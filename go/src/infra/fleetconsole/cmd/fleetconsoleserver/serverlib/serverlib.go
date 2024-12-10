@@ -23,6 +23,7 @@ import (
 	"infra/fleetconsole/cmd/fleetconsoleserver/flags"
 	"infra/fleetconsole/internal/consoleserver"
 	"infra/fleetconsole/internal/devicemanagerclient"
+	"infra/fleetconsole/internal/ufsclient"
 )
 
 func Options() *server.Options {
@@ -41,6 +42,7 @@ func Modules() []module.Module {
 var ACLMap rpcacl.Map = map[string]string{
 	"/fleetconsole.FleetConsole/Ping":                "fleet-console-access",
 	"/fleetconsole.FleetConsole/PingDeviceManager":   "fleet-console-access",
+	"/fleetconsole.FleetConsole/PingUfs":             "fleet-console-access",
 	"/fleetconsole.FleetConsole/ListDevices":         "fleet-console-access",
 	"/fleetconsole.FleetConsole/GetDeviceDimensions": "fleet-console-access",
 	"/discovery.Discovery/Describe":                  rpcacl.All,
@@ -58,6 +60,7 @@ func ServerMain(srv *server.Server) error {
 	srv.RegisterUnifiedServerInterceptors(interceptor)
 	consoleserver.InstallServices(consoleFrontend, srv)
 	consoleserver.SetDeviceManagerClient(consoleFrontend, GetDeviceManagerClient)
+	consoleserver.SetUFSClient(consoleFrontend, GetUfsClient)
 	logging.Infof(srv.Context, "End initialization of console server.")
 	return nil
 }
@@ -101,9 +104,33 @@ func GetDeviceManagerClient(ctx context.Context) (*devicemanagerclient.Client, e
 		deviceManagerPort = port
 	}
 	logging.Infof(ctx, "Initializing device manager client with address: %s:%d", deviceManagerAddr, deviceManagerPort)
-	deviceManagerClient, err := devicemanagerclient.NewClient(ctx, auth.AsSelf, deviceManagerAddr, deviceManagerPort)
+	deviceManagerClient, err := devicemanagerclient.NewClient(ctx, auth.AsSelf, deviceManagerAddr, deviceManagerPort, *flags.UseLocalDeviceManager)
 	if err != nil {
 		return nil, errors.Annotate(err, "configuring device manager client").Err()
 	}
 	return deviceManagerClient, nil
+}
+
+func GetUfsClient(ctx context.Context) (*ufsclient.Client, error) {
+	ufsAddr := ufsclient.UfsDevURL
+	ufsPort := ufsclient.UfsPort
+	if *flags.UseLocalUfs {
+		ufsAddr = "localhost"
+		ufsPort = 8800
+	}
+	if *flags.UfsAddr != "" {
+		res := strings.Split(*flags.UfsAddr, ":")
+		ufsAddr = res[0]
+		port, err := strconv.Atoi(res[1])
+		if err != nil {
+			return nil, errors.Annotate(err, "parsing ufs port from flag").Err()
+		}
+		ufsPort = port
+	}
+	logging.Infof(ctx, "Initializing ufs client with address: %s:%d", ufsAddr, ufsPort)
+	ufsClient, err := ufsclient.NewClient(ctx, auth.AsCredentialsForwarder, ufsAddr, ufsPort, *flags.UseLocalUfs)
+	if err != nil {
+		return nil, errors.Annotate(err, "configuring ufs client").Err()
+	}
+	return ufsClient, nil
 }

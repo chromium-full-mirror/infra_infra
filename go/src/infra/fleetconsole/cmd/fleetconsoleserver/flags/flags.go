@@ -11,3 +11,5 @@ import (
 
 var DeviceManagerAddr = flag.String("dm-addr", "", "Device Manager address to use. Uses production address by default")
 var UseLocalDeviceManager = flag.Bool("use-local-dm", false, "Uses insecure connection to device manager. Default address is localhost:8800. Can be overwritten by dm-addr flag.")
+var UfsAddr = flag.String("ufs-addr", "", "UFS address to use. Uses production address by default")
+var UseLocalUfs = flag.Bool("use-local-ufs", false, "Uses insecure connection to UFS. Default address is localhost:8800. Can be overwritten by ufs-addr flag.")

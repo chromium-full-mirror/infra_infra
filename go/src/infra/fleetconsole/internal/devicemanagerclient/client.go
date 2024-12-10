@@ -7,18 +7,14 @@ package devicemanagerclient
 
 import (
 	"context"
-	"fmt"
-	"net/http"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 
 	// In the device_manager library, please ONLY depend on the constants that are not specific to Scheduke.
 	"infra/device_manager/client"
 	"infra/fleetconsole/api/fleetconsolerpc"
-	"infra/fleetconsole/cmd/fleetconsoleserver/flags"
+	"infra/fleetconsole/internal/site"
 )
 
 const (
@@ -36,30 +32,13 @@ type Client struct {
 }
 
 // NewClient makes a new client.
-func NewClient(ctx context.Context, rpcAuthorityKind auth.RPCAuthorityKind, hostname string, port int) (*Client, error) {
-	var opts []auth.RPCOption
-	switch rpcAuthorityKind {
-	case auth.AsCredentialsForwarder:
-		// do nothing
-	case auth.AsSelf:
-		opts = []auth.RPCOption{auth.WithIDToken()}
-	default:
-		opts = []auth.RPCOption{auth.WithScopes(auth.CloudOAuthScopes...)}
-	}
-	t, err := auth.GetRPCTransport(ctx, rpcAuthorityKind, opts...)
+func NewClient(ctx context.Context, rpcAuthorityKind auth.RPCAuthorityKind, hostname string, port int, insecure bool) (*Client, error) {
+	prpcClient, err := site.NewAuthenticatedClient(ctx, rpcAuthorityKind, hostname, port, insecure)
+
 	if err != nil {
-		return nil, errors.Annotate(err, "setting up auth").Err()
+		return nil, err
 	}
-	httpClient := &http.Client{
-		Transport: t,
-	}
-	prpcClient := &prpc.Client{
-		C: httpClient,
-		Options: &prpc.Options{
-			Insecure: *flags.UseLocalDeviceManager,
-		},
-		Host: fmt.Sprintf("%s:%d", hostname, port),
-	}
+
 	return &Client{
 		Leaser: api.NewDeviceLeaseServiceClient(prpcClient),
 	}, nil

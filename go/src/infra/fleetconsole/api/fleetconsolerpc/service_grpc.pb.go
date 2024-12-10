@@ -26,6 +26,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	FleetConsole_Ping_FullMethodName                = "/fleetconsole.FleetConsole/Ping"
 	FleetConsole_PingDeviceManager_FullMethodName   = "/fleetconsole.FleetConsole/PingDeviceManager"
+	FleetConsole_PingUfs_FullMethodName             = "/fleetconsole.FleetConsole/PingUfs"
 	FleetConsole_ListDevices_FullMethodName         = "/fleetconsole.FleetConsole/ListDevices"
 	FleetConsole_GetDeviceDimensions_FullMethodName = "/fleetconsole.FleetConsole/GetDeviceDimensions"
 )
@@ -38,6 +39,8 @@ type FleetConsoleClient interface {
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error)
 	// PingDeviceManager attempts to contact DeviceManager through Fleet Console. Useful for debugging.
 	PingDeviceManager(ctx context.Context, in *PingDeviceManagerRequest, opts ...grpc.CallOption) (*PingDeviceManagerResponse, error)
+	// PingUfs attempts to contact UFS through Fleet Console. Useful for debugging.
+	PingUfs(ctx context.Context, in *PingUfsRequest, opts ...grpc.CallOption) (*PingUfsResponse, error)
 	// ListDevices managed by Device Manager.
 	ListDevices(ctx context.Context, in *ListDevicesRequest, opts ...grpc.CallOption) (*ListDevicesResponse, error)
 	// GetDeviceDimensions provides overview of devices dimensions and their values
@@ -72,6 +75,16 @@ func (c *fleetConsoleClient) PingDeviceManager(ctx context.Context, in *PingDevi
 	return out, nil
 }
 
+func (c *fleetConsoleClient) PingUfs(ctx context.Context, in *PingUfsRequest, opts ...grpc.CallOption) (*PingUfsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PingUfsResponse)
+	err := c.cc.Invoke(ctx, FleetConsole_PingUfs_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *fleetConsoleClient) ListDevices(ctx context.Context, in *ListDevicesRequest, opts ...grpc.CallOption) (*ListDevicesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListDevicesResponse)
@@ -100,6 +113,8 @@ type FleetConsoleServer interface {
 	Ping(context.Context, *PingRequest) (*PingResponse, error)
 	// PingDeviceManager attempts to contact DeviceManager through Fleet Console. Useful for debugging.
 	PingDeviceManager(context.Context, *PingDeviceManagerRequest) (*PingDeviceManagerResponse, error)
+	// PingUfs attempts to contact UFS through Fleet Console. Useful for debugging.
+	PingUfs(context.Context, *PingUfsRequest) (*PingUfsResponse, error)
 	// ListDevices managed by Device Manager.
 	ListDevices(context.Context, *ListDevicesRequest) (*ListDevicesResponse, error)
 	// GetDeviceDimensions provides overview of devices dimensions and their values
@@ -119,6 +134,9 @@ func (UnimplementedFleetConsoleServer) Ping(context.Context, *PingRequest) (*Pin
 }
 func (UnimplementedFleetConsoleServer) PingDeviceManager(context.Context, *PingDeviceManagerRequest) (*PingDeviceManagerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PingDeviceManager not implemented")
+}
+func (UnimplementedFleetConsoleServer) PingUfs(context.Context, *PingUfsRequest) (*PingUfsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PingUfs not implemented")
 }
 func (UnimplementedFleetConsoleServer) ListDevices(context.Context, *ListDevicesRequest) (*ListDevicesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListDevices not implemented")
@@ -183,6 +201,24 @@ func _FleetConsole_PingDeviceManager_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FleetConsole_PingUfs_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PingUfsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FleetConsoleServer).PingUfs(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FleetConsole_PingUfs_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FleetConsoleServer).PingUfs(ctx, req.(*PingUfsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _FleetConsole_ListDevices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListDevicesRequest)
 	if err := dec(in); err != nil {
@@ -233,6 +269,10 @@ var FleetConsole_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PingDeviceManager",
 			Handler:    _FleetConsole_PingDeviceManager_Handler,
+		},
+		{
+			MethodName: "PingUfs",
+			Handler:    _FleetConsole_PingUfs_Handler,
 		},
 		{
 			MethodName: "ListDevices",

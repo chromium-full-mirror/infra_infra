@@ -17,6 +17,9 @@ service FleetConsole {
   // PingDeviceManager attempts to contact DeviceManager through Fleet Console. Useful for debugging.
   rpc PingDeviceManager(PingDeviceManagerRequest) returns (PingDeviceManagerResponse);
 
+  // PingUfs attempts to contact UFS through Fleet Console. Useful for debugging.
+  rpc PingUfs(PingUfsRequest) returns (PingUfsResponse);
+
   // ListDevices managed by Device Manager.
   rpc ListDevices(ListDevicesRequest) returns (ListDevicesResponse) {};
 
@@ -38,6 +41,14 @@ message PingDeviceManagerRequest {
 
 // PingDeviceManagerResponse intentionally contains nothing.
 message PingDeviceManagerResponse {
+}
+
+// PingUfsRequest intentionally contains nothing.
+message PingUfsRequest {
+}
+
+// PingUfsResponse intentionally contains nothing.
+message PingUfsResponse {
 }
 
 message Device {

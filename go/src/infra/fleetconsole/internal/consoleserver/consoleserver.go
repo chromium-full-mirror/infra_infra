@@ -11,6 +11,7 @@ import (
 
 	"infra/fleetconsole/api/fleetconsolerpc"
 	"infra/fleetconsole/internal/devicemanagerclient"
+	"infra/fleetconsole/internal/ufsclient"
 )
 
 // NewFleetConsoleFrontend creates a new fleet console frontend.
@@ -23,6 +24,7 @@ type FleetConsoleFrontend struct {
 	fleetconsolerpc.UnimplementedFleetConsoleServer
 
 	deviceManagerClient func(context.Context) (*devicemanagerclient.Client, error)
+	ufsClient           func(context.Context) (*ufsclient.Client, error)
 }
 
 // InstallServices installs services into the server.
@@ -33,4 +35,8 @@ func InstallServices(consoleFrontend fleetconsolerpc.FleetConsoleServer, srv grp
 // SetDeviceManagerClient sets the device manager client.
 func SetDeviceManagerClient(consoleFrontend *FleetConsoleFrontend, deviceManagerClient func(context.Context) (*devicemanagerclient.Client, error)) {
 	consoleFrontend.deviceManagerClient = deviceManagerClient
+}
+
+func SetUFSClient(consoleFrontend *FleetConsoleFrontend, ufsClient func(context.Context) (*ufsclient.Client, error)) {
+	consoleFrontend.ufsClient = ufsClient
 }
