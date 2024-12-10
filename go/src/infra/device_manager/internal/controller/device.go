@@ -95,12 +95,13 @@ func PublishDeviceEvent(ctx context.Context, psClient external.PubSubClient, dev
 		return err
 	}
 
-	var latency time.Duration
-	if !device.LastUpdatedTime.IsZero() {
-		latency = time.Since(device.LastUpdatedTime)
+	if device.LastNotificationTime.Before(device.LastUpdatedTime) {
+		latency := time.Since(device.LastUpdatedTime)
+		// For easier log parsing, we truncate the latency to seconds.
+		logging.Debugf(ctx, "PublishDeviceEvent: published in %.0f sec: Device %q dut_id %q: %v", latency.Seconds(), device.ID, device.DutID, deviceEvent)
+	} else {
+		logging.Debugf(ctx, "PublishDeviceEvent: re-published device %q dut_id %q: %v", device.ID, device.DutID, deviceEvent)
 	}
-	// For better log parsing, we tuncate the latency to seconds.
-	logging.Debugf(ctx, "PublishDeviceEvent: published in %.0f sec: Device %q dut_id %q: %v", latency.Seconds(), device.ID, device.DutID, deviceEvent)
 	return nil
 }
 
