@@ -186,7 +186,7 @@ func (ip *indexPack) processExistingKzip(ctx context.Context, kzip string, kzipE
 
 	for _, suffix := range corruptedCUSuffixes {
 		if strings.HasSuffix(outputKey, suffix) {
-			logging.Infof(ctx, "Ignorring known bad CU \"%s\" (filename: %s)", outputKey, kzip)
+			logging.Infof(ctx, "Ignoring known bad CU \"%s\" (filename: %s)", outputKey, kzip)
 			return nil
 		}
 	}
