@@ -25,7 +25,7 @@ var (
 	ProvisionContainerName               = "provision-filter"
 	TestFinderContainerName              = "cros-test-finder"
 	UseFlagFilterContainerName           = "use_flag_filter"
-	PreProcessFilterContainerName        = "pre-process-filter"
+	PreProcessFilterContainerName        = "pre_process_filter"
 	AutoVMTestShifterFilterContainerName = "autovm_test_shifter_filter"
 
 	hwPlaceHolder = "PLACEHOLDER"
@@ -39,7 +39,7 @@ var (
 	binaryLookup = map[string]string{
 		TtcpContainerName:                    "solver_service",
 		TestFinderContainerName:              "test_finder_filter",
-		PreProcessFilterContainerName:        "pre-process-filter",
+		PreProcessFilterContainerName:        "pre_process_filter",
 		AutoVMTestShifterFilterContainerName: "autovm_test_shifter_filter",
 	}
 )
