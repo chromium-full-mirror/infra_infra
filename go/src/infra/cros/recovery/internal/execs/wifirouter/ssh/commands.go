@@ -72,7 +72,7 @@ func Reboot(ctx context.Context, sshRunner Runner, reconnectDelay time.Duration,
 	log.Debugf(ctx, "Waiting %s for host to start rebooting before reconnecting", reconnectDelay)
 	time.Sleep(reconnectDelay)
 	log.Debugf(ctx, "Attempting to reconnect to host after reboot (%s interval, %s timeout)", reconnectInterval, reconnectTimeout)
-	return cros.WaitUntilSSHable(ctx, reconnectTimeout, reconnectInterval, sshRunner.Run, log.Get(ctx))
+	return cros.WaitUntilSSHable(ctx, reconnectTimeout, reconnectInterval, sshRunner.Run)
 }
 
 // TryAccess will attempt to run a simple bash command, `true`, on the host over

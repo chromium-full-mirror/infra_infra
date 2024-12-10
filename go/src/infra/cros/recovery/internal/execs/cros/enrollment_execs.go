@@ -12,6 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/components/cros/vpd"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
@@ -39,7 +40,6 @@ func isEnrollmentInCleanStateExec(ctx context.Context, info *execs.ExecInfo) err
 func enrollmentCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	ha := info.NewHostAccess(info.GetDut().Name)
-	run := info.NewRunner(info.GetDut().Name)
 	// 1. Reset VPD enrollment state
 	log.Debugf(ctx, "First: Try to reset VPD enrollment state!")
 	repairTimeout := argsMap.AsDuration(ctx, "repair_timeout", 120, time.Second)
@@ -78,14 +78,14 @@ func enrollmentCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
 	}
 	rebootTimeout := argsMap.AsDuration(ctx, "reboot_timeout", 10, time.Second)
 	log.Debugf(ctx, "enrollment cleanup: using reboot timeout :%s", rebootTimeout)
-	if err := SimpleReboot(ctx, run, rebootTimeout, info); err != nil {
+	if err := cros.RebootWithCheck(ctx, ha, cros.WaitTimeToDownAtRestart, rebootTimeout); err != nil {
 		return errors.Annotate(err, "enrollment cleanup").Err()
 	}
 	// Finally, we will read the TPM status, and will check whether it
 	// has been cleared or not.
 	tpmTimeout := argsMap.AsDuration(ctx, "tpm_timeout", 150, time.Second)
 	log.Debugf(ctx, "enrollment cleanup: using tpm timeout :%s", tpmTimeout)
-	err := retry.WithTimeout(ctx, time.Second, tpmTimeout, func() error {
+	if err := retry.WithTimeout(ctx, time.Second, tpmTimeout, func() error {
 		isClean, err := vpd.IsEnrollmentInClean(ctx, ha, time.Minute)
 		if err != nil {
 			return err
@@ -95,9 +95,10 @@ func enrollmentCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
 			return nil
 		}
 		return errors.Reason("state is not clean").Err()
-	}, "wait to read tpm status")
-
-	return errors.Annotate(err, "enrollment cleanup").Err()
+	}, "wait to read tpm status"); err != nil {
+		return errors.Annotate(err, "enrollment cleanup").Err()
+	}
+	return nil
 }
 
 func init() {

@@ -148,13 +148,13 @@ func WaitForRestart(ctx context.Context, info *execs.ExecInfo) error {
 	ping := info.DefaultPinger()
 	logger := info.NewLogger()
 	// wait for it to be down.
-	if waitDownErr := cros.WaitUntilNotPingable(ctx, waitDownRebootTime, cros.PingRetryInterval, cros.DefaultPingCount, ping, logger); waitDownErr != nil {
+	if waitDownErr := cros.WaitUntilNotPingable(ctx, waitDownRebootTime, cros.PingRetryInterval, cros.DefaultPingCount, ping); waitDownErr != nil {
 		logger.Debugf("Wait For Restart: device shutdown failed.")
 		return errors.Annotate(waitDownErr, "wait for restart").Err()
 	}
 	// wait down for servo device is successful, then wait for device
 	// up.
-	if waitUpErr := cros.WaitUntilPingable(ctx, waitUpRebootTime, cros.PingRetryInterval, cros.DefaultPingCount, ping, logger); waitUpErr != nil {
+	if waitUpErr := cros.WaitUntilPingable(ctx, waitUpRebootTime, cros.PingRetryInterval, cros.DefaultPingCount, ping); waitUpErr != nil {
 		return errors.Annotate(waitUpErr, "wait for restart").Err()
 	}
 	logger.Infof("Device is up.")

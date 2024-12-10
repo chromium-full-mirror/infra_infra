@@ -12,6 +12,7 @@ import (
 
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/internal/retry"
 )
 
 const (
@@ -42,5 +43,36 @@ func Reboot(ctx context.Context, run components.Runner, timeout time.Duration) e
 		return errors.Annotate(err, "reboot helper").Err()
 	}
 	log.Debugf(ctx, "Stdout: %s", out)
+	return nil
+}
+
+const (
+	// WaitTimeToDownAtRestart is the time for the device to be down at reboot.
+	WaitTimeToDownAtRestart = 120 * time.Second
+	// WaitTimeToBoot is the time for the device to be up after reboot.
+	WaitTimeToBootAfterRestart = 240 * time.Second
+)
+
+// RebootWithCheck executes a simple reboot and check that host goes down and up.
+func RebootWithCheck(ctx context.Context, ha components.HostAccess, timeToDown, timeToUp time.Duration) error {
+	if _, err := ha.RunBackground(ctx, 10*time.Second, "reboot"); err != nil {
+		return errors.Annotate(err, "reboot with check").Err()
+	}
+	// wait for it to be down.
+	log.Debugf(ctx, "Wait for device to lost a ping %s.", timeToUp)
+	if err := retry.WithTimeout(ctx, PingRetryInterval, timeToDown, func() error {
+		return IsNotPingable(ctx, DefaultPingCount, ha.Ping)
+	}, "wait to be not pingable"); err != nil {
+		return errors.Annotate(err, "reboot with check").Err()
+	}
+	// wait down for servo device is successful, then wait for device
+	// up.
+	log.Debugf(ctx, "Wait for device to be pingable %s.", timeToUp)
+	if err := retry.WithTimeout(ctx, PingRetryInterval, timeToUp, func() error {
+		return IsPingable(ctx, DefaultPingCount, ha.Ping)
+	}, "wait to ping"); err != nil {
+		return errors.Annotate(err, "reboot with check").Err()
+	}
+	log.Infof(ctx, "Device is up.")
 	return nil
 }

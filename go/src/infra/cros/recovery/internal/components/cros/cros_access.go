@@ -12,8 +12,8 @@ import (
 
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/linux"
+	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/retry"
-	"infra/cros/recovery/logger"
 )
 
 const (
@@ -29,9 +29,9 @@ func IsPingable(ctx context.Context, count int, ping components.Pinger) error {
 }
 
 // IsNotPingable checks whether the resource is not pingable
-func IsNotPingable(ctx context.Context, count int, ping components.Pinger, log logger.Logger) error {
+func IsNotPingable(ctx context.Context, count int, ping components.Pinger) error {
 	if err := ping(ctx, count); err != nil {
-		log.Debugf("Resource is not pingable, but expected!")
+		log.Debugf(ctx, "Resource is not pingable, but expected!")
 		return nil
 	}
 	return errors.Reason("not pingable: is pingable").Err()
@@ -52,12 +52,12 @@ func IsSSHable(ctx context.Context, run components.Runner, timeout time.Duration
 // The test doesn't check various bind mounts; those are expected to
 // fail the same way as their underlying main mounts.  Whether the
 // Linux kernel can guarantee that is untested...
-func IsFileSystemWritable(ctx context.Context, run components.Runner, log logger.Logger, testDirs []string) error {
+func IsFileSystemWritable(ctx context.Context, run components.Runner, testDirs []string) error {
 	for _, testDir := range testDirs {
 		if err := linux.IsPathWritable(ctx, run, testDir); err != nil {
 			return errors.Annotate(err, "file system writable").Err()
 		}
-		log.Debugf("Directory %s is writable.", testDir)
+		log.Debugf(ctx, "Directory %s is writable.", testDir)
 	}
 	return nil
 }
@@ -68,23 +68,23 @@ const (
 )
 
 // WaitUntilPingable waiting resource to be pingable.
-func WaitUntilPingable(ctx context.Context, waitTime, waitInterval time.Duration, countPerAttempt int, ping components.Pinger, log logger.Logger) error {
-	log.Debugf("Start ping for the next %s.", waitTime)
+func WaitUntilPingable(ctx context.Context, waitTime, waitInterval time.Duration, countPerAttempt int, ping components.Pinger) error {
+	log.Debugf(ctx, "Start ping for the next %s.", waitTime)
 	return retry.WithTimeout(ctx, waitInterval, waitTime, func() error {
 		return IsPingable(ctx, countPerAttempt, ping)
 	}, "wait to ping")
 }
 
 // WaitUntilNotPingable waiting resource to be not pingable.
-func WaitUntilNotPingable(ctx context.Context, waitTime, waitInterval time.Duration, countPerAttempt int, ping components.Pinger, log logger.Logger) error {
+func WaitUntilNotPingable(ctx context.Context, waitTime, waitInterval time.Duration, countPerAttempt int, ping components.Pinger) error {
 	return retry.WithTimeout(ctx, waitInterval, waitTime, func() error {
-		return IsNotPingable(ctx, countPerAttempt, ping, log)
+		return IsNotPingable(ctx, countPerAttempt, ping)
 	}, "wait to be not pingable")
 }
 
 // WaitUntilSSHable waiting resource to be sshable.
-func WaitUntilSSHable(ctx context.Context, waitTime, waitInterval time.Duration, run components.Runner, log logger.Logger) error {
-	log.Debugf("Start SSH check for the next %s.", waitTime)
+func WaitUntilSSHable(ctx context.Context, waitTime, waitInterval time.Duration, run components.Runner) error {
+	log.Debugf(ctx, "Start SSH check for the next %s.", waitTime)
 	return retry.WithTimeout(ctx, waitInterval, waitTime, func() error {
 		return IsSSHable(ctx, run, DefaultSSHTimeout)
 	}, "wait to ssh access")

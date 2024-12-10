@@ -79,7 +79,7 @@ func InsertSIM(ctx context.Context, runner components.Runner, slot int) error {
 		// cros reboot will always time out.
 		log.Infof(ctx, "Error received during reboot: %v", err)
 	}
-	if err := cros.WaitUntilSSHable(ctx, 120*time.Second, 5*time.Second, runner, log.Get(ctx)); err != nil {
+	if err := cros.WaitUntilSSHable(ctx, 120*time.Second, 5*time.Second, runner); err != nil {
 		return errors.Annotate(err, "insert sim: failed to connect to device after rebooting").Err()
 	}
 

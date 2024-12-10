@@ -133,7 +133,7 @@ func PermBootIntoPartition(ctx context.Context, runner components.Runner, recove
 func waitForBootPartition(ctx context.Context, runner components.Runner, bootPart string, timeout time.Duration) error {
 	log.Debugf(ctx, "Waiting %s for host to start rebooting before reconnecting", 10*time.Second)
 	time.Sleep(10 * time.Second)
-	if err := cros.WaitUntilSSHable(ctx, timeout, 10*time.Second, runner, log.Get(ctx)); err != nil {
+	if err := cros.WaitUntilSSHable(ctx, timeout, 10*time.Second, runner); err != nil {
 		return errors.Annotate(err, "wait for boot partition: device did not come back up after temp booting into partition").Err()
 	}
 

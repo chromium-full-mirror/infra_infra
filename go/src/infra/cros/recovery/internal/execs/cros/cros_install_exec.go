@@ -38,7 +38,7 @@ func devModeBootFromServoUSBDriveExec(ctx context.Context, info *execs.ExecInfo)
 	logger := info.NewLogger()
 	retryBootFunc := func() error {
 		logger.Infof("Boot in DEV-mode: staring...")
-		if err := cros.BootFromServoUSBDriveInDevMode(ctx, waitBootTimeout, waitBootInterval, run, ping, servod, logger); err != nil {
+		if err := cros.BootFromServoUSBDriveInDevMode(ctx, waitBootTimeout, waitBootInterval, run, ping, servod); err != nil {
 			return errors.Annotate(err, "retry boot in dev-mode").Err()
 		}
 		if verifyUSBDriveBoot {
@@ -87,6 +87,7 @@ func runChromeosInstallCommandWhenBootFromUSBDriveExec(ctx context.Context, info
 func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.ExecInfo) error {
 	am := info.GetActionArgs(ctx)
 	dut := info.GetDut()
+	dutHa := info.NewHostAccess(dut.Name)
 	dutRun := info.NewRunner(dut.Name)
 	dutBackgroundRun := info.NewBackgroundRunner(dut.Name)
 	dutPing := info.NewPinger(dut.Name)
@@ -235,7 +236,7 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 		AfterRebootTimeout:            am.AsDuration(ctx, "after_reboot_timeout", 150, time.Second),
 		AfterRebootAllowUseServoReset: am.AsBool(ctx, "after_reboot_allow_use_servo_reset", false),
 	}
-	if err := cros.BootInRecoveryMode(ctx, req, dutRun, dutBackgroundRun, dutPing, servod, logger); err != nil {
+	if err := cros.BootInRecoveryMode(ctx, req, dutRun, dutBackgroundRun, dutPing, dutHa, servod, logger); err != nil {
 		return errors.Annotate(err, "install from usb drive in recovery mode").Err()
 	}
 	// Time to wait DUT boot up from post installation.

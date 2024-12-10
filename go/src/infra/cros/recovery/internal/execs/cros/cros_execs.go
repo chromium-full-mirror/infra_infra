@@ -42,7 +42,7 @@ func pingExec(ctx context.Context, info *execs.ExecInfo) error {
 	default:
 		return errors.Reason("ssh: unsupported device-type %q", deviceType).Err()
 	}
-	return cros.WaitUntilPingable(ctx, info.GetExecTimeout(), cros.PingRetryInterval, 2, pinger, info.NewLogger())
+	return cros.WaitUntilPingable(ctx, info.GetExecTimeout(), cros.PingRetryInterval, 2, pinger)
 }
 
 // sshExec verifies ssh access to the current plan's device (named by the default resource name).
@@ -64,7 +64,7 @@ func sshExec(ctx context.Context, info *execs.ExecInfo) error {
 	default:
 		return errors.Reason("ssh: unsupported device-type %q", deviceType).Err()
 	}
-	if err := cros.WaitUntilSSHable(ctx, info.GetExecTimeout(), cros.SSHRetryInterval, run, info.NewLogger()); err != nil {
+	if err := cros.WaitUntilSSHable(ctx, info.GetExecTimeout(), cros.SSHRetryInterval, run); err != nil {
 		return errors.Annotate(err, "ssh %q:", deviceType).Err()
 	}
 	return nil
@@ -72,7 +72,7 @@ func sshExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // sshDUTExec verifies ssh access to the DUT.
 func sshDUTExec(ctx context.Context, info *execs.ExecInfo) error {
-	return cros.WaitUntilSSHable(ctx, info.GetExecTimeout(), cros.SSHRetryInterval, info.NewRunner(info.GetDut().Name), info.NewLogger())
+	return cros.WaitUntilSSHable(ctx, info.GetExecTimeout(), cros.SSHRetryInterval, info.NewRunner(info.GetDut().Name))
 }
 
 // rebootExec reboots the cros DUT.

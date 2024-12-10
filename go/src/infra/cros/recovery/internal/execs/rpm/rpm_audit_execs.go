@@ -43,7 +43,7 @@ func rpmAuditWithoutBatteryExec(ctx context.Context, info *execs.ExecInfo) error
 	}
 	// RPM service is single thread, perform the action OFF can take up-to 60 seconds.
 	log.Debugf(ctx, "Start waiting until the device goes down...")
-	if waitDownErr := cros.WaitUntilNotPingable(ctx, downTimeout, waitInterval, 2, ping, log.Get(ctx)); waitDownErr != nil {
+	if waitDownErr := cros.WaitUntilNotPingable(ctx, downTimeout, waitInterval, 2, ping); waitDownErr != nil {
 		log.Debugf(ctx, "Failed to power down the host: restoring RPM to ON state.")
 		if err := rpmPowerOnExec(ctx, info); err != nil {
 			log.Debugf(ctx, "Failed to recover RPM state to ON: %s", err)
@@ -63,7 +63,7 @@ func rpmAuditWithoutBatteryExec(ctx context.Context, info *execs.ExecInfo) error
 		}
 	}
 	log.Debugf(ctx, "Start waiting until the device goes up...")
-	if err := cros.WaitUntilSSHable(ctx, bootTimeout, waitInterval, run, log.Get(ctx)); err != nil {
+	if err := cros.WaitUntilSSHable(ctx, bootTimeout, waitInterval, run); err != nil {
 		return errors.Annotate(err, "rpm audit: resource did not booted").Err()
 	}
 	log.Debugf(ctx, "Verification finished.")

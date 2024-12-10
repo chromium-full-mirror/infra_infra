@@ -45,7 +45,7 @@ type BootInRecoveryRequest struct {
 //
 // Boot in recovery mode performed by RO firmware and in some cases required stopPD negotiation.
 // Please specify callback function to perform needed actions when device booted in recovery mode.
-func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun, dutBackgroundRun components.Runner, dutPing components.Pinger, servod components.Servod, log logger.Logger) (rErr error) {
+func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun, dutBackgroundRun components.Runner, dutPing components.Pinger, ha components.HostAccess, servod components.Servod, log logger.Logger) (rErr error) {
 	if req.BootRetry < 1 {
 		// We retry at least once when method called.
 		req.BootRetry = 1
@@ -150,7 +150,7 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		if rErr == nil && req.AfterRebootVerify {
 			log.Debugf("Boot in recovery mode: starting verification of the boot...")
 			for {
-				if err := WaitUntilSSHable(ctx, req.AfterRebootTimeout, req.BootInterval, dutRun, log); err != nil {
+				if err := WaitUntilSSHable(ctx, req.AfterRebootTimeout, req.BootInterval, dutRun); err != nil {
 					if req.AfterRebootAllowUseServoReset {
 						req.AfterRebootAllowUseServoReset = false
 						if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueReset); err != nil {
@@ -192,7 +192,7 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 			log.Debugf("Boot in Recovery Mode: Failure when trying to set power_state:rec with error: %s", err)
 		}
 		log.Debugf("Boot in Recovery Mode: Waiting to device to be SSH-able.")
-		if err := WaitUntilSSHable(ctx, req.BootTimeout, req.BootInterval, dutRun, log); err != nil {
+		if err := WaitUntilSSHable(ctx, req.BootTimeout, req.BootInterval, dutRun); err != nil {
 			return errors.Annotate(err, "retry boot").Err()
 		}
 		if err := storage.IsBootedFromExternalStorage(ctx, dutRun); err != nil {

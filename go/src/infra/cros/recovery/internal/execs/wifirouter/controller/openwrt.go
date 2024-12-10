@@ -489,7 +489,7 @@ func (c *OpenWrtRouterController) updateImage(ctx context.Context, imageUUID str
 	log.Infof(ctx, "Waiting 1m before reconnecting to give time for OpenWrt sysupgrade to complete")
 	time.Sleep(1 * time.Minute)
 	log.Infof(ctx, "Attempting to reconnect to OpenWrt router after sysupgrade")
-	if err := cros.WaitUntilSSHable(ctx, 4*time.Minute, 10*time.Second, c.sshRunner.Run, log.Get(ctx)); err != nil {
+	if err := cros.WaitUntilSSHable(ctx, 4*time.Minute, 10*time.Second, c.sshRunner.Run); err != nil {
 		return errors.Annotate(err, "failed to reconnect to OpenWrt device over ssh after flashing new image binary").Err()
 	}
 	log.Infof(ctx, "Successfully reconnected to OpenWrt router after sysupgrade")

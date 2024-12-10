@@ -38,12 +38,12 @@ func newRunner(info *execs.ExecInfo) components.Runner {
 
 // pingAssociatedHostExec verifies that associated host of the DUT is pingable.
 func pingAssociatedHostExec(ctx context.Context, info *execs.ExecInfo) error {
-	return cros.WaitUntilPingable(ctx, info.GetExecTimeout(), cros.PingRetryInterval, 2, newPinger(info), info.NewLogger())
+	return cros.WaitUntilPingable(ctx, info.GetExecTimeout(), cros.PingRetryInterval, 2, newPinger(info))
 }
 
 // sshAssociatedHostExec verifies ssh access to the associated host of the DUT.
 func sshAssociatedHostExec(ctx context.Context, info *execs.ExecInfo) error {
-	return cros.WaitUntilSSHable(ctx, info.GetExecTimeout(), cros.SSHRetryInterval, newRunner(info), info.NewLogger())
+	return cros.WaitUntilSSHable(ctx, info.GetExecTimeout(), cros.SSHRetryInterval, newRunner(info))
 }
 
 // isAssociatedHostLabstationExec verifies that adb is installed at the DUT associated host.
@@ -101,7 +101,7 @@ func isFileSystemWritableExec(ctx context.Context, info *execs.ExecInfo) error {
 	// N.B. Order matters here:  Encrypted stateful is loop-mounted from a file in unencrypted stateful,
 	// so we don't test for errors in encrypted stateful if unencrypted fails.
 	testDirs := []string{"/mnt/stateful_partition", "/var/tmp"}
-	return cros.IsFileSystemWritable(ctx, newRunner(info), info.NewLogger(), testDirs)
+	return cros.IsFileSystemWritable(ctx, newRunner(info), testDirs)
 }
 
 // createInUseFlagExec creates in-use flag file.
