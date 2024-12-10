@@ -21,7 +21,7 @@ import (
 // If the secret is prefixed with `devsecret`, it must be a base64 encoded
 // string. It should not have padding and be in raw encoded form.
 func GetSecret(ctx context.Context, secret string) (string, error) {
-	if !strings.HasPrefix(secret, "devsecret://") && !strings.HasPrefix(secret, "devsecret-text://") {
+	if isPlainTextSecret(secret) {
 		return secret, nil
 	}
 	s, err := secrets.StoredSecret(ctx, secret)
@@ -30,6 +30,19 @@ func GetSecret(ctx context.Context, secret string) (string, error) {
 		return "", err
 	}
 	return string(s.Active), nil
+}
+
+func isPlainTextSecret(secret string) bool {
+	if strings.HasPrefix(secret, "sm://") {
+		return false
+	}
+	if strings.HasPrefix(secret, "devsecret://") {
+		return false
+	}
+	if strings.HasPrefix(secret, "devsecret-text://") {
+		return false
+	}
+	return true
 }
 
 // GetEnvVar tries to get the corresponding environment variable for a string.
