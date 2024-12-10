@@ -13,6 +13,6 @@ import (
 	"time"
 )
 
-func cancelOnSignals(ctx context.Context, idleConns chan struct{}, svr *http.Server, gracePeriod time.Duration) context.Context {
+func cancelOnSignals(ctx context.Context, svr *http.Server, gracePeriod time.Duration) context.Context {
 	panic("windows not supported")
 }

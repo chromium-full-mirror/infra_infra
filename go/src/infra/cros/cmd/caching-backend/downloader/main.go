@@ -125,9 +125,8 @@ func innerMain() error {
 		"caching-backend-downloader",
 		otelhttp.WithMessageEvents(otelhttp.ReadEvents, otelhttp.WriteEvents),
 	)
-	idleConnsClosed := make(chan struct{})
 	svr := http.Server{Addr: *archiveServerAddress, Handler: otelMux}
-	ctx = cancelOnSignals(ctx, idleConnsClosed, &svr, *shutdownGracePeriod)
+	ctx = cancelOnSignals(ctx, &svr, *shutdownGracePeriod)
 
 	opts := []option.ClientOption{option.WithCredentialsFile(*credentialFile)}
 	if *authScopes != "" {
@@ -139,10 +138,10 @@ func innerMain() error {
 	defer c.gsClient.close()
 
 	log.Printf("starting archive-server on %s...", *archiveServerAddress)
-	if err = svr.ListenAndServe(); errors.Is(err, http.ErrServerClosed) {
-		log.Fatalf("HTTP server ListenAndServe: %v", err)
+	if err = svr.ListenAndServe(); !errors.Is(err, http.ErrServerClosed) {
+		log.Fatalf("HTTP server ListenAndServe fatal errror: %v", err)
 	}
-	<-idleConnsClosed
+	<-ctx.Done()
 	return err
 }
 
