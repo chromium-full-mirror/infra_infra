@@ -13,7 +13,6 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
 )
@@ -133,102 +132,4 @@ func ServoNICMacAddress(ctx context.Context, r execs.Runner, nicPath string) (st
 	}
 	log.Infof(ctx, "Servo NIC MAC address visible from DUT: %s", macAddress)
 	return macAddress, nil
-}
-
-const (
-	// waitDownRebootTime is the time the program will wait for the device to be down.
-	waitDownRebootTime = 120 * time.Second
-	// waitUpRebootTime is the time the program will wait for the device to be up after reboot.
-	waitUpRebootTime = 240 * time.Second
-)
-
-// WaitForRestart will first wait the device to go down and then wait
-// for the device to come up.
-func WaitForRestart(ctx context.Context, info *execs.ExecInfo) error {
-	ping := info.DefaultPinger()
-	logger := info.NewLogger()
-	// wait for it to be down.
-	if waitDownErr := cros.WaitUntilNotPingable(ctx, waitDownRebootTime, cros.PingRetryInterval, cros.DefaultPingCount, ping); waitDownErr != nil {
-		logger.Debugf("Wait For Restart: device shutdown failed.")
-		return errors.Annotate(waitDownErr, "wait for restart").Err()
-	}
-	// wait down for servo device is successful, then wait for device
-	// up.
-	if waitUpErr := cros.WaitUntilPingable(ctx, waitUpRebootTime, cros.PingRetryInterval, cros.DefaultPingCount, ping); waitUpErr != nil {
-		return errors.Annotate(waitUpErr, "wait for restart").Err()
-	}
-	logger.Infof("Device is up.")
-	return nil
-}
-
-// TpmStatus is a data structure to represent the parse-version of the
-// TPM Status.
-type TpmStatus struct {
-	statusMap map[string]string
-	success   bool
-}
-
-// NewTpmStatus retrieves the TPM status for the DUT and returns the
-// status values as a map.
-func NewTpmStatus(ctx context.Context, run execs.Runner, timeout time.Duration) *TpmStatus {
-	status, _ := run(ctx, timeout, "tpm_manager_client", "status", "--nonsensitive")
-	log.Debugf(ctx, "New Tpm Status :%q", status)
-	statusItems := strings.Split(status, "\n")
-	var ts = &TpmStatus{
-		statusMap: make(map[string]string),
-		// The uppercase on this string is deliberate.
-		success: strings.Contains(strings.ToUpper(status), "STATUS_SUCCESS"),
-	}
-	// Following the logic in Labpack, if the TPM status string
-	// contains 2 lines or fewer, we will return an empty map for the
-	// TPM status values.
-	if len(statusItems) > 2 {
-		statusItems = statusItems[1 : len(statusItems)-1]
-		for _, statusLine := range statusItems {
-			item := strings.Split(statusLine, ":")[:]
-			if item[0] == "" {
-				continue
-			}
-			if len(item) == 1 {
-				item = append(item, "")
-			}
-			for i, j := range item {
-				item[i] = strings.TrimSpace(j)
-			}
-			ts.statusMap[item[0]] = item[1]
-			// The labpack (Python) implementation checks whether the
-			// string item[1] contains true of false in the string
-			// form, and then explicitly converts that boolean
-			// values. We do not attempt that here since the key and
-			// value types for maps are strongly typed in Go-lang.
-		}
-	}
-	return ts
-}
-
-// hasSuccess checks whether the TpmStatus includes success indicator
-// or not.
-func (tpmStatus *TpmStatus) hasSuccess() bool {
-	return tpmStatus.success
-}
-
-// isOwned checks whether TPM has been cleared or not.
-func (tpmStatus *TpmStatus) isOwned() (bool, error) {
-	if len(tpmStatus.statusMap) == 0 {
-		return false, errors.Reason("tpm status is owned: not initialized").Err()
-	}
-	return tpmStatus.statusMap["is_owned"] == "true", nil
-}
-
-// SimpleReboot executes a simple reboot command using a command
-// runner for a DUT.
-func SimpleReboot(ctx context.Context, run execs.Runner, timeout time.Duration, info *execs.ExecInfo) error {
-	rebootCmd := "reboot"
-	log.Debugf(ctx, "Simple Rebooter : %s", rebootCmd)
-	out, _ := run(ctx, timeout, rebootCmd)
-	log.Debugf(ctx, "Stdout: %s", out)
-	if restartErr := WaitForRestart(ctx, info); restartErr != nil {
-		return errors.Annotate(restartErr, "simple reboot").Err()
-	}
-	return nil
 }

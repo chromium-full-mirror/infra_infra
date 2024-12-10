@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components/cros"
+	"infra/cros/recovery/internal/components/cros/tpm"
 	"infra/cros/recovery/internal/components/cros/vpd"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
@@ -97,6 +98,27 @@ func enrollmentCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Reason("state is not clean").Err()
 	}, "wait to read tpm status"); err != nil {
 		return errors.Annotate(err, "enrollment cleanup").Err()
+	}
+	if argsMap.AsBool(ctx, "fwmp_cleanup_enabled", false) {
+		skipError := argsMap.AsBool(ctx, "fwmp_skip_error", false)
+		ownerDetectTimeout := argsMap.AsDuration(ctx, "owner_detect_timeout", 10, time.Second)
+		skipRebootFWMP := argsMap.AsBool(ctx, "fwmp_skip_reboot", true)
+		fwmpCleaner := tpm.NewFWMPCleaner(ctx, ha, 10*time.Second)
+		if isCLean, err := fwmpCleaner.IsClean(ctx, ha); err != nil {
+			if skipError {
+				log.Debugf(ctx, "enrollment cleanup: fail to read FWMP flags: %s", err)
+			} else {
+				return errors.Annotate(err, "enrollment cleanup: fwmp").Err()
+			}
+		} else if isCLean {
+			log.Debugf(ctx, "FWMP flag is clean!")
+		} else if err := fwmpCleaner.Clean(ctx, ha, skipRebootFWMP, ownerDetectTimeout); err != nil {
+			if skipError {
+				log.Debugf(ctx, "enrollment cleanup: fail to clean up FWMP flags: %s", err)
+			} else {
+				return errors.Annotate(err, "enrollment cleanup: fwmp").Err()
+			}
+		}
 	}
 	return nil
 }
