@@ -127,6 +127,7 @@ func executeContainerUprev(ctx context.Context, dockerKeyFile, cipdLabel, imageT
 			if uprevErr != nil {
 				logging.Infof(ctx, "error while upreving: %s", uprevErr)
 				err = errors.Append(err, uprevErr)
+				continue
 			}
 			if _, ok := containerInfosByFirestore[repo.FirestoreHost]; !ok {
 				containerInfosByFirestore[repo.FirestoreHost] = internal.ContainerInfosMap{}

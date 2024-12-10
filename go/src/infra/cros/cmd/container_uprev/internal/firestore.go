@@ -47,6 +47,10 @@ func filterContainerInfos(infos map[string][]*common.ContainerInfoItem) map[stri
 	for containerName, info := range infos {
 		filteredInfo := []*common.ContainerInfoItem{}
 		for i, infoItem := range info {
+			// Clean out bad entries.
+			if infoItem == nil {
+				continue
+			}
 			// Keep at least 5 entries, filter out the rest.
 			if i >= 5 {
 				compareTime := infoItem.TimeRecord.AddDate(0, 0, 21)
