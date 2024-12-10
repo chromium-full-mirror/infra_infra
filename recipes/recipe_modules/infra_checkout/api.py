@@ -357,13 +357,15 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
       pos = issue['Pos']
       line = pos['Line']
       text = issue['Text']
-      if issue['FromLinter'] == 'gci':
+      if (fromLinter := issue['FromLinter']) == 'gci':
         text = textwrap.dedent('''
         Import order is not sorted.
         Run `golangci-lint run --fix %s` to fix this.''' %
                                self.m.path.dirname(pos['Filename']))
+      else:
+        text = f'Linter: {fromLinter}\n\n{text}'
       self.m.tricium.add_comment(
-          'golangci-lint (%s)' % issue['FromLinter'],
+          'golangci-lint',
           text,
           self.m.path.relpath(go_module_root / pos['Filename'],
                               co.patch_root_path),

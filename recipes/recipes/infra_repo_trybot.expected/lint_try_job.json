@@ -559,7 +559,7 @@
     "cmd": [],
     "name": "write results",
     "~followup_annotations": [
-      "@@@SET_BUILD_PROPERTY@tricium@\"{\\n\\\"comments\\\": [\\n{\\n\\\"category\\\": \\\"golangci-lint (deadcode)\\\",\\n\\\"endLine\\\": 250,\\n\\\"message\\\": \\\"`foo` is unused\\\",\\n\\\"path\\\": \\\"go/src/infra/client/cmd/isolate/lib/batch_archive.go\\\",\\n\\\"startLine\\\": 250\\n},\\n{\\n\\\"category\\\": \\\"golangci-lint (gci)\\\",\\n\\\"endLine\\\": 20,\\n\\\"message\\\": \\\"\\\\nImport order is not sorted.\\\\nRun `golangci-lint run --fix auth_service/impl/model` to fix this.\\\",\\n\\\"path\\\": \\\"go/src/infra/auth_service/impl/model/init.go\\\",\\n\\\"startLine\\\": 20\\n}\\n]\\n}\"@@@"
+      "@@@SET_BUILD_PROPERTY@tricium@\"{\\n\\\"comments\\\": [\\n{\\n\\\"category\\\": \\\"golangci-lint\\\",\\n\\\"endLine\\\": 250,\\n\\\"message\\\": \\\"Linter: deadcode\\\\n\\\\n`foo` is unused\\\",\\n\\\"path\\\": \\\"go/src/infra/client/cmd/isolate/lib/batch_archive.go\\\",\\n\\\"startLine\\\": 250\\n},\\n{\\n\\\"category\\\": \\\"golangci-lint\\\",\\n\\\"endLine\\\": 20,\\n\\\"message\\\": \\\"\\\\nImport order is not sorted.\\\\nRun `golangci-lint run --fix auth_service/impl/model` to fix this.\\\",\\n\\\"path\\\": \\\"go/src/infra/auth_service/impl/model/init.go\\\",\\n\\\"startLine\\\": 20\\n}\\n]\\n}\"@@@"
     ]
   },
   {
@@ -570,7 +570,7 @@
       "@@@STEP_LOG_LINE@findings.json@{@@@",
       "@@@STEP_LOG_LINE@findings.json@  \"findings\": [@@@",
       "@@@STEP_LOG_LINE@findings.json@    {@@@",
-      "@@@STEP_LOG_LINE@findings.json@      \"category\": \"golangci-lint (deadcode)\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@      \"category\": \"golangci-lint\",@@@",
       "@@@STEP_LOG_LINE@findings.json@      \"location\": {@@@",
       "@@@STEP_LOG_LINE@findings.json@        \"file_path\": \"go/src/infra/client/cmd/isolate/lib/batch_archive.go\",@@@",
       "@@@STEP_LOG_LINE@findings.json@        \"gerrit_change_ref\": {@@@",
@@ -584,11 +584,11 @@
       "@@@STEP_LOG_LINE@findings.json@          \"start_line\": 250@@@",
       "@@@STEP_LOG_LINE@findings.json@        }@@@",
       "@@@STEP_LOG_LINE@findings.json@      },@@@",
-      "@@@STEP_LOG_LINE@findings.json@      \"message\": \"`foo` is unused\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@      \"message\": \"Linter: deadcode\\n\\n`foo` is unused\",@@@",
       "@@@STEP_LOG_LINE@findings.json@      \"severity_level\": \"SEVERITY_LEVEL_WARNING\"@@@",
       "@@@STEP_LOG_LINE@findings.json@    },@@@",
       "@@@STEP_LOG_LINE@findings.json@    {@@@",
-      "@@@STEP_LOG_LINE@findings.json@      \"category\": \"golangci-lint (gci)\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@      \"category\": \"golangci-lint\",@@@",
       "@@@STEP_LOG_LINE@findings.json@      \"location\": {@@@",
       "@@@STEP_LOG_LINE@findings.json@        \"file_path\": \"go/src/infra/auth_service/impl/model/init.go\",@@@",
       "@@@STEP_LOG_LINE@findings.json@        \"gerrit_change_ref\": {@@@",
@@ -656,7 +656,7 @@
       }
     },
     "name": "upload 2 findings to ResultDB.upload_invocation_artifacts",
-    "stdin": "{\"requests\": [{\"artifact\": {\"artifactId\": \"findings-00000000-0000-0000-0000-000000001337\", \"contentType\": \"application/vnd.google.protobuf+gzip\", \"contents\": \"H4sIAAAAAAACA5WPMU7DQBBF5QiRaCmQTAor1ZSJhL0Nl6DlArYzO7ZH2t2JdtcRh+EwFFyDi6RiDVWQKGhGo/+leW/UW6GqUWzvR+Task+wN9QbFEOH0qlaVTgFcTy7ZhQZLUUJSA2KK+/YD6HX37N6/1jDunwaRceAP5lGy+STRmc0x8xIpC0f9bFPOLV9wInPlK/ubjeXoroUu/tuEOmAI8x+jmRgpT4L9fBLL2+HEv9r9nhl1s9paiOFMyNpdierXX7Y5pbTYnSz2VbbXaue3UlCAgmGwuLlJUHGJDKNepk9dNduIUd1PfAr/AHoIAksfZo4NrD6AkAzAkJ/AQAA\"}, \"parent\": \"invocations/build:8945511751514863184\"}]}",
+    "stdin": "{\"requests\": [{\"artifact\": {\"artifactId\": \"findings-00000000-0000-0000-0000-000000001337\", \"contentType\": \"application/vnd.google.protobuf+gzip\", \"contents\": \"H4sIAAAAAAACA5WOMU7EMBBFlRViV0Y00RZRqqEncUPFDZCouECSHU+SkWzPynZW3IeLUHAH7rIVDlQrREHzi/+l/556K9TtJHbwE3Jj2afSqUZVOAdxvLh2EpksRQlILYorb9iPYdDfWb1/bGFbPkyiY8CfTqNl8kmjM5pjPk6kLR/0YUg4d0PAmU+UX+vr3bmozkV995yhFB7B0GBQDCnVjyI9cITFL5EMbNTnL0v8r+X9heWwpLmLFE6MpNkdrXYZbfPKabW72u2rfd2pJ3eUkECCobAaeUmQMYlMq14WD/2FFYRcNc3Ir/AHoIcksO5p5tjC5gvk1PSggAEAAA==\"}, \"parent\": \"invocations/build:8945511751514863184\"}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{}@@@",
@@ -667,7 +667,7 @@
       "@@@STEP_LOG_LINE@json.input@      \"artifact\": {@@@",
       "@@@STEP_LOG_LINE@json.input@        \"artifactId\": \"findings-00000000-0000-0000-0000-000000001337\",@@@",
       "@@@STEP_LOG_LINE@json.input@        \"contentType\": \"application/vnd.google.protobuf+gzip\",@@@",
-      "@@@STEP_LOG_LINE@json.input@        \"contents\": \"H4sIAAAAAAACA5WPMU7DQBBF5QiRaCmQTAor1ZSJhL0Nl6DlArYzO7ZH2t2JdtcRh+EwFFyDi6RiDVWQKGhGo/+leW/UW6GqUWzvR+Task+wN9QbFEOH0qlaVTgFcTy7ZhQZLUUJSA2KK+/YD6HX37N6/1jDunwaRceAP5lGy+STRmc0x8xIpC0f9bFPOLV9wInPlK/ubjeXoroUu/tuEOmAI8x+jmRgpT4L9fBLL2+HEv9r9nhl1s9paiOFMyNpdierXX7Y5pbTYnSz2VbbXaue3UlCAgmGwuLlJUHGJDKNepk9dNduIUd1PfAr/AHoIAksfZo4NrD6AkAzAkJ/AQAA\"@@@",
+      "@@@STEP_LOG_LINE@json.input@        \"contents\": \"H4sIAAAAAAACA5WOMU7EMBBFlRViV0Y00RZRqqEncUPFDZCouECSHU+SkWzPynZW3IeLUHAH7rIVDlQrREHzi/+l/556K9TtJHbwE3Jj2afSqUZVOAdxvLh2EpksRQlILYorb9iPYdDfWb1/bGFbPkyiY8CfTqNl8kmjM5pjPk6kLR/0YUg4d0PAmU+UX+vr3bmozkV995yhFB7B0GBQDCnVjyI9cITFL5EMbNTnL0v8r+X9heWwpLmLFE6MpNkdrXYZbfPKabW72u2rfd2pJ3eUkECCobAaeUmQMYlMq14WD/2FFYRcNc3Ir/AHoIcksO5p5tjC5gvk1PSggAEAAA==\"@@@",
       "@@@STEP_LOG_LINE@json.input@      },@@@",
       "@@@STEP_LOG_LINE@json.input@      \"parent\": \"invocations/build:8945511751514863184\"@@@",
       "@@@STEP_LOG_LINE@json.input@    }@@@",
