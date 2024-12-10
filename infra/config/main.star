@@ -39,7 +39,6 @@ lucicfg.config(
         "luci-scheduler.cfg",
         "project.cfg",
         "realms.cfg",
-        "tricium-prod.cfg",
     ],
     fail_on_warnings = True,
     lint_checks = ["default"],
@@ -53,7 +52,6 @@ luci.project(
     notify = "luci-notify.appspot.com",
     scheduler = "luci-scheduler.appspot.com",
     swarming = "chromium-swarm.appspot.com",
-    tricium = "tricium-prod.appspot.com",
     acls = [
         # Publicly readable.
         acl.entry(
@@ -162,9 +160,6 @@ luci.bucket(
         luci.binding(
             roles = "role/buildbucket.triggerer",
             users = [
-                # Allow Tricium dev and prod to trigger analyzer tryjobs.
-                "tricium-dev@appspot.gserviceaccount.com",
-                "tricium-prod@appspot.gserviceaccount.com",
                 # For b/211053378 allow direct buildbucket triggers for github
                 # integration experimentation.
                 #

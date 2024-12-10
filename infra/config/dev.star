@@ -29,16 +29,9 @@ lucicfg.config(
         "luci-notify-dev/email-templates/*",
         "luci-scheduler-dev.cfg",
         "realms-dev.cfg",
-        "tricium-dev.cfg",
     ],
     fail_on_warnings = True,
     lint_checks = ["default"],
-)
-
-# Just copy tricium-dev.cfg as is to the outputs.
-lucicfg.emit(
-    dest = "tricium-dev.cfg",
-    data = io.read_file("tricium-dev.cfg"),
 )
 
 luci.project(

@@ -19,6 +19,8 @@ def try_builder(
         os,
         recipe = None,
         experiment_percentage = None,
+        owner_whitelist = None,
+        mode_allowlist = None,
         properties = None,
         in_cq = True,
         use_python3 = True):
@@ -34,6 +36,8 @@ def try_builder(
             builder = name,
             cq_group = cq_group,
             experiment_percentage = experiment_percentage,
+            owner_whitelist = owner_whitelist,
+            mode_allowlist = mode_allowlist,
         )
 
 build.presubmit(
@@ -55,7 +59,8 @@ try_builder(
         "patch_root": "infra/luci",
         "analyzers": ["Spellchecker"],
     },
-    in_cq = False,
+    owner_whitelist = ["project-infra-tryjob-access"],
+    mode_allowlist = [cq.MODE_NEW_PATCHSET_RUN],
 )
 
 try_builder(

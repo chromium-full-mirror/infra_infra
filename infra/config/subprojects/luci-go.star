@@ -109,7 +109,7 @@ try_builder(
         "analyzers": ["Gosec", "Spellchecker"],
     },
     owner_whitelist = ["project-infra-tryjob-access"],
-    mode_allowlist = [cq.MODE_ANALYZER_RUN],
+    mode_allowlist = [cq.MODE_NEW_PATCHSET_RUN],
 )
 
 try_builder(
@@ -119,7 +119,7 @@ try_builder(
         "run_lint": True,
     },
     owner_whitelist = ["project-infra-tryjob-access"],
-    mode_allowlist = [cq.MODE_ANALYZER_RUN],
+    mode_allowlist = [cq.MODE_NEW_PATCHSET_RUN],
 )
 
 try_builder(

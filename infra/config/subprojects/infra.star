@@ -49,6 +49,8 @@ def try_builder(
         cpu = None,
         recipe = None,
         experiment_percentage = None,
+        owner_whitelist = None,
+        mode_allowlist = None,
         properties = None,
         caches = None,
         in_cq = True,
@@ -69,6 +71,8 @@ def try_builder(
             cq_group = "infra",
             experiment_percentage = experiment_percentage,
             location_filters = location_filters,
+            owner_whitelist = owner_whitelist,
+            mode_allowlist = mode_allowlist,
         )
 
 # CI Linux.
@@ -125,7 +129,8 @@ try_builder(
         "patch_root": "infra",
         "analyzers": ["Gosec", "Spellchecker", "InclusiveLanguageCheck"],
     },
-    in_cq = False,
+    owner_whitelist = ["project-infra-tryjob-access"],
+    mode_allowlist = [cq.MODE_NEW_PATCHSET_RUN],
 )
 
 try_builder(
@@ -134,9 +139,8 @@ try_builder(
     properties = {
         "run_lint": True,
     },
-    # This is False due to restriction of tricium, see
-    # https://crbug.com/1410717#c6 for more details.
-    in_cq = False,
+    owner_whitelist = ["project-infra-tryjob-access"],
+    mode_allowlist = [cq.MODE_NEW_PATCHSET_RUN],
 )
 
 # Experimental trybot for building docker images out of infra.git CLs.
