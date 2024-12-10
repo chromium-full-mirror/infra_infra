@@ -3,3 +3,4 @@ per-file *gtest*=jiesheng@google.com
 per-file *tast*=file:chromiumos/chromite:main:/OWNERS.ci
 per-file *skylab_test_runner*=file:chromiumos/chromite:main:/OWNERS.ci
 per-file *cros_test_result*=file:chromiumos/owners:v1:/infra/OWNERS.ctrp
+per-file test_data/cros_test_result/...=file:chromiumos/owners:v1:/infra/OWNERS.ctrp
