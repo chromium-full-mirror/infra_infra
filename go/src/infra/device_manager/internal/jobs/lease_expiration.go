@@ -105,10 +105,9 @@ func constructUpdatedDevices(ctx context.Context, deviceIDs []string) ([]model.D
 		}
 		dims, err := device.GetOSResourceDims(ctx, client, reportFunc, id)
 		if err != nil {
-			switch status.Code(err) {
-			case codes.NotFound:
+			if status.Code(err) == codes.NotFound {
 				d.IsActive = false
-			default:
+			} else {
 				logging.Errorf(ctx, "failed to get dims for %s: %s", id, err)
 			}
 		}
