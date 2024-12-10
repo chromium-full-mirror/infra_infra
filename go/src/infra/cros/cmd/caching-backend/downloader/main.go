@@ -19,6 +19,10 @@
 //     Download the archive tar and return specified file.
 //   - GET /decompress/<bucket>/path/to/comopressed-file
 //     Download the compressed file and return the decompressed data.
+//   - GET /mkfs-<FS_type>?file=<bucket>/path/to/file&file=...
+//     Download the files specified by parameters and use them to create a file
+//     system image in type of <FS_type>.
+//     Currently, the FS type supported are: ext2/3/4, squashfs, erofs
 package main
 
 import (
@@ -108,6 +112,7 @@ func innerMain() error {
 	mux.HandleFunc("/download/", c.downloadHandler)
 	mux.HandleFunc("/extract/", c.extractHandler)
 	mux.HandleFunc("/decompress/", c.decompressHandler)
+	mux.HandleFunc("/mkfs-", c.mkfsHandler)
 
 	mux.HandleFunc("/debug/pprof/", pprof.Index)
 	mux.HandleFunc("/debug/pprof/cmdline/", pprof.Cmdline)
