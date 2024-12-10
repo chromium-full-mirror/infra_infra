@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/secrets"
@@ -15,15 +16,20 @@ import (
 
 // GetSecret gets the active secret using the LUCI Secrets package.
 //
-// The string must be a base64 encoded string. It should not have padding and be
-// in raw encoded form.
-func GetSecret(ctx context.Context, secretLoc string) (string, error) {
-	secret, err := secrets.StoredSecret(ctx, secretLoc)
+// The secret can be a Google Secret Manager managed secret with proper scheme
+// prefix, or a plain text.
+// If the secret is prefixed with `devsecret`, it must be a base64 encoded
+// string. It should not have padding and be in raw encoded form.
+func GetSecret(ctx context.Context, secret string) (string, error) {
+	if !strings.HasPrefix(secret, "devsecret://") && !strings.HasPrefix(secret, "devsecret-text://") {
+		return secret, nil
+	}
+	s, err := secrets.StoredSecret(ctx, secret)
 	if err != nil {
-		logging.Errorf(ctx, "GetSecret: failed to get secret %s: %s", secretLoc, err)
+		logging.Errorf(ctx, "GetSecret: failed to get secret %s: %s", secret, err)
 		return "", err
 	}
-	return string(secret.Active), nil
+	return string(s.Active), nil
 }
 
 // GetEnvVar tries to get the corresponding environment variable for a string.

@@ -28,6 +28,12 @@ config.set_section_option(alembic_ini, 'DB_HOST', db_config[db_env]['DB_HOST'])
 config.set_section_option(alembic_ini, 'DB_PORT', db_config[db_env]['DB_PORT'])
 config.set_section_option(alembic_ini, 'DB_NAME', db_config[db_env]['DB_NAME'])
 
+# Allow user to overwrite the port number from the command line, e.g.
+# ALEMBIC_ENV=foo alembic -x port=<port> upgrade head
+port = context.get_x_argument(as_dictionary=True).get("port")
+if port:
+  config.set_section_option(alembic_ini, "DB_PORT", port)
+
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 if config.config_file_name is not None:
