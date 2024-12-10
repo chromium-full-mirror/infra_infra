@@ -13,6 +13,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	storage_path "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -440,6 +442,8 @@ func TestResultEntries(t *testing.T) {
 				{
 					TestCaseId: &api.TestCase_Id{Value: "testcase#testname1"},
 					Verdict:    &api.TestCaseResult_Pass_{},
+					StartTime:  &timestamppb.Timestamp{Seconds: 1733521299, Nanos: 52000000},
+					Duration:   &durationpb.Duration{Seconds: 421},
 				},
 				{
 					TestCaseId: &api.TestCase_Id{Value: "testcase#testname2"},
@@ -461,10 +465,13 @@ func TestResultEntries(t *testing.T) {
 						TestClass:        "testcase",
 						Method:           "testname1",
 					},
-					TestStatus:       "pass",
-					Properties:       trProps,
-					WorkUnitId:       returnWUID,
-					Timing:           &atp.Timing{},
+					TestStatus: "pass",
+					Properties: trProps,
+					WorkUnitId: returnWUID,
+					Timing: &atp.Timing{
+						CreationTimestamp: 1733521299052,
+						CompleteTimestamp: 1733521720052,
+					},
 					PrimaryBuildInfo: buildInfo,
 				},
 				{

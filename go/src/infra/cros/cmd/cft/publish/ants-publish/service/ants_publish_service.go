@@ -180,7 +180,8 @@ func (aps *AntsPublishService) antsResult(result *api.TestCaseResult, props []*a
 		}
 	}
 
-	startTime := result.GetStartTime().AsTime().Unix()
+	startTime := result.GetStartTime().AsTime().UnixMilli()
+	duration := result.GetDuration().AsDuration().Milliseconds()
 	return &atp.TestResult{
 		InvocationId:     aps.metadata.GetAntsInvocationId(),
 		WorkUnitId:       parentWUID,
@@ -189,7 +190,7 @@ func (aps *AntsPublishService) antsResult(result *api.TestCaseResult, props []*a
 		TestStatus:       antsTestStatus(result),
 		Timing: &atp.Timing{
 			CreationTimestamp: startTime,
-			CompleteTimestamp: startTime + result.GetDuration().GetSeconds(),
+			CompleteTimestamp: startTime + duration,
 		},
 		Properties:    props,
 		SkippedReason: skipReason,
