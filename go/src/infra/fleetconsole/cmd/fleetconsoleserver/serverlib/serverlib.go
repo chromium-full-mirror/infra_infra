@@ -53,9 +53,7 @@ var ACLMap rpcacl.Map = map[string]string{
 func ServerMain(srv *server.Server) error {
 	logging.Infof(srv.Context, "Begin initialization of console server.")
 	consoleFrontend := consoleserver.NewFleetConsoleFrontend().(*consoleserver.FleetConsoleFrontend)
-	if !srv.Options.Prod {
-		ConfigureDevCORS(srv.Context, srv)
-	}
+	ConfigureCORS(srv.Context, srv)
 	interceptor := rpcacl.Interceptor(ACLMap)
 	srv.RegisterUnifiedServerInterceptors(interceptor)
 	consoleserver.InstallServices(consoleFrontend, srv)
@@ -65,11 +63,12 @@ func ServerMain(srv *server.Server) error {
 	return nil
 }
 
-func ConfigureDevCORS(ctx context.Context, srv *server.Server) {
+func ConfigureCORS(ctx context.Context, srv *server.Server) {
 	srv.ConfigurePRPC(func(prpcSrv *prpc.Server) {
 		prpcSrv.AccessControl = func(ctx context.Context, origin string) prpc.AccessControlDecision {
-			logging.Infof(ctx, "origin is %s", origin)
-			addresses := []string{"localhost:", "luci-milo-dev.appspot.com/"}
+			// currently we are safe to allow localhost, especially as we are not storing auth state in a cookie
+			// in future it would be preferable to only allow localhost for dev environment and not on prod environment
+			addresses := []string{"localhost:", "luci-milo-dev.appspot.com", "luci-milo.appspot.com"}
 
 			matches := slices.ContainsFunc(addresses, func(address string) bool {
 				return strings.HasPrefix(origin, "https://"+address) || strings.HasPrefix(origin, "http://"+address)
