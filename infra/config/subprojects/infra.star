@@ -48,6 +48,7 @@ def try_builder(
         os,
         cpu = None,
         recipe = None,
+        disable_reuse = None,
         experiment_percentage = None,
         owner_whitelist = None,
         mode_allowlist = None,
@@ -69,6 +70,7 @@ def try_builder(
         luci.cq_tryjob_verifier(
             builder = name,
             cq_group = "infra",
+            disable_reuse = disable_reuse,
             experiment_percentage = experiment_percentage,
             location_filters = location_filters,
             owner_whitelist = owner_whitelist,
@@ -129,6 +131,7 @@ try_builder(
         "patch_root": "infra",
         "analyzers": ["Gosec", "Spellchecker", "InclusiveLanguageCheck"],
     },
+    disable_reuse = True,
     owner_whitelist = ["project-infra-tryjob-access"],
     mode_allowlist = [cq.MODE_NEW_PATCHSET_RUN],
 )
@@ -139,6 +142,7 @@ try_builder(
     properties = {
         "run_lint": True,
     },
+    disable_reuse = True,
     owner_whitelist = ["project-infra-tryjob-access"],
     mode_allowlist = [cq.MODE_NEW_PATCHSET_RUN],
 )

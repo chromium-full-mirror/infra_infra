@@ -45,6 +45,7 @@ def try_builder(
         properties = None,
         caches = None,
         in_cq = True,
+        disable_reuse = None,
         experiment_percentage = None,
         owner_whitelist = None,
         mode_allowlist = None,
@@ -61,6 +62,7 @@ def try_builder(
         luci.cq_tryjob_verifier(
             builder = name,
             cq_group = "luci-go",
+            disable_reuse = disable_reuse,
             experiment_percentage = experiment_percentage,
             owner_whitelist = owner_whitelist,
             mode_allowlist = mode_allowlist,
@@ -108,6 +110,7 @@ try_builder(
         "patch_root": "infra/go/src/go.chromium.org/luci",
         "analyzers": ["Gosec", "Spellchecker"],
     },
+    disable_reuse = True,
     owner_whitelist = ["project-infra-tryjob-access"],
     mode_allowlist = [cq.MODE_NEW_PATCHSET_RUN],
 )
@@ -118,6 +121,7 @@ try_builder(
     properties = {
         "run_lint": True,
     },
+    disable_reuse = True,
     owner_whitelist = ["project-infra-tryjob-access"],
     mode_allowlist = [cq.MODE_NEW_PATCHSET_RUN],
 )
