@@ -43,6 +43,9 @@ func (apu *ANTSPublishUpdater) antsPublishMetadata() *metadata.PublishAntsMetada
 				},
 			},
 		},
+		SchedulingMetadata: &artifact.SchedulingMetadata{
+			SchedulingArgs: map[string]string{},
+		},
 	}
 
 	if apu.InvocationID != "" {

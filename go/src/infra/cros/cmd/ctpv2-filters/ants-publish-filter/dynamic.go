@@ -184,6 +184,10 @@ func defineDynamicDeps(antsContainerBuilder *builders.ContainerBuilder) []*api.D
 			Key:   "publishRequest.metadata.atpEnvironment",
 			Value: "env",
 		},
+		{
+			Key:   "publishRequest.metadata.schedulingMetadata.schedulingArgs",
+			Value: "schedulingMetadata.schedulingArgs",
+		},
 	}
 	return dynamicDeps
 }
