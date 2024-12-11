@@ -167,8 +167,7 @@ func (c *androidObject) NewReader(ctx context.Context) (io.ReadCloser, error) {
 }
 
 func (c *androidObject) NewRangeReader(context.Context, int64, int64) (io.ReadCloser, error) {
-	// Android build API server doesn't support range requests.
-	return nil, nil
+	return nil, fmt.Errorf("android build API server doesn't support range requests")
 }
 
 func (c *androidObject) metadataPath() string {
