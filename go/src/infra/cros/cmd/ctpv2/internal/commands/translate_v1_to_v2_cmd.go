@@ -463,6 +463,10 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 				// directly plumb through any other args
 				for _, value := range arg.Values {
 					// add each value separately since we don't wanna enforce any parsing rule for downstream
+					if arg.Key == "exclude_filters" {
+						executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "cts-params", Value: excludeFormatting(value)})
+						continue
+					}
 					executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: arg.Key, Value: value})
 				}
 			}
@@ -499,6 +503,10 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 		MaxInShard:      int64(maxInShard),
 		DddSuite:        dddSuite,
 		RetryCount:      int64(retryCount)}, nil
+}
+
+func excludeFormatting(exclude string) string {
+	return fmt.Sprintf("--compatibility:exclude-filter,\"%s\"", exclude)
 }
 
 func buildScheduleTargets(testJobMsg *common.TestJobMessage, buildState *build.State) ([]*api.ScheduleTargets, error) {
