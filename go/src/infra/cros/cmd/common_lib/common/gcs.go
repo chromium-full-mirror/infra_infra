@@ -160,11 +160,11 @@ func FetchImageData(ctx context.Context, board string, gcsPath string) (map[stri
 	cat := exec.CommandContext(ctx, "gsutil", "cat", gcsPath)
 
 	catOut, err := cat.Output()
+	execLock.Unlock()
 	if err != nil {
 		logging.Infof(ctx, "error while downloading container metadata: %s", err)
 		return nil, errors.Annotate(err, "error while downloading container metadata: ").Err()
 	}
-	execLock.Unlock()
 
 	metadata := &api.ContainerMetadata{}
 	err = protojson.Unmarshal(catOut, metadata)
