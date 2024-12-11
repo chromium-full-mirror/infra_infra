@@ -440,7 +440,7 @@ func TestResultEntries(t *testing.T) {
 			name: "TF_Pass",
 			results: []*api.TestCaseResult{
 				{
-					TestCaseId: &api.TestCase_Id{Value: "testcase#testname1"},
+					TestCaseId: &api.TestCase_Id{Value: "testcase#test1a#test1b"},
 					Verdict:    &api.TestCaseResult_Pass_{},
 					StartTime:  &timestamppb.Timestamp{Seconds: 1733521299, Nanos: 52000000},
 					Duration:   &durationpb.Duration{Seconds: 421},
@@ -463,7 +463,7 @@ func TestResultEntries(t *testing.T) {
 						Module:           parentWU.Name,
 						ModuleParameters: testIdentifierProps,
 						TestClass:        "testcase",
-						Method:           "testname1",
+						Method:           "test1a#test1b",
 					},
 					TestStatus: "pass",
 					Properties: trProps,

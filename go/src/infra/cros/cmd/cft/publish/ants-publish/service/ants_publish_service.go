@@ -106,7 +106,7 @@ func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.Wo
 
 	var entries []*atp.BatchInsertEntry
 	for _, result := range results {
-		names := strings.Split(result.GetTestCaseId().GetValue(), "#")
+		names := strings.SplitN(result.GetTestCaseId().GetValue(), "#", 2)
 		var parentWUID string
 		var testID *atp.TestIdentifier
 		if len(names) == 2 {
