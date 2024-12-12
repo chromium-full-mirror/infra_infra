@@ -1,4 +1,4 @@
-// Copyright 2023 The ChromiumOS Authors.
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package buildbucket
@@ -39,28 +39,6 @@ func TestIsLUCIToolAuthed(t *testing.T) {
 	}
 }
 
-// TestEnsureLUCIToolAuthed tests tryRunBase.EnsureLUCIToolAuthed() by mocking `bb auth-info` output.
-func TestEnsureLUCIToolAuthed(t *testing.T) {
-	c := &Client{}
-	ctx := context.Background()
-	for i, tc := range []struct {
-		bbExitCode  int
-		expectError bool
-	}{
-		{0, false}, // User is logged in
-		{1, true},  // User is logged out
-		{2, true},  // Unexpected error
-	} {
-		c.cmdRunner = FakeAuthInfoRunner("bb", tc.bbExitCode)
-		err := c.EnsureLUCIToolAuthed(ctx, "bb")
-		if err == nil && tc.expectError {
-			t.Errorf("#%d: EnsureLUCIToolAuthed returned no error; want error", i)
-		} else if err != nil && !tc.expectError {
-			t.Errorf("#%d: EnsureLUCIToolAuthed returned an error; want no error. Returned error: %+v", i, err)
-		}
-	}
-}
-
 // TestEnsureLUCIToolsAuthed tests tryRunBase.EnsureLUCIToolsAuthed() by mocking `bb auth-info` and `led auth-info` output.
 func TestEnsureLUCIToolsAuthed(t *testing.T) {
 	c := &Client{}
@@ -75,7 +53,9 @@ func TestEnsureLUCIToolsAuthed(t *testing.T) {
 		{1, 1, true},
 	} {
 		c.cmdRunner = &cmd.FakeCommandRunnerMulti{CommandRunners: []cmd.FakeCommandRunner{
+			FakeWhichRunner("bb", 0),
 			FakeAuthInfoRunner("bb", tc.bbExitCode),
+			FakeWhichRunner("led", 0),
 			FakeAuthInfoRunner("led", tc.ledExitCode),
 		}}
 		err := c.EnsureLUCIToolsAuthed(ctx, "bb", "led")

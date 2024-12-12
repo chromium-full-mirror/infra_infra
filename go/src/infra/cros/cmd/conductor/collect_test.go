@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package main
@@ -109,7 +109,9 @@ func doTestRun(t *testing.T, tc *collectTestConfig) {
 
 	var initialBBIDs []string
 	commandRunners := []cmd.FakeCommandRunner{
+		bb.FakeWhichRunner("bb", 0),
 		bb.FakeAuthInfoRunner("bb", 0),
+		bb.FakeWhichRunner("led", 0),
 		bb.FakeAuthInfoRunner("led", 0),
 	}
 	for _, collectResults := range tc.collectResults {

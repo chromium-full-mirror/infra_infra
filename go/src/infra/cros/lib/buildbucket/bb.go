@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
+	"path"
 	"regexp"
 	"strings"
 
@@ -56,6 +57,16 @@ func FakeAuthInfoRunner(tool string, exitCode int) cmd.FakeCommandRunner {
 	}
 }
 
+// FakeWhichRunner creates a FakeCommandRunner for `which {tool}` (like bb or led).
+func FakeWhichRunner(tool string, exitCode int) cmd.FakeCommandRunner {
+	return cmd.FakeCommandRunner{
+		ExpectedCmd: []string{"which", tool},
+		FailCommand: exitCode != 0,
+		FailError:   createCmdFailError(exitCode),
+		Stdout:      fmt.Sprintln(path.Join("path", "to", tool)),
+	}
+}
+
 // FakeAuthInfoRunnerSuccessStdout is like FakeAuthInfoRunner with exitCode=0, plus stdout about the logged-in user.
 // user should normally be an email address, such as "sundar@google.com".
 // For now it doesn't mock OAuth token details.
@@ -88,28 +99,21 @@ func (c *Client) IsLUCIToolAuthed(ctx context.Context, tool string) (bool, error
 	return false, err
 }
 
-// EnsureLUCIToolAuthed checks whether the named LUCI CLI tool is logged in.
-// If not, it instructs the user to log in, and returns an error.
-func (c *Client) EnsureLUCIToolAuthed(ctx context.Context, tool string) error {
-	if authed, err := c.IsLUCIToolAuthed(ctx, tool); err != nil {
-		return errors.Annotate(err, fmt.Sprintf("determining whether `%s` is authed", tool)).Err()
-	} else if !authed {
-		return fmt.Errorf("%s CLI not logged in. Please run `%s auth-login`, then try again.", tool, tool)
-	}
-	return nil
-}
-
 // EnsureLUCIToolsAuthed ensures that multiple LUCI CLI tools are logged in.
 // If any tools are not authed, it will return an error instructing the user to log into each unauthed tool.
 func (c *Client) EnsureLUCIToolsAuthed(ctx context.Context, tools ...string) error {
 	var unauthedTools []string
 	var authCommands []string
 	for _, tool := range tools {
+		toolPath, err := c.ToolPath(ctx, tool)
+		if err != nil {
+			return err
+		}
 		if authed, err := c.IsLUCIToolAuthed(ctx, tool); err != nil {
 			return err
 		} else if !authed {
 			unauthedTools = append(unauthedTools, tool)
-			authCommands = append(authCommands, fmt.Sprintf("%s auth-login", tool))
+			authCommands = append(authCommands, fmt.Sprintf("%s auth-login", toolPath))
 		}
 	}
 	if len(unauthedTools) != 0 {
@@ -119,6 +123,16 @@ func (c *Client) EnsureLUCIToolsAuthed(ctx context.Context, tools ...string) err
 			strings.Join(authCommands, "\n\t"))
 	}
 	return nil
+}
+
+// ToolPath uses `which` to return the path to the given tool.
+func (c *Client) ToolPath(ctx context.Context, tool string) (string, error) {
+	stdout, stderr, err := c.runCmd(ctx, "which", tool)
+	fmt.Println(stderr)
+	if err != nil {
+		return "", fmt.Errorf("failed to look up tool paths")
+	}
+	return strings.TrimSpace(stdout), nil
 }
 
 // runBBCmd runs a `bb` subcommand.

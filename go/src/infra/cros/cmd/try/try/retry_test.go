@@ -197,7 +197,9 @@ func doOrchestratorRetryTestRun(t *testing.T, tc *retryTestConfig) {
 
 	f := &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
+			bb.FakeWhichRunner("bb", 0),
 			bb.FakeAuthInfoRunner("bb", 0),
+			bb.FakeWhichRunner("led", 0),
 			bb.FakeAuthInfoRunner("led", 0),
 			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
 			// Duplicate calls because of retry detection.
@@ -322,7 +324,9 @@ func doChildRetryTestRun(t *testing.T, tc *childRetryTestConfig) {
 	expectedBuilder := tc.builderName
 	f := &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
+			bb.FakeWhichRunner("bb", 0),
 			bb.FakeAuthInfoRunner("bb", 0),
+			bb.FakeWhichRunner("led", 0),
 			bb.FakeAuthInfoRunner("led", 0),
 			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
 			{
@@ -505,7 +509,9 @@ func TestRetry_childBuilder_previousRetries(t *testing.T) {
 	previousRetryBBID := "8794230068334833059"
 	f := &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
+			bb.FakeWhichRunner("bb", 0),
 			bb.FakeAuthInfoRunner("bb", 0),
+			bb.FakeWhichRunner("led", 0),
 			bb.FakeAuthInfoRunner("led", 0),
 			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
 			{
@@ -805,7 +811,9 @@ func Test_DirectEntry(t *testing.T) {
 
 	f := &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
+			bb.FakeWhichRunner("bb", 0),
 			bb.FakeAuthInfoRunner("bb", 0),
+			bb.FakeWhichRunner("led", 0),
 			bb.FakeAuthInfoRunner("led", 0),
 			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
 			{
@@ -915,7 +923,9 @@ func doPaygenTest(t *testing.T, tc *paygenTestConfig) {
 
 	f := &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
+			bb.FakeWhichRunner("bb", 0),
 			bb.FakeAuthInfoRunner("bb", 0),
+			bb.FakeWhichRunner("led", 0),
 			bb.FakeAuthInfoRunner("led", 0),
 			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
 			{

@@ -145,7 +145,9 @@ func doTestRun(t *testing.T, tc *runTestConfig) {
 
 	f := &cmd.FakeCommandRunnerMulti{
 		CommandRunners: []cmd.FakeCommandRunner{
+			bb.FakeWhichRunner("bb", 0),
 			bb.FakeAuthInfoRunner("bb", 0),
+			bb.FakeWhichRunner("led", 0),
 			bb.FakeAuthInfoRunner("led", 0),
 			bb.FakeAuthInfoRunnerSuccessStdout("led", "sundar@google.com"),
 		},
