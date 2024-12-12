@@ -55,7 +55,7 @@ func registerRunFlags(c *run) {
 	c.Flags.StringVar(&c.model, "model", "", "model specifies what model a test should run on")
 	c.Flags.StringVar(&c.board, "board", "", "board is the board to run against")
 	c.Flags.StringVar(&c.milestone, "milestone", "", "milestone of the ChromeOS image")
-	c.Flags.StringVar(&c.build, "build", "", "build version of the ChromeOS image")
+	c.Flags.StringVar(&c.build, "build", "", "build version of the ChromeOS or Desktop image")
 	c.Flags.StringVar(&c.pool, "pool", "", "pool specifies what `label-pool` dimension we should run a test on")
 	c.Flags.StringVar(&c.harness, "harness", "", "test harness to use for test execution")
 	c.Flags.StringVar(&c.testArgs, "testArgs", "", "test args to use for test execution")

@@ -152,13 +152,7 @@ func (c *Run) createCTPBuilders(ctx context.Context) ([]*builder.CTPBuilder, err
 		Builder: site.GetCTPBuilder(),
 	}
 
-	if c.Image == "" {
-		if misc.IsCustomBuild(c.Build) {
-			c.Image = fmt.Sprintf("%s-local/R%s-%s", c.Board, c.Milestone, c.Build)
-		} else {
-			c.Image = fmt.Sprintf("%s-release/R%s-%s", c.Board, c.Milestone, c.Build)
-		}
-	}
+	c.adaptImage()
 	opt := site.GetAuthOption(ctx)
 
 	if tp.Cft != nil {
@@ -610,4 +604,20 @@ func (c *Run) adaptSuiteName() {
 	} else if !strings.HasPrefix(c.Suite, desktopPrefix) {
 		c.Suite = desktopPrefix + c.Suite
 	}
+}
+
+// adaptImage constructs Image based on other values.
+func (c *Run) adaptImage() {
+	if c.Image != "" {
+		return
+	}
+	if c.Desktop && c.Build != "" {
+		c.Image = fmt.Sprintf("android-build/build_explorer/artifacts_list/%s/%s-trunk_staging-userdebug/attempts/latest/artifacts/android-desktop_image.bin.gz", c.Build, c.Board)
+		return
+	}
+	if misc.IsCustomBuild(c.Build) {
+		c.Image = fmt.Sprintf("%s-local/R%s-%s", c.Board, c.Milestone, c.Build)
+		return
+	}
+	c.Image = fmt.Sprintf("%s-release/R%s-%s", c.Board, c.Milestone, c.Build)
 }

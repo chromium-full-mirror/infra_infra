@@ -132,6 +132,9 @@ func (c *run) validateArgs() error {
 			return errors.Reason("-build must be specified if -image is not provided").Err()
 		}
 	}
+	if c.image != "" && c.build != "" {
+		return errors.Reason("-build can be specified only if -image is not provided").Err()
+	}
 	if c.pool == "" {
 		return errors.Reason("-pool not specified").Err()
 	}
