@@ -6,6 +6,7 @@
 package cft
 
 import (
+	"infra/cros/internal/env"
 	"infra/cros/recovery/tlw"
 )
 
@@ -19,8 +20,13 @@ const (
 
 // NetworkName generates predicable name for custom Docker network.
 func NetworkName(dut *tlw.Dut) string {
-	// Only use one network for all containers.
-	return "adb-network"
+	if env.IsCloudBot() {
+		// CloubBot requires predicted name for docker network.
+		// CloubBot supports a single testbed so no parallel task execution.
+		return "adb-network"
+	}
+	// Create unique network to avoid issues when parallel task removed network.
+	return "adb-network-" + dut.Name
 }
 
 // ADBName generates predicable container name for ADB container.
