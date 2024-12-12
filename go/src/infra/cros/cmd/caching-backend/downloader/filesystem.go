@@ -22,7 +22,7 @@ func (c *archiveServer) mkfsHandler(w http.ResponseWriter, r *http.Request) {
 	id := generateTraceID(r)
 	maker, sources, err := parseMkfsRequest(id, r)
 	if err != nil {
-		errStr := fmt.Sprintf("make file sytem: %s", err)
+		errStr := fmt.Sprintf("make file system: %s", err)
 		http.Error(w, errStr, http.StatusBadRequest)
 		log.Print(errStr)
 		return
@@ -37,10 +37,6 @@ func (c *archiveServer) mkfsHandler(w http.ResponseWriter, r *http.Request) {
 // parseMkfsRequest parses the request and returns the proper file system maker
 // function for the request.
 func parseMkfsRequest(id string, r *http.Request) (mkfsFunc, []string, error) {
-	if r.Method != http.MethodGet {
-		return nil, nil, fmt.Errorf("%s unsupport method %q, only GET is supported", id, r.Method)
-	}
-
 	// Extract the file system wanted from the RPC.
 	// urlParts is like ["", RPC, remainings].
 	urlParts := strings.SplitN(r.URL.Path, "/", 3)
@@ -66,6 +62,9 @@ func parseMkfsRequest(id string, r *http.Request) (mkfsFunc, []string, error) {
 
 	// The source must be non-empty and identical.
 	sources := qs[mkfsParamKey]
+	if len(sources) == 0 {
+		return nil, nil, fmt.Errorf("%s must specify %q parameter and no other parameters are allowed", id, mkfsParamKey)
+	}
 	set := map[string]struct{}{}
 	for _, s := range sources {
 		if s == "" {

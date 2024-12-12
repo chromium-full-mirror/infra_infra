@@ -112,7 +112,11 @@ func innerMain() error {
 	mux.HandleFunc("/download/", c.downloadHandler)
 	mux.HandleFunc("/extract/", c.extractHandler)
 	mux.HandleFunc("/decompress/", c.decompressHandler)
-	mux.HandleFunc("/mkfs-", c.mkfsHandler)
+	mux.HandleFunc("GET /mkfs-ext2/{$}", c.mkfsHandler)
+	mux.HandleFunc("GET /mkfs-ext3/{$}", c.mkfsHandler)
+	mux.HandleFunc("GET /mkfs-ext4/{$}", c.mkfsHandler)
+	mux.HandleFunc("GET /mkfs-squashfs/{$}", c.mkfsHandler)
+	mux.HandleFunc("GET /mkfs-erofs/{$}", c.mkfsHandler)
 
 	mux.HandleFunc("/debug/pprof/", pprof.Index)
 	mux.HandleFunc("/debug/pprof/cmdline/", pprof.Cmdline)
