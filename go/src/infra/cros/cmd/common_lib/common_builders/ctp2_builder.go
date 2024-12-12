@@ -6,6 +6,7 @@ package common_builders
 
 import (
 	"context"
+	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
@@ -78,7 +79,8 @@ func (builder *CTPV2FromV1) BuildRequest() (map[string]*api.CTPRequest, map[stri
 	v2sWithKeyList, reqsChainMap = GroupV2Requests(builder.ctx, v2sWithKeyList, builder.manifestFetcher)
 
 	for _, v2 := range v2sWithKeyList {
-		reqKeyMap[v2.Key] = v2.V2
+		// Make it lower to match downstream behavior
+		reqKeyMap[strings.ToLower(v2.Key)] = v2.V2
 	}
 	return reqKeyMap, reqsChainMap, dddTrackerMap
 }

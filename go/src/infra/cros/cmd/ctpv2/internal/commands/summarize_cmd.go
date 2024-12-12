@@ -212,6 +212,10 @@ func (cmd *SummarizeCmd) RestructureResultsMap(testResultMap map[string][]*data.
 	for _, results := range testResultMap {
 		for _, result := range results {
 			reqChain := cmd.RequestToTargetChainMap[result.RequestKey]
+			if reqChain == nil || len(reqChain) == 0 {
+				// should not happen
+				return nil, fmt.Errorf("empty request map found")
+			}
 			if cmd.DddTrackerMap[result.RequestKey] {
 				// Processing 3d results
 				for _, chainedKey := range reqChain {
