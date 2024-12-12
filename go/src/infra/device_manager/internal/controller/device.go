@@ -132,6 +132,7 @@ func SendNotifications(
 				device_state,
 				schedulable_labels,
 				is_active,
+				last_notification_time,
 				last_updated_time
 			FROM "Devices"
 			WHERE
@@ -165,6 +166,8 @@ func SendNotifications(
 	}
 	go updateWorker(ctx, &wg, db, queryTime, updateDevice, *opts)
 
+	// sql.NullTime has no effective w/ time.Time, see
+	// https://groups.google.com/g/golang-nuts/c/vOTFu2SMNeA
 	for rows.Next() {
 		var device model.Device
 		err = rows.Scan(
@@ -175,6 +178,7 @@ func SendNotifications(
 			&device.DeviceState,
 			&device.SchedulableLabels,
 			&device.IsActive,
+			&device.LastNotificationTime,
 			&lastUpdatedTime,
 		)
 		if err != nil {
