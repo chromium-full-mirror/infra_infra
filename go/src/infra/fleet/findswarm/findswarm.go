@@ -25,38 +25,33 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 )
 
-var (
-	fTerminate      = flag.Bool("terminate", false, "Terminate swarming bots")
-	fVerbose        = flag.Bool("verbose", false, "Verbose output from searching.")
-	fOmni           = flag.Bool("omni", false, "Allow querying Omnibot")
-	fCSV            = flag.Bool("csv", false, "Output CSV.")
-	fSwarmingServer = flag.String("ss", "", "Specify swarming server.")
-)
+type stringList []string
 
-const (
-	chromeSwarming   = "chrome-swarming.appspot.com"
-	chromiumSwarm    = "chromium-swarm.appspot.com"
-	chromiumSwarmDev = "chromium-swarm-dev.appspot.com"
-	omnibotSwarming  = "omnibot-swarming-server.appspot.com"
-)
-
-var swarmingClients = map[string]*swarmingClient{
-	chromeSwarming:   {addr: chromeSwarming},
-	chromiumSwarm:    {addr: chromiumSwarm},
-	chromiumSwarmDev: {addr: chromiumSwarmDev},
+func (s *stringList) String() string {
+	return strings.Join(*s, ",")
 }
 
-var shortURLToVar = map[string]string{
-	"chrome-swarming":    chromeSwarming,
-	"chromium-swarm":     chromiumSwarm,
-	"chromium-swarm-dev": chromiumSwarmDev,
-	"omnibot":            omnibotSwarming,
-}
-
-func initSwarmingClients(c *http.Client) {
-	for _, v := range swarmingClients {
-		v.c = c
+func (s *stringList) Set(value string) error {
+	if value != "" {
+		*s = strings.Split(value, ",")
 	}
+	return nil
+}
+
+var (
+	fTerminate    = flag.Bool("terminate", false, "Terminate swarming bots")
+	fVerbose      = flag.Bool("verbose", false, "Verbose output from searching.")
+	fCSV          = flag.Bool("csv", false, "Output CSV.")
+	fServerDomain = flag.String("server_domain", ".appspot.com", "Default domain for swarming servers used when short names are provided.")
+	fServers      stringList
+)
+
+func init() {
+	envServers := os.Getenv("SWARMING_SERVERS")
+	if envServers != "" {
+		fServers = strings.Split(envServers, ",")
+	}
+	flag.Var(&fServers, "ss", "Comma separated list of swarming servers (default value from SWARMING_SERVERS env var).")
 }
 
 var taskStates = map[string]string{
@@ -371,14 +366,21 @@ func deDupeAndLowerCase(s []string) []string {
 func main() {
 	authFlags := authcli.Flags{}
 	authFlags.Register(flag.CommandLine, chromeinfra.DefaultAuthOptions())
+
 	flag.Parse()
+	if len(fServers) < 1 {
+		fmt.Fprintln(os.Stderr, "No swarming servers specified.")
+		os.Exit(1)
+	}
+	if flag.NArg() < 1 {
+		fmt.Fprintln(os.Stderr, "No bot names specified.")
+		os.Exit(1)
+	}
+
 	opts, err := authFlags.Options()
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return
-	}
-	if *fOmni {
-		swarmingClients[omnibotSwarming] = &swarmingClient{addr: omnibotSwarming}
 	}
 	ctx := context.Background()
 	authenticator := auth.NewAuthenticator(ctx, auth.InteractiveLogin, opts)
@@ -388,20 +390,19 @@ func main() {
 		return
 	}
 
-	if flag.NArg() < 1 {
-		return
-	}
-
+	servers := deDupeAndLowerCase(fServers)
 	botNames := deDupeAndLowerCase(flag.Args())
 	toTerminate := make(map[string][]*swarmingClient)
-	initSwarmingClients(chromeInfraClient)
 
-	if *fSwarmingServer != "" {
-		url := shortURLToVar[*fSwarmingServer]
-		for k := range swarmingClients {
-			if k != url {
-				delete(swarmingClients, k)
-			}
+	swarmingClients := make(map[string]*swarmingClient, len(servers))
+	for _, server := range servers {
+		// If the server is a short name, add the default domain.
+		if !strings.Contains(server, ".") {
+			server = server + *fServerDomain
+		}
+		swarmingClients[server] = &swarmingClient{
+			addr: server,
+			c:    chromeInfraClient,
 		}
 	}
 
@@ -423,7 +424,7 @@ func main() {
 			}(client)
 		}
 
-		if *fSwarmingServer != "" {
+		for range swarmingClients {
 			sr := <-ch
 			lts[sr.Addr] = sr.LastTask
 			if sr.Err != nil {
@@ -435,20 +436,6 @@ func main() {
 				continue
 			}
 			bis[sr.Addr] = sr.BotInfo
-		} else {
-			for range swarmingClients {
-				sr := <-ch
-				lts[sr.Addr] = sr.LastTask
-				if sr.Err != nil {
-					errs[sr.Addr] = sr.Err
-					continue
-				}
-				if sr.BotInfo.Deleted {
-					delBis[sr.Addr] = sr.BotInfo
-					continue
-				}
-				bis[sr.Addr] = sr.BotInfo
-			}
 		}
 
 		if *fVerbose {
