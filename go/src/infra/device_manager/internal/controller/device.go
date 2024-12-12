@@ -119,11 +119,26 @@ func SendNotifications(
 	opts *NotifierOpts,
 ) {
 	var (
-		// queryTime is what will be used as notification time. It is important to
-		// get this before sending the query to avoid missing notifications in case
-		// devices do get updated by while we are sending notifications.
-		queryTime = time.Now()
-		query     = `
+		// Each worker gets a spot in input and output channels
+		publishDevice = make(chan *model.Device, *opts.PublishWorkersN)
+		updateDevice  = make(chan *model.Device, *opts.PublishWorkersN)
+
+		// Control pending updates.
+		wg sync.WaitGroup
+	)
+	defer close(publishDevice)
+	defer close(updateDevice)
+
+	for range *opts.PublishWorkersN {
+		go publishDeviceWorker(ctx, &wg, psClient, publishDevice, updateDevice)
+	}
+	// queryTime is what will be used as notification time. It is important to
+	// get this before sending the query to avoid missing notifications in case
+	// devices do get updated by while we are sending notifications.
+	queryTime := time.Now()
+	go updateWorker(ctx, &wg, db, queryTime, updateDevice, *opts)
+
+	query := `
 			SELECT
 				id,
 				dut_id,
@@ -142,29 +157,11 @@ func SendNotifications(
 					OR last_notification_time IS NULL
 					OR NOW() - last_notification_time > '30m'
 				);`
-		lastUpdatedTime sql.NullTime
-	)
 	rows, err := db.QueryContext(ctx, query)
 	if err != nil {
 		panic(fmt.Errorf("notifier_service: failed to get devices to notify on: [%w]", err))
 	}
 	defer rows.Close()
-
-	var (
-		// Each worker gets a spot in input and output channels
-		publishDevice = make(chan *model.Device, *opts.PublishWorkersN)
-		updateDevice  = make(chan *model.Device, *opts.PublishWorkersN)
-
-		// Control pending updates.
-		wg sync.WaitGroup
-	)
-	defer close(publishDevice)
-	defer close(updateDevice)
-
-	for range *opts.PublishWorkersN {
-		go publishDeviceWorker(ctx, &wg, psClient, publishDevice, updateDevice)
-	}
-	go updateWorker(ctx, &wg, db, queryTime, updateDevice, *opts)
 
 	// sql.NullTime has no effective w/ time.Time, see
 	// https://groups.google.com/g/golang-nuts/c/vOTFu2SMNeA
@@ -179,14 +176,10 @@ func SendNotifications(
 			&device.SchedulableLabels,
 			&device.IsActive,
 			&device.LastNotificationTime,
-			&lastUpdatedTime,
+			&device.LastUpdatedTime,
 		)
 		if err != nil {
 			panic(fmt.Errorf("notifier_service: failed to get scan row of devices to notify on: [%w]", err))
-		}
-
-		if lastUpdatedTime.Valid {
-			device.LastUpdatedTime = lastUpdatedTime.Time
 		}
 
 		wg.Add(1)
