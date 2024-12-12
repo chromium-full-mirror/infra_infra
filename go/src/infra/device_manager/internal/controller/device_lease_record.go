@@ -285,6 +285,11 @@ func ExtendLease(ctx context.Context, db *sql.DB, r *api.ExtendLeaseRequest) (*a
 	if err != nil {
 		return nil, errors.New("ExtendLease: failed to start database transaction")
 	}
+	defer func() {
+		if err := tx.Rollback(); err != nil {
+			logging.Debugf(ctx, "ExtendLease: unable to rollback: %s", err)
+		}
+	}()
 
 	// Record ExtendLeaseRequest in DB
 	extendDur := r.GetExtendDuration().GetSeconds()
