@@ -774,7 +774,8 @@ func DefaultDynamicRdbPublishTaskWrapper(gsPath string, isDeploymentDirty, is3DR
 				builder.PrimaryDut.GetModelName(),
 				builder.ContainerMetadataKey,
 			),
-			PostProcessResponses: &api.RunActivitiesResponse{},
+			PostProcessResponses:      &api.RunActivitiesResponse{},
+			FirmwareProvisionResponse: &api.FirmwareProvisionResponse{},
 		})
 		return []*api.CrosTestRunnerDynamicRequest_Task{
 			{
@@ -807,6 +808,10 @@ func DefaultDynamicRdbPublishTaskWrapper(gsPath string, isDeploymentDirty, is3DR
 						{
 							Key:   "publishRequest.metadata.postProcessResponses",
 							Value: common.NewTaskIdentifier(common.PostProcess).GetRpcResponse("runActivities"),
+						},
+						{
+							Key:   "publishRequest.metadata.firmwareProvisionResponse",
+							Value: common.NewTaskIdentifier(common.FwProvision).AddDeviceId(common.NewPrimaryDeviceIdentifier()).GetRpcResponse("install", "metadata"),
 						},
 					}, is3DRun),
 				},
