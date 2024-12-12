@@ -4,7 +4,7 @@ There are several flags that can be passed to the firmware-filter.
 
 Arg | Description
 --|--
-`-ro SPEC` | Flash the RO and RW AP & EC firmware from specified location. 
+`-ro SPEC` | Flash the RO and RW AP & EC firmware from specified location.
 `-rw SPEC` | Flash the RW AP & EC firmware from specified location. This takes place after the RO flashing.
 `-fallbackToCros` | If `-ro` or -`rw` is set to `firmwareBoardBranch`, and no branch build can be found, fallback to `cros` instead. This is handy for new boards that don't have a branch yet.
 
@@ -35,7 +35,16 @@ config_gen.create_config(
 
 ## From crosfleet
 
-TODO: Find out how to to launch from crosfleet.
+Here is an example of running the tast test `firmware.FwSplashScreen` on
+`nissa/joxer` in pool `faft-test` with the latest firmware branch build flashed
+to RO and RW.
+
+```shell
+crosfleet run test -trv2 -dynamic-trv2 -harness=tast \
+  -board nissa -model joxer -pool faft-test \
+  -user-defined-filter='{"containerInfo":{"binaryArgs":["-ro","firmwareBoardBranch","-fallbackToCros"],"container": {"name":"firmware-filter"}}}' \
+  -exit-early -dim label-servo_state:WORKING firmware.FwSplashScreen
+```
 
 # Production deployment
 
