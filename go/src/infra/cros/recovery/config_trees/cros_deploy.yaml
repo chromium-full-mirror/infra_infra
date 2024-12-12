@@ -52815,6 +52815,10 @@ plans:
                     - file_deletion_timeout:120
                     - reboot_timeout:10
                     - tpm_timeout:150
+                    - fwmp_cleanup_enabled:true
+                    - owner_detect_timeout:10
+                    - fwmp_skip_error:false
+                    - owner_detect_timeout:10
                   docs:
                     - Cleanup the enrollment state.
                     - The recovery process can fail but still fix the issue.
