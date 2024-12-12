@@ -11,6 +11,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -220,6 +221,11 @@ func TestTestProperties(t *testing.T) {
 		{Name: "board", Value: "brya"},
 		{Name: "model", Value: "mithrax"},
 	}
+	schedArgs := map[string]string{
+		"suite":      "v2/al-tse-team/al_cts_depq_test_brya_redrix",
+		"label-pool": "al-dev",
+	}
+
 	testCases := []struct {
 		name                string
 		dut                 *labapi.Dut
@@ -292,6 +298,9 @@ func TestTestProperties(t *testing.T) {
 					PrimaryExecutionInfo: &artifact.ExecutionInfo{
 						DutInfo: &artifact.DutInfo{Dut: tc.dut},
 					},
+					SchedulingMetadata: &artifact.SchedulingMetadata{
+						SchedulingArgs: schedArgs,
+					},
 				},
 			}
 			if tc.invID != "" {
@@ -303,7 +312,12 @@ func TestTestProperties(t *testing.T) {
 				t.Errorf("error calling dut properties: %q", err)
 			}
 			tc.wantProps = append(tc.wantProps, tc.wantIdentifierProps...)
-			if diff := cmp.Diff(tc.wantProps, gotProps, protocmp.Transform()); diff != "" {
+			for k, v := range schedArgs {
+				tc.wantProps = append(tc.wantProps, &atp.Property{Name: k, Value: v})
+			}
+
+			sortFn := cmpopts.SortSlices(func(m1, m2 *atp.Property) bool { return m1.Name < m2.Name })
+			if diff := cmp.Diff(tc.wantProps, gotProps, protocmp.Transform(), sortFn); diff != "" {
 				t.Errorf("Unexpected properties diff: diff: %s", diff)
 			}
 			if diff := cmp.Diff(tc.wantIdentifierProps, gotIdentifierProps, protocmp.Transform()); diff != "" {

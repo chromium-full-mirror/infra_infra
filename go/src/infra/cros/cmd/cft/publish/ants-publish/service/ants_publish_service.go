@@ -305,6 +305,10 @@ func (aps *AntsPublishService) testProperties() ([]*atp.Property, []*atp.Propert
 		props = append(props, &atp.Property{Name: k, Value: v})
 	}
 
+	for k, v := range aps.metadata.GetSchedulingMetadata().GetSchedulingArgs() {
+		props = append(props, &atp.Property{Name: k, Value: v})
+	}
+
 	testIdentifierProps := []*atp.Property{boardProp, modelProp}
 	return props, testIdentifierProps, nil
 }
