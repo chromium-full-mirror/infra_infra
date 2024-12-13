@@ -547,15 +547,13 @@ func ReleaseLease(ctx context.Context, tx *sql.Tx, leaseRec *DeviceLeaseRecord) 
 	)
 	if err != nil {
 		logging.Errorf(ctx, "ReleaseLease: failed to release DeviceLeaseRecord %s: %s", leaseRec.ID, err)
-		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			logging.Errorf(ctx, "ReleaseLease: unable to rollback: %v", rollbackErr)
-		}
-		return err
+		return fmt.Errorf("release lease: %w", err)
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		logging.Errorf(ctx, "ReleaseLease: error getting rows affected: %s", err)
+		return fmt.Errorf("release lease: %w", err)
 	}
 
 	logging.Debugf(ctx, "ReleaseLease: DeviceLeaseRecord %s released successfully (%d row affected)", leaseRec.ID, rowsAffected)

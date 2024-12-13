@@ -343,7 +343,7 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, r *api.ReleaseDeviceRequest)
 	leaseID := r.GetLeaseId()
 	record, err := model.GetDeviceLeaseRecordByID(ctx, db, leaseID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("release device: %w", err)
 	}
 
 	if !record.ReleasedTime.IsZero() && record.ReleasedTime.Before(time.Now()) {
@@ -357,24 +357,27 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, r *api.ReleaseDeviceRequest)
 
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, errors.New("ReleaseDevice: failed to start database transaction")
+		return nil, fmt.Errorf("release device: start database transaction: %w", err)
 	}
 
-	// Update lease record to mark released time
+	// Update lease record to mark released time.
 	releaseRec := model.DeviceLeaseRecord{
 		ID: leaseID,
 	}
 	err = model.ReleaseLease(ctx, tx, &releaseRec)
 	if err != nil {
 		logging.Errorf(ctx, "ReleaseDevice: failed to release lease %s: %s", releaseRec.ID, err)
-		return nil, err
+		if rollbackErr := tx.Rollback(); rollbackErr != nil {
+			logging.Errorf(ctx, "ReleaseDevice: unable to rollback: %v", rollbackErr)
+		}
+		return nil, fmt.Errorf("release device: %w", err)
 	}
 
 	// Pull device data from UFS
 	ctx = external.SetupContext(ctx, ufsUtil.OSNamespace)
 	client, err := external.NewUFSClient(ctx, external.UFSServiceURI)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("release device: %w", err)
 	}
 
 	// Update device and device lease state to available after release
@@ -387,13 +390,11 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, r *api.ReleaseDeviceRequest)
 	// Try to pull dimensions from Device. Mark as inactive if not found.
 	reportFunc := func(e error) { logging.Debugf(ctx, "sanitize dimensions: %s\n", e) }
 	dims, err := device.GetOSResourceDims(ctx, client, reportFunc, record.DeviceID)
+	if err != nil && status.Code(err) == codes.NotFound {
+		toReleaseDevice.IsActive = false
+	}
 	if err != nil {
-		switch status.Code(err) {
-		case codes.NotFound:
-			toReleaseDevice.IsActive = false
-		default:
-			return nil, err
-		}
+		return nil, fmt.Errorf("release device: %w", err)
 	}
 
 	if dims != nil {
@@ -406,19 +407,17 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, r *api.ReleaseDeviceRequest)
 		if rollbackErr := tx.Rollback(); rollbackErr != nil {
 			logging.Errorf(ctx, "UpdateDeviceToAvailable: unable to rollback: %v", rollbackErr)
 		}
-		return nil, err
+		return nil, fmt.Errorf("release device: %w", err)
 	}
 
 	if err = tx.Commit(); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("release device: %w", err)
 	}
 
 	// log success after commit success
 	logging.Debugf(ctx, "ReleaseDevice: released lease %s for device %s dut_id %s", leaseID, d.ID, d.DutID)
 
-	return &api.ReleaseDeviceResponse{
-		LeaseId: leaseID,
-	}, nil
+	return &api.ReleaseDeviceResponse{LeaseId: leaseID}, nil
 }
 
 // CheckLeaseIdempotency checks if there is a record with the same idempotency key.
@@ -475,12 +474,10 @@ func CheckExtensionIdempotency(ctx context.Context, db *sql.DB, idemKey string) 
 
 // ExpireLeases marks expired leases as released and releases Devices in the DB.
 func ExpireLeases(ctx context.Context, db *sql.DB, opts *ExpirerOpts) error {
-	var (
-		// queryTime is what will be used as expiration time. It is important to
-		// get this before sending the query to guard against lease updates during
-		// this expiry op.
-		queryTime = time.Now()
-	)
+	// queryTime is what will be used as expiration time. It is important to
+	// get this before sending the query to guard against lease updates during
+	// this expiry op.
+	queryTime := time.Now()
 
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
