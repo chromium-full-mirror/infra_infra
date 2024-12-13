@@ -254,7 +254,7 @@ func BulkCreateDeviceLeaseRecords(ctx context.Context, tx *sql.Tx, records []Dev
 }
 
 // GetDeviceLeaseRecordByID gets a DeviceLeaseRecord from the database by name.
-func GetDeviceLeaseRecordByID(ctx context.Context, db *sql.DB, recordID string) (DeviceLeaseRecord, error) {
+func GetDeviceLeaseRecordByID(ctx context.Context, db *sql.DB, recordID string) (*DeviceLeaseRecord, error) {
 	var (
 		record          DeviceLeaseRecord
 		leasedTime      sql.NullTime
@@ -292,7 +292,7 @@ func GetDeviceLeaseRecordByID(ctx context.Context, db *sql.DB, recordID string) 
 	)
 	if err != nil {
 		logging.Debugf(ctx, "GetDeviceLeaseRecordByID: failed to get DeviceLeaseRecord %s: %s", recordID, err)
-		return record, err
+		return nil, fmt.Errorf("get device lease record by id %q: %w", recordID, err)
 	}
 
 	// Handle possible null times
@@ -310,7 +310,7 @@ func GetDeviceLeaseRecordByID(ctx context.Context, db *sql.DB, recordID string) 
 	}
 
 	logging.Debugf(ctx, "GetDeviceLeaseRecordByID: success: %v", record)
-	return record, nil
+	return &record, nil
 }
 
 // GetDeviceLeaseRecordByIdemKey gets a DeviceLeaseRecord from the database by idempotency key.
@@ -534,7 +534,7 @@ func ExtendLease(ctx context.Context, tx *sql.Tx, leaseRec DeviceLeaseRecord) er
 }
 
 // ReleaseLease releases a lease record in a transaction.
-func ReleaseLease(ctx context.Context, tx *sql.Tx, leaseRec DeviceLeaseRecord) error {
+func ReleaseLease(ctx context.Context, tx *sql.Tx, leaseRec *DeviceLeaseRecord) error {
 	result, err := tx.ExecContext(ctx, `
 		UPDATE
 			"DeviceLeaseRecords"

@@ -199,7 +199,7 @@ func TestGetDeviceLeaseRecordByID(t *testing.T) {
 
 			record, err := GetDeviceLeaseRecordByID(ctx, db, "test-lease-record-1")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, record, should.Equal(DeviceLeaseRecord{
+			assert.Loosely(t, *record, should.Equal(DeviceLeaseRecord{
 				ID:              "test-lease-record-1",
 				IdempotencyKey:  "fe20140c-b1aa-4953-90fc-d15677df0c6a",
 				DutID:           "test-dut-id",
@@ -259,7 +259,7 @@ func TestGetDeviceLeaseRecordByID(t *testing.T) {
 
 			record, err := GetDeviceLeaseRecordByID(ctx, db, "test-lease-record-1")
 			assert.Loosely(t, err, should.ErrLike("no rows in result set"))
-			assert.Loosely(t, record, should.Equal(DeviceLeaseRecord{}))
+			assert.Loosely(t, record, should.BeNil)
 		})
 	})
 }
@@ -484,7 +484,7 @@ func TestReleaseLease(t *testing.T) {
 					"test-lease-record-1").
 				WillReturnResult(sqlmock.NewResult(1, 1))
 
-			err = ReleaseLease(ctx, tx, DeviceLeaseRecord{
+			err = ReleaseLease(ctx, tx, &DeviceLeaseRecord{
 				ID:              "test-lease-record-1",
 				ReleasedTime:    timeNow.Add(time.Second * 600),
 				ExpirationTime:  timeNow.Add(time.Second * 600),

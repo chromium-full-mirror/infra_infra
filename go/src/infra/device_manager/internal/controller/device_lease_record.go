@@ -364,7 +364,7 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, r *api.ReleaseDeviceRequest)
 	releaseRec := model.DeviceLeaseRecord{
 		ID: r.GetLeaseId(),
 	}
-	err = model.ReleaseLease(ctx, tx, releaseRec)
+	err = model.ReleaseLease(ctx, tx, &releaseRec)
 	if err != nil {
 		logging.Errorf(ctx, "ReleaseDevice: failed to release lease %s: %s", releaseRec.ID, err)
 		return nil, err
