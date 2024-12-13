@@ -340,18 +340,18 @@ func ExtendLease(ctx context.Context, db *sql.DB, r *api.ExtendLeaseRequest) (*a
 // available.
 func ReleaseDevice(ctx context.Context, db *sql.DB, r *api.ReleaseDeviceRequest) (*api.ReleaseDeviceResponse, error) {
 	// TODO (b/328662436): Collect metrics
-	record, err := model.GetDeviceLeaseRecordByID(ctx, db, r.GetLeaseId())
+	leaseID := r.GetLeaseId()
+	record, err := model.GetDeviceLeaseRecordByID(ctx, db, leaseID)
 	if err != nil {
 		return nil, err
 	}
 
-	timeNow := time.Now()
-	if !record.ReleasedTime.IsZero() && record.ReleasedTime.Before(timeNow) {
-		logging.Debugf(ctx, "ReleaseDevice: leased device was already released")
+	if !record.ReleasedTime.IsZero() && record.ReleasedTime.Before(time.Now()) {
+		logging.Debugf(ctx, "ReleaseDevice: leased device %q:%q was already released", record.DeviceID, leaseID)
 		return &api.ReleaseDeviceResponse{
-			LeaseId:     r.GetLeaseId(),
+			LeaseId:     leaseID,
 			ErrorType:   api.ReleaseDeviceResponseErrorType_ERROR_TYPE_DEVICE_ALREADY_RELEASED,
-			ErrorString: fmt.Sprintf("Lease %s for device %s was already released", r.GetLeaseId(), record.DeviceID),
+			ErrorString: fmt.Sprintf("Lease %s for device %s was already released", leaseID, record.DeviceID),
 		}, nil
 	}
 
@@ -362,7 +362,7 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, r *api.ReleaseDeviceRequest)
 
 	// Update lease record to mark released time
 	releaseRec := model.DeviceLeaseRecord{
-		ID: r.GetLeaseId(),
+		ID: leaseID,
 	}
 	err = model.ReleaseLease(ctx, tx, &releaseRec)
 	if err != nil {
@@ -414,10 +414,10 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, r *api.ReleaseDeviceRequest)
 	}
 
 	// log success after commit success
-	logging.Debugf(ctx, "ReleaseDevice: released lease %s for device %s dut_id %s", r.GetLeaseId(), d.ID, d.DutID)
+	logging.Debugf(ctx, "ReleaseDevice: released lease %s for device %s dut_id %s", leaseID, d.ID, d.DutID)
 
 	return &api.ReleaseDeviceResponse{
-		LeaseId: r.GetLeaseId(),
+		LeaseId: leaseID,
 	}, nil
 }
 
