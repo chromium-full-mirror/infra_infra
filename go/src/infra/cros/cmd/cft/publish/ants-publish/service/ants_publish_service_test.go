@@ -6,6 +6,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"slices"
 	"testing"
 
@@ -247,7 +248,6 @@ func TestTestProperties(t *testing.T) {
 				},
 			},
 			wantProps: []*atp.Property{
-				{Name: "sku", Value: "pujja_10G"},
 				{Name: luciInvPropName, Value: ""},
 			},
 			wantIdentifierProps: trProps,
@@ -267,7 +267,6 @@ func TestTestProperties(t *testing.T) {
 			},
 			invID: "inv/12345678",
 			wantProps: []*atp.Property{
-				{Name: "sku", Value: "pujja_10G"},
 				{Name: luciInvPropName, Value: "inv/12345678"},
 			},
 			wantIdentifierProps: trProps,
@@ -285,7 +284,6 @@ func TestTestProperties(t *testing.T) {
 				},
 			},
 			wantProps: []*atp.Property{
-				{Name: "sku", Value: ""},
 				{Name: luciInvPropName, Value: ""},
 			},
 			wantIdentifierProps: trProps,
@@ -306,6 +304,13 @@ func TestTestProperties(t *testing.T) {
 			if tc.invID != "" {
 				aps.metadata.LuciInvocationId = tc.invID
 			}
+
+			skuProp := &atp.Property{Name: "sku", Value: ""}
+			if _, ok := tc.dut.GetDutType().(*labapi.Dut_Chromeos); ok {
+				skuProp.Value = "pujja_10G"
+			}
+
+			tc.wantIdentifierProps = append(tc.wantIdentifierProps, skuProp)
 
 			gotProps, gotIdentifierProps, err := aps.testProperties()
 			if err != nil {
@@ -337,14 +342,15 @@ func TestResultEntries(t *testing.T) {
 	testIdentifierProps := []*atp.Property{
 		{Name: "board", Value: "brya"},
 		{Name: "model", Value: "vell"},
+		{Name: "sku", Value: "pujj_10G"},
 	}
 
 	luciInvID := "inv/12345678"
 	trProps := []*atp.Property{
-		{Name: "sku", Value: "pujj_10G"},
 		{Name: luciInvPropName, Value: luciInvID},
 		{Name: "board", Value: "brya"},
 		{Name: "model", Value: "vell"},
+		{Name: "sku", Value: "pujj_10G"},
 	}
 
 	executionInfo := &artifact.ExecutionInfo{
@@ -638,6 +644,71 @@ func TestUploadResultPartners(t *testing.T) {
 			err = aps.UploadArtifacts(ctx)
 			if err != nil {
 				t.Errorf("Unexpected error for artifacts upload.")
+			}
+		})
+	}
+}
+
+func TestUpdateParentWorkUnitProperties(t *testing.T) {
+	mockCtl := gomock.NewController(t)
+	defer mockCtl.Finish()
+	mockWU := mock_androidapi.NewMockWorkUnitService(mockCtl)
+	wuID := "WU123"
+
+	testCases := []struct {
+		name    string
+		props   []*atp.Property
+		wantErr bool
+	}{
+		{
+			name: "existing",
+			props: []*atp.Property{
+				{Name: "pizza", Value: "cheese"},
+			},
+		},
+		{
+			name:    "error",
+			wantErr: true,
+		},
+		{
+			name: "none",
+		},
+	}
+	executionInfo := &artifact.ExecutionInfo{
+		DutInfo: &artifact.DutInfo{
+			Dut: &labapi.Dut{
+				DutType: &labapi.Dut_Chromeos{
+					Chromeos: &labapi.Dut_ChromeOS{
+						DutModel: &labapi.DutModel{BuildTarget: "brya", ModelName: "vell"},
+						Sku:      "pujj_10G",
+					},
+				},
+			},
+		},
+	}
+
+	aps := &AntsPublishService{
+		service: &androidlib.Service{WorkUnitService: mockWU},
+		metadata: &metadata.PublishAntsMetadata{
+			ParentWorkUnitId:     wuID,
+			PrimaryExecutionInfo: executionInfo,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			wu := &atp.WorkUnit{Id: wuID, Properties: tc.props}
+			wantWU := &atp.WorkUnit{Id: wuID, Properties: tc.props}
+			_, props, _ := aps.testProperties()
+			wantWU.Properties = append(wantWU.Properties, props...)
+			mockWU.EXPECT().Get(wuID).Return(wu, nil)
+			if tc.wantErr {
+				mockWU.EXPECT().Update(wuID, gomock.Any()).Return(nil, errors.New("err"))
+			} else {
+				mockWU.EXPECT().Update(wuID, wantWU).Return(wu, nil)
+			}
+			err := aps.updateParentWorkUnitProperties()
+			if tc.wantErr != (err != nil) {
+				t.Errorf("Unexpected error: %v", err)
 			}
 		})
 	}

@@ -231,6 +231,24 @@ func (aps *AntsPublishService) uploadResults(ctx context.Context, entries []*atp
 	return g.Wait()
 }
 
+func (aps *AntsPublishService) updateParentWorkUnitProperties() error {
+	start := time.Now()
+	defer timeTrack(start, "Parent WU props update")
+	pwu, err := aps.service.WorkUnitService.Get(aps.metadata.ParentWorkUnitId)
+	if err != nil {
+		return err
+	}
+
+	_, props, err := aps.testProperties()
+	if err != nil {
+		return err
+	}
+
+	pwu.Properties = append(pwu.Properties, props...)
+	_, err = aps.service.WorkUnitService.Update(pwu.Id, pwu)
+	return err
+}
+
 // UploadToAnts uploads test results to Ants.
 func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	log.Printf("Uploading to AnTS: %+v", aps.results)
@@ -242,6 +260,11 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	if len(aps.results) == 0 {
 		log.Println("no given test results to upload. Skipping results upload")
 		return nil
+	}
+
+	log.Printf("Update parent workunit properties.")
+	if err := aps.updateParentWorkUnitProperties(); err != nil {
+		return err
 	}
 
 	// Track time taken to upload results
@@ -292,13 +315,14 @@ func (aps *AntsPublishService) testProperties() ([]*atp.Property, []*atp.Propert
 		return nil, nil, fmt.Errorf("unsupported dut type")
 	}
 
-	boardProp := &atp.Property{Name: "board", Value: model.GetBuildTarget()}
-	modelProp := &atp.Property{Name: "model", Value: model.GetModelName()}
-	props := []*atp.Property{
+	testIdentifierProps := []*atp.Property{
+		{Name: "board", Value: model.GetBuildTarget()},
+		{Name: "model", Value: model.GetModelName()},
 		{Name: "sku", Value: sku},
+	}
+
+	props := []*atp.Property{
 		{Name: luciInvPropName, Value: aps.metadata.GetLuciInvocationId()},
-		boardProp,
-		modelProp,
 	}
 
 	for k, v := range dutInfo.GetTags() {
@@ -309,7 +333,7 @@ func (aps *AntsPublishService) testProperties() ([]*atp.Property, []*atp.Propert
 		props = append(props, &atp.Property{Name: k, Value: v})
 	}
 
-	testIdentifierProps := []*atp.Property{boardProp, modelProp}
+	props = append(props, testIdentifierProps...)
 	return props, testIdentifierProps, nil
 }
 
