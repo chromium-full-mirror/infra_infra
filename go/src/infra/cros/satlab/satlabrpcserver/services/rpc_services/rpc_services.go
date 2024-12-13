@@ -44,6 +44,7 @@ import (
 	e "infra/cros/satlab/common/utils/errors"
 	"infra/cros/satlab/common/utils/executor"
 	"infra/cros/satlab/common/utils/parser"
+	"infra/cros/satlab/satlabrpcserver/models"
 	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
 	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
 	"infra/cros/satlab/satlabrpcserver/services/dut_services"
@@ -68,6 +69,11 @@ type SatlabRpcServiceServer struct {
 	commandExecutor executor.IExecCommander
 	// swarmingService provides the swarming API services
 	swarmingService services.ISwarmingService
+
+	// ccdSession uses to save a session that we can use later
+	// As grpc-Web doesn't support bidi streaming, we need
+	// a seesion to let user to input the key of rma
+	ccdSession map[string]models.CCDSession
 }
 
 func New(
@@ -86,6 +92,7 @@ func New(
 		cpuTemperatureOrchestrator: cpuTemperatureOrchestrator,
 		commandExecutor:            &executor.ExecCommander{},
 		swarmingService:            swarmingService,
+		ccdSession:                 map[string]models.CCDSession{},
 	}
 }
 

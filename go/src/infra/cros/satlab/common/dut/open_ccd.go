@@ -7,6 +7,7 @@
 package dut
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"io"
@@ -35,6 +36,12 @@ type CCDOpenRun struct {
 	containerName   string
 	dockerPath      string
 	goexpectSession *expect.GExpect
+	// We use a reader here to read from either the terminal
+	// or the RPC server
+	reader bufio.Reader
+	// We use a writer here to send the message to either
+	// the terminal or the RPC server
+	writer io.Writer
 }
 
 const (
@@ -51,7 +58,10 @@ func (c *CCDOpenRun) TriggerRun(
 	ctx context.Context,
 	executor executor.IExecCommander,
 	w io.Writer,
+	r bufio.Reader,
 ) error {
+	c.reader = r
+	c.writer = w
 	cancelChannel := make(chan os.Signal, 1)
 	// catch SIGETRM or SIGINTERRUPT
 	signal.Notify(cancelChannel, syscall.SIGTERM, syscall.SIGINT)
@@ -68,11 +78,11 @@ func (c *CCDOpenRun) TriggerRun(
 
 				return
 			case <-cancelChannel:
-				fmt.Fprintln(w, "Docker container cleanup...")
+				fmt.Fprintln(c.writer, "Docker container cleanup...")
 				if err := c.killDockerContainerForGSCSerial(ctx, executor); err != nil {
-					fmt.Fprintln(w, err)
+					fmt.Fprintln(c.writer, err)
 				}
-				fmt.Fprintln(w, "Exiting on an interrupt.")
+				fmt.Fprintln(c.writer, "Exiting on an interrupt.")
 				os.Exit(1)
 				return
 
@@ -94,10 +104,10 @@ func (c *CCDOpenRun) TriggerRun(
 	}
 	defer func() {
 		if err := c.killDockerContainerForGSCSerial(ctx, executor); err != nil {
-			fmt.Fprintln(w, err)
+			fmt.Fprintln(c.writer, err)
 		}
 	}()
-	if err := c.prepareCCD(ctx, executor, w); err != nil {
+	if err := c.prepareCCD(ctx, executor); err != nil {
 		return errors.Annotate(err, "prepare ccd").Err()
 	}
 	return nil
@@ -238,13 +248,20 @@ func (c *CCDOpenRun) getSerialDevice(
 		if v["servo_serial"] == c.ServoSerial {
 			servoSerialMatch = true
 		}
-		serialInfo = serialInfo + fmt.Sprintf("USB hub %s: servo serial: %q, GSC serial device: %s\n", k, v["servo_serial"], v["gsc_serial_dev"])
+		serialInfo = serialInfo + fmt.Sprintf(
+			"USB hub %s: servo serial: %q, GSC serial device: %s\n",
+			k,
+			v["servo_serial"],
+			v["gsc_serial_dev"],
+		)
 	}
 	if c.ServoSerial != "" && !servoSerialMatch {
 		return "", errors.New("Provided servo serial not found. Detected devices:\n" + serialInfo)
 	}
 	if relatedUSBHubID == "" && len(m) > 1 {
-		return "", errors.New("More than one supported device detected. Please provide -servo-serial or -usb-device parameter:\n" + serialInfo)
+		return "", errors.New(
+			"More than one supported device detected. Please provide -servo-serial or -usb-device parameter:\n" + serialInfo,
+		)
 	}
 	if gscSerialDev, ok := m[relatedUSBHubID]["gsc_serial_dev"]; ok {
 		return gscSerialDev, nil
@@ -253,7 +270,7 @@ func (c *CCDOpenRun) getSerialDevice(
 	}
 }
 
-func (c *CCDOpenRun) getRDDKeepAlive(w io.Writer) (bool, error) {
+func (c *CCDOpenRun) getRDDKeepAlive() (bool, error) {
 	if err := c.goexpectSession.Send("rddkeepalive\n"); err != nil {
 		return false, errors.Annotate(err, "send rddkeepalive command").Err()
 	}
@@ -262,33 +279,33 @@ func (c *CCDOpenRun) getRDDKeepAlive(w io.Writer) (bool, error) {
 		return false, errors.Annotate(err, "expect output from rddkeepalive command").Err()
 	}
 	if strings.Contains(output, "KeepAlive: enabled") || strings.Contains(output, "Rdd: keepalive") {
-		fmt.Fprintln(w, "RDD keep-alive: enabled")
+		fmt.Fprintln(c.writer, "RDD keep-alive: enabled")
 		return true, nil
 	}
 	if strings.Contains(output, "KeepAlive: disabled") || strings.Contains(output, "Rdd: connected") {
-		fmt.Fprintln(w, "RDD keep-alive: disabled")
+		fmt.Fprintln(c.writer, "RDD keep-alive: disabled")
 		return false, nil
 	}
-	fmt.Fprintln(w, "RDD keep-alive: unknown state")
+	fmt.Fprintln(c.writer, "RDD keep-alive: unknown state")
 	return false, nil
 }
 
-func (c *CCDOpenRun) setRDDKeepAlive(w io.Writer) error {
-	KeepAliveEnabled, err := c.getRDDKeepAlive(w)
+func (c *CCDOpenRun) setRDDKeepAlive() error {
+	KeepAliveEnabled, err := c.getRDDKeepAlive()
 	if err != nil {
 		return errors.Annotate(err, "get rdd keep-alive status").Err()
 	}
 	if KeepAliveEnabled {
 		return nil
 	}
-	fmt.Println("Enabling RDD keep-alive...")
+	fmt.Fprintln(c.writer, "Enabling RDD keep-alive...")
 	if err := c.goexpectSession.Send("rddkeepalive true\n"); err != nil {
 		return errors.Annotate(err, "send rddkeepalive true command").Err()
 	}
 	if _, _, err := c.goexpectSession.Expect(reCcd, timeout); err != nil {
 		return errors.Annotate(err, "expect ccd console prompt after executing rddkeepalive true command").Err()
 	}
-	KeepAliveEnabled, err = c.getRDDKeepAlive(w)
+	KeepAliveEnabled, err = c.getRDDKeepAlive()
 	if err != nil {
 		return errors.Annotate(err, "get rdd keep-alive status").Err()
 	}
@@ -301,7 +318,6 @@ func (c *CCDOpenRun) setRDDKeepAlive(w io.Writer) error {
 func (c *CCDOpenRun) prepareCCD(
 	ctx context.Context,
 	executor executor.IExecCommander,
-	w io.Writer,
 ) error {
 	var err error
 	c.goexpectSession, _, err = expect.Spawn("docker attach "+c.containerName, -1)
@@ -310,65 +326,65 @@ func (c *CCDOpenRun) prepareCCD(
 	}
 	defer func() {
 		if err := c.goexpectSession.Close(); err != nil {
-			fmt.Fprintln(w, err)
+			fmt.Fprintln(c.writer, err)
 		}
 	}()
 	port, err := c.getSerialDevice(ctx, executor)
-	fmt.Fprintf(w, "port: %s\n", port)
+	fmt.Fprintf(c.writer, "port: %s\n", port)
 	if err != nil {
 		return errors.Annotate(err, "get serial device").Err()
 	}
 	if err := c.prepareTerminal(port); err != nil {
 		return errors.Annotate(err, "prepare terminal").Err()
 	}
-	if err := c.setRDDKeepAlive(w); err != nil {
+	if err := c.setRDDKeepAlive(); err != nil {
 		// Don't fail as it's not critical to set this parameter.
-		fmt.Fprintln(w, error.Error(err))
+		fmt.Fprintln(c.writer, error.Error(err))
 	}
-	ccdOpened, err := c.checkIfCCDOpened(w)
+	ccdOpened, err := c.checkIfCCDOpened()
 	if err != nil {
 		return errors.Annotate(err, "check if ccd is opened").Err()
 	}
 	rmaAuthOpen := false
 	if !ccdOpened {
 		if c.UseRmaAuth {
-			if err := c.getRMAAuthChallenge(w); err != nil {
+			if err := c.getRMAAuthChallenge(); err != nil {
 				return errors.Annotate(err, "get rma_auth challenge").Err()
 			}
-			unlockCode, err := c.provideUnlockCode(w)
+			unlockCode, err := c.provideUnlockCode()
 			if err != nil {
 				return errors.Annotate(err, "check if ccd opened").Err()
 			}
-			err = c.openCCDWithRMAAuth(unlockCode, w)
+			err = c.openCCDWithRMAAuth(unlockCode)
 			if err != nil {
 				return errors.Annotate(err, "run rma_auth").Err()
 			}
 			rmaAuthOpen = true
 		} else {
-			err = c.runCCDOpen(w)
+			err = c.runCCDOpen()
 			if err != nil {
 				return errors.Annotate(err, "run ccd open").Err()
 			}
 		}
 	}
-	testlabEnabled, err := c.checkIfTestlabEnabled(w)
+	testlabEnabled, err := c.checkIfTestlabEnabled()
 	if err != nil {
 		return errors.Annotate(err, "check if testlab mode is enabled").Err()
 	}
 	if !testlabEnabled {
-		if err := c.runCCDTestlabEnable(w); err != nil {
+		if err := c.runCCDTestlabEnable(); err != nil {
 			return errors.Annotate(err, "enable testlab mode").Err()
 		}
 	}
 	if c.ResetFactory {
-		if err := c.runCCDResetFactory(w); err != nil {
+		if err := c.runCCDResetFactory(); err != nil {
 			return errors.Annotate(err, "reset ccd to factory settings").Err()
 		}
 	}
 	if rmaAuthOpen {
 		// GSC disables the TPM after RMA open until the AP resets.
 		// Sending ecrst pulse to reboot the AP.
-		fmt.Fprintln(w, "Rebooting to enable TPM after RMA open...")
+		fmt.Fprintln(c.writer, "Rebooting to enable TPM after RMA open...")
 		if err := c.goexpectSession.Send("ecrst pulse\n"); err != nil {
 			return errors.Annotate(err, "send ecrst pulse command").Err()
 		}
@@ -416,7 +432,7 @@ func (c *CCDOpenRun) prepareTerminal(port string) error {
 	return nil
 }
 
-func (c *CCDOpenRun) checkIfCCDOpened(w io.Writer) (bool, error) {
+func (c *CCDOpenRun) checkIfCCDOpened() (bool, error) {
 	if err := c.goexpectSession.Send("ccd\n"); err != nil {
 		return false, errors.Annotate(err, "send ccd command").Err()
 	}
@@ -425,14 +441,14 @@ func (c *CCDOpenRun) checkIfCCDOpened(w io.Writer) (bool, error) {
 	if err != nil {
 		return false, errors.Annotate(err, "expect output from ccd command").Err()
 	}
-	fmt.Fprintln(w, "CCD state: "+match[1])
+	fmt.Fprintln(c.writer, "CCD state: "+match[1])
 	if match[1] == "Opened" {
 		return true, nil
 	}
 	return false, nil
 }
 
-func (c *CCDOpenRun) getRMAAuthChallenge(w io.Writer) error {
+func (c *CCDOpenRun) getRMAAuthChallenge() error {
 	if err := c.goexpectSession.Send("rma_auth\n"); err != nil {
 		return errors.Annotate(err, "send rma_auth command").Err()
 	}
@@ -442,23 +458,26 @@ func (c *CCDOpenRun) getRMAAuthChallenge(w io.Writer) error {
 		return errors.Annotate(err, "expect output from rma_auth command").Err()
 	}
 	challenge := strings.ReplaceAll(match[1], " ", "")
-	fmt.Fprintln(w, "Follow this link to generate unlock code:")
+	fmt.Fprintln(c.writer, "Follow this link to generate unlock code:")
 	url := "https://www.google.com/chromeos/partner/console/cr50reset?challenge=" + challenge
-	fmt.Fprintln(w, url)
+	fmt.Fprintln(c.writer, url)
 	return nil
 }
 
-func (c *CCDOpenRun) provideUnlockCode(w io.Writer) (string, error) {
-	var unlockCode string
-	fmt.Fprint(w, "Enter the unlock code: ")
-	fmt.Scanln(&unlockCode)
+func (c *CCDOpenRun) provideUnlockCode() (string, error) {
+	fmt.Fprint(c.writer, "Enter the unlock code: ")
+	unlockCode, err := c.reader.ReadString('\n')
+	if err != nil {
+		return "", err
+	}
+	unlockCode = strings.TrimSpace(unlockCode)
 	if !regexp.MustCompile(`[A-Z0-9]{8}`).MatchString(unlockCode) {
 		return "", errors.New("Invalid unlock code.")
 	}
 	return unlockCode, nil
 }
 
-func (c *CCDOpenRun) openCCDWithRMAAuth(unlockCode string, w io.Writer) error {
+func (c *CCDOpenRun) openCCDWithRMAAuth(unlockCode string) error {
 	if err := c.goexpectSession.Send("rma_auth " + unlockCode + "\n"); err != nil {
 		return errors.Annotate(err, "send rma_auth command with unlock code").Err()
 	}
@@ -467,12 +486,12 @@ func (c *CCDOpenRun) openCCDWithRMAAuth(unlockCode string, w io.Writer) error {
 	}
 	// Time for GSC to reboot
 	time.Sleep(1 * time.Second)
-	ccdOpened, err := c.checkIfCCDOpened(w)
+	ccdOpened, err := c.checkIfCCDOpened()
 	if err != nil {
 		return errors.Annotate(err, "check if ccd is opened").Err()
 	}
 	if !ccdOpened {
-		if err := c.runCCDOpen(w); err != nil {
+		if err := c.runCCDOpen(); err != nil {
 			return errors.Annotate(err, "run ccd open").Err()
 		}
 	}
@@ -480,7 +499,10 @@ func (c *CCDOpenRun) openCCDWithRMAAuth(unlockCode string, w io.Writer) error {
 }
 
 func powerButtonAlert(w io.Writer) {
-	fmt.Fprint(w, "You may be asked to press the physical power button multiple times. Follow the instructions.")
+	fmt.Fprint(
+		w,
+		"You may be asked to press the physical power button multiple times. Follow the instructions.",
+	)
 	for i := 0; i < 4; i++ {
 		fmt.Fprint(w, ".")
 		time.Sleep(time.Second)
@@ -488,27 +510,29 @@ func powerButtonAlert(w io.Writer) {
 	fmt.Fprint(w, "\n")
 }
 
-func (c *CCDOpenRun) runCCDOpen(w io.Writer) error {
-	powerButtonAlert(w)
+func (c *CCDOpenRun) runCCDOpen() error {
+	powerButtonAlert(c.writer)
 	if err := c.goexpectSession.Send("ccd open\n"); err != nil {
 		return errors.Annotate(err, "send ccd open command").Err()
 	}
 	waitTimeout := 20 * time.Second
 	ccdOpened := false
-	reCcdOpen := regexp.MustCompile(`(Press the physical button now|PP press counted|[Tt]imeout|CCD [Oo]pened|Busy|Access Denied)`)
+	reCcdOpen := regexp.MustCompile(
+		`(Press the physical button now|PP press counted|[Tt]imeout|CCD [Oo]pened|Busy|Access Denied)`,
+	)
 	for i := 0; i < iterationsLimit; i++ {
 		output, _, err := c.goexpectSession.Expect(reCcdOpen, waitTimeout)
 		if err != nil {
 			return errors.Annotate(err, "wait for output from ccd open command").Err()
 		} else if regexp.MustCompile(`CCD [Oo]pened`).MatchString(string(output)) {
-			fmt.Fprintln(w, "CCD opened.")
+			fmt.Fprintln(c.writer, "CCD opened.")
 			ccdOpened = true
 			break
 		} else if regexp.MustCompile(`PP press counted`).MatchString(string(output)) {
-			fmt.Fprintln(w, "PP press counted.")
+			fmt.Fprintln(c.writer, "PP press counted.")
 			waitTimeout = 120 * time.Second
 		} else if regexp.MustCompile(`Press the physical button now`).MatchString(string(output)) {
-			fmt.Fprintln(w, "Press the physical button now!")
+			fmt.Fprintln(c.writer, "Press the physical button now!")
 			waitTimeout = 20 * time.Second
 		} else if regexp.MustCompile(`[Tt]imeout`).MatchString(string(output)) {
 			return errors.New("Timeout waiting for power button!")
@@ -524,7 +548,7 @@ func (c *CCDOpenRun) runCCDOpen(w io.Writer) error {
 	return nil
 }
 
-func (c *CCDOpenRun) checkIfTestlabEnabled(w io.Writer) (bool, error) {
+func (c *CCDOpenRun) checkIfTestlabEnabled() (bool, error) {
 	if err := c.goexpectSession.Send("ccd testlab\n"); err != nil {
 		return false, errors.Annotate(err, "send ccd testlab command").Err()
 	}
@@ -533,32 +557,34 @@ func (c *CCDOpenRun) checkIfTestlabEnabled(w io.Writer) (bool, error) {
 	if err != nil {
 		return false, errors.Annotate(err, "expect output from ccd testlab command").Err()
 	}
-	fmt.Fprintln(w, "CCD testlab mode: "+match[1])
+	fmt.Fprintln(c.writer, "CCD testlab mode: "+match[1])
 	if match[1] == "enabled" {
 		return true, nil
 	}
 	return false, nil
 }
 
-func (c *CCDOpenRun) runCCDTestlabEnable(w io.Writer) error {
-	powerButtonAlert(w)
+func (c *CCDOpenRun) runCCDTestlabEnable() error {
+	powerButtonAlert(c.writer)
 	testlabEnabled := false
 	if err := c.goexpectSession.Send("ccd testlab enable\n"); err != nil {
 		return errors.Annotate(err, "send ccd testlab enable command").Err()
 	}
-	reTestlab := regexp.MustCompile(`(Press the physical button now|PP press counted|Updating testlab to true|CCD test lab mode enabled)`)
+	reTestlab := regexp.MustCompile(
+		`(Press the physical button now|PP press counted|Updating testlab to true|CCD test lab mode enabled)`,
+	)
 	for i := 0; i < iterationsLimit; i++ {
 		output, _, err := c.goexpectSession.Expect(reTestlab, timeout)
 		if err != nil {
 			return errors.Annotate(err, "expect output from ccd testlab enable command").Err()
 		} else if regexp.MustCompile(`Updating testlab to true|CCD test lab mode enabled`).MatchString(string(output)) {
-			fmt.Fprintln(w, "CCD testlab mode enabled.")
+			fmt.Fprintln(c.writer, "CCD testlab mode enabled.")
 			testlabEnabled = true
 			break
 		} else if regexp.MustCompile(`PP press counted`).MatchString(string(output)) {
-			fmt.Fprintln(w, "PP press counted.")
+			fmt.Fprintln(c.writer, "PP press counted.")
 		} else if regexp.MustCompile(`Press the physical button now`).MatchString(string(output)) {
-			fmt.Fprintln(w, "Press the physical button now!")
+			fmt.Fprintln(c.writer, "Press the physical button now!")
 		}
 	}
 	if !testlabEnabled {
@@ -567,7 +593,7 @@ func (c *CCDOpenRun) runCCDTestlabEnable(w io.Writer) error {
 	return nil
 }
 
-func (c *CCDOpenRun) runCCDResetFactory(w io.Writer) error {
+func (c *CCDOpenRun) runCCDResetFactory() error {
 	if err := c.goexpectSession.Send("ccd reset factory\n"); err != nil {
 		return errors.Annotate(err, "send ccd reset factory command").Err()
 	}
@@ -582,6 +608,6 @@ func (c *CCDOpenRun) runCCDResetFactory(w io.Writer) error {
 	} else if strings.Contains(string(output), "IfOpened") {
 		return errors.New("ccd reset factory command failed.")
 	}
-	fmt.Fprintln(w, "Resetting CCD to factory settings successful.")
+	fmt.Fprintln(c.writer, "Resetting CCD to factory settings successful.")
 	return nil
 }

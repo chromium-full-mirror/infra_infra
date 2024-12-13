@@ -8,6 +8,7 @@
 package ccd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 
@@ -56,6 +57,7 @@ func (c *ccdOpenRun) Run(a subcommands.Application, args []string, env subcomman
 // innerRun handles all orchestration needed to pass appropriate clients, contexts and commands into the application
 func (c *ccdOpenRun) innerRun(a subcommands.Application, env subcommands.Env) error {
 	ctx := cli.GetContext(a, c, env)
-	err := c.TriggerRun(ctx, &executor.ExecCommander{}, os.Stdout)
+	reader := bufio.NewReader(os.Stdin)
+	err := c.TriggerRun(ctx, &executor.ExecCommander{}, os.Stdout, *reader)
 	return err
 }

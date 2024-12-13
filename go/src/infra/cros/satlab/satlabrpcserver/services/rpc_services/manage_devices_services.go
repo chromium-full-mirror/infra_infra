@@ -7,13 +7,17 @@
 package rpc_services
 
 import (
+	"bufio"
 	"context"
 	"errors"
+	"fmt"
+	"io"
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/satlab/common/dut"
+	"infra/cros/satlab/satlabrpcserver/models"
 )
 
 type Streaming struct {
@@ -27,7 +31,7 @@ func (s *Streaming) Write(data []byte) (n int, err error) {
 
 	err = s.server.Send(res)
 	if err != nil {
-		logging.Infof(s.server.Context(), "Get an error when streaming. Reason: %s", err.Error())
+		logging.Errorf(s.server.Context(), "can't send message on streaming, got an error: %s", err.Error())
 	}
 
 	return len(data), err
@@ -39,13 +43,40 @@ func (s *SatlabRpcServiceServer) OpenCCD(req *pb.OpenCCDRequest, stream pb.Satla
 	if req.ServoSerial == "" {
 		return errors.New("open ccd, servo serial can't be empty")
 	}
+
 	ccd := dut.CCDOpenRun{
 		ServoSerial: req.ServoSerial,
+		UseRmaAuth:  req.RmaAuth,
 	}
 
 	writer := Streaming{
 		server: stream,
 	}
 
-	return ccd.TriggerRun(context.Background(), s.commandExecutor, &writer)
+	r, w := io.Pipe()
+	reader := bufio.NewReader(r)
+
+	s.ccdSession[req.ServoSerial] = models.CCDSession{
+		Writer: w,
+	}
+
+	defer func() {
+		// Remove the session from dictionary
+		delete(s.ccdSession, req.ServoSerial)
+	}()
+
+	return ccd.TriggerRun(stream.Context(), s.commandExecutor, &writer, *reader)
+}
+
+func (s *SatlabRpcServiceServer) SendMessageToCCDSession(ctx context.Context, req *pb.SendMessageToCCDSessionRequest) (*pb.SendMessageToCCDSessionResponse, error) {
+	session, found := s.ccdSession[req.ServoSerial]
+	if found == false {
+		return nil, errors.New(fmt.Sprintf("can't find the session by %s", req.ServoSerial))
+	}
+
+	if err := session.Send(req.Message); err != nil {
+		return nil, errors.New(fmt.Sprintf("can't send a message to session. Reason: %v", err))
+	}
+
+	return &pb.SendMessageToCCDSessionResponse{}, nil
 }
