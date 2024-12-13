@@ -7,6 +7,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"math"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -17,9 +18,13 @@ import (
 	"github.com/testcontainers/testcontainers-go/wait"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/server"
 
 	"infra/device_manager/internal/database"
+	"infra/device_manager/internal/external"
 	"infra/device_manager/internal/frontend"
+	"infra/device_manager/internal/jobs"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 var e2e = flag.Bool("e2e", false, "Run the end to end tests, which may take much longer than unit tests")
@@ -34,6 +39,14 @@ func TestLeaseDevice(t *testing.T) {
 	InitDBSchema(t, cfg.DBPort)
 	client := newDBClient(ctx, t, cfg)
 
+	opts, err := server.OptionsFromEnv(&server.Options{GRPCAddr: ":0"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	luciServer, err := server.New(ctx, *opts, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
 	s := frontend.NewServer()
 	s.ServiceClients.DBClient = client
 
@@ -61,6 +74,107 @@ func TestLeaseDevice(t *testing.T) {
 					t.Errorf("LeaseDevice(%s) error nil, want error: rsp=%v", tc.name, rsp)
 				}
 			})
+		}
+	})
+	s.ServiceClients.UFSClient = newUFS(luciServer.Context, t)
+	t.Run("import UFS data to DB", func(t *testing.T) {
+		testcases := []struct {
+			name              string
+			prepareSQL        string
+			wantInactiveCount int
+		}{
+			{
+				"Import all to empty DB",
+				"",
+				0,
+			},
+			{
+				// Mark some devices as inactive, the import should reset them back to
+				// active.
+				"Activate the inactive devices if they are valid in UFS",
+				`update "Devices" set is_active=false where id in (select id from "Devices" where is_active=true limit 500);`,
+				0,
+			},
+			{
+				// Change the device ID so we won't find them from UFS, resulting in
+				// inactive status.
+				"Deactivate the active devices if they are not valid in UFS",
+				`update "Devices" set id=id || '_xxx'  where id in (select id from "Devices" where is_active=true limit 500);`,
+				500,
+			},
+		}
+		clients := s.ServiceClients
+		// We actually don't know the exact number of devices in UFS, so we use the
+		// first import result as the baseline for the following tests.
+		// When comparing the result, the number may not exactly same due to ongoing
+		// deployment etc. We suppose it's ok as long as they are almost the same.
+		wantActive := -1
+		allowedRange := 50
+
+		for _, tc := range testcases {
+			tc := tc
+			t.Run(tc.name, func(t *testing.T) {
+				// Don't parallel the subtests. They depend on each other.
+				if tc.prepareSQL != "" {
+					_, _ = clients.DBClient.Conn.Exec(tc.prepareSQL)
+				}
+				if err := jobs.ImportUFSDevices(ctx, clients, ""); err != nil {
+					t.Errorf("ImportUFSDevices() errors %s, want nil", err)
+				}
+
+				var active, inactive int
+				r := clients.DBClient.Conn.QueryRow(`select count(is_active=true OR NULL) as active_count, count(is_active=false OR NULL) as inactive_count from "Devices";`)
+				_ = r.Scan(&active, &inactive)
+				t.Logf("active: %d, inactive: %d", active, inactive)
+				// We don't know the exact number of devices will be imported, so we
+				// just check if it looks right. By 2024, there are ~ 17K devices.
+				if active < 15_000 || active > 20_000 {
+					t.Errorf("ImportUFSDevices() = %d active devices, want >15K && <20K", active)
+				}
+				if wantActive < 0 {
+					wantActive = active
+				} else {
+					if math.Abs(float64(active-wantActive)) > float64(allowedRange) {
+						t.Errorf("ImportUFSDevices() = %d active devices, want ~ %d", active, wantActive)
+					}
+				}
+				if math.Abs(float64(inactive-tc.wantInactiveCount)) > float64(allowedRange) {
+					t.Errorf("ImportUFSDevices() = %d inactive devices, want ~ %d", inactive, tc.wantInactiveCount)
+				}
+			})
+		}
+	})
+	t.Run("Lease a device", func(t *testing.T) {
+		testcases := []struct {
+			name      string
+			isActive  bool
+			state     string
+			wantError bool
+		}{
+			{
+				name:      "lease an inactive device",
+				isActive:  false,
+				state:     "AVAILABLE",
+				wantError: true,
+			},
+		}
+		for _, tc := range testcases {
+			tc := tc
+			query := fmt.Sprintf(`select dut_id from "Devices" where is_active=%t and dut_state='DEVICE_STATE_%s' limit 1;`, tc.isActive, tc.state)
+			var dutID string
+			_ = s.ServiceClients.DBClient.Conn.QueryRow(query).Scan(&dutID)
+			rsp, err := s.LeaseDevice(ctx, &api.LeaseDeviceRequest{
+				IdempotencyKey: "7161090b-0e91-4e6b-9665-8d45a55b83e3",
+				HardwareDeviceReqs: &api.HardwareRequirements{
+					SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
+						"dut_id": {Values: []string{dutID}},
+					},
+				},
+			})
+			t.Logf("rsp %v", rsp)
+			if tc.wantError && err == nil {
+				t.Errorf("LeaseDevice(is_active:%t,state:%s) error nil, want error", tc.isActive, tc.state)
+			}
 		}
 	})
 }
@@ -145,4 +259,13 @@ func newDBClient(ctx context.Context, t *testing.T, cfg *database.DatabaseConfig
 		client.Conn.Close()
 	})
 	return client
+}
+
+func newUFS(ctx context.Context, t *testing.T) ufsAPI.FleetClient {
+	t.Helper()
+	ufs, err := external.NewUFSClient(ctx, external.UFSServiceURI)
+	if err != nil {
+		t.Fatalf("new UFS client: %s", err)
+	}
+	return ufs
 }
