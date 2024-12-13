@@ -59,6 +59,14 @@ func TestLeaseDevice(t *testing.T) {
 				"empty HW req",
 				nil,
 			},
+			{
+				"unexisting-dut",
+				&api.HardwareRequirements{
+					SchedulableLabels: map[string]*api.HardwareRequirements_LabelValues{
+						"dut_id": {Values: []string{"unexisting-dut"}},
+					},
+				},
+			},
 		}
 
 		for _, tc := range badRequets {
