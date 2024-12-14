@@ -728,7 +728,7 @@ func TestUpdateDeviceToAvailable(t *testing.T) {
 				IsActive: false,
 			})
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, updatedDevice, should.Match(Device{
+			assert.Loosely(t, *updatedDevice, should.Match(Device{
 				ID:            "test-device-1",
 				DutID:         "test-dut-id",
 				DeviceAddress: "2.2.2.2:2",

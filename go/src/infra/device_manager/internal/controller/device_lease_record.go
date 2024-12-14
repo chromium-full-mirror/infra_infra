@@ -573,7 +573,7 @@ func getDeviceUFSDataWorker(
 			failure <- d
 			continue
 		}
-		success <- &updatedDevice
+		success <- updatedDevice
 
 		logging.Debugf(ctx, "getDeviceUFSDataWorker: pending release of Device %s dut_id %s", updatedDevice.ID, updatedDevice.DutID)
 	}

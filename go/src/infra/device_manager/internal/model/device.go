@@ -306,7 +306,7 @@ func buildListDevicesQuery(ctx context.Context, pageToken database.PageToken, pa
 // Device's unique hostname to asset tag pairing. The function uses COALESCE to
 // only update fields with provided values. If there is no value provided, then
 // it will use the current value of the device field in the db.
-func UpdateDeviceToAvailable(ctx context.Context, tx *sql.Tx, device Device) (Device, error) {
+func UpdateDeviceToAvailable(ctx context.Context, tx *sql.Tx, device Device) (*Device, error) {
 	var (
 		err                  error
 		updatedDevice        Device
@@ -342,13 +342,13 @@ func UpdateDeviceToAvailable(ctx context.Context, tx *sql.Tx, device Device) (De
 		// Marshal labels and set to null
 		labelBytes, err = json.Marshal(device.SchedulableLabels)
 		if err != nil {
-			return Device{}, err
+			return nil, fmt.Errorf("update device to available: %w", err)
 		}
 
 		err = device.SetDutIDFromLabels(ctx)
 		if err != nil {
 			logging.Errorf(ctx, "UpdateDeviceToAvailable: failed to set DUT ID for Device %s: %s", device.ID, err)
-			return Device{}, err
+			return nil, fmt.Errorf("update device to available: %w", err)
 		}
 	}
 
@@ -384,11 +384,11 @@ func UpdateDeviceToAvailable(ctx context.Context, tx *sql.Tx, device Device) (De
 
 	if err != nil {
 		logging.Errorf(ctx, "UpdateDeviceToAvailable: failed to update Device %s to DB: %s", updatedDevice.ID, err)
-		return Device{}, err
+		return nil, fmt.Errorf("update device to available: %w", err)
 	}
 
 	logging.Debugf(ctx, "UpdateDeviceToAvailable: Device %s updated successfully", updatedDevice.ID)
-	return updatedDevice, nil
+	return &updatedDevice, nil
 }
 
 // UpdateDeviceToLeased updates a Device to Leased in a transaction.
