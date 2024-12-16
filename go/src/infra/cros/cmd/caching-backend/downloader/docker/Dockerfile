@@ -7,6 +7,7 @@
 FROM docker.io/library/ubuntu:24.04
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+  ca-certificates=20240203 \
   squashfs-tools=1:4.6.1-1build1 \
   erofs-utils=1.7.1-1build2 \
   && rm -rf /var/lib/apt/lists/*
