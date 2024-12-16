@@ -8,7 +8,10 @@ create {
     script { name: "fetch.py" }
     unpack_archive: false
   }
-  build {}
+  build {
+    install: "install_win.sh"
+    tool: "tools/7z"
+  }
 }
 
 upload { pkg_prefix: "tools" }

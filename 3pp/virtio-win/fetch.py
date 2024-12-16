@@ -15,7 +15,7 @@ _PLATFORMS = {
 }
 
 _EXTENSION = {
-    'windows': '.msi',
+    'windows': '.iso',
 }
 
 _HTTP_HEADERS = {
@@ -37,7 +37,7 @@ def get_download_url(platform):
     raise ValueError(f'unsupported platform {platform}')
 
   extension = _EXTENSION[platform.split('-')[0]]
-  file_name = f'virtio-win-gt-x64{extension}'
+  file_name = f'virtio-win{extension}'
   url = (f'{_BASE_URL}{file_name}')
 
   manifest = {
