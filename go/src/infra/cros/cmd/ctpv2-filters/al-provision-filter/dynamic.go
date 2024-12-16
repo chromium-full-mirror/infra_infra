@@ -135,7 +135,8 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 	for _, su := range schedulingUnits {
 		gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath()
 		if strings.HasPrefix(gcsPath, "android-build") {
-			applyBuildInfoFromInstallPathToTarget(su.GetPrimaryTarget(), gcsPath)
+			buildId, _ := applyBuildInfoFromInstallPathToTarget(su.GetPrimaryTarget(), gcsPath)
+			su.DynamicUpdateLookupTable["buildNumber"] = buildId
 			su.DynamicUpdateLookupTable["installPath"] = gcsPath
 			continue
 		}
@@ -174,7 +175,7 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 // applyBuildInfoFromInstallPathToTarget extracts the buildId and buildTarget
 // from the provided installPath and applies their values into the target's
 // software request key values.
-func applyBuildInfoFromInstallPathToTarget(target *api.Target, installPath string) {
+func applyBuildInfoFromInstallPathToTarget(target *api.Target, installPath string) (buildId, buildTarget string) {
 	trimmedPath := strings.TrimPrefix(installPath, common.AndroidBuildPrefix)
 	splitPath := strings.Split(trimmedPath, "/")
 	if len(splitPath) < 2 {
@@ -182,7 +183,7 @@ func applyBuildInfoFromInstallPathToTarget(target *api.Target, installPath strin
 		return
 	}
 	// Indexes 0 and 1 correspond to buildId and buildTarget.
-	buildId, buildTarget := splitPath[0], splitPath[1]
+	buildId, buildTarget = splitPath[0], splitPath[1]
 	target.GetSwReq().KeyValues = append(target.GetSwReq().KeyValues, []*api.KeyValue{
 		{
 			Key:   "al_build_id",
@@ -193,6 +194,7 @@ func applyBuildInfoFromInstallPathToTarget(target *api.Target, installPath strin
 			Value: buildTarget,
 		},
 	}...)
+	return
 }
 
 func buildGetReq(board string, branch string) androidapi.BuildGetRequest {
