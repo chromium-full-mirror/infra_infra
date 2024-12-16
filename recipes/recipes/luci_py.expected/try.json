@@ -229,7 +229,6 @@
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@changes@DEPS: False@@@",
       "@@@STEP_LOG_LINE@changes@appengine_third_party: False@@@",
-      "@@@STEP_LOG_LINE@changes@auth_service: True@@@",
       "@@@STEP_LOG_LINE@changes@client: True@@@",
       "@@@STEP_LOG_LINE@changes@components: True@@@",
       "@@@STEP_LOG_LINE@changes@swarming: True@@@",
@@ -358,35 +357,6 @@
       "diff",
       "--name-only",
       "--cached",
-      "appengine/auth_service"
-    ],
-    "cwd": "[CACHE]/builder/infra/luci",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "infra:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "check changes.get change list on appengine/auth_service",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@change list@appengine/auth_service/foo.py@@@",
-      "@@@STEP_LOG_END@change list@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "diff",
-      "--name-only",
-      "--cached",
       "appengine/components"
     ],
     "cwd": "[CACHE]/builder/infra/luci",
@@ -494,87 +464,6 @@
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_END@change list@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "auth_service"
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[CACHE]/builder/vpython2.7",
-      "-ensure-file",
-      "infra/tools/luci/vpython2.7/${platform} latest",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "cwd": "[CACHE]/builder/infra/luci/appengine/auth_service",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "infra:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "auth_service.ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/vpython2.7/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "[CACHE]/builder/vpython2.7/vpython",
-      "-vpython-spec",
-      "[CACHE]/builder/infra/luci/.vpython",
-      "-u",
-      "test.py",
-      "-v",
-      "--conf",
-      "[CACHE]/builder/infra/luci/appengine/auth_service/unittest.cfg"
-    ],
-    "cwd": "[CACHE]/builder/infra/luci/appengine/auth_service",
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/vpython2.7"
-      ]
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "auth_service.run tests python2",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {

@@ -252,7 +252,6 @@
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@changes@DEPS: False@@@",
       "@@@STEP_LOG_LINE@changes@appengine_third_party: False@@@",
-      "@@@STEP_LOG_LINE@changes@auth_service: False@@@",
       "@@@STEP_LOG_LINE@changes@client: True@@@",
       "@@@STEP_LOG_LINE@changes@components: False@@@",
       "@@@STEP_LOG_LINE@changes@swarming: False@@@",
@@ -372,34 +371,6 @@
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@change list@client/foo.py@@@",
-      "@@@STEP_LOG_END@change list@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "diff",
-      "--name-only",
-      "--cached",
-      "appengine/auth_service"
-    ],
-    "cwd": "[CACHE]\\builder\\infra\\luci",
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "infra:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "check changes.get change list on appengine/auth_service",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_END@change list@@@"
     ]
   },

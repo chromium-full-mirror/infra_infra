@@ -38,8 +38,6 @@ def RunSteps(api):
           '%s: %s' % (p, j) for p, j in sorted(changes.items())
       ]
 
-    _step_auth_tests(api, changes)
-
     _step_components_tests(api, changes)
 
     _step_client_tests(api, changes)
@@ -61,8 +59,6 @@ def _check_changes(api):
           _has_changed_files(api, '.vpython3'),
       'client':
           _has_changed_files(api, 'client'),
-      'auth_service':
-          _has_changed_files(api, 'appengine/auth_service'),
       'components':
           _has_changed_files(api, 'appengine/components'),
       'swarming':
@@ -122,20 +118,6 @@ def _step_run_py_tests(api, cwd, python3=False, timeout=None):
     cmd += ['-vpython-spec', venv, '-u', 'test.py'] + testpy_args
     with api.context(env_prefixes={'PATH': env_path_prefix}):
       api.step('run tests %s' % py, cmd, timeout=timeout)
-
-
-def _step_auth_tests(api, changes):
-  if not api.platform.is_linux:
-    return
-
-  deps = ['auth_service', 'components', 'vpython', 'appengine_third_party']
-  if not any([changes[d] for d in deps]):
-    # skip tests when no changes on the dependencies.
-    return
-
-  auth_dir = api.path.checkout_dir.joinpath('luci', 'appengine', 'auth_service')
-  with api.step.nest('auth_service'):
-    _step_run_py_tests(api, auth_dir)
 
 
 def _step_components_tests(api, changes):
@@ -244,8 +226,6 @@ def GenTests(api):
 
   yield (api.test('ci') + _ci_build() +
          _step_data_changed_files('client', ['client/foo.py']) +
-         _step_data_changed_files('appengine/auth_service',
-                                  ['appengine/auth_service/foo.py']) +
          _step_data_changed_files('appengine/components',
                                   ['appengine/components/foo.py']) +
          _step_data_changed_files('appengine/swarming',
@@ -255,8 +235,6 @@ def GenTests(api):
 
   yield (api.test('try') + _try_build() +
          _step_data_changed_files('client', ['client/foo.py']) +
-         _step_data_changed_files('appengine/auth_service',
-                                  ['appengine/auth_service/foo.py']) +
          _step_data_changed_files('appengine/components',
                                   ['appengine/components/foo.py']) +
          _step_data_changed_files(
