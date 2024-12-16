@@ -37,10 +37,13 @@ type Device struct {
 	DeviceState       string
 	SchedulableLabels SchedulableLabels `json:"SchedulableLabels"`
 
-	IsActive             bool
-	CreatedTime          time.Time
-	LastUpdatedTime      time.Time
-	LastNotificationTime time.Time
+	IsActive bool
+	// CreatedTime is alwasys not NULL, so we don't have to use sql.NullTime.
+	CreatedTime                  time.Time
+	LastUpdatedTime              time.Time // Deprecated. Use NullableLastUpdatedTime instead.
+	LastUpdatedTimeNullable      sql.NullTime
+	LastNotificationTime         time.Time // Deprecated. Use NullableLastNotificationTime instead.
+	LastNotificationTimeNullable sql.NullTime
 }
 
 // DeviceIDType indicates the type of ID used to identify a Device in DB.

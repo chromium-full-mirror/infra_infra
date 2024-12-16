@@ -95,13 +95,18 @@ func PublishDeviceEvent(ctx context.Context, psClient external.PubSubClient, dev
 		return err
 	}
 
-	if device.LastNotificationTime.Before(device.LastUpdatedTime) {
-		latency := time.Since(device.LastUpdatedTime)
-		// For easier log parsing, we truncate the latency to seconds.
-		logging.Debugf(ctx, "PublishDeviceEvent: published in %.0f sec: Device %q dut_id %q: %v", latency.Seconds(), device.ID, device.DutID, deviceEvent)
-	} else {
-		logging.Debugf(ctx, "PublishDeviceEvent: re-published device %q dut_id %q: %v", device.ID, device.DutID, deviceEvent)
+	// Log the publish event latency for metrics.
+	if !device.LastUpdatedTimeNullable.Valid {
+		logging.Debugf(ctx, "PublishDeviceEvent: Device %q dut_id %q: %v", device.ID, device.DutID, deviceEvent)
+		return nil
 	}
+	if n := device.LastNotificationTimeNullable; n.Valid && n.Time.After(device.LastUpdatedTimeNullable.Time) {
+		logging.Debugf(ctx, "PublishDeviceEvent: re-published device %q dut_id %q: %v", device.ID, device.DutID, deviceEvent)
+		return nil
+	}
+	latency := time.Since(device.LastUpdatedTimeNullable.Time)
+	// For easier log parsing, we truncate the latency to seconds.
+	logging.Debugf(ctx, "PublishDeviceEvent: published in %.0f sec: Device %q dut_id %q: %v", latency.Seconds(), device.ID, device.DutID, deviceEvent)
 	return nil
 }
 
@@ -163,8 +168,6 @@ func SendNotifications(
 	}
 	defer rows.Close()
 
-	// sql.NullTime has no effective w/ time.Time, see
-	// https://groups.google.com/g/golang-nuts/c/vOTFu2SMNeA
 	for rows.Next() {
 		var device model.Device
 		err = rows.Scan(
@@ -175,8 +178,8 @@ func SendNotifications(
 			&device.DeviceState,
 			&device.SchedulableLabels,
 			&device.IsActive,
-			&device.LastNotificationTime,
-			&device.LastUpdatedTime,
+			&device.LastNotificationTimeNullable,
+			&device.LastUpdatedTimeNullable,
 		)
 		if err != nil {
 			panic(fmt.Errorf("notifier_service: failed to get scan row of devices to notify on: [%w]", err))
