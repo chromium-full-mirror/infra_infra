@@ -386,7 +386,7 @@ func TestGetBotsNotSkipped(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			botsNotSkipped := filterBotBySkipHosts(test.skipHostList, test.bots)
+			botsNotSkipped := FilterBotBySkipHosts(test.skipHostList, test.bots)
 			assert.Loosely(t, len(botsNotSkipped), should.Equal(test.expectedCount))
 		})
 	}

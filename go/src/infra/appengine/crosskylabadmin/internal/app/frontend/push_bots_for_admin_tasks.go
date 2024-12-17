@@ -128,7 +128,10 @@ func (p *adminTaskBotPusher) pushRepairDUTsForGivenPool(ctx context.Context, swa
 	}
 	var bots []*swarmingv2.BotInfo
 	rawBots, err := p.swarmingClient.ListAliveIdleBotsInPool(ctx, swarmingPool, dims)
-	for _, bot := range rawBots {
+
+	cfg := config.Get(ctx)
+	botsNotSkipped := FilterBotBySkipHosts(cfg.GetParis().GetDutRepair().GetSkipHosts(), rawBots)
+	for _, bot := range botsNotSkipped {
 		if !holdouts[bot.BotId] {
 			bots = append(bots, bot)
 		}

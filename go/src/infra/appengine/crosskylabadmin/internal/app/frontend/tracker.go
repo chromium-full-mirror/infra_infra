@@ -164,7 +164,7 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 		logging.Infof(ctx, "successfully get %d alive cros bots", len(bots))
 
 		// Remove bots that are skipped through config
-		botsNotSkipped := filterBotBySkipHosts(skipHostList, bots)
+		botsNotSkipped := FilterBotBySkipHosts(skipHostList, bots)
 
 		if len(botsNotSkipped) == 0 {
 			logging.Infof(ctx, "No bots for audit")
@@ -224,7 +224,7 @@ func (tsi *TrackerServerImpl) PushRepairJobsForLabstations(ctx context.Context, 
 	logging.Infof(ctx, "successfully get %d alive idle labstation bots.", len(bots))
 
 	// Remove bots that are skipped through config
-	botsNotSkipped := filterBotBySkipHosts(cfg.GetParis().GetLabstationRepair().GetSkipHosts(), bots)
+	botsNotSkipped := FilterBotBySkipHosts(cfg.GetParis().GetLabstationRepair().GetSkipHosts(), bots)
 
 	if len(botsNotSkipped) == 0 {
 		logging.Infof(ctx, "No bots for repair labstations")
@@ -426,15 +426,14 @@ func simple3TimesRetry() retry.Factory {
 	}
 }
 
-func filterBotBySkipHosts(skipHostList []string, bots []*swarmingv2.BotInfo) []*swarmingv2.BotInfo {
-
+// FilterBotBySkipHosts removes bots that are skipped through config
+func FilterBotBySkipHosts(skipHostList []string, bots []*swarmingv2.BotInfo) []*swarmingv2.BotInfo {
 	if len(skipHostList) == 0 || len(bots) == 0 {
 		return bots
 	}
 
 	var availableBots []*swarmingv2.BotInfo
 	botsToSkipMap := make(map[string]bool)
-
 	for _, value := range skipHostList {
 		botsToSkipMap[value] = true
 	}
