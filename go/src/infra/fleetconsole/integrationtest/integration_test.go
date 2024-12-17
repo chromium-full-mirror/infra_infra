@@ -34,7 +34,7 @@ func TestPing(t *testing.T) {
 	assert.That(t, err, should.ErrLike(nil))
 	assert.Loosely(t, testServer, should.NotBeNil)
 
-	clientCtx := lucictx.SetLocalAuth(context.Background(), testServer.FakeClientRPCAuth())
+	clientCtx := lucictx.SetLocalAuth(ctx, testServer.FakeClientRPCAuth())
 
 	cli := clilib.Application(func(context.Context) context.Context {
 		return clientCtx
