@@ -4052,6 +4052,23 @@ func crosRepairActions() map[string]*Action {
 				"camerabox_tablet",
 			},
 		},
+		"Audit camera": {
+			Docs: []string{
+				"Check the cameras on DUT and update camera state accordingly",
+				"Timeout is 10 mins.",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_audit_camera",
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 600,
+			},
+			RecoveryActions: []string{
+				"Cold reset by servo and wait for ping",
+			},
+			AllowFailAfterRecovery: true,
+		},
 		"Check audio latency toolkit state": {
 			Docs: []string{
 				"Check the state of audio latency toolkit.",
