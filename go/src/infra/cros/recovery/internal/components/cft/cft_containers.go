@@ -26,7 +26,7 @@ func NetworkName(dut *tlw.Dut) string {
 		return "adb-network"
 	}
 	// Create unique network to avoid issues when parallel task removed network.
-	return "adb-network-" + dut.Name
+	return "paris-" + dut.Name
 }
 
 // ADBName generates predicable container name for ADB container.
