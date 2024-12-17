@@ -44,14 +44,12 @@ type fakeObjectIter struct {
 }
 
 func (f *fakeObjectIter) Next() (*storage.ObjectAttrs, error) {
-	for {
-		if f.i == len(f.data) {
-			return nil, iterator.Done
-		}
-		d := f.data[f.i]
-		f.i += 1
-		return &storage.ObjectAttrs{Name: d}, nil
+	if f.i == len(f.data) {
+		return nil, iterator.Done
 	}
+	d := f.data[f.i]
+	f.i += 1
+	return &storage.ObjectAttrs{Name: d}, nil
 }
 
 func createFakeObject() (io.ReadCloser, error) {
