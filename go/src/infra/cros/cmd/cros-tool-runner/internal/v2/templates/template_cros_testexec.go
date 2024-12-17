@@ -86,6 +86,11 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 		var tlsVars = []string{"DOCKER_CERT_PATH", "DOCKER_HOST", "DOCKER_TLS_VERIFY"}
 		envVars = append(envVars, tlsVars...)
 	}
+	// TODO: b/319321943 -- Remove Satlab specific logic after cros-servod completion
+	droneName := os.Getenv("DRONE_AGENT_HIVE")
+	if strings.Contains(droneName, "satlab") {
+		volumes = append(volumes, "/dev:/dev")
+	}
 
 	// Get GCE Metadata Server env vars
 	envVars = append(envVars, gceMetadataEnvVars()...)
