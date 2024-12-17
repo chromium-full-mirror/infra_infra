@@ -4,8 +4,6 @@
 
 syntax = "proto3";
 
-import "google/protobuf/duration.proto";
-
 package crosskylabadmin.config;
 
 option go_package = "infra/appengine/crosskylabadmin/internal/app/config";
@@ -14,8 +12,8 @@ option go_package = "infra/appengine/crosskylabadmin/internal/app/config";
 
 // Config is the configuration data served by luci-config for this app.
 message Config {
-  reserved 5, 6, 9;
-  reserved "inventory_provider", "inventory", "endpoint";
+  reserved 4, 5, 6, 9;
+  reserved "inventory_provider", "inventory", "endpoint", "cron";
   // AccessGroup is the luci-auth group controlling access to admin app APIs.
   string access_group = 1;
 
@@ -25,9 +23,6 @@ message Config {
 
   // Tasker contains configuration data specific to the Tasker API endpoints.
   Tasker tasker = 3;
-
-  // Cron contains the configuration data specific to cron jobs on this app.
-  Cron cron = 4;
 
   // RPCcontrol controls rpc traffic.
   RPCControl rpc_control = 7;
@@ -84,66 +79,27 @@ message Swarming {
 
 // Tasker contains configuration data specific to the Tasker API endpoints.
 message Tasker {
-  // BackgroundTaskExecutionTimeoutSecs is the execution timeout (in
-  // seconds) for background tasks created by tasker.
-  int64 background_task_execution_timeout_secs = 1;
-
-  // BackgroundTaskExpirationSecs is the expiration time (in seconds) for
-  // background tasks created by tasker.
-  int64 background_task_expiration_secs = 2;
-
-  // LogdogHost is the Logdog host to use for logging from the created tasks.
-  string logdog_host = 3;
-
-  // AdminTaskServiceAccount is the name of the service account to use for admin
-  // tasks.
-  string admin_task_service_account = 4;
-
-  // AdminTaskRealm is a LUCI realm name with ACLs for admin tasks.
-  string admin_task_realm = 5;
-
+  reserved 1, 2, 3, 4, 5;
+  reserved "background_task_execution_timeout_secs",
+      "background_task_expiration_secs", "logdog_host",
+      "admin_task_service_account", "admin_task_realm";
   // EnableSmartScheduling is a kill switch for the smart-scheduling feature.
   // Setting it to false or not setting it prevents the smart-scheduling logic from
   // affecting the behavior of CrOSSkylabAdmin.
   bool enable_smart_scheduling = 6;
 }
 
-// Cron contains the configuration data specific to cron jobs on this app.
-message Cron {
-  reserved 5;
-  reserved "pool_balancer";
-  // FleetAdminTaskPriority is the swarming task priority of created tasks.
-  //
-  // This must be numerically smaller (i.e. more important) than Skylab's test
-  // task priority range [49-255] and numerically larger than the minimum
-  // allowed Swarming priority (20) for non administrator users.
-  int64 fleet_admin_task_priority = 1;
-
-  // EnsureTasksCount is the number of background tasks maintained against
-  // each bot.
-  int32 ensure_tasks_count = 2;
-
-  // RepairIdleDuration is the duration for which a bot in the fleet must have
-  // been idle for a repair task to be created against it.
-  google.protobuf.Duration repair_idle_duration = 3;
-
-  // RepairAttemptDelayDuration is the time between successive attempts at
-  // repairing repair failed bots in the fleet.
-  google.protobuf.Duration repair_attempt_delay_duration = 4;
-}
-
 // next tag: 11
 message RPCControl {
+  reserved 1, 2, 4, 5, 6, 7;
+  reserved "disable_ensure_background_tasks",
+      "disable_ensure_critical_pools_healthy", "disable_refresh_bots",
+      "disable_refresh_inventory", "disable_trigger_repair_on_idle",
+      "disable_trigger_repair_on_repair_failed";
   // Configuration of if disabling some rpc calls. It's used in experimental
   // stage. Once an RPC call is verified to be working/useless, it will be
   // added/deleted.
-  bool disable_ensure_background_tasks = 1;
-  bool disable_ensure_critical_pools_healthy = 2;
   bool disable_push_bots_for_admin_tasks = 3;
-  bool disable_refresh_bots = 4;
-  bool disable_refresh_inventory = 5;
-  bool disable_trigger_repair_on_idle = 6;
-  bool disable_trigger_repair_on_repair_failed = 7;
   bool disable_push_labstations_for_repair = 8;
   bool disable_dump_stable_version_to_datastore = 9;
   bool disable_push_duts_for_admin_audit = 10;

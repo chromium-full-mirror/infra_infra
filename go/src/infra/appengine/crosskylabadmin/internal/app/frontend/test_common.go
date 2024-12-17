@@ -11,7 +11,6 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"google.golang.org/protobuf/types/known/durationpb"
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/common/logging"
@@ -105,16 +104,6 @@ func testingContext() context.Context {
 					AuditEnabled: true,
 				},
 			},
-		},
-		Tasker: &config.Tasker{
-			BackgroundTaskExecutionTimeoutSecs: 3600,
-			BackgroundTaskExpirationSecs:       300,
-		},
-		Cron: &config.Cron{
-			FleetAdminTaskPriority:     33,
-			EnsureTasksCount:           3,
-			RepairIdleDuration:         durationpb.New(10),
-			RepairAttemptDelayDuration: durationpb.New(10),
 		},
 		StableVersionConfig: &config.StableVersionConfig{
 			GerritHost:            "xxx-fake-gerrit-review.googlesource.com",
