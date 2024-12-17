@@ -69,7 +69,8 @@ func (c *NetworkList) Execute(ctx context.Context) (string, string, error) {
 		args = append(args, "--format", c.Format)
 	}
 	for _, name := range c.Names {
-		args = append(args, "--filter", "name="+name)
+		// Wrap name with ^ and $ for exact matching.
+		args = append(args, "--filter", "name=^"+name+"$")
 	}
 	return execute(ctx, dockerCmd, args)
 }
