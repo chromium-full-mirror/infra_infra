@@ -36,7 +36,7 @@ var GetStableVersionCmd = &subcommands.Command{
 		c.commonFlags.Register(&c.Flags)
 
 		c.Flags.StringVar(&c.hostname, "name", "", "Hostname which used to get version.")
-		c.Flags.StringVar(&c.deviceType, "type", "", "Type of device used to get version.")
+		c.Flags.StringVar(&c.deviceType, "device-type", "cros", "Type of the target device of testbed. Default: cros. Other values: androidos, camera_box_tablet, wifi_router, e.t.c.")
 		c.Flags.StringVar(&c.board, "board", "", "Name of the board used to get version.")
 		c.Flags.StringVar(&c.model, "model", "", "Name of the model used to get version.")
 		c.Flags.Var(utils.CSVString(&c.pools), "pools", "comma separated pools used to get version.")
@@ -95,12 +95,13 @@ func (c *getStableVersion) innerRun(a subcommands.Application, args []string, en
 		},
 	)
 	g := hostinfo.NewGetter(nil, invWithSVClient)
-
+	fmt.Printf("Searching version for device-type:%s\n", c.deviceType)
 	version, err := g.GetStableVersion(ctx, c.deviceType, c.hostname, c.board, c.model, c.pools)
 	if err != nil {
+		fmt.Printf("Try to change device-type:%q to different based on go/stable-version.\n", c.deviceType)
 		return err
 	}
-	fmt.Printf("Stable version for host:%s\n", c.hostname)
+	fmt.Printf("Found version for %s:%s\n", c.deviceType, c.hostname)
 	fmt.Printf("\t %s: %s\n", "OsVersion", version.GetOsVersion())
 	fmt.Printf("\t %s: %s\n", "OsImagePath", version.GetOsImagePath())
 	fmt.Printf("\t %s: %s\n", "FwRoVersion", version.GetFirmwareRoVersion())
