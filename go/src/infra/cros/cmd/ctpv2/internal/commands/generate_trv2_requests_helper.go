@@ -52,6 +52,7 @@ const (
 	// required.
 	// TODO (azrahman): revisit this.
 	DefaultTimeout = 8 * time.Hour // Intentionally put a large number for now so
+	Day            = 24 * time.Hour
 	// that reqs don't timeout due to this.
 
 	CtpRequestUIDTemplate = "TestPlanRuns/%d/%s"
