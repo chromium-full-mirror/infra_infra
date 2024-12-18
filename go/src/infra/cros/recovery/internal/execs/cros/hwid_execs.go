@@ -59,13 +59,6 @@ func matchHWIDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// TODO(b/280635852): Remove when stable versions upgraded.
-// Special script to read and set GBB removed in favore of futility.
-const (
-	legacyGBBReadFilename = "/usr/share/vboot/bin/get_gbb_flags.sh"
-	legacyGBBSetFilename  = "/usr/share/vboot/bin/set_gbb_flags.sh"
-)
-
 // updateHWIDFromInvExec updates HWID from inventory to host.
 //
 // HWID can be checkd on the DUT bu futility.
@@ -73,38 +66,13 @@ const (
 func updateHWIDFromInvExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
 	originalHwid := info.GetChromeos().GetHwid()
-	if _, gbbScriptErr := run(ctx, 15*time.Second, fmt.Sprintf("test -f %s", legacyGBBReadFilename)); gbbScriptErr == nil {
-		// TODO(b/280635852): Remove when stable versions upgraded.
-		tempFileName := fmt.Sprintf("/tmp/bios_%s.bin", info.GetActiveResource())
-		log.Debugf(ctx, "Update HWID from host: Try to read AP to file: %q", tempFileName)
-		if out, err := run(ctx, time.Minute, "flashrom", "-p", "internal", "-r", "-i", fmt.Sprintf("GBB:%s", tempFileName)); err != nil {
-			return errors.Annotate(err, "update HWID from host").Err()
-		} else {
-			log.Debugf(ctx, "Update HWID from host: read AP (output): %s", out)
-		}
-		// Update HWID to the file inside temp file.
-		log.Debugf(ctx, "Update HWID from host: update HWID %q in AP to file %q", originalHwid, tempFileName)
-		if out, err := run(ctx, time.Minute, "futility", "gbb", "--set", "--hwid", fmt.Sprintf("%q", originalHwid), tempFileName); err != nil {
-			return errors.Annotate(err, "update HWID from host").Err()
-		} else {
-			log.Debugf(ctx, "Update HWID from host: updated HWID in AP file (output): %s", out)
-		}
-		// Write updated AP file back to host.
-		log.Debugf(ctx, "Update HWID from host: flash AP file %q back", tempFileName)
-		if out, err := run(ctx, time.Minute, "flashrom", "-p", "internal", "-w", "-i", fmt.Sprintf("GBB:%s", tempFileName)); err != nil {
-			return errors.Annotate(err, "update HWID from host").Err()
-		} else {
-			log.Debugf(ctx, "Update HWID from host: AP file flashed to the host (output): %s", out)
-		}
-	} else {
-		// Update HWID to the AP firmware.
-		log.Debugf(ctx, "Update HWID from host: update HWID %q in AP firmware.", originalHwid)
-		if out, err := run(ctx, 3*time.Minute, "futility", "gbb", "--flash --set", "--hwid", fmt.Sprintf("%q", originalHwid)); err != nil {
-			return errors.Annotate(err, "update HWID from host").Err()
-		} else {
-			log.Debugf(ctx, "Update HWID from host: updated HWID in AP file (output): %s", out)
-		}
+	// Update HWID to the AP firmware.
+	log.Debugf(ctx, "Update HWID from host: update HWID %q in AP firmware.", originalHwid)
+	out, err := run(ctx, 3*time.Minute, "futility", "gbb", "--flash --set", "--hwid", fmt.Sprintf("%q", originalHwid))
+	if err != nil {
+		return errors.Annotate(err, "update HWID from host").Err()
 	}
+	log.Debugf(ctx, "Update HWID from host: updated HWID in AP file (output): %s", out)
 	return nil
 }
 

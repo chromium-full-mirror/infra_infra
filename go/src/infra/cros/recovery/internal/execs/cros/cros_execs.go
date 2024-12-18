@@ -200,14 +200,7 @@ func isBootedInSecureModeExec(ctx context.Context, info *execs.ExecInfo) error {
 	runTimeout := info.GetExecTimeout() - checkTimeout
 	// New CMD supported from R111-15306.0.0 of ChromeOS.
 	const readGbbCmd = "/usr/bin/futility gbb --get --flash --flags"
-	var out string
-	var err error
-	if _, err = run(ctx, checkTimeout, fmt.Sprintf("test -f %s", legacyGBBReadFilename)); err == nil {
-		// TODO(b/280635852): Remove when stable versions upgraded.
-		out, err = run(ctx, runTimeout, legacyGBBReadFilename)
-	} else {
-		out, err = run(ctx, runTimeout, readGbbCmd)
-	}
+	out, err := run(ctx, runTimeout, readGbbCmd)
 	if err != nil {
 		return errors.Annotate(err, "is booted in secure mode").Err()
 	}
@@ -410,13 +403,7 @@ func crosSetGbbFlagsExec(ctx context.Context, info *execs.ExecInfo) error {
 	runTimeout := info.GetExecTimeout() - checkTimeout
 	// New CMD supported from R111-15306.0.0 of ChromeOS.
 	const setGbbCmd = "/usr/bin/futility gbb --set --flash --flags %s"
-	var err error
-	if _, err = run(ctx, checkTimeout, fmt.Sprintf("test -f %s", legacyGBBSetFilename)); err == nil {
-		// TODO(b/280635852): Remove when stable versions upgraded.
-		_, err = run(ctx, runTimeout, fmt.Sprintf("%s %s", legacyGBBSetFilename, gbbHex))
-	} else {
-		_, err = run(ctx, runTimeout, fmt.Sprintf(setGbbCmd, gbbHex))
-	}
+	_, err := run(ctx, runTimeout, fmt.Sprintf(setGbbCmd, gbbHex))
 	return errors.Annotate(err, "cros set GBB flags").Err()
 }
 
