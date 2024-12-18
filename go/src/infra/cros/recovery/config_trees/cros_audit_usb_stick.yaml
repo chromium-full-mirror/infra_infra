@@ -6290,6 +6290,8 @@ plans:
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
                     - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:

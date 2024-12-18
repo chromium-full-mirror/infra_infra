@@ -406,6 +406,7 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Restoring HWID on the host from the inventory data.",
 				"Using recovery from the host as flashing firmware by servo is very slow.",
+				"HWID change will be checked on re-run.",
 			},
 			Dependencies: []string{
 				"Is a Chromebook",
@@ -416,7 +417,8 @@ func crosRepairActions() map[string]*Action {
 				"Sleep 1s",
 				"Wait to be SSHable (normal boot)",
 			},
-			ExecName: "cros_match_hwid_to_inventory",
+			ExecName:               "sample_pass",
+			AllowFailAfterRecovery: true,
 		},
 		"Set HWID of the DUT from inventory": {
 			Docs: []string{
@@ -1930,6 +1932,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is a Chromebook",
+				"Is Chrome based",
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
@@ -1948,6 +1951,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is a Chromebook",
+				"Is Chrome based",
 				"Pools required to be in Secure mode",
 			},
 			Dependencies: []string{
@@ -1978,12 +1982,11 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Missing HWID": {
 			Docs: []string{
-				"Verify if device missing HWID because deployment was missed.",
+				"Verify if device missing HWID because deployment was skipped.",
 			},
 			Conditions: []string{
 				"Is a Chromebook",
 				"Not Satlab device",
-				"Read OS version",
 				"Is HWID empty",
 			},
 			Dependencies: []string{
@@ -1999,7 +2002,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is a Chromebook",
-				"Read OS version",
 				"Is HWID known",
 			},
 			ExecName: "cros_match_hwid_to_inventory",
@@ -2010,12 +2012,12 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Missing serial-number": {
 			Docs: []string{
-				"Verify if device missing serial number because deployment was missed.",
+				"Verify if device missing serial number because deployment was skipped.",
 			},
 			Conditions: []string{
 				"Is a Chromebook",
+				"Is Chrome based",
 				"Not Satlab device",
-				"Read OS version",
 				"Is serial-number empty",
 			},
 			Dependencies: []string{
@@ -2029,7 +2031,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is a Chromebook",
-				"Read OS version",
+				"Is Chrome based",
 				"Is serial-number known",
 			},
 			ExecName: "cros_match_serial_number_inventory",
@@ -2139,6 +2141,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that internal storage is responsive",
 			},
 			Dependencies: []string{
+				"Is Chrome based",
 				"Device is SSHable",
 			},
 			ExecName: "cros_is_file_system_writable",

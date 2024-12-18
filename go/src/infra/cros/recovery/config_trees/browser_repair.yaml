@@ -16983,6 +16983,8 @@ plans:
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
                     - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
@@ -18416,6 +18418,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -18451,6 +18455,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -20291,6 +20297,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -20326,6 +20334,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -20762,6 +20772,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -20797,6 +20809,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -21234,6 +21248,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -21269,6 +21285,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -21706,6 +21724,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -21741,6 +21761,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -23631,6 +23653,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -24105,6 +24129,8 @@ plans:
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
                     - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
@@ -25538,6 +25564,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -25573,6 +25601,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -26416,6 +26446,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -27665,6 +27697,8 @@ plans:
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
                     - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
@@ -29098,6 +29132,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -29133,6 +29169,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -29546,6 +29584,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -30979,6 +31019,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -31014,6 +31056,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -31444,6 +31488,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -31479,6 +31525,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -31989,6 +32037,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -33238,6 +33288,8 @@ plans:
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
                     - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
@@ -34671,6 +34723,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -34706,6 +34760,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -35119,6 +35175,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -36552,6 +36610,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -36587,6 +36647,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -37017,6 +37079,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -37052,6 +37116,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -37562,6 +37628,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -37953,6 +38021,8 @@ plans:
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
                     - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
@@ -39386,6 +39456,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -39421,6 +39493,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -39982,6 +40056,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -40613,6 +40689,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -41066,6 +41144,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -41101,6 +41181,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -41550,6 +41632,8 @@ plans:
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
                     - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
@@ -42983,6 +43067,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -43018,6 +43104,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -43448,6 +43536,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -43852,6 +43942,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -43912,6 +44004,8 @@ plans:
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
                     - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
@@ -45345,6 +45439,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -45380,6 +45476,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -46183,6 +46281,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -47616,6 +47716,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -47651,6 +47753,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -48081,6 +48185,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -48116,6 +48222,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -48626,6 +48734,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -48661,6 +48771,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -49093,6 +49205,8 @@ plans:
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
                     - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
@@ -70381,6 +70495,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -71814,6 +71930,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -71849,6 +71967,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -72574,6 +72694,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -74007,6 +74129,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -74042,6 +74166,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -74880,6 +75006,8 @@ plans:
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
                     - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
@@ -76313,6 +76441,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -76348,6 +76478,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -76761,6 +76893,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -78194,6 +78328,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -78229,6 +78365,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -78659,6 +78797,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -78694,6 +78834,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -79276,6 +79418,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -79311,6 +79455,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -79834,6 +79980,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -79869,6 +80017,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -81605,6 +81755,8 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
                   dependencies:
                     - name: Internal storage is responsive
                       exec_name: cros_is_file_system_writable
@@ -81613,6 +81765,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -83046,6 +83200,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -83081,6 +83237,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -83519,6 +83677,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -83535,11 +83695,12 @@ plans:
                             - requests:PROVISION
                           docs:
                             - Remove a PROVISION repair-request.
-                    - name: Restore HWID from inventory
-                      exec_name: cros_match_hwid_to_inventory
+                    - name: Restore HWID from inventory (Allow to fail)
+                      exec_name: sample_pass
                       docs:
                         - Restoring HWID on the host from the inventory data.
                         - Using recovery from the host as flashing firmware by servo is very slow.
+                        - HWID change will be checked on re-run.
                       dependencies:
                         - name: Is a Chromebook (RUN_ONCE)
                           exec_name: dut_check_board
@@ -83623,6 +83784,8 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
                     - name: Pools required to be in Secure mode
                       exec_name: sample_fail
                       docs:
@@ -83648,6 +83811,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -85081,6 +85246,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -85116,6 +85283,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -85646,6 +85815,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -85665,7 +85836,7 @@ plans:
                 - name: Missing HWID
                   exec_name: sample_fail
                   docs:
-                    - Verify if device missing HWID because deployment was missed.
+                    - Verify if device missing HWID because deployment was skipped.
                   conditions:
                     - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
@@ -85685,23 +85856,6 @@ plans:
                             - regex:^satlab
                           docs:
                             - Verify that DUT name is belong Satlab.
-                    - name: Read OS version
-                      exec_name: cros_read_os_version
-                      docs:
-                        - Read and log current OS version.
-                      dependencies:
-                        - name: Internal storage is responsive
-                          exec_name: cros_is_file_system_writable
-                          exec_args:
-                            - paths:/mnt/stateful_partition,/var/tmp,/mnt/stateful_partition/encrypted
-                          docs:
-                            - Verify that internal storage is responsive
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                     - name: Is HWID empty (ALWAYS_RUN)
                       exec_name: sample_fail
                       docs:
@@ -85721,7 +85875,7 @@ plans:
                 - name: Missing serial-number
                   exec_name: sample_fail
                   docs:
-                    - Verify if device missing serial number because deployment was missed.
+                    - Verify if device missing serial number because deployment was skipped.
                   conditions:
                     - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
@@ -85730,6 +85884,8 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
                     - name: Not Satlab device
                       exec_name: sample_fail
                       docs:
@@ -85741,23 +85897,6 @@ plans:
                             - regex:^satlab
                           docs:
                             - Verify that DUT name is belong Satlab.
-                    - name: Read OS version
-                      exec_name: cros_read_os_version
-                      docs:
-                        - Read and log current OS version.
-                      dependencies:
-                        - name: Internal storage is responsive
-                          exec_name: cros_is_file_system_writable
-                          exec_args:
-                            - paths:/mnt/stateful_partition,/var/tmp,/mnt/stateful_partition/encrypted
-                          docs:
-                            - Verify that internal storage is responsive
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                     - name: Is serial-number empty (ALWAYS_RUN)
                       exec_name: sample_fail
                       docs:
@@ -85789,33 +85928,17 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                    - name: Read OS version
-                      exec_name: cros_read_os_version
-                      docs:
-                        - Read and log current OS version.
-                      dependencies:
-                        - name: Internal storage is responsive
-                          exec_name: cros_is_file_system_writable
-                          exec_args:
-                            - paths:/mnt/stateful_partition,/var/tmp,/mnt/stateful_partition/encrypted
-                          docs:
-                            - Verify that internal storage is responsive
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                     - name: Is HWID known (ALWAYS_RUN)
                       exec_name: dut_has_hwid
                       docs:
                         - Check whether the DUT information includes its HWID.
                   recoveries:
-                    - name: Restore HWID from inventory
-                      exec_name: cros_match_hwid_to_inventory
+                    - name: Restore HWID from inventory (Allow to fail)
+                      exec_name: sample_pass
                       docs:
                         - Restoring HWID on the host from the inventory data.
                         - Using recovery from the host as flashing firmware by servo is very slow.
+                        - HWID change will be checked on re-run.
                       dependencies:
                         - name: Is a Chromebook (RUN_ONCE)
                           exec_name: dut_check_board
@@ -85898,23 +86021,8 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                    - name: Read OS version
-                      exec_name: cros_read_os_version
-                      docs:
-                        - Read and log current OS version.
-                      dependencies:
-                        - name: Internal storage is responsive
-                          exec_name: cros_is_file_system_writable
-                          exec_args:
-                            - paths:/mnt/stateful_partition,/var/tmp,/mnt/stateful_partition/encrypted
-                          docs:
-                            - Verify that internal storage is responsive
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
+                    - name: Is Chrome based (ALWAYS_RUN)
+                      exec_name: cros_is_chrome_based
                     - name: Is serial-number known (ALWAYS_RUN)
                       exec_name: dut_has_serial_number
                       docs:
@@ -87383,6 +87491,8 @@ plans:
                           docs:
                             - Verify that internal storage is responsive
                           dependencies:
+                            - name: Is Chrome based (ALWAYS_RUN)
+                              exec_name: cros_is_chrome_based
                             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
@@ -87485,6 +87595,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -89102,6 +89214,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -89220,6 +89334,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -89250,6 +89366,8 @@ plans:
                               docs:
                                 - Verify that internal storage is responsive
                               dependencies:
+                                - name: Is Chrome based (ALWAYS_RUN)
+                                  exec_name: cros_is_chrome_based
                                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
@@ -96154,6 +96272,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -98522,6 +98642,8 @@ plans:
                       docs:
                         - Verify that internal storage is responsive
                       dependencies:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
                         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
@@ -99763,6 +99885,139 @@ plans:
               exec_name: cros_reset_provision_info
               docs:
                 - Reset all provision info.
+            - name: Missing HWID
+              exec_name: sample_fail
+              docs:
+                - Verify if device missing HWID because deployment was skipped.
+              conditions:
+                - name: Is a Chromebook (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Not Satlab device
+                  exec_name: sample_fail
+                  docs:
+                    - Verify that DUT name is not belong Satlab.
+                  conditions:
+                    - name: Is Satlab device
+                      exec_name: dut_regex_name_match
+                      exec_args:
+                        - regex:^satlab
+                      docs:
+                        - Verify that DUT name is belong Satlab.
+                - name: Is HWID empty (ALWAYS_RUN)
+                  exec_name: sample_fail
+                  docs:
+                    - Check whether the DUT information includes its HWID.
+                  conditions:
+                    - name: Is HWID known (ALWAYS_RUN)
+                      exec_name: dut_has_hwid
+                      docs:
+                        - Check whether the DUT information includes its HWID.
+              dependencies:
+                - name: 'Set state: needs_deploy'
+                  exec_name: dut_set_state
+                  exec_args:
+                    - state:needs_deploy
+                  docs:
+                    - The action set devices with request to be redeployed.
+            - name: Match HWID (Allow to fail)
+              exec_name: cros_match_hwid_to_inventory
+              docs:
+                - Match HWID to value in inventory
+                - Allowed to fail if HWID is not matched
+              conditions:
+                - name: Is a Chromebook (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Is HWID known (ALWAYS_RUN)
+                  exec_name: dut_has_hwid
+                  docs:
+                    - Check whether the DUT information includes its HWID.
+              recoveries:
+                - name: Restore HWID from inventory (Allow to fail)
+                  exec_name: sample_pass
+                  docs:
+                    - Restoring HWID on the host from the inventory data.
+                    - Using recovery from the host as flashing firmware by servo is very slow.
+                    - HWID change will be checked on re-run.
+                  dependencies:
+                    - name: Is a Chromebook (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:aurora,reven
+                        - invert_result:true
+                      docs:
+                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                    - name: Is HWID known (ALWAYS_RUN)
+                      exec_name: dut_has_hwid
+                      docs:
+                        - Check whether the DUT information includes its HWID.
+                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Verify that device is reachable by SSH.
+                        - Limited to 15 seconds.
+                    - name: Set HWID of the DUT from inventory (time:'4m0s')
+                      exec_name: cros_update_hwid_from_inventory_to_host
+                      docs:
+                        - Update HWID on the DUT by inventory data.
+                        - The logic used update FW by futility can take time.
+                      dependencies:
+                        - name: Disable software-controlled write-protect for 'internal' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
+                          exec_name: cros_disable_fprom_write_protect
+                          exec_args:
+                            - fprom:internal
+                          docs:
+                            - Disable write-protect fprom 'internal'.
+                          dependencies:
+                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Verify that device is reachable by SSH.
+                                - Limited to 15 seconds.
+                        - name: Disable software-controlled write-protect for 'ec' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
+                          exec_name: cros_disable_fprom_write_protect
+                          exec_args:
+                            - fprom:ec
+                          docs:
+                            - Disable write-protect fprom 'ec'.
+                          dependencies:
+                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Verify that device is reachable by SSH.
+                                - Limited to 15 seconds.
+                    - name: Simple reboot (ALWAYS_RUN)
+                      exec_name: cros_run_command
+                      exec_args:
+                        - host:dut
+                        - command:reboot
+                        - background:true
+                      docs:
+                        - Simple un-blocker reboot.
+                      dependencies:
+                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                          exec_name: cros_ssh
+                          docs:
+                            - Verify that device is reachable by SSH.
+                            - Limited to 15 seconds.
+                    - name: Sleep 1s (Allow to fail) (ALWAYS_RUN)
+                      exec_name: sample_sleep
+                      exec_args:
+                        - sleep:1
+                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Try to wait device to be sshable after the device being rebooted.
+                        - Waiting time 150 seconds.
         - name: All repair-requests resolved
           exec_name: dut_has_no_repair_requests
           docs:

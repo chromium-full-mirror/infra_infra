@@ -22,6 +22,8 @@ func androidActions(actions map[string]*Action) {
 				"Device Uptime",
 				"Has repair-request for re-provision",
 				"Reset provisioned info",
+				"Missing HWID",
+				"Match HWID",
 			},
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
