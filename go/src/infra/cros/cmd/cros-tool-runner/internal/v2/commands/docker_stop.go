@@ -23,3 +23,18 @@ func (c *DockerStop) Execute(ctx context.Context) (string, string, error) {
 	}
 	return stdout, stderr, err
 }
+
+// DockerRemove represents `docker rm`
+type DockerRemove struct {
+	ContainerName string
+}
+
+func (c *DockerRemove) Execute(ctx context.Context) (string, string, error) {
+	args := []string{"rm", c.ContainerName}
+	startTime := time.Now()
+	stdout, stderr, err := execute(ctx, dockerCmd, args)
+	if err == nil {
+		monitorTime(c, startTime)
+	}
+	return stdout, stderr, err
+}

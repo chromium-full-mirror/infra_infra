@@ -186,12 +186,11 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 	if pullErr := s.pullImage(ctx, request.ContainerImage); pullErr != nil {
 		log.Printf("warning: error when pulling image: %s", pullErr)
 	}
-	// Stop previous started container if was not removed before.
-	if stopErr := s.stopContainer(ctx, request.Name); stopErr != nil {
-		log.Printf("warning: error when try to stop container %q: %s", request.Name, stopErr)
-	} else {
-		log.Printf("Stopped previous running container %q", request.Name)
-	}
+	// Stop and/or remove the previously running container if it has not been removed previously.
+	// We can't just delete a running container, so let's try to stop it first.
+	_ = s.stopContainer(ctx, request.Name)
+	_ = s.removeContainer(ctx, request.Name)
+
 	cmd := commands.DockerRun{StartContainerRequest: request}
 	id, stderr, err := s.executor.Execute(ctx, &cmd)
 	if err != nil && stderr != "" {
@@ -272,9 +271,44 @@ func (s *ContainerServerImpl) stopContainer(ctx context.Context, containerID str
 		})
 	}
 	if err != nil {
+		log.Printf("Stop container failed: %s\n", err)
 		return err
 	}
 	log.Printf("Success: stopped container %q\n", containerID)
+	return nil
+}
+
+// removeContainer removes container by name or id.
+func (s *ContainerServerImpl) removeContainer(ctx context.Context, containerID string) error {
+	if containerID == "" {
+		log.Printf("Attempt to remove container without Id")
+		return nil
+	}
+	log.Printf("Remove container: %s\n", containerID)
+	cmd := commands.DockerRemove{ContainerName: containerID}
+	stdout, stderr, err := s.executor.Execute(ctx, &cmd)
+	if err != nil && stdout == "" && stderr != "" {
+		return utils.toStatusErrorWithMapper(stderr, func(s string) codes.Code {
+			switch {
+			// docker error
+			case strings.Contains(s, "denied on resource"):
+				fallthrough
+			// podman error
+			case strings.Contains(s, "failed authentication"):
+				return codes.PermissionDenied
+			// common error string (podman lower case and docker is upper case)
+			case strings.Contains(strings.ToLower(s), "no such container"):
+				return codes.NotFound
+			default:
+				return codes.Unknown
+			}
+		})
+	}
+	if err != nil {
+		log.Printf("Stop container failed: %s\n", err)
+		return err
+	}
+	log.Printf("Success: removed container %q\n", containerID)
 	return nil
 }
 

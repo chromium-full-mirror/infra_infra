@@ -179,6 +179,7 @@ func TestStartContainer_pullError_ignored(t *testing.T) {
 	}
 	commands := []string{
 		"*commands.DockerStop",
+		"*commands.DockerRemove",
 		"*commands.DockerRun",
 	}
 	checkExecutedCommands(commands, &executor, t)
@@ -198,6 +199,28 @@ func TestStartContainer_stopError_ignored(t *testing.T) {
 	}
 	commands := []string{
 		"*commands.DockerPull",
+		"*commands.DockerRemove",
+		"*commands.DockerRun",
+	}
+	checkExecutedCommands(commands, &executor, t)
+}
+
+func TestStartContainer_removeError_ignored(t *testing.T) {
+	errorMapping := make(map[string]string)
+	errorMapping["*commands.DockerRemove"] = "some error"
+	executor := mockExecutor{commandsToThrowError: errorMapping}
+	service := getService(&executor)
+	_, err := service.StartContainer(context.Background(), &api.StartContainerRequest{
+		Name:           "my-container",
+		ContainerImage: "us-docker.pkg.dev/cros-registry/test-services/cros-dut:8811903382633993457",
+		StartCommand:   []string{"cros-dut"},
+	})
+	if err != nil {
+		t.Fatalf("Expect stop error to be ignored")
+	}
+	commands := []string{
+		"*commands.DockerPull",
+		"*commands.DockerStop",
 		"*commands.DockerRun",
 	}
 	checkExecutedCommands(commands, &executor, t)
@@ -219,6 +242,7 @@ func TestStartContainer_runError(t *testing.T) {
 	commands := []string{
 		"*commands.DockerPull",
 		"*commands.DockerStop",
+		"*commands.DockerRemove",
 	}
 	checkExecutedCommands(commands, &executor, t)
 }
@@ -237,6 +261,7 @@ func TestStartContainer_success(t *testing.T) {
 	commands := []string{
 		"*commands.DockerPull",
 		"*commands.DockerStop",
+		"*commands.DockerRemove",
 		"*commands.DockerRun",
 	}
 	checkExecutedCommands(commands, &executor, t)
@@ -270,6 +295,7 @@ func TestStackCommands(t *testing.T) {
 		"*commands.NetworkList",
 		"*commands.DockerPull",
 		"*commands.DockerStop",
+		"*commands.DockerRemove",
 		"*commands.DockerRun",
 	}
 	checkExecutedCommands(commands, &executor, t)
