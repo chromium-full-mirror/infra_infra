@@ -142,6 +142,10 @@ const (
 
 	// Build Experiments
 	EnableXTSArchiverExperiment = "chromeos.cros_infra_config.enable_xts_archiver"
+
+	// Injectables
+	XTSArchiverResultsGCS = "xts-archiver-results-gcs"
+	XTSArchiverAPFEGCS    = "xts-archiver-apfe-gcs"
 )
 
 var (

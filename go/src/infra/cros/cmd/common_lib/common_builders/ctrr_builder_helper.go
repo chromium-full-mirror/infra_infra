@@ -35,7 +35,7 @@ var (
 )
 
 // buildDynamicRequest constructs the base DynamicTrv2Builder for DynamicTrv2FromCft.
-func (builder *DynamicTrv2FromCft) buildDynamicRequest(firestoreDBName string, commonConfig *skylab_test_runner.CommonConfig, botDims []*buildbucketpb.StringPair, buildExperiments []string, isALRun bool) *DynamicTrv2Builder {
+func (builder *DynamicTrv2FromCft) buildDynamicRequest(firestoreDBName string, botDims []*buildbucketpb.StringPair, buildExperiments []string, isALRun bool) *DynamicTrv2Builder {
 	keyvals := builder.Cft.GetAutotestKeyvals()
 	if keyvals == nil {
 		keyvals = make(map[string]string)
@@ -60,7 +60,6 @@ func (builder *DynamicTrv2FromCft) buildDynamicRequest(firestoreDBName string, c
 		OrderedTaskBuilders:  []DynamicTaskBuilder{},
 		FirestoreDBName:      firestoreDBName,
 		IsALRun:              isALRun,
-		CommonConfig:         commonConfig,
 		BotDims:              botDims,
 		BuildExperiments:     buildExperiments,
 	}
@@ -833,9 +832,6 @@ func DefaultDynamicGcsPublishTask(builder *DynamicTrv2Builder) []*api.CrosTestRu
 			Product:              product,
 			Build:                builder.BuildString,
 			ParentSwarmingTaskId: builder.Keyvals["parent_job_id"],
-			// TODO: b/379711782 - Get the GCS paths from common config
-			ResultsGcsPrefix: "gs://chromeos-cts-staging",
-			ApfeGcsPrefix:    "gs://chromeos-cts-staging",
 		},
 		EnableXtsArchiver: slices.Contains(builder.BuildExperiments, common.EnableXTSArchiverExperiment),
 	})
@@ -858,6 +854,14 @@ func DefaultDynamicGcsPublishTask(builder *DynamicTrv2Builder) []*api.CrosTestRu
 					{
 						Key:   "publishRequest.metadata.gcsPath.path",
 						Value: "gcs-url",
+					},
+					{
+						Key:   "publishRequest.metadata.xtsArchiverMetadata.resultsGcsPrefix",
+						Value: common.XTSArchiverResultsGCS,
+					},
+					{
+						Key:   "publishRequest.metadata.xtsArchiverMetadata.apfeGcsPrefix",
+						Value: common.XTSArchiverAPFEGCS,
 					},
 				}, builder.Is3DRun),
 			},

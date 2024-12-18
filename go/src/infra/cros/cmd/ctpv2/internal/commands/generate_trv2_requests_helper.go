@@ -32,6 +32,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/buildbucket/protoutil"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
@@ -700,6 +701,7 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 
 	primary, companions := createDutModelFromTargets(trHelper.primaryTarget, trHelper.secondaryTargets)
 	deadline := time.Now().UTC().Add(trHelper.maxDuration)
+	botDims, _ := protoutil.BotDimensions(trHelper.build.Build())
 	builder := common_builders.DynamicTrv2Builder{
 		ParentBuildId:        trHelper.currBBID,
 		ParentRequestUid:     trHelper.parentRequestUID,
@@ -720,6 +722,9 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*ap
 			common_builders.DefaultDynamicRdbPublishTaskWrapper(gsSourcePath, false, trHelper.is3DRun),
 			common_builders.DefaultDynamicGcsPublishTask,
 		},
+		IsALRun:          trHelper.isAlRun,
+		BotDims:          botDims,
+		BuildExperiments: trHelper.build.Build().GetInput().GetExperiments(),
 	}
 
 	dynamicRequest, err := builder.BuildRequest(ctx, trHelper.isAlRun)

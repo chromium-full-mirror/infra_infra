@@ -88,7 +88,7 @@ func HwExecution() {
 			// If the request is a CrosTestRunner non-dynamic request with translation flag...
 			botDims, _ := protoutil.BotDimensions(st.Build())
 			buildExperiments := st.Build().GetInput().GetExperiments()
-			crosTestRunnerRequest, err = common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx, input.IsAlRun, isPartnerRun, input.CommonConfig, botDims, buildExperiments)
+			crosTestRunnerRequest, err = common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx, input.IsAlRun, isPartnerRun, botDims, buildExperiments)
 			if err == nil {
 				skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st, input.IsAlRun)
 			}
@@ -415,6 +415,11 @@ func executeHwTestsV2(
 	if env != "" {
 		common.LogWarningIfErr(ctx, sk.Injectables.Set("env", "ENV_"+env))
 	}
+
+	// xTS Archiver request
+	// TODO: b/379711782 - Get the GCS paths from common config
+	common.LogWarningIfErr(ctx, sk.Injectables.Set(common.XTSArchiverResultsGCS, "gs://chromeos-cts-staging"))
+	common.LogWarningIfErr(ctx, sk.Injectables.Set(common.XTSArchiverAPFEGCS, "gs://chromeos-cts-staging"))
 
 	populateRequestQueues(sk, req)
 
