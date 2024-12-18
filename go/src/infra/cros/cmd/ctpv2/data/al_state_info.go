@@ -109,7 +109,7 @@ func updateAllNodes(ctx context.Context, service *androidapi.Service, head *andr
 			return err
 		}
 
-		if strings.ToLower(child.GetWorkUnit().State) != strings.ToLower(androidapi.WorkUnitCompleted.String()) {
+		if !strings.EqualFold(child.GetWorkUnit().State, androidapi.WorkUnitCompleted.String()) {
 			logging.Infof(ctx, "%s-%s: child %s-%s in state %s, allPassed set to FALSE\n", head.GetWorkUnit().Id, head.GetWorkUnit().Name, child.GetWorkUnit().Id, child.GetWorkUnit().Name, child.GetWorkUnit().State)
 			allPassed = false
 		}
