@@ -1365,6 +1365,26 @@ func (mr *MockFleetClientMockRecorder) GetDeviceData(ctx, in interface{}, opts .
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeviceData", reflect.TypeOf((*MockFleetClient)(nil).GetDeviceData), varargs...)
 }
 
+// GetDeviceLabels mocks base method.
+func (m *MockFleetClient) GetDeviceLabels(ctx context.Context, in *ufspb1.GetDeviceLabelsRequest, opts ...grpc.CallOption) (*ufspb1.GetDeviceLabelsResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "GetDeviceLabels", varargs...)
+	ret0, _ := ret[0].(*ufspb1.GetDeviceLabelsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDeviceLabels indicates an expected call of GetDeviceLabels.
+func (mr *MockFleetClientMockRecorder) GetDeviceLabels(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeviceLabels", reflect.TypeOf((*MockFleetClient)(nil).GetDeviceLabels), varargs...)
+}
+
 // GetDrac mocks base method.
 func (m *MockFleetClient) GetDrac(ctx context.Context, in *ufspb1.GetDracRequest, opts ...grpc.CallOption) (*ufspb.Drac, error) {
 	m.ctrl.T.Helper()
@@ -1863,6 +1883,26 @@ func (mr *MockFleetClientMockRecorder) ListDefaultWifis(ctx, in interface{}, opt
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDefaultWifis", reflect.TypeOf((*MockFleetClient)(nil).ListDefaultWifis), varargs...)
+}
+
+// ListDeviceLabels mocks base method.
+func (m *MockFleetClient) ListDeviceLabels(ctx context.Context, in *ufspb1.ListDeviceLabelsRequest, opts ...grpc.CallOption) (*ufspb1.ListDeviceLabelsResponse, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListDeviceLabels", varargs...)
+	ret0, _ := ret[0].(*ufspb1.ListDeviceLabelsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListDeviceLabels indicates an expected call of ListDeviceLabels.
+func (mr *MockFleetClientMockRecorder) ListDeviceLabels(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeviceLabels", reflect.TypeOf((*MockFleetClient)(nil).ListDeviceLabels), varargs...)
 }
 
 // ListDracs mocks base method.
@@ -3793,6 +3833,21 @@ func (mr *MockFleetServerMockRecorder) GetDeviceData(arg0, arg1 interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeviceData", reflect.TypeOf((*MockFleetServer)(nil).GetDeviceData), arg0, arg1)
 }
 
+// GetDeviceLabels mocks base method.
+func (m *MockFleetServer) GetDeviceLabels(arg0 context.Context, arg1 *ufspb1.GetDeviceLabelsRequest) (*ufspb1.GetDeviceLabelsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetDeviceLabels", arg0, arg1)
+	ret0, _ := ret[0].(*ufspb1.GetDeviceLabelsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetDeviceLabels indicates an expected call of GetDeviceLabels.
+func (mr *MockFleetServerMockRecorder) GetDeviceLabels(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDeviceLabels", reflect.TypeOf((*MockFleetServer)(nil).GetDeviceLabels), arg0, arg1)
+}
+
 // GetDrac mocks base method.
 func (m *MockFleetServer) GetDrac(arg0 context.Context, arg1 *ufspb1.GetDracRequest) (*ufspb.Drac, error) {
 	m.ctrl.T.Helper()
@@ -4166,6 +4221,21 @@ func (m *MockFleetServer) ListDefaultWifis(arg0 context.Context, arg1 *ufspb1.Li
 func (mr *MockFleetServerMockRecorder) ListDefaultWifis(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDefaultWifis", reflect.TypeOf((*MockFleetServer)(nil).ListDefaultWifis), arg0, arg1)
+}
+
+// ListDeviceLabels mocks base method.
+func (m *MockFleetServer) ListDeviceLabels(arg0 context.Context, arg1 *ufspb1.ListDeviceLabelsRequest) (*ufspb1.ListDeviceLabelsResponse, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListDeviceLabels", arg0, arg1)
+	ret0, _ := ret[0].(*ufspb1.ListDeviceLabelsResponse)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListDeviceLabels indicates an expected call of ListDeviceLabels.
+func (mr *MockFleetServerMockRecorder) ListDeviceLabels(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListDeviceLabels", reflect.TypeOf((*MockFleetServer)(nil).ListDeviceLabels), arg0, arg1)
 }
 
 // ListDracs mocks base method.

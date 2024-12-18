@@ -2322,3 +2322,37 @@ func (s *DecoratedFleet) DeleteDefaultWifi(ctx context.Context, req *DeleteDefau
 	}
 	return
 }
+
+func (s *DecoratedFleet) GetDeviceLabels(ctx context.Context, req *GetDeviceLabelsRequest) (rsp *GetDeviceLabelsResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "GetDeviceLabels", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.GetDeviceLabels(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "GetDeviceLabels", rsp, err)
+	}
+	return
+}
+
+func (s *DecoratedFleet) ListDeviceLabels(ctx context.Context, req *ListDeviceLabelsRequest) (rsp *ListDeviceLabelsResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "ListDeviceLabels", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.ListDeviceLabels(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "ListDeviceLabels", rsp, err)
+	}
+	return
+}
