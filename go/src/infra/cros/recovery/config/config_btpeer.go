@@ -104,7 +104,8 @@ func btpeerRepairPlan() *Plan {
 					"Fetch installed chameleond bundle commit from btpeer",
 					"Btpeer has expected chameleond bundle installed",
 				},
-				ExecName: "sample_pass",
+				ExecName:      "sample_pass",
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Fetch btpeer chameleond release config from GCS": {
 				Docs: []string{

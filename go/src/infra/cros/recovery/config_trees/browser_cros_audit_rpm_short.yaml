@@ -2,21 +2,15 @@ plans:
     - name: cros_base
       criticalactions:
         - name: 'Set state: needs_repair (''dut_set_state'')'
-        - name: DUT has board info ('dut_has_board_name') (RUN_ONCE)
-        - name: DUT has model info ('dut_has_model_name') (RUN_ONCE)
         - name: Start ADB-base ('ctr_start_adb_container')
           conditions:
             - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
             - name: CrosToolRunner is up ('ctr_is_up')
-          dependencies:
-            - name: Stop ADB-base (Allow to fail) ('ctr_stop_adb_container')
         - name: Start Servo-Nexus ('ctr_servo_nexus_start_container')
           conditions:
             - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
             - name: Testbed has Servo ('dut_servo_host_present') (RUN_ONCE)
             - name: CrosToolRunner is up ('ctr_is_up')
-          dependencies:
-            - name: Stop Servo-Nexus (Allow to fail) ('ctr_servo_nexus_stop_container')
     - name: servo (Allow to fail)
       criticalactions:
         - name: Set state:MISSING_CONFIG ('servo_set_servo_state') (ALWAYS_RUN)
@@ -2129,10 +2123,10 @@ plans:
                 - name: 'RPM set state: WRONG_CONFIG (''set_rpm_state'')'
     - name: close (Allow to fail)
       criticalactions:
-        - name: Close Servo-host (Allow to fail) ('sample_pass')
+        - name: Close Servo-host (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
           conditions:
             - name: Servo-host known ('dut_servo_host_present')
-            - name: Servo-host is sshable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+            - name: Servo-host is sshable ('cros_ssh') (RUN_ONCE) (time:'15s')
           dependencies:
             - name: Copy messages from servo-host (Allow to fail) ('cros_copy_to_logs')
               conditions:
@@ -2154,12 +2148,6 @@ plans:
             - name: Turn off servo usbkey power (Allow to fail) ('servo_set') (ALWAYS_RUN)
               conditions:
                 - name: Servo-host known ('dut_servo_host_present')
-            - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
+            - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
               dependencies:
-                - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
-                  dependencies:
-                    - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-        - name: Stop CFT containers ('sample_pass')
-          dependencies:
-            - name: Stop Servo-Nexus (Allow to fail) ('ctr_servo_nexus_stop_container')
-            - name: Stop ADB-base (Allow to fail) ('ctr_stop_adb_container')
+                - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')

@@ -7,10 +7,6 @@ plans:
             - state:needs_deploy
           docs:
             - The action set devices with request to be redeployed.
-        - name: DUT has board info (RUN_ONCE)
-          exec_name: dut_has_board_name
-        - name: DUT has model info (RUN_ONCE)
-          exec_name: dut_has_model_name
         - name: Start ADB-base
           exec_name: ctr_start_adb_container
           docs:
@@ -25,11 +21,6 @@ plans:
               docs:
                 - 'Verify that cros-tool-runner service is up and running, '
                 - the tool expected to start as part of system preparation.
-          dependencies:
-            - name: Stop ADB-base (Allow to fail)
-              exec_name: ctr_stop_adb_container
-              docs:
-                - Stop adb-base container
         - name: Start Servo-Nexus
           exec_name: ctr_servo_nexus_start_container
           docs:
@@ -46,11 +37,6 @@ plans:
               docs:
                 - 'Verify that cros-tool-runner service is up and running, '
                 - the tool expected to start as part of system preparation.
-          dependencies:
-            - name: Stop Servo-Nexus (Allow to fail)
-              exec_name: ctr_servo_nexus_stop_container
-              docs:
-                - Stop Servo-Nexus container
     - name: servo_fw_update
       criticalactions:
         - name: Set state:MISSING_CONFIG (ALWAYS_RUN)
@@ -6553,7 +6539,7 @@ plans:
             - state:WORKING
     - name: cros_deploy
       criticalactions:
-        - name: 'Set state: needs_deploy (RUN_ONCE)'
+        - name: 'Set state: needs_deploy'
           exec_name: dut_set_state
           exec_args:
             - state:needs_deploy
@@ -39036,11 +39022,6 @@ plans:
                           docs:
                             - 'Verify that cros-tool-runner service is up and running, '
                             - the tool expected to start as part of system preparation.
-                      dependencies:
-                        - name: Stop Foil-provision (Allow to fail)
-                          exec_name: ctr_stop_foil_provision_container
-                          docs:
-                            - Stop Foil-provision container
                     - name: Foil-provision Setup service
                       exec_name: ctr_foil_provision_setup_service
                       docs:
@@ -98696,7 +98677,7 @@ plans:
                           docs:
                             - Check whether the DUT information includes its HWID.
                   dependencies:
-                    - name: 'Set state: needs_deploy (RUN_ONCE)'
+                    - name: 'Set state: needs_deploy'
                       exec_name: dut_set_state
                       exec_args:
                         - state:needs_deploy
@@ -98754,7 +98735,7 @@ plans:
                             - 'Check whether the DUT information includes its '
                             - serial number.
                   dependencies:
-                    - name: 'Set state: needs_deploy (RUN_ONCE)'
+                    - name: 'Set state: needs_deploy'
                       exec_name: dut_set_state
                       exec_args:
                         - state:needs_deploy
@@ -109696,11 +109677,6 @@ plans:
                           docs:
                             - 'Verify that cros-tool-runner service is up and running, '
                             - the tool expected to start as part of system preparation.
-                      dependencies:
-                        - name: Stop Foil-provision (Allow to fail)
-                          exec_name: ctr_stop_foil_provision_container
-                          docs:
-                            - Stop Foil-provision container
                     - name: Foil-provision Setup service
                       exec_name: ctr_foil_provision_setup_service
                       docs:
@@ -110447,11 +110423,6 @@ plans:
                           docs:
                             - 'Verify that cros-tool-runner service is up and running, '
                             - the tool expected to start as part of system preparation.
-                      dependencies:
-                        - name: Stop Foil-provision (Allow to fail)
-                          exec_name: ctr_stop_foil_provision_container
-                          docs:
-                            - Stop Foil-provision container
                     - name: Foil-provision Setup service
                       exec_name: ctr_foil_provision_setup_service
                       docs:
@@ -111157,11 +111128,6 @@ plans:
                           docs:
                             - 'Verify that cros-tool-runner service is up and running, '
                             - the tool expected to start as part of system preparation.
-                      dependencies:
-                        - name: Stop Foil-provision (Allow to fail)
-                          exec_name: ctr_stop_foil_provision_container
-                          docs:
-                            - Stop Foil-provision container
                     - name: Foil-provision Setup service
                       exec_name: ctr_foil_provision_setup_service
                       docs:
@@ -112806,18 +112772,19 @@ plans:
                 - Reset DUT-state-reason for good DUT as it becomes stale.
     - name: chameleon (Allow to fail)
       criticalactions:
-        - name: Mark as bad
+        - name: Mark as bad (RUN_ONCE)
           exec_name: chameleon_state_broken
         - name: Device is pingable (time:'15s')
           exec_name: cros_ping
           recoveries:
-            - name: Chameleon RPM power cycle
-              exec_name: sample_pass
+            - name: Chameleon RPM power cycle (ALWAYS_RUN) (time:'2m30s')
+              exec_name: cros_ssh
               docs:
                 - Power cycle chameleon if rpm exists
                 - Ensure chameleon is SSHable on after power cycle
+                - Try to wait device to be sshable after the device being rebooted.
               conditions:
-                - name: Has chameleon rpm info
+                - name: Has chameleon rpm info (RUN_ONCE)
                   exec_name: device_has_rpm_info
                   exec_args:
                     - device_type:chameleon
@@ -112830,18 +112797,13 @@ plans:
                     - device_type:chameleon
                   docs:
                     - Run rpm power cycle on chameleon
-                - name: Wait for SSHable (after rpm cycle) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Try to wait device to be sshable after the device being rebooted.
-                    - Waiting time 150 seconds.
         - name: cros_ssh
           exec_name: cros_ssh
         - name: Update AudioBox JackPlugger State (Allow to fail)
           exec_name: chameleon_check_audiobox_jackplugger
           docs:
             - Update the status of AudioBox JackPlugger.
-        - name: Mark as good
+        - name: Mark as good (RUN_ONCE)
           exec_name: chameleon_state_working
     - name: bluetooth_peer (Allow to fail)
       criticalactions:
@@ -113322,7 +113284,7 @@ plans:
             - Set the WifiRouter state to WORKING
     - name: human_motion_robot (Allow to fail)
       criticalactions:
-        - name: Set state:BROKEN (time:'15s')
+        - name: Set state:BROKEN (RUN_ONCE) (time:'15s')
           exec_name: set_hmr_state
           exec_args:
             - state:BROKEN
@@ -113334,7 +113296,7 @@ plans:
           exec_name: check_hmr_state
           docs:
             - Check the state of Touchhost of HMR with XMLRPC API call GetErrors.
-        - name: Set state:WORKING (time:'15s')
+        - name: Set state:WORKING (RUN_ONCE) (time:'15s')
           exec_name: set_hmr_state
           exec_args:
             - state:WORKING
@@ -113485,12 +113447,15 @@ plans:
                 - Verify that DUT is not in a pool that runs cellular tests
             - name: has_cellular_info
               exec_name: has_cellular_info
-        - name: Close Servo-host (Allow to fail)
-          exec_name: sample_pass
+        - name: Close Servo-host (Allow to fail) (ALWAYS_RUN)
+          exec_name: servo_host_servod_stop
+          docs:
+            - Stop the servod daemon.
+            - Collect all logs and files from the host.
           conditions:
             - name: Servo-host known
               exec_name: dut_servo_host_present
-            - name: Servo-host is sshable (ALWAYS_RUN) (time:'15s')
+            - name: Servo-host is sshable (RUN_ONCE) (time:'15s')
               exec_name: cros_ssh
               exec_args:
                 - device_type:servo
@@ -113562,25 +113527,8 @@ plans:
               conditions:
                 - name: Servo-host known
                   exec_name: dut_servo_host_present
-            - name: Stop servod (Allow to fail) (ALWAYS_RUN)
-              exec_name: servo_host_servod_stop
-              docs:
-                - Stop the servod daemon.
-                - Allowed to fail as can be run when servod is not running.
+            - name: Save UART capture (Allow to fail)
+              exec_name: servod_save_uart_capture
               dependencies:
-                - name: Save UART capture (Allow to fail)
-                  exec_name: servod_save_uart_capture
-                  dependencies:
-                    - name: Stop UART capture (Allow to fail)
-                      exec_name: servod_stop_uart_capture
-        - name: Stop CFT containers
-          exec_name: sample_pass
-          dependencies:
-            - name: Stop Servo-Nexus (Allow to fail)
-              exec_name: ctr_servo_nexus_stop_container
-              docs:
-                - Stop Servo-Nexus container
-            - name: Stop ADB-base (Allow to fail)
-              exec_name: ctr_stop_adb_container
-              docs:
-                - Stop adb-base container
+                - name: Stop UART capture (Allow to fail)
+                  exec_name: servod_stop_uart_capture

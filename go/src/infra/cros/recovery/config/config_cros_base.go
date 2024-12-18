@@ -25,8 +25,6 @@ func crosBasePlan(pt basePlanType) *Plan {
 		ca = append(ca, "Set state: needs_repair")
 	}
 	ca = append(ca,
-		"DUT has board info",
-		"DUT has model info",
 		"Start ADB-base",
 		"Start Servo-Nexus",
 	)
@@ -37,40 +35,9 @@ func crosBasePlan(pt basePlanType) *Plan {
 }
 
 func crosBaseActions() map[string]*Action {
-	actions := map[string]*Action{
-		"Set state: needs_deploy": {
-			Docs: []string{
-				"The action set devices with request to be redeployed.",
-			},
-			ExecName: "dut_set_state",
-			ExecExtraArgs: []string{
-				"state:needs_deploy",
-			},
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
-		"Set state: repair_failed": {
-			Docs: []string{
-				"The action set devices with state means that repair tsk did not success to recover the devices.",
-			},
-			ExecName: "dut_set_state",
-			ExecExtraArgs: []string{
-				"state:repair_failed",
-			},
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
-		"Set state: needs_repair": {
-			Docs: []string{
-				"The action set devices with state means that DUT requires repair.",
-			},
-			ExecName: "dut_set_state",
-			ExecExtraArgs: []string{
-				"state:needs_repair",
-			},
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
-	}
+	actions := map[string]*Action{}
 	addCrosCftContainers(actions)
 	addEnvActions(actions)
-	addDUTActions(actions)
+	addStateActions(actions)
 	return actions
 }

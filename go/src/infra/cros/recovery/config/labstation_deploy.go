@@ -16,7 +16,7 @@ func LabstationDeployConfig() *Configuration {
 	afterLogName, afterLogActions := labstationCollectionLogs("after")
 
 	criticalActions := []string{
-		"dut_state_needs_deploy",
+		"Set state: needs_deploy",
 		"check_host_info",
 		beforeLogName,
 		"Device is SSHable",
@@ -26,7 +26,7 @@ func LabstationDeployConfig() *Configuration {
 		"Remove reboot requests from host",
 		"Update provisioned info",
 		"Validate RPM info",
-		"dut_state_ready",
+		"Set state: ready",
 		afterLogName,
 	}
 	actions := map[string]*Action{
@@ -34,23 +34,24 @@ func LabstationDeployConfig() *Configuration {
 			Docs: []string{
 				"Check basic info for deployment.",
 			},
-			ExecName: "sample_pass",
 			Dependencies: []string{
-				"dut_has_name",
 				"dut_has_board_name",
 				"dut_has_model_name",
 			},
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			RunControl:    RunControl_RUN_ONCE,
 		},
 		"Update inventory info": {
 			Docs: []string{
 				"Updating device info in inventory.",
 			},
-			ExecName: "sample_pass",
 			Dependencies: []string{
-				"cros_ssh",
 				"cros_update_hwid_to_inventory",
 				"cros_update_serial_number_inventory",
 			},
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Installed OS is stable": {
 			Docs: []string{
@@ -165,6 +166,7 @@ func LabstationDeployConfig() *Configuration {
 		}
 		actions[k] = v
 	}
+	addStateActions(actions)
 	return &Configuration{
 		PlanNames: []string{PlanCrOS},
 		Plans: map[string]*Plan{

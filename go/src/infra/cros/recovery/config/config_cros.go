@@ -119,7 +119,6 @@ func crosClosePlan() *Plan {
 			"Update DUT state for failures more than threshold",
 			"Update cellular modem state for non-cellular pools",
 			"Close Servo-host",
-			"Stop CFT containers",
 		},
 		Actions: crosRepairClosingActions(),
 	}

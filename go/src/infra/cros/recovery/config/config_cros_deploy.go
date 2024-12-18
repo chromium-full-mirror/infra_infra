@@ -301,7 +301,8 @@ func deployActions() map[string]*Action {
 			Dependencies: []string{
 				"Install OS in DEV mode by USB-drive",
 			},
-			ExecName: "sample_pass",
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Collect cellular labels": {
 			Docs: []string{
@@ -317,6 +318,7 @@ func deployActions() map[string]*Action {
 			ExecName: "sample_pass",
 			// Do not block deployment on cellular label detection.
 			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Collect DUT labels": {
 			Docs: []string{
@@ -334,7 +336,8 @@ func deployActions() map[string]*Action {
 				"Read RO_VPD from DUT",
 				"Collect cellular labels",
 			},
-			ExecName: "sample_pass",
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"servo_type_label": {
 			Docs: []string{
@@ -342,6 +345,7 @@ func deployActions() map[string]*Action {
 			},
 			ExecName:               "servo_update_servo_type_label",
 			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Check stable versions exist": {
 			Docs: []string{
@@ -356,7 +360,8 @@ func deployActions() map[string]*Action {
 				// Disabled faft version check until b/241150358 got resolved.
 				//"Check stable faft version exists",
 			},
-			ExecName: "sample_pass",
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Missing stable fw image": {
 			Docs: []string{
@@ -365,7 +370,8 @@ func deployActions() map[string]*Action {
 			Conditions: []string{
 				"has_stable_version_fw_image",
 			},
-			ExecName: "sample_fail",
+			ExecName:      "sample_fail",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Collect HWID into inventory": {
 			Docs: []string{
@@ -375,8 +381,9 @@ func deployActions() map[string]*Action {
 				"Read HWID from DUT",
 				"Read HWID from DUT (Satlab)",
 			},
-			RunControl: RunControl_RUN_ONCE,
-			ExecName:   "sample_pass",
+			RunControl:    RunControl_RUN_ONCE,
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 	}
 }

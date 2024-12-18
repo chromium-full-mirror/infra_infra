@@ -162,43 +162,6 @@ func crosRepairActions() map[string]*Action {
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
-		"Set state: ready": {
-			Docs: []string{
-				"The action set devices with state ready for the testing.",
-			},
-			Dependencies: []string{
-				"All repair-requests resolved",
-				"Reset DUT-state reason",
-			},
-			ExecName: "dut_set_state",
-			ExecExtraArgs: []string{
-				"state:ready",
-			},
-			RunControl:    RunControl_RUN_ONCE,
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
-		"Set state: repair_failed": {
-			Docs: []string{
-				"The action set devices with state means that repair tsk did not success to recover the devices.",
-			},
-			ExecName: "dut_set_state",
-			ExecExtraArgs: []string{
-				"state:repair_failed",
-			},
-			RunControl:    RunControl_RUN_ONCE,
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
-		"Set state: needs_deploy": {
-			Docs: []string{
-				"The action set devices with request to be redeployed.",
-			},
-			ExecName: "dut_set_state",
-			ExecExtraArgs: []string{
-				"state:needs_deploy",
-			},
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-			RunControl:    RunControl_RUN_ONCE,
-		},
 		"Device is pingable": {
 			Docs: []string{
 				"Verify that device is reachable by ping.",
@@ -240,7 +203,8 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 15,
 			},
-			RunControl: RunControl_ALWAYS_RUN,
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Device is SSHable": {
 			Docs: []string{
@@ -302,7 +266,8 @@ func crosRepairActions() map[string]*Action {
 				"Stateful partition has enough free space",
 				"Stateful partition (encrypted) has enough free space",
 			},
-			ExecName: "sample_pass",
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Stop if DUT needs replacement": {
 			Docs: []string{
@@ -434,7 +399,8 @@ func crosRepairActions() map[string]*Action {
 				"Match HWID",
 				"Match serial-number",
 			},
-			ExecName: "sample_pass",
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Restore HWID from inventory": {
 			Docs: []string{
@@ -682,7 +648,8 @@ func crosRepairActions() map[string]*Action {
 				"Power is recognized by DUT",
 				"Battery is changing or have accepted level",
 			},
-			ExecName: "sample_pass",
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Battery is changing or have accepted level": {
 			Docs: []string{
@@ -854,7 +821,8 @@ func crosRepairActions() map[string]*Action {
 				"RO Firmware version matches the recovery-version",
 				"Verify servo keyboard firmware",
 			},
-			ExecName: "sample_pass",
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Ensure firmware is in good state": {
 			Docs: []string{
@@ -1730,6 +1698,7 @@ func crosRepairActions() map[string]*Action {
 				"Cellular modem is up",
 			},
 			ExecName:               "sample_pass",
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			AllowFailAfterRecovery: true,
 		},
 		"Audit cellular modem on non-cellular pools": {
@@ -2020,7 +1989,8 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Set state: needs_deploy",
 			},
-			ExecName: "sample_fail",
+			ExecName:      "sample_fail",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
 		"Match HWID": {
 			Docs: []string{
@@ -2078,8 +2048,9 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Check whether the DUT information includes its HWID.",
 			},
-			ExecName:   "dut_has_hwid",
-			RunControl: RunControl_ALWAYS_RUN,
+			ExecName:      "dut_has_hwid",
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Is HWID empty": {
 			Docs: []string{
@@ -2088,16 +2059,18 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Is HWID known",
 			},
-			ExecName:   "sample_fail",
-			RunControl: RunControl_ALWAYS_RUN,
+			ExecName:      "sample_fail",
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Is serial-number known": {
 			Docs: []string{
 				"Check whether the DUT information includes its ",
 				"serial number.",
 			},
-			ExecName:   "dut_has_serial_number",
-			RunControl: RunControl_ALWAYS_RUN,
+			ExecName:      "dut_has_serial_number",
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Is serial-number empty": {
 			Docs: []string{
@@ -2107,8 +2080,9 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Is serial-number known",
 			},
-			ExecName:   "sample_fail",
-			RunControl: RunControl_ALWAYS_RUN,
+			ExecName:      "sample_fail",
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Not Satlab device": {
 			Docs: []string{
@@ -2255,7 +2229,8 @@ func crosRepairActions() map[string]*Action {
 				"Read dlm_sku_id",
 				"Update RO_VPD from DUT to Inventory",
 			},
-			ExecName: "sample_pass",
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Read Cr50 PHASE": {
 			Docs: []string{
@@ -2356,7 +2331,8 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Download stable image to USB-key",
 			},
-			ExecName: "sample_pass",
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Stable version image is missing from servo usbkey": {
 			Docs: []string{
@@ -2397,7 +2373,8 @@ func crosRepairActions() map[string]*Action {
 				"Call servod to download image to USB-key",
 				"Remove UPDATE_USBKEY_IMAGE repair-request",
 			},
-			ExecName: "sample_pass",
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Call servod to download image to USB-key": {
 			Docs: []string{
@@ -2452,6 +2429,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "sample_pass",
 			AllowFailAfterRecovery: true,
 			RunControl:             RunControl_RUN_ONCE,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Download stable image to USB-key": {
 			Docs: []string{
@@ -2470,6 +2448,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "sample_pass",
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"It is time to update USB-drive image": {
 			Docs: []string{
@@ -2594,9 +2573,10 @@ func crosRepairActions() map[string]*Action {
 				"Try to wait device to be sshable after the device being rebooted.",
 				"Waiting time 150 seconds.",
 			},
-			ExecName:    "cros_ssh",
-			ExecTimeout: &durationpb.Duration{Seconds: 150},
-			RunControl:  RunControl_ALWAYS_RUN,
+			ExecName:      "cros_ssh",
+			ExecTimeout:   &durationpb.Duration{Seconds: 150},
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Wait to be pingable (normal boot)": {
 			// No recovery actions as that is help action.
@@ -2604,9 +2584,10 @@ func crosRepairActions() map[string]*Action {
 				"Wait DUT to be pingable after some action on it.",
 				"Waiting time 150 seconds.",
 			},
-			ExecName:    "cros_ping",
-			ExecTimeout: &durationpb.Duration{Seconds: 150},
-			RunControl:  RunControl_ALWAYS_RUN,
+			ExecName:      "cros_ping",
+			ExecTimeout:   &durationpb.Duration{Seconds: 150},
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Trigger kernel panic to reset the whole board and try ssh to DUT": {
 			Docs: []string{
@@ -3887,7 +3868,8 @@ func crosRepairActions() map[string]*Action {
 				"Audit RPM config (with battery)",
 				"Audit RPM config (without battery)",
 			},
-			ExecName: "sample_pass",
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Is servod running": {
 			Docs: []string{
@@ -3897,8 +3879,9 @@ func crosRepairActions() map[string]*Action {
 				"Setup has servo info",
 				"Verify servod is responsive",
 			},
-			ExecName:   "sample_pass",
-			RunControl: RunControl_ALWAYS_RUN,
+			ExecName:      "sample_pass",
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Setup has servo info": {
 			ExecName: "dut_servo_host_present",
@@ -4169,6 +4152,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "sample_pass",
 			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Collect logs from DUT on /var/log/*": {
 			Docs: []string{
@@ -4316,9 +4300,7 @@ func crosRepairActions() map[string]*Action {
 				"is_enabled:true",
 			},
 			AllowFailAfterRecovery: true,
-			MetricsConfig: &MetricsConfig{
-				UploadPolicy: MetricsConfig_SKIP_ALL,
-			},
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Disable verbose shill logs": {
 			Docs: []string{
@@ -4333,9 +4315,7 @@ func crosRepairActions() map[string]*Action {
 				"is_enabled:false",
 			},
 			AllowFailAfterRecovery: true,
-			MetricsConfig: &MetricsConfig{
-				UploadPolicy: MetricsConfig_SKIP_ALL,
-			},
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Disable verbose ModemManager logs": {
 			Docs: []string{
@@ -4350,9 +4330,7 @@ func crosRepairActions() map[string]*Action {
 				"is_enabled:false",
 			},
 			AllowFailAfterRecovery: true,
-			MetricsConfig: &MetricsConfig{
-				UploadPolicy: MetricsConfig_SKIP_ALL,
-			},
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Enable verbose network logging for cellular DUTs": {
 			Docs: []string{
@@ -4368,9 +4346,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:               "sample_pass",
 			AllowFailAfterRecovery: true,
-			MetricsConfig: &MetricsConfig{
-				UploadPolicy: MetricsConfig_SKIP_ALL,
-			},
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Disable verbose network logging for cellular DUTs": {
 			Docs: []string{
@@ -4385,9 +4361,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:               "sample_pass",
 			AllowFailAfterRecovery: true,
-			MetricsConfig: &MetricsConfig{
-				UploadPolicy: MetricsConfig_SKIP_ALL,
-			},
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Collect dmesg": {
 			Docs: []string{
@@ -4541,13 +4515,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_kernel_priority_has_not_changed",
 		},
-		"Reset DUT-state reason": {
-			Docs: []string{
-				"Reset DUT-state-reason for good DUT as it becomes stale.",
-			},
-			ExecName:      "dut_reset_state_reason",
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
 		"Is crosid present": {
 			Docs: []string{
 				"Verify if crosid cli is present on the ChromeOS",
@@ -4656,12 +4623,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
-		"All repair-requests resolved": {
-			Docs: []string{
-				"Checks if all repair requests are resolved",
-			},
-			ExecName: "dut_has_no_repair_requests",
-		},
 		"Read bootId": {
 			Docs: []string{
 				"Read bootid and public to config scope.",
@@ -4751,7 +4712,8 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Install OS in recovery mode by booting from servo USB-drive (Flex with AMT)",
 			},
-			ExecName: "sample_pass",
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"RPM config present": {
 			Docs: []string{
@@ -4954,6 +4916,6 @@ func crosRepairActions() map[string]*Action {
 	androidActions(actions)
 	addCrosCftContainers(actions)
 	addEnvActions(actions)
-
+	addStateActions(actions)
 	return actions
 }

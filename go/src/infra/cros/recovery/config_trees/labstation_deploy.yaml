@@ -1,15 +1,17 @@
 plans:
     - name: cros
       criticalactions:
-        - name: dut_state_needs_deploy
-          exec_name: dut_state_needs_deploy
-        - name: check_host_info
+        - name: 'Set state: needs_deploy'
+          exec_name: dut_set_state
+          exec_args:
+            - state:needs_deploy
+          docs:
+            - The action set devices with request to be redeployed.
+        - name: check_host_info (RUN_ONCE)
           exec_name: sample_pass
           docs:
             - Check basic info for deployment.
           dependencies:
-            - name: dut_has_name
-              exec_name: dut_has_name
             - name: dut_has_board_name
               exec_name: dut_has_board_name
             - name: dut_has_model_name
@@ -99,8 +101,6 @@ plans:
           docs:
             - Updating device info in inventory.
           dependencies:
-            - name: cros_ssh
-              exec_name: cros_ssh
             - name: cros_update_hwid_to_inventory
               exec_name: cros_update_hwid_to_inventory
             - name: cros_update_serial_number_inventory
@@ -170,8 +170,21 @@ plans:
               conditions:
                 - name: has_rpm_info
                   exec_name: has_rpm_info
-        - name: dut_state_ready
-          exec_name: dut_state_ready
+        - name: 'Set state: ready (RUN_ONCE)'
+          exec_name: dut_set_state
+          exec_args:
+            - state:ready
+          docs:
+            - The action set devices with state ready for the testing.
+          dependencies:
+            - name: All repair-requests resolved
+              exec_name: dut_has_no_repair_requests
+              docs:
+                - Checks if all repair requests are resolved
+            - name: Reset DUT-state reason
+              exec_name: dut_reset_state_reason
+              docs:
+                - Reset DUT-state-reason for good DUT as it becomes stale.
         - name: Collect logs (after) (Allow to fail) (RUN_ONCE)
           exec_name: sample_pass
           docs:

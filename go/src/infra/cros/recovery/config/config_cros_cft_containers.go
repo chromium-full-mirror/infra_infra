@@ -22,9 +22,6 @@ func addCrosCftContainers(actions map[string]*Action) {
 				"Is not cloudbot",
 				"CrosToolRunner is up",
 			},
-			Dependencies: []string{
-				"Stop ADB-base",
-			},
 			ExecName: "ctr_start_adb_container",
 		},
 		"Stop ADB-base": {
@@ -43,9 +40,6 @@ func addCrosCftContainers(actions map[string]*Action) {
 				"Testbed has Servo",
 				"CrosToolRunner is up",
 			},
-			Dependencies: []string{
-				"Stop Servo-Nexus",
-			},
 			ExecName: "ctr_servo_nexus_start_container",
 		},
 		"Stop Servo-Nexus": {
@@ -62,9 +56,6 @@ func addCrosCftContainers(actions map[string]*Action) {
 			Conditions: []string{
 				"Is not cloudbot",
 				"CrosToolRunner is up",
-			},
-			Dependencies: []string{
-				"Stop Foil-provision",
 			},
 			ExecName: "ctr_start_foil_provision_container",
 		},

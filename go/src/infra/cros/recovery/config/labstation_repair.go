@@ -15,8 +15,7 @@ func LabstationRepairConfig() *Configuration {
 	beforeLogName, beforeLogActions := labstationCollectionLogs("before")
 	afterLogName, afterLogActions := labstationCollectionLogs("after")
 	criticalActions := []string{
-		"dut_state_repair_failed",
-		"check_host_info",
+		"Set state: repair_failed",
 		beforeLogName,
 		"Device is SSHable",
 		"System services is up",
@@ -32,22 +31,10 @@ func LabstationRepairConfig() *Configuration {
 		"Cleanup bluetooth",
 		"Is crosid readable",
 		"Update inventory info",
-		"dut_state_ready",
+		"Set state: ready",
 		afterLogName,
 	}
 	actions := map[string]*Action{
-		"dut_state_repair_failed": {
-			RunControl: RunControl_RUN_ONCE,
-		},
-		"check_host_info": {
-			Docs:     []string{"Check basic info for deployment."},
-			ExecName: "sample_pass",
-			Dependencies: []string{
-				"dut_has_name",
-				"dut_has_board_name",
-				"dut_has_model_name",
-			},
-		},
 		"cros_is_on_stable_version": {
 			Conditions: []string{
 				"has_stable_version_cros_image",
@@ -301,19 +288,21 @@ func LabstationRepairConfig() *Configuration {
 			},
 			// Labstation may take some time to fully up(e.g. network service ready) after an update.
 			// So giving it 10 minutes in here to allow more buffer.
-			ExecTimeout: &durationpb.Duration{Seconds: 600},
-			ExecName:    "cros_ssh",
-			RunControl:  RunControl_ALWAYS_RUN,
+			ExecTimeout:   &durationpb.Duration{Seconds: 600},
+			ExecName:      "cros_ssh",
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Update inventory info": {
 			Docs: []string{
 				"Updating device info in inventory.",
 			},
-			ExecName: "sample_pass",
 			Dependencies: []string{
 				"cros_update_hwid_to_inventory",
 				"Read serial number from labstation",
 			},
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Sysrq reboot": {
 			Docs: []string{
@@ -550,6 +539,7 @@ func LabstationRepairConfig() *Configuration {
 		}
 		actions[k] = v
 	}
+	addStateActions(actions)
 	return &Configuration{
 		PlanNames: []string{
 			PlanCrOS,

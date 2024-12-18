@@ -1,7 +1,7 @@
 plans:
     - name: android
       criticalactions:
-        - name: 'Set state: needs_deploy (RUN_ONCE)'
+        - name: 'Set state: needs_deploy'
           exec_name: dut_set_state
           exec_args:
             - state:needs_deploy
@@ -12,12 +12,6 @@ plans:
           docs:
             - Check Android DUT info for repair.
           dependencies:
-            - name: dut_has_name
-              exec_name: dut_has_name
-            - name: android_dut_has_board_name
-              exec_name: android_dut_has_board_name
-            - name: android_dut_has_model_name
-              exec_name: android_dut_has_model_name
             - name: android_dut_has_serial_number
               exec_name: android_dut_has_serial_number
             - name: android_dut_has_associated_host
@@ -445,7 +439,7 @@ plans:
                     - name: android_associated_host_schedule_reboot
                       exec_name: android_associated_host_schedule_reboot
           recoveries:
-            - name: Reboot device if in fastboot mode (time:'11m30s')
+            - name: Reboot device if in fastboot mode
               exec_name: sample_pass
               docs:
                 - Reboot the device via fastboot if the device is in fastboot mode.
@@ -867,7 +861,7 @@ plans:
                         - name: android_associated_host_schedule_reboot
                           exec_name: android_associated_host_schedule_reboot
               recoveries:
-                - name: Reboot device if in fastboot mode (time:'11m30s')
+                - name: Reboot device if in fastboot mode
                   exec_name: sample_pass
                   docs:
                     - Reboot the device via fastboot if the device is in fastboot mode.
@@ -1257,7 +1251,7 @@ plans:
                                 - name: android_associated_host_has_no_other_locks
                                   exec_name: android_associated_host_has_no_other_locks
           recoveries:
-            - name: Unlock DUT screen (time:'11m30s')
+            - name: Unlock DUT screen
               exec_name: sample_pass
               docs:
                 - Unlocks DUT screen.
@@ -1497,7 +1491,16 @@ plans:
           exec_args:
             - state:ready
           docs:
-            - Final state of Android DUT indicating successful repair.
+            - The action set devices with state ready for the testing.
+          dependencies:
+            - name: All repair-requests resolved
+              exec_name: dut_has_no_repair_requests
+              docs:
+                - Checks if all repair requests are resolved
+            - name: Reset DUT-state reason
+              exec_name: dut_reset_state_reason
+              docs:
+                - Reset DUT-state-reason for good DUT as it becomes stale.
     - name: close (Allow to fail)
       criticalactions:
         - name: Unlock associated host (ALWAYS_RUN)

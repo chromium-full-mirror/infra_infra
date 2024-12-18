@@ -7,10 +7,6 @@ plans:
             - state:needs_repair
           docs:
             - The action set devices with state means that DUT requires repair.
-        - name: DUT has board info (RUN_ONCE)
-          exec_name: dut_has_board_name
-        - name: DUT has model info (RUN_ONCE)
-          exec_name: dut_has_model_name
         - name: Start ADB-base
           exec_name: ctr_start_adb_container
           docs:
@@ -25,11 +21,6 @@ plans:
               docs:
                 - 'Verify that cros-tool-runner service is up and running, '
                 - the tool expected to start as part of system preparation.
-          dependencies:
-            - name: Stop ADB-base (Allow to fail)
-              exec_name: ctr_stop_adb_container
-              docs:
-                - Stop adb-base container
         - name: Start Servo-Nexus
           exec_name: ctr_servo_nexus_start_container
           docs:
@@ -46,11 +37,6 @@ plans:
               docs:
                 - 'Verify that cros-tool-runner service is up and running, '
                 - the tool expected to start as part of system preparation.
-          dependencies:
-            - name: Stop Servo-Nexus (Allow to fail)
-              exec_name: ctr_servo_nexus_stop_container
-              docs:
-                - Stop Servo-Nexus container
     - name: cros_audit
       criticalactions:
         - name: Device is pingable (simple) (ALWAYS_RUN) (time:'15s')

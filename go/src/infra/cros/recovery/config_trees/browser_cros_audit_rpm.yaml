@@ -7,10 +7,6 @@ plans:
             - state:needs_repair
           docs:
             - The action set devices with state means that DUT requires repair.
-        - name: DUT has board info (RUN_ONCE)
-          exec_name: dut_has_board_name
-        - name: DUT has model info (RUN_ONCE)
-          exec_name: dut_has_model_name
         - name: Start ADB-base
           exec_name: ctr_start_adb_container
           docs:
@@ -25,11 +21,6 @@ plans:
               docs:
                 - 'Verify that cros-tool-runner service is up and running, '
                 - the tool expected to start as part of system preparation.
-          dependencies:
-            - name: Stop ADB-base (Allow to fail)
-              exec_name: ctr_stop_adb_container
-              docs:
-                - Stop adb-base container
         - name: Start Servo-Nexus
           exec_name: ctr_servo_nexus_start_container
           docs:
@@ -46,11 +37,6 @@ plans:
               docs:
                 - 'Verify that cros-tool-runner service is up and running, '
                 - the tool expected to start as part of system preparation.
-          dependencies:
-            - name: Stop Servo-Nexus (Allow to fail)
-              exec_name: ctr_servo_nexus_stop_container
-              docs:
-                - Stop Servo-Nexus container
     - name: servo (Allow to fail)
       criticalactions:
         - name: Set state:MISSING_CONFIG (ALWAYS_RUN)
@@ -6240,12 +6226,15 @@ plans:
                     - state:WRONG_CONFIG
     - name: close (Allow to fail)
       criticalactions:
-        - name: Close Servo-host (Allow to fail)
-          exec_name: sample_pass
+        - name: Close Servo-host (Allow to fail) (ALWAYS_RUN)
+          exec_name: servo_host_servod_stop
+          docs:
+            - Stop the servod daemon.
+            - Collect all logs and files from the host.
           conditions:
             - name: Servo-host known
               exec_name: dut_servo_host_present
-            - name: Servo-host is sshable (ALWAYS_RUN) (time:'15s')
+            - name: Servo-host is sshable (RUN_ONCE) (time:'15s')
               exec_name: cros_ssh
               exec_args:
                 - device_type:servo
@@ -6317,25 +6306,8 @@ plans:
               conditions:
                 - name: Servo-host known
                   exec_name: dut_servo_host_present
-            - name: Stop servod (Allow to fail) (ALWAYS_RUN)
-              exec_name: servo_host_servod_stop
-              docs:
-                - Stop the servod daemon.
-                - Allowed to fail as can be run when servod is not running.
+            - name: Save UART capture (Allow to fail)
+              exec_name: servod_save_uart_capture
               dependencies:
-                - name: Save UART capture (Allow to fail)
-                  exec_name: servod_save_uart_capture
-                  dependencies:
-                    - name: Stop UART capture (Allow to fail)
-                      exec_name: servod_stop_uart_capture
-        - name: Stop CFT containers
-          exec_name: sample_pass
-          dependencies:
-            - name: Stop Servo-Nexus (Allow to fail)
-              exec_name: ctr_servo_nexus_stop_container
-              docs:
-                - Stop Servo-Nexus container
-            - name: Stop ADB-base (Allow to fail)
-              exec_name: ctr_stop_adb_container
-              docs:
-                - Stop adb-base container
+                - name: Stop UART capture (Allow to fail)
+                  exec_name: servod_stop_uart_capture

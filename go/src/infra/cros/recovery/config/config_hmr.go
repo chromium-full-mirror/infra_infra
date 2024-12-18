@@ -34,6 +34,8 @@ func hmrRepairPlan() *Plan {
 				ExecExtraArgs: []string{
 					"state:BROKEN",
 				},
+				RunControl:    RunControl_RUN_ONCE,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Set state:WORKING": {
 				ExecName:    "set_hmr_state",
@@ -41,6 +43,8 @@ func hmrRepairPlan() *Plan {
 				ExecExtraArgs: []string{
 					"state:WORKING",
 				},
+				RunControl:    RunControl_RUN_ONCE,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Check HMR state with XMLRPC call GetErrors": {
 				Docs: []string{

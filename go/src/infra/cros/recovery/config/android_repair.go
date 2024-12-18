@@ -42,46 +42,15 @@ func androidRepairPlan() *Plan {
 }
 
 func androidRepairDeployActions() map[string]*Action {
-	return map[string]*Action{
-		"Set state: needs_deploy": {
-			Docs: []string{
-				"The action set devices with request to be redeployed.",
-			},
-			ExecName: "dut_set_state",
-			ExecExtraArgs: []string{
-				"state:needs_deploy",
-			},
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-			RunControl:    RunControl_RUN_ONCE,
-		},
-		"Set state: repair_failed": {
-			Docs: []string{
-				"Initial state of Android DUT before repair to indicate failure if recovery fails by any reason.",
-			},
-			ExecName:      "dut_set_state",
-			ExecExtraArgs: []string{"state:repair_failed"},
-			RunControl:    RunControl_RUN_ONCE,
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
-		"Set state: ready": {
-			Docs: []string{
-				"Final state of Android DUT indicating successful repair.",
-			},
-			ExecName:      "dut_set_state",
-			ExecExtraArgs: []string{"state:ready"},
-			RunControl:    RunControl_RUN_ONCE,
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
+	actions := map[string]*Action{
 		"Validate DUT info": {
 			Docs: []string{"Check Android DUT info for repair."},
 			Dependencies: []string{
-				"dut_has_name",
-				"android_dut_has_board_name",
-				"android_dut_has_model_name",
 				"android_dut_has_serial_number",
 				"android_dut_has_associated_host",
 			},
-			ExecName: "sample_pass",
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Validate associated host": {
 			Docs: []string{"Check availability of associated host of the DUT."},
@@ -227,8 +196,7 @@ func androidRepairDeployActions() map[string]*Action {
 				"android_dut_reboot",
 				"Wait for Online DUT",
 			},
-			ExecName:    "sample_pass",
-			ExecTimeout: &durationpb.Duration{Seconds: 690},
+			ExecName: "sample_pass",
 		},
 		"Reset DUT": {
 			Docs: []string{"Resets DUT to factory settings."},
@@ -247,12 +215,13 @@ func androidRepairDeployActions() map[string]*Action {
 		"Configure DUT": {
 			Docs: []string{"Configures DUT after reset."},
 			Dependencies: []string{
-				"Wait for DUT to reboot",
+				"Wait for Offline DUT",
+				"Wait for Online DUT",
 				"Connect to WiFi network",
 				"Unroot DUT",
 			},
-			ExecName:    "sample_pass",
-			ExecTimeout: &durationpb.Duration{Seconds: 690},
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"DUT has userdebug build": {
 			Docs: []string{"This verifier checks whether the DUT has userdebug build."},
@@ -279,15 +248,6 @@ func androidRepairDeployActions() map[string]*Action {
 				"timeout:600",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
-		},
-		"Wait for DUT to reboot": {
-			Docs: []string{"Waits for DUT till it reboots."},
-			Dependencies: []string{
-				"Wait for Offline DUT",
-				"Wait for Online DUT",
-			},
-			ExecName:    "sample_pass",
-			ExecTimeout: &durationpb.Duration{Seconds: 690},
 		},
 		"Connect to WiFi network": {
 			Docs: []string{"Connects DUT to WiFi network."},
@@ -367,8 +327,8 @@ func androidRepairDeployActions() map[string]*Action {
 				"android_reboot_device_via_fastboot",
 				"Wait for Online DUT",
 			},
-			ExecName:    "sample_pass",
-			ExecTimeout: &durationpb.Duration{Seconds: 690},
+			ExecName:      "sample_pass",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Reconnect device if in offline state": {
 			Docs: []string{
@@ -380,6 +340,8 @@ func androidRepairDeployActions() map[string]*Action {
 			ExecName: "android_reconnect_offline_dut",
 		},
 	}
+	addStateActions(actions)
+	return actions
 }
 
 // androidClosePlan provides plan to close android repair tasks.

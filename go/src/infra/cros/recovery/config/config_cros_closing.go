@@ -35,9 +35,14 @@ func crosRepairClosingActions() map[string]*Action {
 				"Is servo_state:working",
 			},
 			ExecName:               "cros_remove_reboot_request",
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 			AllowFailAfterRecovery: true,
 		},
 		"Close Servo-host": {
+			Docs: []string{
+				"Stop the servod daemon.",
+				"Collect all logs and files from the host.",
+			},
 			Conditions: []string{
 				"Servo-host known",
 				"Servo-host is sshable",
@@ -50,9 +55,10 @@ func crosRepairClosingActions() map[string]*Action {
 				"Remove in-use flag on servo-host",
 				"Remove request to reboot if servo is good",
 				"Turn off servo usbkey power",
-				"Stop servod",
+				"Save UART capture",
 			},
-			ExecName:               "sample_pass",
+			ExecName:               "servo_host_servod_stop",
+			RunControl:             RunControl_ALWAYS_RUN,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			AllowFailAfterRecovery: true,
 		},
@@ -217,7 +223,6 @@ func crosRepairClosingActions() map[string]*Action {
 			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
-
 		"Update DUT state for failures more than threshold": {
 			Docs: []string{
 				"Set the DUT state to the value passed in the ",
@@ -352,7 +357,7 @@ func crosRepairClosingActions() map[string]*Action {
 				Seconds: 15,
 			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-			RunControl:    RunControl_ALWAYS_RUN,
+			RunControl:    RunControl_RUN_ONCE,
 		},
 		"Save UART capture": {
 			Dependencies: []string{
@@ -378,27 +383,6 @@ func crosRepairClosingActions() map[string]*Action {
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
-		"Stop CFT containers": {
-			Dependencies: []string{
-				"Stop Servo-Nexus",
-				"Stop ADB-base",
-			},
-			ExecName: "sample_pass",
-		},
-		"Stop ADB-base": {
-			Docs: []string{
-				"Stop adb-base container",
-			},
-			ExecName:               "ctr_stop_adb_container",
-			AllowFailAfterRecovery: true,
-		},
-		"Stop Servo-Nexus": {
-			Docs: []string{
-				"Stop Servo-Nexus container",
-			},
-			ExecName:               "ctr_servo_nexus_stop_container",
-			AllowFailAfterRecovery: true,
 		},
 	}
 }

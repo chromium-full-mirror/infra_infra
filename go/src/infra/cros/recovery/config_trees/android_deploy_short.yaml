@@ -1,12 +1,9 @@
 plans:
     - name: android
       criticalactions:
-        - name: 'Set state: needs_deploy (''dut_set_state'') (RUN_ONCE)'
+        - name: 'Set state: needs_deploy (''dut_set_state'')'
         - name: Validate DUT info ('sample_pass')
           dependencies:
-            - name: dut_has_name
-            - name: android_dut_has_board_name
-            - name: android_dut_has_model_name
             - name: android_dut_has_serial_number
             - name: android_dut_has_associated_host
         - name: Validate associated host ('android_associated_host_fs_is_writable')
@@ -137,7 +134,7 @@ plans:
                   dependencies:
                     - name: android_associated_host_schedule_reboot
           recoveries:
-            - name: Reboot device if in fastboot mode ('sample_pass') (time:'11m30s')
+            - name: Reboot device if in fastboot mode ('sample_pass')
               dependencies:
                 - name: android_device_in_fastboot_mode
                 - name: android_reboot_device_via_fastboot
@@ -265,7 +262,7 @@ plans:
                       dependencies:
                         - name: android_associated_host_schedule_reboot
               recoveries:
-                - name: Reboot device if in fastboot mode ('sample_pass') (time:'11m30s')
+                - name: Reboot device if in fastboot mode ('sample_pass')
                   dependencies:
                     - name: android_device_in_fastboot_mode
                     - name: android_reboot_device_via_fastboot
@@ -387,7 +384,7 @@ plans:
                               conditions:
                                 - name: android_associated_host_has_no_other_locks
           recoveries:
-            - name: Unlock DUT screen ('sample_pass') (time:'11m30s')
+            - name: Unlock DUT screen ('sample_pass')
               conditions:
                 - name: DUT has userdebug build ('android_dut_has_userdebug_build')
                   dependencies:
@@ -463,6 +460,9 @@ plans:
                 - name: android_dut_reboot
                 - name: Wait for Online DUT ('android_wait_for_online_dut') (ALWAYS_RUN) (time:'10m0s')
         - name: 'Set state: ready (''dut_set_state'') (RUN_ONCE)'
+          dependencies:
+            - name: All repair-requests resolved ('dut_has_no_repair_requests')
+            - name: Reset DUT-state reason ('dut_reset_state_reason')
     - name: close (Allow to fail)
       criticalactions:
         - name: Unlock associated host ('android_associated_host_unlock') (ALWAYS_RUN)

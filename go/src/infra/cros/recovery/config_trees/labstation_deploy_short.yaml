@@ -1,10 +1,9 @@
 plans:
     - name: cros
       criticalactions:
-        - name: dut_state_needs_deploy
-        - name: check_host_info ('sample_pass')
+        - name: 'Set state: needs_deploy (''dut_set_state'')'
+        - name: check_host_info ('sample_pass') (RUN_ONCE)
           dependencies:
-            - name: dut_has_name
             - name: dut_has_board_name
             - name: dut_has_model_name
         - name: Collect logs (before) (Allow to fail) ('sample_pass') (RUN_ONCE)
@@ -25,7 +24,6 @@ plans:
                 - name: has_rpm_info
         - name: Update inventory info ('sample_pass')
           dependencies:
-            - name: cros_ssh
             - name: cros_update_hwid_to_inventory
             - name: cros_update_serial_number_inventory
         - name: Remove whitelabel_tag VPD field if necessary ('cros_run_command')
@@ -51,7 +49,10 @@ plans:
             - name: Power cycle by RPM ('rpm_power_cycle') (ALWAYS_RUN) (time:'2m0s')
               conditions:
                 - name: has_rpm_info
-        - name: dut_state_ready
+        - name: 'Set state: ready (''dut_set_state'') (RUN_ONCE)'
+          dependencies:
+            - name: All repair-requests resolved ('dut_has_no_repair_requests')
+            - name: Reset DUT-state reason ('dut_reset_state_reason')
         - name: Collect logs (after) (Allow to fail) ('sample_pass') (RUN_ONCE)
           conditions:
             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')

@@ -18,8 +18,16 @@ func chameleonPlan() *Plan {
 			"Mark as good",
 		},
 		Actions: map[string]*Action{
-			"Mark as bad":  {ExecName: "chameleon_state_broken"},
-			"Mark as good": {ExecName: "chameleon_state_working"},
+			"Mark as bad": {
+				ExecName:      "chameleon_state_broken",
+				RunControl:    RunControl_RUN_ONCE,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
+			"Mark as good": {
+				ExecName:      "chameleon_state_working",
+				RunControl:    RunControl_RUN_ONCE,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
 			"Device is pingable": {
 				ExecTimeout: &durationpb.Duration{Seconds: 15},
 				ExecName:    "cros_ping",
@@ -31,15 +39,17 @@ func chameleonPlan() *Plan {
 				Docs: []string{
 					"Power cycle chameleon if rpm exists",
 					"Ensure chameleon is SSHable on after power cycle",
+					"Try to wait device to be sshable after the device being rebooted.",
 				},
 				Conditions: []string{
 					"Has chameleon rpm info",
 				},
 				Dependencies: []string{
 					"Power cycle chameleon by RPM",
-					"Wait for SSHable (after rpm cycle)",
 				},
-				ExecName: "sample_pass",
+				ExecName:    "cros_ssh",
+				ExecTimeout: &durationpb.Duration{Seconds: 150},
+				RunControl:  RunControl_ALWAYS_RUN,
 			},
 			"Has chameleon rpm info": {
 				Docs: []string{
@@ -49,6 +59,8 @@ func chameleonPlan() *Plan {
 				ExecExtraArgs: []string{
 					"device_type:chameleon",
 				},
+				RunControl:    RunControl_RUN_ONCE,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Power cycle chameleon by RPM": {
 				Docs: []string{
@@ -58,16 +70,6 @@ func chameleonPlan() *Plan {
 				ExecExtraArgs: []string{
 					"device_type:chameleon",
 				},
-			},
-			"Wait for SSHable (after rpm cycle)": {
-				// No recovery actions as that is help action.
-				Docs: []string{
-					"Try to wait device to be sshable after the device being rebooted.",
-					"Waiting time 150 seconds.",
-				},
-				ExecName:    "cros_ssh",
-				ExecTimeout: &durationpb.Duration{Seconds: 150},
-				RunControl:  RunControl_ALWAYS_RUN,
 			},
 			"Update AudioBox JackPlugger State": {
 				Docs: []string{

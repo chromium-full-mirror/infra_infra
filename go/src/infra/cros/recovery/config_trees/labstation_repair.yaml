@@ -1,19 +1,12 @@
 plans:
     - name: cros
       criticalactions:
-        - name: dut_state_repair_failed (RUN_ONCE)
-          exec_name: dut_state_repair_failed
-        - name: check_host_info
-          exec_name: sample_pass
+        - name: 'Set state: repair_failed'
+          exec_name: dut_set_state
+          exec_args:
+            - state:repair_failed
           docs:
-            - Check basic info for deployment.
-          dependencies:
-            - name: dut_has_name
-              exec_name: dut_has_name
-            - name: dut_has_board_name
-              exec_name: dut_has_board_name
-            - name: dut_has_model_name
-              exec_name: dut_has_model_name
+            - The action set devices with state means that repair tsk did not success to recover the devices.
         - name: Collect logs (before) (Allow to fail) (RUN_ONCE)
           exec_name: sample_pass
           docs:
@@ -976,8 +969,21 @@ plans:
               exec_name: cros_update_hwid_to_inventory
             - name: Read serial number from labstation (Allow to fail)
               exec_name: cros_update_serial_number_inventory
-        - name: dut_state_ready
-          exec_name: dut_state_ready
+        - name: 'Set state: ready (RUN_ONCE)'
+          exec_name: dut_set_state
+          exec_args:
+            - state:ready
+          docs:
+            - The action set devices with state ready for the testing.
+          dependencies:
+            - name: All repair-requests resolved
+              exec_name: dut_has_no_repair_requests
+              docs:
+                - Checks if all repair requests are resolved
+            - name: Reset DUT-state reason
+              exec_name: dut_reset_state_reason
+              docs:
+                - Reset DUT-state-reason for good DUT as it becomes stale.
         - name: Collect logs (after) (Allow to fail) (RUN_ONCE)
           exec_name: sample_pass
           docs:
