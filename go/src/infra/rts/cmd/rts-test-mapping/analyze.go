@@ -13,6 +13,7 @@ import (
 	"io"
 	"log"
 	"math"
+	"math/rand"
 	"os"
 	"slices"
 	"sort"
@@ -34,11 +35,11 @@ import (
 type analyzeCommandRun struct {
 	subcommands.CommandRunBase
 	authOpt                 *auth.Options
-	ev                      eval.Eval
 	builder                 string
+	debugMode               bool
+	ev                      eval.Eval
 	osStr                   string
 	similarityJSONFile      string
-	debugMode               bool
 	testSelectionPerCluster int
 }
 
@@ -49,14 +50,17 @@ type debugEntry struct {
 	testIds         string
 }
 
-type variantEntry struct {
-	lock       *sync.RWMutex
-	candidates *sync.Map
+type decisionEngine struct {
+	allowedTests            map[string]struct{}
+	cqTests                 map[string]struct{}
+	skippedTests            map[string]struct{}
+	testClusterIDsMapping   map[string]map[string]struct{}
+	testSelectionPerCluster int
 }
 
 func cmdAnalyze(authOpt *auth.Options) *subcommands.Command {
 	return &subcommands.Command{
-		UsageLine: `analyze -rejections <path> -durations <path> -builder <name> -os <os_string> [-similarity_json <path>]`,
+		UsageLine: `analyze -rejections <path> -durations <path> [-builder <name>] [-os <os_string>] -similarity_json <path>`,
 		ShortDesc: `Prints the expected recall and savings on the test mapping CQ run`,
 		LongDesc: text.Doc(`
 			This process uses a provided JSON file containing test cluster data to determine which tests to run during a CQ (Commit Queue) run, aiming to increase efficiency and resource savings.
@@ -65,11 +69,11 @@ func cmdAnalyze(authOpt *auth.Options) *subcommands.Command {
 		`),
 		CommandRun: func() subcommands.CommandRun {
 			r := &analyzeCommandRun{authOpt: authOpt}
-			r.Flags.StringVar(&r.builder, "builder", "", "(optional)Builder running the testSuite to exclude from tests")
-			r.Flags.StringVar(&r.osStr, "os", "", "(optional)The os sub string value such as Ubuntu for linux, Win for windows, Mac for MacOS, etc.")
-			r.Flags.StringVar(&r.similarityJSONFile, "similarity_json", "", "(required)A json file containing similarity between test case ids, such as {test_id_1: [test_id_2]}")
-			r.Flags.IntVar(&r.testSelectionPerCluster, "test_per_cluster", 1, "(optional)The count of tests to be selected to run per cluster.")
-			r.Flags.BoolVar(&r.debugMode, "debug_mode", false, "(optional)A flag to indicate whether to have debug output.")
+			r.Flags.StringVar(&r.builder, "builder", "", "(Optional)Builder running the testSuite to exclude from tests")
+			r.Flags.BoolVar(&r.debugMode, "debug_mode", false, "(Optional)A flag to indicate whether to have debug output.")
+			r.Flags.StringVar(&r.osStr, "os", "", "(Optional)The os sub string value such as Ubuntu for linux, Win for windows, Mac for MacOS, etc.")
+			r.Flags.StringVar(&r.similarityJSONFile, "similarity_json", "", "(Required)A json file containing similarity between test case ids, such as {test_id_1: [test_id_2]}")
+			r.Flags.IntVar(&r.testSelectionPerCluster, "test_per_cluster", 1, "(Optional)The count of tests to be selected to run per cluster.")
 			r.ev.LogProgressInterval = 1000
 			if err := r.ev.RegisterFlags(&r.Flags); err != nil {
 				logging.Warningf(context.Background(), "RegisterFlags() return: %s", err.Error())
@@ -109,20 +113,11 @@ func (r *analyzeCommandRun) validateFlags() error {
 	}
 	switch {
 	case r.similarityJSONFile == "":
-		return errors.New("-similarity_json is required.")
+		return errors.New("-similarity_json is required")
 	case r.testSelectionPerCluster < 1:
-		return errors.New("-test_per_cluster could not be less than 1.")
+		return errors.New("-test_per_cluster could not be less than 1")
 	default:
 		return nil
-	}
-}
-
-func addValuesToMap(data map[string]map[string]bool, key string, values []string) {
-	if _, ok := data[key]; !ok {
-		data[key] = map[string]bool{}
-	}
-	for _, value := range values {
-		data[key][value] = true
 	}
 }
 
@@ -135,7 +130,7 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 	}
 
 	fileDebuggingEntries := make(map[string][]debugEntry)
-	testClusterMapping := make(map[string]map[string]bool)
+	testClusterMapping := make(map[string]map[string]struct{})
 	var mu = &sync.RWMutex{}
 	var err error
 	if r.similarityJSONFile != "" {
@@ -145,21 +140,42 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 			return 1
 		}
 		for key, values := range testSimilarityMappingTemp {
-			addValuesToMap(testClusterMapping, key, values)
+			if _, ok := testClusterMapping[key]; !ok {
+				testClusterMapping[key] = map[string]struct{}{}
+			}
+			for _, value := range values {
+				testClusterMapping[key][value] = struct{}{}
+			}
 		}
 	}
-	variantHashDisallowedTests := sync.Map{}
+	// Build a {cluster_id: test_ids} table
+	testClusterIDsMapping := clusterTests(testClusterMapping)
 	unchangedVariantCount := 0
 	changedVariantCount := 0
-	// Build testClusterIdMapping from testClusterMapping
 	res, err := r.ev.Run(ctx, func(ctx context.Context, in eval.Input, out *eval.Output) error {
+		// Build allowedTests and skippedTests.
 		optimizedReason := -1
+		affectedBuilder := r.builder
+		e := decisionEngine{
+			allowedTests:            make(map[string]struct{}),
+			cqTests:                 make(map[string]struct{}),
+			skippedTests:            make(map[string]struct{}),
+			testClusterIDsMapping:   testClusterIDsMapping,
+			testSelectionPerCluster: r.testSelectionPerCluster,
+		}
+		for _, tv := range in.TestVariants {
+			e.cqTests[tv.Id] = struct{}{}
+		}
+		e.update()
+		if r.debugMode {
+			logging.Infof(ctx, "The number of tests in allowedTests: %d\n", len(e.allowedTests))
+			logging.Infof(ctx, "The number of tests in skippedTests: %d\n", len(e.skippedTests))
+		}
 
 		for i, tv := range in.TestVariants {
 			variantBuilderSuite := getBuilderSuiteString(tv.Variant)
 			osString := getOsString(tv.Variant)
-			affectedBuilder := r.builder
-			inSignature := signatureFromSourceFiles(in.ChangedFiles)
+
 			if !strings.Contains(variantBuilderSuite, affectedBuilder) || !strings.Contains(osString, r.osStr) {
 				if !strings.Contains(variantBuilderSuite, affectedBuilder) {
 					optimizedReason = -3
@@ -173,37 +189,11 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 				continue
 			}
 
-			if _, ok := variantHashDisallowedTests.Load(inSignature); !ok {
-				// If this inSignature was never saw before, create a variantEntry for this inSignature entry
-				entry := variantEntry{}
-				entry.candidates = &sync.Map{}
-				entry.lock = &sync.RWMutex{}
-				variantHashDisallowedTests.Store(inSignature, entry)
-			}
-			testToBeTrimmedTemp, _ := variantHashDisallowedTests.Load(inSignature)
-			disallowedTestList := testToBeTrimmedTemp.(variantEntry)
-			// If this test_id is already in testToBeTrimmed, skip this test run.
-			disallowedTestList.lock.RLock()
-			if _, ok := disallowedTestList.candidates.Load(tv.Id); ok {
+			if _, ok := e.skippedTests[tv.Id]; ok {
 				out.TestVariantAffectedness[i] = rts.Affectedness{Distance: math.Inf(1)}
 				optimizedReason = 0
 				logDebugEntry(mu, tv, optimizedReason, variantBuilderSuite, fileDebuggingEntries, in.ChangedFiles)
-				disallowedTestList.lock.RUnlock()
 				continue
-			}
-			disallowedTestList.lock.RUnlock()
-			// If this test id has an entry in testSimilarityMapping, disallow its buddies.
-			if _, ok := testClusterMapping[tv.Id]; ok {
-				countToDisallow := len(testClusterMapping[tv.Id]) - r.testSelectionPerCluster
-				for testID := range testClusterMapping[tv.Id] {
-					if countToDisallow <= 0 {
-						break
-					}
-					disallowedTestList.lock.Lock()
-					disallowedTestList.candidates.Store(testID, true)
-					disallowedTestList.lock.Unlock()
-					countToDisallow -= 1
-				}
 			}
 			out.TestVariantAffectedness[i] = rts.Affectedness{Distance: 0}
 			unchangedVariantCount += 1
@@ -241,12 +231,97 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 				}
 			}
 		}
-		variantHashDisallowedTests.Range(func(key, value any) bool {
-			fmt.Println("Signature:", key, "Tests to remove:", value)
-			return true // Continue iteration
-		})
 	}
 	return 0
+}
+
+// Uses random selection to pick up tests into allowedTests and skippedTests.
+func (r *decisionEngine) update() {
+	// Random algorithms to select allowedTests and skippedTests.
+	for _, tests := range r.testClusterIDsMapping {
+		base := intersectSets(tests, r.cqTests)
+		testPerCluster := r.testSelectionPerCluster
+		if testPerCluster > len(base) {
+			testPerCluster = len(base)
+		}
+		selected := randomSelectFromSet(base, testPerCluster)
+		extendSetFromList(r.allowedTests, selected)
+		for t := range tests {
+			if _, ok := r.allowedTests[t]; !ok {
+				r.skippedTests[t] = struct{}{}
+			}
+		}
+	}
+}
+
+// Builds a cluster sequence of {cluster_id : [test_id]} from input dict.
+func clusterTests(input map[string]map[string]struct{}) map[string]map[string]struct{} {
+	clusters := make(map[string]map[string]struct{})
+	clusterID := 0
+	// Input is {test_id_1 : {test_id_2: true, test_id_3: true}}
+	// Output is {cluster_id_1: {test_id_1: true, test_id_2: true, test_id_3: true}}
+	for key, values := range input {
+		found := false
+
+		for _, cluster := range clusters {
+			if _, ok := cluster[key]; ok {
+				extendSet(cluster, map[string]struct{}{key: {}})
+				extendSet(cluster, values)
+				found = true
+			}
+		}
+		if !found {
+			c := make(map[string]struct{})
+			extendSet(c, map[string]struct{}{key: {}})
+			extendSet(c, values)
+			clusters[fmt.Sprint(clusterID)] = c
+			clusterID += 1
+		}
+	}
+	return clusters
+}
+
+// Randomly selects n entries from input.
+func randomSelectFromSet(input map[string]struct{}, n int) []string {
+	if n <= 0 || n > len(input) {
+		return nil // Handle invalid input
+	}
+
+	keys := make([]string, 0, len(input))
+	for k := range input {
+		keys = append(keys, k)
+	}
+
+	rand.Shuffle(len(keys), func(i, j int) { keys[i], keys[j] = keys[j], keys[i] })
+
+	return keys[:n]
+}
+
+// Generates a map that is the interact between map1 and map2.
+func intersectSets(map1, map2 map[string]struct{}) map[string]struct{} {
+	intersection := make(map[string]struct{})
+
+	for key := range map1 {
+		if _, ok := map2[key]; ok {
+			intersection[key] = struct{}{}
+		}
+	}
+
+	return intersection
+}
+
+// Extends src into dest.
+func extendSet(dest, src map[string]struct{}) {
+	for k := range src {
+		dest[k] = struct{}{}
+	}
+}
+
+// Extends src into dest.
+func extendSetFromList(dest map[string]struct{}, src []string) {
+	for _, k := range src {
+		dest[k] = struct{}{}
+	}
 }
 
 // Uses a list of path from sourceFiles to generate a SHA256 hash.
