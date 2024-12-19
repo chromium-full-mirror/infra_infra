@@ -29,6 +29,7 @@ const (
 	FleetConsole_PingUfs_FullMethodName             = "/fleetconsole.FleetConsole/PingUfs"
 	FleetConsole_ListDevices_FullMethodName         = "/fleetconsole.FleetConsole/ListDevices"
 	FleetConsole_GetDeviceDimensions_FullMethodName = "/fleetconsole.FleetConsole/GetDeviceDimensions"
+	FleetConsole_CountDevices_FullMethodName        = "/fleetconsole.FleetConsole/CountDevices"
 )
 
 // FleetConsoleClient is the client API for FleetConsole service.
@@ -45,6 +46,8 @@ type FleetConsoleClient interface {
 	ListDevices(ctx context.Context, in *ListDevicesRequest, opts ...grpc.CallOption) (*ListDevicesResponse, error)
 	// GetDeviceDimensions provides overview of devices dimensions and their values
 	GetDeviceDimensions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GetDeviceDimensionsResponse, error)
+	// CountDevices provides a count of the total devices present and
+	CountDevices(ctx context.Context, in *CountDevicesRequest, opts ...grpc.CallOption) (*CountDevicesResponse, error)
 }
 
 type fleetConsoleClient struct {
@@ -105,6 +108,16 @@ func (c *fleetConsoleClient) GetDeviceDimensions(ctx context.Context, in *emptyp
 	return out, nil
 }
 
+func (c *fleetConsoleClient) CountDevices(ctx context.Context, in *CountDevicesRequest, opts ...grpc.CallOption) (*CountDevicesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CountDevicesResponse)
+	err := c.cc.Invoke(ctx, FleetConsole_CountDevices_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FleetConsoleServer is the server API for FleetConsole service.
 // All implementations must embed UnimplementedFleetConsoleServer
 // for forward compatibility.
@@ -119,6 +132,8 @@ type FleetConsoleServer interface {
 	ListDevices(context.Context, *ListDevicesRequest) (*ListDevicesResponse, error)
 	// GetDeviceDimensions provides overview of devices dimensions and their values
 	GetDeviceDimensions(context.Context, *emptypb.Empty) (*GetDeviceDimensionsResponse, error)
+	// CountDevices provides a count of the total devices present and
+	CountDevices(context.Context, *CountDevicesRequest) (*CountDevicesResponse, error)
 	mustEmbedUnimplementedFleetConsoleServer()
 }
 
@@ -143,6 +158,9 @@ func (UnimplementedFleetConsoleServer) ListDevices(context.Context, *ListDevices
 }
 func (UnimplementedFleetConsoleServer) GetDeviceDimensions(context.Context, *emptypb.Empty) (*GetDeviceDimensionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetDeviceDimensions not implemented")
+}
+func (UnimplementedFleetConsoleServer) CountDevices(context.Context, *CountDevicesRequest) (*CountDevicesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CountDevices not implemented")
 }
 func (UnimplementedFleetConsoleServer) mustEmbedUnimplementedFleetConsoleServer() {}
 func (UnimplementedFleetConsoleServer) testEmbeddedByValue()                      {}
@@ -255,6 +273,24 @@ func _FleetConsole_GetDeviceDimensions_Handler(srv interface{}, ctx context.Cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FleetConsole_CountDevices_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CountDevicesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FleetConsoleServer).CountDevices(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FleetConsole_CountDevices_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FleetConsoleServer).CountDevices(ctx, req.(*CountDevicesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FleetConsole_ServiceDesc is the grpc.ServiceDesc for FleetConsole service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -281,6 +317,10 @@ var FleetConsole_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetDeviceDimensions",
 			Handler:    _FleetConsole_GetDeviceDimensions_Handler,
+		},
+		{
+			MethodName: "CountDevices",
+			Handler:    _FleetConsole_CountDevices_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

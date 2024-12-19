@@ -25,6 +25,9 @@ service FleetConsole {
 
   // GetDeviceDimensions provides overview of devices dimensions and their values
   rpc GetDeviceDimensions(google.protobuf.Empty) returns (GetDeviceDimensionsResponse);
+
+  // CountDevices provides a count of the devices
+  rpc CountDevices(CountDevicesRequest) returns (CountDevicesResponse) {};
 }
 
 // PingRequest intentionally contains nothing.
@@ -129,3 +132,29 @@ message GetDeviceDimensionsResponse {
 message LabelValues {
   repeated string values = 1;
 }
+
+message CountDevicesRequest {
+  // See: AIP-160 (https://google.aip.dev/160) for the syntax
+  // Same filter format as ListDevicesRequest
+  string filter = 1;
+}
+
+message CountDevicesResponse {
+  int32 total = 1;
+
+  TaskStateCounts task_state = 2;
+  DeviceStateCounts device_state = 3;
+}
+
+message TaskStateCounts {
+  int32 busy = 1;
+  int32 idle = 2;
+}
+
+message DeviceStateCounts {
+  int32 ready = 1;
+  int32 need_manual_repair = 2;
+  int32 need_repair = 3;
+  int32 repair_failed = 4;
+}
+
