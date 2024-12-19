@@ -163,7 +163,7 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 		firestoreDBName = common.PartnerTestPlatformFireStore
 	}
 
-	defK := common.MakeDefaultFilters(ctx, cmd.CtpReq.GetSuiteRequest(), cmd.Experiments)
+	defK := common.MakeDefaultFilters(ctx, cmd.CtpReq.GetSuiteRequest(), cmd.Experiments, cmd.IsPartnerRun, cmd.IsAlRun)
 	finalMetadataMap := createContainerImagesInfoMap(ctx, cmd.CtpReq, buildContainerMetadata, cmd.CredsFile, cmd.CTPversion, defK, build, firestoreDBName)
 	logging.Infof(ctx, "FINALMAP:", finalMetadataMap)
 

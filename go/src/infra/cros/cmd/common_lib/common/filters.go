@@ -27,6 +27,7 @@ var (
 	UseFlagFilterContainerName           = "use_flag_filter"
 	PreProcessFilterContainerName        = "pre_process_filter"
 	AutoVMTestShifterFilterContainerName = "autovm_test_shifter_filter"
+	PartnerStagingContainerName          = "partner-staging"
 
 	hwPlaceHolder = "PLACEHOLDER"
 	// DefaultKarbonFilterNames defines Default karbon filters (SetDefaultFilters may add/remove)
@@ -69,7 +70,7 @@ func GetDefaultFilterContainerImageInfosMap(ctx context.Context, creds, ctpVersi
 }
 
 // MakeDefaultFilters sets/appends proper default filters; in their required order.
-func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest, experiments []string) []string {
+func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest, experiments []string, isPartner, isAlRun bool) []string {
 	hwFilter := ""
 	if suiteReq.GetDddSuite() {
 		hwFilter = TtcpContainerName
@@ -78,6 +79,9 @@ func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest, experim
 	}
 
 	filters := []string{}
+	if isPartner && !isAlRun {
+		filters = append(filters, PartnerStagingContainerName)
+	}
 	for _, filter := range DefaultKarbonFilterNames {
 		if filter == hwPlaceHolder {
 			filters = append(filters, hwFilter)

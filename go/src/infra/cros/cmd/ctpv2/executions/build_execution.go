@@ -303,7 +303,7 @@ func executeFiltersInLuciBuild(
 	}
 
 	fillInUserDefinedFilters(ctx, req, dockerKeyFile, ctpVersion, isPartnerRun)
-	nFilters := getTotalFilters(ctx, req, common.MakeDefaultFilters(ctx, req.GetSuiteRequest(), buildState.Build().Input.Experiments), common.DefaultKoffeeFilterNames)
+	nFilters := getTotalFilters(ctx, req, common.MakeDefaultFilters(ctx, req.GetSuiteRequest(), buildState.Build().Input.Experiments, isPartnerRun, req.IsAlRun), common.DefaultKoffeeFilterNames)
 	logging.Infof(ctx, "nfilters: %s", nFilters)
 	// Generate config
 	ctpv2Config := configs.NewCtpv2ExecutionConfig(nFilters, configs.LuciBuildFilterExecutionConfigType, cmdCfg, sk)
