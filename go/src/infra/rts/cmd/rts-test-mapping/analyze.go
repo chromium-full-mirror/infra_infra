@@ -34,13 +34,17 @@ import (
 
 type analyzeCommandRun struct {
 	subcommands.CommandRunBase
-	authOpt                 *auth.Options
-	builder                 string
-	debugMode               bool
-	ev                      eval.Eval
-	osStr                   string
-	similarityJSONFile      string
-	testSelectionPerCluster int
+	authOpt                    *auth.Options
+	builder                    string
+	debugMode                  bool
+	favoriteTestsJSONFile      string
+	ev                         eval.Eval
+	osStr                      string
+	refinedMode                bool
+	similarityJSONFile         string
+	testSelectionEnagedCluster int
+	testSelectionPerCluster    int
+	testSelectionRestCluster   int
 }
 
 type debugEntry struct {
@@ -51,16 +55,20 @@ type debugEntry struct {
 }
 
 type decisionEngine struct {
-	allowedTests            map[string]struct{}
-	cqTests                 map[string]struct{}
-	skippedTests            map[string]struct{}
-	testClusterIDsMapping   map[string]map[string]struct{}
-	testSelectionPerCluster int
+	advancedAlgorithm          bool
+	allowedTests               map[string]struct{}
+	cqTests                    map[string]struct{}
+	fileFavoriteTestsMapping   map[string][]string
+	skippedTests               map[string]struct{}
+	testClusterIDsMapping      map[string]map[string]struct{}
+	testSelectionEnagedCluster int
+	testSelectionPerCluster    int
+	testSelectionRestCluster   int
 }
 
 func cmdAnalyze(authOpt *auth.Options) *subcommands.Command {
 	return &subcommands.Command{
-		UsageLine: `analyze -rejections <path> -durations <path> [-builder <name>] [-os <os_string>] -similarity_json <path>`,
+		UsageLine: `analyze -rejections <path> -durations <path> [-builder <name>] [-os <os_string>] -similarity_json <path> [-refined] [-favorite_json <path>]`,
 		ShortDesc: `Prints the expected recall and savings on the test mapping CQ run`,
 		LongDesc: text.Doc(`
 			This process uses a provided JSON file containing test cluster data to determine which tests to run during a CQ (Commit Queue) run, aiming to increase efficiency and resource savings.
@@ -71,53 +79,19 @@ func cmdAnalyze(authOpt *auth.Options) *subcommands.Command {
 			r := &analyzeCommandRun{authOpt: authOpt}
 			r.Flags.StringVar(&r.builder, "builder", "", "(Optional)Builder running the testSuite to exclude from tests")
 			r.Flags.BoolVar(&r.debugMode, "debug_mode", false, "(Optional)A flag to indicate whether to have debug output.")
+			r.Flags.StringVar(&r.favoriteTestsJSONFile, "favorite_json", "", "(Optional)A json file containing depot filepath and its favorite tests.")
 			r.Flags.StringVar(&r.osStr, "os", "", "(Optional)The os sub string value such as Ubuntu for linux, Win for windows, Mac for MacOS, etc.")
+			r.Flags.BoolVar(&r.refinedMode, "refined", false, "(Optional)A flag to indicate whether to run on random algorithm or refined algorithm.")
 			r.Flags.StringVar(&r.similarityJSONFile, "similarity_json", "", "(Required)A json file containing similarity between test case ids, such as {test_id_1: [test_id_2]}")
 			r.Flags.IntVar(&r.testSelectionPerCluster, "test_per_cluster", 1, "(Optional)The count of tests to be selected to run per cluster.")
+			r.Flags.IntVar(&r.testSelectionEnagedCluster, "test_per_engaged_cluster", 3, "(Optional)The count of tests to be selected to run per engaged cluster.")
+			r.Flags.IntVar(&r.testSelectionRestCluster, "test_per_rest_cluster", 5, "(Optional)The count of tests to be selected to run per rest cluster.")
 			r.ev.LogProgressInterval = 1000
 			if err := r.ev.RegisterFlags(&r.Flags); err != nil {
 				logging.Warningf(context.Background(), "RegisterFlags() return: %s", err.Error())
 			}
 			return r
 		},
-	}
-}
-
-// Stores a debugEntry into entries list.
-func logDebugEntry(m *sync.RWMutex, tv *evalpb.TestVariant, reason int, suite string, entries map[string][]debugEntry, changedFiles []*evalpb.SourceFile) {
-	m.Lock()
-	defer m.Unlock()
-	d, ok := entries[tv.FileName]
-	if !ok {
-		d = make([]debugEntry, 0)
-	}
-	e := new(debugEntry)
-	// Stop using tv.FileName as that is the test source file.
-	files := []string{}
-	for _, f := range changedFiles {
-		files = append(files, f.Path)
-	}
-	slices.Sort(files)
-	ck := signatureFromSourceFiles(changedFiles)
-	e.filePath = strings.Join(files[:], ",")
-	e.optimizedReason = reason
-	e.testSuites = suite
-	e.testIds = tv.Id
-	entries[ck] = append(d, *e)
-}
-
-// Validates input command line flags.
-func (r *analyzeCommandRun) validateFlags() error {
-	if err := r.ev.ValidateFlags(); err != nil {
-		return err
-	}
-	switch {
-	case r.similarityJSONFile == "":
-		return errors.New("-similarity_json is required")
-	case r.testSelectionPerCluster < 1:
-		return errors.New("-test_per_cluster could not be less than 1")
-	default:
-		return nil
 	}
 }
 
@@ -131,6 +105,7 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 
 	fileDebuggingEntries := make(map[string][]debugEntry)
 	testClusterMapping := make(map[string]map[string]struct{})
+	fileFavoriteTestsMapping := make(map[string][]string)
 	var mu = &sync.RWMutex{}
 	var err error
 	if r.similarityJSONFile != "" {
@@ -148,6 +123,23 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 			}
 		}
 	}
+	// Gets some stats
+	distinctTests := make(map[string]struct{})
+	if r.favoriteTestsJSONFile != "" {
+		fileFavoriteTestsMappingTemp, err := loadFromJSONFile(r.favoriteTestsJSONFile)
+		if err != nil {
+			logging.Infof(ctx, err.Error())
+			return 1
+		}
+		for key, values := range fileFavoriteTestsMappingTemp {
+			fileFavoriteTestsMapping[key] = values
+			for _, v := range values {
+				distinctTests[v] = struct{}{}
+			}
+		}
+	}
+	logging.Infof(ctx, "Size of favorite_tests: %d", len(fileFavoriteTestsMapping))
+	logging.Infof(ctx, "Number of distinct tests: %d", len(distinctTests))
 	// Build a {cluster_id: test_ids} table
 	testClusterIDsMapping := clusterTests(testClusterMapping)
 	unchangedVariantCount := 0
@@ -157,16 +149,17 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 		optimizedReason := -1
 		affectedBuilder := r.builder
 		e := decisionEngine{
-			allowedTests:            make(map[string]struct{}),
-			cqTests:                 make(map[string]struct{}),
-			skippedTests:            make(map[string]struct{}),
-			testClusterIDsMapping:   testClusterIDsMapping,
-			testSelectionPerCluster: r.testSelectionPerCluster,
+			advancedAlgorithm:          r.refinedMode,
+			allowedTests:               make(map[string]struct{}),
+			cqTests:                    make(map[string]struct{}),
+			fileFavoriteTestsMapping:   fileFavoriteTestsMapping,
+			skippedTests:               make(map[string]struct{}),
+			testClusterIDsMapping:      testClusterIDsMapping,
+			testSelectionEnagedCluster: r.testSelectionEnagedCluster,
+			testSelectionPerCluster:    r.testSelectionPerCluster,
+			testSelectionRestCluster:   r.testSelectionRestCluster,
 		}
-		for _, tv := range in.TestVariants {
-			e.cqTests[tv.Id] = struct{}{}
-		}
-		e.update()
+		e.update(in)
 		if r.debugMode {
 			logging.Infof(ctx, "The number of tests in allowedTests: %d\n", len(e.allowedTests))
 			logging.Infof(ctx, "The number of tests in skippedTests: %d\n", len(e.skippedTests))
@@ -235,8 +228,68 @@ func (r *analyzeCommandRun) Run(a subcommands.Application, args []string, env su
 	return 0
 }
 
+// Uses advanced algorithm to pick up tests into allowedTests and skippedTests.
+func (r *decisionEngine) updateInAdvancedAlgorithm(in eval.Input) {
+	// Advanced algorithm to select allowedTests and skippedTests.
+	//
+	// Generate a list of allowedTests via a FER formula:
+	//   F for favorite tests from joining the table with in.ChangedFiles,
+	//   E for tests from engaged clusters,
+	//   R for tests from rest clusters.
+	// allowedTests = F + E + R.
+
+	// For F tests: retrieve from changed files join fileFavoriteTestsMapping.
+	r.allowedTests = testsFromChangedFiles(in.ChangedFiles, r.fileFavoriteTestsMapping)
+	engagedClusters := make(map[string]struct{})
+	allClusters := make(map[string]struct{})
+	for id, tests := range r.testClusterIDsMapping {
+		allClusters[id] = struct{}{}
+
+		for t := range tests {
+			if _, ok := r.allowedTests[t]; ok {
+				// Mark the cluster as engaged cluster
+				engagedClusters[id] = struct{}{}
+				break
+			}
+		}
+	}
+	restClusters := diffSet(allClusters, engagedClusters)
+	for id := range engagedClusters {
+		// For E tests: retrieve from engaged clusters.
+		tests := r.testClusterIDsMapping[id]
+		base := intersectSets(tests, r.cqTests)
+		testPerCluster := r.testSelectionEnagedCluster
+		if testPerCluster > len(base) {
+			testPerCluster = len(base)
+		}
+		selected := randomSelectFromSet(base, testPerCluster)
+		extendSetFromList(r.allowedTests, selected)
+		for t := range tests {
+			if _, ok := r.allowedTests[t]; !ok {
+				r.skippedTests[t] = struct{}{}
+			}
+		}
+	}
+	for id := range restClusters {
+		// For R tests: retrieve from other clusters.
+		tests := r.testClusterIDsMapping[id]
+		base := intersectSets(tests, r.cqTests)
+		testPerCluster := r.testSelectionRestCluster
+		if testPerCluster > len(base) {
+			testPerCluster = len(base)
+		}
+		selected := randomSelectFromSet(base, testPerCluster)
+		extendSetFromList(r.allowedTests, selected)
+		for t := range tests {
+			if _, ok := r.allowedTests[t]; !ok {
+				r.skippedTests[t] = struct{}{}
+			}
+		}
+	}
+}
+
 // Uses random selection to pick up tests into allowedTests and skippedTests.
-func (r *decisionEngine) update() {
+func (r *decisionEngine) updateInRandomAlgorithm() {
 	// Random algorithms to select allowedTests and skippedTests.
 	for _, tests := range r.testClusterIDsMapping {
 		base := intersectSets(tests, r.cqTests)
@@ -251,6 +304,58 @@ func (r *decisionEngine) update() {
 				r.skippedTests[t] = struct{}{}
 			}
 		}
+	}
+}
+
+// Populates the decisionEngine with allowedTests and skippedTests.
+func (r *decisionEngine) update(in eval.Input) {
+	for _, tv := range in.TestVariants {
+		r.cqTests[tv.Id] = struct{}{}
+	}
+	if r.advancedAlgorithm {
+		r.updateInAdvancedAlgorithm(in)
+	} else {
+		r.updateInRandomAlgorithm()
+	}
+}
+
+// Stores a debugEntry into entries list.
+func logDebugEntry(m *sync.RWMutex, tv *evalpb.TestVariant, reason int, suite string, entries map[string][]debugEntry, changedFiles []*evalpb.SourceFile) {
+	m.Lock()
+	defer m.Unlock()
+	d, ok := entries[tv.FileName]
+	if !ok {
+		d = make([]debugEntry, 0)
+	}
+	e := new(debugEntry)
+	// Stop using tv.FileName as that is the test source file.
+	files := []string{}
+	for _, f := range changedFiles {
+		files = append(files, f.Path)
+	}
+	slices.Sort(files)
+	ck := signatureFromSourceFiles(changedFiles)
+	e.filePath = strings.Join(files[:], ",")
+	e.optimizedReason = reason
+	e.testSuites = suite
+	e.testIds = tv.Id
+	entries[ck] = append(d, *e)
+}
+
+// Validates input command line flags.
+func (r *analyzeCommandRun) validateFlags() error {
+	if err := r.ev.ValidateFlags(); err != nil {
+		return err
+	}
+	switch {
+	case r.similarityJSONFile == "":
+		return errors.New("-similarity_json is required")
+	case r.testSelectionPerCluster < 1:
+		return errors.New("-test_per_cluster could not be less than 1")
+	case r.refinedMode && r.favoriteTestsJSONFile == "":
+		return errors.New("-favorite_json is required when -refined is specified")
+	default:
+		return nil
 	}
 }
 
@@ -297,7 +402,18 @@ func randomSelectFromSet(input map[string]struct{}, n int) []string {
 	return keys[:n]
 }
 
-// Generates a map that is the interact between map1 and map2.
+// Generates a map that is the output of source - target.
+func diffSet(source, target map[string]struct{}) map[string]struct{} {
+	results := make(map[string]struct{})
+	for k, v := range source {
+		if _, ok := target[k]; !ok {
+			results[k] = v
+		}
+	}
+	return results
+}
+
+// Generates a map that is the intersect between map1 and map2.
 func intersectSets(map1, map2 map[string]struct{}) map[string]struct{} {
 	intersection := make(map[string]struct{})
 
@@ -322,6 +438,24 @@ func extendSetFromList(dest map[string]struct{}, src []string) {
 	for _, k := range src {
 		dest[k] = struct{}{}
 	}
+}
+
+// Returns a dict of tests from changedFiles
+func testsFromChangedFiles(sourceFiles []*evalpb.SourceFile, lookup map[string][]string) map[string]struct{} {
+	candidates := make(map[string]struct{})
+	var paths []string
+	for _, f := range sourceFiles {
+		paths = append(paths, f.Path)
+	}
+	for _, p := range paths {
+		if _, ok := lookup[p]; ok {
+			for _, k := range lookup[p] {
+				candidates[k] = struct{}{}
+			}
+		}
+	}
+	return candidates
+
 }
 
 // Uses a list of path from sourceFiles to generate a SHA256 hash.
