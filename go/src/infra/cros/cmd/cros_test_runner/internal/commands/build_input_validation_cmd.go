@@ -8,8 +8,6 @@ import (
 	"context"
 	"fmt"
 
-	"infra/cros/cmd/common_lib/common"
-
 	"github.com/gogo/protobuf/jsonpb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -18,6 +16,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
+	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 )

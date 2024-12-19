@@ -17,7 +17,6 @@ import (
 	"infra/cros/dutstate"
 	"infra/libs/skylab/inventory/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
-
 	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	manufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 	"infra/unifiedfleet/app/util/osutil"

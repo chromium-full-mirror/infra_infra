@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"infra/cros/servo/logging"
-
 	"github.com/google/go-cmp/cmp"
+
+	"infra/cros/servo/logging"
 )
 
 func TestFuncLogger(t *testing.T) {

@@ -11,22 +11,24 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
-	androidapi "infra/cros/cmd/common_lib/android_api"
 	"log"
 	"strconv"
 	"strings"
 	"sync"
 
 	"cloud.google.com/go/bigquery"
+	"cloud.google.com/go/pubsub"
 	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/analytics"
+	androidapi "infra/cros/cmd/common_lib/android_api"
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/common_lib/tools/outputprops"
@@ -34,10 +36,6 @@ import (
 	"infra/cros/cmd/cros_test_runner/protos"
 	"infra/cros/cmd/ctpv2/data"
 	"infra/cros/cmd/ctpv2/internal/configs"
-
-	"cloud.google.com/go/pubsub"
-
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 )
 
 var inputProps = build.RegisterInputProperty[*steps.CTPv2BinaryBuildInput]("")

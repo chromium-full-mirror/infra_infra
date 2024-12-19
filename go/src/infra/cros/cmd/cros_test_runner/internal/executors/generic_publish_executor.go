@@ -8,12 +8,12 @@ import (
 	"context"
 	"fmt"
 
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"google.golang.org/grpc"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"

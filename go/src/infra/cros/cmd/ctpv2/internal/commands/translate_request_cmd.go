@@ -22,12 +22,11 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/luciexe/build"
+	resultpb "go.chromium.org/luci/resultdb/proto/v1"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/ctpv2/data"
-
-	resultpb "go.chromium.org/luci/resultdb/proto/v1"
 )
 
 // FilterExecutionCmd represents test execution cmd.

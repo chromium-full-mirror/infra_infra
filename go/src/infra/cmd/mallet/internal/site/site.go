@@ -12,13 +12,13 @@ import (
 
 	"github.com/google/uuid"
 
-	ufsUtil "infra/unifiedfleet/app/util"
-
 	"go.chromium.org/luci/auth"
 	buildbucket_pb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/api/gitiles"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
+
+	ufsUtil "infra/unifiedfleet/app/util"
 )
 
 // OAuth scope for the whole of cloud platform.

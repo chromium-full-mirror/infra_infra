@@ -14,11 +14,12 @@ import (
 	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"go.chromium.org/luci/common/logging"
-	"go.chromium.org/luci/common/logging/gologger"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/common/logging/gologger"
 
 	"infra/device_manager/internal/database"
 	"infra/device_manager/internal/frontend"

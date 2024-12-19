@@ -10,13 +10,13 @@ import (
 	"sort"
 	"strings"
 
+	"google.golang.org/protobuf/proto"
+
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	common_proto "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
-
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/build"
-	"google.golang.org/protobuf/proto"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/interfaces"

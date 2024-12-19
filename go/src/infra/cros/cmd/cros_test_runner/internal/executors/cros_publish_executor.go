@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"os"
 
-	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
 
@@ -17,6 +16,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	testapi_metadata "go.chromium.org/chromiumos/config/go/test/api/metadata"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"

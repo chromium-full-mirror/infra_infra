@@ -9,16 +9,16 @@ import (
 	"fmt"
 	"testing"
 
-	androidapi "infra/cros/cmd/common_lib/android_api"
-	mock_androidapi "infra/cros/cmd/common_lib/android_api/mocks"
-	"infra/cros/cmd/ctpv2/data"
-
-	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
-	"infra/cros/cmd/common_lib/common"
-
 	"github.com/golang/mock/gomock"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+
+	androidapi "infra/cros/cmd/common_lib/android_api"
+	mock_androidapi "infra/cros/cmd/common_lib/android_api/mocks"
+	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/ctpv2/data"
 )
 
 func TestUpdateInvocationProperties(t *testing.T) {

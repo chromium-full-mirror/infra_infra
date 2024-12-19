@@ -14,7 +14,6 @@ import (
 	"strconv"
 
 	"github.com/golang/protobuf/proto"
-
 	"google.golang.org/api/option"
 
 	"go.chromium.org/chromiumos/config/go/test/api"

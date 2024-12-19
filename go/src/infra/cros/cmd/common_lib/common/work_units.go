@@ -5,8 +5,9 @@
 package common
 
 import (
-	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 	"strings"
+
+	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 func InvocationSealed(inv *androidbuildinternal.Invocation) bool {

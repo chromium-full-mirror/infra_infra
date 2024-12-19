@@ -6,10 +6,11 @@ package utils
 
 import (
 	"flag"
+	"testing"
+
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-	"testing"
 )
 
 func TestGetUpdateMask(t *testing.T) {

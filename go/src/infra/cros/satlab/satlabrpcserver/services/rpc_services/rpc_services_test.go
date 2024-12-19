@@ -21,6 +21,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -29,7 +30,6 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
-	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/cros/satlab/common/dut"
 	"infra/cros/satlab/common/enumeration"

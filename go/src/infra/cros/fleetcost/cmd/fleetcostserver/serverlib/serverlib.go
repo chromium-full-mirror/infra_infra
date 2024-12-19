@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/bigquery"
+	"google.golang.org/api/option"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -22,8 +23,6 @@ import (
 	"go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
-
-	"google.golang.org/api/option"
 
 	"infra/cros/fleetcost/internal/costserver"
 	"infra/libs/bqwrapper"

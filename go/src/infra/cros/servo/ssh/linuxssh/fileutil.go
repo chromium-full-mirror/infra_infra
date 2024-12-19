@@ -10,9 +10,6 @@ package linuxssh
 
 import (
 	"bytes"
-	"strconv"
-	"time"
-
 	"context"
 	"crypto/sha1"
 	"encoding/hex"
@@ -23,7 +20,9 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
+	"time"
 
 	"golang.org/x/sys/unix"
 

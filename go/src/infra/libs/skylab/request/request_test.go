@@ -13,6 +13,7 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	goconfig "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/build/api"
@@ -26,7 +27,6 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/testing/typed"
-	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"infra/libs/skylab/inventory"
 	"infra/libs/skylab/request"

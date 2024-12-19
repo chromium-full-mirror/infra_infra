@@ -7,11 +7,12 @@ package dumper
 import (
 	"bufio"
 	"context"
+	"os"
+	"testing"
+
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-	"os"
-	"testing"
 )
 
 func TestParseGoldenEyeJsonData(t *testing.T) {
