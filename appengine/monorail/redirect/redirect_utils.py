@@ -3,12 +3,11 @@
 # found in the LICENSE file.
 """Utils for redirect."""
 import urllib
-from werkzeug.datastructures import MultiDict
-from redirect import redirect_project_template
 
-from tracker import tracker_constants
-from tracker import tracker_bizobj
+from werkzeug.datastructures import MultiDict
+
 from redirect import redirect_custom_labels
+from redirect import redirect_project_template
 
 PROJECT_REDIRECT_MAP = {
     'angleproject': 'https://issues.angleproject.org',
@@ -79,6 +78,22 @@ VALID_IS_SEARCH_VALUE = ['open', 'starred']
 
 # Chromium's component ID in Buganizer.
 DEFAULT_COMPONENT_ID = '1363614'
+
+# The next few items are specifications of the defaults for project
+# issue configurations.  These are used for projects that do not have
+# their own config.
+DEFAULT_CANNED_QUERIES = {
+    1: '',
+    2: 'is:open',
+    3: 'is:open owner:me',
+    4: 'is:open reporter:me',
+    5: 'is:open is:starred',
+    6: 'status:new',
+    7: 'status=fixed,done',
+    8: 'is:open commentby:me',
+}
+OPEN_ISSUES_CAN = 2
+
 
 def GetRedirectURL(project_name):
   return PROJECT_REDIRECT_MAP.get(project_name, None)
@@ -166,10 +181,9 @@ def GetSearchQuery(project_name, params):
   # (eg.can=41013401 in Monorail is the Triage Queue.)
   # For redirect we will just support the build in can query as the first step.
   # TODO(b/283983843): support customized can query as needed.
-  can_param = params.get(
-      'can', type=int, default=tracker_constants.OPEN_ISSUES_CAN)
+  can_param = params.get('can', type=int, default=OPEN_ISSUES_CAN)
   # TODO(b/283983843): move the BuiltInQuery to redirect folder.
-  default_search_string = tracker_bizobj.GetBuiltInQuery(can_param)
+  default_search_string = _GetBuiltInQuery(can_param)
   for cond in default_search_string.split(' '):
     search_conds.append(cond)
 
@@ -302,3 +316,8 @@ def _GetCustomLabelsToCustomFieldRedirectInfo(
     return None, None
 
   return None, None
+
+
+def _GetBuiltInQuery(query_id):
+  """If the given query ID is for a built-in query, return that string."""
+  return DEFAULT_CANNED_QUERIES.get(query_id, '')

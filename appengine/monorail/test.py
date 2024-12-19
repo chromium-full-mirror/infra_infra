@@ -8,21 +8,7 @@ import sys
 
 import pytest
 
-# gae_ts_mon's __init__.py does some import magic to create an infra_libs
-# package, so we need to import it before importing Monorail packages.
-import gae_ts_mon
-
-import import_utils
-
 if __name__ == '__main__':
-  os.environ['GAE_RUNTIME'] = 'python3'
-  os.environ['GAE_APPLICATION'] = 'testing-app'
-  os.environ['SERVER_SOFTWARE'] = 'test'
-
-  import_utils.FixImports()
-
-  args = ['-Werror']
-  args += ['--ignore', 'components']
-  args += ['--ignore', 'gae_ts_mon']
-  args += ['--reruns', '2']
+  # TODO(dtu): Re-enable -Werror once jinja2 is updated.
+  args = []
   sys.exit(pytest.main(args + sys.argv[1:]))

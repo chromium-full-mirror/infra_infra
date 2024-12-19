@@ -1,8 +1,0 @@
-[if-any site_banner_message]
- <div style="font-weight:bold; color:var(--chops-field-error-color); padding:5px; margin-top:10px; text-align:center; background:var(--chops-orange-50);">
-  [site_banner_message]
-  [if-any banner_time]
-    <chops-timestamp timestamp="[banner_time]"></chops-timestamp>
-  [end]
- </div>
-[end]

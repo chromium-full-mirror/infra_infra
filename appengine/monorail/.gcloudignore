@@ -7,26 +7,11 @@
 .*\#.*
 .*@.*
 ._gae_py*
-.nyc_output
 REVISION
-.coverage
-coverage
-htmlcov
 .DS_Store
 workspace.xml
-static_src/**/*\.min.js*
-node_modules
-elements/mock-data/*\.json
-!elements/mock-data/gates-mock.json
-full_results.json
 
 doc/
-schema/
-tools/
 
 # Python 3 virtual environment. Created with `python3 -m venv venv`.
 venv/
-
-# Python third-party libraries.
-# https://cloud.google.com/appengine/docs/standard/python3/specifying-dependencies
-lib

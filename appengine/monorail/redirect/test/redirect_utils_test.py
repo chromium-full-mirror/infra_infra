@@ -3,17 +3,26 @@
 # found in the LICENSE file.
 
 import unittest
+from unittest import mock
+
+from google.appengine.ext import testbed
 import werkzeug
 
-from mock import patch
-
 from redirect import redirect_utils
-from mock import patch
 
 
 class TestRedirectUtils(unittest.TestCase):
 
-  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  def setUp(self):
+    self.testbed = testbed.Testbed()
+    self.testbed.activate()
+    self.testbed.init_memcache_stub()
+    self.testbed.init_datastore_v3_stub()
+
+  def tearDown(self):
+    self.testbed.deactivate()
+
+  @mock.patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
   def testNewIssueParams(self, fake_redirectProjectTemplate):
     fake_redirectProjectTemplate.return_value = None, None
     params = werkzeug.datastructures.MultiDict(
@@ -30,7 +39,7 @@ class TestRedirectUtils(unittest.TestCase):
     get = redirect_utils.GetNewIssueParams(params, 'project')
     self.assertEqual(expected, get)
 
-  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  @mock.patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
   def testNewIssueParams_withSubComponent(self, fake_redirectProjectTemplate):
     fake_redirectProjectTemplate.return_value = None, None
     params = werkzeug.datastructures.MultiDict(
@@ -47,7 +56,7 @@ class TestRedirectUtils(unittest.TestCase):
     get = redirect_utils.GetNewIssueParams(params, 'boringssl')
     self.assertEqual(expected, get)
 
-  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  @mock.patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
   def testNewIssueRedirectWithTemplateParam(self, fake_redirectProjectTemplate):
     fake_redirectProjectTemplate.return_value = '1', '2'
     params = werkzeug.datastructures.MultiDict(
@@ -60,7 +69,7 @@ class TestRedirectUtils(unittest.TestCase):
     get = redirect_utils.GetNewIssueParams(params, 'project')
     self.assertEqual(expected, get)
 
-  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  @mock.patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
   def testNewIssueRedirectWithComponentsParam(
       self, fake_redirectProjectTemplate):
     fake_redirectProjectTemplate.return_value = '1', None
@@ -74,7 +83,7 @@ class TestRedirectUtils(unittest.TestCase):
     get = redirect_utils.GetNewIssueParams(params, 'project')
     self.assertEqual(expected, get)
 
-  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  @mock.patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
   def testNewIssueRedirectWithComponentsParam(
       self, fake_redirectProjectTemplate):
     fake_redirectProjectTemplate.return_value = '1', None
@@ -88,7 +97,7 @@ class TestRedirectUtils(unittest.TestCase):
     get = redirect_utils.GetNewIssueParams(params, 'project')
     self.assertEqual(expected, get)
 
-  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  @mock.patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
   def testNewIssueRedirectWithMutipleComponentsParam(
       self, fake_redirectProjectTemplate):
 
@@ -110,7 +119,7 @@ class TestRedirectUtils(unittest.TestCase):
     get = redirect_utils.GetNewIssueParams(params, 'project')
     self.assertEqual(expected, get)
 
-  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  @mock.patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
   def testNewIssueRedirectWithAllParam(self, fake_redirectProjectTemplate):
 
     def mock_redirect(_, arg):
@@ -133,7 +142,7 @@ class TestRedirectUtils(unittest.TestCase):
     get = redirect_utils.GetNewIssueParams(params, 'project')
     self.assertEqual(expected, get)
 
-  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  @mock.patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
   def testNewIssueParamsWithNoValidValue(self, fake_redirectProjectTemplate):
     fake_redirectProjectTemplate.return_value = None, None
     params = werkzeug.datastructures.MultiDict([('test', 'this is a test')])
@@ -141,7 +150,7 @@ class TestRedirectUtils(unittest.TestCase):
     get = redirect_utils.GetNewIssueParams(params, 'project')
     self.assertEqual(expected, get)
 
-  @patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
+  @mock.patch("redirect.redirect_project_template.RedirectProjectTemplate.Get")
   def testNewIssueParamsWithNoWizard(self, fake_redirectProjectTemplate):
     fake_redirectProjectTemplate.return_value = None, None
     params = werkzeug.datastructures.MultiDict([('test', 'this is a test')])
@@ -149,7 +158,8 @@ class TestRedirectUtils(unittest.TestCase):
     get = redirect_utils.GetNewIssueParams(params, 'dawn')
     self.assertEqual(expected, get)
 
-  @patch("redirect.redirect_custom_labels.RedirectCustomLabelsToHotlists.Get")
+  @mock.patch(
+      "redirect.redirect_custom_labels.RedirectCustomLabelsToHotlists.Get")
   def testNewIssueParamsWithCustomLabelsToHotlists(
       self, fake_redirect_custom_labels_to_hotlists):
     fake_redirect_custom_labels_to_hotlists.return_value = '12345'
@@ -159,7 +169,7 @@ class TestRedirectUtils(unittest.TestCase):
     get = redirect_utils.GetNewIssueParams(params, 'project')
     self.assertEqual(expected, get)
 
-  @patch("redirect.redirect_custom_labels.RedirectToCustomFields.GetAll")
+  @mock.patch("redirect.redirect_custom_labels.RedirectToCustomFields.GetAll")
   def testNewIssueParamsWithCustomLabelsToCustomFields(
       self, fake_redirect_custom_labels_to_custom_fields):
     fake_redirect_custom_labels_to_custom_fields.return_value = {
@@ -177,7 +187,8 @@ class TestRedirectUtils(unittest.TestCase):
     get = redirect_utils.GetNewIssueParams(params, 'project')
     self.assertEqual(expected, get)
 
-  @patch("redirect.redirect_custom_labels.RedirectCustomLabelsToHotlists.Get")
+  @mock.patch(
+      "redirect.redirect_custom_labels.RedirectCustomLabelsToHotlists.Get")
   def testGetSearchQuery(self, fake_redirect_custom_labels_to_hotlists):
     fake_redirect_custom_labels_to_hotlists.return_value = None
     params = werkzeug.datastructures.MultiDict(
@@ -187,7 +198,8 @@ class TestRedirectUtils(unittest.TestCase):
     get = redirect_utils.GetSearchQuery('project', params)
     self.assertEqual(expected, get)
 
-  @patch("redirect.redirect_custom_labels.RedirectCustomLabelsToHotlists.Get")
+  @mock.patch(
+      "redirect.redirect_custom_labels.RedirectCustomLabelsToHotlists.Get")
   def testGetSearchQueryWithSubComponent(
       self, fake_redirect_custom_labels_to_hotlists):
     fake_redirect_custom_labels_to_hotlists.return_value = None
@@ -197,7 +209,8 @@ class TestRedirectUtils(unittest.TestCase):
     get = redirect_utils.GetSearchQuery('boringssl', params)
     self.assertEqual(expected, get)
 
-  @patch("redirect.redirect_custom_labels.RedirectCustomLabelsToHotlists.Get")
+  @mock.patch(
+      "redirect.redirect_custom_labels.RedirectCustomLabelsToHotlists.Get")
   def testGetSearchQueryWithCustomLabelsToHotlists(
       self, fake_redirect_custom_labels_to_hotlists):
     fake_redirect_custom_labels_to_hotlists.return_value = '12345'
@@ -208,7 +221,7 @@ class TestRedirectUtils(unittest.TestCase):
     get = redirect_utils.GetSearchQuery('project', params)
     self.assertEqual(expected, get)
 
-  @patch("redirect.redirect_custom_labels.RedirectToCustomFields.GetAll")
+  @mock.patch("redirect.redirect_custom_labels.RedirectToCustomFields.GetAll")
   def testGetSearchQueryWithCustomLabelsToCustomFields(
       self, fake_redirect_custom_labels_to_custom_fields):
     fake_redirect_custom_labels_to_custom_fields.return_value = {
@@ -227,7 +240,8 @@ class TestRedirectUtils(unittest.TestCase):
     get = redirect_utils.GetSearchQuery('project', params)
     self.assertEqual(expected, get)
 
-  @patch("redirect.redirect_custom_labels.RedirectCustomLabelsToHotlists.Get")
+  @mock.patch(
+      "redirect.redirect_custom_labels.RedirectCustomLabelsToHotlists.Get")
   def testGetSearchQueryWithCanValue(
       self, fake_redirect_custom_labels_to_hotlists):
     fake_redirect_custom_labels_to_hotlists.return_value = None

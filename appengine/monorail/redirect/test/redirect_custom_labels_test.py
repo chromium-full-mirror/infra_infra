@@ -6,6 +6,7 @@ import unittest
 
 from google.appengine.ext import ndb
 from google.appengine.ext import testbed
+
 from redirect import redirect_custom_labels
 
 
