@@ -6,7 +6,10 @@ package consoleserver
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
+
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
@@ -15,6 +18,7 @@ import (
 	"infra/fleetconsole/internal/consoleserver/filtering"
 	"infra/fleetconsole/internal/consoleserver/sorting"
 	"infra/fleetconsole/internal/devicemanagerclient"
+	"infra/fleetconsole/internal/internalproto"
 )
 
 const maxPageSize int = 50
@@ -25,7 +29,11 @@ func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *flee
 	if err != nil {
 		return nil, errors.Annotate(err, "list devices").Err()
 	}
-	afterDeviceID := pageTokenToDeviceID(req.PageToken)
+
+	afterDeviceID, err := pageTokenToDeviceID(ctx, req.PageToken)
+	if err != nil {
+		return nil, err
+	}
 
 	d, err := deviceManagerClient.Leaser.ListDevices(ctx, &api.ListDevicesRequest{})
 
@@ -58,7 +66,11 @@ func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *flee
 
 	nextPageToken := ""
 	if len(devicesPage) > 0 && devicesPage[len(devicesPage)-1].Id != devices[len(devices)-1].Id { // not reached the end of the collection yet
-		nextPageToken = devicesPage[len(devicesPage)-1].Id // TODO: b/378633906 - obfuscate the page token
+		deviceID := devicesPage[len(devicesPage)-1].Id
+		nextPageToken, err = deviceIDToPageToken(ctx, deviceID)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &fleetconsolerpc.ListDevicesResponse{
@@ -67,10 +79,30 @@ func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *flee
 	}, nil
 }
 
-// TODO: b/378633906 - this is a stub method, which in future will unpack an obfuscated page token
-// Uses last device ID from a previous page as a cursor
-func pageTokenToDeviceID(pageToken string) string {
-	return pageToken
+func pageTokenToDeviceID(ctx context.Context, pageToken string) (string, error) {
+	encodedProto, err := base64.RawURLEncoding.DecodeString(pageToken)
+	if err != nil {
+		return "", errors.Annotate(err, "invalid page token").Err()
+	}
+
+	var tokenProto internalproto.ListDevicesPaginationToken
+	if err := proto.Unmarshal(encodedProto, &tokenProto); err != nil {
+		return "", errors.Annotate(err, "invalid page token").Err()
+	}
+
+	return tokenProto.GetToken(), nil
+}
+
+func deviceIDToPageToken(ctx context.Context, pageToken string) (string, error) {
+	nextPageToken, err := proto.Marshal(&internalproto.ListDevicesPaginationToken{
+		Token: pageToken,
+	})
+
+	if err != nil {
+		return "", errors.Annotate(err, "failed to encrypt page token").Err()
+	}
+
+	return base64.RawURLEncoding.EncodeToString(nextPageToken), nil
 }
 
 func getPage(devices []*fleetconsolerpc.Device, afterDeviceID string, pageSize int) ([]*fleetconsolerpc.Device, error) {
