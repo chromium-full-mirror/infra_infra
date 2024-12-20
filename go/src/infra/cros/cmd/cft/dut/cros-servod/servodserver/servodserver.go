@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"strings"
 
 	dc "github.com/docker/docker/client"
@@ -263,7 +264,29 @@ func (s *ServodService) LogCheckPoint(ctx context.Context, req *api.LogCheckPoin
 //	The extraction of the MCU console logs from latest.DEBUG
 func (s *ServodService) SaveLogs(ctx context.Context, req *api.SaveLogsRequest) (*api.SaveLogsResponse, error) {
 	s.logger.Printf("Received api.SaveLogsRequest: %#v\n", req)
-	return nil, errors.New("the service SaveLogs has not be implemented")
+	var sshClient *crypto_ssh.Client
+	sshClient, err := s.sshPool.Get(req.ServoHostPath)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get client from pool: %w", err)
+	}
+	dst := req.Dest
+	if dst == "" {
+		dst, err = os.MkdirTemp("/tmp/servodserver", "servodlogs")
+		if err != nil {
+			return nil, fmt.Errorf("failed to create temporary directory %s to save logs: %w", dst, err)
+		}
+	} else {
+		if err := os.MkdirAll(dst, 0750); err != nil {
+			return nil, fmt.Errorf("failed to create directory %s to save logs: %w", dst, err)
+		}
+	}
+
+	if err := SaveServoLog(ctx, req.GetServoHostPath(), req.GetServodDockerContainerName(),
+		req.GetServodPorts(), sshClient, dst, s.logger); err != nil {
+		return nil, fmt.Errorf("failed to save servo logs: %w", err)
+	}
+
+	return &api.SaveLogsResponse{}, nil
 }
 
 // getErrorMessage returns either Stderr output or error message

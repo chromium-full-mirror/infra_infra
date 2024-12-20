@@ -22,6 +22,7 @@ import (
 	"github.com/docker/docker/api/types/filters"
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
+	crypto_ssh "golang.org/x/crypto/ssh"
 
 	"infra/cros/servo/errors"
 	"infra/cros/servo/ssh"
@@ -42,8 +43,9 @@ type Proxy struct {
 	port            int
 	sshPort         int
 	keyFile, keyDir string
-	dcl             *client.Client // nil if servod is not running inside a docker container
-	sdc             string         // empty if servod is not running inside a docker container
+	dcl             *client.Client     // nil if servod is not running inside a docker container
+	sdc             string             // empty if servod is not running inside a docker container
+	sshClient       *crypto_ssh.Client // existing ssh connections.
 }
 
 func createDockerClient(ctx context.Context, dockerHost string) (*client.Client, error) {
@@ -212,7 +214,7 @@ func SplitHostPort(servoHostPort string) (*ConnectInfo, error) {
 // If the servod is running in a docker container, the serverHostPort expected to be in form "${CONTAINER_NAME}:9999:docker:".
 // The port of the servod host is defaulted to 9999, user only needs to provide the container name.
 // CONTAINER_NAME must end with docker_servod.
-func NewProxy(ctx context.Context, servoHostPort, keyFile, keyDir string) (newProxy *Proxy, retErr error) {
+func NewProxy(ctx context.Context, servoHostPort, keyFile, keyDir string, sshClient *crypto_ssh.Client) (newProxy *Proxy, retErr error) {
 	var pxy Proxy
 	defer func() {
 		if retErr != nil {
@@ -229,6 +231,7 @@ func NewProxy(ctx context.Context, servoHostPort, keyFile, keyDir string) (newPr
 	pxy.sshPort = connectInfo.ServoSSHPort
 	pxy.keyFile = keyFile
 	pxy.keyDir = keyDir
+	pxy.sshClient = sshClient
 
 	if err := pxy.connectSSH(ctx); err != nil {
 		return nil, err
@@ -252,10 +255,10 @@ func NewProxy(ctx context.Context, servoHostPort, keyFile, keyDir string) (newPr
 		pxy.sdc = connectInfo.DockerContainer
 	}
 
-	testing.ContextLogf(ctx, "Connecting to servod directly at %s:%d", pxy.servoHostname, pxy.port)
+	testing.ContextLogf(ctx, "Connecting to servo port %d at %s:%d", pxy.port, pxy.servoHostname, pxy.sshPort)
 	pxy.svo, err = New(ctx, pxy.servoHostname, pxy.port)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "failed connect to servod servo port %d at %s:%d", pxy.port, pxy.servoHostname, pxy.sshPort)
 	}
 	return &pxy, nil
 }
@@ -310,6 +313,7 @@ func (p *Proxy) connectSSH(ctx context.Context) (retErr error) {
 		WarnFunc:       func(msg string) { testing.ContextLog(ctx, msg) },
 		Hostname:       net.JoinHostPort(p.servoHostname, fmt.Sprint(p.sshPort)),
 		User:           "root",
+		SSHClient:      p.sshClient,
 	}
 	testing.ContextLogf(ctx, "Opening Servo SSH connection to %s", sopt.Hostname)
 	hst, err := ssh.New(ctx, &sopt)

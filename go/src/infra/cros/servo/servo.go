@@ -84,7 +84,7 @@ func (s *Servo) verifyConnectivity(ctx context.Context) error {
 	const msg = "hello from servo"
 	actualMessage, err := s.Echo(ctx, "hello from servo")
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to call servo to verify connection")
 	}
 
 	const expectedMessage = "ECH0ING: " + msg

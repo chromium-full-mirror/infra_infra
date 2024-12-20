@@ -51,6 +51,8 @@ type Conn struct {
 	platform *Platform
 
 	adbDevice *gadb.Device
+
+	useExistingClient bool // useExistingClient indicate cl is using an exsiting client.
 }
 
 // Options contains options used when connecting to an SSH server.
@@ -87,6 +89,9 @@ type Options struct {
 	// Platform describes the operating system running on the SSH server. This controls how certain
 	// commands will be executed on the remote system. If nil, assumes a ChromeOS system.
 	Platform *Platform
+
+	// SSHClient contain an exisitng client that can be used.
+	SSHClient *ssh.Client
 }
 
 // ConnectionType indicates the type of connection to the DUT.
@@ -244,6 +249,14 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 	}
 	if o.Platform == nil {
 		o.Platform = DefaultPlatform
+	}
+
+	if o.SSHClient != nil {
+		return &Conn{
+			cl:                o.SSHClient,
+			platform:          o.Platform,
+			useExistingClient: false,
+		}, nil
 	}
 
 	am, err := getSSHAuthMethods(o, "["+o.Hostname+"] ")
@@ -471,7 +484,7 @@ func cloudBotsProxyAddress() (string, error) {
 // Close closes the underlying connection to the host.
 func (s *Conn) Close(ctx context.Context) error {
 	return doAsync(ctx, func() error {
-		if s != nil && s.cl != nil {
+		if s != nil && s.cl != nil && !s.useExistingClient {
 			return s.cl.Conn.Close()
 		}
 		// adbDevice doesn't need closing
