@@ -445,6 +445,11 @@ func BuildPostProcessRequest(dynamicID string) *api.PostTestTask {
 						GetGscInfoRequest: &api.GetGscInfoRequest{},
 					},
 				},
+				{
+					Request: &api.Request_GetServoInfoRequest{
+						GetServoInfoRequest: &api.GetServoInfoRequest{},
+					},
+				},
 			},
 		},
 		DynamicIdentifier: dynamicID,
