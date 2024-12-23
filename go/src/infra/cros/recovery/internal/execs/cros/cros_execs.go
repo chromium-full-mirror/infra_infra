@@ -199,7 +199,7 @@ func isBootedInSecureModeExec(ctx context.Context, info *execs.ExecInfo) error {
 	checkTimeout := 15 * time.Second
 	runTimeout := info.GetExecTimeout() - checkTimeout
 	// New CMD supported from R111-15306.0.0 of ChromeOS.
-	const readGbbCmd = "/usr/bin/futility gbb --get --flash --flags"
+	const readGbbCmd = "futility gbb --get --flash --flags"
 	out, err := run(ctx, runTimeout, readGbbCmd)
 	if err != nil {
 		return errors.Annotate(err, "is booted in secure mode").Err()
@@ -402,7 +402,7 @@ func crosSetGbbFlagsExec(ctx context.Context, info *execs.ExecInfo) error {
 	checkTimeout := 15 * time.Second
 	runTimeout := info.GetExecTimeout() - checkTimeout
 	// New CMD supported from R111-15306.0.0 of ChromeOS.
-	const setGbbCmd = "/usr/bin/futility gbb --set --flash --flags %s"
+	const setGbbCmd = "futility gbb --set --flash --flags %s"
 	_, err := run(ctx, runTimeout, fmt.Sprintf(setGbbCmd, gbbHex))
 	return errors.Annotate(err, "cros set GBB flags").Err()
 }
@@ -411,7 +411,6 @@ func crosSetGbbFlagsExec(ctx context.Context, info *execs.ExecInfo) error {
 func crosSwitchToSecureModeExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.NewRunner(info.GetDut().Name)
 	if _, err := run(ctx, info.GetExecTimeout(), "crossystem", "disable_dev_request=1"); err != nil {
-		log.Debugf(ctx, "Cros Switch to Secure Mode %s", err)
 		return errors.Annotate(err, "cros switch to secure mode").Err()
 	}
 	return nil
