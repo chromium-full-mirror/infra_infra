@@ -81,6 +81,7 @@ func androidActions(actions map[string]*Action) {
 				"retry_interval:3",
 				"timeout:5",
 			},
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Reboot by ADB": {
 			Docs: []string{
@@ -101,11 +102,12 @@ func androidActions(actions map[string]*Action) {
 			},
 			ExecName: "cros_is_previous_android_os_type",
 		},
-		"Is Android based ADB or previous DUT OS": {
+		"Is Android based by ADB or provision-info": {
 			Docs: []string{
-				"Validate that OS on the DUT was provisioned with Android.",
+				"Validate that DUT has AndroidOS based on ADB connection or provisioned info.",
 			},
-			ExecName: "cros_is_previous_android_based_or_os_type",
+			ExecName:   "cros_is_previous_android_based_or_os_type",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Foil-provision Setup service": {
 			Docs: []string{
@@ -118,7 +120,7 @@ func androidActions(actions map[string]*Action) {
 				"The install performs real install Android on the DUT.",
 			},
 			Conditions: []string{
-				"Is Android based ADB or previous DUT OS",
+				"Is Android based by ADB or provision-info",
 			},
 			Dependencies: []string{
 				"Detect CacheService address",

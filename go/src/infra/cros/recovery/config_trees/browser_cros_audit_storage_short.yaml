@@ -21,7 +21,7 @@ plans:
             - name: DUT is not SSHable (simple) ('sample_fail') (ALWAYS_RUN)
               conditions:
                 - name: Device is SSHable (simple) ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-            - name: ADB Connect DUT ('ctr_adb_connect')
+            - name: ADB Connect DUT ('ctr_adb_connect') (ALWAYS_RUN)
         - name: Audit storage ('sample_pass')
           conditions:
             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)

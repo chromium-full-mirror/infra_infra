@@ -2351,8 +2351,6 @@ plans:
                   dependencies:
                     - name: Set default boot as disk ('cros_update_crossystem')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
           recoveries:
             - name: Quick provision OS ('sample_pass')
               conditions:
@@ -3006,14 +3004,11 @@ plans:
                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Is crosid present ('cros_run_command')
               recoveries:
-                - name: Repair by Reboot ('sample_pass') (ALWAYS_RUN)
+                - name: Repair by Reboot ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                   conditions:
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Quick provision OS ('sample_pass')
                   conditions:
                     - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -3028,7 +3023,7 @@ plans:
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-                - name: Remove whitelabel_tag from vpd and reboot ('sample_pass') (ALWAYS_RUN)
+                - name: Remove whitelabel_tag from vpd and reboot ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                   conditions:
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -3037,9 +3032,6 @@ plans:
                       dependencies:
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
           recoveries:
             - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
             - name: Quick provision OS ('sample_pass')
@@ -4231,8 +4223,6 @@ plans:
                       conditions:
                         - name: has_stable_version_fw_image
                 - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                  dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
         - name: DUT has expected firmware version ('sample_pass') (ALWAYS_RUN)
           conditions:
@@ -4666,7 +4656,7 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: DUT has expected RO firmware version ('cros_is_on_ro_firmware_stable_version') (ALWAYS_RUN)
               recoveries:
-                - name: Fix FW on the DUT to match stable-version and wait to boot ('sample_pass')
+                - name: Fix FW on the DUT to match stable-version and wait to boot ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                   dependencies:
                     - name: Fix FW on the DUT to match stable-version (Allow to fail) ('cros_update_firmware_from_firmware_image') (time:'2h0m0s')
                       conditions:
@@ -4695,9 +4685,6 @@ plans:
                           dependencies:
                             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Update FW from fw-image by servo and wait for boot ('sample_pass')
                   conditions:
                     - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -4749,7 +4736,7 @@ plans:
                     - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: DUT has expected RW firmware version ('cros_is_on_rw_firmware_stable_version') (ALWAYS_RUN)
               recoveries:
-                - name: Fix FW on the DUT to match stable-version and wait to boot ('sample_pass')
+                - name: Fix FW on the DUT to match stable-version and wait to boot ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                   dependencies:
                     - name: Fix FW on the DUT to match stable-version (Allow to fail) ('cros_update_firmware_from_firmware_image') (time:'2h0m0s')
                       conditions:
@@ -4778,9 +4765,6 @@ plans:
                           dependencies:
                             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Update FW from fw-image by servo and wait for boot ('sample_pass')
                   conditions:
                     - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -7213,7 +7197,7 @@ plans:
             - name: DUT is not SSHable (simple) ('sample_fail') (ALWAYS_RUN)
               conditions:
                 - name: Device is SSHable (simple) ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-            - name: ADB Connect DUT ('ctr_adb_connect')
+            - name: ADB Connect DUT ('ctr_adb_connect') (ALWAYS_RUN)
         - name: Chrome OS checks ('sample_pass')
           conditions:
             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -9730,8 +9714,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -10293,8 +10275,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -10434,8 +10414,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -10575,8 +10553,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -10716,8 +10692,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -10839,8 +10813,6 @@ plans:
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
@@ -11872,8 +11844,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -12009,7 +11979,7 @@ plans:
               recoveries:
                 - name: Provision Android OS ('ctr_foil_provision_install') (time:'1h0m0s')
                   conditions:
-                    - name: Is Android based ADB or previous DUT OS ('cros_is_previous_android_based_or_os_type')
+                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
                   dependencies:
                     - name: Detect CacheService address ('cache_service_address_detection')
                     - name: Start Foil-provision ('ctr_start_foil_provision_container')
@@ -12948,8 +12918,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -13514,8 +13482,6 @@ plans:
                           dependencies:
                             - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                             - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                              dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                             - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -13654,8 +13620,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -14623,8 +14587,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -15189,8 +15151,6 @@ plans:
                           dependencies:
                             - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                             - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                              dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                             - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -15329,8 +15289,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -16048,8 +16006,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -16217,8 +16173,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -16408,8 +16362,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -16554,8 +16506,6 @@ plans:
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -17128,8 +17078,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -17378,8 +17326,6 @@ plans:
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -17837,8 +17783,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -18519,8 +18463,6 @@ plans:
                           dependencies:
                             - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                             - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                              dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                             - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -18659,8 +18601,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -18828,8 +18768,6 @@ plans:
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -25764,8 +25702,6 @@ plans:
                           dependencies:
                             - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                             - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                              dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                             - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -25879,7 +25815,7 @@ plans:
                             - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                   recoveries:
-                    - name: Fix FW on the DUT to match stable-version and wait to boot ('sample_pass')
+                    - name: Fix FW on the DUT to match stable-version and wait to boot ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                       dependencies:
                         - name: Fix FW on the DUT to match stable-version (Allow to fail) ('cros_update_firmware_from_firmware_image') (time:'2h0m0s')
                           conditions:
@@ -25908,9 +25844,6 @@ plans:
                               dependencies:
                                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: Update FW from fw-image by servo and wait for boot ('sample_pass')
                       conditions:
                         - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -26421,8 +26354,6 @@ plans:
                           dependencies:
                             - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                             - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                              dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                             - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -26536,7 +26467,7 @@ plans:
                             - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                   recoveries:
-                    - name: Fix FW on the DUT to match stable-version and wait to boot ('sample_pass')
+                    - name: Fix FW on the DUT to match stable-version and wait to boot ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                       dependencies:
                         - name: Fix FW on the DUT to match stable-version (Allow to fail) ('cros_update_firmware_from_firmware_image') (time:'2h0m0s')
                           conditions:
@@ -26565,9 +26496,6 @@ plans:
                               dependencies:
                                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: Update FW from fw-image by servo and wait for boot ('sample_pass')
                       conditions:
                         - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -27116,8 +27044,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -27682,8 +27608,6 @@ plans:
                           dependencies:
                             - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                             - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                              dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                             - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -27822,8 +27746,6 @@ plans:
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -28016,8 +27938,6 @@ plans:
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -28182,8 +28102,6 @@ plans:
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -29137,8 +29055,6 @@ plans:
                           dependencies:
                             - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                             - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                              dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                             - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -29267,7 +29183,7 @@ plans:
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-                    - name: Restore HWID from inventory (Allow to fail) ('sample_pass')
+                    - name: Restore HWID from inventory (Allow to fail) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                       dependencies:
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                         - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
@@ -29281,10 +29197,7 @@ plans:
                               dependencies:
                                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Verify that DUT is not in DEV mode ('cros_is_not_in_dev_mode')
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -29743,8 +29656,6 @@ plans:
                           dependencies:
                             - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                             - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                              dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                             - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -29868,7 +29779,7 @@ plans:
                           conditions:
                             - name: Booted in secure mode (condition) ('cros_is_booted_in_secure_mode') (ALWAYS_RUN)
                       dependencies:
-                        - name: Reset GBB flags by host (Allow to fail) ('cros_set_gbb_flags') (time:'3m0s')
+                        - name: Reset GBB flags by host (Allow to fail) ('cros_set_gbb_flags') (ALWAYS_RUN) (time:'3m0s')
                           dependencies:
                             - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                               dependencies:
@@ -29876,10 +29787,8 @@ plans:
                             - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                               dependencies:
                                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-                        - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode')
+                        - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: Quick provision OS ('sample_pass')
@@ -29924,7 +29833,7 @@ plans:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
                   recoveries:
-                    - name: Restore HWID from inventory (Allow to fail) ('sample_pass')
+                    - name: Restore HWID from inventory (Allow to fail) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                       dependencies:
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                         - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
@@ -29938,10 +29847,7 @@ plans:
                               dependencies:
                                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Match serial-number (Allow to fail) ('cros_match_serial_number_inventory')
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -30362,14 +30268,11 @@ plans:
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Is crosid present ('cros_run_command')
                   recoveries:
-                    - name: Repair by Reboot ('sample_pass') (ALWAYS_RUN)
+                    - name: Repair by Reboot ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                       conditions:
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: Quick provision OS ('sample_pass')
                       conditions:
                         - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -30384,7 +30287,7 @@ plans:
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-                    - name: Remove whitelabel_tag from vpd and reboot ('sample_pass') (ALWAYS_RUN)
+                    - name: Remove whitelabel_tag from vpd and reboot ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                       conditions:
                         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -30393,9 +30296,6 @@ plans:
                           dependencies:
                             - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                          dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-                        - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
               recoveries:
                 - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
                 - name: Quick provision OS ('sample_pass')
@@ -30852,8 +30752,6 @@ plans:
                         - name: CBI is present ('cros_cbi_is_present')
                         - name: UFS contains CBI contents ('cros_ufs_contains_cbi_contents')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: Invalidate CBI cache ('cros_invalidate_cbi_cache')
                       dependencies:
@@ -30867,14 +30765,11 @@ plans:
                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Is crosid present ('cros_run_command')
               recoveries:
-                - name: Repair by Reboot ('sample_pass') (ALWAYS_RUN)
+                - name: Repair by Reboot ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                   conditions:
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Quick provision OS ('sample_pass')
                   conditions:
                     - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -30889,7 +30784,7 @@ plans:
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-                - name: Remove whitelabel_tag from vpd and reboot ('sample_pass') (ALWAYS_RUN)
+                - name: Remove whitelabel_tag from vpd and reboot ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                   conditions:
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -30898,9 +30793,6 @@ plans:
                       dependencies:
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
             - name: Update special device labels ('sample_pass')
               dependencies:
                 - name: Read device SKU (Allow to fail) ('cros_update_device_sku')
@@ -33152,7 +33044,7 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Provision Android OS ('ctr_foil_provision_install') (time:'1h0m0s')
                   conditions:
-                    - name: Is Android based ADB or previous DUT OS ('cros_is_previous_android_based_or_os_type')
+                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
                   dependencies:
                     - name: Detect CacheService address ('cache_service_address_detection')
                     - name: Start Foil-provision ('ctr_start_foil_provision_container')
@@ -33389,7 +33281,7 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Provision Android OS ('ctr_foil_provision_install') (time:'1h0m0s')
                   conditions:
-                    - name: Is Android based ADB or previous DUT OS ('cros_is_previous_android_based_or_os_type')
+                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
                   dependencies:
                     - name: Detect CacheService address ('cache_service_address_detection')
                     - name: Start Foil-provision ('ctr_start_foil_provision_container')
@@ -33607,7 +33499,7 @@ plans:
               recoveries:
                 - name: Provision Android OS ('ctr_foil_provision_install') (time:'1h0m0s')
                   conditions:
-                    - name: Is Android based ADB or previous DUT OS ('cros_is_previous_android_based_or_os_type')
+                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
                   dependencies:
                     - name: Detect CacheService address ('cache_service_address_detection')
                     - name: Start Foil-provision ('ctr_start_foil_provision_container')
@@ -34111,7 +34003,7 @@ plans:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
               recoveries:
-                - name: Restore HWID from inventory (Allow to fail) ('sample_pass')
+                - name: Restore HWID from inventory (Allow to fail) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                   dependencies:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
@@ -34125,10 +34017,7 @@ plans:
                           dependencies:
                             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
-                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
         - name: All repair-requests resolved ('dut_has_no_repair_requests')
         - name: Reset DUT-state reason ('dut_reset_state_reason')
         - name: Servo is in WORKING state ('servo_match_state')

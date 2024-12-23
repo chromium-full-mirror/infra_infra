@@ -9972,7 +9972,7 @@ plans:
                   docs:
                     - Verify that device is reachable by SSH.
                     - Limited to 15 seconds.
-            - name: ADB Connect DUT
+            - name: ADB Connect DUT (ALWAYS_RUN)
               exec_name: ctr_adb_connect
               exec_args:
                 - retry_count:3
@@ -18475,12 +18475,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -20354,12 +20348,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -20829,12 +20817,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -21305,12 +21287,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -21781,12 +21757,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -22196,12 +22166,6 @@ plans:
                         - background:true
                       docs:
                         - Simple un-blocker reboot.
-                      dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Verify that device is reachable by SSH.
-                            - Limited to 15 seconds.
                     - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_ssh
                       docs:
@@ -25621,12 +25585,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -26064,10 +26022,10 @@ plans:
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
-                    - name: Is Android based ADB or previous DUT OS
+                    - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
-                        - Validate that OS on the DUT was provisioned with Android.
+                        - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
                   dependencies:
                     - name: Detect CacheService address
                       exec_name: cache_service_address_detection
@@ -29189,12 +29147,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -31076,12 +31028,6 @@ plans:
                                 - background:true
                               docs:
                                 - Simple un-blocker reboot.
-                              dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                                  exec_name: cros_ssh
-                                  docs:
-                                    - Verify that device is reachable by SSH.
-                                    - Limited to 15 seconds.
                             - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                               exec_name: cros_ssh
                               docs:
@@ -31545,12 +31491,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -34780,12 +34720,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -36667,12 +36601,6 @@ plans:
                                 - background:true
                               docs:
                                 - Simple un-blocker reboot.
-                              dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                                  exec_name: cros_ssh
-                                  docs:
-                                    - Verify that device is reachable by SSH.
-                                    - Limited to 15 seconds.
                             - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                               exec_name: cros_ssh
                               docs:
@@ -37136,12 +37064,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -39513,12 +39435,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -40076,12 +39992,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -40709,12 +40619,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -41201,12 +41105,6 @@ plans:
                         - background:true
                       docs:
                         - Simple un-blocker reboot.
-                      dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Verify that device is reachable by SSH.
-                            - Limited to 15 seconds.
                     - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_ssh
                       docs:
@@ -43124,12 +43022,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -43962,12 +43854,6 @@ plans:
                         - background:true
                       docs:
                         - Simple un-blocker reboot.
-                      dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Verify that device is reachable by SSH.
-                            - Limited to 15 seconds.
                     - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_ssh
                       docs:
@@ -45496,12 +45382,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -47773,12 +47653,6 @@ plans:
                                 - background:true
                               docs:
                                 - Simple un-blocker reboot.
-                              dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                                  exec_name: cros_ssh
-                                  docs:
-                                    - Verify that device is reachable by SSH.
-                                    - Limited to 15 seconds.
                             - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                               exec_name: cros_ssh
                               docs:
@@ -48242,12 +48116,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -48791,12 +48659,6 @@ plans:
                         - background:true
                       docs:
                         - Simple un-blocker reboot.
-                      dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Verify that device is reachable by SSH.
-                            - Limited to 15 seconds.
                     - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_ssh
                       docs:
@@ -71987,12 +71849,6 @@ plans:
                                 - background:true
                               docs:
                                 - Simple un-blocker reboot.
-                              dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                                  exec_name: cros_ssh
-                                  docs:
-                                    - Verify that device is reachable by SSH.
-                                    - Limited to 15 seconds.
                             - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                               exec_name: cros_ssh
                               docs:
@@ -72371,8 +72227,8 @@ plans:
                               docs:
                                 - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
                   recoveries:
-                    - name: Fix FW on the DUT to match stable-version and wait to boot
-                      exec_name: sample_pass
+                    - name: Fix FW on the DUT to match stable-version and wait to boot (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ssh
                       docs:
                         - Update firmware from the host and reboot, then wait for host be available for SSH.
                       dependencies:
@@ -72479,17 +72335,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Try to wait device to be sshable after the device being rebooted.
-                            - Waiting time 150 seconds.
                     - name: Update FW from fw-image by servo and wait for boot
                       exec_name: sample_pass
                       docs:
@@ -74186,12 +74031,6 @@ plans:
                                 - background:true
                               docs:
                                 - Simple un-blocker reboot.
-                              dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                                  exec_name: cros_ssh
-                                  docs:
-                                    - Verify that device is reachable by SSH.
-                                    - Limited to 15 seconds.
                             - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                               exec_name: cros_ssh
                               docs:
@@ -74570,8 +74409,8 @@ plans:
                               docs:
                                 - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
                   recoveries:
-                    - name: Fix FW on the DUT to match stable-version and wait to boot
-                      exec_name: sample_pass
+                    - name: Fix FW on the DUT to match stable-version and wait to boot (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ssh
                       docs:
                         - Update firmware from the host and reboot, then wait for host be available for SSH.
                       dependencies:
@@ -74678,17 +74517,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Try to wait device to be sshable after the device being rebooted.
-                            - Waiting time 150 seconds.
                     - name: Update FW from fw-image by servo and wait for boot
                       exec_name: sample_pass
                       docs:
@@ -76498,12 +76326,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -78385,12 +78207,6 @@ plans:
                                 - background:true
                               docs:
                                 - Simple un-blocker reboot.
-                              dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                                  exec_name: cros_ssh
-                                  docs:
-                                    - Verify that device is reachable by SSH.
-                                    - Limited to 15 seconds.
                             - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                               exec_name: cros_ssh
                               docs:
@@ -78854,12 +78670,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -79475,12 +79285,6 @@ plans:
                         - background:true
                       docs:
                         - Simple un-blocker reboot.
-                      dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Verify that device is reachable by SSH.
-                            - Limited to 15 seconds.
                     - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_ssh
                       docs:
@@ -80037,12 +79841,6 @@ plans:
                         - background:true
                       docs:
                         - Simple un-blocker reboot.
-                      dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Verify that device is reachable by SSH.
-                            - Limited to 15 seconds.
                     - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_ssh
                       docs:
@@ -83257,12 +83055,6 @@ plans:
                                 - background:true
                               docs:
                                 - Simple un-blocker reboot.
-                              dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                                  exec_name: cros_ssh
-                                  docs:
-                                    - Verify that device is reachable by SSH.
-                                    - Limited to 15 seconds.
                             - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                               exec_name: cros_ssh
                               docs:
@@ -83695,8 +83487,8 @@ plans:
                             - requests:PROVISION
                           docs:
                             - Remove a PROVISION repair-request.
-                    - name: Restore HWID from inventory (Allow to fail)
-                      exec_name: sample_pass
+                    - name: Restore HWID from inventory (Allow to fail) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ssh
                       docs:
                         - Restoring HWID on the host from the inventory data.
                         - Using recovery from the host as flashing firmware by servo is very slow.
@@ -83756,21 +83548,10 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Sleep 1s (Allow to fail) (ALWAYS_RUN)
                           exec_name: sample_sleep
                           exec_args:
                             - sleep:1
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Try to wait device to be sshable after the device being rebooted.
-                            - Waiting time 150 seconds.
                 - name: Verify that DUT is not in DEV mode
                   exec_name: cros_is_not_in_dev_mode
                   docs:
@@ -85303,12 +85084,6 @@ plans:
                                 - background:true
                               docs:
                                 - Simple un-blocker reboot.
-                              dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                                  exec_name: cros_ssh
-                                  docs:
-                                    - Verify that device is reachable by SSH.
-                                    - Limited to 15 seconds.
                             - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                               exec_name: cros_ssh
                               docs:
@@ -85728,7 +85503,7 @@ plans:
                               docs:
                                 - Check if the device booted in secure mode.
                       dependencies:
-                        - name: Reset GBB flags by host (Allow to fail) (time:'3m0s')
+                        - name: Reset GBB flags by host (Allow to fail) (ALWAYS_RUN) (time:'3m0s')
                           exec_name: cros_set_gbb_flags
                           exec_args:
                             - gbb_flags:0x0
@@ -85759,7 +85534,7 @@ plans:
                                   docs:
                                     - Verify that device is reachable by SSH.
                                     - Limited to 15 seconds.
-                        - name: Disables booting into DEV-mode (Allow to fail)
+                        - name: Disables booting into DEV-mode (Allow to fail) (ALWAYS_RUN)
                           exec_name: cros_switch_to_secure_mode
                           docs:
                             - This action disables booting into dev-mode.
@@ -85771,12 +85546,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ping
                           docs:
@@ -85933,8 +85702,8 @@ plans:
                       docs:
                         - Check whether the DUT information includes its HWID.
                   recoveries:
-                    - name: Restore HWID from inventory (Allow to fail)
-                      exec_name: sample_pass
+                    - name: Restore HWID from inventory (Allow to fail) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ssh
                       docs:
                         - Restoring HWID on the host from the inventory data.
                         - Using recovery from the host as flashing firmware by servo is very slow.
@@ -85994,21 +85763,10 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
                         - name: Sleep 1s (Allow to fail) (ALWAYS_RUN)
                           exec_name: sample_sleep
                           exec_args:
                             - sleep:1
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Try to wait device to be sshable after the device being rebooted.
-                            - Waiting time 150 seconds.
                 - name: Match serial-number (Allow to fail)
                   exec_name: cros_match_serial_number_inventory
                   docs:
@@ -87433,8 +87191,8 @@ plans:
                       docs:
                         - Verify if crosid cli is present on the ChromeOS
                   recoveries:
-                    - name: Repair by Reboot (ALWAYS_RUN)
-                      exec_name: sample_pass
+                    - name: Repair by Reboot (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ssh
                       docs:
                         - Do simple reboot of the DUT force to update DUT cache seetings.
                       conditions:
@@ -87452,17 +87210,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Try to wait device to be sshable after the device being rebooted.
-                            - Waiting time 150 seconds.
                     - name: Quick provision OS
                       exec_name: sample_pass
                       docs:
@@ -87509,8 +87256,8 @@ plans:
                             - requests:PROVISION
                           docs:
                             - Remove a PROVISION repair-request.
-                    - name: Remove whitelabel_tag from vpd and reboot (ALWAYS_RUN)
-                      exec_name: sample_pass
+                    - name: Remove whitelabel_tag from vpd and reboot (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ssh
                       docs:
                         - Remove whitelabel_tag from vpd and reboot to apply change.
                       conditions:
@@ -87551,17 +87298,6 @@ plans:
                             - background:true
                           docs:
                             - Simple un-blocker reboot.
-                          dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
-                              docs:
-                                - Verify that device is reachable by SSH.
-                                - Limited to 15 seconds.
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Try to wait device to be sshable after the device being rebooted.
-                            - Waiting time 150 seconds.
               recoveries:
                 - name: Sleep 1s (Allow to fail) (ALWAYS_RUN)
                   exec_name: sample_sleep
@@ -89097,12 +88833,6 @@ plans:
                         - background:true
                       docs:
                         - Simple un-blocker reboot.
-                      dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Verify that device is reachable by SSH.
-                            - Limited to 15 seconds.
                     - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_ssh
                       docs:
@@ -89156,8 +88886,8 @@ plans:
                   docs:
                     - Verify if crosid cli is present on the ChromeOS
               recoveries:
-                - name: Repair by Reboot (ALWAYS_RUN)
-                  exec_name: sample_pass
+                - name: Repair by Reboot (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ssh
                   docs:
                     - Do simple reboot of the DUT force to update DUT cache seetings.
                   conditions:
@@ -89175,17 +88905,6 @@ plans:
                         - background:true
                       docs:
                         - Simple un-blocker reboot.
-                      dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Verify that device is reachable by SSH.
-                            - Limited to 15 seconds.
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
-                      docs:
-                        - Try to wait device to be sshable after the device being rebooted.
-                        - Waiting time 150 seconds.
                 - name: Quick provision OS
                   exec_name: sample_pass
                   docs:
@@ -89232,8 +88951,8 @@ plans:
                         - requests:PROVISION
                       docs:
                         - Remove a PROVISION repair-request.
-                - name: Remove whitelabel_tag from vpd and reboot (ALWAYS_RUN)
-                  exec_name: sample_pass
+                - name: Remove whitelabel_tag from vpd and reboot (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ssh
                   docs:
                     - Remove whitelabel_tag from vpd and reboot to apply change.
                   conditions:
@@ -89274,17 +88993,6 @@ plans:
                         - background:true
                       docs:
                         - Simple un-blocker reboot.
-                      dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Verify that device is reachable by SSH.
-                            - Limited to 15 seconds.
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
-                      docs:
-                        - Try to wait device to be sshable after the device being rebooted.
-                        - Waiting time 150 seconds.
             - name: Update special device labels
               exec_name: sample_pass
               docs:
@@ -96809,10 +96517,10 @@ plans:
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
-                    - name: Is Android based ADB or previous DUT OS
+                    - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
-                        - Validate that OS on the DUT was provisioned with Android.
+                        - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
                   dependencies:
                     - name: Detect CacheService address
                       exec_name: cache_service_address_detection
@@ -97555,10 +97263,10 @@ plans:
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
-                    - name: Is Android based ADB or previous DUT OS
+                    - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
-                        - Validate that OS on the DUT was provisioned with Android.
+                        - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
                   dependencies:
                     - name: Detect CacheService address
                       exec_name: cache_service_address_detection
@@ -98260,10 +97968,10 @@ plans:
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
-                    - name: Is Android based ADB or previous DUT OS
+                    - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
-                        - Validate that OS on the DUT was provisioned with Android.
+                        - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
                   dependencies:
                     - name: Detect CacheService address
                       exec_name: cache_service_address_detection
@@ -99942,8 +99650,8 @@ plans:
                   docs:
                     - Check whether the DUT information includes its HWID.
               recoveries:
-                - name: Restore HWID from inventory (Allow to fail)
-                  exec_name: sample_pass
+                - name: Restore HWID from inventory (Allow to fail) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ssh
                   docs:
                     - Restoring HWID on the host from the inventory data.
                     - Using recovery from the host as flashing firmware by servo is very slow.
@@ -100003,21 +99711,10 @@ plans:
                         - background:true
                       docs:
                         - Simple un-blocker reboot.
-                      dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
-                          docs:
-                            - Verify that device is reachable by SSH.
-                            - Limited to 15 seconds.
                     - name: Sleep 1s (Allow to fail) (ALWAYS_RUN)
                       exec_name: sample_sleep
                       exec_args:
                         - sleep:1
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
-                      docs:
-                        - Try to wait device to be sshable after the device being rebooted.
-                        - Waiting time 150 seconds.
         - name: All repair-requests resolved
           exec_name: dut_has_no_repair_requests
           docs:

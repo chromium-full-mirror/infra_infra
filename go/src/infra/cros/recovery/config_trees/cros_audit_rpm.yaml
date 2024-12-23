@@ -6156,7 +6156,7 @@ plans:
                   docs:
                     - Verify that device is reachable by SSH.
                     - Limited to 15 seconds.
-            - name: ADB Connect DUT
+            - name: ADB Connect DUT (ALWAYS_RUN)
               exec_name: ctr_adb_connect
               exec_args:
                 - retry_count:3

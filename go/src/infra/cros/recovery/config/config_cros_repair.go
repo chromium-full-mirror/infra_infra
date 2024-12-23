@@ -113,6 +113,15 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_set_as_android_based",
 		},
+		"Mark as Android based OS": {
+			Docs: []string{
+				"Mark DUT as Android based.",
+			},
+			ExecName:               "cros_set_as_android_based",
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+		},
 		"Mark as Chrome based OS": {
 			Docs: []string{
 				"Mark DUT as Chrome based.",
@@ -415,9 +424,10 @@ func crosRepairActions() map[string]*Action {
 				"Set HWID of the DUT from inventory",
 				"Simple reboot",
 				"Sleep 1s",
-				"Wait to be SSHable (normal boot)",
 			},
-			ExecName:               "sample_pass",
+			ExecName:               "cros_ssh",
+			ExecTimeout:            &durationpb.Duration{Seconds: 150},
+			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
 		"Set HWID of the DUT from inventory": {
@@ -1353,9 +1363,10 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Fix FW on the DUT to match stable-version",
 				"Simple reboot",
-				"Wait to be SSHable (normal boot)",
 			},
-			ExecName: "sample_pass",
+			ExecName:    "cros_ssh",
+			ExecTimeout: &durationpb.Duration{Seconds: 150},
+			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"Fix FW on the DUT to match stable-version": {
 			Docs: []string{
@@ -2521,6 +2532,7 @@ func crosRepairActions() map[string]*Action {
 				"gbb_flags:0x0",
 			},
 			ExecTimeout:            &durationpb.Duration{Seconds: 180},
+			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
 		"Disables booting into DEV-mode": {
@@ -2528,6 +2540,7 @@ func crosRepairActions() map[string]*Action {
 				"This action disables booting into dev-mode.",
 			},
 			ExecName:               "cros_switch_to_secure_mode",
+			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
 		"Is Flex device": {
@@ -3413,9 +3426,6 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Simple un-blocker reboot.",
 			},
-			Dependencies: []string{
-				"Device is SSHable",
-			},
 			ExecName: "cros_run_command",
 			ExecExtraArgs: []string{
 				"host:dut",
@@ -3491,10 +3501,10 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Simple reboot",
-				"Wait to be SSHable (normal boot)",
 			},
-			ExecName:   "sample_pass",
-			RunControl: RunControl_ALWAYS_RUN,
+			ExecName:    "cros_ssh",
+			ExecTimeout: &durationpb.Duration{Seconds: 150},
+			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"Flash AP (FW) with GBB 0x18 by servo": {
 			Docs: []string{
@@ -4560,10 +4570,10 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Delete whitelabel_tag from vpd",
 				"Simple reboot",
-				"Wait to be SSHable (normal boot)",
 			},
-			ExecName:   "sample_pass",
-			RunControl: RunControl_ALWAYS_RUN,
+			ExecName:    "cros_ssh",
+			ExecTimeout: &durationpb.Duration{Seconds: 150},
+			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"Delete whitelabel_tag from vpd": {
 			Docs: []string{

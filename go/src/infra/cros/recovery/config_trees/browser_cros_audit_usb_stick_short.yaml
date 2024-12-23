@@ -2101,7 +2101,7 @@ plans:
             - name: DUT is not SSHable (simple) ('sample_fail') (ALWAYS_RUN)
               conditions:
                 - name: Device is SSHable (simple) ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-            - name: ADB Connect DUT ('ctr_adb_connect')
+            - name: ADB Connect DUT ('ctr_adb_connect') (ALWAYS_RUN)
         - name: Audit USB-drive from DUT ('audit_usb_from_dut_side') (time:'1h0m0s')
           conditions:
             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -2123,8 +2123,6 @@ plans:
                   dependencies:
                     - name: Set default boot as disk ('cros_update_crossystem')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
             - name: Print block devices of the DUT (Allow to fail) ('cros_run_command')
             - name: Check if USB-key drop connection after sleep ('servo_usbkey_is_detected') (time:'3m20s')
           recoveries:
