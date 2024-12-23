@@ -376,7 +376,7 @@ func (s *SatlabRpcServiceServer) ListConnectedDutsFirmware(ctx context.Context, 
 		err = json.Unmarshal([]byte(cmdRes.Value), &cmdResponse)
 		if err != nil {
 			// If something wrong, we can continue to decode another ip result.
-			logging.Errorf(ctx, "Json decode error: %v", err)
+			logging.Errorf(ctx, "Json decode error: %v Value: \n\n%s\n\n", err, cmdRes.Value)
 			continue
 		}
 
