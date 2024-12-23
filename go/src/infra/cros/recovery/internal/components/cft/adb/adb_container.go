@@ -52,7 +52,7 @@ func RunCommand(ctx context.Context, adbClient api.ADBServiceClient, timeout tim
 	if len(args) > 0 {
 		fullCmd += " " + strings.Join(args, " ")
 	}
-	log.Infof(ctx, "Prepare to run adb command: %q", fullCmd)
+	log.Debugf(ctx, "Prepare to run adb command: %q", fullCmd)
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 	res, err := adbClient.ExecCommand(ctx, &api.ADBCommandRequest{

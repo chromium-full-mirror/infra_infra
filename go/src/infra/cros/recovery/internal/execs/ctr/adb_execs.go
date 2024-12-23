@@ -131,15 +131,26 @@ func adbConnectExec(ctx context.Context, info *execs.ExecInfo) error {
 	retryinterval := argsMap.AsDuration(ctx, "retry_interval", 1, time.Second)
 	// Set 10 seconds so in total is 60 seconds, but mostly will run faster.
 	timeout := argsMap.AsDuration(ctx, "timeout", 2, time.Second)
+	deviceName := fmt.Sprintf("%s:%d", dut.Name, adbPort)
+	if argsMap.AsBool(ctx, "skip_when_connected", true) {
+		log.Infof(ctx, "Check if %q is already connected!", dut.Name)
+		if res, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
+			log.Debugf(ctx, "Device is not connected yet: %s", err)
+		} else if out := string(res.GetStdout()); out != "" && strings.Contains(out, deviceName) {
+			log.Debugf(ctx, "Device is listed, so not need to connect")
+			return nil
+		} else {
+			log.Debugf(ctx, "Device is not connected!")
+		}
+	}
+	if _, err := adb.ExecCommand(ctx, client, timeout, "kill-server"); err != nil {
+		log.Debugf(ctx, "adb devices error: %s", err)
+	}
+	if _, err := adb.ExecCommand(ctx, client, timeout, "start-server"); err != nil {
+		log.Debugf(ctx, "adb devices error: %s", err)
+	}
 	connect := func() error {
-		if _, err := adb.ExecCommand(ctx, client, timeout, "kill-server"); err != nil {
-			log.Debugf(ctx, "adb devices error: %s", err)
-		}
-		if _, err := adb.ExecCommand(ctx, client, timeout, "start-server"); err != nil {
-			log.Debugf(ctx, "adb devices error: %s", err)
-		}
-		log.Debugf(ctx, "Try to connect to %q by adb", dut.Name)
-		deviceName := fmt.Sprintf("%s:%d", dut.Name, adbPort)
+		log.Infof(ctx, "Try to connect to %q by adb", dut.Name)
 		if _, err := adb.ExecCommand(ctx, client, timeout, "connect", deviceName); err != nil {
 			return errors.Annotate(err, "fail to connect").Err()
 		}
