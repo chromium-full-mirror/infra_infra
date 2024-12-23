@@ -329,14 +329,26 @@ func (s *SatlabRpcServiceServer) StageBuild(ctx context.Context, in *pb.StageBui
 		return nil, err
 	}
 
-	res, err := s.buildService.StageBuild(ctx, in.GetBoard(), in.GetModel(), in.GetBuildVersion(), site.GetGCSImageBucket())
+	filterType := build_service.Unset
+
+	if in.GetFilterType() == "firmware" {
+		filterType = build_service.Firmware
+	} else if in.GetFilterType() == "release" {
+		filterType = build_service.Release
+	} else if in.GetFilterType() != "" {
+		logging.Errorf(ctx, "unsupport stage type: %s", in.GetFilterType())
+		return nil, errors.New("unsupport stage type. Only support `release`, `firmware` now.")
+	}
+
+	res, err := s.buildService.StageBuild(ctx, in.GetBoard(), in.GetModel(), in.GetBuildVersion(), site.GetGCSImageBucket(), filterType)
 	if err != nil {
-		logging.Errorf(ctx, "gRPC Service error: stage_build: %w", err)
+		logging.Errorf(ctx, "gRPC Service error: stage_build: %s", err.Error())
 		return nil, err
 	}
 
 	return &pb.StageBuildResponse{
 		BuildBucket: res.GetBucket(),
+		Path:        res.GetPath(),
 	}, nil
 
 }

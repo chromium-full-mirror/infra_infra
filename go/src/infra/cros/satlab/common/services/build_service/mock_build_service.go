@@ -62,8 +62,8 @@ func (m *MockBuildService) CheckBuildStageStatus(ctx context.Context, board, mod
 }
 
 // StageBuild Mock the function instead of calling an API.
-func (m *MockBuildService) StageBuild(ctx context.Context, board, model, buildVersion, bucketName string) (*moblabapipb.BuildArtifact, error) {
-	args := m.Called(ctx, board, model, buildVersion, bucketName)
+func (m *MockBuildService) StageBuild(ctx context.Context, board, model, buildVersion, bucketName string, filterType FilterType) (*moblabapipb.BuildArtifact, error) {
+	args := m.Called(ctx, board, model, buildVersion, bucketName, filterType)
 	return args.Get(0).(*moblabapipb.BuildArtifact), args.Error(1)
 }
 

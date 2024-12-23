@@ -32,6 +32,14 @@ var FromGCSBucketBuildStatusMap = map[moblabapipb.Build_BuildStatus]BuildStatus{
 	moblabapipb.Build_ABORTED: ABORTED,
 }
 
+type FilterType string
+
+const (
+	Unset    FilterType = ""
+	Release             = "release"
+	Firmware            = "firmware"
+)
+
 // IBuildService is the interface that provide the services
 // It should not contain any `Business Logic` here, because it
 // is to mock the interface for testing.
@@ -58,7 +66,7 @@ type IBuildService interface {
 	CheckBuildStageStatus(ctx context.Context, board, model, buildVersion, bucketName string) (bool, error)
 
 	// StageBuild stage the build version in the bucket by given board, model, build version, and bucket name.
-	StageBuild(ctx context.Context, board, model, buildVersion, bucketName string) (*moblabapipb.BuildArtifact, error)
+	StageBuild(ctx context.Context, board, model, buildVersion, bucketName string, filterType FilterType) (*moblabapipb.BuildArtifact, error)
 
 	// Close clean up
 	Close() error

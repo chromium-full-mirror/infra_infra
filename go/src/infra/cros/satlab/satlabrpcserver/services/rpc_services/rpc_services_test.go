@@ -594,7 +594,7 @@ func TestStageBuildShouldSuccess(t *testing.T) {
 	}
 
 	s.buildService.(*build_service.MockBuildService).
-		On("StageBuild", ctx, board, model, build, bucketName).
+		On("StageBuild", ctx, board, model, build, bucketName, build_service.Unset).
 		Return(expectedArtifact, nil)
 
 	req := &pb.StageBuildRequest{
@@ -615,7 +615,7 @@ func TestStageBuildShouldSuccess(t *testing.T) {
 	}
 }
 
-// TestStageBuildShouldSuccess test `StageBuild` function.
+// TestStageBuildShouldFailWhenMakeARequestToBuildClientFailed tests failed case when calling an API failed
 func TestStageBuildShouldFailWhenMakeARequestToBuildClientFailed(t *testing.T) {
 	t.Parallel()
 	// Create a SATLab Server
@@ -638,7 +638,7 @@ func TestStageBuildShouldFailWhenMakeARequestToBuildClientFailed(t *testing.T) {
 	expectedErr := errors.New("can't make a request")
 
 	s.buildService.(*build_service.MockBuildService).
-		On("StageBuild", ctx, board, model, build, bucketName).
+		On("StageBuild", ctx, board, model, build, bucketName, build_service.Unset).
 		Return(expectedArtifact, expectedErr)
 
 	req := &pb.StageBuildRequest{

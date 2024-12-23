@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"go.chromium.org/luci/common/logging"
 	"google.golang.org/api/option"
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 	"google.golang.org/genproto/protobuf/field_mask"
@@ -310,10 +311,19 @@ func (b *BuildServiceImpl) StageBuild(ctx context.Context,
 	model string,
 	buildVersion string,
 	bucketName string,
+	filterType FilterType,
 ) (*moblabapipb.BuildArtifact, error) {
 	artifactName := ParseBuildArtifactPath(board, model, buildVersion, bucketName)
+	filter := ""
+	if filterType == Firmware {
+		filter = "type=firmware"
+	} else if filterType == Release {
+		filter = "type=release"
+	}
+
 	req := &moblabapipb.StageBuildRequest{
-		Name: artifactName,
+		Name:   artifactName,
+		Filter: filter,
 	}
 
 	_, err := b.client.StageBuild(ctx, req)
@@ -328,11 +338,14 @@ func (b *BuildServiceImpl) StageBuild(ctx context.Context,
 	for {
 		c--
 		req := &moblabapipb.CheckBuildStageStatusRequest{
-			Name: artifactName,
+			Name:   artifactName,
+			Filter: filter,
 		}
 
 		stageStatus, err = b.client.CheckBuildStageStatus(ctx, req)
+		logging.Infof(ctx, "check build stage status: %v", stageStatus)
 		if err != nil {
+			logging.Errorf(ctx, "check build stage status error: %s", err.Error())
 			return nil, err
 		}
 
