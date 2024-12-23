@@ -1,11 +1,15 @@
 create {
-  platform_re: "windows-(amd64|arm64|386)"
+  platform_re: "windows-amd64"
   source {
     url {
-      download_url: "https://go.microsoft.com/fwlink/?linkid=2271337"
-      version: "10.1.26100.1"
+      download_url: "https://go.microsoft.com/fwlink/?linkid=2289980"
+      version: "10.1.26100.2454"
       extension: ".exe"
     }
+  }
+
+  build {
+    install: "install_win.sh"
   }
 }
 

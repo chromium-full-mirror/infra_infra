@@ -98,6 +98,7 @@ func (g *Generator) generateWindows(plats generators.Platforms, tmpl *workflow.G
 
 	tmpl.Env.Set("PROCESSOR_ARCHITECTURE", procArch)
 	tmpl.Env.Set("OS", "Windows_NT")
+	tmpl.Env.Set("SYSTEMDRIVE", os.Getenv("SYSTEMDRIVE"))
 	tmpl.Env.Set("winsdk_root", "{{.winsdk_files}}")
 	tmpl.Env.Set("sdk_arch", sdk_arch)
 	return nil
