@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -122,6 +123,7 @@ func runResource(ctx context.Context, resource string, runMetric *metrics.Action
 		runMetric.Observations = append(runMetric.Observations,
 			metrics.NewStringObservation("device_type", dut.SetupType.String()),
 			metrics.NewStringObservation("start_dut_state", string(dut.State)),
+			metrics.NewStringObservation("cros_is_android", strconv.FormatBool(dut.GetChromeos().GetIsAndroidBased())),
 		)
 		defer func() {
 			runMetric.Observations = append(runMetric.Observations,
