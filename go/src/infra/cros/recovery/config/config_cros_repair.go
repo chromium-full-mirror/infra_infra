@@ -403,6 +403,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Default boot set as internal storage",
 				"Verify that DUT is not in DEV mode",
+				"Verify that DUT has clear GBB flags",
 				"Missing HWID",
 				"Missing serial-number",
 				"Match HWID",
@@ -1963,7 +1964,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is a Chromebook",
-				"Is Chrome based",
 				"Pools required to be in Secure mode",
 			},
 			Dependencies: []string{
@@ -1972,6 +1972,22 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_is_not_in_dev_mode",
 			RecoveryActions: []string{
 				"Switch to secure-mode and reboot",
+				"Provision Android OS",
+				"Quick provision OS",
+			},
+		},
+		"Verify that DUT has clear GBB flags": {
+			Docs: []string{
+				"Check if the device booted with 0x0 GBB flags.",
+			},
+			Conditions: []string{
+				"Is a Chromebook",
+				"Pools required to manage FW on the device",
+			},
+			ExecName: "cros_is_booted_in_secure_mode",
+			RecoveryActions: []string{
+				"Switch to secure-mode and reboot",
+				"Provision Android OS",
 				"Quick provision OS",
 			},
 		},
@@ -2516,9 +2532,11 @@ func crosRepairActions() map[string]*Action {
 				"Disables booting into DEV-mode",
 				"Simple reboot",
 				"Wait to be pingable (normal boot)",
-				"Wait to be SSHable (normal boot)",
+				"ADB reconnect",
 			},
-			ExecName: "sample_pass",
+			ExecName:    "cros_ssh",
+			ExecTimeout: &durationpb.Duration{Seconds: 150},
+			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"Reset GBB flags by host": {
 			Docs: []string{
