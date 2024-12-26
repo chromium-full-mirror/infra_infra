@@ -87732,6 +87732,14 @@ plans:
                             - dfu-programmer atmega32u4 flash /tmp/keyboard.hex
                           docs:
                             - Write new keyboard map using the copied keyboard hex.
+                - name: FPMCU is working (Allow to fail)
+                  exec_name: cros_run_command
+                  exec_args:
+                    - host:dut
+                    - command:ectool --name=cros_fp version
+                    - background:false
+                  docs:
+                    - Check FPMCU is working and can provide version info.
             - name: Check if OS on required version for camerabox tablet
               exec_name: is_camerabox_tablet_on_os_version
               docs:

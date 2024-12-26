@@ -22640,6 +22640,7 @@ plans:
                         - name: Transfer keyboard hex ('transfer_keyboard_hex')
                         - name: Erase keyboard map ('cros_run_shell_command') (time:'2m0s')
                         - name: Write keyboard map ('cros_run_shell_command') (time:'2m0s')
+                - name: FPMCU is working (Allow to fail) ('cros_run_command')
             - name: Check if OS on required version for camerabox tablet ('is_camerabox_tablet_on_os_version')
               conditions:
                 - name: is_camerabox_tablet_pool ('dut_is_in_pool')

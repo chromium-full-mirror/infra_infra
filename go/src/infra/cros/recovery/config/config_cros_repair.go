@@ -832,6 +832,7 @@ func crosRepairActions() map[string]*Action {
 				"Ensure firmware is in good state",
 				"RO Firmware version matches the recovery-version",
 				"Verify servo keyboard firmware",
+				"FPMCU is working",
 			},
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
@@ -3365,6 +3366,7 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"mp_firmware_testing",
 			},
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Set default boot as disk and reboot": {
 			Docs: []string{
@@ -4923,6 +4925,18 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:      "sample_fail",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"FPMCU is working": {
+			Docs: []string{
+				"Check FPMCU is working and can provide version info.",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:dut",
+				"command:ectool --name=cros_fp version",
+				"background:false",
+			},
+			AllowFailAfterRecovery: true,
 		},
 	}
 
