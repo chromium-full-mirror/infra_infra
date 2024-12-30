@@ -33,8 +33,8 @@ func (m *MockBuildService) ListModels(ctx context.Context, board string) ([]stri
 }
 
 // ListAvailableMilestones Mock the function instead of calling an API.
-func (m *MockBuildService) ListAvailableMilestones(ctx context.Context, board, model string) ([]string, error) {
-	args := m.Called(ctx, board, model)
+func (m *MockBuildService) ListAvailableMilestones(ctx context.Context, board, model string, filterType FilterType) ([]string, error) {
+	args := m.Called(ctx, board, model, filterType)
 	return args.Get(0).([]string), args.Error(1)
 }
 
@@ -50,8 +50,8 @@ func (m *MockBuildService) FindMostStableBuildByBoardAndModel(ctx context.Contex
 }
 
 // ListBuildsForMilestone Mock the function instead of calling an API.
-func (m *MockBuildService) ListBuildsForMilestone(ctx context.Context, board, model string, milestone int32) ([]*BuildVersion, error) {
-	args := m.Called(ctx, board, model, milestone)
+func (m *MockBuildService) ListBuildsForMilestone(ctx context.Context, board, model string, milestone int32, filterType FilterType) ([]*BuildVersion, error) {
+	args := m.Called(ctx, board, model, milestone, filterType)
 	return args.Get(0).([]*BuildVersion), args.Error(1)
 }
 

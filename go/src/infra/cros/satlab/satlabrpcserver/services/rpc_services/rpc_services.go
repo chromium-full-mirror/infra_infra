@@ -138,12 +138,21 @@ func (s *SatlabRpcServiceServer) ListMilestones(ctx context.Context, in *pb.List
 		return nil, err
 	}
 
-	// Get the milestones from the partner bucket
-	// If the milestones are in the partner bucket. they are staged.
-	bucketMilestones, err := s.bucketService.GetMilestones(ctx, in.GetBoard())
+	filterType, err := toFilterType(in.GetFilterType())
 	if err != nil {
-		logging.Errorf(ctx, "gRPC Service error: list_milestones: %w", err)
+		logging.Errorf(ctx, "unsupport stage type: %s", in.GetFilterType())
 		return nil, err
+	}
+
+	var bucketMilestones []string
+	if *filterType != build_service.Firmware {
+		// Get the milestones from the partner bucket
+		// If the milestones are in the partner bucket - they are staged.
+		bucketMilestones, err = s.bucketService.GetMilestones(ctx, in.GetBoard())
+		if err != nil {
+			logging.Errorf(ctx, "gRPC Service error: list_milestones: %w", err)
+			return nil, err
+		}
 	}
 
 	var remoteMilestones []string
@@ -155,7 +164,7 @@ func (s *SatlabRpcServiceServer) ListMilestones(ctx context.Context, in *pb.List
 	}
 
 	if !isBucketInAsia {
-		remoteMilestones, err = s.buildService.ListAvailableMilestones(ctx, in.GetBoard(), in.GetModel())
+		remoteMilestones, err = s.buildService.ListAvailableMilestones(ctx, in.GetBoard(), in.GetModel(), *filterType)
 		if err != nil {
 			logging.Errorf(ctx, "gRPC Service error: list_milestones: %w", err)
 			return nil, err
@@ -252,12 +261,22 @@ func (s *SatlabRpcServiceServer) ListBuildVersions(ctx context.Context, in *pb.L
 		return nil, err
 	}
 
-	// Get the builds from the partner bucket
-	// If the builds are in the partner bucket. they are staged.
-	bucketBuilds, err := s.bucketService.GetBuilds(ctx, in.GetBoard(), in.GetMilestone())
+	filterType, err := toFilterType(in.GetFilterType())
 	if err != nil {
-		logging.Errorf(ctx, "gRPC Service error: list_build_versions: %w", err)
+		logging.Errorf(ctx, "unsupport stage type: %s", in.GetFilterType())
 		return nil, err
+	}
+
+	var bucketBuilds []string
+	if *filterType != build_service.Firmware {
+		// Get the builds from the partner bucket
+		// If the builds are in the partner bucket - they are staged.
+		bucketBuilds, err = s.bucketService.GetBuilds(ctx, in.GetBoard(), in.GetMilestone())
+		if err != nil {
+			logging.Errorf(ctx, "gRPC Service error: list_build_versions: %w", err)
+			return nil, err
+		}
+
 	}
 
 	var remoteBuilds []*build_service.BuildVersion
@@ -269,7 +288,7 @@ func (s *SatlabRpcServiceServer) ListBuildVersions(ctx context.Context, in *pb.L
 	}
 
 	if !isBucketInAsia {
-		remoteBuilds, err = s.buildService.ListBuildsForMilestone(ctx, in.GetBoard(), in.GetModel(), in.GetMilestone())
+		remoteBuilds, err = s.buildService.ListBuildsForMilestone(ctx, in.GetBoard(), in.GetModel(), in.GetMilestone(), *filterType)
 		if err != nil {
 			logging.Errorf(ctx, "gRPC Service error: list_build_versions: %w", err)
 			return nil, err
@@ -319,6 +338,20 @@ func (s *SatlabRpcServiceServer) ListBuildVersions(ctx context.Context, in *pb.L
 	}, nil
 }
 
+func toFilterType(s string) (*build_service.FilterType, error) {
+	filterType := build_service.Unset
+
+	if s == "firmware" {
+		filterType = build_service.Firmware
+	} else if s == "release" {
+		filterType = build_service.Release
+	} else if s != "" {
+		return nil, errors.New("unsupport stage type. Only support `release`, `firmware` now.")
+	}
+
+	return &filterType, nil
+}
+
 // StageBuild stage a build version in bucket.
 //
 // pb.StageBuildRequest in the request from client which we want to stage the artifact in the partner bucket.
@@ -329,18 +362,13 @@ func (s *SatlabRpcServiceServer) StageBuild(ctx context.Context, in *pb.StageBui
 		return nil, err
 	}
 
-	filterType := build_service.Unset
-
-	if in.GetFilterType() == "firmware" {
-		filterType = build_service.Firmware
-	} else if in.GetFilterType() == "release" {
-		filterType = build_service.Release
-	} else if in.GetFilterType() != "" {
+	filterType, err := toFilterType(in.GetFilterType())
+	if err != nil {
 		logging.Errorf(ctx, "unsupport stage type: %s", in.GetFilterType())
-		return nil, errors.New("unsupport stage type. Only support `release`, `firmware` now.")
+		return nil, err
 	}
 
-	res, err := s.buildService.StageBuild(ctx, in.GetBoard(), in.GetModel(), in.GetBuildVersion(), site.GetGCSImageBucket(), filterType)
+	res, err := s.buildService.StageBuild(ctx, in.GetBoard(), in.GetModel(), in.GetBuildVersion(), site.GetGCSImageBucket(), *filterType)
 	if err != nil {
 		logging.Errorf(ctx, "gRPC Service error: stage_build: %s", err.Error())
 		return nil, err

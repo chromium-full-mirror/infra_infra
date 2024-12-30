@@ -51,10 +51,10 @@ type IBuildService interface {
 	ListModels(ctx context.Context, board string) ([]string, error)
 
 	// ListAvailableMilestones returns all available milestones by given board and model.
-	ListAvailableMilestones(ctx context.Context, board, model string) ([]string, error)
+	ListAvailableMilestones(ctx context.Context, board, model string, filterType FilterType) ([]string, error)
 
 	// ListBuildsForMilestone returns all build versions by given board, model, and milestone.
-	ListBuildsForMilestone(ctx context.Context, board, model string, milestone int32) ([]*BuildVersion, error)
+	ListBuildsForMilestone(ctx context.Context, board, model string, milestone int32, filterType FilterType) ([]*BuildVersion, error)
 
 	// FindMostStableBuild find the stable build version by given board.
 	FindMostStableBuild(ctx context.Context, board string) (string, error)

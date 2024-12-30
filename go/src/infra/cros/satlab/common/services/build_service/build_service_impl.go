@@ -119,8 +119,8 @@ func (b *BuildServiceImpl) ListModels(ctx context.Context, board string) ([]stri
 //
 // string board is the board name that we use it as a filter.
 // string model is the model name that we use it as a filter.
-func (b *BuildServiceImpl) ListAvailableMilestones(ctx context.Context, board string, model string) ([]string, error) {
-	log.Println("Trying to list available milestones")
+func (b *BuildServiceImpl) ListAvailableMilestones(ctx context.Context, board, model string, filterType FilterType) ([]string, error) {
+	filter := toFilter(filterType)
 
 	fm := &field_mask.FieldMask{
 		Paths: []string{"milestone"},
@@ -131,6 +131,7 @@ func (b *BuildServiceImpl) ListAvailableMilestones(ctx context.Context, board st
 		ReadMask: fm,
 		GroupBy:  fm,
 		PageSize: PageSize,
+		Filter:   filter,
 	}
 
 	iter := b.client.ListBuilds(ctx, req)
@@ -248,8 +249,11 @@ func (b *BuildServiceImpl) ListBuildsForMilestone(
 	board string,
 	model string,
 	milestone int32,
+	filterType FilterType,
 ) ([]*BuildVersion, error) {
 	filter := fmt.Sprintf("milestone=milestones/%d", milestone)
+	f := toFilter(filterType)
+	filter = fmt.Sprintf("%s %s", filter, f)
 	req := &moblabapipb.ListBuildsRequest{
 		Parent:   ParseModelPath(board, model),
 		Filter:   filter,
@@ -300,6 +304,16 @@ func (b *BuildServiceImpl) CheckBuildStageStatus(
 	return res.IsBuildStaged, nil
 }
 
+func toFilter(filterType FilterType) string {
+	filter := ""
+	if filterType == Firmware {
+		filter = "type=firmware"
+	} else if filterType == Release {
+		filter = "type=release"
+	}
+	return filter
+}
+
 // StageBuild stage the build version in the bucket by given board, model, build version, and bucket name.
 //
 // string board is the board that we want to stage.
@@ -314,13 +328,7 @@ func (b *BuildServiceImpl) StageBuild(ctx context.Context,
 	filterType FilterType,
 ) (*moblabapipb.BuildArtifact, error) {
 	artifactName := ParseBuildArtifactPath(board, model, buildVersion, bucketName)
-	filter := ""
-	if filterType == Firmware {
-		filter = "type=firmware"
-	} else if filterType == Release {
-		filter = "type=release"
-	}
-
+	filter := toFilter(filterType)
 	req := &moblabapipb.StageBuildRequest{
 		Name:   artifactName,
 		Filter: filter,

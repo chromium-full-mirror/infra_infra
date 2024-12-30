@@ -186,7 +186,7 @@ func TestListMilestonesShouldSuccess(t *testing.T) {
 	board := "zork"
 	model := "dirinboz"
 	expectedMilestones := []string{"114", "113"}
-	s.buildService.(*build_service.MockBuildService).On("ListAvailableMilestones", ctx, board, model).Return(
+	s.buildService.(*build_service.MockBuildService).On("ListAvailableMilestones", ctx, board, model, build_service.Unset).Return(
 		expectedMilestones, nil)
 
 	localBucketMilestones := []string{"113"}
@@ -241,7 +241,7 @@ func TestListMilestonesShouldSuccessWhenBucketInAsia(t *testing.T) {
 	board := "zork"
 	model := "dirinboz"
 	expectedMilestones := []string{"114", "113"}
-	s.buildService.(*build_service.MockBuildService).On("ListAvailableMilestones", ctx, board, model).Return(
+	s.buildService.(*build_service.MockBuildService).On("ListAvailableMilestones", ctx, board, model, build_service.Unset).Return(
 		expectedMilestones, nil)
 
 	localBucketMilestones := []string{"113"}
@@ -293,7 +293,7 @@ func TestListMilestonesShouldFailWhenMakeARequestToBucketFailed(t *testing.T) {
 	model := "dirinboz"
 	expectedMilestones := []string{"114", "113"}
 	expectedErr := errors.New("can't make a request")
-	s.buildService.(*build_service.MockBuildService).On("ListAvailableMilestones", ctx, board, model).Return(
+	s.buildService.(*build_service.MockBuildService).On("ListAvailableMilestones", ctx, board, model, build_service.Unset).Return(
 		expectedMilestones, nil)
 
 	localBucketMilestones := []string{"113"}
@@ -418,7 +418,7 @@ func TestListBuildVersionsShouldSuccess(t *testing.T) {
 		Return([]string{"14820.8.0"}, nil)
 
 	s.buildService.(*build_service.MockBuildService).
-		On("ListBuildsForMilestone", ctx, board, model, milestone).
+		On("ListBuildsForMilestone", ctx, board, model, milestone, build_service.Unset).
 		Return([]*build_service.BuildVersion{
 			{
 				Version: "14820.100.0",
@@ -491,7 +491,7 @@ func Test_ListBuildVersionsStatusShouldSuccess(t *testing.T) {
 		Return([]string{"14820.8.0"}, nil)
 
 	s.buildService.(*build_service.MockBuildService).
-		On("ListBuildsForMilestone", ctx, board, model, milestone).
+		On("ListBuildsForMilestone", ctx, board, model, milestone, build_service.Unset).
 		Return([]*build_service.BuildVersion{
 			{
 				Version: "14820.8.0",
@@ -561,7 +561,7 @@ func TestListBuildVersionsShouldFailWhenMakeARequestToBuildClientFailed(t *testi
 		false, nil)
 
 	s.buildService.(*build_service.MockBuildService).
-		On("ListBuildsForMilestone", ctx, board, model, milestone).
+		On("ListBuildsForMilestone", ctx, board, model, milestone, build_service.Unset).
 		Return([]*build_service.BuildVersion{}, expectedErr)
 
 	req := &pb.ListBuildVersionsRequest{Board: board, Model: model, Milestone: milestone}
