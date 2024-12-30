@@ -98,7 +98,7 @@ func startServodOnLocalContainer(ctx context.Context, req *StartServodRequest) e
 		// Wait 3 seconds as sometimes container is not fully initialized and fail
 		// when start ing working with servod or tooling.
 		time.Sleep(3 * time.Second)
-		if err := dockerVerifyServodDaemonIsUp(ctx, d, req.ContainerName, req.Options.GetServodPort(), 60); err != nil {
+		if err := dockerVerifyServodDaemonIsUp(ctx, d, req.ContainerName, req.Options.GetServodPort(), servodStartTimeoutSec); err != nil {
 			return errors.Annotate(err, "start servod container").Err()
 		}
 	}

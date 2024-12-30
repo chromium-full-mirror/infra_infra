@@ -24,6 +24,8 @@ import (
 const (
 	// Waiting 3 seconds when stopping servod daemon.
 	stopServodTimeout = 3
+	// Start timeout for servod to verify that servod started.
+	servodStartTimeoutSec = 120
 	// Local address with dynamic port.
 	localAddr = "127.0.0.1:0"
 	// Local address template for remote host.
@@ -66,7 +68,7 @@ func startServod(ctx context.Context, servodHost string, servoPort int32, params
 	// Use servodtool to check whether the servod is started.
 	log.Debugf(ctx, "Start servod: use servodtool to check and wait the servod on labstation device to be fully started.")
 	startTime := time.Now()
-	execResult := ssh.Run(ctx, provider, servodHost, fmt.Sprintf("servodtool instance wait-for-active -p %d --timeout 60", servoPort))
+	execResult := ssh.Run(ctx, provider, servodHost, fmt.Sprintf("servodtool instance wait-for-active -p %d --timeout %d", servoPort, servodStartTimeoutSec))
 	servodStartDuration := time.Since(startTime)
 	if execResult.ExitCode != 0 {
 		metrics.DefaultActionAddObservations(ctx, metrics.NewFloat64Observation(observationKindStartServodTimeoutFail, servodStartDuration.Seconds()))

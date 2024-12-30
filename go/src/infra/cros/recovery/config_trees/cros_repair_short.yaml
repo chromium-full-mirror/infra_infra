@@ -167,7 +167,7 @@ plans:
         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
           dependencies:
             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-        - name: Start servod daemon ('servo_host_servod_init') (time:'2m0s')
+        - name: Start servod daemon ('servo_host_servod_init') (time:'4m0s')
           dependencies:
             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               dependencies:

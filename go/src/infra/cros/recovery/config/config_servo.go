@@ -170,7 +170,7 @@ func servoPlanActions() map[string]*Action {
 				"Set state:SERVO_HOST_ISSUE",
 			},
 			ExecName:    "servo_host_servod_init",
-			ExecTimeout: &durationpb.Duration{Seconds: 120},
+			ExecTimeout: &durationpb.Duration{Seconds: 240},
 			RecoveryActions: []string{
 				"Reboot servo device",
 				"Stop servod and request to use recovery-mode for servod",

@@ -409,7 +409,7 @@ plans:
           dependencies:
             - name: Stop UART capture (Allow to fail)
               exec_name: servod_stop_uart_capture
-        - name: Start servod daemon (time:'2m0s')
+        - name: Start servod daemon (time:'4m0s')
           exec_name: servo_host_servod_init
           docs:
             - Start servod daemon on servo-host
