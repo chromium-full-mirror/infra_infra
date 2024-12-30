@@ -74823,6 +74823,63 @@ plans:
                     - background:false
                   docs:
                     - Check FPMCU is working and can provide version info.
+                  recoveries:
+                    - name: Provision OS if needed
+                      exec_name: sample_pass
+                      docs:
+                        - Perform provision OS if device is not running on it.
+                      conditions:
+                        - name: Is Chrome based (ALWAYS_RUN)
+                          exec_name: cros_is_chrome_based
+                        - name: Recovery version has OS image path
+                          exec_name: has_stable_version_cros_image
+                          docs:
+                            - Verify that recovery version has OS image path.
+                          dependencies:
+                            - name: Has a stable-version service (RUN_ONCE)
+                              exec_name: has_stable_version_service_path
+                              docs:
+                                - Verify if we have access to the service provided access to the stable version
+                        - name: DUT not on stable version
+                          exec_name: cros_not_on_stable_version
+                          docs:
+                            - Confirm that DUT does not have stable version.
+                      dependencies:
+                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                          exec_name: cros_ssh
+                          docs:
+                            - Verify that device is reachable by SSH.
+                            - Limited to 15 seconds.
+                        - name: Call provision for DUT (ALWAYS_RUN) (time:'1h0m0s')
+                          exec_name: cros_provision
+                          docs:
+                            - Call provision OS of the DUT.
+                        - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:PROVISION
+                          docs:
+                            - Remove a PROVISION repair-request.
+                    - name: Reflash FP MCU from installed OS (ALWAYS_RUN) (time:'10m0s')
+                      exec_name: cros_run_command
+                      exec_args:
+                        - host:dut
+                        - command:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - background:false
+                      docs:
+                        - Reflash FPMCU from existing OS on the DUT.
+                        - The action is expected to be finished in a few minutes.
+                      dependencies:
+                        - name: Set fw_wp_state to force_off
+                          exec_name: servo_set
+                          exec_args:
+                            - command:fw_wp_state
+                            - string_value:force_off
+                          docs:
+                            - Force disable wp of FW by servo.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
             - name: Check if OS on required version for camerabox tablet
               exec_name: is_camerabox_tablet_on_os_version
               docs:

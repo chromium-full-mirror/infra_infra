@@ -4954,7 +4954,28 @@ func crosRepairActions() map[string]*Action {
 				"command:ectool --name=cros_fp version",
 				"background:false",
 			},
+			RecoveryActions: []string{
+				"Provision OS if needed",
+				"Reflash FP MCU from installed OS",
+			},
 			AllowFailAfterRecovery: true,
+		},
+		"Reflash FP MCU from installed OS": {
+			Docs: []string{
+				"Reflash FPMCU from existing OS on the DUT.",
+				"The action is expected to be finished in a few minutes.",
+			},
+			Dependencies: []string{
+				"Set fw_wp_state to force_off",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:dut",
+				"command:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin",
+				"background:false",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 600},
+			RunControl:  RunControl_ALWAYS_RUN,
 		},
 	}
 

@@ -22641,6 +22641,23 @@ plans:
                         - name: Erase keyboard map ('cros_run_shell_command') (time:'2m0s')
                         - name: Write keyboard map ('cros_run_shell_command') (time:'2m0s')
                 - name: FPMCU is working (Allow to fail) ('cros_run_command')
+                  recoveries:
+                    - name: Provision OS if needed ('sample_pass')
+                      conditions:
+                        - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
+                        - name: Recovery version has OS image path ('has_stable_version_cros_image')
+                          dependencies:
+                            - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                        - name: DUT not on stable version ('cros_not_on_stable_version')
+                      dependencies:
+                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
+                        - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Reflash FP MCU from installed OS ('cros_run_command') (ALWAYS_RUN) (time:'10m0s')
+                      dependencies:
+                        - name: Set fw_wp_state to force_off ('servo_set')
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
             - name: Check if OS on required version for camerabox tablet ('is_camerabox_tablet_on_os_version')
               conditions:
                 - name: is_camerabox_tablet_pool ('dut_is_in_pool')
