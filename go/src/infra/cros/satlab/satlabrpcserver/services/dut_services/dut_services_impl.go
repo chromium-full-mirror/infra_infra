@@ -10,12 +10,12 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"os/exec"
 	"regexp"
 	"strings"
 	"sync"
 
+	"go.chromium.org/luci/common/logging"
 	"golang.org/x/crypto/ssh"
 
 	"infra/cros/satlab/common/enumeration"
@@ -103,26 +103,26 @@ func New() (IDUTServices, error) {
 func (d *DUTServicesImpl) RunCommandOnIP(ctx context.Context, IP string, cmd string) (*models.SSHResult, error) {
 	client, err := d.clientConnector.Connect(ctx, IP+":"+d.port, &d.config)
 	if err != nil {
-		log.Printf("Can't create a ssh client %v", err)
+		logging.Infof(ctx, "Can't create a ssh client %v", err)
 		return nil, err
 	}
 	defer func(client *ssh.Client) {
 		err := client.Close()
 		if err != nil {
-			log.Printf("Can't close a ssh client, %v", err)
+			logging.Infof(ctx, "Can't close a ssh client, %v", err)
 		}
 	}(client)
 
 	session, err := client.NewSession()
 	if err != nil {
-		log.Printf("Can't create a ssh session, %v", err)
+		logging.Infof(ctx, "Can't create a ssh session, %v", err)
 		return nil, err
 	}
 	defer func(session *ssh.Session) {
 		err := session.Close()
 		// BUG: https://github.com/golang/go/issues/38115
 		if err != nil && err != io.EOF {
-			log.Printf("Can't close a ssh session, %v", err)
+			logging.Infof(ctx, "Can't close a ssh session, %v", err)
 		}
 	}(session)
 
@@ -164,7 +164,7 @@ func (d *DUTServicesImpl) RunCommandOnIPs(ctx context.Context, IPs []string, cmd
 			// SSH connection error, we can't do anything here.
 			// log the error message.
 			if err != nil {
-				log.Printf("Run command on IP: %s failed because the connection problem: %v", IP, err)
+				logging.Infof(ctx, "Run command on IP: %s failed because the connection problem: %v", IP, err)
 				ch <- &models.SSHResult{IP: IP, Error: err}
 				return
 			}
@@ -340,19 +340,19 @@ func (d *DUTServicesImpl) GetModel(ctx context.Context, IP string) (string, erro
 func (d *DUTServicesImpl) GetGSCSerialAndServoUSBCount(ctx context.Context, IP string) (*GSCInfo, error) {
 	res, err := d.RunCommandOnIP(ctx, IP, constants.GetGSCSerialAndServoUSB)
 	if err != nil {
-		log.Printf("command '%s'to get gsc serial and servo usb connector failed on %s: %v", constants.GetGSCSerialAndServoUSB, IP, err)
+		logging.Infof(ctx, "command '%s'to get gsc serial and servo usb connector failed on %s: %v", constants.GetGSCSerialAndServoUSB, IP, err)
 		return nil, err
 	}
 
 	if res.Error != nil {
-		log.Printf("command '%s'to get gsc serial and servo usb connector failed on %s: %v", constants.GetGSCSerialAndServoUSB, IP, res.Error)
+		logging.Infof(ctx, "command '%s'to get gsc serial and servo usb connector failed on %s: %v", constants.GetGSCSerialAndServoUSB, IP, res.Error)
 		return nil, res.Error
 	}
 
 	var gscInfo GSCInfo
 	err = json.Unmarshal([]byte(res.Value), &gscInfo)
 	if err != nil {
-		log.Printf("Json decode error while processing gsc serial: %v", err)
+		logging.Infof(ctx, "Json decode error while processing gsc serial: %v", err)
 		return nil, err
 	}
 	return &gscInfo, nil
@@ -363,12 +363,12 @@ func (d *DUTServicesImpl) GetServoSerial(ctx context.Context, IP string, usbDevi
 
 	gscServoInfo, err := d.GetGSCSerialAndServoUSBCount(ctx, IP)
 	if err != nil {
-		log.Printf("unable to get gsc serial and servo usb count: %v", err)
+		logging.Infof(ctx, "unable to get gsc serial and servo usb count: %v", err)
 		return false, "", err
 	}
 
 	if gscServoInfo.GSCSerial == "" {
-		log.Printf("gsc serial is empty, cannot determine servo serial: %v", err)
+		logging.Infof(ctx, "gsc serial is empty, cannot determine servo serial: %v", err)
 		return false, "", nil
 	}
 
@@ -376,14 +376,14 @@ func (d *DUTServicesImpl) GetServoSerial(ctx context.Context, IP string, usbDevi
 	if gscServoInfo.ServoUSBCount > 0 {
 		device, err := enumeration.FindServoFromDUT(gscServoInfo.GSCSerial, usbDevices)
 		if err != nil {
-			log.Printf("found servo connection but not detected on cr50/ti50 (serial:%s) port for %s : %v", gscServoInfo.GSCSerial, IP, err)
+			logging.Infof(ctx, "found servo connection but not detected on cr50/ti50 (serial:%s) port for %s : %v", gscServoInfo.GSCSerial, IP, err)
 			return true, "", nil
 		}
-		log.Printf("detected servo connection with serial %s: cr50/ti50 (serial:%s) port for %s ", device.Serial, gscServoInfo.GSCSerial, IP)
+		logging.Infof(ctx, "detected servo connection with serial %s: cr50/ti50 (serial:%s) port for %s ", device.Serial, gscServoInfo.GSCSerial, IP)
 		return true, device.Serial, nil
 	}
 
-	log.Printf("No Servo connected or detected for %s", IP)
+	logging.Infof(ctx, "No Servo connected or detected for %s", IP)
 	return false, "", nil
 }
 
