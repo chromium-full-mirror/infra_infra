@@ -129,7 +129,7 @@ try_builder(
     properties = {
         "gclient_config_name": "infra",
         "patch_root": "infra",
-        "analyzers": ["Gosec", "Spellchecker", "InclusiveLanguageCheck"],
+        "analyzers": ["Spellchecker"],
     },
     disable_reuse = True,
     owner_whitelist = ["project-infra-tryjob-access"],

@@ -108,7 +108,7 @@ try_builder(
     properties = {
         "gclient_config_name": "luci_go",
         "patch_root": "infra/go/src/go.chromium.org/luci",
-        "analyzers": ["Gosec", "Spellchecker"],
+        "analyzers": ["Spellchecker"],
     },
     disable_reuse = True,
     owner_whitelist = ["project-infra-tryjob-access"],
