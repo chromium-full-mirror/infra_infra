@@ -5,8 +5,6 @@
 package devicelabel
 
 import (
-	"google.golang.org/protobuf/types/known/anypb"
-
 	"infra/libs/fleet"
 	ufspb "infra/unifiedfleet/api/v1/models"
 )
@@ -22,13 +20,12 @@ func ConvertChromeOS(data *ufspb.ChromeOSDeviceData) (*fleet.Device, error) {
 		if err != nil {
 			return nil, err
 		}
-		anyV, _ := anypb.New(v)
 		d.DeviceLabels = append(d.DeviceLabels, &fleet.DeviceLabel{
-			Key:           reg.name,
-			SchedulableId: reg.schedulableID,
-			Source:        reg.source,
-			ReasonToAdd:   reg.reasonToAdd,
-			Value:         anyV,
+			Key:              reg.name,
+			SchedulableId:    reg.schedulableID,
+			SchedulableValue: v,
+			Source:           reg.source,
+			ReasonToAdd:      reg.reasonToAdd,
 		})
 	}
 	return d, nil

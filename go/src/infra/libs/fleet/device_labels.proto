@@ -10,8 +10,6 @@ package fleet.device.labels;
 
 option go_package = "infra/libs/fleet;";
 
-import "google/protobuf/any.proto";
-
 
 // NEXT TAG: 3
 message Device {
@@ -30,10 +28,11 @@ enum ResourceType {
 message DeviceLabel {
   // The generic name of this label;
   string key = 1;
-  // The value of this label, could be Enum, string, int, bool;
-  google.protobuf.Any value = 2;
+
   // The id used in scheduling layer;
-  string schedulable_id = 3;
+  string schedulable_id = 2;
+  // The value of labels used in scheduling layer;
+  SchedulableValue schedulable_value = 3;
 
   // NEXT TAG: 5
   enum SOURCE {
@@ -50,4 +49,9 @@ message DeviceLabel {
   string owner = 5;
   // The reason to add this device label;
   string reason_to_add = 6;
+}
+
+// Indicating the schedulable values, can be changed if the scheduling layer is changed.
+message SchedulableValue {
+  repeated string swarming_labels = 1;
 }
