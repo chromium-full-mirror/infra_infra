@@ -36,7 +36,7 @@ func TestServodServer_StartServodSuccess(t *testing.T) {
 			return bOut, bErr, nil
 		},
 	)
-	mce.EXPECT().Run(gomock.Eq("servoHostPath"), gomock.Eq("servodtool instance wait-for-active --timeout 60 -p 0"), gomock.Eq(nil), gomock.Eq(false)).DoAndReturn(
+	mce.EXPECT().Run(gomock.Eq("servoHostPath"), gomock.Eq("servodtool instance wait-for-active --timeout 120 -p 0"), gomock.Eq(nil), gomock.Eq(false)).DoAndReturn(
 		func(addr string, command string, stdin io.Reader, routeToStd bool) (bytes.Buffer, bytes.Buffer, error) {
 			var bOut, bErr bytes.Buffer
 			bOut.Write([]byte("success ready!"))

@@ -147,7 +147,7 @@ func (s *ServodService) startServoLabStation(a model.CliArgs) error {
 	if err != nil {
 		return fmt.Errorf("error while running command %s\nstdOut: %s\nstdErr: %s\n err: %s", command, bOut.String(), bErr.String(), err.Error())
 	}
-	command = fmt.Sprintf("servodtool instance wait-for-active --timeout 60 -p %v", a.ServodPort)
+	command = fmt.Sprintf("servodtool instance wait-for-active --timeout 120 -p %v", a.ServodPort)
 	bOut, bErr, err = s.commandexecutor.Run(a.ServoHostPath, command, nil, false)
 	if !strings.Contains(bOut.String(), ready) {
 		return fmt.Errorf("error while running command %s\nstdOut: %s\nstdErr: %s\n err: %s", command, bOut.String(), bErr.String(), err.Error())
