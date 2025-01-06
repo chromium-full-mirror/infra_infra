@@ -7,6 +7,7 @@ package configparser
 
 import (
 	"fmt"
+	"time"
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
@@ -27,6 +28,12 @@ func isDayCompliant(day int, isFortnightly, isNDays bool) error {
 		highBound = 13
 	} else if isNDays {
 		highBound = 365
+
+		// Fix for edge case during leap years where Dec. 31st is considered out
+		// of bounds.
+		if now := time.Now(); now.YearDay() == 366 {
+			highBound = 366
+		}
 	}
 
 	if day < 0 || day > highBound {
