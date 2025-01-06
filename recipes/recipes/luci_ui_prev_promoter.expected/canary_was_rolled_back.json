@@ -1,0 +1,451 @@
+[
+  {
+    "cmd": [
+      "python3",
+      "-u",
+      "RECIPE_MODULE[depot_tools::git]/resources/git_setup.py",
+      "--path",
+      "[CACHE]/builder/gae",
+      "--url",
+      "https://chrome-internal.googlesource.com/infradata/gae"
+    ],
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git setup"
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "main",
+      "--progress"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "env": {
+      "PATH": "RECIPE_REPO[depot_tools]:<PATH>"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git fetch"
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-f",
+      "FETCH_HEAD"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git checkout"
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-parse",
+      "HEAD"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "read revision",
+    "~followup_annotations": [
+      "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "clean",
+      "-f",
+      "-d",
+      "-x"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git clean"
+  },
+  {
+    "cmd": [
+      "git",
+      "branch",
+      "-D",
+      "roll-attempt"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git branch"
+  },
+  {
+    "cmd": [
+      "git",
+      "checkout",
+      "-t",
+      "origin/main",
+      "-b",
+      "roll-attempt"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git checkout (2)"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "-u",
+      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
+      "--json-output",
+      "/path/to/tmp/json",
+      "copy",
+      "[CACHE]/builder/gae/apps/luci-milo/channels.json",
+      "/path/to/tmp/"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "read channels.json",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@channels.json@{@@@",
+      "@@@STEP_LOG_LINE@channels.json@  \"canaryPercent\": 20,@@@",
+      "@@@STEP_LOG_LINE@channels.json@  \"tarballs\": {@@@",
+      "@@@STEP_LOG_LINE@channels.json@    \"luci-go/luci-milo-ui\": {@@@",
+      "@@@STEP_LOG_LINE@channels.json@      \"canary\": \"17404-55af652\",@@@",
+      "@@@STEP_LOG_LINE@channels.json@      \"stable\": \"17380-5010687\",@@@",
+      "@@@STEP_LOG_LINE@channels.json@      \"staging\": \"17404-55af652\"@@@",
+      "@@@STEP_LOG_LINE@channels.json@    }@@@",
+      "@@@STEP_LOG_LINE@channels.json@  }@@@",
+      "@@@STEP_LOG_LINE@channels.json@}@@@",
+      "@@@STEP_LOG_END@channels.json@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "rev-list",
+      "-n",
+      "1",
+      "--before=\"2012-04-30T12:53:21.500000\"",
+      "HEAD"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git rev-list"
+  },
+  {
+    "cmd": [
+      "git",
+      "fetch",
+      "origin",
+      "--tags"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git fetch tags"
+  },
+  {
+    "cmd": [
+      "git",
+      "cat-file",
+      "blob",
+      "98015b440da77cd986cb5722ed29894d29f2cf7f:apps/luci-milo/channels.json"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git cat-file 98015b440da77cd986cb5722ed29894d29f2cf7f:apps/luci-milo/channels.json"
+  },
+  {
+    "cmd": [
+      "[CACHE]/builder/gae/scripts/promote.py",
+      "--stable",
+      "--version",
+      "17404-55af652",
+      "--json",
+      "luci-milo",
+      "--tarballs",
+      "luci-go/luci-milo-ui"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "promote.py",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"cc\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"person-1@google.com\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"person-2@google.com\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  ],@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"commitMessage\": \"this is a commit message\"@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "add",
+      "."
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git add"
+  },
+  {
+    "cmd": [
+      "git",
+      "diff",
+      "--cached",
+      "--exit-code"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git diff"
+  },
+  {
+    "cmd": [
+      "git",
+      "commit",
+      "-m",
+      "this is a commit message"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git commit"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "RECIPE_REPO[depot_tools]/git_cl.py",
+      "upload",
+      "--force",
+      "--bypass-hooks",
+      "--cc=person-1@google.com",
+      "--cc=person-2@google.com",
+      "--set-bot-commit",
+      "--use-commit-queue",
+      "--message-file",
+      "this is a commit message"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git cl upload"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "RECIPE_REPO[depot_tools]/git_cl.py",
+      "issue",
+      "--json",
+      "/path/to/tmp/json"
+    ],
+    "cwd": "[CACHE]/builder/gae",
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "git cl issue",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"issue\": 123456789,@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"issue_url\": \"https://chromium-review.googlesource.com/c/1234567\"@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@",
+      "@@@STEP_LINK@Issue 123456789@https://chromium-review.googlesource.com/c/1234567@@@"
+    ]
+  },
+  {
+    "name": "$result"
+  }
+]

@@ -59,6 +59,7 @@
   * [infra_repo_trybot](#recipes-infra_repo_trybot)
   * [luci_go](#recipes-luci_go)
   * [luci_py](#recipes-luci_py)
+  * [luci_ui_prev_promoter](#recipes-luci_ui_prev_promoter)
   * [luci_ui_promoter](#recipes-luci_ui_promoter)
   * [powershell:examples/test](#recipes-powershell_examples_test)
   * [qemu:examples/basic](#recipes-qemu_examples_basic)
@@ -1830,6 +1831,12 @@ then this function will run those commands on the UI too.
 
 
 &mdash; **def [RunSteps](/recipes/recipes/luci_py.py#27)(api):**
+### *recipes* / [luci\_ui\_prev\_promoter](/recipes/recipes/luci_ui_prev_promoter.py)
+
+[DEPS](/recipes/recipes/luci_ui_prev_promoter.py#9): [depot\_tools/git][depot_tools/recipe_modules/git], [cloudbuildhelper](#recipe_modules-cloudbuildhelper), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/time][recipe_engine/recipe_modules/time]
+
+
+&mdash; **def [RunSteps](/recipes/recipes/luci_ui_prev_promoter.py#29)(api):**
 ### *recipes* / [luci\_ui\_promoter](/recipes/recipes/luci_ui_promoter.py)
 
 [DEPS](/recipes/recipes/luci_ui_promoter.py#7): [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [cloudbuildhelper](#recipe_modules-cloudbuildhelper), [recipe\_engine/archive][recipe_engine/recipe_modules/archive], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/nodejs][recipe_engine/recipe_modules/nodejs], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/resultdb][recipe_engine/recipe_modules/resultdb], [recipe\_engine/step][recipe_engine/recipe_modules/step]
