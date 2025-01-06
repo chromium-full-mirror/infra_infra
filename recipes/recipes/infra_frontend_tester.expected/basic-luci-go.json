@@ -391,6 +391,72 @@
       "rdb",
       "stream",
       "--",
+      "make",
+      "lint"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci/milo/ui",
+    "env": {
+      "npm_config_cache": "[CACHE]/npmcache/npm",
+      "npm_config_prefix": "[CACHE]/npmcache/pfx"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/npmcache/pfx/bin",
+        "[CACHE]/nodejs/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra/luci/luci-go:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "milo lint"
+  },
+  {
+    "cmd": [
+      "rdb",
+      "stream",
+      "--",
+      "make",
+      "build"
+    ],
+    "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci/milo/ui",
+    "env": {
+      "npm_config_cache": "[CACHE]/npmcache/npm",
+      "npm_config_prefix": "[CACHE]/npmcache/pfx"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/npmcache/pfx/bin",
+        "[CACHE]/nodejs/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra/luci/luci-go:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "milo build"
+  },
+  {
+    "cmd": [
+      "rdb",
+      "stream",
+      "--",
       "npm",
       "run",
       "test"

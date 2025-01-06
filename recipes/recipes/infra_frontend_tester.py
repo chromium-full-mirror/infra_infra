@@ -71,10 +71,12 @@ def RunInfraInternalFrontendTests(api, root_path):
 
   testhaus = root_path.joinpath('go', 'src', 'infra_internal', 'appengine',
                                 'testhaus')
+  RunNpmInstall(api, testhaus / 'frontend' / 'ui', 'testhaus')
   RunFrontendTests(api, testhaus / 'frontend' / 'ui', 'testhaus')
 
   cwd = root_path.joinpath('go', 'src', 'infra_internal', 'appengine', 'spike',
                            'appengine', 'frontend', 'ui')
+  RunNpmInstall(api, cwd, 'spike')
   RunFrontendTests(api, cwd, 'spike')
 
 
@@ -84,27 +86,52 @@ def RunInfraFrontendTests(api, root_path):
 
   cwd = root_path.joinpath('go', 'src', 'infra', 'appengine', 'dashboard',
                            'frontend')
+  RunNpmInstall(api, cwd, 'chopsdash')
   RunFrontendTests(api, cwd, 'chopsdash')
 
   cwd = root_path.joinpath('go', 'src', 'infra', 'appengine',
                            'chrome-test-health', 'frontend')
+  RunNpmInstall(api, cwd, 'chrome-test-health')
   RunFrontendTests(api, cwd, 'chrome-test-health')
 
 
 def RunLuciGoTests(api, root_path):
   """This function runs UI tests in the `luci-go` project.
+  If the UI project is configured to test a build and be linted,
+  then this function will run those commands on the UI too.
   """
 
   cwd = root_path.joinpath('analysis', 'frontend', 'ui')
+  RunNpmInstall(api, cwd, 'analysis')
   RunFrontendTests(api, cwd, 'analysis')
 
   cwd = root_path.joinpath('milo', 'ui')
+  RunNpmInstall(api, cwd, 'milo')
+  BuildAndLintFrontend(api, cwd, 'milo')
   RunFrontendTests(api, cwd, 'milo')
+
+
+def RunNpmInstall(api, cwd, app_name):
+  with api.context(cwd=cwd):
+    api.step(('%s npm install' % app_name), ['npm', 'ci'])
+
+
+def BuildAndLintFrontend(api, cwd, app_name):
+  """Build and run ESLint on a UI.
+     To use this step your UI must have:
+       1. A `Makefile` that contains a `build` command.
+       2. An `lint` npm script in the `package.json` file.
+  """
+
+  with api.context(cwd=cwd):
+    api.step(('%s lint' % app_name), api.resultdb.wrap(['make', 'lint']))
+    api.step(('%s build' % app_name), api.resultdb.wrap(['make', 'build']))
 
 
 def RunFrontendTests(api, cwd, app_name):
   with api.context(cwd=cwd):
-    api.step(('%s npm install' % app_name), ['npm', 'ci'])
+    # Prefixing the step name with `test` to make it easier to identify from
+    # other npm install runs.
     api.step(('%s test' % app_name), api.resultdb.wrap(['npm', 'run', 'test']))
 
 def GenTests(api):
