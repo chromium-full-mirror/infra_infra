@@ -274,7 +274,14 @@ func fetchSubrepo(ctx context.Context, spec *buildSpec, randomizeDir bool) (repo
 			return "", err
 		}
 	} else {
-		repoDir = "x_" + spec.inputs.Project
+		repoDir = filepath.Join(spec.workdir, "x_"+spec.inputs.Project)
+
+		// In some cases, this directory may already exist. If, for example, we're running golangbuild
+		// under golangbuild. Clear away the existing directory for the new one. It's likely just a git
+		// checkout at the wrong commit, and it's simpler and easier to just start from scratch.
+		if err := os.RemoveAll(repoDir); err != nil {
+			return "", fmt.Errorf("fetching subrepo: deleting %s in anticipation of re-fetching: %v", repoDir, err)
+		}
 	}
 	if err := fetchRepo(ctx, spec.subrepoSrc, repoDir, spec.inputs); err != nil {
 		return "", err
