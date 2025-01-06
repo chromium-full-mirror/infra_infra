@@ -8,6 +8,8 @@ import (
 	"testing"
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
+
+	"infra/cros/cmd/kron/common"
 )
 
 func TestGetGCSImageBucketCrosImageBucketNotNil(t *testing.T) {
@@ -60,5 +62,20 @@ func TestFormGCSPathPartner(t *testing.T) {
 
 	if path := formGCSPath(config, fakeItems...); path != expected {
 		t.Errorf("Expected %s got %s", expected, path)
+	}
+}
+
+func TestGenerateStagingConfig(t *testing.T) {
+	config := &suschpb.SchedulerConfig{
+		Name: "TSEStagingTest",
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{
+			TimeoutMins: 39 * 60,
+		},
+	}
+
+	request := BuildCTPRequest(config, "", "", "", "", "", "")
+
+	if request.GetParams().GetTime().GetMaximumDuration().GetSeconds() != common.MaxStagingSeconds {
+		t.Errorf("expected %d seconds got %d", int64(common.MaxStagingSeconds), request.GetParams().GetTime().GetMaximumDuration().GetSeconds())
 	}
 }

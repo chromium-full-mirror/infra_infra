@@ -17,6 +17,7 @@ import (
 	requestpb "go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
+	"infra/cros/cmd/kron/common"
 	"infra/cros/cmd/kron/configparser"
 )
 
@@ -86,8 +87,14 @@ func getSchedulingFields(PoolOptions *suschpb.SchedulerConfig_PoolOptions, launc
 	return schedParams
 }
 
-func getTimeoutSeconds(timeoutMins int32) int64 {
-	return int64(timeoutMins) * 60
+func getTimeoutSeconds(timeoutMins int32, isStaging bool) int64 {
+	timeoutSeconds := int64(timeoutMins) * 60
+
+	if isStaging && timeoutSeconds > common.MaxStagingSeconds {
+		timeoutSeconds = common.MaxStagingSeconds
+	}
+
+	return timeoutSeconds
 }
 
 func getTags(board, model, build, branchTrigger string, config *suschpb.SchedulerConfig) []string {
@@ -179,6 +186,7 @@ func formGCSPath(config *suschpb.SchedulerConfig, items ...string) string {
 // BuildCTPRequest takes information from a SuSch config and builds the
 // corresponding CTP request.
 func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget, buildMilestone, buildVersion, branchTrigger string) *requestpb.Request {
+	isStaging := common.IsStagingConfig(config)
 	buildImage := formBuildImage(buildTarget, buildMilestone, buildVersion)
 
 	request := &requestpb.Request{
@@ -213,7 +221,7 @@ func BuildCTPRequest(config *suschpb.SchedulerConfig, board, model, buildTarget,
 				ContainerMetadataUrl:   formGCSPath(config, buildImage, ContainerMetadataLocation),
 			},
 			Time: &requestpb.Request_Params_Time{
-				MaximumDuration: &durationpb.Duration{Seconds: getTimeoutSeconds(config.GetRunOptions().GetTimeoutMins())},
+				MaximumDuration: &durationpb.Duration{Seconds: getTimeoutSeconds(config.GetRunOptions().GetTimeoutMins(), isStaging)},
 			},
 			Decorations: &requestpb.Request_Params_Decorations{
 				Tags: getTags(board, model, buildImage, branchTrigger, config),

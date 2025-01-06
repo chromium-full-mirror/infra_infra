@@ -10,6 +10,10 @@ import (
 	"time"
 )
 
+var (
+	MaxStagingSeconds = int64(18 * time.Hour.Seconds())
+)
+
 const (
 	Day       = 24 * time.Hour
 	Week      = 7 * Day

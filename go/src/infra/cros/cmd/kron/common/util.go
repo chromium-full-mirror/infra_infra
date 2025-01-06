@@ -16,6 +16,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"google.golang.org/protobuf/encoding/protojson"
@@ -222,4 +223,8 @@ func FindFactors(n int) []int {
 	}
 
 	return factors
+}
+
+func IsStagingConfig(config *suschpb.SchedulerConfig) bool {
+	return strings.HasPrefix(config.GetName(), StagingConfigsPrefix)
 }

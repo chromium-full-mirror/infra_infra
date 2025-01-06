@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strconv"
-	"strings"
 	"sync"
 
 	"google.golang.org/protobuf/encoding/protojson"
@@ -170,7 +169,7 @@ func onlyStagingRequests(ctpRequests []*ctpEvent) []*ctpEvent {
 	var limitedRequests []*ctpEvent
 	for _, configWrapper := range ctpRequests {
 		// Only add configs with the staging config prefix.
-		if strings.HasPrefix(configWrapper.config.Name, common.StagingConfigsPrefix) {
+		if common.IsStagingConfig(configWrapper.config) {
 			limitedRequests = append(limitedRequests, configWrapper)
 		}
 	}
