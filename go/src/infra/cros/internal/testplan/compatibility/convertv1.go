@@ -22,6 +22,7 @@ import (
 	test_api_v1 "go.chromium.org/chromiumos/config/go/test/api/v1"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging"
@@ -86,9 +87,11 @@ func getAllAttrFromCriteria(criteria []*testpb.DutCriterion, attr *testpb.DutAtt
 	return values, nil
 }
 
-// checkCriteriaValid returns an error if any of criteria don't match the set
-// of validAttrs.
-func checkCriteriaValid(criteria []*testpb.DutCriterion, validAttrs ...*testpb.DutAttribute) error {
+// getFreeformAttributes returns the criteria that don't match any of
+// validAttrs, converted to FreeformAttributes
+func getFreeformAttributes(criteria []*testpb.DutCriterion, validAttrs ...*testpb.DutAttribute) (*test_platform.Request_Params_FreeformAttributes, error) {
+	freeformAttributes := &test_platform.Request_Params_FreeformAttributes{}
+
 	for _, criterion := range criteria {
 		matches := false
 		for _, attr := range validAttrs {
@@ -98,11 +101,17 @@ func checkCriteriaValid(criteria []*testpb.DutCriterion, validAttrs ...*testpb.D
 		}
 
 		if !matches {
-			return fmt.Errorf("criterion %q doesn't match any valid attributes (%q)", criterion, validAttrs)
+			if len(criterion.GetValues()) != 1 {
+				return nil, fmt.Errorf("only DutCriterion with exactly one value supported, got %q", criterion)
+			}
+			freeformAttributes.SwarmingDimensions = append(freeformAttributes.SwarmingDimensions, fmt.Sprintf(
+				"%s:%s", criterion.GetAttributeId().GetValue(),
+				criterion.GetValues()[0],
+			))
 		}
 	}
 
-	return nil
+	return freeformAttributes, nil
 }
 
 // sortedValuesFromMap returns the values from m as a list, sorted by the keys
@@ -466,6 +475,9 @@ type suiteInfo struct {
 	runViaCft bool
 	// optional, if true then autotest tests will be sharded.
 	enableAutotestSharding bool
+	// optional, any unexpected DutCriteria are passed through as
+	// FreeformAttributes.
+	freeformAttributes *test_platform.Request_Params_FreeformAttributes
 }
 
 // getBuildTarget returns the build target for the suiteInfo. If boardVariant is
@@ -558,10 +570,12 @@ func coverageRuleToSuiteInfo(
 
 	dutTarget := rule.GetDutTargets()[0]
 
-	// Check that all criteria in dutTarget specify one of the expected
-	// DutAttributes.
-	if err := checkCriteriaValid(dutTarget.GetCriteria(), poolAttr, programAttr, designAttr, licenseAttr); err != nil {
+	freeformAttributes, err := getFreeformAttributes(dutTarget.GetCriteria(), poolAttr, programAttr, designAttr, licenseAttr)
+	if err != nil {
 		return nil, err
+	}
+	if len(freeformAttributes.GetSwarmingDimensions()) > 0 {
+		logging.Infof(ctx, "Passing additional DutCriteria as FreeformAttributes: %s", freeformAttributes)
 	}
 
 	pools, err := getAttrFromCriteria(dutTarget.GetCriteria(), poolAttr)
@@ -709,6 +723,7 @@ func coverageRuleToSuiteInfo(
 						licenses:               licenses,
 						runViaCft:              rule.RunViaCft,
 						enableAutotestSharding: rule.EnableAutotestSharding,
+						freeformAttributes:     freeformAttributes,
 					})
 			}
 		case *testpb.TestSuite_TestCaseTagCriteria_:
@@ -749,6 +764,7 @@ func coverageRuleToSuiteInfo(
 					licenses:               licenses,
 					runViaCft:              rule.GetRunViaCft(),
 					enableAutotestSharding: rule.GetEnableAutotestSharding(),
+					freeformAttributes:     freeformAttributes,
 				})
 		default:
 			return nil, fmt.Errorf("TestSuite spec type %T is not supported", spec)
@@ -1064,6 +1080,7 @@ func ToCTP1(
 					TotalShards:            suiteInfo.totalShards,
 					MaxInShard:             suiteInfo.maxInShard,
 					Companions:             suiteInfo.companions,
+					FreeformAttributes:     suiteInfo.freeformAttributes,
 				}
 
 				if _, found := hwTests[displayName]; found {

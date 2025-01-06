@@ -19,6 +19,7 @@ import (
 	test_api_v1 "go.chromium.org/chromiumos/config/go/test/api/v1"
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 
@@ -89,6 +90,12 @@ var hwTestPlans = []*test_api_v1.HWTestPlan{
 									Value: "swarming-pool",
 								},
 								Values: []string{"DUT_POOL_QUOTA"},
+							},
+							{
+								AttributeId: &testpb.DutAttribute_Id{
+									Value: "extradim",
+								},
+								Values: []string{"extraval"},
 							},
 						},
 					},
@@ -919,6 +926,9 @@ func TestToCTP1(t *testing.T) {
 							Suite:       "suite1",
 							SkylabBoard: "boardA",
 							Pool:        "DUT_POOL_QUOTA",
+							FreeformAttributes: &test_platform.Request_Params_FreeformAttributes{
+								SwarmingDimensions: []string{"extradim:extraval"},
+							},
 						},
 						{
 							Common: &testplans.TestSuiteCommon{
@@ -928,6 +938,9 @@ func TestToCTP1(t *testing.T) {
 							Suite:       "suite2",
 							SkylabBoard: "boardA",
 							Pool:        "DUT_POOL_QUOTA",
+							FreeformAttributes: &test_platform.Request_Params_FreeformAttributes{
+								SwarmingDimensions: []string{"extradim:extraval"},
+							},
 						},
 						{
 							Common: &testplans.TestSuiteCommon{
@@ -939,9 +952,10 @@ func TestToCTP1(t *testing.T) {
 								Tags:        []string{`"group:somegroup"`},
 								TagExcludes: []string{"informational"},
 							},
-							TotalShards: 1,
-							SkylabBoard: "boardA",
-							Pool:        "DUT_POOL_MULTI_DUT",
+							TotalShards:        1,
+							SkylabBoard:        "boardA",
+							Pool:               "DUT_POOL_MULTI_DUT",
+							FreeformAttributes: &test_platform.Request_Params_FreeformAttributes{},
 							Companions: []*testplans.TestCompanion{
 								{
 									Board: "boardCompanionA",
@@ -975,7 +989,8 @@ func TestToCTP1(t *testing.T) {
 								lab.LicenseType_LICENSE_TYPE_WINDOWS_10_PRO,
 								lab.LicenseType_LICENSE_TYPE_MS_OFFICE_STANDARD,
 							},
-							Pool: "DUT_POOL_QUOTA",
+							Pool:               "DUT_POOL_QUOTA",
+							FreeformAttributes: &test_platform.Request_Params_FreeformAttributes{},
 						},
 					},
 				},
@@ -1001,11 +1016,12 @@ func TestToCTP1(t *testing.T) {
 								DisplayName: "cq-builderA-kernelnext.model1.hw.suite-with-board-variant",
 								Critical:    wrapperspb.Bool(false),
 							},
-							Suite:       "suite-with-board-variant",
-							SkylabBoard: "boardA",
-							SkylabModel: "model1",
-							Pool:        "DUT_POOL_QUOTA",
-							RunViaCft:   true,
+							Suite:              "suite-with-board-variant",
+							SkylabBoard:        "boardA",
+							SkylabModel:        "model1",
+							Pool:               "DUT_POOL_QUOTA",
+							RunViaCft:          true,
+							FreeformAttributes: &test_platform.Request_Params_FreeformAttributes{},
 						},
 					},
 				},
@@ -1036,6 +1052,7 @@ func TestToCTP1(t *testing.T) {
 							Pool:                   "DUT_POOL_QUOTA",
 							RunViaCft:              true,
 							EnableAutotestSharding: true,
+							FreeformAttributes:     &test_platform.Request_Params_FreeformAttributes{},
 						},
 					},
 				},
@@ -1298,50 +1315,6 @@ func TestToCTP1Errors(t *testing.T) {
 			},
 			dutAttributeList: dutAttributeList,
 			errRegexp:        "only DutCriterion with at least one value supported",
-		},
-		{
-			name:        "invalid DUT attribute",
-			vmTestPlans: vmTestPlans,
-			hwTestPlans: []*test_api_v1.HWTestPlan{
-				{
-					CoverageRules: []*testpb.CoverageRule{
-						{
-							DutTargets: []*testpb.DutTarget{
-								{
-									Criteria: []*testpb.DutCriterion{
-										{
-											AttributeId: &testpb.DutAttribute_Id{
-												Value: "attr-program",
-											},
-											Values: []string{"programA"},
-										},
-										{
-											AttributeId: &testpb.DutAttribute_Id{
-												Value: "swarming-pool",
-											},
-											Values: []string{"DUT_POOL_QUOTA"},
-										},
-										{
-											AttributeId: &testpb.DutAttribute_Id{
-												Value: "attr-design",
-											},
-											Values: []string{"model1"},
-										},
-										{
-											AttributeId: &testpb.DutAttribute_Id{
-												Value: "fp",
-											},
-											Values: []string{"fp1"},
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-			dutAttributeList: dutAttributeList,
-			errRegexp:        "criterion .+ doesn't match any valid attributes",
 		},
 		{
 			name:        "multiple pool values",
