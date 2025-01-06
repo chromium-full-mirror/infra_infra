@@ -26608,6 +26608,9 @@ plans:
                         - name: Set fw_wp_state to force_off ('servo_set')
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present')
+                - name: FW WP is disabled (Allow to fail) ('servo_check_servod_control') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Servo-state:WORKING ('servo_match_state')
             - name: Check if OS on required version for camerabox tablet ('is_camerabox_tablet_on_os_version')
               conditions:
                 - name: is_camerabox_tablet_pool ('dut_is_in_pool')

@@ -834,6 +834,7 @@ func crosRepairActions() map[string]*Action {
 				"RO Firmware version matches the recovery-version",
 				"Verify servo keyboard firmware",
 				"FPMCU is working",
+				"FW WP is disabled",
 			},
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
@@ -1335,6 +1336,18 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"state:WORKING",
 			},
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Servo-state:WORKING": {
+			Docs: []string{
+				"Validate that servo-state:WORKING.",
+				"That is condition only",
+			},
+			ExecName: "servo_match_state",
+			ExecExtraArgs: []string{
+				"state:WORKING",
+			},
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"RO Firmware version matches the recovery-version": {
 			Docs: []string{
@@ -3352,6 +3365,7 @@ func crosRepairActions() map[string]*Action {
 				// Device with MP AP firmware must be in dev mode to boot test OS image
 				"mp_firmware_testing",
 			},
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Pools require Servo in WORKING state": {
 			Docs: []string{
@@ -3366,6 +3380,7 @@ func crosRepairActions() map[string]*Action {
 				"faft-test",
 				"satlab_faft",
 			},
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Pools required to be in Secure mode": {
 			Docs: []string{
@@ -4067,6 +4082,7 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"camerabox_tablet",
 			},
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Audit camera": {
 			Docs: []string{
@@ -4976,6 +4992,21 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
 			RunControl:  RunControl_ALWAYS_RUN,
+		},
+		"FW WP is disabled": {
+			Docs: []string{
+				"Validate if WP is enabled or not.",
+			},
+			Dependencies: []string{
+				"Servo-state:WORKING",
+			},
+			ExecName: "servo_check_servod_control",
+			ExecExtraArgs: []string{
+				"command:fw_wp_state",
+				"expected_string_value:force_off",
+			},
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
 		},
 	}
 
