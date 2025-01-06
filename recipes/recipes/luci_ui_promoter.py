@@ -34,16 +34,16 @@ def RunSteps(api):
 
 
 def _try_promote_staging_to_prod(api, gae_dir):
-  # Check whether the staging version and stable version matches.
+  # Check whether the staging version and canary version matches.
   channel_json_file = gae_dir / 'apps' / 'luci-milo' / 'channels.json'
   channel_json_data = api.file.read_json('read channels.json',
                                          channel_json_file)
   luci_ui_versions = channel_json_data.get('tarballs').get(
       'luci-go/luci-milo-ui')
   staging_tarball_version = luci_ui_versions.get('staging')
-  stable_tarball_version = luci_ui_versions.get('stable')
-  # No need to promote if the staging version is the same as the stable version.
-  if staging_tarball_version == stable_tarball_version:
+  canary_tarball_version = luci_ui_versions.get('canary')
+  # No need to promote if the staging version is the same as the canary version.
+  if staging_tarball_version == canary_tarball_version:
     return None
 
   # Find and load `<staging-tarball-version>.json`.
@@ -90,7 +90,9 @@ def _try_promote_staging_to_prod(api, gae_dir):
       cmd=[
           gae_dir / 'scripts' / 'promote.py',
           '--canary',
-          '--stable',
+          # Do not promote the stable channel because we use it to track a
+          # X-weeks-old LUCI UI version. See b/381131084.
+          # '--stable',
           '--json',
           'luci-milo',
           # Promote the UI service only.

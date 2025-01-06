@@ -592,7 +592,6 @@
     "cmd": [
       "[CACHE]/builder/gae/scripts/promote.py",
       "--canary",
-      "--stable",
       "--json",
       "luci-milo",
       "--tarballs",
