@@ -1979,9 +1979,6 @@ func crosRepairActions() map[string]*Action {
 				"Is a Chromebook",
 				"Pools required to be in Secure mode",
 			},
-			Dependencies: []string{
-				"Internal storage is responsive",
-			},
 			ExecName: "cros_is_not_in_dev_mode",
 			RecoveryActions: []string{
 				"Switch to secure-mode and reboot",
