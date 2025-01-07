@@ -78,7 +78,7 @@ def _try_promote_staging_to_prod(api, gae_dir):
   # Bootstrap nodejs at that version and run LUCI UI integration tests against
   # the staging tarball.
   luci_ui_dir = luci_go_dir / 'milo' / 'ui'
-  tarball_dist_dir = extract_dir / 'service-ui' / 'ui' / 'dist'
+  tarball_dist_dir = extract_dir / 'service-ui-new' / 'ui' / 'dist'
   with api.nodejs(version), api.context(
       cwd=luci_ui_dir, env={'VITE_LOCAL_BASE_OUT_DIR': tarball_dist_dir}):
     api.step('npm ci', ['npm', 'ci'])
