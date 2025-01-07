@@ -14,11 +14,11 @@ import (
 	"strings"
 	"unicode"
 
-	"infra/tricium/api/v1"
+	tricium "infra/tricium/api/v1"
 )
 
 const (
-	category                = "Spacey"
+	category                = "spacey"
 	individualCommentsLimit = 3
 	tabLength               = 8
 )
@@ -103,7 +103,7 @@ func analyzeFile(scanner *bufio.Scanner, path string) []*tricium.Data_Comment {
 
 	if adjacentEmptyLines > 0 {
 		comments = append(comments, &tricium.Data_Comment{
-			Category:  fmt.Sprintf("%s/%s", category, "TrailingLines"),
+			Category:  fmt.Sprintf("%s_trailing_lines", category),
 			Message:   "Found empty line(s) at the end of the file",
 			Path:      path,
 			StartLine: int32(start + 1),
@@ -147,7 +147,7 @@ func checkSpaceMix(path, line string, pos int) *tricium.Data_Comment {
 	// Add a comment if there was a whitespace section and more than one kind of space.
 	if start != end && (spaceFlag+tabFlag+otherFlag > 1) {
 		comment := &tricium.Data_Comment{
-			Category:  fmt.Sprintf("%s/%s", category, "SpaceMix"),
+			Category:  fmt.Sprintf("%s_space_mix", category),
 			Message:   "Found mix of white space characters",
 			Path:      path,
 			StartLine: int32(pos),
@@ -215,7 +215,7 @@ func checkTrailingSpace(path, line string, pos int) *tricium.Data_Comment {
 
 	if start != end {
 		comment := &tricium.Data_Comment{
-			Category:  fmt.Sprintf("%s/%s", category, "TrailingSpace"),
+			Category:  fmt.Sprintf("%s_trailing_space", category),
 			Message:   "Found trailing space",
 			Path:      path,
 			StartLine: int32(pos),

@@ -93,60 +93,67 @@ func TestPylintParsing(t *testing.T) {
 			expected := []*tricium.Data_Comment{
 				{
 					Path: "test.py",
-					Message: "Empty function docstring.\n" +
+					Message: "Type: convention; Symbol: empty-docstring\n" +
+						"Empty function docstring.\n" +
 						"To disable, add: # pylint: disable=empty-docstring",
-					Category:  "Pylint/convention/empty-docstring",
+					Category:  "pylint",
 					StartLine: 6,
 					StartChar: 0,
 				},
 				{
 					Path: "test.py",
-					Message: "Unused argument 'y'.\n" +
+					Message: "Type: warning; Symbol: unused-argument\n" +
+						"Unused argument 'y'.\n" +
 						"To disable, add: # pylint: disable=unused-argument",
-					Category:  "Pylint/warning/unused-argument",
+					Category:  "pylint",
 					StartLine: 6,
 					StartChar: 15,
 				},
 				{
 					Path: "test.py",
-					Message: "Unused argument 'z'.\n" +
+					Message: "Type: warning; Symbol: unused-argument\n" +
+						"Unused argument 'z'.\n" +
 						"To disable, add: # pylint: disable=unused-argument",
-					Category:  "Pylint/warning/unused-argument",
+					Category:  "pylint",
 					StartLine: 6,
 					StartChar: 18,
 				},
 				{
 					Path: "test.py",
-					Message: "Unnecessary pass statement.\n" +
+					Message: "Type: warning; Symbol: unnecessary-pass\n" +
+						"Unnecessary pass statement.\n" +
 						"To disable, add: # pylint: disable=unnecessary-pass",
-					Category:  "Pylint/warning/unnecessary-pass",
+					Category:  "pylint",
 					StartLine: 12,
 					StartChar: 2,
 				},
 				{
 					Path: "test.py",
-					Message: "Using possibly undefined loop variable 'a'.\n" +
+					Message: "Type: warning; Symbol: undefined-loop-variable\n" +
+						"Using possibly undefined loop variable 'a'.\n" +
 						"To disable, add: # pylint: disable=undefined-loop-variable",
-					Category:  "Pylint/warning/undefined-loop-variable",
+					Category:  "pylint",
 					StartLine: 19,
 					StartChar: 10,
 				},
 				{
 					Path: "test.py",
-					Message: "Unused variable 'a'.\n" +
+					Message: "Type: warning; Symbol: unused-variable\n" +
+						"Unused variable 'a'.\n" +
 						"To disable, add: # pylint: disable=unused-variable",
-					Category:  "Pylint/warning/unused-variable",
+					Category:  "pylint",
 					StartLine: 18,
 					StartChar: 6,
 				},
 				{
 					Path: "test.py",
-					Message: "Undefined variable 'main'.\n" +
+					Message: "Type: error; Symbol: undefined-variable\n" +
+						"Undefined variable 'main'.\n" +
 						"This check could give false positives when there are wildcard imports\n" +
 						"(from module import *). It is recommended to avoid wildcard imports; see\n" +
 						"https://www.python.org/dev/peps/pep-0008/#imports.\n" +
 						"To disable, add: # pylint: disable=undefined-variable",
-					Category:  "Pylint/error/undefined-variable",
+					Category:  "pylint",
 					StartLine: 26,
 					StartChar: 0,
 				},

@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	category = "Copyright"
+	category = "copyright"
 )
 
 var (
@@ -148,7 +148,7 @@ func getFileHeader(path string, file *os.File) string {
 
 func missingCopyrightComment(path string) *tricium.Data_Comment {
 	return &tricium.Data_Comment{
-		Category: fmt.Sprintf("%s/%s", category, "Missing"),
+		Category: fmt.Sprintf("%s_%s", category, "missing"),
 		Message: "Missing copyright statement.\n" +
 			"Use the following for BSD:\n" +
 			"Copyright <year> The <group> Authors. All rights reserved.\n" +
@@ -168,7 +168,7 @@ func missingCopyrightComment(path string) *tricium.Data_Comment {
 
 func incorrectCopyrightComment(path string) *tricium.Data_Comment {
 	return &tricium.Data_Comment{
-		Category: fmt.Sprintf("%s/%s", category, "Incorrect"),
+		Category: fmt.Sprintf("%s_%s", category, "incorrect"),
 		Message: "Incorrect copyright statement.\n" +
 			"Use the following for BSD:\n" +
 			"Copyright <year> The <group> Authors. All rights reserved.\n" +
@@ -188,7 +188,7 @@ func incorrectCopyrightComment(path string) *tricium.Data_Comment {
 
 func oldCopyrightComment(path string) *tricium.Data_Comment {
 	return &tricium.Data_Comment{
-		Category: fmt.Sprintf("%s/%s", category, "OutOfDate"),
+		Category: fmt.Sprintf("%s_%s", category, "out_of_date"),
 		Message: "Out of date copyright statement (omit the (c) to update).\n\n" +
 			"See: https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++.md#file-headers",
 		Path:      path,

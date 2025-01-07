@@ -164,8 +164,8 @@ func parsePylintOutput(stdout []byte) ([]*tricium.Data_Comment, error) {
 		comments = append(comments, &tricium.Data_Comment{
 			Path: r.Path,
 			Message: fmt.Sprintf(
-				"%s.\nTo disable, add: # pylint: disable=%s", msg, r.Symbol),
-			Category:  fmt.Sprintf("Pylint/%s/%s", r.Type, r.Symbol),
+				"Type: %s; Symbol: %s\n%s.\nTo disable, add: # pylint: disable=%s", r.Type, r.Symbol, msg, r.Symbol),
+			Category:  "pylint",
 			StartLine: r.Line,
 			StartChar: r.Column,
 		})
