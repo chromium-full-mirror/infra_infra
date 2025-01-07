@@ -13,6 +13,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/common_commands"
@@ -64,7 +65,23 @@ func (cmd *GenericProvisionCmd) instantiateWithHwTestStateKeeper(
 	}); err != nil {
 		return fmt.Errorf("cmd %s missing dependency: ProvisionRequest, %s", cmd.GetCommandType(), err)
 	}
+	pool := []string{""}
+	if keyvals := sk.CrosTestRunnerRequest.GetParams().GetKeyvals(); keyvals != nil {
+		if labelPool, ok := keyvals["label-pool"]; ok {
+			pool = []string{labelPool}
+		}
+	}
 
+	if cmd.ProvisionRequest.GetDynamicIdentifier() == "cros-provision_primary" && cmd.ProvisionRequest.GetTarget() == "primary" && shouldUpdateFirmware(sk.CommonConfig, pool, sk.CrosTestRunnerRequest.GetParams().GetPrimaryDut()) {
+		metadata := &testapi.CrOSProvisionMetadata{
+			UpdateFirmware: true,
+		}
+		anyMetadata, err := anypb.New(metadata)
+		if err != nil {
+			return errors.Annotate(err, "error during creating generic provision metadata: ").Err()
+		}
+		cmd.ProvisionRequest.InstallRequest.Metadata = anyMetadata
+	}
 	return nil
 }
 
