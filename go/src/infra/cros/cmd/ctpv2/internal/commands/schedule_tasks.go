@@ -839,6 +839,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			if newBuildReq != nil && newBuildReq.ScheduleBuildRequest != nil {
 				logging.Infof(ctx, "total retry left after current retry: %d", buildReq.SuiteInfo.GetSuiteRequest().GetRetryCount()-int64(retryNum))
 				// Schedule retry
+				wg.Add(1)
 				go cmd.ScheduleAndMonitor(rootCtx, newBuildReq.Key, newBuildReq, wg, resultsChan, retryNum+1, dmc, buildsMapLen, bbClient)
 			}
 		}
