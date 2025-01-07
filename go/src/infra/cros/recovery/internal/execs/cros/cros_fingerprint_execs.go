@@ -24,6 +24,8 @@ func checkFingerprintInfo(board, mcu, sensor string) bool {
 	validCombinations := map[string]map[string]string{
 		"bloonchipper": {"stm32f412": "210"},
 		"dartmonkey":   {"stm32h7x3": "1400"},
+		"nami_fp":      {"stm32h7x3": "1400"},
+		"nocturne_fp":  {"stm32h7x3": "1400"},
 		"helipilot":    {"NPCX99FP": "210"},
 		"buccaneer":    {"NPCX99FP": "4f4f"},
 		"None":         {"None": "None"},
@@ -59,6 +61,10 @@ func collectFingerprint(ctx context.Context, info *execs.ExecInfo) error {
 		// In the error case, we expect this was a device without fingerprint.
 		board = "None"
 		log.Debugf(ctx, "collect fingerprint_board returned error: ", err)
+	}
+	if board == "" {
+		// Nami devices without fingerprint return blank string.
+		board = "None"
 	}
 
 	// command to grab the fingerprint_mcu from dut
