@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
@@ -21,7 +22,14 @@ func NewAuthenticatedClient(ctx context.Context, rpcAuthorityKind auth.RPCAuthor
 	case auth.AsCredentialsForwarder:
 		// do nothing
 	case auth.AsSelf:
-		opts = []auth.RPCOption{auth.WithIDToken()}
+		// TODO(gregorynisbet): This logic is too complicated. Streamline it.
+		audience := "https://" + ensureSingleTrailingSlash(baseURL)
+		if insecure {
+			audience = "http://" + ensureSingleTrailingSlash(baseURL)
+		}
+		opts = []auth.RPCOption{
+			auth.WithIDTokenAudience(audience),
+		}
 	default:
 		opts = []auth.RPCOption{auth.WithScopes(auth.CloudOAuthScopes...)}
 	}
@@ -40,4 +48,9 @@ func NewAuthenticatedClient(ctx context.Context, rpcAuthorityKind auth.RPCAuthor
 		Host: fmt.Sprintf("%s:%d", baseURL, port),
 	}
 	return prpcClient, nil
+}
+
+func ensureSingleTrailingSlash(content string) string {
+	out := strings.TrimRight(content, "/")
+	return out + "/"
 }
