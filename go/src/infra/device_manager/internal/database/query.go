@@ -45,7 +45,7 @@ func BuildQueryFilter(ctx context.Context, filter string) (string, []interface{}
 		queryFilter string
 	)
 
-	logging.Debugf(ctx, "BuildQueryFilter: processing filter string %s", filter)
+	logging.Debugf(ctx, "BuildQueryFilter: processing filter string %q", filter)
 	for _, filterPart := range strings.Split(filter, "AND") {
 		trimmedFilter := strings.TrimSpace(filterPart)
 		parts := strings.FieldsFunc(trimmedFilter, func(r rune) bool {
@@ -53,7 +53,7 @@ func BuildQueryFilter(ctx context.Context, filter string) (string, []interface{}
 		})
 
 		if len(parts) < 2 {
-			logging.Warningf(ctx, "BuildQueryFilter: invalid filter format: %s", trimmedFilter)
+			logging.Warningf(ctx, "BuildQueryFilter: invalid filter format: %q", trimmedFilter)
 			break
 		}
 
@@ -68,7 +68,7 @@ func BuildQueryFilter(ctx context.Context, filter string) (string, []interface{}
 		}
 		operator := strings.TrimSpace(trimmedFilter[len(field):(len(trimmedFilter) - len(value))])
 
-		logging.Debugf(ctx, "BuildQueryFilter: %s %s %s", field, operator, value)
+		logging.Debugf(ctx, "BuildQueryFilter: %q %q %q", field, operator, value)
 		position := fmt.Sprintf("$%d", len(filterArgs)+1)
 
 		switch operator {
@@ -93,7 +93,7 @@ func BuildQueryFilter(ctx context.Context, filter string) (string, []interface{}
 			}
 			continue
 		default:
-			logging.Warningf(ctx, "BuildQueryFilter: unsupported filter: %s %s %s", field, operator, value)
+			logging.Warningf(ctx, "BuildQueryFilter: unsupported filter: %q %q %q", field, operator, value)
 			continue
 		}
 
