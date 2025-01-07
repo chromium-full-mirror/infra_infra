@@ -90,10 +90,12 @@ func GetDeviceManagerClient(ctx context.Context) (*devicemanagerclient.Client, e
 	deviceManagerAddr := devicemanagerclient.DMDevURL
 	deviceManagerPort := devicemanagerclient.DMLeasesPort
 	if *flags.UseLocalDeviceManager {
+		logging.Infof(ctx, "using local device manager")
 		deviceManagerAddr = "localhost"
 		deviceManagerPort = 8800
 	}
 	if *flags.DeviceManagerAddr != "" {
+		logging.Infof(ctx, "parsing device manager from flag: %s", *flags.DeviceManagerAddr)
 		res := strings.Split(*flags.DeviceManagerAddr, ":")
 		deviceManagerAddr = res[0]
 		port, err := strconv.Atoi(res[1])
@@ -106,6 +108,7 @@ func GetDeviceManagerClient(ctx context.Context) (*devicemanagerclient.Client, e
 	logging.Infof(ctx, "Initializing device manager client with address: %s:%d", deviceManagerAddr, deviceManagerPort)
 	deviceManagerClient, err := devicemanagerclient.NewClient(ctx, auth.AsSelf, deviceManagerAddr, deviceManagerPort, *flags.UseLocalDeviceManager)
 	if err != nil {
+		logging.Errorf(ctx, "encountered error while initializing device manager: %s", err)
 		return nil, errors.Annotate(err, "configuring device manager client").Err()
 	}
 	return deviceManagerClient, nil
