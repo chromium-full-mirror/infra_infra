@@ -52,9 +52,9 @@ class WindowsADKApi(recipe_api.RecipeApi):
     # does nothing. q: quiet, l: logs, features +: all features
     results = self.m.powershell(
         'Install ADK',
-        cipd_dir / 'raw_source_0.exe',
+        cipd_dir / 'adksetup.exe',
         logs=[logs_dir],
-        args=['/q', '/l', log_file, '/features', '+'])
+        args=['/q', '/l', log_file, '/features', 'OptionId.DeploymentTools'])
     if results and 'i007: Exit code: 0x0' not in results[str(log_file)]:
       raise self.m.step.InfraFailure(
           'ADK installation failed')  # pragma: no cover
@@ -73,7 +73,7 @@ class WindowsADKApi(recipe_api.RecipeApi):
     # does nothing. q: quiet, l: logs, features +: all features
     results = self.m.powershell(
         'Install WinPE',
-        cipd_dir / 'raw_source_0.exe',
+        cipd_dir / 'adkwinpesetup.exe',
         logs=[logs_dir],
         args=['/q', '/l', log_file, '/features', '+'])
     if results and 'i007: Exit code: 0x0' not in results[str(log_file)]:
@@ -89,7 +89,7 @@ class WindowsADKApi(recipe_api.RecipeApi):
     # uninstall: remove all
     results = self.m.powershell(
         'Uninstall ADK',
-        cipd_dir / 'raw_source_0.exe',
+        cipd_dir / 'adksetup.exe',
         logs=[logs_dir],
         args=['/q', '/l', log_file, '/uninstall'])
     if results and 'i007: Exit code: 0x0' not in results[str(log_file)]:
@@ -105,7 +105,7 @@ class WindowsADKApi(recipe_api.RecipeApi):
     # remove all
     results = self.m.powershell(
         'Uninstall WinPE',
-        cipd_dir / 'raw_source_0.exe',
+        cipd_dir / 'adkwinpesetup.exe',
         logs=[logs_dir],
         args=['/q', '/l', log_file, '/uninstall'])
     if results and 'i007: Exit code: 0x0' not in results[str(log_file)]:
