@@ -192,6 +192,11 @@ func buildPerModelConfigs(models []string, config *suschpb.SchedulerConfig, buil
 			if err != nil {
 				return nil, err
 			}
+
+			// Add the event ID to the list of tags so that it gets propagated to the
+			// child test runners.
+			ctpRequest = ctprequest.AddTagToRequest("event-id", event.GetEventUuid(), ctpRequest)
+
 			request := &ctpEvent{
 				event:      event,
 				ctpRequest: ctpRequest,
@@ -207,6 +212,10 @@ func buildPerModelConfigs(models []string, config *suschpb.SchedulerConfig, buil
 		if err != nil {
 			return nil, err
 		}
+
+		// Add the event ID to the list of tags so that it gets propagated to the
+		// child test runners.
+		ctpRequest = ctprequest.AddTagToRequest("event-id", event.GetEventUuid(), ctpRequest)
 
 		request := &ctpEvent{
 			event:      event,

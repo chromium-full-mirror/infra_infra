@@ -273,3 +273,18 @@ func BuildAllCTPRequests(config *suschpb.SchedulerConfig, targets configparser.T
 
 	return requests
 }
+
+// AddTagToRequest adds a new string tag in the form of <key>:<value> to the
+// request's list of tags.
+func AddTagToRequest(key, value string, request *requestpb.Request) *requestpb.Request {
+	decorations := request.GetParams().GetDecorations()
+	tags := request.GetParams().GetDecorations().GetTags()
+	newTag := fmt.Sprintf("%s:%s", key, value)
+	tags = append(tags, newTag)
+
+	if decorations != nil {
+		decorations.Tags = tags
+	}
+
+	return request
+}

@@ -449,6 +449,10 @@ func BuildMultiDUTCTPRequest(config *suschpb.SchedulerConfig, branchTrigger stri
 		return nil, err
 	}
 
+	// Add the event ID to the list of tags so that it gets propagated to the
+	// child test runners.
+	request = ctprequest.AddTagToRequest("event-id", metricEvent.GetEventUuid(), request)
+
 	return &ctpEvent{
 		event:      metricEvent,
 		ctpRequest: request,

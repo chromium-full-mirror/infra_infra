@@ -7,6 +7,7 @@ package ctprequest
 import (
 	"testing"
 
+	requestpb "go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
 	"infra/cros/cmd/kron/common"
@@ -78,4 +79,32 @@ func TestGenerateStagingConfig(t *testing.T) {
 	if request.GetParams().GetTime().GetMaximumDuration().GetSeconds() != common.MaxStagingSeconds {
 		t.Errorf("expected %d seconds got %d", int64(common.MaxStagingSeconds), request.GetParams().GetTime().GetMaximumDuration().GetSeconds())
 	}
+}
+
+func TestAddTagToRequest(t *testing.T) {
+	request := &requestpb.Request{
+		Params: &requestpb.Request_Params{
+			Decorations: &requestpb.Request_Params_Decorations{},
+		},
+	}
+
+	modifiedRequest := AddTagToRequest("key", "value", request)
+	expectedTag := "key:value"
+
+	tags := modifiedRequest.GetParams().GetDecorations().GetTags()
+	if len(tags) == 0 {
+		t.Errorf("request tags were expected to be populated, a zero length was returned")
+		return
+	}
+
+	if len(tags) != 1 {
+		t.Errorf("expected %d tag, got %d tags", 1, len(tags))
+		return
+	}
+
+	if tags[0] != expectedTag {
+		t.Errorf("expected tag (%s), got (%s)", expectedTag, tags[0])
+		return
+	}
+
 }
