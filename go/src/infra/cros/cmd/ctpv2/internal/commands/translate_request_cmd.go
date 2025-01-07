@@ -370,7 +370,7 @@ func executionMetadata(req *api.CTPRequest, isPartnerRun bool) *api.ExecutionMet
 		k := ""
 		v := ""
 		for _, innerkv := range strings.Split(kv, "=") {
-			if k == "resultdb_settings" || k == "test_args_b64" {
+			if k == "resultdb_settings" || strings.Contains(k, "b64") {
 				// force split to 2 (since the value may have multiple '='s)
 				rdbKVs := strings.SplitN(kv, "=", 2)
 				k = rdbKVs[0]
