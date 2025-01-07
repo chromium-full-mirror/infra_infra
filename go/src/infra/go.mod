@@ -44,9 +44,9 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/electricbubble/gadb v0.1.1-0.20240523030754-97c5a1a929a9
 	github.com/fsnotify/fsnotify v1.7.0
-	github.com/gliderlabs/ssh v0.3.7
+	github.com/gliderlabs/ssh v0.3.8
 	github.com/go-delve/delve v1.23.1
-	github.com/go-git/go-git/v5 v5.12.0
+	github.com/go-git/go-git/v5 v5.13.0
 	github.com/gofrs/flock v0.12.1
 	github.com/gogo/protobuf v1.3.2
 	github.com/golang/glog v1.2.3
@@ -87,7 +87,7 @@ require (
 	github.com/savaki/jq v0.0.0-20161209013833-0e6baecebbf8
 	github.com/shirou/gopsutil/v3 v3.24.5
 	github.com/shirou/gopsutil/v4 v4.24.7
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/testcontainers/testcontainers-go v0.34.0
 	github.com/ulikunitz/xz v0.5.12
 	github.com/waigani/diffparser v0.0.0-20190828052634-7391f219313d
@@ -158,7 +158,7 @@ require (
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/propagator v0.48.2 // indirect
 	github.com/GoogleCloudPlatform/protoc-gen-bq-schema v0.0.0-20190119112626-026f9fcdf705 // indirect
 	github.com/PaesslerAG/gval v1.0.0 // indirect
-	github.com/ProtonMail/go-crypto v1.0.0 // indirect
+	github.com/ProtonMail/go-crypto v1.1.3 // indirect
 	github.com/anmitsu/go-shlex v0.0.0-20200514113438-38f4b401e2be // indirect
 	github.com/antlr4-go/antlr/v4 v4.13.0 // indirect
 	github.com/apache/arrow/go/v15 v15.0.2 // indirect
@@ -195,7 +195,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.8 // indirect
 	github.com/go-delve/liner v1.2.3-0.20231231155935-4726ab1d7f62 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
-	github.com/go-git/go-billy/v5 v5.5.0 // indirect
+	github.com/go-git/go-billy/v5 v5.6.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
@@ -271,7 +271,6 @@ require (
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/shoenig/go-m1cpu v0.1.6 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
-	github.com/skeema/knownhosts v1.3.0 // indirect
 	github.com/smarty/assertions v1.16.0 // indirect
 	github.com/spf13/cobra v1.7.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
