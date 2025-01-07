@@ -1,6 +1,6 @@
-// Copyright 2020 The LUCI Authors. All rights reserved.
-// Use of this source code is governed under the Apache License, Version 2.0
-// that can be found in the LICENSE file.
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package main
 
@@ -10,9 +10,15 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"github.com/maruel/subcommands"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
+	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
@@ -22,6 +28,8 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/lucictx"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
+
+	exceptionpb "infra/tools/result_adapter/proto"
 )
 
 // ExitCodeCommandFailure indicates that a given command failed due to internal errors
@@ -139,6 +147,52 @@ func (r *baseRun) done(err error) int {
 	return 0
 }
 
+func (r *baseRun) reportException(ctx context.Context, reportErr error) {
+	exceptions := &exceptionpb.ExceptionOccurrences{
+		Datapoints: []*exceptionpb.ExceptionOccurrence{
+			{
+				Name:         reportErr.Error(),
+				Stacktrace:   errors.RenderStack(reportErr),
+				OccurredTime: timestamppb.New(time.Now()),
+			},
+		},
+	}
+	// Convert exceptions to jsonpb
+	exceptionsAnypb, err := anypb.New(exceptions)
+	if err != nil {
+		logging.Warningf(ctx, "Warning: failed to construct exceptions report.")
+		return
+	}
+
+	jsonpb, err := protojson.MarshalOptions{UseProtoNames: true}.Marshal(exceptionsAnypb)
+	if err != nil {
+		logging.Warningf(ctx, "Warning: failed to convert exceptions as jsonpb.")
+		return
+	}
+	exceptionsStruct := new(structpb.Struct)
+	if err = exceptionsStruct.UnmarshalJSON(jsonpb); err != nil {
+		logging.Warningf(ctx, "Warning: failed to construct exceptions struct.")
+		return
+	}
+
+	// We are doing an overwrite for extended_properties.exception_occurrences.
+	// However, we are not expecting exception_occurrences reported from multiple
+	// different sources at the same time in the Chromium infra. That it should be
+	// good to ignore the potential overwrite behavior for now.
+	if _, err := r.sinkC.UpdateInvocation(ctx, &sinkpb.UpdateInvocationRequest{
+		Invocation: &sinkpb.Invocation{
+			ExtendedProperties: map[string]*structpb.Struct{
+				"exception_occurrences": exceptionsStruct,
+			},
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{
+			Paths: []string{"extended_properties.exception_occurrences"},
+		},
+	}); err != nil {
+		logging.Warningf(ctx, "Warning: failed to report converter exceptions.")
+	}
+}
+
 func (r *baseRun) run(ctx context.Context, args []string, f converter) (ret int) {
 	if err := r.initSinkClient(ctx); err != nil {
 		return r.done(err)
@@ -150,15 +204,17 @@ func (r *baseRun) run(ctx context.Context, args []string, f converter) (ret int)
 		return r.done(errors.Annotate(err, "test command failed").Err())
 	}
 
+	// Setup auth header for ResultSink before potential uploads.
+	ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", "ResultSink "+r.sinkCtx.AuthToken)
+
 	trs, err := f(ctx, out)
 	switch {
 	case err != nil:
+		r.reportException(ctx, err)
 		return r.done(err)
 	case len(trs) == 0:
 		return ec
 	}
-
-	ctx = metadata.AppendToOutgoingContext(ctx, "Authorization", "ResultSink "+r.sinkCtx.AuthToken)
 
 	// Try to upload invocation link artifacts.
 	// Upload before test results so that the links are present even if something goes wrong in the test result upload.
