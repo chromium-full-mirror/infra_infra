@@ -80,7 +80,7 @@ For now only running in testing mode.`,
 		c.Flags.StringVar(&c.logRoot, "log-root", "", "Path to the custom json config file.")
 		c.Flags.BoolVar(&c.generateLogFiles, "generate-log-files", false, "Generate log files. Default is no.")
 
-		c.Flags.BoolVar(&c.onlyVerify, "only-verify", false, "Block recovery actions and run only verifiers. Default is no.")
+		c.Flags.BoolVar(&c.onlyVerify, "only-verify", true, "Enable recovery actions. Default is only run verify.")
 		c.Flags.BoolVar(&c.devPrintProto, "log-proto", false, "Print proto data of dut. Default is no.")
 		c.Flags.BoolVar(&c.updateInventory, "update-inv", false, "Update UFS at the end execution. Default is no.")
 		c.Flags.BoolVar(&c.showSteps, "steps", false, "Show generated steps. Default is no.")
@@ -88,6 +88,8 @@ For now only running in testing mode.`,
 		c.Flags.StringVar(&c.taskName, "task-name", "recovery", `What type of task name to use. The default is "recovery".`)
 		c.Flags.BoolVar(&c.devOptionActive, "dev-active", true, `Set DevOption Active. Default true.`)
 		c.Flags.StringVar(&c.namespace, "namespace", "os", `Specify which namespace to use. The default is "os".`)
+		c.Flags.StringVar(&c.adbPort, "adb-port", "", `Specify value for ADB_CONNECTION_PORT.`)
+		c.Flags.StringVar(&c.adbPath, "adb-path", "", `Specify value for ADB_PATH.`)
 		return c
 	},
 }
@@ -111,6 +113,9 @@ type localRecoveryRun struct {
 	taskName              string
 	namespace             string
 	noCft                 bool
+
+	adbPort string
+	adbPath string
 
 	devPrintProto   bool
 	devOptionActive bool
@@ -142,6 +147,12 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 	tn, err := buildbucket.NormalizeTaskName(c.taskName)
 	if err != nil {
 		return errors.Annotate(err, "local recovery").Err()
+	}
+	if c.adbPort != "" {
+		os.Setenv("ADB_CONNECTION_PORT", c.adbPort)
+	}
+	if c.adbPath != "" {
+		os.Setenv("ADB_PATH", c.adbPath)
 	}
 	ctx := cli.GetContext(a, c, env)
 

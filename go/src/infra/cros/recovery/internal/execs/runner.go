@@ -6,6 +6,7 @@ package execs
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -13,6 +14,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	adbTool "infra/cros/recovery/internal/adb"
 	"infra/cros/recovery/internal/components"
 	"infra/cros/recovery/internal/components/cft"
 	"infra/cros/recovery/internal/components/cft/adb"
@@ -140,29 +142,43 @@ func (b *hostAccess) run(ctx context.Context, inBackground bool, timeout time.Du
 	// TODO(otabek): apply code logic from SSH run.
 	adbRun := func() (components.SSHRunResponse, *errors.Annotator) {
 		fullCmd = "adb shell " + fullCmd
-		client, err := cft.ADBClientFromScope(ctx, b.dut)
-		if err != nil {
-			return &adbResponse{
-				err:  err.Error(),
-				code: -1,
-			}, errors.Annotate(err, "runner")
+
+		var resErr error
+		var response adb.ADBResponse
+		if adbTool.UseLocal(ctx) {
+			// For local run we ned specify device always.
+			deviceName := fmt.Sprintf("%s:%d", b.dut.Name, adbTool.Port(ctx))
+			params := []string{deviceName, "shell", command}
+			if len(args) > 0 {
+				params = append(params, args...)
+			}
+			// Response doe snot contains exit code.
+			response, resErr = adb.RunCommand(ctx, nil, timeout, "-s", params...)
+		} else {
+			client, err := cft.ADBClientFromScope(ctx, b.dut)
+			if err != nil {
+				return &adbResponse{
+					err:  err.Error(),
+					code: -1,
+				}, errors.Annotate(err, "runner")
+			}
+			params := []string{command}
+			if len(args) > 0 {
+				params = append(params, args...)
+			}
+			// Response doe snot contains exit code.
+			response, resErr = adb.RunCommand(ctx, client, timeout, "shell", params...)
 		}
-		params := []string{command}
-		if len(args) > 0 {
-			params = append(params, args...)
-		}
-		// Response doe snot contains exit code.
-		res, err := adb.RunCommand(ctx, client, timeout, "shell", params...)
-		if err != nil {
+		if resErr != nil {
 			return &adbResponse{
-				err:  err.Error(),
+				err:  resErr.Error(),
 				code: 1,
-			}, errors.Annotate(err, "runner")
+			}, errors.Annotate(resErr, "runner")
 		}
 		return &adbResponse{
-			out:  string(res.GetStdout()),
-			err:  string(res.GetStderr()),
-			code: res.GetExitCode(),
+			out:  string(response.GetStdout()),
+			err:  string(response.GetStderr()),
+			code: response.GetExitCode(),
 		}, nil
 	}
 	var errAnnotator *errors.Annotator

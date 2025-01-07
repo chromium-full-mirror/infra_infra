@@ -7,8 +7,6 @@ package adb
 
 import (
 	"context"
-	"os"
-	"strconv"
 	"strings"
 	"time"
 
@@ -16,6 +14,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/ctr"
+	"infra/cros/recovery/internal/adb"
 	"infra/cros/recovery/internal/components/cft"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
@@ -55,19 +54,28 @@ func RunCommand(ctx context.Context, adbClient api.ADBServiceClient, timeout tim
 	log.Debugf(ctx, "Prepare to run adb command: %q", fullCmd)
 	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
-	res, err := adbClient.ExecCommand(ctx, &api.ADBCommandRequest{
-		Command: command,
-		Args:    args,
-	})
-	if res != nil {
-		log.Debugf(ctx, "STDOUT: %s", res.GetStdout())
-		log.Debugf(ctx, "STDERR: %s", res.GetStderr())
-		log.Debugf(ctx, "EXITCODE: %d", res.GetExitCode())
+
+	var err error
+	var response ADBResponse
+	if adbClient != nil {
+		response, err = adbClient.ExecCommand(ctx, &api.ADBCommandRequest{
+			Command: command,
+			Args:    args,
+		})
+	} else {
+		newArgs := []string{command}
+		newArgs = append(newArgs, args...)
+		response, err = adb.Run(ctx, newArgs...)
+	}
+	if response != nil {
+		log.Debugf(ctx, "STDOUT: %s", response.GetStdout())
+		log.Debugf(ctx, "STDERR: %s", response.GetStderr())
+		log.Debugf(ctx, "EXITCODE: %d", response.GetExitCode())
 	}
 	if err != nil {
 		err = errors.Reason("failed execute command %q, finished with error: %d", fullCmd, err).Err()
 	}
-	return res, errors.Annotate(err, "exec adb command %q", fullCmd).Err()
+	return response, errors.Annotate(err, "exec adb command %q", fullCmd).Err()
 }
 
 // ServiceClient creates service client to the service running on CFT container.
@@ -91,18 +99,4 @@ func ServiceClient(ctx context.Context, ctrInfo ctr.ServiceInfo, dut *tlw.Dut) (
 		return nil, errors.Reason("adb service client: fail to create client").Err()
 	}
 	return client, nil
-}
-
-// Port provides port number for ADB connect.
-func Port(ctx context.Context) int {
-	val := strings.TrimSpace(os.Getenv("ADB_CONNECTION_PORT"))
-	if val != "" {
-		if port, err := strconv.Atoi(val); err != nil {
-			log.Infof(ctx, "Fail to parse ADB port from environment: %q, will use default port 22", val)
-		} else {
-			return port
-		}
-	}
-	// Default ADB port for connection.
-	return 22
 }

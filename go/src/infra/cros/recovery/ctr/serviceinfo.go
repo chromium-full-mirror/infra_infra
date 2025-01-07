@@ -75,6 +75,12 @@ func Init(ctx context.Context, rootDir string) (ServiceInfo, error) {
 	return i, nil
 }
 
+// IsUp tells if CTR service is up or not.
+func IsUp(ctx context.Context) bool {
+	_, ok := Get(ctx)
+	return ok
+}
+
 // Get returns ctr ServiceInfo from context.
 func Get(ctx context.Context) (i ServiceInfo, ok bool) {
 	if p, ok := scopes.GetParam(ctx, scopes.ParamKeyCTRClient); !ok {

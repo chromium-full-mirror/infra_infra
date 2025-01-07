@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/ctr"
+	adbTool "infra/cros/recovery/internal/adb"
 	"infra/cros/recovery/internal/components/cft"
 	"infra/cros/recovery/internal/components/cft/adb"
 	"infra/cros/recovery/internal/execs"
@@ -102,16 +103,20 @@ func stopADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // adbCommandExec execs custom command with arguments.
 func adbCommandExec(ctx context.Context, info *execs.ExecInfo) error {
-	client, err := cft.ADBClientFromScope(ctx, info.GetDut())
-	if err != nil {
-		return errors.Annotate(err, "adb command").Err()
+	var client api.ADBServiceClient
+	if !adbTool.UseLocal(ctx) {
+		var err error
+		client, err = cft.ADBClientFromScope(ctx, info.GetDut())
+		if err != nil {
+			return errors.Annotate(err, "adb command").Err()
+		}
 	}
 	// Minus 5 seconds as we expect 5 seconds to get container info.
 	timeout := info.GetExecTimeout() - (5 * time.Second)
 	argsMap := info.GetActionArgs(ctx)
 	command := argsMap.AsString(ctx, "command", "")
 	commandArgs := argsMap.AsStringSlice(ctx, "args", []string{})
-	_, err = adb.ExecCommand(ctx, client, timeout, command, commandArgs...)
+	_, err := adb.ExecCommand(ctx, client, timeout, command, commandArgs...)
 	return errors.Annotate(err, "adb command").Err()
 }
 
@@ -120,12 +125,15 @@ func adbConnectExec(ctx context.Context, info *execs.ExecInfo) error {
 	if dut == nil {
 		return errors.Reason("adb connect: dut is not provided").Err()
 	}
-	client, err := cft.ADBClientFromScope(ctx, dut)
-	if err != nil {
-		return errors.Annotate(err, "adb connect").Err()
+	var client api.ADBServiceClient
+	if !adbTool.UseLocal(ctx) {
+		var err error
+		client, err = cft.ADBClientFromScope(ctx, info.GetDut())
+		if err != nil {
+			return errors.Annotate(err, "adb connect").Err()
+		}
 	}
-
-	adbPort := adb.Port(ctx)
+	adbPort := adbTool.Port(ctx)
 	argsMap := info.GetActionArgs(ctx)
 	retryCount := argsMap.AsInt(ctx, "retry_count", 1)
 	retryinterval := argsMap.AsDuration(ctx, "retry_interval", 1, time.Second)
@@ -143,11 +151,13 @@ func adbConnectExec(ctx context.Context, info *execs.ExecInfo) error {
 			log.Debugf(ctx, "Device is not connected!")
 		}
 	}
-	if _, err := adb.ExecCommand(ctx, client, timeout, "kill-server"); err != nil {
-		log.Debugf(ctx, "adb devices error: %s", err)
-	}
-	if _, err := adb.ExecCommand(ctx, client, timeout, "start-server"); err != nil {
-		log.Debugf(ctx, "adb devices error: %s", err)
+	if !adbTool.UseLocal(ctx) {
+		if _, err := adb.ExecCommand(ctx, client, timeout, "kill-server"); err != nil {
+			log.Debugf(ctx, "adb devices error: %s", err)
+		}
+		if _, err := adb.ExecCommand(ctx, client, timeout, "start-server"); err != nil {
+			log.Debugf(ctx, "adb devices error: %s", err)
+		}
 	}
 	connect := func() error {
 		log.Infof(ctx, "Try to connect to %q by adb", dut.Name)
