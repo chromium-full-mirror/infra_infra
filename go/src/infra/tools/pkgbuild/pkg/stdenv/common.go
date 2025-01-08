@@ -158,6 +158,7 @@ func Init(cfg *Config) error {
 		"patch",
 		"perl",
 		"ps",
+		"pwd",
 		"rm",
 		"rmdir",
 		"sh",
