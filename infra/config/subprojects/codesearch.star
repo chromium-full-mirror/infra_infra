@@ -377,7 +377,7 @@ chromium_genfiles(
     cpu_cores = "8",
     cpu = "arm64",
     machine_type = "n1-highcpu-8",
-    xcode_build_version = "15a240d",
+    xcode_build_version = "16b40",
 )
 
 chromium_genfiles(
