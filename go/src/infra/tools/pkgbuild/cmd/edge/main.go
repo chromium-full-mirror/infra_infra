@@ -88,9 +88,7 @@ func Main(ctx context.Context, app *Application, args []string) error {
 		names = b.SpecLoader.ListAllByFullName()
 	}
 
-	// TODO(fancl): for update bot we need all platform listed here, not only
-	// cipd host and cipd target.
-	if err := b.SpecLoader.LoadSourceInfos(ctx, names, []string{b.CIPDHost, b.CIPDTarget}, app.Update, app.UpdateSourceLock); err != nil {
+	if err := b.SpecLoader.LoadSourceInfos(ctx, names, app.UpdateSourcePlatforms, app.Update, app.UpdateSourceLock); err != nil {
 		return err
 	}
 

@@ -27,6 +27,7 @@ import (
 	"go.chromium.org/luci/cipkg/core"
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
+	luciflag "go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/filesystem"
 	"go.chromium.org/luci/luciexe/build"
@@ -78,6 +79,8 @@ func (a *Application) Parse(args []string) error {
 	fs.StringVar(&a.CipdService, "cipd-service", a.CipdService, "CIPD service URL for downloading and uploading packages.")
 	fs.StringVar(&a.CipdPackagePrefix, "cipd-package-prefix", a.CipdPackagePrefix, "Required; The prefix to use for uploading built packages.")
 
+	fs.Var(luciflag.StringSlice(&a.UpdateSourcePlatforms), "update-source-platform", "Platform for which packages will be updated; by default it will be build and target platforms.")
+
 	fs.StringVar(&a.SnoopyService, "snoopy-service", a.SnoopyService, "Snoopy service URL for reporting artifact hash.")
 
 	fs.BoolVar(&a.Help, "help", false, "Display help message.")
@@ -92,6 +95,7 @@ func (a *Application) Parse(args []string) error {
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
+
 	if a.Help {
 		fs.Usage()
 		return nil
@@ -114,6 +118,10 @@ func (a *Application) Parse(args []string) error {
 	if a.CipdPackagePrefix == "" {
 		fs.Usage()
 		return fmt.Errorf("cipd-package-prefix is required")
+	}
+
+	if len(a.UpdateSourcePlatforms) == 0 {
+		a.UpdateSourcePlatforms = []string{platform.CurrentPlatform(), a.TargetPlatform}
 	}
 
 	a.Packages = fs.Args()

@@ -30,6 +30,8 @@ message Input {
 
   // If true, source lock file under the package spec directory will be updated.
   bool update_source_lock = 9;
+  // List of source platforms to be updated.
+  repeated string update_source_platforms = 12;
 
   // CIPD service URL for downloading and uploading packages.
   string cipd_service = 5;
