@@ -6,12 +6,14 @@ package analytics
 
 import (
 	"context"
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -28,7 +30,8 @@ const taskResultsTable = "CTPV2TaskMetrics"
 
 const saProject = "chromeos-test-platform-data"
 
-// tableProject := "chromeos-test-platform-data"
+const cacheTable = "DurationCache"
+const minDuration = 1
 const saFile = "/creds/service_accounts/service-account-chromeos.json"
 
 const Start = "START"
@@ -87,6 +90,48 @@ func InsertCTPMetrics(c *bigquery.Client, data []*BqData) error {
 		return err
 	}
 	return nil
+}
+
+type resSchema struct {
+	Normalized_test string
+	Duration        float64
+}
+
+// ReadDurationMetrics will query the duration cache table, and return a map of the test results.
+// If a board is provided and not "", it will limit the results to that board.
+func ReadDurationMetrics(c *bigquery.Client, board string, harness string) (map[string]float64, error) {
+	ctx := context.Background()
+	durs := make(map[string]float64)
+	table := fmt.Sprintf("%s.%s.%s", saProject, dataset, cacheTable)
+
+	// Limit to a Duration > 1 second to reduce the size of the response; makes the query faster, cheaper, and we can treat all "no results" as 1 sec duration.
+	cmd := fmt.Sprintf("SELECT * FROM %s WHERE Duration > %v and harness = \"%s\" ORDER BY dur DESC", table, minDuration, harness)
+	if board != "" {
+		cmd = fmt.Sprintf("SELECT * FROM %s WHERE board = \"%s\" and Duration > %v and harness = \"%s\" ORDER BY dur DESC", table, board, minDuration, harness)
+	}
+
+	bqQ := c.Query(cmd)
+
+	// Execute the query.
+	it, err := bqQ.Read(ctx)
+	if err != nil {
+		fmt.Printf("INFORMATIONAL: query error: %s", err)
+	}
+
+	for {
+		var resp resSchema
+		err := it.Next(&resp)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			fmt.Println("found this err while parsing", err)
+			return nil, err
+		}
+		durs[resp.Normalized_test] = resp.Duration
+	}
+
+	return durs, nil
 }
 
 // InsertCTPMetrics will insert the CTP Analytics Data into the CTPv2TaskMetrics Table.
