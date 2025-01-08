@@ -20,10 +20,11 @@ import (
 
 const (
 	// moSysSkuCmd will retrieve the SKU label of the DUT.
-	moSysSkuCmd                 = "mosys platform sku"
-	crosIDSkuCmd                = "crosid -f SKU"
-	cmdAudioLatencyToolkitCheck = "lsusb -vv -d 16c0: | grep \"Teensyduino\""
-	cmdAudioBeamformingCheck    = "cros_config /audio/main cras-config-dir"
+	moSysSkuCmd                    = "mosys platform sku"
+	crosIDSkuCmd                   = "crosid -f SKU"
+	cmdAudioLatencyToolkitCheck    = "lsusb -vv -d 16c0: | grep \"Teensyduino\""
+	cmdAudioBeamformingCheckLegacy = "cros_config /audio/main cras-config-dir"
+	cmdAudioBeamformingCheck       = "cras_server_tool label-audio_beamforming"
 )
 
 // updateDlmSkuIdExec updates device's SKU label if not present in inventory
@@ -138,15 +139,15 @@ func updateAudioLatencyToolkitStateExec(ctx context.Context, info *execs.ExecInf
 	return nil
 }
 
-// updateAudioBeamformingTypeExec updates the DUT's Audio Beamforming type
-// based on the condition as follows:
+// updateAudioBeamformingTypeLegacy updates the DUT's Audio Beamforming type
+// based on the legacy condition as follows:
 // if ".3mic" suffix exists: set as intelligo
 // else set as "none"
-func updateAudioBeamformingTypeExec(ctx context.Context, info *execs.ExecInfo) error {
-	res, err := info.DefaultRunner()(ctx, info.GetExecTimeout(), cmdAudioBeamformingCheck)
-	log.Debugf(ctx, "command \"%s\" shows: %s", cmdAudioBeamformingCheck, res)
+func updateAudioBeamformingTypeLegacy(ctx context.Context, info *execs.ExecInfo) error {
+	res, err := info.DefaultRunner()(ctx, info.GetExecTimeout(), cmdAudioBeamformingCheckLegacy)
+	log.Debugf(ctx, "command \"%s\" shows: %s", cmdAudioBeamformingCheckLegacy, res)
 	if err != nil {
-		log.Debugf(ctx, "command \"%s\" got error: %s", cmdAudioBeamformingCheck, err)
+		log.Debugf(ctx, "command \"%s\" got error: %s", cmdAudioBeamformingCheckLegacy, err)
 		return errors.Annotate(err, "unable to find the type of audio beamforming on dut.").Err()
 	}
 	resTrimmed := strings.TrimSpace(res)
@@ -161,6 +162,21 @@ func updateAudioBeamformingTypeExec(ctx context.Context, info *execs.ExecInfo) e
 	default:
 		info.GetChromeos().GetAudio().Beamforming = "none"
 	}
+	return nil
+}
+
+// updateAudioBeamformingTypeExec updates the DUT's Audio Beamforming type
+// based on cras_server_tool.
+func updateAudioBeamformingTypeExec(ctx context.Context, info *execs.ExecInfo) error {
+	res, err := info.DefaultRunner()(ctx, info.GetExecTimeout(), cmdAudioBeamformingCheck)
+	if err != nil {
+		log.Debugf(ctx, "command %q got error: %s", cmdAudioBeamformingCheck, err)
+		// Fall back to legacy check.
+		return updateAudioBeamformingTypeLegacy(ctx, info)
+	}
+
+	log.Debugf(ctx, "command %q: %q", cmdAudioBeamformingCheck, res)
+	info.GetChromeos().GetAudio().Beamforming = strings.TrimSpace(res)
 	return nil
 }
 
