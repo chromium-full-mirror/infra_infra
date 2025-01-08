@@ -1,0 +1,229 @@
+From f2c7e2b2e4f2e68a71cb53fecb3bd2518fd048d7 Mon Sep 17 00:00:00 2001
+From: Pablo Galindo Salgado <Pablogsal@gmail.com>
+Date: Sat, 8 Oct 2022 07:57:09 -0700
+Subject: [PATCH] gh-97922: Run the GC only on eval breaker (#97920)
+
+Backported to 3.11 by Robert Iannucci <iannucci@chromium.org>:
+  * Removed Doc/whatsnew/3.12.rst change
+  * Manually ported changes to Python/ceval.c (Python/ceval_gil.c in the
+    original patch).
+
+---
+ Include/internal/pycore_gc.h                  |  2 ++
+ Include/internal/pycore_interp.h              |  2 ++
+ Lib/test/test_frame.py                        |  2 +-
+ ...2-10-05-11-37-15.gh-issue-97922.Zu9Bge.rst |  5 ++++
+ Modules/gcmodule.c                            | 27 +++++++++++++++--
+ Modules/signalmodule.c                        | 13 +++++++++
+ Python/ceval.c                                | 29 ++++++++++++-------
+ 7 files changed, 66 insertions(+), 14 deletions(-)
+ create mode 100644 Misc/NEWS.d/next/Core and Builtins/2022-10-05-11-37-15.gh-issue-97922.Zu9Bge.rst
+
+diff --git a/Include/internal/pycore_gc.h b/Include/internal/pycore_gc.h
+index 16c1893639f..6e3e46372e3 100644
+--- a/Include/internal/pycore_gc.h
++++ b/Include/internal/pycore_gc.h
+@@ -176,6 +176,8 @@ extern void _PyList_ClearFreeList(PyInterpreterState *interp);
+ extern void _PyDict_ClearFreeList(PyInterpreterState *interp);
+ extern void _PyAsyncGen_ClearFreeLists(PyInterpreterState *interp);
+ extern void _PyContext_ClearFreeList(PyInterpreterState *interp);
++extern void _Py_ScheduleGC(PyInterpreterState *interp);
++extern void _Py_RunGC(PyThreadState *tstate);
+ 
+ #ifdef __cplusplus
+ }
+diff --git a/Include/internal/pycore_interp.h b/Include/internal/pycore_interp.h
+index 02d25d67c74..1a21fd73cbe 100644
+--- a/Include/internal/pycore_interp.h
++++ b/Include/internal/pycore_interp.h
+@@ -50,6 +50,8 @@ struct _ceval_state {
+     _Py_atomic_int eval_breaker;
+     /* Request for dropping the GIL */
+     _Py_atomic_int gil_drop_request;
++    /* The GC is ready to be executed */
++    _Py_atomic_int gc_scheduled;
+     struct _pending_calls pending;
+ };
+ 
+diff --git a/Lib/test/test_frame.py b/Lib/test/test_frame.py
+index 1e52164a6ba..645d0bd73fb 100644
+--- a/Lib/test/test_frame.py
++++ b/Lib/test/test_frame.py
+@@ -279,7 +279,7 @@ def callback(phase, info):
+             frame!
+             """
+             nonlocal sneaky_frame_object
+-            sneaky_frame_object = sys._getframe().f_back
++            sneaky_frame_object = sys._getframe().f_back.f_back
+             # We're done here:
+             gc.callbacks.remove(callback)
+ 
+diff --git a/Misc/NEWS.d/next/Core and Builtins/2022-10-05-11-37-15.gh-issue-97922.Zu9Bge.rst b/Misc/NEWS.d/next/Core and Builtins/2022-10-05-11-37-15.gh-issue-97922.Zu9Bge.rst
+new file mode 100644
+index 00000000000..bf78709362f
+--- /dev/null
++++ b/Misc/NEWS.d/next/Core and Builtins/2022-10-05-11-37-15.gh-issue-97922.Zu9Bge.rst	
+@@ -0,0 +1,5 @@
++The Garbage Collector now runs only on the eval breaker mechanism of the
++Python bytecode evaluation loop instead on object allocations. The GC can
++also run when :c:func:`PyErr_CheckSignals` is called so C extensions that
++need to run for a long time without executing any Python code also have a
++chance to execute the GC periodically.
+diff --git a/Modules/gcmodule.c b/Modules/gcmodule.c
+index 347ded80b7c..5c13cd5baf9 100644
+--- a/Modules/gcmodule.c
++++ b/Modules/gcmodule.c
+@@ -2249,6 +2249,20 @@ PyObject_IS_GC(PyObject *obj)
+     return _PyObject_IS_GC(obj);
+ }
+ 
++void
++_Py_ScheduleGC(PyInterpreterState *interp)
++{
++    GCState *gcstate = &interp->gc;
++    if (gcstate->collecting == 1) {
++        return;
++    }
++    struct _ceval_state *ceval = &interp->ceval;
++    if (!_Py_atomic_load_relaxed(&ceval->gc_scheduled)) {
++        _Py_atomic_store_relaxed(&ceval->gc_scheduled, 1);
++        _Py_atomic_store_relaxed(&ceval->eval_breaker, 1);
++    }
++}
++
+ void
+ _PyObject_GC_Link(PyObject *op)
+ {
+@@ -2266,12 +2280,19 @@ _PyObject_GC_Link(PyObject *op)
+         !gcstate->collecting &&
+         !_PyErr_Occurred(tstate))
+     {
+-        gcstate->collecting = 1;
+-        gc_collect_generations(tstate);
+-        gcstate->collecting = 0;
++        _Py_ScheduleGC(tstate->interp);
+     }
+ }
+ 
++void
++_Py_RunGC(PyThreadState *tstate)
++{
++    GCState *gcstate = &tstate->interp->gc;
++    gcstate->collecting = 1;
++    gc_collect_generations(tstate);
++    gcstate->collecting = 0;
++}
++
+ static PyObject *
+ gc_alloc(size_t basicsize, size_t presize)
+ {
+diff --git a/Modules/signalmodule.c b/Modules/signalmodule.c
+index 8305f640203..5c0c26a9f78 100644
+--- a/Modules/signalmodule.c
++++ b/Modules/signalmodule.c
+@@ -1803,6 +1803,19 @@ int
+ PyErr_CheckSignals(void)
+ {
+     PyThreadState *tstate = _PyThreadState_GET();
++
++    /* Opportunistically check if the GC is scheduled to run and run it
++       if we have a request. This is done here because native code needs
++       to call this API if is going to run for some time without executing
++       Python code to ensure signals are handled. Checking for the GC here
++       allows long running native code to clean cycles created using the C-API
++       even if it doesn't run the evaluation loop */
++    struct _ceval_state *interp_ceval_state = &tstate->interp->ceval;
++    if (_Py_atomic_load_relaxed(&interp_ceval_state->gc_scheduled)) {
++        _Py_atomic_store_relaxed(&interp_ceval_state->gc_scheduled, 0);
++        _Py_RunGC(tstate);
++    }
++
+     if (!_Py_ThreadCanHandleSignals(tstate->interp)) {
+         return 0;
+     }
+diff --git a/Python/ceval.c b/Python/ceval.c
+index 1ce6bbc10fb..1dcb828525d 100644
+--- a/Python/ceval.c
++++ b/Python/ceval.c
+@@ -18,6 +18,7 @@
+ #include "pycore_opcode.h"        // EXTRA_CASES
+ #include "pycore_pyerrors.h"      // _PyErr_Fetch()
+ #include "pycore_pylifecycle.h"   // _PyErr_Print()
++#include "pycore_interp.h"        // _Py_RunGC()
+ #include "pycore_pymem.h"         // _PyMem_IsPtrFreed()
+ #include "pycore_pystate.h"       // _PyInterpreterState_GET()
+ #include "pycore_sysmodule.h"     // _PySys_Audit()
+@@ -231,7 +232,8 @@ COMPUTE_EVAL_BREAKER(PyInterpreterState *interp,
+            && _Py_ThreadCanHandleSignals(interp))
+         | (_Py_atomic_load_relaxed_int32(&ceval2->pending.calls_to_do)
+            && _Py_ThreadCanHandlePendingCalls())
+-        | ceval2->pending.async_exc);
++        | ceval2->pending.async_exc
++        | _Py_atomic_load_relaxed_int32(&ceval2->gc_scheduled));
+ }
+ 
+ 
+@@ -1176,6 +1178,7 @@ eval_frame_handle_pending(PyThreadState *tstate)
+ {
+     _PyRuntimeState * const runtime = &_PyRuntime;
+     struct _ceval_runtime_state *ceval = &runtime->ceval;
++    struct _ceval_state *interp_ceval_state = &tstate->interp->ceval;
+ 
+     /* Pending signals */
+     if (_Py_atomic_load_relaxed_int32(&ceval->signals_pending)) {
+@@ -1185,20 +1188,26 @@ eval_frame_handle_pending(PyThreadState *tstate)
+     }
+ 
+     /* Pending calls */
+-    struct _ceval_state *ceval2 = &tstate->interp->ceval;
+-    if (_Py_atomic_load_relaxed_int32(&ceval2->pending.calls_to_do)) {
++    if (_Py_atomic_load_relaxed_int32(&interp_ceval_state->pending.calls_to_do)) {
+         if (make_pending_calls(tstate->interp) != 0) {
+             return -1;
+         }
+     }
+ 
++    /* GC scheduled to run */
++    if (_Py_atomic_load_relaxed_int32(&interp_ceval_state->gc_scheduled)) {
++        _Py_atomic_store_relaxed(&interp_ceval_state->gc_scheduled, 0);
++        COMPUTE_EVAL_BREAKER(tstate->interp, ceval, interp_ceval_state);
++        _Py_RunGC(tstate);
++    }
++
+     /* GIL drop request */
+-    if (_Py_atomic_load_relaxed_int32(&ceval2->gil_drop_request)) {
++    if (_Py_atomic_load_relaxed_int32(&interp_ceval_state->gil_drop_request)) {
+         /* Give another thread a chance */
+         if (_PyThreadState_Swap(&runtime->gilstate, NULL) != tstate) {
+             Py_FatalError("tstate mix-up");
+         }
+-        drop_gil(ceval, ceval2, tstate);
++        drop_gil(ceval, interp_ceval_state, tstate);
+ 
+         /* Other threads may run now */
+ 
+@@ -1219,16 +1228,16 @@ eval_frame_handle_pending(PyThreadState *tstate)
+         return -1;
+     }
+ 
+-#ifdef MS_WINDOWS
+-    // bpo-42296: On Windows, _PyEval_SignalReceived() can be called in a
+-    // different thread than the Python thread, in which case
++    // It is possible that some of the conditions that trigger the eval breaker
++    // are called in a different thread than the Python thread. An example of
++    // this is bpo-42296: On Windows, _PyEval_SignalReceived() can be called in
++    // a different thread than the Python thread, in which case
+     // _Py_ThreadCanHandleSignals() is wrong. Recompute eval_breaker in the
+     // current Python thread with the correct _Py_ThreadCanHandleSignals()
+     // value. It prevents to interrupt the eval loop at every instruction if
+     // the current Python thread cannot handle signals (if
+     // _Py_ThreadCanHandleSignals() is false).
+-    COMPUTE_EVAL_BREAKER(tstate->interp, ceval, ceval2);
+-#endif
++    COMPUTE_EVAL_BREAKER(tstate->interp, ceval, interp_ceval_state);
+ 
+     return 0;
+ }
+-- 
+2.47.1.613.gc27f4b7a9f-goog
+
