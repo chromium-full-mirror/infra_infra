@@ -428,42 +428,36 @@ type builderInfo struct {
 // batchCTPRequests groups configs/events into common.MultirequestSize sized
 // batches.
 func batchCTPRequests(ctpEvents []*ctpEvent, isProd, dryRun bool) ([]*ctpEventBatch, error) {
-	eventsByBuilderID := map[builderInfo][]*ctpEvent{}
-	// Group the requests by custom builder input. This is going to give us
-	// partner support coverage
+	// ************************** b/386908692 FIX **************************
+	batches := []*ctpEventBatch{}
+	eventsByConfigs := map[*suschpb.SchedulerConfig][]*ctpEvent{}
+
+	// Combine events by config
 	for _, event := range ctpEvents {
-		builderID := event.config.GetRunOptions().GetBuilderId()
-		builder := builderInfo{}
+		if _, ok := eventsByConfigs[event.config]; !ok {
+			eventsByConfigs[event.config] = []*ctpEvent{}
+		}
+
+		eventsByConfigs[event.config] = append(eventsByConfigs[event.config], event)
+	}
+
+	// Create batches of common.MultirequestSize size.
+	currentBatch := []*ctpEvent{}
+	for config, events := range eventsByConfigs {
+		// The new config mixing logic requires these fields to be passed into
+		// the merge function. Populate them with the config's information since
+		// in this quick workaround we are only using a single config.
+		currentConfigs := []*suschpb.SchedulerConfig{config}
+		builderID := config.GetRunOptions().GetBuilderId()
+		currentBuilderID := builderInfo{}
 		if builderID != nil {
-			builder = builderInfo{
+			currentBuilderID = builderInfo{
 				project: builderID.GetProject(),
 				bucket:  builderID.GetBucket(),
 				builder: builderID.GetBuilder(),
 			}
 		}
 
-		if _, ok := eventsByBuilderID[builder]; !ok {
-			eventsByBuilderID[builder] = []*ctpEvent{}
-		}
-
-		eventsByBuilderID[builder] = append(eventsByBuilderID[builder], event)
-	}
-
-	batches := []*ctpEventBatch{}
-
-	// Create batches of common.MultirequestSize size.
-	currentBatch := []*ctpEvent{}
-
-	// Shadow lists/maps to aggregate metadata on the current batch.
-	currentConfigs := []*suschpb.SchedulerConfig{}
-	dupeConfigs := map[string]struct{}{}
-	currentBuilderID := builderInfo{}
-
-	// Create request batches that share builder IDs. This means that batches
-	// can share requests from multiple configs but only if they share the same
-	// builderID.
-	for builderID, events := range eventsByBuilderID {
-		currentBuilderID = builderID
 		for _, event := range events {
 			// Merge requests when we hit the max batch limit
 			if len(currentBatch) == common.MultirequestSize {
@@ -477,31 +471,105 @@ func batchCTPRequests(ctpEvents []*ctpEvent, isProd, dryRun bool) ([]*ctpEventBa
 				// Reset the tracking lists/maps so that the next batch starts
 				// fresh.
 				currentBatch = []*ctpEvent{}
-				currentConfigs = []*suschpb.SchedulerConfig{}
-				dupeConfigs = map[string]struct{}{}
-			}
-
-			// Check to see if the config needs to be added to the config list
-			// that will generate tags for the CTP Request.
-			if _, ok := dupeConfigs[event.config.Name]; !ok {
-				dupeConfigs[event.config.Name] = struct{}{}
-				currentConfigs = append(currentConfigs, event.config)
 			}
 
 			currentBatch = append(currentBatch, event)
 		}
-	}
 
-	// If a partial batch was left after iterating through all the events, merge
-	// the last requests and add it to the batch list.
-	if len(currentBatch) != 0 {
-		batch, err := mergeRequests(currentBatch, currentConfigs, isProd, dryRun, false, currentBuilderID)
-		if err != nil {
-			return nil, err
+		// If a partial batch was left after iterating through all the events, merge
+		// the last requests and add it to the batch list.
+		if len(currentBatch) != 0 {
+			batch, err := mergeRequests(currentBatch, currentConfigs, isProd, dryRun, false, currentBuilderID)
+			if err != nil {
+				return nil, err
+			}
+
+			batches = append(batches, batch)
+
+			// Reset the tracking lists/maps so that the next batch starts
+			// fresh.
+			currentBatch = []*ctpEvent{}
 		}
-
-		batches = append(batches, batch)
 	}
+	// ************************** b/386908692 FIX **************************
+
+	// ************************** Config Mixing logic **************************
+	// eventsByBuilderID := map[builderInfo][]*ctpEvent{}
+
+	// // Group the requests by custom builder input. This is going to give us
+	// // partner support coverage
+	// for _, event := range ctpEvents {
+	// 	builderID := event.config.GetRunOptions().GetBuilderId()
+	// 	builder := builderInfo{}
+	// 	if builderID != nil {
+	// 		builder = builderInfo{
+	// 			project: builderID.GetProject(),
+	// 			bucket:  builderID.GetBucket(),
+	// 			builder: builderID.GetBuilder(),
+	// 		}
+	// 	}
+
+	// 	if _, ok := eventsByBuilderID[builder]; !ok {
+	// 		eventsByBuilderID[builder] = []*ctpEvent{}
+	// 	}
+
+	// 	eventsByBuilderID[builder] = append(eventsByBuilderID[builder], event)
+	// }
+
+	// batches := []*ctpEventBatch{}
+
+	// // Create batches of common.MultirequestSize size.
+	// currentBatch := []*ctpEvent{}
+
+	// // Shadow lists/maps to aggregate metadata on the current batch.
+	// currentConfigs := []*suschpb.SchedulerConfig{}
+	// dupeConfigs := map[string]struct{}{}
+	// currentBuilderID := builderInfo{}
+
+	// // Create request batches that share builder IDs. This means that batches
+	// // can share requests from multiple configs but only if they share the same
+	// // builderID.
+	// for builderID, events := range eventsByBuilderID {
+	// 	currentBuilderID = builderID
+	// 	for _, event := range events {
+	// 		// Merge requests when we hit the max batch limit
+	// 		if len(currentBatch) == common.MultirequestSize {
+	// 			batch, err := mergeRequests(currentBatch, currentConfigs, isProd, dryRun, false, currentBuilderID)
+	// 			if err != nil {
+	// 				return nil, err
+	// 			}
+
+	// 			batches = append(batches, batch)
+
+	// 			// Reset the tracking lists/maps so that the next batch starts
+	// 			// fresh.
+	// 			currentBatch = []*ctpEvent{}
+	// 			currentConfigs = []*suschpb.SchedulerConfig{}
+	// 			dupeConfigs = map[string]struct{}{}
+	// 		}
+
+	// 		// Check to see if the config needs to be added to the config list
+	// 		// that will generate tags for the CTP Request.
+	// 		if _, ok := dupeConfigs[event.config.Name]; !ok {
+	// 			dupeConfigs[event.config.Name] = struct{}{}
+	// 			currentConfigs = append(currentConfigs, event.config)
+	// 		}
+
+	// 		currentBatch = append(currentBatch, event)
+	// 	}
+	// }
+
+	// // If a partial batch was left after iterating through all the events, merge
+	// // the last requests and add it to the batch list.
+	// if len(currentBatch) != 0 {
+	// 	batch, err := mergeRequests(currentBatch, currentConfigs, isProd, dryRun, false, currentBuilderID)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+
+	// 	batches = append(batches, batch)
+	// }
+	// ************************** Config Mixing logic **************************
 
 	return batches, nil
 }
