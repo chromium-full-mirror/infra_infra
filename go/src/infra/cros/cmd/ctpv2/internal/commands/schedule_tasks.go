@@ -227,9 +227,14 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 		totalFailedTestRunCount = totalFailedTestRunCount + currFailedTestRunCount
 		summary := fmt.Sprintf("passed: %d, failed: %d, module_failed: %d", (currTestCount - currFailedTestCount), currFailedTestCount, currFailedTestRunCount)
 		taskState := common.TaskCompletedState
-		if err := results.GetProvisionErrIfAny(); err != nil {
-			// TODO (azrahman): mark as error for crashes/container failures etc
-			// mark it as error on provisioning failure
+		// Intentionally casting wider net to capture all kinds of downstream errors.
+		if err := results.GetTestRunnerErr(); err != nil {
+			summary = err.Error()
+			taskState = common.TaskErrorState
+			testJobEventState = common.TaskErrorState
+		} else if err := results.GetProvisionErrIfAny(); err != nil {
+			// TODO: GetTestRunnerErr should cover provisioning error as well. but keeping this as a safety net till
+			// we gain more confidence on the new error pipeline. Remove this block when makes sense.
 			summary = err.Error()
 			taskState = common.TaskErrorState
 			testJobEventState = common.TaskErrorState

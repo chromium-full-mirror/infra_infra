@@ -44,12 +44,40 @@ func (t *TestResults) GetProvisionErrIfAny() error {
 				if step.GetHumanReadableSummary() != "" {
 					failureMsg = fmt.Sprintf("%s: %s", failureMsg, step.GetHumanReadableSummary())
 				}
-				return fmt.Errorf(failureMsg)
+				return fmt.Errorf("%s", failureMsg)
 			}
 		}
 	}
 
 	return nil
+}
+
+func (t *TestResults) GetTestRunnerErr() error {
+	// Ignore publish error since historically we ignore publish errors as they are non-critical
+	// Before changing this, (1) make sure that publish errors are reported correctly and only critical errors are surfaced,
+	// (2) they are critical everywhere (ATP, CROS CQ, CTP summarize)
+	if t.Results.GetErrorString() != "" && t.Results.GetErrorType() != skylab_test_runner.TestRunnerErrorType_PUBLISH {
+		formattedErrorStr := FormatErrMsg(t.Results.ErrorString, t.Results.ErrorType)
+		return fmt.Errorf("%s", formattedErrorStr)
+	}
+
+	return nil
+}
+
+func FormatErrMsg(errorMessage string, errorType skylab_test_runner.TestRunnerErrorType) string {
+	parts := strings.Split(errorMessage, ":")
+	// If no appended errors, return base
+	if len(parts) == 1 {
+		return fmt.Sprintf("%s error: %s", strings.ToLower(errorType.String()), errorMessage)
+	}
+	lastPart := strings.TrimSpace(parts[len(parts)-1])
+
+	// Further refine to handle potential "(and X other error)" suffix
+	if strings.Contains(lastPart, "(") {
+		lastPart = strings.TrimSpace(lastPart[:strings.Index(lastPart, "(")])
+	}
+
+	return fmt.Sprintf("%s error: %s", strings.ToLower(errorType.String()), lastPart)
 }
 
 func (t *TestResults) GetFailureErr() error {
@@ -68,7 +96,6 @@ func (t *TestResults) GetFailureErr() error {
 
 	// Handle autotest results
 	if t.Results.GetAutotestResults() != nil {
-
 		testResults, ok := t.Results.GetAutotestResults()["original_test"]
 		if !ok {
 			// the test results from trv2 should be here, if not,

@@ -164,47 +164,65 @@ func (cmd *SummarizeCmd) Execute(ctx context.Context) error {
 	common.WriteProtoToStepLog(ctx, step, cmd.ExecuteResponses, "output_properties")
 
 	for _, suite := range suiteKeys {
-		var suiteErr error
-		testResults := cmd.AllTestResults[suite]
-		step, ctx := build.StartStep(ctx, suite)
-		defer func() { step.End(suiteErr) }()
-
-		// Get map from list and group error/non-error separately
-		testResultsMap := GetResultsMapFromList(testResults)
-		nonErrorResultKeys, nonErrorResultMap, errorResultKeys, errorResultMap := GroupErrAndNonErrResults(testResultsMap)
-
-		errResultErr := ProcessResultsMap(ctx, errorResultKeys, errorResultMap)
-		nonErrResultErr := ProcessResultsMap(ctx, nonErrorResultKeys, nonErrorResultMap)
-
-		// If we we are in an AL run and have an invocation attached link to the
-		// ATI page.
-		if cmd.AlStateInfo != nil {
-			tree := cmd.AlStateInfo.GetWorkUnitTree()
-			if tree != nil && tree.Head != nil {
-				var apiStack string
-				// Append the url field in staging.
-				if !common.IsProd(cmd.BuildState.Build().GetBuilder()) {
-					apiStack = "?api-stack=atp"
-				}
-
-				link := fmt.Sprintf("* [ATI Results](%s/%s/%s)", common.ATILink, tree.Head.GetWorkUnit().InvocationId, apiStack)
-
-				step.SetSummaryMarkdown(link)
-			}
+		// If any failure found, set it to err to fail summarize step
+		if suiteErr := cmd.DisplaySuite(ctx, suite); suiteErr != nil {
+			err = suiteErr
 		}
-
-		// Assign non nil err (if any) so that this step fails
-		if errResultErr != nil {
-			err = errResultErr
-		} else if nonErrResultErr != nil {
-			err = nonErrResultErr
-		}
-		// This will make sure the suite step is red only when there is failure within that suite run
-		suiteErr = err
 	}
 
 	// we don't want the build to fail for this step
 	return nil
+}
+
+func (cmd *SummarizeCmd) DisplaySuite(ctx context.Context, suite string) error {
+	var err error
+	testResults := cmd.AllTestResults[suite]
+	step, ctx := build.StartStep(ctx, suite)
+	defer func() { step.End(err) }()
+
+	if len(testResults) == 0 {
+		err = fmt.Errorf("No test results found for suite %s.", suite)
+		step.SetSummaryMarkdown(err.Error())
+		return err
+	}
+
+	// Get map from list and group error/non-error separately
+	testResultsMap := GetResultsMapFromList(testResults)
+	// We divide the results into two groups
+	// (1) Results that don't have test results (failed before hitting test_runner; i.e. bot params rejected, enum error, others)
+	// (2) Results that do have test results
+	// #1 is displayed first for better clarity and also grouped together
+	// Then #2 is displayed with actual test results
+	nonErrorResultKeys, nonErrorResultMap, errorResultKeys, errorResultMap := GroupErrAndNonErrResults(testResultsMap)
+
+	errResultErr := ProcessResultsMap(ctx, errorResultKeys, errorResultMap)
+	nonErrResultErr := ProcessResultsMap(ctx, nonErrorResultKeys, nonErrorResultMap)
+
+	// If we we are in an AL run and have an invocation attached link to the
+	// ATI page.
+	if cmd.AlStateInfo != nil {
+		tree := cmd.AlStateInfo.GetWorkUnitTree()
+		if tree != nil && tree.Head != nil {
+			var apiStack string
+			// Append the url field in staging.
+			if !common.IsProd(cmd.BuildState.Build().GetBuilder()) {
+				apiStack = "?api-stack=atp"
+			}
+
+			link := fmt.Sprintf("* [ATI Results](%s/%s/%s)", common.ATILink, tree.Head.GetWorkUnit().InvocationId, apiStack)
+
+			step.SetSummaryMarkdown(link)
+		}
+	}
+
+	// Assign non nil err (if any) so that this step fails
+	if errResultErr != nil {
+		err = errResultErr
+	} else if nonErrResultErr != nil {
+		err = nonErrResultErr
+	}
+
+	return err
 }
 
 func (cmd *SummarizeCmd) RestructureResultsMap(testResultMap map[string][]*data.TestResults) (map[string][]*data.TestResults, error) {
@@ -258,46 +276,60 @@ func (cmd *SummarizeCmd) RestructureResultsMap(testResultMap map[string][]*data.
 func ProcessResultsMap(ctx context.Context, keys []string, resultMap map[string][]*data.TestResults) error {
 	var err error
 	for _, key := range keys {
-		step, _ := build.StartStep(ctx, key)
-		defer func() { step.End(err) }()
 
 		resultsList := resultMap[key]
 		// sort by attempt
 		sort.Sort(data.ByAttempt(resultsList))
-		links := []string{}
-
-		for _, result := range resultsList {
-			// regardless of error/non-error, log the testCases
-			LogTestCasesIfAny(ctx, result, step)
-			err = result.GetFailureErr()
-			if result.TopLevelError != nil {
-				DisplayError(ctx, result, step)
-				continue
-			}
-			buildUrl := result.BuildUrl
-
-			linkStr := "* "
-			if result.Attempt > 0 {
-				linkStr = fmt.Sprintf("%sretry #%d: ", linkStr, result.Attempt)
-			}
-
-			logLink := result.Results.GetLogData().GetTesthausUrl()
-			if logLink != "" {
-				linkStr = fmt.Sprintf("%s[log link](%s),", linkStr, logLink)
-			}
-
-			if buildUrl != "" {
-				linkStr = fmt.Sprintf("%s [task link](%s)", linkStr, buildUrl)
-			}
-
-			if linkStr != "* " {
-				links = append(links, linkStr)
-			}
-
+		if resultErr := DisplayResult(ctx, key, resultsList); resultErr != nil {
+			err = resultErr
 		}
-		if len(links) > 0 {
-			step.SetSummaryMarkdown(strings.Join(links, "\n"))
+	}
+
+	return err
+}
+
+func DisplayResult(ctx context.Context, key string, resultsList []*data.TestResults) error {
+	var err error
+	step, _ := build.StartStep(ctx, key)
+	defer func() { step.End(err) }()
+
+	links := []string{}
+
+	// Here resultsList holds results for a single request(i.e. [jacuzzi]-shard-3).
+	// so multiple results in the list means that there are retry attempts for this one.
+	// if last retry is green, we should consider this run to be successful. (the list is ordered by attempts).
+	for _, result := range resultsList {
+		// regardless of error/non-error, log the testCases
+		LogTestCasesIfAny(ctx, result, step)
+		// override of err is okay since latest green means the whole run is green.
+		err = result.GetFailureErr()
+		if result.TopLevelError != nil {
+			DisplayError(ctx, result, step)
+			continue
 		}
+		buildUrl := result.BuildUrl
+
+		linkStr := "* "
+		if result.Attempt > 0 {
+			linkStr = fmt.Sprintf("%sretry #%d: ", linkStr, result.Attempt)
+		}
+
+		logLink := result.Results.GetLogData().GetTesthausUrl()
+		if logLink != "" {
+			linkStr = fmt.Sprintf("%s[log link](%s),", linkStr, logLink)
+		}
+
+		if buildUrl != "" {
+			linkStr = fmt.Sprintf("%s [task link](%s)", linkStr, buildUrl)
+		}
+
+		if linkStr != "* " {
+			links = append(links, linkStr)
+		}
+
+	}
+	if len(links) > 0 {
+		step.SetSummaryMarkdown(strings.Join(links, "\n"))
 	}
 
 	return err
@@ -364,7 +396,11 @@ func addToMap(inMap map[string][]*data.TestResults, key string, result *data.Tes
 func LogTestCasesIfAny(ctx context.Context, result *data.TestResults, step *build.Step) {
 	testCasesNames := common.GetFlattenedTestCases(result.TestCases)
 	if len(testCasesNames) > 0 {
-		log := step.Log(fmt.Sprintf("testcases for '%s'", result.Key))
+		logNameSuffix := ""
+		if result.Attempt > 0 {
+			logNameSuffix = fmt.Sprintf("-retry-%d", result.Attempt)
+		}
+		log := step.Log(fmt.Sprintf("testcases for '%s'%s", result.Key, logNameSuffix))
 		log.Write([]byte(fmt.Sprintf("%s", strings.Join(testCasesNames, "\n"))))
 	}
 }
