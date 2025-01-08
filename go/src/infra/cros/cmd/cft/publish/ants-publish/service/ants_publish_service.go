@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/pkg/errors"
@@ -138,7 +139,8 @@ func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.Wo
 	}
 
 	log.Printf("Create %d parent test class workunits in parallel", len(tcWorkunits))
-	g, ctx := errgroup.WithContext(ctx)
+	var mu sync.Mutex
+	g, _ := errgroup.WithContext(ctx)
 	for wuName := range tcWorkunits {
 		g.Go(func() error {
 			parentwu, err := aps.insertModuleWorkUnit(wuName, "TF_TEST_RUN", module.Id)
@@ -146,7 +148,10 @@ func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.Wo
 				log.Printf("unable to create test run workunit for %s due to %q", wuName, err)
 				return err
 			}
+
+			mu.Lock()
 			tcWorkunits[wuName] = parentwu.Id
+			mu.Unlock()
 			return nil
 		})
 	}
