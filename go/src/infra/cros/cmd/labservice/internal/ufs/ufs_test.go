@@ -178,6 +178,11 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 													},
 												},
 											},
+											Rpm: &lab.OSRPM{
+												PowerunitName:   "fake-power-unit-1",
+												PowerunitOutlet: "FAKE1",
+												PowerunitType:   lab.OSRPM_TYPE_SENTRY,
+											},
 										},
 										Modeminfo: &lab.ModemInfo{
 											Type:           lab.ModemType_MODEM_TYPE_LCUK54,
@@ -493,6 +498,18 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 									},
 								},
 							},
+						},
+						Rpm: &labapi.RPM{
+							Present: true,
+							FrontendAddress: &labapi.IpEndpoint{
+								Address: "rpm-service",
+								Port:    9999,
+							},
+							PowerUnitHostname: &labapi.IpEndpoint{
+								Address: "fake-power-unit-1",
+							},
+							PowerUnitOutlet: "FAKE1",
+							Type:            labapi.RPMType_RPM_TYPE_SENTRY,
 						},
 					},
 				},

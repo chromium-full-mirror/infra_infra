@@ -218,6 +218,7 @@ func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) 
 				ModemInfo:      getModemInfo(d.GetModeminfo()),
 				Cellular:       getCellular(p),
 				PasitHost:      p.GetPasitHost2(),
+				Rpm:            getRpm(p.GetRpm()),
 			},
 		},
 		CacheServer: &labapi.CacheServer{
@@ -622,4 +623,38 @@ func getSimInfo(src []*lab.SIMInfo) []*labapi.SIMInfo {
 		r = append(r, &info)
 	}
 	return r
+}
+
+const (
+	// The k8s cluster internal service name point to rpm frontend server.
+	rpmServiceHost = "rpm-service"
+	// The service port of rpm frontend server.
+	rpmServicePort = 9999
+)
+
+func getRpm(src *lab.OSRPM) *labapi.RPM {
+	if src != nil {
+		rpm := &labapi.RPM{
+			Present:           true,
+			PowerUnitHostname: &labapi.IpEndpoint{Address: src.GetPowerunitName()},
+			PowerUnitOutlet:   src.GetPowerunitOutlet(),
+		}
+		switch src.GetPowerunitType() {
+		case lab.OSRPM_TYPE_SENTRY:
+			rpm.Type = labapi.RPMType_RPM_TYPE_SENTRY
+		case lab.OSRPM_TYPE_IP9850:
+			rpm.Type = labapi.RPMType_RPM_TYPE_IP9850
+		default:
+			rpm.Type = labapi.RPMType_RPM_TYPE_UNKNOWN
+		}
+		// Other type of RPMs are only support the http based call direct to the power unit.
+		if src.GetPowerunitType() == lab.OSRPM_TYPE_SENTRY {
+			rpm.FrontendAddress = &labapi.IpEndpoint{
+				Address: rpmServiceHost,
+				Port:    rpmServicePort,
+			}
+		}
+		return rpm
+	}
+	return nil
 }
