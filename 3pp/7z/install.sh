@@ -23,7 +23,7 @@ if [[ $_3PP_PLATFORM =~ windows-.*  ]]; then
   else
     BUILD_DIR=x64
   fi
-  BUILD_CMD="nmake PLATFORM=$BUILD_DIR"
+  BUILD_CMD="nmake PLATFORM=$BUILD_DIR NO_ASM_GNU=1"
 elif [[ $_3PP_PLATFORM =~ mac-.* ]]; then
   BUILD_CMD="make -j -f ../../cmpl_clang.mak"
   BUILD_DIR="b/c"
