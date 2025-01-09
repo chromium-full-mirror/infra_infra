@@ -135,6 +135,21 @@ func TestValidateArgs(t *testing.T) {
 			},
 		},
 		{
+			&run{ // 'non-cft' test with -max-in-shard > 0
+				runFlags: runFlags{
+					test:       "rlz_CheckPing.should_send_rlz_ping_missing",
+					board:      "zork",
+					model:      "gumboz",
+					milestone:  "111",
+					build:      "15329.6.0",
+					satlabId:   "satlab-0wgatfqi21118003",
+					pool:       "pool",
+					harness:    "tast",
+					maxInShard: 2,
+					cft:        false},
+			},
+		},
+		{
 			&run{ // desktop test not with -suite
 				runFlags: runFlags{
 					test:        "rlz_CheckPing.should_send_rlz_ping_missing",

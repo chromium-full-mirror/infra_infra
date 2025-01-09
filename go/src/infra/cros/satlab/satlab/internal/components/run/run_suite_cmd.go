@@ -80,6 +80,7 @@ func (c *run) innerRun(a subcommands.Application, positionalArgs []string, env s
 		TagExcludes:      c.tagExcludes,
 		TestNameIncludes: c.testNameIncludes,
 		TestNameExcludes: c.testNameExcludes,
+		MaxInShard:       c.maxInShard,
 	}
 	buildLink, err := r.TriggerRun(ctx)
 	fmt.Printf("\n-- BUILD LINK --\n%s\n\n", buildLink)
@@ -114,6 +115,9 @@ func (c *run) validateArgs() error {
 	}
 	if !c.cft && c.desktop {
 		return errors.Reason("-cft is required for desktop test").Err()
+	}
+	if !c.cft && c.maxInShard > 0 {
+		return errors.Reason("-cft is required for -max-in-shard").Err()
 	}
 	if c.suite == "" && !c.desktop && (len(c.tagIncludes) > 0 || len(c.tagExcludes) > 0 || len(c.testNameIncludes) > 0 || len(c.testNameExcludes) > 0) {
 		return errors.Reason("-tags-includes/-tags-excludes/-test-name-includes/-test-name-excludes can run only with -suite").Err()
