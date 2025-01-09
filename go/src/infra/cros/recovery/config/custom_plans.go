@@ -155,7 +155,7 @@ func EnableSerialConsoleConfig() *Configuration {
 			PlanCrOS: {
 				CriticalActions: []string{
 					"Is servod running",
-					"Set GBB flags to 0x18 by servo",
+					"Set GBB flags to enable dev mode and boot from usb by servo",
 					"Flash AP (FW) with enabled serial console",
 					"Cold reset DUT by servo",
 					"Sleep 10 seconds",

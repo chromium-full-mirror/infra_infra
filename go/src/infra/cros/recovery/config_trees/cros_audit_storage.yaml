@@ -499,12 +499,12 @@ plans:
                                   conditions:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                        - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) (time:'1h30m0s')
+                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
                           exec_name: cros_update_fw_with_fw_image_by_servo
                           exec_args:
                             - update_ap_attempt_count:3
                             - download_timeout:600
-                            - gbb_flags:0x18
+                            - gbb_flags:0x80000018
                             - use_cache_extractor:true
                             - use_fw_targets_from_inventory:true
                           docs:
@@ -1584,12 +1584,12 @@ plans:
                           docs:
                             - Verify if we have access to the service provided access to the stable version
                   dependencies:
-                    - name: Set GBB flags to 0x18 by servo (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
+                    - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
                       exec_name: cros_set_gbb_by_servo
                       exec_args:
-                        - gbb_flags:0x18
+                        - gbb_flags:0x80000018
                       docs:
-                        - Force to set GBB flags to 0x18 to boot in DEV mode and enable to boot from USB-drive.
+                        - Force to set GBB flags to boot in DEV mode and enable to boot from USB-drive.
                         - Allowed to fail as flags can applied but fail by some reason
                       dependencies:
                         - name: Is servod running (ALWAYS_RUN)
@@ -2111,12 +2111,12 @@ plans:
                               conditions:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) (time:'1h30m0s')
+                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ap_attempt_count:3
                         - download_timeout:600
-                        - gbb_flags:0x18
+                        - gbb_flags:0x80000018
                         - use_cache_extractor:true
                         - use_fw_targets_from_inventory:true
                       docs:

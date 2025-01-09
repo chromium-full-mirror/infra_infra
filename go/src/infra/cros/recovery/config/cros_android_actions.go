@@ -23,7 +23,7 @@ func androidActions(actions map[string]*Action) {
 				"Has repair-request for re-provision",
 				"Reset provisioned info",
 				"Verify that DUT is not in DEV mode",
-				"Verify that DUT has clear GBB flags",
+				"Verify that DUT has default GBB flags",
 				"Missing HWID",
 				"Match HWID",
 			},

@@ -14,6 +14,7 @@ import (
 
 	"infra/cros/recovery/internal/components/cros/firmware"
 	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/gbb"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/tlw"
 	"infra/cros/recovery/version"
@@ -34,7 +35,7 @@ func setGbbFlagsByServoExec(ctx context.Context, info *execs.ExecInfo) error {
 	actionArgs := info.GetActionArgs(ctx)
 	servod := info.NewServod()
 	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
-	gbbHex := actionArgs.AsString(ctx, "gbb_flags", "")
+	gbbHex := actionArgs.AsString(ctx, "gbb_flags", fmt.Sprintf("0x%x", gbb.DefaultFlags))
 	if err := firmware.SetGBBByServo(ctx, gbbHex, info.GetExecTimeout(), run, servod); err != nil {
 		return errors.Annotate(err, "set gbb flags").Err()
 	}

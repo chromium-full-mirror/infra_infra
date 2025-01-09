@@ -155,7 +155,7 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -477,7 +477,7 @@ plans:
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                   dependencies:
-                    - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+                    - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -658,7 +658,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:

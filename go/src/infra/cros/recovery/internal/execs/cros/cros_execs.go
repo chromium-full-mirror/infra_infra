@@ -18,6 +18,7 @@ import (
 	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/components/linux"
 	"infra/cros/recovery/internal/execs"
+	"infra/cros/recovery/internal/gbb"
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/version"
@@ -204,11 +205,11 @@ func isBootedInSecureModeExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err != nil {
 		return errors.Annotate(err, "is booted in secure mode").Err()
 	}
-	// Check if GBB flags is set as 0x0 as expected for device booted in secure mode
-	if r, err := regexp.Compile(`flags:([0x ]*)$`); err != nil {
+	// Check if GBB flags is set to the default value as expected for device booted in secure mode
+	if r, err := regexp.Compile(fmt.Sprintf("flags:0x%08x$", gbb.DefaultFlags)); err != nil {
 		return errors.Annotate(err, "is booted in secure mode").Err()
 	} else if !r.MatchString(out) {
-		return errors.Reason("is booted in secure mode: gbb flags are not set to 0(zero)").Err()
+		return errors.Reason("is booted in secure mode: gbb flags are not set to default").Err()
 	}
 	return nil
 }
@@ -398,7 +399,7 @@ func crosSetGbbFlagsExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.NewRunner(info.GetDut().Name)
 	actionArgs := info.GetActionArgs(ctx)
 	// The expected value in hex format. (eg. 0x18)
-	gbbHex := actionArgs.AsString(ctx, "gbb_flags", "0x0")
+	gbbHex := actionArgs.AsString(ctx, "gbb_flags", fmt.Sprintf("0x%x", gbb.DefaultFlags))
 	checkTimeout := 15 * time.Second
 	runTimeout := info.GetExecTimeout() - checkTimeout
 	// New CMD supported from R111-15306.0.0 of ChromeOS.

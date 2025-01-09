@@ -2455,7 +2455,7 @@ plans:
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
               dependencies:
-                - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+                - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -2712,7 +2712,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -3176,7 +3176,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -3498,7 +3498,7 @@ plans:
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
               dependencies:
-                - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+                - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -3679,7 +3679,7 @@ plans:
                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                           conditions:
                             - name: Setup has servo info ('dut_servo_host_present')
-                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -3865,7 +3865,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -4368,7 +4368,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -4720,7 +4720,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -4800,7 +4800,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -5043,7 +5043,7 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -5461,7 +5461,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -5898,7 +5898,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -6262,7 +6262,7 @@ plans:
                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                           conditions:
                             - name: Setup has servo info ('dut_servo_host_present')
-                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -6386,7 +6386,7 @@ plans:
                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                           conditions:
                             - name: Setup has servo info ('dut_servo_host_present')
-                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -6582,7 +6582,7 @@ plans:
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
               dependencies:
-                - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+                - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -6880,7 +6880,7 @@ plans:
                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                           conditions:
                             - name: Setup has servo info ('dut_servo_host_present')
-                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -7326,7 +7326,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -7731,7 +7731,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -8136,7 +8136,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -8541,7 +8541,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -8964,7 +8964,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -9384,7 +9384,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -9945,7 +9945,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -10953,7 +10953,7 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -11337,7 +11337,7 @@ plans:
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                   dependencies:
-                    - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+                    - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -11514,7 +11514,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -12037,7 +12037,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) and set GBB to enable dev mode and boot from usb from fw-image by servo (without reboot) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -12215,7 +12215,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -12411,7 +12411,7 @@ plans:
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                   dependencies:
-                    - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+                    - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -12588,7 +12588,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -13152,7 +13152,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -13706,7 +13706,7 @@ plans:
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                       dependencies:
-                        - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+                        - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -13884,7 +13884,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -14080,7 +14080,7 @@ plans:
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                   dependencies:
-                    - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+                    - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -14257,7 +14257,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -14821,7 +14821,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -15375,7 +15375,7 @@ plans:
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                       dependencies:
-                        - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+                        - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -15676,7 +15676,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -16748,7 +16748,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -17453,7 +17453,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -18133,7 +18133,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -18687,7 +18687,7 @@ plans:
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                       dependencies:
-                        - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+                        - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -19025,7 +19025,7 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -19449,7 +19449,7 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -19883,7 +19883,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -20317,7 +20317,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -20754,7 +20754,7 @@ plans:
                                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                               conditions:
                                                 - name: Setup has servo info ('dut_servo_host_present')
-                                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                       conditions:
                                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                           dependencies:
@@ -21189,7 +21189,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -21622,7 +21622,7 @@ plans:
                                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                               conditions:
                                                 - name: Setup has servo info ('dut_servo_host_present')
-                                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                       conditions:
                                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                           dependencies:
@@ -22054,7 +22054,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -22463,7 +22463,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -22890,7 +22890,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -23299,7 +23299,7 @@ plans:
                                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                               conditions:
                                                 - name: Setup has servo info ('dut_servo_host_present')
-                                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                       conditions:
                                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                           dependencies:
@@ -23729,7 +23729,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -24142,7 +24142,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -24547,7 +24547,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -24956,7 +24956,7 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -25372,7 +25372,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -25879,7 +25879,7 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -26024,7 +26024,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -26531,7 +26531,7 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -26735,7 +26735,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -27299,7 +27299,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -27853,7 +27853,7 @@ plans:
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                       dependencies:
-                        - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+                        - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -28327,7 +28327,7 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -28746,7 +28746,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -29274,7 +29274,7 @@ plans:
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-                - name: Verify that DUT has clear GBB flags ('cros_is_booted_in_secure_mode')
+                - name: Verify that DUT has default GBB flags ('cros_is_booted_in_secure_mode')
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Pools required to manage FW on the device ('dut_not_in_pool')
@@ -29498,7 +29498,7 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -29953,7 +29953,7 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -30470,7 +30470,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -30880,7 +30880,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -31285,7 +31285,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -31690,7 +31690,7 @@ plans:
                                     - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
-                            - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                               conditions:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                   dependencies:
@@ -32095,7 +32095,7 @@ plans:
                                         - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                           conditions:
                                             - name: Setup has servo info ('dut_servo_host_present')
-                                - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                                   conditions:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                                       dependencies:
@@ -32480,7 +32480,7 @@ plans:
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                   dependencies:
-                    - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+                    - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -32658,7 +32658,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) and set GBB to enable dev mode and boot from usb from fw-image by servo (without reboot) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -32895,7 +32895,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) and set GBB to enable dev mode and boot from usb from fw-image by servo (without reboot) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -33079,7 +33079,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) and set GBB to enable dev mode and boot from usb from fw-image by servo (without reboot) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -33257,7 +33257,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) with GBB 0x18 by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -33453,7 +33453,7 @@ plans:
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                   dependencies:
-                    - name: Set GBB flags to 0x18 by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+                    - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -33564,7 +33564,7 @@ plans:
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-            - name: Verify that DUT has clear GBB flags ('cros_is_booted_in_secure_mode')
+            - name: Verify that DUT has default GBB flags ('cros_is_booted_in_secure_mode')
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Pools required to manage FW on the device ('dut_not_in_pool')

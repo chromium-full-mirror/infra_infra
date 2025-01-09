@@ -5,7 +5,11 @@
 package config
 
 import (
+	"fmt"
+
 	"google.golang.org/protobuf/types/known/durationpb"
+
+	"infra/cros/recovery/internal/gbb"
 )
 
 func crosRepairPlan() *Plan {
@@ -344,7 +348,7 @@ func crosRepairActions() map[string]*Action {
 				"Flash EC (FW) by servo (allowed failed)",
 				"Sleep 60 seconds",
 				"Disable software write protection via servo",
-				"Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)",
+				"Flash AP (FW) and set GBB to enable dev mode and boot from usb from fw-image by servo (without reboot)",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Remove REFLASH_FW repair-request",
 				"Boot DUT from USB in DEV mode",
@@ -403,7 +407,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Default boot set as internal storage",
 				"Verify that DUT is not in DEV mode",
-				"Verify that DUT has clear GBB flags",
+				"Verify that DUT has default GBB flags",
 				"Missing HWID",
 				"Missing serial-number",
 				"Match HWID",
@@ -1388,7 +1392,7 @@ func crosRepairActions() map[string]*Action {
 				"Download firmware image based on stable_version and install via firmware updater from DUT",
 				"Update FW required the DUT to be run on stable-version OS.",
 				"The reboot is not triggered as part of the action.",
-				"Set timeout to 120 minutes = 10 minutes for download + 100 minutes for find and extract AP/EC images + 10 minutes for run updater.",
+				"Set timeout to 120 minutes = 10 minutes for download+100 minutes for find and extract AP/EC images+10 minutes for run updater.",
 			},
 			Conditions: []string{
 				"Recovery version has OS image path",
@@ -1986,9 +1990,9 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 			},
 		},
-		"Verify that DUT has clear GBB flags": {
+		"Verify that DUT has default GBB flags": {
 			Docs: []string{
-				"Check if the device booted with 0x0 GBB flags.",
+				"Check if the device booted with default GBB flags.",
 			},
 			Conditions: []string{
 				"Is a Chromebook",
@@ -2550,7 +2554,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Reset GBB flags by host": {
 			Docs: []string{
-				"This action sets the GBB flags to 0x0.",
+				"This action sets the GBB flags to the default value.",
 			},
 			Dependencies: []string{
 				"Disable software-controlled write-protect for 'internal'",
@@ -2558,7 +2562,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_set_gbb_flags",
 			ExecExtraArgs: []string{
-				"gbb_flags:0x0",
+				fmt.Sprintf("gbb_flags:0x%x", gbb.DefaultFlags),
 			},
 			ExecTimeout:            &durationpb.Duration{Seconds: 180},
 			RunControl:             RunControl_ALWAYS_RUN,
@@ -2761,9 +2765,9 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
 		},
-		"Set GBB flags to 0x18 by servo": {
+		"Set GBB flags to enable dev mode and boot from usb by servo": {
 			Docs: []string{
-				"Force to set GBB flags to 0x18 to boot in DEV mode and enable to boot from USB-drive.",
+				"Force to set GBB flags to boot in DEV mode and enable to boot from USB-drive.",
 				"Allowed to fail as flags can applied but fail by some reason",
 			},
 			Dependencies: []string{
@@ -2771,7 +2775,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_set_gbb_by_servo",
 			ExecExtraArgs: []string{
-				"gbb_flags:0x18",
+				fmt.Sprintf("gbb_flags:0x%x", gbb.DevUsbDefault),
 			},
 			ExecTimeout:            &durationpb.Duration{Seconds: 300},
 			AllowFailAfterRecovery: true,
@@ -2945,7 +2949,7 @@ func crosRepairActions() map[string]*Action {
 				"Flash EC (FW) by servo (allowed failed)",
 				"Sleep 60 seconds",
 				"Disable software write protection via servo",
-				"Flash AP (FW) with GBB 0x18 by servo",
+				"Flash AP (FW) with GBB enable dev mode and boot from usb by servo",
 				"Servo USB-Key needs to be reflashed",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Boot DUT in recovery and install from USB-drive",
@@ -3139,7 +3143,7 @@ func crosRepairActions() map[string]*Action {
 				"Recovery version has OS image path",
 			},
 			Dependencies: []string{
-				"Set GBB flags to 0x18 by servo",
+				"Set GBB flags to enable dev mode and boot from usb by servo",
 				"Install OS in DEV mode by USB-drive",
 			},
 			ExecName: "sample_pass",
@@ -3538,7 +3542,7 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{Seconds: 150},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
-		"Flash AP (FW) with GBB 0x18 by servo": {
+		"Flash AP (FW) with GBB enable dev mode and boot from usb by servo": {
 			Docs: []string{
 				"Download fw-image specified in stable version and flash AP to the DUT by servo",
 				"Set timeout for 90 minutes for now as = 10m(download)+2*20m(find/extract file)+40m(ap-update with retry).",
@@ -3554,7 +3558,7 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"update_ap_attempt_count:3",
 				"download_timeout:600",
-				"gbb_flags:0x18",
+				fmt.Sprintf("gbb_flags:0x%x", gbb.DevUsbDefault),
 				"use_cache_extractor:true",
 				"use_fw_targets_from_inventory:true",
 			},
@@ -3579,7 +3583,7 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"update_ap_attempt_count:3",
 				"download_timeout:600",
-				"gbb_flags:0x18",
+				fmt.Sprintf("gbb_flags:0x%x", gbb.DevUsbDefault),
 				"use_cache_extractor:true",
 				"use_serial_fw_target:true",
 				"use_fw_targets_from_inventory:true",
@@ -3632,7 +3636,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 6600},
 		},
-		"Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)": {
+		"Flash AP (FW) and set GBB to enable dev mode and boot from usb from fw-image by servo (without reboot)": {
 			Docs: []string{
 				"Download fw-image specified in stable version and flash AP only to the DUT by servo",
 				"Set timeout for 90 minutes for now as = 10m(download)+2*20m(find/extract file)+40m(ap-update with retry).",
@@ -3651,7 +3655,7 @@ func crosRepairActions() map[string]*Action {
 				"update_ec_attempt_count:0",
 				"update_ap_attempt_count:3",
 				"download_timeout:600",
-				"gbb_flags:0x18",
+				fmt.Sprintf("gbb_flags:0x%x", gbb.DevUsbDefault),
 				"use_cache_extractor:true",
 				"use_fw_targets_from_inventory:true",
 			},
@@ -3676,7 +3680,7 @@ func crosRepairActions() map[string]*Action {
 				"Flash EC (FW) by servo (allowed failed)",
 				"Sleep 60 seconds",
 				"Disable software write protection via servo",
-				"Flash AP (FW) with GBB 0x18 by servo",
+				"Flash AP (FW) with GBB enable dev mode and boot from usb by servo",
 				"Wait to be pingable (normal boot)",
 				"Remove REFLASH_FW repair-request",
 			},
@@ -4741,7 +4745,7 @@ func crosRepairActions() map[string]*Action {
 				"Flash EC (FW) by servo (allowed failed)",
 				"Sleep 60 seconds",
 				"Disable software write protection via servo",
-				"Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)",
+				"Flash AP (FW) and set GBB to enable dev mode and boot from usb from fw-image by servo (without reboot)",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Install OS in DEV mode by USB-drive",
 				"Remove REFLASH_FW repair-request",
@@ -4835,7 +4839,7 @@ func crosRepairActions() map[string]*Action {
 				"Flash EC (FW) by servo",
 				"Sleep 60 seconds",
 				"Disable software write protection via servo",
-				"Flash AP (FW) with GBB 0x18 by servo",
+				"Flash AP (FW) with GBB enable dev mode and boot from usb by servo",
 				"Sleep 60 seconds",
 				"Install OS in DEV mode by USB-drive",
 				"Remove REFLASH_FW repair-request",

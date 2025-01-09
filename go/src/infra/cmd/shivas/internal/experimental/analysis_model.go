@@ -395,7 +395,7 @@ type karteData struct {
 
 var actions = []string{
 	"action:Flash EC (FW) by servo",
-	"action:Flash AP (FW) and set GBB to 0x18 from fw-image by servo (without reboot)",
+	"action:Flash AP (FW) and set GBB to enable dev mode and boot from usb from fw-image by servo (without reboot)",
 	"action:Boot DUT in recovery and install from USB-drive",
 }
 
