@@ -551,9 +551,9 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	req := buildReq.ScheduleBuildRequest
 
 	// Spit out the request
-	// b/377196624 - enable log streaming for test runner requests only if there are fewer requests than number defined by logsAndAnalyticsLimit.
+	// b/377196624,b/388180876 - enable log streaming for test runner requests only if there are fewer requests than number defined by logsAndAnalyticsLimit.
 	// exceeding this limit may lead to an oom issue. (This metric is when executed on a bot with 8 GB memory)
-	logsAndAnalyticsLimit := 200
+	logsAndAnalyticsLimit := 50
 	if buildsMapLen < logsAndAnalyticsLimit {
 		// Spit out the request
 		requestData, err := json.MarshalIndent(req, "", "  ")
