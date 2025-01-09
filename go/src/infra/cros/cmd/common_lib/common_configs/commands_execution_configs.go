@@ -206,8 +206,13 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 	executeAllCmds, isCleanup bool) error {
 	var allErr error
 	var singleErr error
+	var firstErr error
 	foundErr := false
 	for i, cmd := range cmds {
+		if firstErr == nil {
+			// Once allErr is not nil, should only have a single error.
+			firstErr = allErr
+		}
 		if foundErr && !executeAllCmds && !cmdExecPairConfigs[i].IsRequired() {
 			continue
 		}
@@ -268,5 +273,11 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 		}
 	}
 
-	return allErr
+	if allErr != nil {
+		logging.Infof(ctx, "errors found: %s", allErr.Error())
+	}
+
+	// Most important error for display is the first one found.
+	// Other subsequent errors should be relegated to logging.
+	return firstErr
 }
