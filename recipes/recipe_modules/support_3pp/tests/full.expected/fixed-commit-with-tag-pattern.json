@@ -160,7 +160,7 @@
   },
   {
     "failure": {
-      "humanReason": "Uncaught Exception: ExceptionGroup('deferred failures', '[AssertionError('fixed_commit is mutually exclusive with tags.')]')"
+      "humanReason": "Uncaught Exception: ExceptionGroup('deferred failures', [AssertionError('fixed_commit is mutually exclusive with tags.')])"
     },
     "name": "$result"
   }

@@ -159,7 +159,7 @@
   },
   {
     "failure": {
-      "humanReason": "Uncaught Exception: ExceptionGroup('deferred failures', '[AssertionError('Non git-rev commit specified: refs/heads/main')]')"
+      "humanReason": "Uncaught Exception: ExceptionGroup('deferred failures', [AssertionError('Non git-rev commit specified: refs/heads/main')])"
     },
     "name": "$result"
   }
