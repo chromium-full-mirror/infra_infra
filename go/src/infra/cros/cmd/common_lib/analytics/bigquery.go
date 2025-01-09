@@ -105,13 +105,12 @@ func ReadDurationMetrics(c *bigquery.Client, board string, harness string) (map[
 	table := fmt.Sprintf("%s.%s.%s", saProject, dataset, cacheTable)
 
 	// Limit to a Duration > 1 second to reduce the size of the response; makes the query faster, cheaper, and we can treat all "no results" as 1 sec duration.
-	cmd := fmt.Sprintf("SELECT * FROM %s WHERE Duration > %v and harness = \"%s\" ORDER BY dur DESC", table, minDuration, harness)
+	cmd := fmt.Sprintf("SELECT * FROM %s WHERE Duration > %v and harness = \"%s\" ORDER BY Duration DESC", table, minDuration, harness)
 	if board != "" {
-		cmd = fmt.Sprintf("SELECT * FROM %s WHERE board = \"%s\" and Duration > %v and harness = \"%s\" ORDER BY dur DESC", table, board, minDuration, harness)
+		cmd = fmt.Sprintf("SELECT * FROM %s WHERE board = \"%s\" and Duration > %v and harness = \"%s\" ORDER BY Duration DESC", table, board, minDuration, harness)
 	}
 
 	bqQ := c.Query(cmd)
-
 	// Execute the query.
 	it, err := bqQ.Read(ctx)
 	if err != nil {

@@ -47,11 +47,14 @@ type MiddleOutRequestCmd struct {
 	BuildState *build.State
 
 	ExecutionError error
+
+	DurationBasedSharding bool
 }
 
 const (
 	TautoTastPrefix = "tauto.tast"
 	NO_DEVICES_INT  = math.MinInt32 + 1
+	TastPrefix      = "tast"
 )
 
 // ExtractDependencies (Boiler plate)
@@ -117,6 +120,14 @@ func (cmd *MiddleOutRequestCmd) extractDepsFromFilterStateKeeper(
 	if sk.BQClient != nil {
 		cmd.BQClient = sk.BQClient
 	}
+
+	// By default, we do not want to do this, as even shard duration is often at the cost of total runtime
+	// due to the nature of how fixtures work in Tast. So only enable this for the ChromeOS Cq flow.
+	cmd.DurationBasedSharding = false
+	if sk.CtpReq.GetSchedulerInfo().GetQsAccount() == common.PcqQsAccount && !sk.IsAlRun {
+		cmd.DurationBasedSharding = true
+	}
+
 	cmd.BuildState = sk.BuildState
 
 	cmd.ExecutionError = sk.ExecutionError
@@ -133,6 +144,12 @@ func (cmd *MiddleOutRequestCmd) updateFilterStateKeeper(
 
 	sk.ExecutionError = cmd.ExecutionError
 	return nil
+}
+
+// light wrapper around the BQ call, to make unittests easier.
+func getDurationMetrics(board string, harness string) (map[string]float64, error) {
+	bqClient := analytics.CtpAnalyticsBQClient(context.Background())
+	return analytics.ReadDurationMetrics(bqClient, board, harness)
 }
 
 // Execute executes the command.
@@ -166,7 +183,8 @@ func (cmd *MiddleOutRequestCmd) Execute(ctx context.Context) error {
 			}
 			return maxInShard
 		}(),
-		pool: pool,
+		pool:                  pool,
+		durationBasedSharding: cmd.DurationBasedSharding,
 	}
 
 	trReqs, err := middleOut(ctx, cmd.InternalTestPlan, cfg)
@@ -235,10 +253,11 @@ type kv struct {
 }
 
 type distroCfg struct {
-	pool            string
-	isUnitTest      bool
-	unitTestDevices int
-	maxInShard      int
+	pool                  string
+	isUnitTest            bool
+	unitTestDevices       int
+	maxInShard            int
+	durationBasedSharding bool
 }
 
 type middleOutData struct {
@@ -408,7 +427,20 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 		// Currently we will not try anymore than basic sharding.
 		// As in, we won't attempt to "fill" a pod, then spill over.
 		// Its either "you can take all these tests" or we get a new pod.
-		shards := shard(tcs, solverData.cfg.maxInShard)
+		shards := [][]string{}
+
+		if solverData.cfg.durationBasedSharding {
+			allSame, board := allBoardsSameInEqc(hwHash, solverData)
+			var err error
+			shards, err = shardWithTimeDistribution(ctx, tcs, solverData.cfg.maxInShard, allSame, board)
+			if err != nil {
+				logging.Infof(ctx, "Unable to time based shard, moving to regular.")
+				shards = shard(tcs, solverData.cfg.maxInShard)
+			}
+		} else {
+			shards = shard(tcs, solverData.cfg.maxInShard)
+		}
+
 		for _, shardedtc := range shards {
 
 			harness := ""
@@ -422,6 +454,27 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 	}
 
 	return solverData.finalAssignments
+}
+
+// used to determine if an EQC class is comprised of 1 board, or several.
+// If several, the returned board will be ""
+func allBoardsSameInEqc(hwHash uint64, solverData *middleOutData) (bool, string) {
+	board := ""
+	devices := solverData.hwEquivalenceMap[hwHash]
+	for _, device := range devices {
+		// if the shard is empty, we need to use the labloading process block
+		// not the shard filler.
+		d := solverData.flatHWUUIDMap[device]
+		for _, subbUnit := range d.req.GetSchedulingUnits() {
+			deviceBoard := subbUnit.GetPrimaryTarget().GetSwarmingDef().GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget()
+			if board == "" {
+				board = deviceBoard
+			} else if board != deviceBoard {
+				return false, ""
+			}
+		}
+	}
+	return true, board
 }
 
 // assignHardware will add the tests to the selectedDevice, being aware if it should go into a non-filled hard, or a new one.
@@ -666,9 +719,40 @@ func allItemsIn(item1 []string, item2 []string) bool {
 
 }
 
-// shard will device the list into a list of lists where each item in the list length of maxInShard
+func filterToRelevantTests(ctx context.Context, testSet map[string]bool, durs map[string]float64) map[string]float64 {
+	testsWeCareAbout := make(map[string]float64)
+	for test := range testSet {
+		logging.Infof(ctx, "checking for ", test)
+		value, ok := durs[test]
+		if ok {
+			logging.Infof(ctx, "checking for %s time %s ", test, value)
+
+			testsWeCareAbout[test] = value
+		} else {
+			// If we don't know anything, assume 1 second.
+			testsWeCareAbout[test] = 1.0
+		}
+	}
+	return testsWeCareAbout
+}
+
+// shard will divide the list into a list of lists where each item in the list length of maxInShard
 // eg: [1,2,3,4], maxInShard=2 --> [[1,2], [3,4]]
 func shard(alltests []string, maxInShard int) (shards [][]string) {
+	harnessBuckets := bucketByHarness(alltests)
+
+	for _, tests := range harnessBuckets {
+
+		for maxInShard < len(tests) {
+			tests, shards = tests[maxInShard:], append(shards, tests[0:maxInShard:maxInShard])
+		}
+		shards = append(shards, tests)
+	}
+
+	return shards
+}
+
+func bucketByHarness(alltests []string) map[string][]string {
 	harnessBuckets := make(map[string][]string)
 	for _, test := range alltests {
 		h := getHarness(test)
@@ -680,15 +764,74 @@ func shard(alltests []string, maxInShard int) (shards [][]string) {
 			harnessBuckets[h] = append(harnessBuckets[h], test)
 		}
 	}
+	return harnessBuckets
+}
 
-	for _, tests := range harnessBuckets {
-
-		for maxInShard < len(tests) {
-			tests, shards = tests[maxInShard:], append(shards, tests[0:maxInShard:maxInShard])
-		}
-		shards = append(shards, tests)
+// shard will device the list into a list of lists where each item in the list length of maxInShard
+// eg: [1,2,3,4], maxInShard=2 --> [[1,2], [3,4]]
+func shardWithTimeDistribution(ctx context.Context, alltests []string, maxInShard int, allSame bool, EQCboard string) (shards [][]string, err error) {
+	type testDuration struct {
+		name     string
+		duration float64
 	}
-	return shards
+
+	harnessBuckets := bucketByHarness(alltests)
+
+	for harness, tests := range harnessBuckets {
+		testSet := make(map[string]bool)
+
+		// Make a map of tests in the bucket, so that we can search the query result for its result.
+		for _, str := range tests {
+			testSet[str] = true
+		}
+
+		// Determine the number of shards based on the MaxInShard value and the # of tests.
+		totalShards := int(math.Ceil(float64(len(tests)) / float64(maxInShard)))
+
+		// If the entire EQC has the same board, lets limit the query on the board or speed/accuracy.
+		board := ""
+		if allSame {
+			board = EQCboard
+		}
+		durs, err := getDurationMetrics(board, harness)
+
+		if err != nil {
+			logging.Infof(ctx, "err while getting duration metrics: %s", err)
+			return shards, err
+		}
+		// 0. Descope the total to just the tests we care about:
+		testsWeCareAbout := filterToRelevantTests(ctx, testSet, durs)
+
+		// 1. Sort tests by duration in descending order.
+
+		var orderedDurs []testDuration
+		for name, duration := range testsWeCareAbout {
+			orderedDurs = append(orderedDurs, testDuration{name, duration})
+		}
+
+		sort.Slice(orderedDurs, func(i, j int) bool {
+			return orderedDurs[i].duration > orderedDurs[j].duration
+		})
+
+		// 2. Initialize slices and track their sums.
+		slices := make([][]string, totalShards)
+		sums := make([]float64, totalShards)
+
+		// 3. Distribute tests to minimize sum differences.
+		for _, test := range orderedDurs {
+			minSumIndex := 0
+			for i := 1; i < totalShards; i++ {
+				if sums[i] < sums[minSumIndex] {
+					minSumIndex = i
+				}
+			}
+			slices[minSumIndex] = append(slices[minSumIndex], test.name)
+			sums[minSumIndex] += test.duration
+		}
+		logging.Infof(ctx, "Expected distro: ", sums)
+		shards = append(shards, slices...)
+	}
+	return shards, nil
 }
 
 // extracts the harness out of the test name.
