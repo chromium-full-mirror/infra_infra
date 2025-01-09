@@ -534,7 +534,7 @@ func ExtendLease(ctx context.Context, tx *sql.Tx, leaseRec DeviceLeaseRecord) er
 }
 
 // ReleaseLease releases a lease record in a transaction.
-func ReleaseLease(ctx context.Context, tx *sql.Tx, leaseRec *DeviceLeaseRecord) error {
+func ReleaseLease(ctx context.Context, tx *sql.Tx, leaseID string) error {
 	result, err := tx.ExecContext(ctx, `
 		UPDATE
 			"DeviceLeaseRecords"
@@ -543,20 +543,20 @@ func ReleaseLease(ctx context.Context, tx *sql.Tx, leaseRec *DeviceLeaseRecord) 
 			last_updated_time=NOW()
 		WHERE
 			id=$1;`,
-		leaseRec.ID,
+		leaseID,
 	)
 	if err != nil {
-		logging.Errorf(ctx, "ReleaseLease: failed to release DeviceLeaseRecord %s: %s", leaseRec.ID, err)
-		return fmt.Errorf("release lease: %w", err)
+		logging.Errorf(ctx, "ReleaseLease: failed to release DeviceLeaseRecord %s: %s", leaseID, err)
+		return fmt.Errorf("release lease %q: %w", leaseID, err)
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
 		logging.Errorf(ctx, "ReleaseLease: error getting rows affected: %s", err)
-		return fmt.Errorf("release lease: %w", err)
+		return fmt.Errorf("release lease %q: %w", leaseID, err)
 	}
 
-	logging.Debugf(ctx, "ReleaseLease: DeviceLeaseRecord %s released successfully (%d row affected)", leaseRec.ID, rowsAffected)
+	logging.Debugf(ctx, "ReleaseLease: DeviceLeaseRecord %s released successfully (%d row affected)", leaseID, rowsAffected)
 	return nil
 }
 

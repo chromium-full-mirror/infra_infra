@@ -355,22 +355,11 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, r *api.ReleaseDeviceRequest)
 		}, nil
 	}
 
-	tx, err := db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, fmt.Errorf("release device: start database transaction: %w", err)
-	}
-
-	// Update lease record to mark released time.
-	releaseRec := model.DeviceLeaseRecord{
-		ID: leaseID,
-	}
-	err = model.ReleaseLease(ctx, tx, &releaseRec)
-	if err != nil {
-		logging.Errorf(ctx, "ReleaseDevice: failed to release lease %s: %s", releaseRec.ID, err)
-		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			logging.Errorf(ctx, "ReleaseDevice: unable to rollback: %v", rollbackErr)
-		}
-		return nil, fmt.Errorf("release device: %w", err)
+	// Update device and device lease state to available after release
+	toReleaseDevice := model.Device{
+		ID:       record.DeviceID,
+		DutID:    record.DutID,
+		IsActive: true,
 	}
 
 	// Pull device data from UFS
@@ -379,14 +368,6 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, r *api.ReleaseDeviceRequest)
 	if err != nil {
 		return nil, fmt.Errorf("release device: %w", err)
 	}
-
-	// Update device and device lease state to available after release
-	toReleaseDevice := model.Device{
-		ID:       record.DeviceID,
-		DutID:    record.DutID,
-		IsActive: true,
-	}
-
 	// Try to pull dimensions from Device. Mark as inactive if not found.
 	reportFunc := func(e error) { logging.Debugf(ctx, "sanitize dimensions: %s\n", e) }
 	dims, err := device.GetOSResourceDims(ctx, client, reportFunc, record.DeviceID)
@@ -401,12 +382,27 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, r *api.ReleaseDeviceRequest)
 		toReleaseDevice.SchedulableLabels = SwarmingDimsToLabels(ctx, dims)
 	}
 
+	tx, err := db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, fmt.Errorf("release device: start database transaction: %w", err)
+	}
+	defer func() {
+		// Rollback after commit is a no-op, just returning ErrTxDone.
+		if err := tx.Rollback(); !errors.Is(err, sql.ErrTxDone) {
+			logging.Errorf(ctx, "ReleaseDevice: unable to rollback: %v", err)
+		}
+	}()
+
+	// Update lease record to mark released time.
+	err = model.ReleaseLease(ctx, tx, leaseID)
+	if err != nil {
+		logging.Errorf(ctx, "ReleaseDevice: failed to release lease %s: %s", leaseID, err)
+		return nil, fmt.Errorf("release device: %w", err)
+	}
+
 	d, err := model.UpdateDeviceToAvailable(ctx, tx, toReleaseDevice)
 	if err != nil {
 		logging.Errorf(ctx, "ReleaseDevice: failed to release device %s dut_id %s: %s", record.DeviceID, record.DutID, err)
-		if rollbackErr := tx.Rollback(); rollbackErr != nil {
-			logging.Errorf(ctx, "UpdateDeviceToAvailable: unable to rollback: %v", rollbackErr)
-		}
 		return nil, fmt.Errorf("release device: %w", err)
 	}
 

@@ -470,8 +470,6 @@ func TestReleaseLease(t *testing.T) {
 				t.Fatalf("an error '%s' was not expected when opening a stub db transaction", err)
 			}
 
-			timeNow := time.Now()
-
 			mock.ExpectExec(regexp.QuoteMeta(`
 				UPDATE
 					"DeviceLeaseRecords"
@@ -484,12 +482,7 @@ func TestReleaseLease(t *testing.T) {
 					"test-lease-record-1").
 				WillReturnResult(sqlmock.NewResult(1, 1))
 
-			err = ReleaseLease(ctx, tx, &DeviceLeaseRecord{
-				ID:              "test-lease-record-1",
-				ReleasedTime:    timeNow.Add(time.Second * 600),
-				ExpirationTime:  timeNow.Add(time.Second * 600),
-				LastUpdatedTime: timeNow,
-			})
+			err = ReleaseLease(ctx, tx, "test-lease-record-1")
 			assert.Loosely(t, err, should.BeNil)
 		})
 	})
