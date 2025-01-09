@@ -265,10 +265,14 @@ func (s *ServodService) LogCheckPoint(ctx context.Context, req *api.LogCheckPoin
 func (s *ServodService) SaveLogs(ctx context.Context, req *api.SaveLogsRequest) (*api.SaveLogsResponse, error) {
 	s.logger.Printf("Received api.SaveLogsRequest: %#v\n", req)
 	var sshClient *crypto_ssh.Client
-	sshClient, err := s.sshPool.Get(req.ServoHostPath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to get client from pool: %w", err)
+	var err error
+	if !strings.Contains(req.GetServodDockerContainerName(), "satlab") {
+		sshClient, err = s.sshPool.Get(req.ServoHostPath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get client from pool: %w", err)
+		}
 	}
+
 	dst := req.Dest
 	if dst == "" {
 		dst, err = os.MkdirTemp("/tmp/servodserver", "servodlogs")

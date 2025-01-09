@@ -72,12 +72,11 @@ func composeHostnameForProxy(servoHost, dockerContainer string, servoPort int32)
 		servoPort = 9999
 	}
 	if dockerContainer != "" {
-		// format: ${CONTAINER_NAME}:9999:docker:
-		return fmt.Sprintf("%s:%d:docker", dockerContainer, servoPort), nil
+		return fmt.Sprintf("%s:%d", dockerContainer, servoPort), nil
 	}
 	if servoHost == "localhost" || servoHost == "127.0.0.1" || servoHost == "::1" {
 		// format: localhost:<servo_port>
-		return fmt.Sprintf("%s:%d:docker", dockerContainer, servoPort), nil
+		return fmt.Sprintf("localhost:%d", servoPort), nil
 	}
 	host, sshPort, err := splitHostPort(servoHost)
 	if err != nil {
