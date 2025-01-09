@@ -66,6 +66,11 @@
                         "platform_cpu_vendor": "mediatek",
                         "platform_disk_size": "62",
                         "platform_memory_size": "4"
+                    },
+                    "servo_info": {
+                        "servod_version": "v1.0.2345-4b2de21e 2024-08-17 00:30:57",
+                        "servo_type": "servo_v4_with_c2d2_and_ccd_ti50",
+                        "servo_versions": "c2d2_v2.4.73-d771c18ba9,0.24.40/ti50_common_prepvt-15086.B:v0.0.355-15c69d7f,fizz-labstation-release/R115-15474.55.0,servo_v4_v2.4.58-c37246f9c"
                     }
                 }
             },

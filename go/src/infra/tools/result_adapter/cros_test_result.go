@@ -463,6 +463,13 @@ func configBuildMetaDataTags(tags []*pb.StringPair, buildMetadata *artifactpb.Bu
 		newTags = AppendTags(newTags, "platform_memory_size", strconv.FormatUint(gfxInfo.PlatformMemorySize, 10))
 	}
 
+	servoInfo := buildMetadata.GetServoInfo()
+	if servoInfo != nil {
+		newTags = AppendTags(newTags, "servod_version", servoInfo.ServodVersion)
+		newTags = AppendTags(newTags, "servo_type", servoInfo.ServoType)
+		newTags = AppendTags(newTags, "servo_versions", servoInfo.ServoVersions)
+	}
+
 	return newTags
 }
 
