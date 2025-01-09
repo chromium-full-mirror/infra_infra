@@ -668,29 +668,36 @@ func UpsertDeviceFromUFS(ctx context.Context, db *sql.DB, device Device) error {
 // SetDutIDFromLabels take the label and sets it to the Device model. If no
 // labels are found, then the DUT ID will also not be set.
 func (d *Device) SetDutIDFromLabels(ctx context.Context) error {
-	if len(d.DutID) != 0 {
-		logging.Warningf(ctx, "dut_id %s will be overridden by the schedulable label value", d.DutID)
+	newID, err := getDutIDLabel(d.SchedulableLabels)
+	if err != nil {
+		logging.Warningf(ctx, "dut_id %q of %q is cleared: %s", d.DutID, d.ID, err)
 		d.DutID = ""
+		return fmt.Errorf("set dut_id from labels: %w", err)
 	}
+	if d.DutID != newID {
+		logging.Warningf(ctx, "dut_id %q of %q will be overridden to %q by the schedulable label value", d.DutID, d.ID, newID)
+		d.DutID = newID
+	}
+	return nil
+}
 
-	if d.SchedulableLabels == nil {
-		return fmt.Errorf("no labels provided")
+func getDutIDLabel(labels SchedulableLabels) (string, error) {
+	if labels == nil {
+		return "", fmt.Errorf("the schedulable labels is nil")
 	}
 
 	// Extract DUT ID from labels and set DutID.
-	dutIDLabel, ok := d.SchedulableLabels["dut_id"]
+	dutIDLabel, ok := labels["dut_id"]
 	if !ok {
-		return fmt.Errorf("failed to get dut_id from Device %s", d.ID)
+		return "", fmt.Errorf("no dut_id in labels")
 	}
 	dutIDVals := dutIDLabel.Values
 	switch len(dutIDVals) {
 	case 1:
-		logging.Debugf(ctx, "Extracted dut_id from schedulable labels: %s", dutIDVals[0])
-		d.DutID = dutIDVals[0]
-		return nil
+		return dutIDVals[0], nil
 	case 0:
-		return fmt.Errorf("no value for DUT ID found for Device %s", d.ID)
+		return "", fmt.Errorf("dut_id is empty in labels")
 	default:
-		return fmt.Errorf("multiple values for DUT ID found for Device %s", d.ID)
+		return "", fmt.Errorf("multiple dut_id values: %v", dutIDVals)
 	}
 }

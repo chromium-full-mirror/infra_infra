@@ -1067,7 +1067,7 @@ func TestSetDutIDFromLabels(t *testing.T) {
 				},
 			}
 			err := d.SetDutIDFromLabels(ctx)
-			assert.Loosely(t, err, should.ErrLike("failed to get dut_id from Device foo"))
+			assert.Loosely(t, err, should.ErrLike("no dut_id"))
 			assert.Loosely(t, d.DutID, should.Match(""))
 		})
 		t.Run("SetDutIDFromLabels: invalid dut_id; too many labels", func(t *ftt.Test) {
@@ -1080,7 +1080,7 @@ func TestSetDutIDFromLabels(t *testing.T) {
 				},
 			}
 			err := d.SetDutIDFromLabels(ctx)
-			assert.Loosely(t, err, should.ErrLike("multiple values for DUT ID found for Device foo"))
+			assert.Loosely(t, err, should.ErrLike("multiple dut_id values"))
 			assert.Loosely(t, d.DutID, should.Match(""))
 		})
 	})
