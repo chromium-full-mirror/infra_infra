@@ -364,7 +364,6 @@ func SwarmingDimsToLabels(ctx context.Context, dims swarming.Dimensions) model.S
 func deviceModelToAPIDevice(ctx context.Context, device model.Device) *api.Device {
 	addr, err := stringToDeviceAddress(ctx, device.DeviceAddress)
 	if err != nil {
-		logging.Errorf(ctx, err.Error())
 		addr = &api.DeviceAddress{}
 	}
 
