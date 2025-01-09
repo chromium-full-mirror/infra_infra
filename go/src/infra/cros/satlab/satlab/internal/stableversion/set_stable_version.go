@@ -8,11 +8,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	"github.com/googleapis/gax-go/v2"
 	"github.com/maruel/subcommands"
-	"google.golang.org/api/option"
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 	"google.golang.org/protobuf/encoding/protojson"
 
@@ -26,7 +24,7 @@ import (
 	"infra/cmdsupport/cmdlib"
 	"infra/cros/recovery/models"
 	"infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
-	"infra/cros/satlab/common/run"
+	"infra/cros/satlab/common/services/build_service"
 	"infra/cros/satlab/common/site"
 	"infra/cros/satlab/common/utils/misc"
 )
@@ -131,19 +129,19 @@ func (c *setStableVersionRun) innerRunBoardModel(ctx context.Context, a subcomma
 		return err
 	}
 
-	moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
+	service, err := build_service.New(ctx)
+	if err != nil {
+		return errors.Annotate(err, "new Moblab API connector").Err()
+	}
 	if numArgs == 0 { // If os,fw, and fwImage not provided, use board/model to fetch arbitrary version
-		if err != nil {
-			return errors.Annotate(err, "satlab new moblab api build client").Err()
-		}
-		rv, err = FindMostStableBuild(ctx, moblabClient, c.board, c.model)
+		rv, err = service.FindMostStableBuildByBoardAndModel(ctx, c.board, c.model)
 		if err != nil {
 			return errors.Annotate(err, "find most stable build").Err()
 		}
 	} else if numArgs < 3 { // If partial args provided, throw an error
 		return fmt.Errorf("Please provide all or none of the following: -os, -fw, -fwImage")
 	}
-	if err := StageAndWriteLocalStableVersion(ctx, moblabClient, rv); err != nil {
+	if err := misc.StageAndWriteLocalStableVersion(ctx, service, rv); err != nil {
 		return errors.Annotate(err, "stage and write local stable version").Err()
 	}
 	return nil
@@ -194,67 +192,6 @@ func (c *setStableVersionRun) innerRunHostname(ctx context.Context, a subcommand
 	stableVersion, _ := json.MarshalIndent(rv, "", " ")
 	fmt.Println("-- Stable Version set successfully --\n", string(stableVersion))
 	return nil
-}
-
-// StageAndWriteLocalStableVersion stages a recovery image to partner bucket and writes the associated rv metadata locally
-func StageAndWriteLocalStableVersion(ctx context.Context, moblabClient MoblabClient, rv *models.RecoveryVersion) error {
-	buildVersion := strings.Split(rv.OsImage, "-")[1]
-	if err := run.StageImageToBucket(ctx, moblabClient, rv.Board, rv.Model, buildVersion); err != nil {
-		return errors.Annotate(err, "stage stable version image to bucket").Err()
-	}
-	if err := misc.WriteLocalStableVersion(rv, site.RecoveryVersionDirectory); err != nil {
-		return errors.Annotate(err, "write local stable version").Err()
-	}
-	return nil
-}
-
-// Fetch a stable recovery version for a given board model
-func FindMostStableBuild(ctx context.Context, moblabClient MoblabClient, board string, model string) (*models.RecoveryVersion, error) {
-
-	// fetch os image and fw
-	findBuildRequest := &moblabpb.FindMostStableBuildRequest{
-		BuildTarget: "buildTargets/" + board,
-	}
-	resp, err := moblabClient.FindMostStableBuild(ctx, findBuildRequest)
-	if err != nil {
-		return nil, err
-	}
-	milestone := strings.Split(resp.GetBuild().GetMilestone(), "/")[1]
-	os := "R" + milestone + "-" + resp.Build.GetBuildVersion()
-	fw := resp.Build.GetRwFirmwareVersion()
-
-	listMilestonesRequest := &moblabpb.ListBuildsRequest{
-		Parent: fmt.Sprintf("buildTargets/%s/models/%s", board, model),
-		Filter: "type=firmware",
-	}
-	listMilestonesResponse := moblabClient.ListBuilds(ctx, listMilestonesRequest)
-	milestoneBuild, err := listMilestonesResponse.Next()
-	if err != nil {
-		return nil, err
-	}
-	fwMilestone := strings.Split(milestoneBuild.GetMilestone(), "/")[1]
-
-	// fetch firmware build version
-	listBuildVersionsRequest := &moblabpb.ListBuildsRequest{
-		Parent:   fmt.Sprintf("buildTargets/%s/models/%s", board, model),
-		Filter:   fmt.Sprintf("type=firmware+milestone=milestones/%s", fwMilestone),
-		PageSize: 1,
-	}
-	listBuildVersionsResponse := moblabClient.ListBuilds(ctx, listBuildVersionsRequest)
-	firmwareBuild, err := listBuildVersionsResponse.Next()
-	if err != nil {
-		return nil, err
-	}
-	fwImage := fmt.Sprintf("%s-firmware/R%s-%s", board, fwMilestone, firmwareBuild.GetBuildVersion())
-
-	rv := &models.RecoveryVersion{
-		Board:     board,
-		Model:     model,
-		OsImage:   os,
-		FwVersion: fw,
-		FwImage:   fwImage,
-	}
-	return rv, nil
 }
 
 func (c *setStableVersionRun) validateBoardModelArgs() (int, error) {
