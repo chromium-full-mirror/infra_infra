@@ -95,6 +95,6 @@ const (
 )
 
 // DefaultFlags to be used for devices in the lab.
-var DefaultFlags = VB2_GBB_FLAG_ENABLE_ADB
+var DefaultFlags int64 = VB2_GBB_FLAG_ENABLE_ADB
 
-var DevUsbDefault = DefaultFlags + VB2_GBB_FLAG_FORCE_DEV_SWITCH_ON + VB2_GBB_FLAG_FORCE_DEV_BOOT_USB
+var DevUsbDefault int64 = DefaultFlags + VB2_GBB_FLAG_FORCE_DEV_SWITCH_ON + VB2_GBB_FLAG_FORCE_DEV_BOOT_USB
