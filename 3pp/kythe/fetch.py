@@ -10,10 +10,6 @@ import urllib.request
 
 
 def do_latest():
-  # Pin to v0.0.67 until artifacts are uploaded for latest version
-  print("v0.0.67")
-  return
-
   # All releases of Kythe are "pre-release" so just getting "/latest" fails.
   # Leaving the code here for when Kythe starts making non-"pre-release"
   # releases.
