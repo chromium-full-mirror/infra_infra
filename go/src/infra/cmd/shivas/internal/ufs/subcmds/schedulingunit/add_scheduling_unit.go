@@ -100,6 +100,9 @@ func (c *addSchedulingUnit) innerRun(a subcommands.Application, args []string, e
 	if err := c.validateArgs(); err != nil {
 		return err
 	}
+	if len(args) != 0 {
+		return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nadd schedulingunit does not take any positional parameters")
+	}
 	ctx := cli.GetContext(a, c, env)
 	ctx = utils.SetupContext(ctx, ufsUtil.OSNamespace)
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
