@@ -461,7 +461,7 @@ func rpcBuildbucket(buildCtx context.Context, rows []Row, client BBClient) error
 	step, ctx := build.StartStep(buildCtx, "RPC Buildbucket")
 	defer func() { step.End(err) }()
 
-	healthProtos := make([]*buildbucketpb.SetBuilderHealthRequest_BuilderHealth, len(rows), len(rows))
+	healthProtos := make([]*buildbucketpb.SetBuilderHealthRequest_BuilderHealth, len(rows))
 	for i, row := range rows {
 		simplifiedMetrics := map[string]float32{}
 		for _, metric := range row.Metrics {

@@ -1224,7 +1224,7 @@ func getVms(ctx context.Context, ic UfleetAPI.FleetClient, scanner *bufio.Scanne
 		Desc:     fmt.Sprintf("%sVM?", OptionToEnter),
 		Required: true,
 	}
-	vms := make([]*fleet.VM, 0, 0)
+	vms := make([]*fleet.VM, 0)
 	var vm *fleet.VM
 	for input != nil {
 		if input.Desc != "" {
@@ -1473,7 +1473,7 @@ func getPeripheralRequirements(scanner *bufio.Scanner) []*fleet.PeripheralRequir
 		Desc:     fmt.Sprintf("%sPeripheralRequirement?", OptionToEnter),
 		Required: true,
 	}
-	prs := make([]*fleet.PeripheralRequirement, 0, 0)
+	prs := make([]*fleet.PeripheralRequirement, 0)
 	var pr *fleet.PeripheralRequirement
 	for input != nil {
 		if input.Desc != "" {
@@ -1571,7 +1571,7 @@ func getVirtualRequirements(scanner *bufio.Scanner, mlsep *fleet.MachineLSEProto
 		Desc:     fmt.Sprintf("%sVirtualRequirement?", OptionToEnter),
 		Required: true,
 	}
-	prs := make([]*fleet.VirtualRequirement, 0, 0)
+	prs := make([]*fleet.VirtualRequirement, 0)
 	var pr *fleet.VirtualRequirement
 	for input != nil {
 		if input.Desc != "" {
@@ -2307,7 +2307,7 @@ func getRepeatedStringInput(ctx context.Context, ic UfleetAPI.FleetClient, scann
 	if yn == "n" {
 		return nil, true
 	}
-	values := make([]string, 0, 0)
+	values := make([]string, 0)
 	input = &Input{
 		Key: key,
 	}
@@ -2367,7 +2367,7 @@ func getRepeatedEnumInput(scanner *bufio.Scanner, yn, key string, m map[int32]st
 	if yn == "n" {
 		return nil, true
 	}
-	values := make([]int32, 0, 0)
+	values := make([]int32, 0)
 	input = &Input{
 		Key:      key,
 		Desc:     fmt.Sprintf("%s%s", "\nChoose a "+key+"\n", createKeyValuePairs(m)),

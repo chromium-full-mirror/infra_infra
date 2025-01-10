@@ -86,7 +86,7 @@ func (c *getZones) innerRun(a subcommands.Application, args []string, env subcom
 }
 
 func getEmitZones(keysOnly bool) []*zone {
-	zones := make([]*zone, 0, 0)
+	zones := make([]*zone, 0)
 	for zoneValue := range ufspb.Zone_value {
 		if !strings.Contains(zoneValue, "UNSPECIFIED") {
 			z := &zone{
@@ -103,7 +103,7 @@ func getEmitZones(keysOnly bool) []*zone {
 }
 
 func getNoEmitZones(keysOnly bool) []*noEmitZone {
-	zones := make([]*noEmitZone, 0, 0)
+	zones := make([]*noEmitZone, 0)
 	for zoneValue := range ufspb.Zone_value {
 		if !strings.Contains(zoneValue, "UNSPECIFIED") {
 			z := &noEmitZone{

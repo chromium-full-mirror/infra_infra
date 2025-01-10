@@ -63,7 +63,7 @@ func PersistCommits(ctx context.Context, commits []*common.GitCommit) (bool, err
 		return true, nil
 	}
 
-	docs := make([]*Commit, len(commits), len(commits))
+	docs := make([]*Commit, len(commits))
 	for i, commit := range commits {
 		docs[i] = &Commit{
 			ID:            commit.ID(),

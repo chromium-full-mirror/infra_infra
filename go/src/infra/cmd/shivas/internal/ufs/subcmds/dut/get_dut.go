@@ -200,7 +200,7 @@ func printDutFull(ctx context.Context, ic ufsAPI.FleetClient, msgs []proto.Messa
 	lseTomachineMap := make(map[string]*ufspb.Machine, 0)
 	lses := make([]*ufspb.MachineLSE, len(msgs))
 	idTomachineMap := make(map[string]*ufspb.Machine, 0)
-	ids := make([]string, 0, 0)
+	ids := make([]string, 0)
 	for i, r := range msgs {
 		lses[i] = r.(*ufspb.MachineLSE)
 		lses[i].Name = ufsUtil.RemovePrefix(lses[i].Name)

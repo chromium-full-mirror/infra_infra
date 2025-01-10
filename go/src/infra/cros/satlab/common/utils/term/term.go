@@ -243,7 +243,7 @@ func GetPass(prompt string, f *os.File, pbuf []byte) ([]byte, error) {
 	if err := noecho.Set(f); err != nil {
 		return nil, err
 	}
-	b := make([]byte, 1, 1)
+	b := make([]byte, 1)
 	i := 0
 	if _, err := f.Write([]byte(prompt)); err != nil {
 		return nil, err
@@ -272,7 +272,7 @@ func clearbuf(b []byte) {
 
 // GetChar reads a single byte.
 func GetChar(f *os.File) (b byte, err error) {
-	bs := make([]byte, 1, 1)
+	bs := make([]byte, 1)
 	if _, err = f.Read(bs); err != nil {
 		return 0, err
 	}
@@ -387,7 +387,7 @@ func (p *PTY) Close() error {
 
 // ReadByte implements the io.ByteReader interface to read single char from the PTY.
 func (p *PTY) ReadByte() (byte, error) {
-	bs := make([]byte, 1, 1)
+	bs := make([]byte, 1)
 	_, err := p.Primary.Read(bs)
 	return bs[0], err
 }

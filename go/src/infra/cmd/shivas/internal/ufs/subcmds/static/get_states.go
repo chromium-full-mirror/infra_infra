@@ -86,7 +86,7 @@ func (c *getStates) innerRun(a subcommands.Application, args []string, env subco
 }
 
 func getEmitStates(keysOnly bool) []*state {
-	states := make([]*state, 0, 0)
+	states := make([]*state, 0)
 	for stateValue := range ufspb.State_value {
 		if !strings.Contains(stateValue, "UNSPECIFIED") {
 			s := &state{
@@ -103,7 +103,7 @@ func getEmitStates(keysOnly bool) []*state {
 }
 
 func getNoEmitStates(keysOnly bool) []*noEmitState {
-	states := make([]*noEmitState, 0, 0)
+	states := make([]*noEmitState, 0)
 	for stateValue := range ufspb.State_value {
 		if !strings.Contains(stateValue, "UNSPECIFIED") {
 			s := &noEmitState{

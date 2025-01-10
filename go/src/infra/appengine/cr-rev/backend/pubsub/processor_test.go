@@ -185,7 +185,7 @@ func TestPubsubProcessor(t *testing.T) {
 
 	ftt.Run("create ref", t, func(t *ftt.Test) {
 		n := 2001
-		commits := make([]*git.Commit, n, n)
+		commits := make([]*git.Commit, n)
 		for i := 0; i < n; i++ {
 			commits[i] = &git.Commit{
 				Id: fmt.Sprintf("%040x", i),
