@@ -7,6 +7,7 @@ package common_builders
 import (
 	"context"
 	"fmt"
+	"regexp"
 	"slices"
 	"strings"
 
@@ -38,6 +39,10 @@ var (
 	ExcludedChromeosBuildPrefixes  = []string{"staging", "dev"}
 	ExcludedChromeosBuildPostfixes = []string{"main"}
 	ExcludedVariantPostfixes       = []string{"sdknext"}
+	ExcludedRegexes                = []*regexp.Regexp{
+		// Exclude if numbers included.
+		regexp.MustCompile("[0-9]+"),
+	}
 )
 
 // GroupV2Requests filters CTP requests list by manifest. "PUBLIC" manifest will
@@ -505,6 +510,24 @@ func GetRetryCount(v1 *test_platform.Request) int64 {
 	return 0
 }
 
+func excludeRegexesFromChromeosBuildString(chromeosBuildParts []string) []string {
+	allowedChromeosBuildParts := []string{}
+	for _, part := range chromeosBuildParts {
+		exclude := false
+		for _, excludedRegex := range ExcludedRegexes {
+			exclude = excludedRegex.MatchString(part)
+			if exclude {
+				break
+			}
+		}
+		if !exclude {
+			allowedChromeosBuildParts = append(allowedChromeosBuildParts, part)
+		}
+	}
+
+	return allowedChromeosBuildParts
+}
+
 // GetBuildType parses the software dependency's ChromeosBuild
 // into the build type by taking the last part after removing postfixes.
 func GetBuildType(softwareDeps []*test_platform.Request_Params_SoftwareDependency) string {
@@ -513,6 +536,8 @@ func GetBuildType(softwareDeps []*test_platform.Request_Params_SoftwareDependenc
 		case *test_platform.Request_Params_SoftwareDependency_ChromeosBuild:
 			chromeosBuildLeft := strings.Split(dep.ChromeosBuild, "/")[0]
 			chromeosBuildParts := strings.Split(chromeosBuildLeft, "-")
+			// Filter out excluded regex matches.
+			chromeosBuildParts = excludeRegexesFromChromeosBuildString(chromeosBuildParts)
 			// Strip post-fixes.
 			if slices.Contains(ExcludedChromeosBuildPostfixes, chromeosBuildParts[len(chromeosBuildParts)-1]) {
 				chromeosBuildParts = chromeosBuildParts[:len(chromeosBuildParts)-1]
@@ -531,6 +556,8 @@ func GetVariant(softwareDeps []*test_platform.Request_Params_SoftwareDependency)
 		case *test_platform.Request_Params_SoftwareDependency_ChromeosBuild:
 			chromeosBuildLeft := strings.Split(dep.ChromeosBuild, "/")[0]
 			chromeosBuildParts := strings.Split(chromeosBuildLeft, "-")
+			// Filter out excluded regex matches.
+			chromeosBuildParts = excludeRegexesFromChromeosBuildString(chromeosBuildParts)
 			// Strip post-fixes.
 			if slices.Contains(ExcludedChromeosBuildPostfixes, chromeosBuildParts[len(chromeosBuildParts)-1]) {
 				chromeosBuildParts = chromeosBuildParts[:len(chromeosBuildParts)-1]

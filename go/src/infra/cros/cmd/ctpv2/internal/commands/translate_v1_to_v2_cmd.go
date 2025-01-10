@@ -278,9 +278,9 @@ func (cmd *TranslateV1ToV2Cmd) CreateKeyToBMVTargetChain(v1KeysMap map[string]st
 	for key, chainedKeys := range requestChainMap {
 		bmvToKeyMap := map[string]string{}
 		for _, chainedKey := range chainedKeys {
-			bmvToKeyMap[strings.ToLower(v1KeysMap[chainedKey])] = strings.ToLower(chainedKey)
+			bmvToKeyMap[v1KeysMap[chainedKey]] = chainedKey
 		}
-		finalMap[strings.ToLower(key)] = bmvToKeyMap
+		finalMap[key] = bmvToKeyMap
 	}
 	return finalMap
 }

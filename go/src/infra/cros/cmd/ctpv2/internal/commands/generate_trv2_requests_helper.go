@@ -394,7 +394,7 @@ func populateHwTargetHelper(ctx context.Context, board string, model string, var
 		hwTarget.boardWVaraint = fmt.Sprintf("%s-%s", hwTarget.board, hwTarget.variant)
 	}
 
-	hwTarget.gcsArtifactPath = findGcsPath(suiteInfo, hwTarget.board, hwTarget.variant)
+	hwTarget.gcsArtifactPath = findGcsPath(suiteInfo, board, variant)
 	if hwTarget.gcsArtifactPath == "" {
 		logging.Infof(ctx, "GcsPath was not found for build target: %s", hwTarget.boardWVaraint)
 		// if the type is not cros, then ignore
