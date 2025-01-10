@@ -238,6 +238,7 @@ func CreateContainerRequest(requestedFilter *api.CTPFilter, build int) *api.Cont
 					}, requestedFilter.GetContainerInfo().GetBinaryArgs()...),
 					BinaryName:        requestedFilter.GetContainerInfo().GetBinaryName(),
 					AdditionalVolumes: []string{"/creds/service_accounts/:/creds/service_accounts/"},
+					Env:               GceMetadataEnvVars(),
 				},
 			},
 		},
