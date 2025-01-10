@@ -34,10 +34,13 @@ type TranslateRequestCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	// Deps
-	CtpReq *testapi.CTPRequest
+	CtpReq     *testapi.CTPRequest
+	RequestKey string
+	IsAlRun    bool
 
 	// Updates
 	InternalTestPlan *testapi.InternalTestplan
+	TestResults      map[string]*data.TestResults
 
 	ExecutionError error
 	IsPartnerRun   bool
@@ -94,7 +97,13 @@ func (cmd *TranslateRequestCmd) extractDepsFromFilterStateKeeper(
 		logging.Warningf(ctx, "cmd %q missing optional dependency: AlStateInfo", cmd.GetCommandType())
 	}
 
+	if sk.RequestKey == "" {
+		logging.Warningf(ctx, "cmd %q missing optional dependency: RequestKey", cmd.GetCommandType())
+	}
+
 	cmd.CtpReq = sk.CtpReq
+	cmd.RequestKey = sk.RequestKey
+	cmd.IsAlRun = sk.IsAlRun
 	cmd.IsPartnerRun = sk.IsPartnerRun
 	cmd.ExecutionError = sk.ExecutionError
 	return nil
@@ -103,6 +112,12 @@ func (cmd *TranslateRequestCmd) extractDepsFromFilterStateKeeper(
 func (cmd *TranslateRequestCmd) updateLocalTestStateKeeper(sk *data.FilterStateKeeper) error {
 	if cmd.InternalTestPlan != nil {
 		sk.InitialInternalTestPlan = cmd.InternalTestPlan
+	}
+
+	if len(cmd.TestResults) > 0 {
+		for k, v := range cmd.TestResults {
+			sk.SuiteTestResults[k] = v
+		}
 	}
 
 	sk.ExecutionError = cmd.ExecutionError
@@ -132,7 +147,9 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 		DynamicUpdates:    []*api.UserDefinedDynamicUpdate{},
 	}
 
-	updateSchedulingTargetsBasedOnBotAvailability(ctx, cmd.CtpReq)
+	// bmvToDimsMap holds the map to {key -> dims[]} for all the targets that are dropped.
+	// this will be used to create bot params rejected result that will be reflected in summarize and output properties.
+	bmvToDimsMap := updateSchedulingTargetsBasedOnBotAvailability(ctx, cmd.CtpReq)
 
 	// new field that supports multi-dut
 	suitemd.SchedulingUnits = getSchedulingUnits(cmd.CtpReq)
@@ -155,19 +172,39 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 
 	cmd.InternalTestPlan = internalStruct
 
+	suiteName := cmd.CtpReq.GetSuiteRequest().GetTestSuite().GetName()
+
+	// If there are targets that were dropped, we need to report them as bot params rejected.
+	if len(bmvToDimsMap) > 0 {
+		cmd.TestResults = map[string]*data.TestResults{}
+		for bmvKey, dims := range bmvToDimsMap {
+			botParamsRejectedErr := &data.BotParamsRejectedError{Key: bmvKey, RejectedDims: dims}
+			testResult := &data.TestResults{Suite: suiteName, Key: bmvKey, TopLevelError: botParamsRejectedErr, RequestKey: cmd.RequestKey, Name: fmt.Sprintf("%s_%s", suiteName, bmvKey), IsALRun: cmd.IsAlRun}
+			cmd.TestResults[bmvKey] = testResult
+		}
+	}
+
+	// Validations
+	if len(suitemd.GetSchedulingUnits()) == 0 {
+		logging.Infof(ctx, fmt.Sprintf("no scheduling units found at the end of translation. check logs to see if all of the targets are dropped."))
+		err = fmt.Errorf("No device targets found at the end of translation. Perhaps invalid targets provided in request.")
+		step.SetSummaryMarkdown(err.Error())
+	}
+
 	return err
 }
 
-func updateSchedulingTargetsBasedOnBotAvailability(ctx context.Context, ctpReq *testapi.CTPRequest) {
+func updateSchedulingTargetsBasedOnBotAvailability(ctx context.Context, ctpReq *testapi.CTPRequest) map[string][]string {
+	bmvToDimsMap := map[string][]string{}
 	swarmingServ, err := common.CreateNewSwarmingService(context.Background())
 	if err != nil {
 		logging.Infof(ctx, fmt.Sprintf("error found while creating new swarming service: %s", err))
-		return
+		return bmvToDimsMap
 	}
 	pool := ctpReq.GetPool()
 	// skip swarming bot count check if pool is vmlab
 	if pool == "vmlab" {
-		return
+		return bmvToDimsMap
 	}
 	botAvailabilityCache := make(map[string]bool)
 
@@ -179,6 +216,8 @@ func updateSchedulingTargetsBasedOnBotAvailability(ctx context.Context, ctpReq *
 		for _, target := range schedulingTargets.GetTargets() {
 			model := target.HwTarget.GetLegacyHw().GetModel()
 			board := target.HwTarget.GetLegacyHw().GetBoard()
+			variant := target.GetHwTarget().GetLegacyHw().GetVariant()
+			bmvKey := common.ConstructKey(board, model, variant)
 			dimsForCache := fmt.Sprintf("%s-%s-%s", model, board, pool)
 			if _, ok := botAvailabilityCache[dimsForCache]; !ok {
 				dims := []string{}
@@ -200,13 +239,13 @@ func updateSchedulingTargetsBasedOnBotAvailability(ctx context.Context, ctpReq *
 				} else {
 					botAvailabilityCache[dimsForCache] = false
 					logging.Infof(ctx, fmt.Sprintf("dropping : %s", dimsForCache))
+					bmvToDimsMap[bmvKey] = dims
 				}
 			} else {
 				if botAvailabilityCache[dimsForCache] {
 					newTargets = append(newTargets, target)
 				}
 			}
-
 		}
 
 		if len(newTargets) > 0 {
@@ -215,6 +254,8 @@ func updateSchedulingTargetsBasedOnBotAvailability(ctx context.Context, ctpReq *
 		}
 	}
 	ctpReq.ScheduleTargets = newSchedulingTargets
+
+	return bmvToDimsMap
 }
 
 func newBBClient(ctx context.Context) (buildbucketpb.BuildsClient, error) {

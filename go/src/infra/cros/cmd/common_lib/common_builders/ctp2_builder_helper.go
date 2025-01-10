@@ -247,6 +247,11 @@ func canBeGrouped(r1, r2 *testapi.CTPRequest) bool {
 		return false
 	}
 
+	// Dont combine AL and non-AL requests
+	if r1.GetIsAlRun() != r2.GetIsAlRun() {
+		return false
+	}
+
 	return true
 }
 
@@ -272,7 +277,7 @@ func buildCTPRequest(v1 *test_platform.Request, buildState *build.State) *testap
 		KarbonFilters:   v1.GetParams().GetUserDefinedFilters(),
 		// Reuse translate flag from v1 to signal dynamic run in v2.
 		RunDynamic: v1.GetParams().GetTranslateTrv2Request(),
-		IsAlRun:    getIsALRun(v1, buildState),
+		IsAlRun:    getIsALRun(v1),
 	}
 }
 
@@ -624,7 +629,12 @@ func getTag(tags []string, targetTag string) string {
 	return ""
 }
 
-func getIsALRun(v1 *test_platform.Request, buildState *build.State) bool {
+func getIsALRun(v1 *test_platform.Request) bool {
+	// If explicitly marked as AL request, respect it
+	if v1.GetParams().GetIsAlRun() {
+		return true
+	}
+
 	alPrefix := "al."
 	// Check suite name
 	suites := v1.GetTestPlan().GetSuite()
@@ -632,16 +642,9 @@ func getIsALRun(v1 *test_platform.Request, buildState *build.State) bool {
 		return true
 	}
 
-	// Check suite scheduler config name
-	build := buildState.Build()
-	if build != nil {
-		for _, tag := range build.GetTags() {
-			if tag.GetKey() == "suite-scheduler-config" {
-				if strings.HasPrefix(strings.ToLower(tag.GetValue()), alPrefix) {
-					return true
-				}
-			}
-		}
+	// Check suite scheduler config (analytics name) name
+	if strings.HasPrefix(strings.ToLower(getAnalyticsName(v1)), alPrefix) {
+		return true
 	}
 
 	return false

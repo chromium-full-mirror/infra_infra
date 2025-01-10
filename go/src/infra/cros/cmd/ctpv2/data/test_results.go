@@ -29,6 +29,7 @@ type TestResults struct {
 	RequestKey    string // this is used to link back the results to original request
 	Name          string
 	TestCases     []*api.TestCase_Id
+	IsALRun       bool
 
 	// For ATP reporting
 	CreationTimestamp time.Time

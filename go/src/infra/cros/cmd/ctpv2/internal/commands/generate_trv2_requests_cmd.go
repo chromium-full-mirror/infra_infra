@@ -180,7 +180,9 @@ func (cmd *GenerateTrv2RequestsCmd) updateScheduleStateKeeper(ctx context.Contex
 	// summarize step. And in this case, scheduleTasks will not add anything to the
 	// testResults.
 	if cmd.TestResults != nil && len(cmd.TestResults) != 0 {
-		sk.SuiteTestResults = cmd.TestResults
+		for k, v := range cmd.TestResults {
+			sk.SuiteTestResults[k] = v
+		}
 	}
 
 	if cmd.AlStateInfo != nil && cmd.AlStateInfo.CurrentTestJobEvent != nil {
@@ -362,7 +364,7 @@ func (cmd *GenerateTrv2RequestsCmd) ProcessEnumError(ctx context.Context, step *
 	err := &data.EnumerationError{SuiteName: suiteName}
 
 	cmd.TestResults = map[string]*data.TestResults{}
-	cmd.TestResults[common.EnumerationErrKey] = &data.TestResults{Suite: suiteName, Key: common.EnumerationErrKey, TopLevelError: err, RequestKey: cmd.RequestKey, Name: suiteName}
+	cmd.TestResults[common.EnumerationErrKey] = &data.TestResults{Suite: suiteName, Key: common.EnumerationErrKey, TopLevelError: err, RequestKey: cmd.RequestKey, Name: suiteName, IsALRun: cmd.IsAlRun}
 
 	cmd.ObserveEnumerationFailure(ctx)
 	return err

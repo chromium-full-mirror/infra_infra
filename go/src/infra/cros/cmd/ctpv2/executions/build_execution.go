@@ -300,6 +300,7 @@ func executeFiltersInLuciBuild(
 		AlStateInfo:        alStateInfo,
 		IsAlRun:            req.IsAlRun,
 		IsPartnerRun:       isPartnerRun,
+		SuiteTestResults:   map[string]*data.TestResults{},
 	}
 
 	fillInUserDefinedFilters(ctx, req, dockerKeyFile, ctpVersion, isPartnerRun)

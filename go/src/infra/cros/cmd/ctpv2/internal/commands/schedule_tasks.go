@@ -67,6 +67,7 @@ type ScheduleTasksCmd struct {
 	InternalTestPlan *api.InternalTestplan
 	BuildsMap        map[string]*data.BuildRequest
 	RequestKey       string
+	IsAlRun          bool
 
 	// Updates
 	TestResults map[string]*data.TestResults
@@ -187,12 +188,15 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 	}
 
 	cmd.ExecutionError = sk.ExecutionError
+	cmd.IsAlRun = sk.IsAlRun
 	return nil
 }
 
 func (cmd *ScheduleTasksCmd) updateScheduleStateKeeper(ctx context.Context, sk *data.FilterStateKeeper) error {
 	if cmd.TestResults != nil && len(cmd.TestResults) != 0 {
-		sk.SuiteTestResults = cmd.TestResults
+		for k, v := range cmd.TestResults {
+			sk.SuiteTestResults[k] = v
+		}
 	}
 	cmd.InternalTestPlan = proto.Clone(sk.TestPlanStates[len(sk.TestPlanStates)-1]).(*api.InternalTestplan)
 
@@ -486,7 +490,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	defer func() { step.End(err) }()
 
 	// Construct test results
-	result := &data.TestResults{Key: key, Suite: suiteName, Attempt: retryNum, RequestKey: cmd.RequestKey, Name: fmt.Sprintf("%s_%s", suiteName, key), ShardIndex: buildReq.ShardNum, CreationTimestamp: time.Now(), TestCases: buildReq.OriginalTrReq.Tcs}
+	result := &data.TestResults{Key: key, Suite: suiteName, Attempt: retryNum, RequestKey: cmd.RequestKey, Name: fmt.Sprintf("%s_%s", suiteName, key), ShardIndex: buildReq.ShardNum, CreationTimestamp: time.Now(), TestCases: buildReq.OriginalTrReq.Tcs, IsALRun: cmd.IsAlRun}
 
 	// If we are inside of an AL run that has built a WU tree then generate and
 	// insert an attempt node.

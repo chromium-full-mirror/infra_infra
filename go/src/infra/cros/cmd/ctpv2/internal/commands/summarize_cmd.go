@@ -198,8 +198,26 @@ func (cmd *SummarizeCmd) DisplaySuite(ctx context.Context, suite string) error {
 	errResultErr := ProcessResultsMap(ctx, errorResultKeys, errorResultMap)
 	nonErrResultErr := ProcessResultsMap(ctx, nonErrorResultKeys, nonErrorResultMap)
 
-	// If we we are in an AL run and have an invocation attached link to the
-	// ATI page.
+	// If one of the result is type AL, that means the suite is AL run.
+	// AL and non-AL results mix isn't possible inside a single suite run.
+	// size check is done above so skipping here.
+	if testResults[0].IsALRun {
+		cmd.AttachATILinkIfApplicable(step)
+	}
+
+	// Assign non nil err (if any) so that this step fails
+	if errResultErr != nil {
+		err = errResultErr
+	} else if nonErrResultErr != nil {
+		err = nonErrResultErr
+	}
+
+	return err
+}
+
+// AttachATILinkIfApplicable adds an ATI link to step, If we are in an AL run and have an invocation attached link to the
+// ATI page.
+func (cmd *SummarizeCmd) AttachATILinkIfApplicable(step *build.Step) {
 	if cmd.AlStateInfo != nil {
 		tree := cmd.AlStateInfo.GetWorkUnitTree()
 		if tree != nil && tree.Head != nil {
@@ -214,15 +232,6 @@ func (cmd *SummarizeCmd) DisplaySuite(ctx context.Context, suite string) error {
 			step.SetSummaryMarkdown(link)
 		}
 	}
-
-	// Assign non nil err (if any) so that this step fails
-	if errResultErr != nil {
-		err = errResultErr
-	} else if nonErrResultErr != nil {
-		err = nonErrResultErr
-	}
-
-	return err
 }
 
 func (cmd *SummarizeCmd) RestructureResultsMap(testResultMap map[string][]*data.TestResults) (map[string][]*data.TestResults, error) {
@@ -245,13 +254,7 @@ func (cmd *SummarizeCmd) RestructureResultsMap(testResultMap map[string][]*data.
 			} else {
 				// Processing non-3d results
 				resultBMVkey := common.ExtractPrefixUntilDelimiter(result.Key, "-shard")
-				if _, ok := reqChain[resultBMVkey]; !ok && resultBMVkey != common.EnumerationErrKey {
-					// should not happen
-					return nil, fmt.Errorf("result key %s not found in request chain!", resultBMVkey)
-				}
-				if resultBMVkey == common.EnumerationErrKey {
-					// in this case there won't be any individual test results for each BMVs.
-					// so we need to copy the same result of each (similar to 3d procressing).
+				if DoesResultBelongToAllRequestsInChain(reqChain, resultBMVkey) {
 					for _, chainedKey := range reqChain {
 						if _, ok := ret[chainedKey]; !ok {
 							ret[chainedKey] = []*data.TestResults{}
@@ -271,6 +274,18 @@ func (cmd *SummarizeCmd) RestructureResultsMap(testResultMap map[string][]*data.
 	}
 
 	return ret, nil
+}
+
+func DoesResultBelongToAllRequestsInChain(reqChain map[string]string, resultBMVkey string) bool {
+	// resultBMVkey not found means the target was changed by one of the filter.
+	// right now, this is done by autovm_test_shifter_filter in non-3D scenario.
+	// in that case, the result should apply to all the requests in the chain (as same board).
+
+	// for Enum error, the key won't be in request chain either.
+	// in this case, there won't be any individual test results for each BMVs.
+	// so we need to copy the same result of each (similar to 3d procressing).
+	_, isBmvInReqChain := reqChain[resultBMVkey]
+	return !isBmvInReqChain
 }
 
 func ProcessResultsMap(ctx context.Context, keys []string, resultMap map[string][]*data.TestResults) error {
