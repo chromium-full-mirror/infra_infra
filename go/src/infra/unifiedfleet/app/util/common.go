@@ -236,6 +236,9 @@ const (
 
 	// ChromeClankHive hive value for a clank DUT.
 	chromeClankHive string = "chrome-clank"
+
+	// chromeos1Hive hive value for a chromeos1 DUT.
+	chromeos1Hive string = "chromeos1"
 )
 
 // GetHiveForDut returns the hive value for a DUT.
@@ -246,6 +249,10 @@ const (
 func GetHiveForDut(hostname string, hive string) string {
 	if hive != "" {
 		return hive
+	}
+
+	if strings.HasPrefix(hostname, "chromeos1-") {
+		return chromeos1Hive
 	}
 	// gTransit DUTs.
 	if gtransitRegex.MatchString(hostname) {
