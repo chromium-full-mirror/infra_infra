@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2023 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,6 +7,13 @@ import argparse
 import json
 import os
 import urllib.request
+
+
+_PLATFORMS = {
+    'windows-386': '.i386',
+    'windows-amd64': '',
+    'windows-arm64': '.arm64',
+}
 
 
 def do_latest():
@@ -17,18 +24,17 @@ def do_latest():
       ['tag_name'])
 
 
-_PLATFORMS = ['linux-amd64']
-
-
 def get_download_url(version, platform):
   if platform not in _PLATFORMS:
     raise ValueError(f'unsupported platform {platform}')
 
-  url = (f'https://github.com/ipxe/wimboot/releases/download/{version}/wimboot')
+  extension = _PLATFORMS[platform]
+  file = f'wimboot{extension}'
+  url = (f'https://github.com/ipxe/wimboot/releases/download/{version}/{file}')
 
   manifest = {
       'url': [url],
-      'ext': '',
+      'ext': extension,
   }
 
   print(json.dumps(manifest))

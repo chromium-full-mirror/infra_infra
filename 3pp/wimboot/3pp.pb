@@ -1,9 +1,9 @@
-# Copyright 2023 The Chromium Authors
+# Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 create {
-  platform_re: "linux-amd64"
+  platform_re: "windows-.*"
   source {
     script { name: "fetch.py" }
     unpack_archive: false
