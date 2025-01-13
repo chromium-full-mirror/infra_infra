@@ -372,6 +372,7 @@
       "--",
       "go",
       "test",
+      "-shuffle=on",
       "-fullpath",
       "-json",
       "./..."

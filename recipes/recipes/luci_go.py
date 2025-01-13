@@ -88,8 +88,8 @@ def RunSteps(
             api.step(
                 'go test',
                 api.resultdb.wrap([
-                    adapter, 'go', '--', 'go', 'test', '-fullpath', '-json',
-                    './...'
+                    adapter, 'go', '--', 'go', 'test', '-shuffle=on',
+                    '-fullpath', '-json', './...'
                 ]))
           # The race detector requires CGO. We have it only on Linux and OSX.
           if not api.platform.is_win:
