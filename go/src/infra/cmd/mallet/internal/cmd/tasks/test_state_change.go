@@ -36,6 +36,7 @@ var TestStateChange = &subcommands.Command{
 		c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 		c.envFlags.Register(&c.Flags)
 		c.Flags.StringVar(&c.newState, "state", "needs_repair", "Specify the state need to set for the DUT. Default needs-repair to address repair-requests")
+		c.Flags.BoolVar(&c.needToClean, "clean", false, "Clean up repair-requests for DUT.")
 		c.Flags.BoolVar(&c.needProvision, "provision", false, "Repair-request for provision request for DUT.")
 		c.Flags.BoolVar(&c.needReimage, "reimage", false, "Repair-request for reimage request for DUT.")
 		c.Flags.BoolVar(&c.needUpdateUSBkey, "usbkey", false, "Repair-request for re-downlaod image to USB drive request for DUT.")
@@ -49,6 +50,7 @@ type testStateChangeRun struct {
 	envFlags  site.EnvFlags
 
 	newState         string
+	needToClean      bool
 	needProvision    bool
 	needReimage      bool
 	needUpdateUSBkey bool
@@ -86,6 +88,13 @@ func (c *testStateChangeRun) innerRun(a subcommands.Application, args []string, 
 	}
 	if c.needUpdateUSBkey {
 		repairRequests = append(repairRequests, ufslab.DutState_REPAIR_REQUEST_UPDATE_USBKEY_IMAGE)
+		maskPaths = append(maskPaths, "dut_state.repair_requests")
+	}
+	if c.needToClean && len(repairRequests) > 0 {
+		return errors.Reason("internal run: cannot set repair requests with clean up request").Err()
+	} else if c.needToClean {
+		// Create a new collection with a single item as an empty collection can be ignored by UFS.
+		repairRequests = []ufslab.DutState_RepairRequest{ufslab.DutState_REPAIR_REQUEST_UNKNOWN}
 		maskPaths = append(maskPaths, "dut_state.repair_requests")
 	}
 	hc, err := buildbucket.NewHTTPClient(ctx, &c.authFlags)
