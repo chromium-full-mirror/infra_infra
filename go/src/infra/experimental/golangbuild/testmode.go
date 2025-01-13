@@ -505,6 +505,7 @@ func repoToModules(ctx context.Context, spec *buildSpec, repoDir string) (module
 		"telemetry": true, // A local replace directive in x/telemetry/godev as of 2023-06-08.
 		"exp":       true, // A local replace directive in x/exp/slog/benchmarks/{zap,zerolog}_benchmarks as of 2023-06-08.
 		"oscar":     true, // A local module reference via go.work in x/oscar as of 2024-08-05.
+		"vscode-go": true, // A local replace directive in vscode-go/extension as of 2024-01-13.
 
 		"debug":           true, // 'find . -name go.mod | grep /testdata/ | wc -l' is 1 as of 2024-09-18.
 		"pkgsite":         true, // 'find . -name go.mod | grep /testdata/ | wc -l' is 1 as of 2024-09-18.
