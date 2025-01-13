@@ -23,7 +23,6 @@ import (
 
 	"infra/device_manager/internal/database"
 	"infra/device_manager/internal/model"
-	"infra/libs/skylab/inventory/swarming"
 )
 
 func TestGetDevice(t *testing.T) {
@@ -734,36 +733,6 @@ func Test_labelsToSwarmingDims(t *testing.T) {
 			assert.That(t, dims, should.Match(&schedulingAPI.SwarmingDimensions{
 				DimsMap: map[string]*schedulingAPI.DimValues{},
 			}))
-		})
-	})
-}
-
-func TestSwarmingDimsToLabels(t *testing.T) {
-	t.Parallel()
-	ctx := context.Background()
-
-	ftt.Run("SwarmingDimsToLabels", t, func(t *ftt.Test) {
-		t.Run("SwarmingDimsToLabels: valid dims", func(t *ftt.Test) {
-			dims := swarming.Dimensions{
-				"label-test": []string{
-					"test-value-1",
-					"test-value-2",
-				},
-			}
-			labels := SwarmingDimsToLabels(ctx, dims)
-			assert.Loosely(t, labels, should.Match(model.SchedulableLabels{
-				"label-test": model.LabelValues{
-					Values: []string{
-						"test-value-1",
-						"test-value-2",
-					},
-				},
-			}))
-		})
-		t.Run("SwarmingDimsToLabels: empty dims", func(t *ftt.Test) {
-			dims := swarming.Dimensions{}
-			labels := SwarmingDimsToLabels(ctx, dims)
-			assert.Loosely(t, labels, should.Match(model.SchedulableLabels{}))
 		})
 	})
 }

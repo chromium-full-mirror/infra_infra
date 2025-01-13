@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 
 	"infra/device_manager/internal/database"
+	"infra/libs/skylab/inventory/swarming"
 )
 
 // Error types for Device model operations
@@ -310,10 +311,19 @@ func buildListDevicesQuery(ctx context.Context, pageToken database.PageToken, pa
 // only update fields with provided values. If there is no value provided, then
 // it will use the current value of the device field in the db.
 func UpdateDeviceToAvailable(ctx context.Context, tx *sql.Tx, device Device) (*Device, error) {
+	if device.SchedulableLabels == nil {
+		return nil, fmt.Errorf("update device %q to available: empty schedulabe labels", device.ID)
+	}
+	if device.DutID == "" {
+		return nil, fmt.Errorf("update device %q to available: empty dut_id", device.ID)
+	}
+	// Marshal labels and set to null
+	labelBytes, err := json.Marshal(device.SchedulableLabels)
+	if err != nil {
+		return nil, fmt.Errorf("update device %q to available: %w", device.ID, err)
+	}
 	var (
-		err                  error
 		updatedDevice        Device
-		labelBytes           []byte
 		createdTime          sql.NullTime
 		lastUpdatedTime      sql.NullTime
 		lastNotificationTime sql.NullTime
@@ -340,20 +350,6 @@ func UpdateDeviceToAvailable(ctx context.Context, tx *sql.Tx, device Device) (*D
 				last_updated_time,
 				last_notification_time;`
 	)
-
-	if device.SchedulableLabels != nil {
-		// Marshal labels and set to null
-		labelBytes, err = json.Marshal(device.SchedulableLabels)
-		if err != nil {
-			return nil, fmt.Errorf("update device to available: %w", err)
-		}
-
-		err = device.SetDutIDFromLabels(ctx)
-		if err != nil {
-			logging.Errorf(ctx, "UpdateDeviceToAvailable: failed to set DUT ID for Device %s: %s", device.ID, err)
-			return nil, fmt.Errorf("update device to available: %w", err)
-		}
-	}
 
 	logging.Debugf(ctx, "UpdateDeviceToAvailable: %s", query)
 	err = tx.QueryRowContext(ctx, query,
@@ -616,12 +612,6 @@ func BulkUpdateDevicesToLeased(ctx context.Context, tx *sql.Tx, deviceIDs []stri
 // information except for device_address, device_type, and device_state. Those
 // three will not be updated on conflict but should be inserted for new Devices.
 func UpsertDeviceFromUFS(ctx context.Context, db *sql.DB, device Device) error {
-	err := device.SetDutIDFromLabels(ctx)
-	if err != nil {
-		logging.Errorf(ctx, "UpsertDeviceFromUFS: failed to set DUT ID for Device %s: %s", device.ID, err)
-		return err
-	}
-
 	result, err := db.ExecContext(ctx, `
 		INSERT INTO "Devices" AS d
 			(
@@ -663,41 +653,60 @@ func UpsertDeviceFromUFS(ctx context.Context, db *sql.DB, device Device) error {
 	return nil
 }
 
-// SetDutIDFromLabels takes dut_id (asset tag) from the schedulable labels.
+// ApplySwarmingDims applies swarming Dimensions to the device object.
 //
-// SetDutIDFromLabels take the label and sets it to the Device model. If no
-// labels are found, then the DUT ID will also not be set.
-func (d *Device) SetDutIDFromLabels(ctx context.Context) error {
-	newID, err := getDutIDLabel(d.SchedulableLabels)
+// Mostly it set the scheduleable labels and the dut id field. If no dut_id dim
+// are found, then the DUT ID will also not be set.
+func (d *Device) ApplySwarmingDims(ctx context.Context, dims swarming.Dimensions) error {
+	if dims == nil {
+		// It's doubtful that if dims can be nil. But just regard it as OK here to
+		// keep the same behavior of the old code.
+		logging.Warningf(ctx, "%q:%q dims is nil", d.DutID, d.ID)
+		return nil
+	}
+	d.SchedulableLabels = swarmingDimsToLabels(dims)
+	newDutID, err := getDutIDLabel(d.SchedulableLabels)
 	if err != nil {
 		logging.Warningf(ctx, "dut_id %q of %q is cleared: %s", d.DutID, d.ID, err)
 		d.DutID = ""
-		return fmt.Errorf("set dut_id from labels: %w", err)
+		return fmt.Errorf("apply swarming dims to labels: %w", err)
 	}
-	if d.DutID != newID {
-		logging.Warningf(ctx, "dut_id %q of %q will be overridden to %q by the schedulable label value", d.DutID, d.ID, newID)
-		d.DutID = newID
+	if d.DutID != newDutID {
+		logging.Warningf(ctx, "dut_id %q of %q will be overridden to %q by the scheduleable label value", d.DutID, d.ID, newDutID)
+		d.DutID = newDutID
 	}
 	return nil
 }
 
+// swarmingDimsToLabels converts SwarmingDimensions to Device Manager
+// SchedulableLabels.
+func swarmingDimsToLabels(dims swarming.Dimensions) SchedulableLabels {
+	schedLabels := make(SchedulableLabels)
+	for k, v := range dims {
+		schedLabels[k] = LabelValues{
+			Values: v,
+		}
+	}
+	return schedLabels
+}
+
 func getDutIDLabel(labels SchedulableLabels) (string, error) {
 	if labels == nil {
-		return "", fmt.Errorf("the schedulable labels is nil")
+		return "", fmt.Errorf("get dut_id label: the scheduleable labels is nil")
 	}
 
 	// Extract DUT ID from labels and set DutID.
 	dutIDLabel, ok := labels["dut_id"]
 	if !ok {
-		return "", fmt.Errorf("no dut_id in labels")
+		return "", fmt.Errorf("get dut_id label: no dut_id in labels")
 	}
 	dutIDVals := dutIDLabel.Values
 	switch len(dutIDVals) {
 	case 1:
 		return dutIDVals[0], nil
 	case 0:
-		return "", fmt.Errorf("dut_id is empty in labels")
+		return "", fmt.Errorf("get dut_id label: dut_id is empty in labels")
 	default:
-		return "", fmt.Errorf("multiple dut_id values: %v", dutIDVals)
+		return "", fmt.Errorf("get dut_id label: multiple dut_id values: %v", dutIDVals)
 	}
 }

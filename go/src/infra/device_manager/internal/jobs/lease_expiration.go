@@ -17,7 +17,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/device_manager/internal/controller"
 	"infra/device_manager/internal/external"
 	"infra/device_manager/internal/frontend"
 	"infra/device_manager/internal/model"
@@ -112,9 +111,7 @@ func constructUpdatedDevices(ctx context.Context, deviceIDs []string) ([]model.D
 			}
 		}
 
-		if dims != nil {
-			d.SchedulableLabels = controller.SwarmingDimsToLabels(ctx, dims)
-		}
+		_ = d.ApplySwarmingDims(ctx, dims)
 		updatedDevices[i] = d
 	}
 	return updatedDevices, nil

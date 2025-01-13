@@ -24,6 +24,7 @@ import (
 	"go.chromium.org/luci/common/testing/typed"
 
 	"infra/device_manager/internal/database"
+	"infra/libs/skylab/inventory/swarming"
 )
 
 func TestGetDeviceByID(t *testing.T) {
@@ -713,7 +714,7 @@ func TestUpdateDeviceToAvailable(t *testing.T) {
 
 			updatedDevice, err := UpdateDeviceToAvailable(ctx, tx, Device{
 				ID:            "test-device-1",
-				DutID:         "test-dut-id-no-change", // this should not change DUT ID
+				DutID:         "test-dut-id",
 				DeviceAddress: "2.2.2.2:2",
 				DeviceType:    "DEVICE_TYPE_VIRTUAL",
 				DeviceState:   "DEVICE_STATE_LEASED",
@@ -1021,6 +1022,7 @@ func TestUpsertDeviceFromUFS(t *testing.T) {
 				DeviceAddress: "2.2.2.2:2",
 				DeviceType:    "DEVICE_TYPE_VIRTUAL",
 				DeviceState:   "DEVICE_STATE_LEASED",
+				DutID:         "test-dut-id",
 				SchedulableLabels: SchedulableLabels{
 					"dut_id": LabelValues{
 						Values: []string{"test-dut-id"},
@@ -1036,50 +1038,36 @@ func TestUpsertDeviceFromUFS(t *testing.T) {
 	})
 }
 
-func TestSetDutIDFromLabels(t *testing.T) {
+func TestApplySwarmingDims(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	ftt.Run("SetDutIDFromLabels should set the dut_id label", t, func(t *ftt.Test) {
-		t.Run("SetDutIDFromLabels: valid dut_id", func(t *ftt.Test) {
-			d := Device{
-				ID: "foo",
-				SchedulableLabels: SchedulableLabels{
-					"dut_id": LabelValues{
-						Values: []string{"bar"},
-					},
-					"hostname": LabelValues{
-						Values: []string{"baz", "lol"},
-					},
-				},
+	ftt.Run("ApplySwarmingDims should set the dut_id label", t, func(t *ftt.Test) {
+		t.Run("ApplySwarmingDims: valid dut_id", func(t *ftt.Test) {
+			dims := swarming.Dimensions{
+				"dut_id":   []string{"bar"},
+				"hostname": []string{"baz", "lol"},
 			}
-			err := d.SetDutIDFromLabels(ctx)
+			d := Device{ID: "foo"}
+			err := d.ApplySwarmingDims(ctx, dims)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, d.DutID, should.Match("bar"))
 		})
-		t.Run("SetDutIDFromLabels: invalid dut_id; no labels", func(t *ftt.Test) {
-			d := Device{
-				ID: "foo",
-				SchedulableLabels: SchedulableLabels{
-					"hostname": LabelValues{
-						Values: []string{"baz", "lol"},
-					},
-				},
+		t.Run("ApplySwarmingDims: invalid dut_id; no labels", func(t *ftt.Test) {
+			dims := swarming.Dimensions{
+				"hostname": []string{"baz", "lol"},
 			}
-			err := d.SetDutIDFromLabels(ctx)
+			d := Device{ID: "foo"}
+			err := d.ApplySwarmingDims(ctx, dims)
 			assert.Loosely(t, err, should.ErrLike("no dut_id"))
 			assert.Loosely(t, d.DutID, should.Match(""))
 		})
-		t.Run("SetDutIDFromLabels: invalid dut_id; too many labels", func(t *ftt.Test) {
-			d := Device{
-				ID: "foo",
-				SchedulableLabels: SchedulableLabels{
-					"dut_id": LabelValues{
-						Values: []string{"baz", "lol"},
-					},
-				},
+		t.Run("ApplySwarmingDims: invalid dut_id; too many labels", func(t *ftt.Test) {
+			dims := swarming.Dimensions{
+				"dut_id": []string{"baz", "lol"},
 			}
-			err := d.SetDutIDFromLabels(ctx)
+			d := Device{ID: "foo"}
+			err := d.ApplySwarmingDims(ctx, dims)
 			assert.Loosely(t, err, should.ErrLike("multiple dut_id values"))
 			assert.Loosely(t, d.DutID, should.Match(""))
 		})

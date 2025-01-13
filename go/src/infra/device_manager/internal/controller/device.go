@@ -25,7 +25,6 @@ import (
 	"infra/device_manager/internal/database"
 	"infra/device_manager/internal/external"
 	"infra/device_manager/internal/model"
-	"infra/libs/skylab/inventory/swarming"
 )
 
 // TODO: b/343293714 - Write unit tests and manually test this. Create a job that calls SendNotifications.
@@ -346,18 +345,6 @@ func labelsToSwarmingDims(ctx context.Context, labels model.SchedulableLabels) *
 		}
 	}
 	return swarmingDims
-}
-
-// SwarmingDimsToLabels converts SwarmingDimensions to Device Manager
-// SchedulableLabels.
-func SwarmingDimsToLabels(ctx context.Context, dims swarming.Dimensions) model.SchedulableLabels {
-	schedLabels := make(model.SchedulableLabels)
-	for k, v := range dims {
-		schedLabels[k] = model.LabelValues{
-			Values: v,
-		}
-	}
-	return schedLabels
 }
 
 // deviceModelToAPIDevice takes a Device model and returns an API Device object.

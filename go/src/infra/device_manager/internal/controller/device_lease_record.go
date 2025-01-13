@@ -378,8 +378,8 @@ func ReleaseDevice(ctx context.Context, db *sql.DB, r *api.ReleaseDeviceRequest)
 		return nil, fmt.Errorf("release device: %w", err)
 	}
 
-	if dims != nil {
-		toReleaseDevice.SchedulableLabels = SwarmingDimsToLabels(ctx, dims)
+	if err := toReleaseDevice.ApplySwarmingDims(ctx, dims); err != nil {
+		return nil, fmt.Errorf("release device %q: %w", toReleaseDevice.ID, err)
 	}
 
 	tx, err := db.BeginTx(ctx, nil)
@@ -559,8 +559,10 @@ func getDeviceUFSDataWorker(
 			continue
 		}
 
-		if dims != nil {
-			d.SchedulableLabels = SwarmingDimsToLabels(ctx, dims)
+		if err := d.ApplySwarmingDims(ctx, dims); err != nil {
+			logging.Errorf(ctx, "ExpireLeases: failed to release Device %s dut_id %s: %s", d.ID, d.DutID, err)
+			failure <- d
+			continue
 		}
 
 		updatedDevice, err := model.UpdateDeviceToAvailable(ctx, tx, *d)

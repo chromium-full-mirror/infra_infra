@@ -19,7 +19,6 @@ import (
 	"go.chromium.org/luci/common/tsmon/distribution"
 
 	shivasUtil "infra/cmd/shivas/utils"
-	"infra/device_manager/internal/controller"
 	"infra/device_manager/internal/database"
 	"infra/device_manager/internal/external"
 	"infra/device_manager/internal/frontend"
@@ -263,9 +262,7 @@ func upsertDeviceData(ctx context.Context, queue <-chan struct{}, wg *sync.WaitG
 		// error here and mark the device as inactive.
 		logging.Debugf(ctx, "upsertDeviceData: ignore GetOSResourceDims error: %s", err)
 	} else {
-		deviceModel.SchedulableLabels = controller.SwarmingDimsToLabels(ctx, dims)
-		err = deviceModel.SetDutIDFromLabels(ctx)
-		if err != nil {
+		if err := deviceModel.ApplySwarmingDims(ctx, dims); err != nil {
 			logging.Errorf(ctx, "Failed to set DUT ID using schedulable labels for Device %s: %s", deviceModel.ID, err)
 			return
 		}
