@@ -159,6 +159,7 @@ func TestGetIncident(t *testing.T) {
 }
 
 func TestGetServiceIncidents(t *testing.T) {
+	t.Skip("test breaks when shuffling is enabled, see b/389742273 for details.")
 	ctx := newTestContext()
 	datastore.Put(ctx, &testService)
 

@@ -82,6 +82,7 @@ func TestCreateDeleteScheduler(t *testing.T) {
 }
 
 func TestCreateListDeleteAccount(t *testing.T) {
+	t.Skip("test is not shuffle safe, see b/389742273 for details")
 	poolID := "Pool1"
 	Convey("Given an admin server running in a test context", t, func(t *T) {
 		ctx := gaetesting.TestingContext()

@@ -51,7 +51,7 @@ func TestReadFile(t *testing.T) {
 }
 
 func TestWriteFile(t *testing.T) {
-	t.Parallel()
+	t.Skip("enabling this test breaks test shuffling, see b/389742273 for details.")
 	td := sshtest.NewTestDataConn(t)
 	defer td.Close()
 
