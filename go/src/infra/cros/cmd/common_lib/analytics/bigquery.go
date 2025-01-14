@@ -99,24 +99,22 @@ type resSchema struct {
 
 // ReadDurationMetrics will query the duration cache table, and return a map of the test results.
 // If a board is provided and not "", it will limit the results to that board.
-func ReadDurationMetrics(c *bigquery.Client, board string, harness string) (map[string]float64, error) {
-	ctx := context.Background()
+func ReadDurationMetrics(c *bigquery.Client, harness string, ctx context.Context) (map[string]float64, error) {
 	durs := make(map[string]float64)
 	table := fmt.Sprintf("%s.%s.%s", saProject, dataset, cacheTable)
 
 	// Limit to a Duration > 1 second to reduce the size of the response; makes the query faster, cheaper, and we can treat all "no results" as 1 sec duration.
 	cmd := fmt.Sprintf("SELECT * FROM %s WHERE Duration > %v and harness = \"%s\" ORDER BY Duration DESC", table, minDuration, harness)
-	if board != "" {
-		cmd = fmt.Sprintf("SELECT * FROM %s WHERE board = \"%s\" and Duration > %v and harness = \"%s\" ORDER BY Duration DESC", table, board, minDuration, harness)
-	}
 
 	bqQ := c.Query(cmd)
 	// Execute the query.
+
+	logging.Infof(ctx, "query: %s", cmd)
 	it, err := bqQ.Read(ctx)
 	if err != nil {
 		fmt.Printf("INFORMATIONAL: query error: %s", err)
 	}
-
+	logging.Infof(ctx, "starting iter")
 	for {
 		var resp resSchema
 		err := it.Next(&resp)
@@ -129,6 +127,7 @@ func ReadDurationMetrics(c *bigquery.Client, board string, harness string) (map[
 		}
 		durs[resp.Normalized_test] = resp.Duration
 	}
+	logging.Infof(ctx, "done iter")
 
 	return durs, nil
 }

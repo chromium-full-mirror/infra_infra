@@ -57,6 +57,8 @@ const (
 	TastPrefix      = "tast"
 )
 
+var dursCache = make(map[string]map[string]float64)
+
 // ExtractDependencies (Boiler plate)
 func (cmd *MiddleOutRequestCmd) ExtractDependencies(
 	ctx context.Context,
@@ -147,9 +149,18 @@ func (cmd *MiddleOutRequestCmd) updateFilterStateKeeper(
 }
 
 // light wrapper around the BQ call, to make unittests easier.
-func getDurationMetrics(board string, harness string) (map[string]float64, error) {
-	bqClient := analytics.CtpAnalyticsBQClient(context.Background())
-	return analytics.ReadDurationMetrics(bqClient, board, harness)
+func getDurationMetrics(harness string, ctx context.Context) (map[string]float64, error) {
+	durs, ok := dursCache[harness]
+	if !ok {
+		logging.Infof(ctx, "getting durations for harness %s", harness)
+		bqClient := analytics.CtpAnalyticsBQClient(context.Background())
+		d, err := analytics.ReadDurationMetrics(bqClient, harness, ctx)
+		dursCache[harness] = d
+		return d, err
+	} else {
+		logging.Infof(ctx, "CacheHit for metrics")
+		return durs, nil
+	}
 }
 
 // Execute executes the command.
@@ -430,9 +441,8 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 		shards := [][]string{}
 
 		if solverData.cfg.durationBasedSharding {
-			allSame, board := allBoardsSameInEqc(hwHash, solverData)
 			var err error
-			shards, err = shardWithTimeDistribution(ctx, tcs, solverData.cfg.maxInShard, allSame, board)
+			shards, err = shardWithTimeDistribution(ctx, tcs, solverData.cfg.maxInShard)
 			if err != nil {
 				logging.Infof(ctx, "Unable to time based shard, moving to regular.")
 				shards = shard(tcs, solverData.cfg.maxInShard)
@@ -452,7 +462,6 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 
 		}
 	}
-
 	return solverData.finalAssignments
 }
 
@@ -769,7 +778,8 @@ func bucketByHarness(alltests []string) map[string][]string {
 
 // shard will device the list into a list of lists where each item in the list length of maxInShard
 // eg: [1,2,3,4], maxInShard=2 --> [[1,2], [3,4]]
-func shardWithTimeDistribution(ctx context.Context, alltests []string, maxInShard int, allSame bool, EQCboard string) (shards [][]string, err error) {
+func shardWithTimeDistribution(ctx context.Context, alltests []string, maxInShard int) (shards [][]string, err error) {
+	logging.Infof(ctx, "shardWithTimeDistribution")
 	type testDuration struct {
 		name     string
 		duration float64
@@ -789,16 +799,16 @@ func shardWithTimeDistribution(ctx context.Context, alltests []string, maxInShar
 		totalShards := int(math.Ceil(float64(len(tests)) / float64(maxInShard)))
 
 		// If the entire EQC has the same board, lets limit the query on the board or speed/accuracy.
-		board := ""
-		if allSame {
-			board = EQCboard
-		}
-		durs, err := getDurationMetrics(board, harness)
 
+		logging.Infof(ctx, "pre duration")
+		durs, err := getDurationMetrics(harness, ctx)
+		logging.Infof(ctx, "post duration")
 		if err != nil {
 			logging.Infof(ctx, "err while getting duration metrics: %s", err)
 			return shards, err
 		}
+		logging.Infof(ctx, "post duration")
+
 		// 0. Descope the total to just the tests we care about:
 		testsWeCareAbout := filterToRelevantTests(ctx, testSet, durs)
 
