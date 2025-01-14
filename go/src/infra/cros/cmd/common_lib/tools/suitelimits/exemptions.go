@@ -14,11 +14,10 @@ type suiteFilter struct {
 }
 
 var (
-	// After end of Q3
-	standardExemption = time.Date(2025, time.January, 20, 0, 0, 0, 0, time.UTC)
+	// After end of Q1 2025
+	standardExemption = time.Date(2025, time.March, 20, 0, 0, 0, 0, time.UTC)
 
-	// Date beyond the lifetime of this builder to ensure no lapse in coverage
-	releaseLongTerm = time.Date(2025, time.January, 30, 0, 0, 0, 0, time.UTC)
+	releaseLongTerm = time.Date(2025, time.July, 30, 0, 0, 0, 0, time.UTC)
 )
 
 // exemptions stores all granted exemptions from the SuiteLimits project. go/sl-tracking-sheet for more information.
