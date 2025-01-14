@@ -1355,6 +1355,20 @@ func TestCreateSchedulingUnit(t *testing.T) {
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring(ufsAPI.EmptyID))
 		})
+
+		t.Run("b/388896025 -- empty string as machine LSE should be rejected informmatively", func(t *ftt.Test) {
+			req := &ufsAPI.CreateSchedulingUnitRequest{
+				SchedulingUnitId: "aaa",
+				SchedulingUnit: &ufspb.SchedulingUnit{
+					Name:        "aaa",
+					MachineLSEs: []string{""},
+				},
+			}
+			_, err := tf.Fleet.CreateSchedulingUnit(tf.C, req)
+			assert.Loosely(t, err, should.NotBeNil)
+			status := status.Code(err).String()
+			assert.That(t, status, should.Equal(codes.InvalidArgument.String()))
+		})
 	})
 }
 

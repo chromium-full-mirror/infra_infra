@@ -27,6 +27,7 @@ var (
 	NilEntity                      string = "Invalid input - No Entity to add/update."
 	EmptyID                        string = "Invalid input - Entity ID is empty."
 	EmptyName                      string = "Invalid input - Entity Name is empty."
+	EmptyMachineLSE                string = "Invalid input - At least one MachineLSE is empty."
 	InvalidMac                     string = "invalid mac address"
 	ValidName                      string = "Name must match the regular expression `^[a-zA-Z0-9-)(_:.]{3,63}$`"
 	HostnamePattern                string = "Name must match the regular expression `^[a-zA-Z0-9-.]{1,63}$`"
@@ -1341,6 +1342,11 @@ func (r *CreateSchedulingUnitRequest) Validate() error {
 	}
 	if !util.ValidateTags(r.SchedulingUnit.GetTags()) {
 		return status.Errorf(codes.InvalidArgument, InvalidTags)
+	}
+	for _, machineLSE := range r.GetSchedulingUnit().GetMachineLSEs() {
+		if machineLSE == "" {
+			return status.Error(codes.InvalidArgument, EmptyMachineLSE)
+		}
 	}
 	r.SchedulingUnitId = id
 	return nil
