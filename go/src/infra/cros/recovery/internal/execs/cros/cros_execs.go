@@ -206,7 +206,7 @@ func isBootedInSecureModeExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "is booted in secure mode").Err()
 	}
 	// Check if GBB flags is set to the default value as expected for device booted in secure mode
-	if r, err := regexp.Compile(fmt.Sprintf("flags:0x%08x$", gbb.DefaultFlags)); err != nil {
+	if r, err := regexp.Compile(fmt.Sprintf("flags:\\s*0x%08x$", gbb.DefaultFlags)); err != nil {
 		return errors.Annotate(err, "is booted in secure mode").Err()
 	} else if !r.MatchString(out) {
 		return errors.Reason("is booted in secure mode: gbb flags are not set to default").Err()
