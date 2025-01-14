@@ -606,7 +606,7 @@ func (fs *FleetServerImpl) CreateSchedulingUnit(ctx context.Context, req *ufsAPI
 	}
 	// https://aip.dev/122 - as per AIP guideline.
 	cs.Name = util.AddPrefix(util.SchedulingUnitCollection, cs.Name)
-	return cs, err
+	return cs, nil
 }
 
 // UpdateSchedulingUnit updates the SchedulingUnit information in database.
