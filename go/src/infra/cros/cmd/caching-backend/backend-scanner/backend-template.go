@@ -55,6 +55,7 @@ http {
 
   proxy_cache_path  /var/cache/nginx levels=1:2 keys_zone=google-storage:80m
                     max_size={{ .CacheSizeInGB }}g inactive=720h;
+  proxy_temp_path   /var/cache/nginx/proxy_temp 1 2 2;
   proxy_cache           google-storage;
   proxy_connect_timeout 90;
   proxy_read_timeout    3600;
