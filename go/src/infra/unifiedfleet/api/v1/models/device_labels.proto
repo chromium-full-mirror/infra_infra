@@ -1,0 +1,32 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package unifiedfleet.api.v1.models;
+
+option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
+
+// DeviceLabels represents a map of device labels for scheduling purposes
+//
+// Next Tag: 4
+message DeviceLabels {
+  string name = 1;
+  ResourceType resource_type = 2;
+  map<string, DeviceLabelValues> labels = 3;
+}
+
+// DeviceLabelValues is an array of device label values.
+message DeviceLabelValues {
+  repeated string label_values = 1;
+}
+
+// Next Tag: 5
+enum ResourceType {
+  RESOURCE_TYPE_UNSPECIFIED = 0;
+  RESOURCE_TYPE_SCHEDULING_UNIT = 1;
+  RESOURCE_TYPE_CHROMEOS_DEVICE = 2;
+  RESOURCE_TYPE_ATTACHED_DEVICE = 3;
+  RESOURCE_TYPE_BROWSER_DEVICE = 4;
+}

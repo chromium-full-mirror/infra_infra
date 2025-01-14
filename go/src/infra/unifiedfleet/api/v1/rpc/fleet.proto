@@ -25,6 +25,7 @@ import "infra/unifiedfleet/api/v1/models/peripherals.proto";
 import "infra/unifiedfleet/api/v1/models/lse_prototype.proto";
 import "infra/unifiedfleet/api/v1/models/secret.proto";
 import "infra/unifiedfleet/api/v1/models/state.proto";
+import "infra/unifiedfleet/api/v1/models/device_labels.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
 import "infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
@@ -2610,9 +2611,12 @@ message GetDeviceLabelsRequest {
   ];
 }
 
-// Next tag: 2
+// Next tag: 3
 message GetDeviceLabelsResponse {
+  // TODO: deprecate
   DeviceLabels device_labels = 1;
+
+  models.DeviceLabels labels = 2;
 }
 
 // Next tag: 5
@@ -2634,13 +2638,16 @@ message ListDeviceLabelsRequest {
   string filter = 3;
 }
 
-// Next tag: 3
+// Next tag: 4
 message ListDeviceLabelsResponse {
+  // TODO: deprecate
   repeated DeviceLabels devices_labels = 1;
 
   // A token, which can be sent as `page_token` to retrieve the next page.
   // If this field is omitted, there are no subsequent pages.
   string next_page_token = 2;
+
+  repeated models.DeviceLabels labels = 3;
 }
 
 // Next tag: 3
