@@ -7,6 +7,10 @@ create {
   source {
     script { name: "fetch.py" }
     unpack_archive: false
+    patch_version: "chromium.1"
+  }
+  build {
+    install: "install_win.sh"
   }
 }
 
