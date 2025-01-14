@@ -38,14 +38,18 @@ type savedValue struct {
 func value(t testing.TB, insertID, jsonVal string) savedValue {
 	t.Helper()
 	v := savedValue{insertID: insertID}
-	assert.Loosely(t, json.Unmarshal([]byte(jsonVal), &v.row), should.BeNil, truth.LineContext())
+	d := json.NewDecoder(strings.NewReader(jsonVal))
+	d.UseNumber()
+	assert.Loosely(t, d.Decode(&v.row), should.BeNil, truth.LineContext())
 	return v
 }
 
 func doReadInput(data string, jsonList bool, extraColumns string) ([]savedValue, error) {
 	var cols map[string]bigquery.Value
 	if extraColumns != "" {
-		err := json.Unmarshal([]byte(extraColumns), &cols)
+		d := json.NewDecoder(strings.NewReader(extraColumns))
+		d.UseNumber()
+		err := d.Decode(&cols)
 		if err != nil {
 			return nil, err
 		}
@@ -110,7 +114,7 @@ func TestReadInput(t *testing.T) {
 			{"k": "v2
 			{"k": "v2"}
 		`, false, "")
-		assert.Loosely(t, err, should.ErrLike(`bad input line 4: bad JSON - unexpected end of JSON input`))
+		assert.Loosely(t, err, should.ErrLike(`bad input line 4: bad JSON - unexpected EOF`))
 	})
 
 	ftt.Run("JSON List", t, func(t *ftt.Test) {
@@ -162,6 +166,33 @@ func TestReadInput(t *testing.T) {
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, vals, should.Resemble([]savedValue{
 			value(t, "seed:0", huge),
+		}))
+	})
+
+	ftt.Run("Large number", t, func(t *ftt.Test) {
+		vals, err := doReadInput(`{"k": 8771020063101878816}`, false, "")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, vals, should.Resemble([]savedValue{
+			value(t, "seed:0", `{"k": 8771020063101878816}`),
+		}))
+	})
+
+	ftt.Run("Large number in JSON List", t, func(t *ftt.Test) {
+		out, err := doReadInput(`[
+			{"k": 8771020063101878816}
+		]`, true, "")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, out, should.Resemble([]savedValue{
+			value(t, "seed:0", `{"k": 8771020063101878816}`),
+		}))
+	})
+
+	ftt.Run("Large number in extra columns", t, func(t *ftt.Test) {
+		vals, err := doReadInput(`{"k1": 8771020063101878816, "k2": 8726173464556272737}`,
+			false, `{"k1": 8726180848108507009}`)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, vals, should.Resemble([]savedValue{
+			value(t, "seed:0", `{"k1": 8726180848108507009, "k2": 8726173464556272737}`),
 		}))
 	})
 }

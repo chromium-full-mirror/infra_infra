@@ -44,7 +44,7 @@ import (
 )
 
 const (
-	userAgent = "bqupload v1.6"
+	userAgent = "bqupload v1.7"
 	// The bigquery API imposes a hard limit of 50,000 rows. We use a much lower
 	// default limit to also make it less likely that the total payload size
 	// exceeds the maximum, and to limit the blast radius when a batch fails to
@@ -203,7 +203,9 @@ func upload(ctx context.Context, opts *uploadOpts) error {
 	overrides := make(map[string]bigquery.Value, len(opts.columns))
 	for key, value := range opts.columns {
 		var val bigquery.Value
-		if err := json.Unmarshal([]byte(value), &val); err != nil {
+		d := json.NewDecoder(strings.NewReader(value))
+		d.UseNumber()
+		if err := d.Decode(&val); err != nil {
 			return errors.Annotate(err, "parsing -column %q value", key).Err()
 		}
 		overrides[key] = val
@@ -287,7 +289,9 @@ func overrideColumns(row map[string]bigquery.Value, columns map[string]bigquery.
 func readInput(r io.Reader, insertIDBase string, jsonList bool, overrides map[string]bigquery.Value) (rows []*tableRow, err error) {
 	if jsonList {
 		var target []map[string]bigquery.Value
-		if err := json.NewDecoder(r).Decode(&target); err != nil {
+		d := json.NewDecoder(r)
+		d.UseNumber()
+		if err := d.Decode(&target); err != nil {
 			return nil, err
 		}
 		rows = make([]*tableRow, len(target))
@@ -330,7 +334,9 @@ type tableRow struct {
 
 func parseRow(data []byte, insertID string) (*tableRow, error) {
 	row := make(map[string]bigquery.Value)
-	if err := json.Unmarshal(data, &row); err != nil {
+	d := json.NewDecoder(bytes.NewReader(data))
+	d.UseNumber()
+	if err := d.Decode(&row); err != nil {
 		return nil, fmt.Errorf("bad JSON - %s", err)
 	}
 	return &tableRow{row, insertID}, nil
