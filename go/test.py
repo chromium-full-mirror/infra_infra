@@ -122,7 +122,7 @@ def run_tests(package_root):
   Returns:
     0 if all tests pass..
   """
-  command = ['go', 'test', '-v', f'{package_root}/...']
+  command = ['go', 'test', '-shuffle=on', '-v', f'{package_root}/...']
 
   prev_env = os.environ.copy()
   if _use_resultdb():
