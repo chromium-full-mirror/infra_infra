@@ -157,7 +157,7 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 	cmd.IsPartnerRun = sk.IsPartnerRun
 	cmd.EnvVersion = sk.CTPversion
 	fireStoreDB := common.TestPlatformFireStore
-	if sk.IsPartnerRun && sk.IsAlRun {
+	if sk.IsPartnerRun {
 		fireStoreDB = common.PartnerTestPlatformFireStore
 	}
 	cmd.FirestoreDBName = fireStoreDB
