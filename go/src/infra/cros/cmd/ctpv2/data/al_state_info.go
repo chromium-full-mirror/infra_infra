@@ -154,6 +154,10 @@ func updateAllNodes(ctx context.Context, service *androidapi.Service, head *andr
 // sealInvocation updates the top level Work Unit and Invocation once before
 // sealing them with a terminal state status.
 func (a *AlStateInfo) sealInvocation(ctx context.Context, tree *androidapi.WorkUnitTree, service *androidapi.Service) error {
+	if a.ATPWorkUnit == nil {
+		return nil
+	}
+
 	var err error
 
 	// Refresh the work unit in case we are not using the most up-to-date
@@ -213,19 +217,23 @@ func (a *AlStateInfo) CloseWUTree(ctx context.Context, service *androidapi.Servi
 
 	logging.Infof(ctx, "Got work tree head %s, updating node statuses", tree.Head.GetWorkUnit().Id)
 	// Update the status of each WU.
-	err = updateAllNodes(ctx, service, tree.Head, errorMsg, errorName)
-	if err != nil {
-		return err
+	wuErr := updateAllNodes(ctx, service, tree.Head, errorMsg, errorName)
+	if wuErr != nil {
+		logging.Warningf(ctx, "Failed updating nodes: %v", err)
 	}
 
 	// If we generated the invocation and the starting ATP WorkUnit then close
 	// out the work unit and invocation to fully seal the run.
 	//
-	// NOTE: ATP would normally handle this but because we are handing the
-	// creation of the invocation we now in charge.
+	// NOTE: ATP would normally handle this but because we are handling the
+	// creation of the invocation we are now in charge.
+	var sealInvErr error
 	if a.ATPWorkUnit != nil {
-		return a.sealInvocation(ctx, tree, service)
+		sealInvErr = a.sealInvocation(ctx, tree, service)
+		if sealInvErr != nil {
+			logging.Warningf(ctx, "Failed to seal invocation: %v", err)
+		}
 	}
 
-	return nil
+	return errors.Join(wuErr, sealInvErr)
 }

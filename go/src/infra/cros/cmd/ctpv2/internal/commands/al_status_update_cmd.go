@@ -238,7 +238,7 @@ func (cmd *AlStatusUpdateCmd) alInvocationInformation() (string, string, string)
 	return buildID, buildTarget, runTarget
 }
 
-func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, step *build.Step) error {
+func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, _ *build.Step) error {
 	if !cmd.AlStateInfo.GenerateInvocation {
 		return nil
 	}

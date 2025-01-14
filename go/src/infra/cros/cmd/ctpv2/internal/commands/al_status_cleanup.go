@@ -64,9 +64,8 @@ func (cmd *AlStatusCleanUpCmd) UpdateStateKeeper(ctx context.Context, ski interf
 	return nil
 }
 
-func (cmd *AlStatusCleanUpCmd) updateScheduleStateKeeper(ctx context.Context, sk *data.FilterStateKeeper) error {
+func (cmd *AlStatusCleanUpCmd) updateScheduleStateKeeper(_ context.Context, sk *data.FilterStateKeeper) error {
 	sk.AlStateInfo = cmd.AlStateInfo
-
 	sk.ExecutionError = cmd.ExecutionError
 
 	return nil
