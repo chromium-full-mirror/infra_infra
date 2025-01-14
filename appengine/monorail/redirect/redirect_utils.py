@@ -44,6 +44,8 @@ PROJECT_REDIRECT_MAP = {
     'webrtc': 'https://issues.webrtc.org',
 }
 
+LAUNCH_BASE_URL = 'http://launch'
+
 # Only contain the project that is a subcomponent of the tracker.
 PROJECT_COMPONENT_ID_MAP = {
     'boringssl': 1590116,
@@ -64,7 +66,7 @@ PROJECT_COMPONENT_ID_MAP = {
     'webports': 1630185,
 }
 
-MAX_MONORAIL_ISSUE_ID = 10000000
+MIN_ISSUETRACKER_ISSUE_ID = 10000000
 
 TRACKER_SEARCH_KEY_MAP = {
     'cc': 'cc',
@@ -76,7 +78,7 @@ TRACKER_SEARCH_KEY_MAP = {
 
 VALID_IS_SEARCH_VALUE = ['open', 'starred']
 
-# Chromium's component ID in Buganizer.
+# Chromium's component ID in Chromium Issue Tracker.
 DEFAULT_COMPONENT_ID = '1363614'
 
 # The next few items are specifications of the defaults for project
@@ -120,8 +122,8 @@ def GetNewIssueParams(params: MultiDict, project_name: str):
   if 'components' in params:
     components_str = params.get('components', type=str)
     components = [component.strip() for component in components_str.split(",")]
-    # Get buganizer component id base on components param if no component exist.
-    # The redirect is base on first value on the list.
+    # Get Issue Tracker component id based on components param if no component
+    # exists. The redirect is base on first value on the list.
     if components and not has_append_component:
       component = components[0]
       redirect_component_id, _ = (

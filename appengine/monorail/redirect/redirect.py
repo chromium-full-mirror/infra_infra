@@ -81,10 +81,18 @@ def _GenerateIssueDetailRedirectURL(local_id: int, project_name: str):
   if not redirect_base_url:
     return None
 
-  if local_id > redirect_utils.MAX_MONORAIL_ISSUE_ID:
+  if local_id >= redirect_utils.MIN_ISSUETRACKER_ISSUE_ID:
     return redirect_base_url + '/' + str(local_id)
 
   tracker_id = redirectissue.RedirectIssue.Get(project_name, local_id)
-  if tracker_id:
-    return redirect_base_url + '/' + tracker_id
-  return None
+  if not tracker_id:
+    return None
+
+  try:
+    tracker_id_int = int(tracker_id)
+    if tracker_id_int < redirect_utils.MIN_ISSUETRACKER_ISSUE_ID:
+      return redirect_utils.LAUNCH_BASE_URL + '/' + tracker_id
+  except ValueError:
+    pass
+
+  return redirect_base_url + '/' + tracker_id
