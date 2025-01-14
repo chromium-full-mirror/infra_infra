@@ -79,3 +79,66 @@ func TestExtractMilestoneShouldWork(t *testing.T) {
 	}
 
 }
+
+func TestExtractFwImageBuildVersion(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		input  string
+		output string
+		err    error
+	}{
+		{
+			"board-release/R111-16112.0.0/firmware_from_source.tar.bz2",
+			"16112.0.0",
+			nil,
+		},
+		{
+			"board-firmware/R111-16112.0.0",
+			"16112.0.0",
+			nil,
+		},
+		{
+			"firmware-boardA-11709.B-branch-firmware/R102-15749.126.0/boardB",
+			"15749.126.0",
+			nil,
+		},
+		{
+			"firmware-board-15577.B-branch-firmware/R89-13527.574.0",
+			"13527.574.0",
+			nil,
+		},
+		{
+			"board-release/R111/6112.0.0/firmware_from_source.tar.bz2",
+			"",
+			e.NotMatch,
+		},
+		{
+			"board-firmware/R111-16112.0",
+			"",
+			e.NotMatch,
+		},
+		{
+			"firmware-boardA-11709.B-branch-firmware/M102-15749.126.0/boardB",
+			"",
+			e.NotMatch,
+		},
+		{
+			"firmware-board-15577.B-branch-firmware-R89-13527.574.0",
+			"",
+			e.NotMatch,
+		},
+	}
+
+	for _, tt := range cases {
+		expected := tt.output
+		actual, err := ExtractFwImageBuildVersionFrom(tt.input)
+		if diff := cmp.Diff(expected, actual); diff != "" {
+			t.Errorf("Expected: %v, unexpected diff: %s", expected, diff)
+		}
+
+		if !errors.Is(err, tt.err) {
+			t.Errorf("Expected: %v, got: %v", tt.err, err)
+		}
+	}
+}

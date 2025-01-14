@@ -36,8 +36,8 @@ type FilterType string
 
 const (
 	Unset    FilterType = ""
-	Release             = "release"
-	Firmware            = "firmware"
+	Release  FilterType = "release"
+	Firmware FilterType = "firmware"
 )
 
 // IBuildService is the interface that provide the services

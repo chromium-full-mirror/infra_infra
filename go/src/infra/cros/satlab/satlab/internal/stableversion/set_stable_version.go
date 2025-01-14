@@ -141,7 +141,7 @@ func (c *setStableVersionRun) innerRunBoardModel(ctx context.Context, a subcomma
 	} else if numArgs < 3 { // If partial args provided, throw an error
 		return fmt.Errorf("Please provide all or none of the following: -os, -fw, -fwImage")
 	}
-	if err := misc.StageAndWriteLocalStableVersion(ctx, service, rv); err != nil {
+	if err := misc.StageAndWriteLocalStableVersion(ctx, service, rv, site.RecoveryVersionDirectory); err != nil {
 		return errors.Annotate(err, "stage and write local stable version").Err()
 	}
 	return nil

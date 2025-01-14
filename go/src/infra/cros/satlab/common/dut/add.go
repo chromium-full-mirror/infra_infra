@@ -232,7 +232,7 @@ func (c *AddDUT) TriggerRun(
 				return errors.Annotate(err, "find most stable build").Err()
 			}
 
-			err = misc.StageAndWriteLocalStableVersion(ctx, service, recoveryVersion)
+			err = misc.StageAndWriteLocalStableVersion(ctx, service, recoveryVersion, site.RecoveryVersionDirectory)
 			if err != nil {
 				logging.Errorf(ctx, "failed to write local stable version: %s", err.Error())
 				return errors.Annotate(err, "stage and write local stable version").Err()

@@ -18,23 +18,35 @@ import (
 	"infra/cros/recovery/models"
 	"infra/cros/satlab/common/services/build_service"
 	"infra/cros/satlab/common/site"
+	"infra/cros/satlab/common/utils/parser"
 )
 
-// StageAndWriteLocalStableVersion stages a recovery image to partner bucket and writes the associated rv metadata locally
+// StageAndWriteLocalStableVersion stages a recovery image to partner bucket and writes the associated rv metadata locally.
 func StageAndWriteLocalStableVersion(
 	ctx context.Context,
 	service build_service.IBuildService,
 	rv *models.RecoveryVersion,
+	path string,
 ) error {
 	buildVersion := strings.Split(rv.OsImage, "-")[1]
+	fwImageBuildVersion, err := parser.ExtractFwImageBuildVersionFrom(rv.FwImage)
+	if err != nil {
+		return errors.Annotate(err, "get firmware image build version").Err()
+	}
 	bucket := site.GetGCSImageBucket()
 	if bucket == "" {
 		return errors.New("GCS_IMAGE_BUCKET not found")
 	}
-	if _, err := service.StageBuild(ctx, rv.Board, rv.Model, buildVersion, bucket, build_service.Unset); err != nil {
+	if _, err := service.StageBuild(ctx, rv.Board, rv.Model, buildVersion, bucket, build_service.Release); err != nil {
 		return errors.Annotate(err, "stage stable version image to bucket").Err()
 	}
-	if err := WriteLocalStableVersion(rv, site.RecoveryVersionDirectory); err != nil {
+	buildArtifact, err := service.StageBuild(ctx, rv.Board, rv.Model, fwImageBuildVersion, bucket, build_service.Firmware)
+	if err != nil {
+		return errors.Annotate(err, "stage stable version firmware image to bucket").Err()
+	}
+	// FwImage can be in different locations, staging will return the correct place.
+	rv.FwImage = buildArtifact.GetPath()
+	if err := WriteLocalStableVersion(rv, path); err != nil {
 		return errors.Annotate(err, "write local stable version").Err()
 	}
 	return nil
@@ -127,7 +139,7 @@ func AskConfirmation(s string) (bool, error) {
 	}
 }
 
-// GetEnv is helper to get env variables and falling back if not set
+// GetEnv is helper to get env variables and falling back if not set.
 func GetEnv(key, fallback string) string {
 	if value, ok := os.LookupEnv(key); ok {
 		return value

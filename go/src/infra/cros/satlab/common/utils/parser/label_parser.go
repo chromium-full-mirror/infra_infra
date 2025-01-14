@@ -11,6 +11,7 @@ import (
 
 var milestoneRegex = regexp.MustCompile(`milestones/(?P<Milestone>\d+)$`)
 var boardAndModelRegex = regexp.MustCompile(`^buildTargets/(?P<Board>\w+)/models/(?P<Model>\w+)$`)
+var fwImageBuildVersionRegex = regexp.MustCompile(`\/R\d+-(?P<BuildVersion>\d+\.\d+\.\d+)`)
 
 type BoardAndModelPair struct {
 	Board string
@@ -42,6 +43,21 @@ func ExtractMilestoneFrom(s string) (string, error) {
 
 	matches := milestoneRegex.FindStringSubmatch(s)
 	index := milestoneRegex.SubexpIndex("Milestone")
+
+	return matches[index], nil
+}
+
+// ExtractFwImageBuildVersionFrom extract the firmware image
+// build version information from the given string.
+//
+// string s the string we want to get the information from.
+func ExtractFwImageBuildVersionFrom(s string) (string, error) {
+	if !fwImageBuildVersionRegex.MatchString(s) {
+		return "", errors.NotMatch
+	}
+
+	matches := fwImageBuildVersionRegex.FindStringSubmatch(s)
+	index := fwImageBuildVersionRegex.SubexpIndex("BuildVersion")
 
 	return matches[index], nil
 }

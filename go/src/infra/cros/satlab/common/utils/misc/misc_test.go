@@ -4,16 +4,32 @@
 package misc
 
 import (
+	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"reflect"
 	"testing"
 
+	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
+
+	"go.chromium.org/luci/common/errors"
+
 	"infra/cros/recovery/models"
+	"infra/cros/satlab/common/services/build_service"
+	"infra/cros/satlab/common/site"
 )
+
+func setupTempStableVersionDir(path string) error {
+	if err := os.RemoveAll(path); err != nil {
+		return err
+	}
+	if err := os.MkdirAll(path, 0777); err != nil {
+		return err
+	}
+	return nil
+}
 
 // TestWriteLocalStableVersion tests stable version file creation
 func TestWriteLocalStableVersion(t *testing.T) {
@@ -30,10 +46,7 @@ func TestWriteLocalStableVersion(t *testing.T) {
 	// Perform our test in a temporary file managed by the test framework.
 	path := filepath.Join(t.TempDir(), "tmp", "recovery_versions")
 
-	if err := os.RemoveAll(path); err != nil {
-		t.Errorf("Unexpected err: %v", err)
-	}
-	if err := os.MkdirAll(path, 0777); err != nil {
+	if err := setupTempStableVersionDir(path); err != nil {
 		t.Errorf("Unexpected err: %v", err)
 	}
 	if err := WriteLocalStableVersion(rv, path); err != nil {
@@ -55,4 +68,54 @@ func TestWriteLocalStableVersion(t *testing.T) {
 	if !reflect.DeepEqual(rv, rv2) {
 		t.Errorf("Recovery version saved incorrectly")
 	}
+}
+
+func TestStageAndWriteLocalStableVersionShouldWork(t *testing.T) {
+	t.Parallel()
+
+	const (
+		board        = "zork"
+		model        = "gumboz"
+		osImage      = "R115-15474.70.0"
+		osImageBuild = "15474.70.0"
+		fwVersion    = "Google_Berknip.13434.356.0"
+		fwImage      = "zork-firmware/R87-13434.819.0"
+		fwImageBuild = "13434.819.0"
+	)
+
+	bucketName := site.GetGCSImageBucket()
+	mockArtifactOs := &moblabapipb.BuildArtifact{
+		Build:  osImageBuild,
+		Name:   fmt.Sprintf("buildTargets/%s/models/%s/builds/%s/artifacts/%s", board, model, osImageBuild, bucketName),
+		Bucket: bucketName,
+		Path:   fmt.Sprintf("%s-release/%s", board, osImage),
+	}
+	mockArtifactFw := &moblabapipb.BuildArtifact{
+		Build:  osImageBuild,
+		Name:   fmt.Sprintf("buildTargets/%s/models/%s/builds/%s/artifacts/%s", board, model, fwImageBuild, bucketName),
+		Bucket: bucketName,
+		Path:   fwImage,
+	}
+
+	ctx := context.Background()
+	mockBuildService := new(build_service.MockBuildService)
+	mockBuildService.On("StageBuild", ctx, board, model, osImageBuild, bucketName, build_service.Release).Return(mockArtifactOs, nil)
+	mockBuildService.On("StageBuild", ctx, board, model, fwImageBuild, bucketName, build_service.Firmware).Return(mockArtifactFw, nil)
+	path := filepath.Join(t.TempDir(), "tmp", "recovery_versions")
+	if err := setupTempStableVersionDir(path); err != nil {
+		t.Errorf("Setup temp dir for stable version: %v", err)
+	}
+
+	rv := &models.RecoveryVersion{
+		Board:     board,
+		Model:     model,
+		OsImage:   osImage,
+		FwVersion: fwVersion,
+		FwImage:   fwImage,
+	}
+
+	if err := StageAndWriteLocalStableVersion(ctx, mockBuildService, rv, path); err != nil {
+		t.Errorf("StageAndWriteLocalStableVersion() error = %v", err)
+	}
+
 }
