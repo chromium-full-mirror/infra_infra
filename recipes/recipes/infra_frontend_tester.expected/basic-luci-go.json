@@ -388,9 +388,6 @@
   },
   {
     "cmd": [
-      "rdb",
-      "stream",
-      "--",
       "make",
       "lint"
     ],

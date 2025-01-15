@@ -1788,7 +1788,7 @@ before we discover that e.g. amd64 is broken.
 Build and run ESLint on a UI.
 To use this step your UI must have:
   1. A `Makefile` that contains a `build` command.
-  2. An `lint` npm script in the `package.json` file.
+  2. A `lint` npm script in the `package.json` file.
 
 &mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#131)(api, cwd, app_name):**
 
