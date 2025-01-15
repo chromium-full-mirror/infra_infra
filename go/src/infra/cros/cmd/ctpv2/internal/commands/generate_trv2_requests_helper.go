@@ -95,6 +95,7 @@ type TrV2ReqHelper struct {
 	isAlRun          bool
 	isPartnerRun     bool
 	is3DRun          bool
+	eventID          string
 }
 
 type HwTarget struct {
@@ -1137,10 +1138,10 @@ func createSwarmingTags(ctx context.Context, trHelper *TrV2ReqHelper) ([]string,
 	// TODO(dbeckett) THESE BELOW:
 	reprName := fmt.Sprintf("shard-%v", trHelper.shardNum)
 	tags = append(tags, "display_name:"+makeDisplayName(trHelper.builderStr, trHelper.suiteName, reprName))
-	// tags = append(tags, removeReservedTags(g.Params.GetDecorations().GetTags())...)
-	// // Add primary/secondary DUTs board/model info in swarming tags for
-	// // multi-DUTs result reporting purpose.
-	// tags = append(tags, g.multiDutsTags()...)
+
+	if trHelper.eventID != "" {
+		tags = append(tags, trHelper.eventID)
+	}
 
 	return tags, nil
 }
