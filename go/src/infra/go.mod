@@ -44,7 +44,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1
 	github.com/electricbubble/gadb v0.1.1-0.20240523030754-97c5a1a929a9
 	github.com/fsnotify/fsnotify v1.7.0
-	github.com/gliderlabs/ssh v0.3.8
+	github.com/gliderlabs/ssh v0.3.9-0.20241212082318-d137aad99cd6
 	github.com/go-delve/delve v1.23.1
 	github.com/go-git/go-git/v5 v5.13.0
 	github.com/gofrs/flock v0.12.1
@@ -106,19 +106,19 @@ require (
 	go.opentelemetry.io/otel/trace v1.33.0
 	go.skia.org/infra v0.0.0-20250114041601-4a95c0b5f67e
 	go.starlark.net v0.0.0-20241226192728-8dfa5b98479f
-	golang.org/x/build v0.0.0-20241002221812-a0b635343b82
-	golang.org/x/crypto v0.31.0
-	golang.org/x/exp v0.0.0-20240909161429-701f63a606c0
+	golang.org/x/build v0.0.0-20250107184505-240dfd072cb3
+	golang.org/x/crypto v0.32.0
+	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
-	golang.org/x/mod v0.21.0
-	golang.org/x/net v0.33.0
+	golang.org/x/mod v0.22.0
+	golang.org/x/net v0.34.0
 	golang.org/x/oauth2 v0.25.0
-	golang.org/x/perf v0.0.0-20240910214617-f1a715d501dd
+	golang.org/x/perf v0.0.0-20250106172127-400946f43c82
 	golang.org/x/sync v0.10.0
-	golang.org/x/sys v0.28.0
-	golang.org/x/term v0.27.0
+	golang.org/x/sys v0.29.0
+	golang.org/x/term v0.28.0
 	golang.org/x/time v0.9.0
-	golang.org/x/tools v0.26.0
+	golang.org/x/tools v0.29.0
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da
 	gonum.org/v1/gonum v0.15.1
 	google.golang.org/api v0.216.0
