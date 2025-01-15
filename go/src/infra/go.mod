@@ -59,7 +59,7 @@ require (
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/google/subcommands v1.2.0
 	github.com/google/uuid v1.6.0
-	github.com/googleapis/gax-go/v2 v2.14.0
+	github.com/googleapis/gax-go/v2 v2.14.1
 	github.com/googleapis/google-cloud-go-testing v0.0.0-20210719221736-1c9a4c676720
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-version v1.7.0
@@ -112,22 +112,22 @@ require (
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
 	golang.org/x/mod v0.21.0
 	golang.org/x/net v0.33.0
-	golang.org/x/oauth2 v0.24.0
+	golang.org/x/oauth2 v0.25.0
 	golang.org/x/perf v0.0.0-20240910214617-f1a715d501dd
 	golang.org/x/sync v0.10.0
 	golang.org/x/sys v0.28.0
 	golang.org/x/term v0.27.0
-	golang.org/x/time v0.8.0
+	golang.org/x/time v0.9.0
 	golang.org/x/tools v0.26.0
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da
 	gonum.org/v1/gonum v0.15.1
-	google.golang.org/api v0.214.0
+	google.golang.org/api v0.216.0
 	google.golang.org/appengine v1.6.8
 	google.golang.org/appengine/v2 v2.0.6
-	google.golang.org/genproto v0.0.0-20241118233622-e639e219e697
-	google.golang.org/genproto/googleapis/api v0.0.0-20241118233622-e639e219e697
-	google.golang.org/genproto/googleapis/bytestream v0.0.0-20241209162323-e6fa225c2576
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20241209162323-e6fa225c2576
+	google.golang.org/genproto v0.0.0-20250106144421-5f5ef82da422
+	google.golang.org/genproto/googleapis/api v0.0.0-20250106144421-5f5ef82da422
+	google.golang.org/genproto/googleapis/bytestream v0.0.0-20250106144421-5f5ef82da422
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20250106144421-5f5ef82da422
 	google.golang.org/grpc v1.69.4
 	google.golang.org/grpc/cmd/protoc-gen-go-grpc v1.5.1
 	google.golang.org/protobuf v1.36.2
@@ -146,8 +146,8 @@ require (
 	cel.dev/expr v0.16.2 // indirect
 	cloud.google.com/go/auth v0.13.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.6 // indirect
-	cloud.google.com/go/errorreporting v0.3.1 // indirect
-	cloud.google.com/go/iam v1.2.2 // indirect
+	cloud.google.com/go/errorreporting v0.3.2 // indirect
+	cloud.google.com/go/iam v1.3.1 // indirect
 	dario.cat/mergo v1.0.1 // indirect
 	github.com/AdaLogics/go-fuzz-headers v0.0.0-20240806141605-e8a1dd7889d6 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
