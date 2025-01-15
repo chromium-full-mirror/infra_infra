@@ -24,7 +24,7 @@ type FleetConsoleFrontend struct {
 	fleetconsolerpc.UnimplementedFleetConsoleServer
 
 	deviceManagerClient func(context.Context) (*devicemanagerclient.Client, error)
-	ufsClient           func(context.Context) (*ufsclient.Client, error)
+	ufsClient           func(context.Context) (ufsclient.Client, error)
 }
 
 // InstallServices installs services into the server.
@@ -37,6 +37,7 @@ func SetDeviceManagerClient(consoleFrontend *FleetConsoleFrontend, deviceManager
 	consoleFrontend.deviceManagerClient = deviceManagerClient
 }
 
-func SetUFSClient(consoleFrontend *FleetConsoleFrontend, ufsClient func(context.Context) (*ufsclient.Client, error)) {
+// SeUFSClient sets the UFS client.
+func SetUFSClient(consoleFrontend *FleetConsoleFrontend, ufsClient func(context.Context) (ufsclient.Client, error)) {
 	consoleFrontend.ufsClient = ufsClient
 }

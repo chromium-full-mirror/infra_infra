@@ -7,6 +7,7 @@ package serverlib
 
 import (
 	"context"
+	"net/http"
 	"slices"
 	"strconv"
 	"strings"
@@ -24,6 +25,7 @@ import (
 	"infra/fleetconsole/internal/consoleserver"
 	"infra/fleetconsole/internal/devicemanagerclient"
 	"infra/fleetconsole/internal/ufsclient"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 func Options() *server.Options {
@@ -114,8 +116,8 @@ func GetDeviceManagerClient(ctx context.Context) (*devicemanagerclient.Client, e
 	return deviceManagerClient, nil
 }
 
-func GetUfsClient(ctx context.Context) (*ufsclient.Client, error) {
-	ufsAddr := ufsclient.UfsDevURL
+func GetUfsClient(ctx context.Context) (ufsclient.Client, error) {
+	ufsAddr := ufsclient.UfsProdURL
 	ufsPort := ufsclient.UfsPort
 	if *flags.UseLocalUfs {
 		ufsAddr = "localhost"
@@ -130,10 +132,21 @@ func GetUfsClient(ctx context.Context) (*ufsclient.Client, error) {
 		}
 		ufsPort = port
 	}
-	logging.Infof(ctx, "Initializing ufs client with address: %s:%d", ufsAddr, ufsPort)
-	ufsClient, err := ufsclient.NewClient(ctx, auth.AsCredentialsForwarder, ufsAddr, ufsPort, *flags.UseLocalUfs)
+
+	// This stanza is copied from the fleet cost service.
+	t, err := auth.GetRPCTransport(ctx, auth.AsSelf, auth.WithScopes(auth.CloudOAuthScopes...))
 	if err != nil {
-		return nil, errors.Annotate(err, "configuring ufs client").Err()
+		return nil, errors.Annotate(err, "setting up UFS client").Err()
 	}
+	httpClient := &http.Client{
+		Transport: t,
+	}
+	prpcClient := &prpc.Client{
+		C:    httpClient,
+		Host: ufsAddr,
+	}
+	ufsClient := ufsAPI.NewFleetPRPCClient(prpcClient)
+
+	logging.Infof(ctx, "Initializing ufs client with address: %s:%d", ufsAddr, ufsPort)
 	return ufsClient, nil
 }

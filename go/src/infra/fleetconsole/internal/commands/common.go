@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 
 	"infra/fleetconsole/api/fleetconsolerpc"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 // dmClient creates a DeviceManager client using the command line method.
@@ -36,6 +37,22 @@ func dmClient(ctx context.Context, host string, authFlags authcli.Flags) (testap
 		},
 	}
 	return testapi.NewDeviceLeaseServiceClient(prpcClient), nil
+}
+
+// ufsClient creates a UFS client using the command line method.
+func ufsClient(ctx context.Context, host string, authFlags authcli.Flags) (ufsAPI.FleetClient, error) {
+	httpClient, err := authenticatedClient(ctx, host, authFlags)
+	if err != nil {
+		return nil, errors.Annotate(err, "ping").Err()
+	}
+	prpcClient := &prpc.Client{
+		C:    httpClient,
+		Host: host,
+		Options: &prpc.Options{
+			PerRPCTimeout: 30 * time.Second,
+		},
+	}
+	return ufsAPI.NewFleetPRPCClient(prpcClient), nil
 }
 
 // consoleClient creates a FleetConsoleClient pointing at a specific host.

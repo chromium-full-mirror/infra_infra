@@ -6,11 +6,6 @@
 package ufsclient
 
 import (
-	"context"
-
-	"go.chromium.org/luci/server/auth"
-
-	"infra/fleetconsole/internal/site"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
@@ -24,19 +19,4 @@ const (
 )
 
 // Client is a client for UFS.
-type Client struct {
-	FleetClient ufsAPI.FleetClient
-}
-
-// NewClient makes a new client.
-func NewClient(ctx context.Context, rpcAuthorityKind auth.RPCAuthorityKind, baseURL string, port int, insecure bool) (*Client, error) {
-	prpcClient, err := site.NewAuthenticatedClient(ctx, rpcAuthorityKind, baseURL, port, insecure)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &Client{
-		FleetClient: ufsAPI.NewFleetPRPCClient(prpcClient),
-	}, nil
-}
+type Client = ufsAPI.FleetClient

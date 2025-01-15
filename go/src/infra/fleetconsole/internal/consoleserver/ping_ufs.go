@@ -20,7 +20,7 @@ func (frontend *FleetConsoleFrontend) PingUfs(ctx context.Context, req *fleetcon
 		return nil, errors.Annotate(err, "ping ufs").Err()
 	}
 
-	_, err2 := ufsClient.FleetClient.ListMachineLSEs(ctx, &ufsAPI.ListMachineLSEsRequest{PageSize: 1})
+	_, err2 := ufsClient.ListMachineLSEs(ctx, &ufsAPI.ListMachineLSEsRequest{PageSize: 1})
 	if err2 != nil {
 		return nil, errors.Annotate(err2, "ping ufs").Err()
 	}
