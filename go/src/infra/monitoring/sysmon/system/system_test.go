@@ -20,6 +20,7 @@ func init() {
 }
 
 func TestMetrics(t *testing.T) {
+	t.Skip("b/389742273: this test breaks shuffling")
 	t.Parallel()
 
 	t.Run("Uptime", func(t *testing.T) {

@@ -165,6 +165,7 @@ func TestUpdateVersionFile_noVersionFile(t *testing.T) {
 }
 
 func TestUpdateVersionFile_success(t *testing.T) {
+	t.Skip("b/389742273, this test breaks shuffling")
 	tmpDir := "repotest_tmp_dir"
 	tmpDir, err := ioutil.TempDir("", tmpDir)
 	defer os.RemoveAll(tmpDir)
