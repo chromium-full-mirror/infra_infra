@@ -373,7 +373,7 @@ func (r *GoTestRenderer) Ingest(ev *TestEvent) error {
 	switch ev.Action {
 	case "error":
 		// Error reading JSON.
-		if _, err := fmt.Fprintf(r.w, ev.Output); err != nil {
+		if _, err := fmt.Fprint(r.w, ev.Output); err != nil {
 			return err
 		}
 
