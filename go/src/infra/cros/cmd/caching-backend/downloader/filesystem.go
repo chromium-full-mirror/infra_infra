@@ -15,6 +15,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"infra/libs/otil"
@@ -115,7 +116,7 @@ var filesystemMakers = map[string]mkfsFunc{
 	"ext2":     mkfsExt2,
 	"ext3":     mkfsExt3,
 	"ext4":     mkfsExt4,
-	"squashfs": mkfsSquarshfs,
+	"squashfs": mkfsSquashfs,
 	"erofs":    mkfsErofs,
 }
 
@@ -131,52 +132,46 @@ func mkfsExt4(ctx context.Context, w http.ResponseWriter, sources ...*sourceFile
 	return nil
 }
 
-func mkfsSquarshfs(ctx context.Context, w http.ResponseWriter, sources ...*sourceFile) error {
-	// We need to create some temp files as the input of mksquashfs command.
-	dir, err := os.MkdirTemp("", "mksquashfs-")
-	if err != nil {
-		return fmt.Errorf("mkfs squashfs: create result dir: %w", err)
-	}
-	defer func() {
-		if err := os.RemoveAll(dir); err != nil {
-			log.Printf("mkfs squashfs: failed to clean up temp dir %q: %s", dir, err)
+func mkfsSquashfs(ctx context.Context, w http.ResponseWriter, sources ...*sourceFile) error {
+	prepareFunc := func(ctx context.Context, cwd, resultFile string) (*exec.Cmd, error) {
+		cmd := exec.Command("mksquashfs", "-", resultFile, "-pf", "-", "-quiet", "-no-progress", "-comp", "zstd", "-Xcompression-level", "22")
+		// We use the "pseudo file" to tell mksquashfs what to do.
+		// See
+		// https://manpages.debian.org/testing/squashfs-tools/mksquashfs.1.en.html#PSEUDO_FILE_DEFINITION_FORMAT
+		// for the pseudo file definition.
+		pseudoFiles := []string{
+			// The root directory of the result file system. Must have.
+			"/ d 0755 root root",
 		}
-	}()
+		// For each source, we write them to a fifo and use pseudo file to ask
+		// `mksquashfs` to read the fifo.
+		for _, s := range sources {
+			// Create all necessary parent dir. The order doesn't matter.
+			// TODO dedupe the dirs.
+			for d := filepath.Dir(s.name); d != "." && d != "/"; d = filepath.Dir(d) {
+				pseudoFiles = append(pseudoFiles, d+" d 0755 root root")
+			}
+			fifoPath, err := createFifoForSource(cwd, s)
+			if err != nil {
+				return nil, fmt.Errorf("prepare input for mksquashfs: %w", err)
+			}
+			// "f" means read the output of the specified command as the file content.
+			pseudoFiles = append(pseudoFiles, fmt.Sprintf("%s f 0644 root root cat %s", s.name, fifoPath))
 
-	// mksquashfs command requires the result file must be seek-able, blocking us
-	// to write the result to a pipe to streamline the whole process.
-	resultFile := filepath.Join(dir, "result.sqfs")
-	cmd := exec.Command("mksquashfs", "-", resultFile, "-pf", "-", "-quiet", "-no-progress", "-comp", "zstd", "-Xcompression-level", "22")
-	if err := prepareMksquashfInput(ctx, cmd, dir, sources...); err != nil {
-		return fmt.Errorf("mkfs squashfs: %q: %w", cmd, err)
+			s.writeToFiFo(ctx, fifoPath)
+		}
+		cmd.Stdin = strings.NewReader(strings.Join(pseudoFiles, "\n"))
+		return cmd, nil
 	}
 
-	stderr, err := cmd.StderrPipe()
+	fd, size, err := mkfsInDir(ctx, prepareFunc)
 	if err != nil {
-		return fmt.Errorf("mkfs squashfs: get stderr of %q: %w", cmd, err)
-	}
-
-	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("mkfs squashfs: %q: %w", cmd, err)
-	}
-
-	msg, _ := io.ReadAll(stderr)
-	if err := cmd.Wait(); err != nil {
-		return fmt.Errorf("mkfs squashfs: cmd %q failed: %w: %s", cmd, err, msg)
-	}
-
-	stat, err := os.Stat(resultFile)
-	if err != nil {
-		return fmt.Errorf("mkfs squashfs: stat the result file: %w", err)
-	}
-	fd, err := os.Open(resultFile)
-	if err != nil {
-		return fmt.Errorf("mkfs squashfs: read the result file: %w", err)
+		return fmt.Errorf("mkfs squashfs: %w", err)
 	}
 	defer fd.Close()
 
 	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Header().Set("Content-Length", strconv.FormatInt(stat.Size(), 10))
+	w.Header().Set("Content-Length", strconv.FormatInt(size, 10))
 	w.WriteHeader(http.StatusOK)
 	bytes, err := fd.WriteTo(w)
 	if err != nil {
@@ -186,7 +181,87 @@ func mkfsSquarshfs(ctx context.Context, w http.ResponseWriter, sources ...*sourc
 }
 
 func mkfsErofs(ctx context.Context, w http.ResponseWriter, sources ...*sourceFile) error {
+	prepareFunc := func(ctx context.Context, cwd, resultFile string) (*exec.Cmd, error) {
+		sourceDir := filepath.Join(cwd, "sources")
+		cmd := exec.Command("mkfs.erofs", resultFile, sourceDir)
+		var wg sync.WaitGroup
+		// download all sources to the source dir for packing.
+		for _, s := range sources {
+			wg.Add(1)
+			go func(s *sourceFile) {
+				defer wg.Done()
+				if err := s.writeToRegular(ctx, filepath.Join(sourceDir, s.name)); err != nil {
+					log.Printf("Mkfs.erofs: %s", err)
+				}
+			}(s)
+		}
+		wg.Wait()
+		return cmd, nil
+	}
+
+	fd, size, err := mkfsInDir(ctx, prepareFunc)
+	if err != nil {
+		return fmt.Errorf("mkfs erofs: %w", err)
+	}
+	defer fd.Close()
+
+	w.Header().Set("Content-Type", "application/octet-stream")
+	w.Header().Set("Content-Length", strconv.FormatInt(size, 10))
+	w.WriteHeader(http.StatusOK)
+	bytes, err := fd.WriteTo(w)
+	if err != nil {
+		return fmt.Errorf("mkfs erofs failed after writing %d bytes: %w", bytes, err)
+	}
 	return nil
+}
+
+// mkfsInDir makes a file system file in a created temp dir.
+//
+// It calls the prepareFunc to set up the environment and executes the returned
+// command to generate the result file.
+func mkfsInDir(ctx context.Context, prepareFunc func(context.Context, string, string) (*exec.Cmd, error)) (*os.File, int64, error) {
+	// We need to create some temp files as the input for making file system.
+	dir, err := os.MkdirTemp("", "mkfs-in-dir-")
+	if err != nil {
+		return nil, 0, fmt.Errorf("mkfs in dir: create result dir: %w", err)
+	}
+	defer func() {
+		if err := os.RemoveAll(dir); err != nil {
+			log.Printf("mkfs in dir: failed to clean up temp dir %q: %s", dir, err)
+		}
+	}()
+
+	// Some mkfs.XXX command requires the result file must be seek-able,
+	// blocking us to write the result to a pipe to streamline the whole process.
+	resultFile := filepath.Join(dir, "result.fs")
+	cmd, err := prepareFunc(ctx, dir, resultFile)
+	if err != nil {
+		return nil, 0, fmt.Errorf("mkfs in dir: %q: %w", cmd, err)
+	}
+
+	stderr, err := cmd.StderrPipe()
+	if err != nil {
+		return nil, 0, fmt.Errorf("mkfs in dir: get stderr of %q: %w", cmd, err)
+	}
+
+	if err := cmd.Start(); err != nil {
+		return nil, 0, fmt.Errorf("mkfs in dir: %q: %w", cmd, err)
+	}
+
+	msg, _ := io.ReadAll(stderr)
+	if err := cmd.Wait(); err != nil {
+		return nil, 0, fmt.Errorf("mkfs in dir: cmd %q failed: %w: %s", cmd, err, msg)
+	}
+
+	stat, err := os.Stat(resultFile)
+	if err != nil {
+		return nil, 0, fmt.Errorf("mkfs in dir: stat the result file: %w", err)
+	}
+	fd, err := os.Open(resultFile)
+	if err != nil {
+		return nil, 0, fmt.Errorf("mkfs in dir: read the result file: %w", err)
+	}
+	return fd, stat.Size(), nil
 }
 
 func httpError(w http.ResponseWriter, error string, code int) {
@@ -194,42 +269,29 @@ func httpError(w http.ResponseWriter, error string, code int) {
 	http.Error(w, error, code)
 }
 
-// prepareMksquashfInput pass the sources to the mksquashfs command.
-func prepareMksquashfInput(ctx context.Context, cmd *exec.Cmd, cwd string, sources ...*sourceFile) error {
-	// We use the "pseudo file" to tell mksquashfs what to do.
-	// See
-	// https://manpages.debian.org/testing/squashfs-tools/mksquashfs.1.en.html#PSEUDO_FILE_DEFINITION_FORMAT
-	// for the pseudo file definition.
-	pseudoFiles := []string{
-		// The root directory of the result file system. Must have.
-		"/ d 0755 root root",
-	}
-	// For each source, we write them to a fifo and use pseudo file to ask
-	// `mksquashfs` to read the fifo.
-	for _, s := range sources {
-		// Create all necessary parent dir. The order doesn't matter.
-		// TODO dedupe the dirs.
-		for d := filepath.Dir(s.name); d != "." && d != "/"; d = filepath.Dir(d) {
-			pseudoFiles = append(pseudoFiles, d+" d 0755 root root")
-		}
-		fifoPath, err := createFifoForSource(cwd, s)
-		if err != nil {
-			return fmt.Errorf("prepare input for mksquashfs: %w", err)
-		}
-		// "f" means read the output of the specified command as the file content.
-		pseudoFiles = append(pseudoFiles, fmt.Sprintf("%s f 0644 root root cat %s", s.name, fifoPath))
-
-		s.writeToFiFo(ctx, fifoPath)
-	}
-	cmd.Stdin = strings.NewReader(strings.Join(pseudoFiles, "\n"))
-	return nil
-}
-
 // sourceFile is the source file stream. We only have one chance to read it.
 type sourceFile struct {
 	name          string
 	contentStream io.ReadCloser
 	closed        chan struct{}
+}
+
+// writeToRegular writes the stream data to a regular file, creating all
+// necessary directories.
+// This function can only be called ONCE!
+func (s *sourceFile) writeToRegular(ctx context.Context, path string) error {
+	defer close(s.closed)
+	if err := os.MkdirAll(filepath.Dir(path), 0700); err != nil {
+		return fmt.Errorf("write %q to regular file %q: %w", s.name, path, err)
+	}
+	f, err := os.Create(path)
+	if err != nil {
+		return fmt.Errorf("write %q to regular file %q: %w", s.name, path, err)
+	}
+	if bytes, err := io.Copy(f, s.contentStream); err != nil {
+		return fmt.Errorf("Write %q to regular file %q failed at byte %d: %w", s.name, path, bytes, err)
+	}
+	return nil
 }
 
 // writeToFiFo writes the stream to the named pipe (fifo)
