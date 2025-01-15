@@ -5,23 +5,23 @@ go 1.23
 toolchain go1.23.4
 
 require (
-	cloud.google.com/go v0.117.0
-	cloud.google.com/go/appengine v1.9.2
-	cloud.google.com/go/bigquery v1.64.0
-	cloud.google.com/go/cloudsqlconn v1.12.1
-	cloud.google.com/go/cloudtasks v1.13.2
-	cloud.google.com/go/compute v1.29.0
+	cloud.google.com/go v0.118.0
+	cloud.google.com/go/appengine v1.9.3
+	cloud.google.com/go/bigquery v1.65.0
+	cloud.google.com/go/cloudsqlconn v1.13.2
+	cloud.google.com/go/cloudtasks v1.13.3
+	cloud.google.com/go/compute v1.31.1
 	cloud.google.com/go/compute/metadata v0.6.0
 	cloud.google.com/go/datastore v1.20.0
-	cloud.google.com/go/firestore v1.17.0
+	cloud.google.com/go/firestore v1.18.0
 	cloud.google.com/go/logging v1.13.0
-	cloud.google.com/go/longrunning v0.6.2
-	cloud.google.com/go/monitoring v1.21.2
-	cloud.google.com/go/profiler v0.4.1
-	cloud.google.com/go/pubsub v1.45.1
-	cloud.google.com/go/secretmanager v1.14.2
-	cloud.google.com/go/storage v1.44.0
-	cloud.google.com/go/trace v1.11.2
+	cloud.google.com/go/longrunning v0.6.4
+	cloud.google.com/go/monitoring v1.22.1
+	cloud.google.com/go/profiler v0.4.2
+	cloud.google.com/go/pubsub v1.45.3
+	cloud.google.com/go/secretmanager v1.14.3
+	cloud.google.com/go/storage v1.50.0
+	cloud.google.com/go/trace v1.11.3
 	contrib.go.opencensus.io/exporter/stackdriver v0.13.14
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/Microsoft/go-winio v0.6.2
@@ -151,7 +151,7 @@ require (
 	dario.cat/mergo v1.0.1 // indirect
 	github.com/AdaLogics/go-fuzz-headers v0.0.0-20240806141605-e8a1dd7889d6 // indirect
 	github.com/Azure/go-ansiterm v0.0.0-20230124172434-306776ec8161 // indirect
-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.24.2 // indirect
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.25.0 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.48.1 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.24.2 // indirect
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.48.2 // indirect
