@@ -234,6 +234,269 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 	})
 
+	// TODO(go.dev/issue/70435): Improve handling of Go 1.24's go test -json output, and update test cases.
+	ftt.Run("test JSON build errors", t, func(t *ftt.Test) {
+		trs, err := r.generateTestResults(context.Background(), []byte(goTestJSONBuildError))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, trs, should.HaveLength(7))
+		assert.That(t, trs[0], should.Match(mustParseTestResult(
+			`status: ABORT
+			duration: {}
+			`)))
+		assert.That(t, trs[1], should.Match(mustParseTestResult(
+			`test_id: "test/a"
+			expected: true
+			status: PASS
+			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1734113176
+			  nanos:   230477000
+			}
+			duration: {
+			  nanos: 400000000
+			}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "PASS\nok  	test/a	0.400s\n"
+			  }
+			}`)))
+		assert.That(t, trs[2], should.Match(mustParseTestResult(
+			`test_id: "test/a.TestA"
+			expected: true
+			status: PASS
+			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1734113176
+			  nanos:   630042000
+			}
+			duration: {}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "=== RUN   TestA\n    a_test.go:6: A is okay\n--- PASS: TestA (0.00s)\n"
+			  }
+			}`)))
+		assert.That(t, trs[3], should.Match(mustParseTestResult(
+			`test_id: "test/b"
+			status: FAIL
+			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1734113176
+			  nanos:   230551000
+			}
+			duration: {}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "FAIL	test/b [build failed]\n"
+			  }
+			}`)))
+		assert.That(t, trs[4], should.Match(mustParseTestResult(
+			`test_id: "test/c"
+			status: FAIL
+			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1734113176
+			  nanos:   230575000
+			}
+			duration: {}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "FAIL	test/c [build failed]\n"
+			  }
+			}`)))
+		assert.That(t, trs[5], should.Match(mustParseTestResult(
+			`test_id: "test/d"
+			expected: true
+			status: PASS
+			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1734113176
+			  nanos:   230633000
+			}
+			duration: {
+			  nanos: 232000000
+			}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "PASS\nok  	test/d	0.232s\n"
+			  }
+			}`)))
+		assert.That(t, trs[6], should.Match(mustParseTestResult(
+			`test_id: "test/d.TestD"
+			expected: true
+			status: PASS
+			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1734113176
+			  nanos:   462169000
+			}
+			duration: {}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "=== RUN   TestD\n    d_test.go:8: D is okay\n--- PASS: TestD (0.00s)\n"
+			  }
+			}`)))
+	})
+	ftt.Run("test JSON build errors (Go 1.23 and older)", t, func(t *ftt.Test) {
+		trs, err := r.generateTestResults(context.Background(), []byte(goTestJSONBuildErrorGo123))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, trs, should.HaveLength(6))
+		assert.That(t, trs[0], should.Match(mustParseTestResult(
+			`test_id: "test/a"
+			expected: true
+			status: PASS
+			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1734116530
+			  nanos:   21159000
+			}
+			duration: {
+			  nanos: 234000000
+			}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "PASS\nok  	test/a	0.234s\n"
+			  }
+			}`)))
+		assert.That(t, trs[1], should.Match(mustParseTestResult(
+			`test_id: "test/a.TestA"
+			expected: true
+			status: PASS
+			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1734116530
+			  nanos:   254709000
+			}
+			duration: {}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "=== RUN   TestA\n    a_test.go:6: A is okay\n--- PASS: TestA (0.00s)\n"
+			  }
+			}`)))
+		assert.That(t, trs[2], should.Match(mustParseTestResult(
+			`test_id: "test/b"
+			status: FAIL
+			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1734116530
+			  nanos:   21296000
+			}
+			duration: {}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "FAIL	test/b [build failed]\n"
+			  }
+			}`)))
+		assert.That(t, trs[3], should.Match(mustParseTestResult(
+			`test_id: "test/c"
+			status: FAIL
+			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1734116530
+			  nanos:   21361000
+			}
+			duration: {}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "FAIL	test/c [build failed]\n"
+			  }
+			}`)))
+		assert.That(t, trs[4], should.Match(mustParseTestResult(
+			`test_id: "test/d"
+			expected: true
+			status: PASS
+			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1734116530
+			  nanos:   21398000
+			}
+			duration: {
+			  nanos: 398000000
+			}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "PASS\nok  	test/d	0.398s\n"
+			  }
+			}`)))
+		assert.That(t, trs[5], should.Match(mustParseTestResult(
+			`test_id: "test/d.TestD"
+			expected: true
+			status: PASS
+			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1734116530
+			  nanos:   418623000
+			}
+			duration: {}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "=== RUN   TestD\n    d_test.go:8: D is okay\n--- PASS: TestD (0.00s)\n"
+			  }
+			}`)))
+	})
+
+	ftt.Run("test JSON build warnings", t, func(t *ftt.Test) {
+		trs, err := r.generateTestResults(context.Background(), []byte(goTestJSONBuildWarning))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, trs, should.HaveLength(2))
+		assert.That(t, trs[0], should.Match(mustParseTestResult(
+			`status: ABORT
+			duration: {}
+			`)))
+		assert.That(t, trs[1], should.Match(mustParseTestResult(
+			`test_id: "test"
+			expected: true
+			status: PASS
+			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1736812206
+			  nanos:   318980000
+			}
+			duration: {
+			  nanos: 214000000
+			}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "testing: warning: no tests to run\nPASS\nok  	test	0.214s [no tests to run]\n"
+			  }
+			}`)))
+	})
+	ftt.Run("test JSON build warnings (Go 1.23 and older)", t, func(t *ftt.Test) {
+		trs, err := r.generateTestResults(context.Background(), []byte(goTestJSONBuildWarningGo123))
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, trs, should.HaveLength(1))
+		assert.That(t, trs[0], should.Match(mustParseTestResult(
+			`test_id: "test"
+			expected: true
+			status: PASS
+			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1736812228
+			  nanos:   261264000
+			}
+			duration: {
+			  nanos: 220000000
+			}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "testing: warning: no tests to run\nPASS\nok  	test	0.220s [no tests to run]\n"
+			  }
+			}`)))
+	})
+
 	ftt.Run(`parses skipped package`, t, func(t *ftt.Test) {
 		trs, err := r.generateTestResults(context.Background(),
 			[]byte(`{"Time":"2021-06-17T16:11:01.086366-07:00","Action":"output","Package":"go.chromium.org/luci/resultdb/internal/permissions","Output":"?   \tgo.chromium.org/luci/resultdb/internal/permissions\t[no test files]\n"}
@@ -309,6 +572,133 @@ var goTestJSONPkgLevelOutputFail = []byte(`
 {"Action":"output","Package":"example/pkg","Output":"hello world!\n"}
 {"Action":"fail","Package":"example/pkg"}
 `)
+
+const (
+	// goTestJSONBuildError holds stdout output from 'go test -json -count=1 ./...'
+	// that corresponds to running the following tests that involve build errors:
+	//
+	//	$ go test -v -count=1 ./...
+	//	# test/c
+	//	c/c.go:3:8: "os" imported and not used
+	//	# test/b [test/b.test]
+	//	b/b_test.go:5:8: "os" imported and not used
+	//	=== RUN   TestA
+	//	    a_test.go:6: A is okay
+	//	--- PASS: TestA (0.00s)
+	//	PASS
+	//	ok  	test/a	0.240s
+	//	FAIL	test/b [build failed]
+	//	FAIL	test/c [build failed]
+	//	=== RUN   TestD
+	//	    d_test.go:8: D is okay
+	//	--- PASS: TestD (0.00s)
+	//	PASS
+	//	ok  	test/d	0.392s
+	//	FAIL
+	//
+	//	$ go test -count=1 ./...
+	//	# test/c
+	//	c/c.go:3:8: "os" imported and not used
+	//	# test/b [test/b.test]
+	//	b/b_test.go:5:8: "os" imported and not used
+	//	ok  	test/a	0.395s
+	//	FAIL	test/b [build failed]
+	//	FAIL	test/c [build failed]
+	//	ok  	test/d	0.268s
+	//	FAIL
+	//
+	goTestJSONBuildError = `{"ImportPath":"test/c","Action":"build-output","Output":"# test/c\n"}
+{"ImportPath":"test/c","Action":"build-output","Output":"c/c.go:3:8: \"os\" imported and not used\n"}
+{"ImportPath":"test/c","Action":"build-fail"}
+{"ImportPath":"test/b [test/b.test]","Action":"build-output","Output":"# test/b [test/b.test]\n"}
+{"ImportPath":"test/b [test/b.test]","Action":"build-output","Output":"b/b_test.go:5:8: \"os\" imported and not used\n"}
+{"ImportPath":"test/b [test/b.test]","Action":"build-fail"}
+{"Time":"2024-12-13T13:06:16.230477-05:00","Action":"start","Package":"test/a"}
+{"Time":"2024-12-13T13:06:16.230551-05:00","Action":"start","Package":"test/b"}
+{"Time":"2024-12-13T13:06:16.230562-05:00","Action":"output","Package":"test/b","Output":"FAIL\ttest/b [build failed]\n"}
+{"Time":"2024-12-13T13:06:16.230566-05:00","Action":"fail","Package":"test/b","Elapsed":0,"FailedBuild":"test/b [test/b.test]"}
+{"Time":"2024-12-13T13:06:16.230575-05:00","Action":"start","Package":"test/c"}
+{"Time":"2024-12-13T13:06:16.230585-05:00","Action":"output","Package":"test/c","Output":"FAIL\ttest/c [build failed]\n"}
+{"Time":"2024-12-13T13:06:16.230588-05:00","Action":"fail","Package":"test/c","Elapsed":0,"FailedBuild":"test/c"}
+{"Time":"2024-12-13T13:06:16.230633-05:00","Action":"start","Package":"test/d"}
+{"Time":"2024-12-13T13:06:16.462169-05:00","Action":"run","Package":"test/d","Test":"TestD"}
+{"Time":"2024-12-13T13:06:16.462322-05:00","Action":"output","Package":"test/d","Test":"TestD","Output":"=== RUN   TestD\n"}
+{"Time":"2024-12-13T13:06:16.462356-05:00","Action":"output","Package":"test/d","Test":"TestD","Output":"    d_test.go:8: D is okay\n"}
+{"Time":"2024-12-13T13:06:16.46237-05:00","Action":"output","Package":"test/d","Test":"TestD","Output":"--- PASS: TestD (0.00s)\n"}
+{"Time":"2024-12-13T13:06:16.462375-05:00","Action":"pass","Package":"test/d","Test":"TestD","Elapsed":0}
+{"Time":"2024-12-13T13:06:16.462381-05:00","Action":"output","Package":"test/d","Output":"PASS\n"}
+{"Time":"2024-12-13T13:06:16.463066-05:00","Action":"output","Package":"test/d","Output":"ok  \ttest/d\t0.232s\n"}
+{"Time":"2024-12-13T13:06:16.463087-05:00","Action":"pass","Package":"test/d","Elapsed":0.232}
+{"Time":"2024-12-13T13:06:16.630042-05:00","Action":"run","Package":"test/a","Test":"TestA"}
+{"Time":"2024-12-13T13:06:16.630076-05:00","Action":"output","Package":"test/a","Test":"TestA","Output":"=== RUN   TestA\n"}
+{"Time":"2024-12-13T13:06:16.630109-05:00","Action":"output","Package":"test/a","Test":"TestA","Output":"    a_test.go:6: A is okay\n"}
+{"Time":"2024-12-13T13:06:16.630118-05:00","Action":"output","Package":"test/a","Test":"TestA","Output":"--- PASS: TestA (0.00s)\n"}
+{"Time":"2024-12-13T13:06:16.630123-05:00","Action":"pass","Package":"test/a","Test":"TestA","Elapsed":0}
+{"Time":"2024-12-13T13:06:16.63013-05:00","Action":"output","Package":"test/a","Output":"PASS\n"}
+{"Time":"2024-12-13T13:06:16.630519-05:00","Action":"output","Package":"test/a","Output":"ok  \ttest/a\t0.400s\n"}
+{"Time":"2024-12-13T13:06:16.630537-05:00","Action":"pass","Package":"test/a","Elapsed":0.4}
+`
+	// goTestJSONBuildErrorGo123 is like goTestJSONBuildError, except it was generated with Go 1.23.
+	//
+	// Build output and failures are not present here, because they're sent to stderr.
+	goTestJSONBuildErrorGo123 = `{"Time":"2024-12-13T14:02:10.021159-05:00","Action":"start","Package":"test/a"}
+{"Time":"2024-12-13T14:02:10.021296-05:00","Action":"start","Package":"test/b"}
+{"Time":"2024-12-13T14:02:10.021337-05:00","Action":"output","Package":"test/b","Output":"FAIL\ttest/b [build failed]\n"}
+{"Time":"2024-12-13T14:02:10.021347-05:00","Action":"fail","Package":"test/b","Elapsed":0}
+{"Time":"2024-12-13T14:02:10.021361-05:00","Action":"start","Package":"test/c"}
+{"Time":"2024-12-13T14:02:10.02137-05:00","Action":"output","Package":"test/c","Output":"FAIL\ttest/c [build failed]\n"}
+{"Time":"2024-12-13T14:02:10.021373-05:00","Action":"fail","Package":"test/c","Elapsed":0}
+{"Time":"2024-12-13T14:02:10.021398-05:00","Action":"start","Package":"test/d"}
+{"Time":"2024-12-13T14:02:10.254709-05:00","Action":"run","Package":"test/a","Test":"TestA"}
+{"Time":"2024-12-13T14:02:10.254779-05:00","Action":"output","Package":"test/a","Test":"TestA","Output":"=== RUN   TestA\n"}
+{"Time":"2024-12-13T14:02:10.254808-05:00","Action":"output","Package":"test/a","Test":"TestA","Output":"    a_test.go:6: A is okay\n"}
+{"Time":"2024-12-13T14:02:10.254837-05:00","Action":"output","Package":"test/a","Test":"TestA","Output":"--- PASS: TestA (0.00s)\n"}
+{"Time":"2024-12-13T14:02:10.254839-05:00","Action":"pass","Package":"test/a","Test":"TestA","Elapsed":0}
+{"Time":"2024-12-13T14:02:10.254843-05:00","Action":"output","Package":"test/a","Output":"PASS\n"}
+{"Time":"2024-12-13T14:02:10.255042-05:00","Action":"output","Package":"test/a","Output":"ok  \ttest/a\t0.234s\n"}
+{"Time":"2024-12-13T14:02:10.255062-05:00","Action":"pass","Package":"test/a","Elapsed":0.234}
+{"Time":"2024-12-13T14:02:10.418623-05:00","Action":"run","Package":"test/d","Test":"TestD"}
+{"Time":"2024-12-13T14:02:10.418652-05:00","Action":"output","Package":"test/d","Test":"TestD","Output":"=== RUN   TestD\n"}
+{"Time":"2024-12-13T14:02:10.418672-05:00","Action":"output","Package":"test/d","Test":"TestD","Output":"    d_test.go:8: D is okay\n"}
+{"Time":"2024-12-13T14:02:10.418677-05:00","Action":"output","Package":"test/d","Test":"TestD","Output":"--- PASS: TestD (0.00s)\n"}
+{"Time":"2024-12-13T14:02:10.41868-05:00","Action":"pass","Package":"test/d","Test":"TestD","Elapsed":0}
+{"Time":"2024-12-13T14:02:10.418684-05:00","Action":"output","Package":"test/d","Output":"PASS\n"}
+{"Time":"2024-12-13T14:02:10.419001-05:00","Action":"output","Package":"test/d","Output":"ok  \ttest/d\t0.398s\n"}
+{"Time":"2024-12-13T14:02:10.419021-05:00","Action":"pass","Package":"test/d","Elapsed":0.398}
+`
+
+	// goTestJSONBuildWarning holds stdout output from 'go test -json -count=1 ./...'
+	// that corresponds to running the following tests that involve build warnings:
+	//
+	//	$ go test -v -count=1 ./...
+	//	# test.test
+	//	ld: warning: ignoring duplicate libraries: '-lobjc'
+	//	testing: warning: no tests to run
+	//	PASS
+	//	ok  	test	0.225s [no tests to run]
+	//
+	//	$ go test -count=1 ./...
+	//	# test.test
+	//	ld: warning: ignoring duplicate libraries: '-lobjc'
+	//	ok  	test	0.216s [no tests to run]
+	//
+	goTestJSONBuildWarning = `{"ImportPath":"test.test","Action":"build-output","Output":"# test.test\nld: warning: ignoring duplicate libraries: '-lobjc'\n"}
+{"Time":"2025-01-13T18:50:06.31898-05:00","Action":"start","Package":"test"}
+{"Time":"2025-01-13T18:50:06.532973-05:00","Action":"output","Package":"test","Output":"testing: warning: no tests to run\n"}
+{"Time":"2025-01-13T18:50:06.533027-05:00","Action":"output","Package":"test","Output":"PASS\n"}
+{"Time":"2025-01-13T18:50:06.533313-05:00","Action":"output","Package":"test","Output":"ok  \ttest\t0.214s [no tests to run]\n"}
+{"Time":"2025-01-13T18:50:06.533339-05:00","Action":"pass","Package":"test","Elapsed":0.214}
+`
+	// goTestJSONBuildWarningGo123 is like goTestJSONBuildWarning, except it was generated with Go 1.23.
+	//
+	// Build output and failures are not present here, because they're sent to stderr.
+	goTestJSONBuildWarningGo123 = `{"Time":"2025-01-13T18:50:28.261264-05:00","Action":"start","Package":"test"}
+{"Time":"2025-01-13T18:50:28.48058-05:00","Action":"output","Package":"test","Output":"testing: warning: no tests to run\n"}
+{"Time":"2025-01-13T18:50:28.480678-05:00","Action":"output","Package":"test","Output":"PASS\n"}
+{"Time":"2025-01-13T18:50:28.48109-05:00","Action":"output","Package":"test","Output":"ok  \ttest\t0.220s [no tests to run]\n"}
+{"Time":"2025-01-13T18:50:28.481111-05:00","Action":"pass","Package":"test","Elapsed":0.22}
+`
+)
 
 func TestCopyTestOutput(t *testing.T) {
 	type test struct {
@@ -394,6 +784,95 @@ hello world!
 FAIL
 FAIL	example/pkg	0.123s
 hello world!
+`,
+		},
+		// TODO(go.dev/issue/70435): Improve handling of Go 1.24's go test -json output, and update test cases.
+		{
+			name:    "BuildErrorVerbose",
+			verbose: true,
+			input:   []byte(goTestJSONBuildError),
+			expect: `=== RUN   TestA
+    a_test.go:6: A is okay
+--- PASS: TestA (0.00s)
+PASS
+ok  	test/a	0.400s
+FAIL	test/b [build failed]
+FAIL	test/c [build failed]
+=== RUN   TestD
+    d_test.go:8: D is okay
+--- PASS: TestD (0.00s)
+PASS
+ok  	test/d	0.232s
+`,
+		},
+		{
+			name:    "BuildErrorNonVerbose",
+			verbose: false,
+			input:   []byte(goTestJSONBuildError),
+			expect: `ok  	test/a	0.400s
+FAIL	test/b [build failed]
+FAIL	test/c [build failed]
+ok  	test/d	0.232s
+`,
+		},
+		{
+			name:    "BuildErrorVerboseGo123",
+			verbose: true,
+			input:   []byte(goTestJSONBuildErrorGo123),
+			expect: `=== RUN   TestA
+    a_test.go:6: A is okay
+--- PASS: TestA (0.00s)
+PASS
+ok  	test/a	0.234s
+FAIL	test/b [build failed]
+FAIL	test/c [build failed]
+=== RUN   TestD
+    d_test.go:8: D is okay
+--- PASS: TestD (0.00s)
+PASS
+ok  	test/d	0.398s
+`,
+		},
+		{
+			name:    "BuildErrorNonVerboseGo123",
+			verbose: false,
+			input:   []byte(goTestJSONBuildErrorGo123),
+			expect: `ok  	test/a	0.234s
+FAIL	test/b [build failed]
+FAIL	test/c [build failed]
+ok  	test/d	0.398s
+`,
+		},
+		{
+			name:    "BuildWarningVerbose",
+			verbose: true,
+			input:   []byte(goTestJSONBuildWarning),
+			expect: `testing: warning: no tests to run
+PASS
+ok  	test	0.214s [no tests to run]
+`,
+		},
+		{
+			name:    "BuildWarningNonVerbose",
+			verbose: false,
+			input:   []byte(goTestJSONBuildWarning),
+			expect: `ok  	test	0.214s [no tests to run]
+`,
+		},
+		{
+			name:    "BuildWarningVerboseGo123",
+			verbose: true,
+			input:   []byte(goTestJSONBuildWarningGo123),
+			expect: `testing: warning: no tests to run
+PASS
+ok  	test	0.220s [no tests to run]
+`,
+		},
+		{
+			name:    "BuildWarningNonVerboseGo123",
+			verbose: false,
+			input:   []byte(goTestJSONBuildWarningGo123),
+			expect: `ok  	test	0.220s [no tests to run]
 `,
 		},
 	} {

@@ -112,6 +112,7 @@ func goTestJSONToPackageRecords(ctx context.Context, data []byte, copyTestOutput
 			logging.Warningf(ctx, "cannot parse row %q, %s", string(l), err)
 			continue
 		}
+		// TODO(go.dev/issue/70435): Improve handling of Go 1.24's go test -json output.
 		currentRecord := byID[tEvt.Package]
 		if currentRecord == nil {
 			currentRecord = &PackageRecord{
@@ -157,7 +158,7 @@ type PackageRecord struct {
 	PackageName string // Import path of the go package.
 	Result      string // Out of a subset of the values for TestEvent.Action as applicable.
 	Started     time.Time
-	Elapsed     float64         //seconds
+	Elapsed     float64         // seconds
 	Output      strings.Builder // Output for the package, excluding output attributed to individual tests.
 
 	TestsByName  map[string]*TestRecord
@@ -171,7 +172,7 @@ type TestRecord struct {
 	PackageName string // Import path of the Go package that the test is a part of.
 	Result      string // Out of a subset of the values for TestEvent.Action as applicable.
 	Started     time.Time
-	Elapsed     float64 //seconds
+	Elapsed     float64 // seconds
 	Output      strings.Builder
 }
 
