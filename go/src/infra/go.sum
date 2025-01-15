@@ -773,8 +773,8 @@ go.opentelemetry.io/proto/otlp v1.4.0 h1:TA9WRvW6zMwP+Ssb6fLoUIuirti1gGbP28GcKG1
 go.opentelemetry.io/proto/otlp v1.4.0/go.mod h1:PPBWZIP98o2ElSqI35IHfu7hIhSwvc5N38Jw8pXuGFY=
 go.skia.org/infra v0.0.0-20240823043022-8db4baf70cfc h1:4fdyi6d1Q2pjZg7Cb63giNeMiPRFnTBywnn45G+wnqg=
 go.skia.org/infra v0.0.0-20240823043022-8db4baf70cfc/go.mod h1:zueFfZykW8MrW4sYGwR0Xwk0n/wc0JmXAza1BEoQ5HQ=
-go.starlark.net v0.0.0-20240925182052-1207426daebd h1:S+EMisJOHklQxnS3kqsY8jl2y5aF0FDEdcLnOw3q22E=
-go.starlark.net v0.0.0-20240925182052-1207426daebd/go.mod h1:YKMCv9b1WrfWmeqdV5MAuEHWsu5iC+fe6kYl2sQjdI8=
+go.starlark.net v0.0.0-20241226192728-8dfa5b98479f h1:Zs/py28HDFATSDzPcfIzrBFjVsV7HzDEGNNVZIGsjm0=
+go.starlark.net v0.0.0-20241226192728-8dfa5b98479f/go.mod h1:YKMCv9b1WrfWmeqdV5MAuEHWsu5iC+fe6kYl2sQjdI8=
 go.uber.org/atomic v1.3.2/go.mod h1:gD2HeocX3+yG+ygLZcrzQJaqmWj9AIm7n08wl/qW/PE=
 go.uber.org/atomic v1.4.0/go.mod h1:gD2HeocX3+yG+ygLZcrzQJaqmWj9AIm7n08wl/qW/PE=
 go.uber.org/atomic v1.5.0/go.mod h1:sABNBOSYdrvTF6hTgEIbc7YasKWGhgEQZyfxyTvoXHQ=
