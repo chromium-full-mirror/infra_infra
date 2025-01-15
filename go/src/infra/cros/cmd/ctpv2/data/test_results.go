@@ -143,15 +143,16 @@ func (t *TestResults) GetTestCounts() (int, int, int) {
 	totalTestCount := 0
 	totalFailedTestCount := 0
 	totalFailedTestRunCount := 0
-	testCasesFoundInResutls := 0
+	parentTestCasesFoundInResults := 0
 	testCasesNames := common.GetFlattenedTestCases(t.TestCases)
+	testCasesNamesWithModuleInfoOnly := common.ExtractModulesIfSubModulesProvided(testCasesNames)
 
 	// Handle android generic results
 	genericResults := t.Results.GetAndroidGenericResult().GetGivenTestCases()
 	if len(genericResults) > 0 {
 		for _, givenTestCase := range genericResults {
-			if slices.Contains(testCasesNames, givenTestCase.ParentTest) {
-				testCasesFoundInResutls++
+			if slices.Contains(testCasesNamesWithModuleInfoOnly, givenTestCase.ParentTest) {
+				parentTestCasesFoundInResults++
 			}
 			for _, testCase := range givenTestCase.GetChildTestCases() {
 				totalTestCount++
@@ -161,7 +162,7 @@ func (t *TestResults) GetTestCounts() (int, int, int) {
 			}
 		}
 
-		totalFailedTestRunCount = len(testCasesNames) - testCasesFoundInResutls
+		totalFailedTestRunCount = len(testCasesNamesWithModuleInfoOnly) - parentTestCasesFoundInResults
 		// totalFailedTestRunCount cannot be negative
 		if totalFailedTestRunCount < 0 {
 			totalFailedTestRunCount = 0

@@ -82,3 +82,17 @@ func GetFlattenedTestCases(ctpTestCases []*api.TestCase_Id) []string {
 
 	return testCasesNames
 }
+
+func ExtractModulesIfSubModulesProvided(testCases []string) []string {
+	resultedTcs := []string{}
+	moduleMap := map[string]bool{}
+	for _, testCase := range testCases {
+		moduleName := strings.Split(testCase, " ")[0]
+		if _, ok := moduleMap[moduleName]; !ok {
+			moduleMap[moduleName] = true
+			resultedTcs = append(resultedTcs, moduleName)
+		}
+	}
+
+	return resultedTcs
+}

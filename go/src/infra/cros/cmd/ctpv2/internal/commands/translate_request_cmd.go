@@ -426,11 +426,13 @@ func executionMetadata(req *api.CTPRequest, isPartnerRun bool) *api.ExecutionMet
 				v = ""
 			}
 		}
-		kvproto := &testapi.Arg{
-			Flag:  k,
-			Value: v,
+		if k != "" && v != "" {
+			kvproto := &testapi.Arg{
+				Flag:  k,
+				Value: v,
+			}
+			things = append(things, kvproto)
 		}
-		things = append(things, kvproto)
 	}
 
 	args.Args = things
