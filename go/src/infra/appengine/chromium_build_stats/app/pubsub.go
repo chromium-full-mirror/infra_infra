@@ -70,6 +70,10 @@ func pubsubHandler(w http.ResponseWriter, req *http.Request) {
 	}
 
 	info, err := getFile(ctx, filename, bucketID)
+	if err != nil {
+		log.Debugf(ctx, "failed to get file %q in bucket %q", filename, bucketID)
+		return
+	}
 
 	// Use invocation ID for Trace upload if available.
 	invID, err := uuid.Parse(info.Metadata.InvocationID)
