@@ -31,8 +31,8 @@ require (
 	github.com/aclements/go-moremath v0.0.0-20210112150236-f10218a38794
 	github.com/andygrunwald/go-gerrit v0.0.0-20210726065827-cc4e14e40b5b
 	github.com/bazelbuild/reclient/api v0.0.0-20240617160057-89d6134e48e5
-	github.com/bazelbuild/remote-apis v0.0.0-20240926071355-6777112ef7de
-	github.com/bazelbuild/remote-apis-sdks v0.0.0-20240910213405-f4821a2a072c
+	github.com/bazelbuild/remote-apis v0.0.0-20250106163131-9a0af1d31814
+	github.com/bazelbuild/remote-apis-sdks v0.0.0-20250110170550-8bf84d3488e5
 	github.com/beevik/etree v1.4.1
 	github.com/biogo/hts v1.4.5
 	github.com/bmatcuk/doublestar v1.3.4
