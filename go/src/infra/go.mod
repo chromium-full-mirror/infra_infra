@@ -39,7 +39,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.3.0
 	github.com/containerd/cgroups v1.1.0
 	github.com/danjacques/gofslock v0.0.0-20240212154529-d899e02bfe22
-	github.com/docker/docker v27.1.2+incompatible
+	github.com/docker/docker v27.5.0+incompatible
 	github.com/docker/go-connections v0.5.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/electricbubble/gadb v0.1.1-0.20240523030754-97c5a1a929a9
