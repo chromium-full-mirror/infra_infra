@@ -52,13 +52,13 @@ func Port(ctx context.Context) int {
 	val := strings.TrimSpace(os.Getenv("ADB_CONNECTION_PORT"))
 	if val != "" {
 		if port, err := strconv.Atoi(val); err != nil {
-			log.Infof(ctx, "Fail to parse ADB port from environment: %q, will use default port 22", val)
+			log.Infof(ctx, "Fail to parse ADB port from environment: %q, will use default port 5555", val)
 		} else {
 			return port
 		}
 	}
 	// Default ADB port for connection.
-	return 22
+	return 5555
 }
 
 func init() {
