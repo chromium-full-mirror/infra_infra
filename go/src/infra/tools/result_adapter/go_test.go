@@ -234,16 +234,11 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 	})
 
-	// TODO(go.dev/issue/70435): Improve handling of Go 1.24's go test -json output, and update test cases.
 	ftt.Run("test JSON build errors", t, func(t *ftt.Test) {
 		trs, err := r.generateTestResults(context.Background(), []byte(goTestJSONBuildError))
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, trs, should.HaveLength(7))
+		assert.Loosely(t, trs, should.HaveLength(6))
 		assert.That(t, trs[0], should.Match(mustParseTestResult(
-			`status: ABORT
-			duration: {}
-			`)))
-		assert.That(t, trs[1], should.Match(mustParseTestResult(
 			`test_id: "test/a"
 			expected: true
 			status: PASS
@@ -261,7 +256,7 @@ func TestGenerateTestResults(t *testing.T) {
 			    contents: "PASS\nok  	test/a	0.400s\n"
 			  }
 			}`)))
-		assert.That(t, trs[2], should.Match(mustParseTestResult(
+		assert.That(t, trs[1], should.Match(mustParseTestResult(
 			`test_id: "test/a.TestA"
 			expected: true
 			status: PASS
@@ -277,7 +272,7 @@ func TestGenerateTestResults(t *testing.T) {
 			    contents: "=== RUN   TestA\n    a_test.go:6: A is okay\n--- PASS: TestA (0.00s)\n"
 			  }
 			}`)))
-		assert.That(t, trs[3], should.Match(mustParseTestResult(
+		assert.That(t, trs[2], should.Match(mustParseTestResult(
 			`test_id: "test/b"
 			status: FAIL
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
@@ -289,10 +284,10 @@ func TestGenerateTestResults(t *testing.T) {
 			artifacts: {
 			  key: "output"
 			  value: {
-			    contents: "FAIL	test/b [build failed]\n"
+			    contents: "FAIL	test/b [build failed]\n# test/b [test/b.test]\nb/b_test.go:5:8: \"os\" imported and not used\n"
 			  }
 			}`)))
-		assert.That(t, trs[4], should.Match(mustParseTestResult(
+		assert.That(t, trs[3], should.Match(mustParseTestResult(
 			`test_id: "test/c"
 			status: FAIL
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
@@ -304,10 +299,10 @@ func TestGenerateTestResults(t *testing.T) {
 			artifacts: {
 			  key: "output"
 			  value: {
-			    contents: "FAIL	test/c [build failed]\n"
+			    contents: "FAIL	test/c [build failed]\n# test/c\nc/c.go:3:8: \"os\" imported and not used\n"
 			  }
 			}`)))
-		assert.That(t, trs[5], should.Match(mustParseTestResult(
+		assert.That(t, trs[4], should.Match(mustParseTestResult(
 			`test_id: "test/d"
 			expected: true
 			status: PASS
@@ -325,7 +320,7 @@ func TestGenerateTestResults(t *testing.T) {
 			    contents: "PASS\nok  	test/d	0.232s\n"
 			  }
 			}`)))
-		assert.That(t, trs[6], should.Match(mustParseTestResult(
+		assert.That(t, trs[5], should.Match(mustParseTestResult(
 			`test_id: "test/d.TestD"
 			expected: true
 			status: PASS
@@ -451,10 +446,6 @@ func TestGenerateTestResults(t *testing.T) {
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, trs, should.HaveLength(2))
 		assert.That(t, trs[0], should.Match(mustParseTestResult(
-			`status: ABORT
-			duration: {}
-			`)))
-		assert.That(t, trs[1], should.Match(mustParseTestResult(
 			`test_id: "test"
 			expected: true
 			status: PASS
@@ -470,6 +461,18 @@ func TestGenerateTestResults(t *testing.T) {
 			  key: "output"
 			  value: {
 			    contents: "testing: warning: no tests to run\nPASS\nok  	test	0.214s [no tests to run]\n"
+			  }
+			}`)))
+		assert.That(t, trs[1], should.Match(mustParseTestResult(
+			`test_id: "test.test"
+			expected: true
+			status: PASS
+			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			duration: {}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "# test.test\nld: warning: ignoring duplicate libraries: '-lobjc'\n"
 			  }
 			}`)))
 	})
@@ -786,7 +789,6 @@ FAIL	example/pkg	0.123s
 hello world!
 `,
 		},
-		// TODO(go.dev/issue/70435): Improve handling of Go 1.24's go test -json output, and update test cases.
 		{
 			name:    "BuildErrorVerbose",
 			verbose: true,
@@ -797,7 +799,11 @@ hello world!
 PASS
 ok  	test/a	0.400s
 FAIL	test/b [build failed]
+# test/b [test/b.test]
+b/b_test.go:5:8: "os" imported and not used
 FAIL	test/c [build failed]
+# test/c
+c/c.go:3:8: "os" imported and not used
 === RUN   TestD
     d_test.go:8: D is okay
 --- PASS: TestD (0.00s)
@@ -811,7 +817,11 @@ ok  	test/d	0.232s
 			input:   []byte(goTestJSONBuildError),
 			expect: `ok  	test/a	0.400s
 FAIL	test/b [build failed]
+# test/b [test/b.test]
+b/b_test.go:5:8: "os" imported and not used
 FAIL	test/c [build failed]
+# test/c
+c/c.go:3:8: "os" imported and not used
 ok  	test/d	0.232s
 `,
 		},
@@ -850,6 +860,8 @@ ok  	test/d	0.398s
 			expect: `testing: warning: no tests to run
 PASS
 ok  	test	0.214s [no tests to run]
+# test.test
+ld: warning: ignoring duplicate libraries: '-lobjc'
 `,
 		},
 		{

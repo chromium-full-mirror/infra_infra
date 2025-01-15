@@ -74,17 +74,14 @@ func (r *goRun) generateTestResults(ctx context.Context, data []byte) ([]*sinkpb
 
 // goTestJSONToPackageRecords parses one line at a time from the given output,
 // which is expected to be the one produced by `go test -json <package>`.
-// It converts each line to TestEvent and ingests it into a PackageRecord.
+// It converts each line to GoTestEvent and ingests it into a PackageRecord.
 // copyTestOutput optionally specifies where to write a copy of test output.
 // The resulting PackageRecord(s) are returned to the caller as a slice in the
 // same order as they were initially seen.
 func goTestJSONToPackageRecords(ctx context.Context, data []byte, copyTestOutput io.Writer, verboseTestOutput bool) []*PackageRecord {
 	var ordered []*PackageRecord
-	byID := make(map[string]*PackageRecord)
-	// Ensure that the scanner below returns the last line in the output.
-	if !bytes.HasSuffix(data, []byte("\n")) {
-		data = append(data, []byte("\n")...)
-	}
+	byID := make(map[string]*PackageRecord)       // Map key is the 'Package' field.
+	buildRecords := make(map[string]*BuildRecord) // Map key is the 'ImportPath' field.
 
 	// Set up the test renderer, which will render the go test -json events
 	// to copyTestOutput.
@@ -93,12 +90,16 @@ func goTestJSONToPackageRecords(ctx context.Context, data []byte, copyTestOutput
 	if copyTestOutput != nil {
 		rn = NewGoTestRenderer(copyTestOutput, verboseTestOutput)
 		defer func() {
-			if err := rn.Close(); err != nil {
+			if err := rn.Close(renderFailed); err != nil {
 				logging.Warningf(ctx, "failed to finish test output rendering: %v", err)
 			}
 		}()
 	}
 
+	// Ensure that the scanner below returns the last line in the output.
+	if !bytes.HasSuffix(data, []byte{'\n'}) {
+		data = append(data, '\n')
+	}
 	lines := bufio.NewScanner(bytes.NewReader(data))
 	// Iterate over output, parsing an event from each line and making the
 	// appropriate record ingest it.
@@ -112,17 +113,25 @@ func goTestJSONToPackageRecords(ctx context.Context, data []byte, copyTestOutput
 			logging.Warningf(ctx, "cannot parse row %q, %s", string(l), err)
 			continue
 		}
-		// TODO(go.dev/issue/70435): Improve handling of Go 1.24's go test -json output.
-		currentRecord := byID[tEvt.Package]
-		if currentRecord == nil {
-			currentRecord = &PackageRecord{
-				PackageName: tEvt.Package,
-				TestsByName: make(map[string]*TestRecord),
+		if tEvt.IsBuildEvent() {
+			br := buildRecords[tEvt.ImportPath]
+			if br == nil {
+				br = new(BuildRecord)
+				buildRecords[tEvt.ImportPath] = br
 			}
-			ordered = append(ordered, currentRecord)
-			byID[currentRecord.PackageName] = currentRecord
+			br.ingest(tEvt)
+		} else {
+			pr := byID[tEvt.Package]
+			if pr == nil {
+				pr = &PackageRecord{
+					PackageName: tEvt.Package,
+					TestsByName: make(map[string]*TestRecord),
+				}
+				ordered = append(ordered, pr)
+				byID[pr.PackageName] = pr
+			}
+			pr.ingest(tEvt, buildRecords)
 		}
-		currentRecord.ingest(tEvt)
 
 		// Pass events to the renderer, if available. If we ever fail to render,
 		// stop rendering, otherwise we'll likely be emitting a lot of error lines
@@ -134,29 +143,87 @@ func goTestJSONToPackageRecords(ctx context.Context, data []byte, copyTestOutput
 			}
 		}
 	}
+
+	// By now, the buildRecords map is most likely empty because its content has
+	// been consumed by test events with the corresponding FailedBuild field.
+	// However, in some cases there may be build output without a corresponding
+	// test event (for example, if there are build warnings and no test failure).
+	//
+	// So, if we get this far and there's any build output left, append it to the
+	// closest fit package record we find, creating new package records if there's
+	// no exact match.
+	for importPath, br := range buildRecords {
+		pr := byID[importPath]
+		if pr == nil {
+			pr = &PackageRecord{
+				PackageName: importPath,
+				TestsByName: make(map[string]*TestRecord),
+			}
+			ordered = append(ordered, pr)
+			byID[pr.PackageName] = pr
+
+			// By default, treat build-output with no build-fail
+			// as a passing result. This corresponds to behavior
+			// like compiler warnings.
+			pr.Result = "pass"
+		}
+		if pr.Result == "pass" && br.Fail {
+			// If the package record was passing but we observed
+			// a build-fail event, change it to a failing result.
+			pr.Result = "fail"
+		}
+		pr.Output.WriteString(br.Output.String())
+	}
+
 	return ordered
 }
 
-func parseRow(s []byte) (*TestEvent, error) {
-	new := &TestEvent{}
+func parseRow(s []byte) (*GoTestEvent, error) {
+	new := &GoTestEvent{}
 	return new, json.Unmarshal(s, new)
 }
 
-// TestEvent represents each json object produced by `go test -json`.
-// Details at https://go.dev/cmd/test2json.
-type TestEvent struct {
+// GoTestEvent represents each JSON object produced by `go test -json`.
+//
+// It corresponds to either the TestEvent struct, or
+// the BuildEvent struct; IsBuildEvent reports which.
+//
+// See https://go.dev/cmd/test2json#hdr-Output_Format
+// and https://go.dev/cmd/go#hdr-Build__json_encoding.
+type GoTestEvent struct {
 	Time    time.Time // encodes as an RFC3339-format string
 	Action  string
 	Package string
 	Test    string
 	Elapsed float64 // seconds
 	Output  string
+
+	// FailedBuild is set for Action == "fail" if the test failure was caused
+	// by a build failure. It contains the package ID of the package that failed
+	// to build. This matches the ImportPath field of the "go list" output,
+	// as well as the BuildEvent.ImportPath field as emitted by "go build -json".
+	//
+	// This field is populated in Go 1.24 and newer, unless the user opts out of
+	// the new behavior using the GODEBUG setting gotestjsonbuildtext.
+	// See https://go.dev/doc/go1.24#go-command.
+	FailedBuild string
+
+	// ImportPath holds the package ID of the package being built.
+	// This field exists only in BuildEvent objects.
+	ImportPath string
 }
+
+// IsBuildEvent reports whether this event is a test event, or build event.
+//
+// As of Go 1.24, the two possible build events are build-output and build-fail.
+// More build events are not expected to be added soon, but if so, they'll also
+// have a "build-" prefix.
+func (e *GoTestEvent) IsBuildEvent() bool { return strings.HasPrefix(e.Action, "build-") }
 
 // PackageRecord represents the results of a single package.
 type PackageRecord struct {
 	PackageName string // Import path of the go package.
-	Result      string // Out of a subset of the values for TestEvent.Action as applicable.
+	Result      string // Out of a subset of the values for GoTestEvent.Action as applicable.
 	Started     time.Time
 	Elapsed     float64         // seconds
 	Output      strings.Builder // Output for the package, excluding output attributed to individual tests.
@@ -170,13 +237,18 @@ type PackageRecord struct {
 type TestRecord struct {
 	TestName    string // TestName is the name of the test within the package.
 	PackageName string // Import path of the Go package that the test is a part of.
-	Result      string // Out of a subset of the values for TestEvent.Action as applicable.
+	Result      string // Out of a subset of the values for GoTestEvent.Action as applicable.
 	Started     time.Time
 	Elapsed     float64 // seconds
 	Output      strings.Builder
 }
 
-func (pr *PackageRecord) ingest(te *TestEvent) {
+// ingest updates the fields of the package record according to the contents of
+// the given test event.
+//
+// Whenever a test event has a non-empty FailedBuild field, ingest consumes the
+// corresponding BuildRecord and deletes it from buildRecords.
+func (pr *PackageRecord) ingest(te *GoTestEvent, buildRecords map[string]*BuildRecord) {
 	if te.Test == "" {
 		switch te.Action {
 		// Action string values from https://go.dev/cmd/test2json.
@@ -194,6 +266,22 @@ func (pr *PackageRecord) ingest(te *TestEvent) {
 		default:
 			// Ignore.
 		}
+
+		// Include information about the build failure that caused this test failure.
+		if te.FailedBuild != "" {
+			br, ok := buildRecords[te.FailedBuild]
+			if !ok {
+				// This should not happen under normal circumstances.
+				// Report some details about it if it happens anyway.
+				br = new(BuildRecord)
+				fmt.Fprintf(&br.Output, "unexpected case: encountered a TestEvent with FailedBuild field %q, but no corresponding BuildEvent", te.FailedBuild)
+			}
+			pr.Output.WriteString(br.Output.String())
+
+			// The build record was consumed, delete it from the map.
+			delete(buildRecords, te.FailedBuild)
+		}
+
 	} else {
 		// Record for a specific test.
 		testRecord := pr.TestsByName[te.Test]
@@ -275,7 +363,7 @@ func (pr *PackageRecord) toTestProtos(ctx context.Context) []*sinkpb.TestResult 
 // Tests running in parallel that choose not to use t.Log/t.Error and instead
 // write to stdout/stderr directly may result in output being associated with
 // the wrong test. See https://go.dev/issue/23036#issuecomment-355669573.
-func (tr *TestRecord) ingest(te *TestEvent) {
+func (tr *TestRecord) ingest(te *GoTestEvent) {
 	if tr.PackageName == "" {
 		tr.PackageName = te.Package
 	}
@@ -343,27 +431,55 @@ func (tr *TestRecord) toProto(ctx context.Context, packagePassed bool) *sinkpb.T
 	return result
 }
 
+// BuildRecord represents the results of building a single package.
+//
+// A single build record aggregates information from several build
+// events, grouping that information by the Go package import path.
+type BuildRecord struct {
+	Output strings.Builder
+	Fail   bool // Whether a build-fail event was seen for this import path.
+}
+
+// ingest ingests te, which must be a build event,
+// and updates the build record br accordingly.
+func (br *BuildRecord) ingest(te *GoTestEvent) {
+	switch te.Action {
+	case "build-output":
+		br.Output.WriteString(te.Output)
+	case "build-fail":
+		br.Fail = true
+	default:
+		// Ignore.
+		//
+		// In the unlikely case a new build event is added,
+		// it's likely safe to ignore it by default, until
+		// result_adapter gets updated to handle it better.
+	}
+}
+
 // GoTestRenderer takes a go test -json event stream and renders it as text.
 //
 // It supports two modes: verbose and non-verbose mode. They correspond
 // roughly to the output of "go test" with and without -v respectively.
 type GoTestRenderer struct {
-	w       io.Writer
-	testOut map[string]*pkg
-	pkgs    []string
-	verbose bool
+	w            io.Writer
+	testOut      map[string]*pkg         // Map key is the 'Package' field.
+	buildRecords map[string]*BuildRecord // Map key is the 'ImportPath' field.
+	pkgs         []string
+	verbose      bool
 }
 
 func NewGoTestRenderer(w io.Writer, verbose bool) *GoTestRenderer {
 	return &GoTestRenderer{
-		w:       w,
-		testOut: make(map[string]*pkg),
-		verbose: verbose,
+		w:            w,
+		testOut:      make(map[string]*pkg),
+		buildRecords: make(map[string]*BuildRecord),
+		verbose:      verbose,
 	}
 }
 
 // Ingest consumes the next event from a go test -json event stream.
-func (r *GoTestRenderer) Ingest(ev *TestEvent) error {
+func (r *GoTestRenderer) Ingest(ev *GoTestEvent) error {
 	// If we see any output from a package, record that
 	// we've seen that package.
 	if ev.Package != "" && r.testOut[ev.Package] == nil {
@@ -371,6 +487,22 @@ func (r *GoTestRenderer) Ingest(ev *TestEvent) error {
 		r.pkgs = append(r.pkgs, ev.Package)
 	}
 
+	// If this is a build event, ingest it as such.
+	//
+	// Most build events will be consumed by later
+	// test events with matching FailedBuild field.
+	if ev.IsBuildEvent() {
+		br := r.buildRecords[ev.ImportPath]
+		if br == nil {
+			br = new(BuildRecord)
+			r.buildRecords[ev.ImportPath] = br
+		}
+		br.ingest(ev)
+		return nil
+	}
+
+	// If we get this far, this is a test event.
+	// Ingest it.
 	switch ev.Action {
 	case "error":
 		// Error reading JSON.
@@ -416,6 +548,22 @@ func (r *GoTestRenderer) Ingest(ev *TestEvent) error {
 			// Package failed.
 			r.testOut[ev.Package].done = true
 			r.testOut[ev.Package].failed = true
+
+			// Include information about the build failure that caused this test failure.
+			if ev.FailedBuild != "" {
+				br, ok := r.buildRecords[ev.FailedBuild]
+				if !ok {
+					// This should not happen under normal circumstances.
+					// Report some details about it if it happens anyway.
+					br = new(BuildRecord)
+					fmt.Fprintf(&br.Output, "unexpected case: encountered a TestEvent with FailedBuild field %q, but no corresponding BuildEvent", ev.FailedBuild)
+				}
+				r.testOut[ev.Package].extra.add(br.Output.String())
+
+				// The build record was consumed, delete it from the map.
+				delete(r.buildRecords, ev.FailedBuild)
+			}
+
 			break
 		}
 		// Leave failed tests in the map.
@@ -433,6 +581,10 @@ func (r *GoTestRenderer) Ingest(ev *TestEvent) error {
 	}
 
 	// Flush completed tests.
+	return r.flushCompleted()
+}
+
+func (r *GoTestRenderer) flushCompleted() error {
 	for len(r.pkgs) > 0 && r.testOut[r.pkgs[0]].done {
 		pkg := r.testOut[r.pkgs[0]]
 		delete(r.testOut, r.pkgs[0])
@@ -441,11 +593,49 @@ func (r *GoTestRenderer) Ingest(ev *TestEvent) error {
 			return err
 		}
 	}
-
 	return nil
 }
 
-func (r *GoTestRenderer) Close() error {
+func (r *GoTestRenderer) Close(renderFailed bool) error {
+	if renderFailed {
+		// If rendering test output already failed,
+		// don't try to render more test output.
+		return nil
+	}
+
+	// By now, the buildRecords map is most likely empty because its content has
+	// been consumed by test events with the corresponding FailedBuild field.
+	// However, in some cases there may be build output without a corresponding
+	// test event (for example, if there are build warnings and no test failure).
+	//
+	// So, if we get this far and there's any build output left, append it to the
+	// closest fit package record we find, creating new package records if there's
+	// no exact match.
+	for importPath, br := range r.buildRecords {
+		if r.testOut[importPath] == nil {
+			r.testOut[importPath] = newPkg()
+			r.pkgs = append(r.pkgs, importPath)
+
+			// By default, treat build-output with no build-fail
+			// as a passing result. This corresponds to behavior
+			// like compiler warnings.
+			r.testOut[importPath].done = true
+			r.testOut[importPath].failed = false
+		}
+		if !r.testOut[importPath].failed && br.Fail {
+			// If the package record was passing but we observed
+			// a build-fail event, change it to a failing result.
+			r.testOut[importPath].failed = true
+		}
+		r.testOut[importPath].extra.add(br.Output.String())
+	}
+
+	// Flush completed packages.
+	if err := r.flushCompleted(); err != nil {
+		return err
+	}
+
+	// Report incomplete packages.
 	if len(r.testOut) != 0 {
 		if _, err := fmt.Fprintf(r.w, "packages neither passed nor failed:\n"); err != nil {
 			return err
@@ -459,6 +649,7 @@ func (r *GoTestRenderer) Close() error {
 			}
 		}
 	}
+
 	return nil
 }
 
