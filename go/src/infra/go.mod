@@ -104,7 +104,7 @@ require (
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.33.0
 	go.opentelemetry.io/otel/sdk v1.33.0
 	go.opentelemetry.io/otel/trace v1.33.0
-	go.skia.org/infra v0.0.0-20240823043022-8db4baf70cfc
+	go.skia.org/infra v0.0.0-20250114041601-4a95c0b5f67e
 	go.starlark.net v0.0.0-20241226192728-8dfa5b98479f
 	golang.org/x/build v0.0.0-20241002221812-a0b635343b82
 	golang.org/x/crypto v0.31.0
@@ -225,6 +225,8 @@ require (
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.3.3 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
+	github.com/jackc/pgx/v4 v4.18.3 // indirect
+	github.com/jackc/puddle v1.3.0 // indirect
 	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/jcgregorio/logger v0.1.3 // indirect
