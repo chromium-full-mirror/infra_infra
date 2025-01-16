@@ -1,0 +1,9 @@
+---
+name: cros/labtunnel
+extends: ../../base.yaml
+
+dockerfile: ../../../../go/src/infra/cros/cmd/labtunnel/docker/Dockerfile
+deterministic: true
+
+build:
+  - go_binary: infra/cros/cmd/labtunnel
