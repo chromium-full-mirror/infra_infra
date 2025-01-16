@@ -173,7 +173,7 @@ func trQSAccount(tags []*buildbucketpb.StringPair) string {
 func trOSType(tags []*buildbucketpb.StringPair) schedukepb.OsType {
 	for _, t := range tags {
 		if t.GetKey() == OSType {
-			switch t.GetKey() {
+			switch t.GetValue() {
 			case "al":
 				return schedukepb.OsType_ANDROID
 			default:

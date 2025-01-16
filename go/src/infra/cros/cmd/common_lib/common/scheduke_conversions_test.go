@@ -476,3 +476,32 @@ func TestRespolvePoolName(t *testing.T) {
 		})
 	}
 }
+
+func TestTrOSType(t *testing.T) {
+	// cros
+	tags := []*buildbucketpb.StringPair{
+		{Key: "os_type", Value: "chromeos"},
+		{Key: "analytics_name", Value: "baz"},
+	}
+	osType := trOSType(tags)
+	if osType != schedukepb.OsType_CHROMEOS {
+		t.Errorf("got %v, want %v", osType, schedukepb.OsType_CHROMEOS)
+	}
+	// al
+	tags = []*buildbucketpb.StringPair{
+		{Key: "os_type", Value: "al"},
+		{Key: "analytics_name", Value: "baz"},
+	}
+	osType = trOSType(tags)
+	if osType != schedukepb.OsType_ANDROID {
+		t.Errorf("got %v, want %v", osType, schedukepb.OsType_ANDROID)
+	}
+	// cros
+	tags = []*buildbucketpb.StringPair{
+		{Key: "analytics_name", Value: "baz"},
+	}
+	osType = trOSType(tags)
+	if osType != schedukepb.OsType_CHROMEOS {
+		t.Errorf("got %v, want %v", osType, schedukepb.OsType_CHROMEOS)
+	}
+}
