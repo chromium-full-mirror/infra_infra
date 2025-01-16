@@ -91,14 +91,14 @@ func (ps *AntsPublishServer) Publish(ctx context.Context, req *api.PublishReques
 		return op, fmt.Errorf("failed to create new ants publish service: %w", err)
 	}
 
-	if err := aps.UploadToAnts(context.Background()); err != nil {
+	if err := aps.UploadToAnts(ctx); err != nil {
 		log.Printf("upload to ants failed: %s", err)
 		out.Status = api.PublishResponse_STATUS_FAILURE
 		out.Message = fmt.Sprintf("failed upload to ants: %s", err.Error())
 		return op, fmt.Errorf("failed upload to ants: %w", err)
 	}
 
-	if err := aps.UploadArtifacts(context.Background()); err != nil {
+	if err := aps.UploadArtifacts(ctx); err != nil {
 		log.Printf("upload artifacts to ants failed: %s", err)
 		out.Status = api.PublishResponse_STATUS_FAILURE
 		out.Message = fmt.Sprintf("failed upload artifacts to ants: %s", err.Error())
