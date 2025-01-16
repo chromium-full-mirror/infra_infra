@@ -237,7 +237,7 @@ func TestGenerateTestResults(t *testing.T) {
 	ftt.Run("test JSON build errors", t, func(t *ftt.Test) {
 		trs, err := r.generateTestResults(context.Background(), []byte(goTestJSONBuildError))
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, trs, should.HaveLength(6))
+		assert.Loosely(t, trs, should.HaveLength(7))
 		assert.That(t, trs[0], should.Match(mustParseTestResult(
 			`test_id: "test/a"
 			expected: true
@@ -303,6 +303,21 @@ func TestGenerateTestResults(t *testing.T) {
 			  }
 			}`)))
 		assert.That(t, trs[4], should.Match(mustParseTestResult(
+			`test_id: "test/c2"
+			status: FAIL
+			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1737045179
+			  nanos:   172315000
+			}
+			duration: {}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "FAIL\ttest/c2 [build failed]\n# test/c\nc/c.go:3:8: \"os\" imported and not used\n"
+			  }
+			}`)))
+		assert.That(t, trs[5], should.Match(mustParseTestResult(
 			`test_id: "test/d"
 			expected: true
 			status: PASS
@@ -320,7 +335,7 @@ func TestGenerateTestResults(t *testing.T) {
 			    contents: "PASS\nok  	test/d	0.232s\n"
 			  }
 			}`)))
-		assert.That(t, trs[5], should.Match(mustParseTestResult(
+		assert.That(t, trs[6], should.Match(mustParseTestResult(
 			`test_id: "test/d.TestD"
 			expected: true
 			status: PASS
@@ -340,7 +355,7 @@ func TestGenerateTestResults(t *testing.T) {
 	ftt.Run("test JSON build errors (Go 1.23 and older)", t, func(t *ftt.Test) {
 		trs, err := r.generateTestResults(context.Background(), []byte(goTestJSONBuildErrorGo123))
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, trs, should.HaveLength(6))
+		assert.Loosely(t, trs, should.HaveLength(7))
 		assert.That(t, trs[0], should.Match(mustParseTestResult(
 			`test_id: "test/a"
 			expected: true
@@ -406,6 +421,21 @@ func TestGenerateTestResults(t *testing.T) {
 			  }
 			}`)))
 		assert.That(t, trs[4], should.Match(mustParseTestResult(
+			`test_id: "test/c2"
+			status: FAIL
+			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
+			start_time: {
+			  seconds: 1737045161
+			  nanos:   67794000
+			}
+			duration: {}
+			artifacts: {
+			  key: "output"
+			  value: {
+			    contents: "FAIL	test/c2 [build failed]\n"
+			  }
+			}`)))
+		assert.That(t, trs[5], should.Match(mustParseTestResult(
 			`test_id: "test/d"
 			expected: true
 			status: PASS
@@ -423,7 +453,7 @@ func TestGenerateTestResults(t *testing.T) {
 			    contents: "PASS\nok  	test/d	0.398s\n"
 			  }
 			}`)))
-		assert.That(t, trs[5], should.Match(mustParseTestResult(
+		assert.That(t, trs[6], should.Match(mustParseTestResult(
 			`test_id: "test/d.TestD"
 			expected: true
 			status: PASS
@@ -592,6 +622,7 @@ const (
 	//	ok  	test/a	0.240s
 	//	FAIL	test/b [build failed]
 	//	FAIL	test/c [build failed]
+	//	FAIL	test/c2 [build failed]
 	//	=== RUN   TestD
 	//	    d_test.go:8: D is okay
 	//	--- PASS: TestD (0.00s)
@@ -607,6 +638,7 @@ const (
 	//	ok  	test/a	0.395s
 	//	FAIL	test/b [build failed]
 	//	FAIL	test/c [build failed]
+	//	FAIL	test/c2 [build failed]
 	//	ok  	test/d	0.268s
 	//	FAIL
 	//
@@ -623,6 +655,9 @@ const (
 {"Time":"2024-12-13T13:06:16.230575-05:00","Action":"start","Package":"test/c"}
 {"Time":"2024-12-13T13:06:16.230585-05:00","Action":"output","Package":"test/c","Output":"FAIL\ttest/c [build failed]\n"}
 {"Time":"2024-12-13T13:06:16.230588-05:00","Action":"fail","Package":"test/c","Elapsed":0,"FailedBuild":"test/c"}
+{"Time":"2025-01-16T11:32:59.172315-05:00","Action":"start","Package":"test/c2"}
+{"Time":"2025-01-16T11:32:59.172342-05:00","Action":"output","Package":"test/c2","Output":"FAIL\ttest/c2 [build failed]\n"}
+{"Time":"2025-01-16T11:32:59.172348-05:00","Action":"fail","Package":"test/c2","Elapsed":0,"FailedBuild":"test/c"}
 {"Time":"2024-12-13T13:06:16.230633-05:00","Action":"start","Package":"test/d"}
 {"Time":"2024-12-13T13:06:16.462169-05:00","Action":"run","Package":"test/d","Test":"TestD"}
 {"Time":"2024-12-13T13:06:16.462322-05:00","Action":"output","Package":"test/d","Test":"TestD","Output":"=== RUN   TestD\n"}
@@ -651,6 +686,9 @@ const (
 {"Time":"2024-12-13T14:02:10.021361-05:00","Action":"start","Package":"test/c"}
 {"Time":"2024-12-13T14:02:10.02137-05:00","Action":"output","Package":"test/c","Output":"FAIL\ttest/c [build failed]\n"}
 {"Time":"2024-12-13T14:02:10.021373-05:00","Action":"fail","Package":"test/c","Elapsed":0}
+{"Time":"2025-01-16T11:32:41.067794-05:00","Action":"start","Package":"test/c2"}
+{"Time":"2025-01-16T11:32:41.067808-05:00","Action":"output","Package":"test/c2","Output":"FAIL\ttest/c2 [build failed]\n"}
+{"Time":"2025-01-16T11:32:41.067812-05:00","Action":"fail","Package":"test/c2","Elapsed":0}
 {"Time":"2024-12-13T14:02:10.021398-05:00","Action":"start","Package":"test/d"}
 {"Time":"2024-12-13T14:02:10.254709-05:00","Action":"run","Package":"test/a","Test":"TestA"}
 {"Time":"2024-12-13T14:02:10.254779-05:00","Action":"output","Package":"test/a","Test":"TestA","Output":"=== RUN   TestA\n"}
@@ -804,6 +842,7 @@ b/b_test.go:5:8: "os" imported and not used
 FAIL	test/c [build failed]
 # test/c
 c/c.go:3:8: "os" imported and not used
+FAIL	test/c2 [build failed]
 === RUN   TestD
     d_test.go:8: D is okay
 --- PASS: TestD (0.00s)
@@ -822,6 +861,7 @@ b/b_test.go:5:8: "os" imported and not used
 FAIL	test/c [build failed]
 # test/c
 c/c.go:3:8: "os" imported and not used
+FAIL	test/c2 [build failed]
 ok  	test/d	0.232s
 `,
 		},
@@ -836,6 +876,7 @@ PASS
 ok  	test/a	0.234s
 FAIL	test/b [build failed]
 FAIL	test/c [build failed]
+FAIL	test/c2 [build failed]
 === RUN   TestD
     d_test.go:8: D is okay
 --- PASS: TestD (0.00s)
@@ -850,6 +891,7 @@ ok  	test/d	0.398s
 			expect: `ok  	test/a	0.234s
 FAIL	test/b [build failed]
 FAIL	test/c [build failed]
+FAIL	test/c2 [build failed]
 ok  	test/d	0.398s
 `,
 		},

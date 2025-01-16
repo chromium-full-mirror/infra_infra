@@ -144,15 +144,20 @@ func goTestJSONToPackageRecords(ctx context.Context, data []byte, copyTestOutput
 		}
 	}
 
-	// By now, the buildRecords map is most likely empty because its content has
-	// been consumed by test events with the corresponding FailedBuild field.
-	// However, in some cases there may be build output without a corresponding
+	// By now, records in the buildRecords map have likely been reported
+	// as part of test events that had a corresponding FailedBuild field.
+	// However, in some cases there may be build events without a corresponding
 	// test event (for example, if there are build warnings and no test failure).
 	//
-	// So, if we get this far and there's any build output left, append it to the
-	// closest fit package record we find, creating new package records if there's
-	// no exact match.
+	// So, if we get this far and there are unreported build records, add them
+	// to the closest fit package record we find, creating new package records
+	// if there's no exact match.
 	for importPath, br := range buildRecords {
+		if br.Reported {
+			// Already reported, nothing to do.
+			continue
+		}
+
 		pr := byID[importPath]
 		if pr == nil {
 			pr = &PackageRecord{
@@ -274,12 +279,10 @@ func (pr *PackageRecord) ingest(te *GoTestEvent, buildRecords map[string]*BuildR
 				// This should not happen under normal circumstances.
 				// Report some details about it if it happens anyway.
 				br = new(BuildRecord)
-				fmt.Fprintf(&br.Output, "unexpected case: encountered a TestEvent with FailedBuild field %q, but no corresponding BuildEvent", te.FailedBuild)
+				fmt.Fprintf(&br.Output, "unexpected case: encountered a TestEvent with FailedBuild field %q, but no corresponding BuildEvent\n", te.FailedBuild)
 			}
 			pr.Output.WriteString(br.Output.String())
-
-			// The build record was consumed, delete it from the map.
-			delete(buildRecords, te.FailedBuild)
+			br.Reported = true
 		}
 
 	} else {
@@ -438,6 +441,11 @@ func (tr *TestRecord) toProto(ctx context.Context, packagePassed bool) *sinkpb.T
 type BuildRecord struct {
 	Output strings.Builder
 	Fail   bool // Whether a build-fail event was seen for this import path.
+
+	// Reported tracks whether this build record has been reported
+	// as part of at least one test event, before reaching the end
+	// of the event stream.
+	Reported bool
 }
 
 // ingest ingests te, which must be a build event,
@@ -556,12 +564,15 @@ func (r *GoTestRenderer) Ingest(ev *GoTestEvent) error {
 					// This should not happen under normal circumstances.
 					// Report some details about it if it happens anyway.
 					br = new(BuildRecord)
-					fmt.Fprintf(&br.Output, "unexpected case: encountered a TestEvent with FailedBuild field %q, but no corresponding BuildEvent", ev.FailedBuild)
+					fmt.Fprintf(&br.Output, "unexpected case: encountered a TestEvent with FailedBuild field %q, but no corresponding BuildEvent\n", ev.FailedBuild)
 				}
-				r.testOut[ev.Package].extra.add(br.Output.String())
 
-				// The build record was consumed, delete it from the map.
-				delete(r.buildRecords, ev.FailedBuild)
+				// Report the build record no more than once in the text.
+				// This matches the behavior of 'go test' (without -json).
+				if !br.Reported {
+					r.testOut[ev.Package].extra.add(br.Output.String())
+					br.Reported = true
+				}
 			}
 
 			break
@@ -603,15 +614,20 @@ func (r *GoTestRenderer) Close(renderFailed bool) error {
 		return nil
 	}
 
-	// By now, the buildRecords map is most likely empty because its content has
-	// been consumed by test events with the corresponding FailedBuild field.
-	// However, in some cases there may be build output without a corresponding
+	// By now, records in the buildRecords map have likely been reported
+	// as part of test events that had a corresponding FailedBuild field.
+	// However, in some cases there may be build events without a corresponding
 	// test event (for example, if there are build warnings and no test failure).
 	//
-	// So, if we get this far and there's any build output left, append it to the
-	// closest fit package record we find, creating new package records if there's
-	// no exact match.
+	// So, if we get this far and there are unreported build records, add them
+	// to the closest fit package record we find, creating new package records
+	// if there's no exact match.
 	for importPath, br := range r.buildRecords {
+		if br.Reported {
+			// Already reported, nothing to do.
+			continue
+		}
+
 		if r.testOut[importPath] == nil {
 			r.testOut[importPath] = newPkg()
 			r.pkgs = append(r.pkgs, importPath)
@@ -637,11 +653,11 @@ func (r *GoTestRenderer) Close(renderFailed bool) error {
 
 	// Report incomplete packages.
 	if len(r.testOut) != 0 {
-		if _, err := fmt.Fprintf(r.w, "packages neither passed nor failed:\n"); err != nil {
+		if _, err := fmt.Fprintln(r.w, "packages neither passed nor failed:"); err != nil {
 			return err
 		}
 		for pkgName, pkg := range r.testOut {
-			if _, err := fmt.Fprintf(r.w, "%s\n", pkgName); err != nil {
+			if _, err := fmt.Fprintln(r.w, pkgName); err != nil {
 				return err
 			}
 			if err := pkg.emitTests(r.w, r.verbose); err != nil {
