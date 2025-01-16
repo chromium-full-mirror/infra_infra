@@ -216,6 +216,10 @@ func updateSchedulingTargetsBasedOnBotAvailability(ctx context.Context, ctpReq *
 		for _, target := range schedulingTargets.GetTargets() {
 			model := target.HwTarget.GetLegacyHw().GetModel()
 			board := target.HwTarget.GetLegacyHw().GetBoard()
+			// vmlab fork has been historically based on supported boards and not solely based on pool value, this allows to handle cases where users are still sending pool value as DUT_POOL_QUOTA and expecting vm run.
+			if common.IsSupportedVMBoard(board) {
+				return bmvToDimsMap
+			}
 			variant := target.GetHwTarget().GetLegacyHw().GetVariant()
 			bmvKey := common.ConstructKey(board, model, variant)
 			dimsForCache := fmt.Sprintf("%s-%s-%s", model, board, pool)
