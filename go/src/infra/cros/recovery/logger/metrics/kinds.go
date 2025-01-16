@@ -29,4 +29,6 @@ const (
 	// BadBlocksRWExecutionKind is an actionKind that indicates the RW
 	// badblocks has been executed.
 	BadBlocksRWExecutionKind = "backblocks_rw_execution"
+	// AuditCameraKind is an actionKind for tracking audit camera tasks.
+	AuditCameraKind = "audit_camera"
 )

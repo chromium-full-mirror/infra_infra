@@ -4097,6 +4097,9 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{
 				Seconds: 600,
 			},
+			ExecExtraArgs: []string{
+				"audit_interval_hours:168", // 7*24 hours
+			},
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for ping",
 			},

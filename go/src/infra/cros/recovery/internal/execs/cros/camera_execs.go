@@ -6,12 +6,14 @@ package cros
 
 import (
 	"context"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components/cros/camera"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
+	"infra/cros/recovery/logger/metrics"
 	"infra/cros/recovery/tlw"
 )
 
@@ -25,7 +27,7 @@ const (
 // - if there is no camera: "not detected"
 // -  if all usb camera can capture frame: "normal"
 // - else set as "need replacement"
-func auditCameraExec(ctx context.Context, info *execs.ExecInfo) error {
+func auditCameraExec(ctx context.Context, info *execs.ExecInfo) (rErr error) {
 	ha := info.NewHostAccess(info.GetDut().Name)
 
 	cameraInfo := info.GetChromeos().GetCamera()
@@ -35,6 +37,26 @@ func auditCameraExec(ctx context.Context, info *execs.ExecInfo) error {
 		cameraInfo = &tlw.Camera{}
 		info.GetChromeos().Camera = cameraInfo
 	}
+
+	argsMap := info.GetActionArgs(ctx)
+	auditIntervalHours := argsMap.AsDuration(ctx, "audit_interval_hours", 7*24, time.Hour)
+
+	shouldRunAudit, err := camera.ShouldRunAudit(ctx, info.GetMetrics(), info.GetDut(), auditIntervalHours)
+	if err != nil {
+		return errors.Annotate(err, "audit camera: unable to fetch metric.").Err()
+	}
+
+	if !shouldRunAudit {
+		log.Debugf(ctx, "audit camera: camera audit skipped.")
+		return nil
+	}
+
+	karteAction := info.NewMetric(metrics.AuditCameraKind)
+
+	defer func() {
+		// update status for action, needed for ShouldRunAudit function.
+		karteAction.UpdateStatus(rErr)
+	}()
 
 	cameraInfo.State = tlw.HardwareState_HARDWARE_NOT_DETECTED
 
