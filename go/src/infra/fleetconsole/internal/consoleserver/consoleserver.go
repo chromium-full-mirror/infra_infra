@@ -23,8 +23,9 @@ func NewFleetConsoleFrontend() fleetconsolerpc.FleetConsoleServer {
 type FleetConsoleFrontend struct {
 	fleetconsolerpc.UnimplementedFleetConsoleServer
 
+	cloudProject        string
 	deviceManagerClient func(context.Context) (*devicemanagerclient.Client, error)
-	ufsClient           func(context.Context) (ufsclient.Client, error)
+	ufsClient           func(context.Context, string) (ufsclient.Client, error)
 }
 
 // InstallServices installs services into the server.
@@ -38,6 +39,11 @@ func SetDeviceManagerClient(consoleFrontend *FleetConsoleFrontend, deviceManager
 }
 
 // SeUFSClient sets the UFS client.
-func SetUFSClient(consoleFrontend *FleetConsoleFrontend, ufsClient func(context.Context) (ufsclient.Client, error)) {
+func SetUFSClient(consoleFrontend *FleetConsoleFrontend, ufsClient func(context.Context, string) (ufsclient.Client, error)) {
 	consoleFrontend.ufsClient = ufsClient
+}
+
+// SetCloudProject sets the cloud project
+func SetCloudProject(consoleFrontend *FleetConsoleFrontend, cloudProject string) {
+	consoleFrontend.cloudProject = cloudProject
 }

@@ -59,6 +59,7 @@ func ServerMain(srv *server.Server) error {
 	ConfigureCORS(srv.Context, srv)
 	interceptor := rpcacl.Interceptor(ACLMap)
 	srv.RegisterUnifiedServerInterceptors(interceptor)
+	consoleserver.SetCloudProject(consoleFrontend, srv.Options.CloudProject)
 	consoleserver.InstallServices(consoleFrontend, srv)
 	consoleserver.SetDeviceManagerClient(consoleFrontend, GetDeviceManagerClient)
 	consoleserver.SetUFSClient(consoleFrontend, GetUfsClient)
@@ -116,8 +117,8 @@ func GetDeviceManagerClient(ctx context.Context) (*devicemanagerclient.Client, e
 	return deviceManagerClient, nil
 }
 
-func GetUfsClient(ctx context.Context) (ufsclient.Client, error) {
-	ufsAddr := ufsclient.UfsProdURL
+func GetUfsClient(ctx context.Context, cloudProject string) (ufsclient.Client, error) {
+	ufsAddr := getUFSName(cloudProject)
 	ufsPort := ufsclient.UfsPort
 	if *flags.UseLocalUfs {
 		ufsAddr = "localhost"
@@ -149,4 +150,11 @@ func GetUfsClient(ctx context.Context) (ufsclient.Client, error) {
 
 	logging.Infof(ctx, "Initializing ufs client with address: %s:%d", ufsAddr, ufsPort)
 	return ufsClient, nil
+}
+
+func getUFSName(cloudProject string) string {
+	if strings.HasSuffix(cloudProject, "dev") {
+		return ufsclient.UfsDevURL
+	}
+	return ufsclient.UfsProdURL
 }
