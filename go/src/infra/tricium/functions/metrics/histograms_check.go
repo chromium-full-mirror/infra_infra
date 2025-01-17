@@ -10,7 +10,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"path/filepath"
@@ -21,12 +20,11 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/data/stringset"
-
-	tricium "infra/tricium/api/v1"
+	findingspb "go.chromium.org/luci/common/proto/findings"
 )
 
 const (
-	category            = "Metrics"
+	category            = "chromium_metrics"
 	dateFormat          = "2006-01-02"
 	dateMilestoneFormat = "2006-01-02T15:04:05"
 	histogramEndTag     = "</histogram>"
@@ -34,26 +32,26 @@ const (
 	ownerEndTag         = "</owner"
 	variantsEndTag      = "</variants>"
 
-	oneOwnerError                = `[WARNING] It's preferred to list at least two owners, where the second is often a team mailing list or a src/path/to/OWNERS reference: https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Owners.`
-	firstOwnerTeamError          = `[WARNING] Please list an individual as the primary owner for this metric: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Owners.`
-	oneOwnerTeamError            = `[WARNING] Please list an individual as the primary owner for this metric. Note that it's preferred to list at least two owners, where the second is often a team mailing list or a src/path/to/OWNERS reference: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Owners.`
-	noExpiryError                = `[ERROR] Please specify an expiry condition for this histogram: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
-	badExpiryError               = `[ERROR] Could not parse histogram expiry. Please format as YYYY-MM-DD or MXXX: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
-	pastExpiryWarning            = `[WARNING] This expiry date is in the past. Did you mean to set an expiry date in the future?`
-	farExpiryWarning             = `[WARNING] It's a best practice to choose an expiry that is at most one year out: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
-	dataDiscontinuityWarning     = `[WARNING] This histogram is expired for more than a month. It might have already stopped reporting. If you're extending this histogram, please be careful of data discontinuity: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#extending.`
-	neverExpiryInfo              = `[INFO] The expiry should only be set to "never" in rare cases. Please double-check that this use of "never" is appropriate: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
-	neverExpiryError             = `[ERROR] The expiry should only be set to "never" in rare cases. If you believe this use of "never" is appropriate, you must include an XML comment describing why, such as <!-- expires-never: "heartbeat" metric (internal: go/uma-heartbeats) -->: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
-	milestoneFailure             = `[WARNING] Tricium failed to fetch milestone branch date. Please double-check that this milestone is correct, because the tool is currently not able to check for you.`
-	unitsHighResolutionWarning   = `[WARNING] Histograms using microseconds should document whether the metric is reported for all clients or only clients with high-resolution clocks. If your histogram logging macro or function calls HistogramBase::AddTimeMicrosecondsGranularity() under the hood, then the metric is reported for only clients with high-resolution clocks. Separately, samples from clients with low-resolution clocks (e.g. on Windows, see TimeTicks::IsHighResolution()) may be as coarse as ~15.6ms.`
-	addedNamespaceWarning        = `[WARNING] Are you sure you want to add the namespace %s to histograms.xml? For most new histograms, it's appropriate to re-use one of the existing top-level histogram namespaces. For histogram names, the namespace is defined as everything preceding the first dot '.' in the name.`
-	singleElementEnumWarning     = `[WARNING] It looks like this is an enumerated histogram that contains only a single bucket. UMA metrics are difficult to interpret in isolation, so please either add one or more additional buckets that can serve as a baseline for comparison, or document what other metric should be used as a baseline during analysis. https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#enum-histograms.`
-	SuffixesDeprecationWarning   = `[WARNING] The <histogram_suffixes> syntax is deprecated. If you're adding a new list of suffixes, please use patterned histograms instead. If you're modifying an existing list of suffixes, please consider migrating that list to use patterned histograms. See https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#patterned-histograms.`
-	osxNamespaceDeprecationError = `[ERROR] The namespace "OSX" is deprecated. Prefer adding new Mac histograms to the "Mac" namespace.`
-	removedHistogramInfo         = `[INFO] The following histograms were removed without an obsoletion message: %s. It is preferred to add an obsoletion message when a histogram is removed: https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#add-an-obsoletion-message.`
-	obsoletionMessageError       = `[WARNING] An obsoletion message has been added to following histograms: %s, but they are not removed. Please double check if there're typos.`
-	allRemovedHistogramInfo      = `[INFO] The following histograms have been removed and obsoleted in this CL: %s.`
-	globalObsoletionMessageError = `[WARNING] A CL-level obsoletion message was added but no histogram has been removed in the CL.`
+	oneOwnerError                = `It's preferred to list at least two owners, where the second is often a team mailing list or a src/path/to/OWNERS reference: https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Owners.`
+	firstOwnerTeamError          = `Please list an individual as the primary owner for this metric: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Owners.`
+	oneOwnerTeamError            = `Please list an individual as the primary owner for this metric. Note that it's preferred to list at least two owners, where the second is often a team mailing list or a src/path/to/OWNERS reference: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Owners.`
+	noExpiryError                = `Please specify an expiry condition for this histogram: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
+	badExpiryError               = `Could not parse histogram expiry. Please format as YYYY-MM-DD or MXXX: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
+	pastExpiryWarning            = `This expiry date is in the past. Did you mean to set an expiry date in the future?`
+	farExpiryWarning             = `It's a best practice to choose an expiry that is at most one year out: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
+	dataDiscontinuityWarning     = `This histogram is expired for more than a month. It might have already stopped reporting. If you're extending this histogram, please be careful of data discontinuity: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#extending.`
+	neverExpiryInfo              = `The expiry should only be set to "never" in rare cases. Please double-check that this use of "never" is appropriate: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
+	neverExpiryError             = `The expiry should only be set to "never" in rare cases. If you believe this use of "never" is appropriate, you must include an XML comment describing why, such as <!-- expires-never: "heartbeat" metric (internal: go/uma-heartbeats) -->: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
+	milestoneFailure             = `Failed to fetch milestone branch date. Please double-check that this milestone is correct, because the tool is currently not able to check for you.`
+	unitsHighResolutionWarning   = `Histograms using microseconds should document whether the metric is reported for all clients or only clients with high-resolution clocks. If your histogram logging macro or function calls HistogramBase::AddTimeMicrosecondsGranularity() under the hood, then the metric is reported for only clients with high-resolution clocks. Separately, samples from clients with low-resolution clocks (e.g. on Windows, see TimeTicks::IsHighResolution()) may be as coarse as ~15.6ms.`
+	addedNamespaceWarning        = `Are you sure you want to add the namespace %s to histograms.xml? For most new histograms, it's appropriate to re-use one of the existing top-level histogram namespaces. For histogram names, the namespace is defined as everything preceding the first dot '.' in the name.`
+	singleElementEnumWarning     = `It looks like this is an enumerated histogram that contains only a single bucket. UMA metrics are difficult to interpret in isolation, so please either add one or more additional buckets that can serve as a baseline for comparison, or document what other metric should be used as a baseline during analysis. https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#enum-histograms.`
+	SuffixesDeprecationWarning   = `The <histogram_suffixes> syntax is deprecated. If you're adding a new list of suffixes, please use patterned histograms instead. If you're modifying an existing list of suffixes, please consider migrating that list to use patterned histograms. See https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#patterned-histograms.`
+	osxNamespaceDeprecationError = `The namespace "OSX" is deprecated. Prefer adding new Mac histograms to the "Mac" namespace.`
+	removedHistogramInfo         = `The following histograms were removed without an obsoletion message: %s. It is preferred to add an obsoletion message when a histogram is removed: https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#add-an-obsoletion-message.`
+	obsoletionMessageError       = `An obsoletion message has been added to following histograms: %s, but they are not removed. Please double check if there're typos.`
+	allRemovedHistogramInfo      = `The following histograms have been removed and obsoleted in this CL: %s.`
+	globalObsoletionMessageError = `A CL-level obsoletion message was added but no histogram has been removed in the CL.`
 )
 
 var (
@@ -156,9 +154,9 @@ const (
 	REMOVED
 )
 
-func analyzeHistogramFile(f io.Reader, filePath, prevDir string, filesChanged *diffsPerFile, singletonEnums stringset.Set) ([]*tricium.Data_Comment, stringset.Set, stringset.Set) {
+func analyzeHistogramFile(f io.Reader, filePath, prevDir string, filesChanged *diffsPerFile, singletonEnums stringset.Set) ([]*findingspb.Finding, stringset.Set, stringset.Set) {
 	log.Printf("ANALYZING File: %s", filePath)
-	var allComments []*tricium.Data_Comment
+	var allFindings []*findingspb.Finding
 	// Analyze removed lines in file (if any).
 	oldPath := filepath.Join(prevDir, filePath)
 	oldFile := openFileOrDie(oldPath)
@@ -167,73 +165,85 @@ func analyzeHistogramFile(f io.Reader, filePath, prevDir string, filesChanged *d
 	var emptyMap map[string]*histogram
 	_, oldHistograms, oldNamespaces, _, oldVariants := analyzeChangedLines(bufio.NewScanner(oldFile), filePath, filesChanged.removedLines[filePath], emptySet, emptyMap, REMOVED)
 	// Analyze added lines in file (if any).
-	comments, newHistograms, newNamespaces, namespaceLineNums, newVariants := analyzeChangedLines(bufio.NewScanner(f), filePath, filesChanged.addedLines[filePath], singletonEnums, oldHistograms, ADDED)
-	allComments = append(allComments, comments...)
+	findings, newHistograms, newNamespaces, namespaceLineNums, newVariants := analyzeChangedLines(bufio.NewScanner(f), filePath, filesChanged.addedLines[filePath], singletonEnums, oldHistograms, ADDED)
+	allFindings = append(allFindings, findings...)
 	// Get the list of added histograms and the list of removed histograms after expansion. Obsolete histograms are excluded.
 	addedHistograms, removedHistograms := generateAddedAndRemovedHistograms(newHistograms, oldHistograms, newVariants, oldVariants)
 	// Identify if any new namespaces were added.
-	allComments = append(allComments, generateCommentsForAddedNamespaces(filePath, newNamespaces, oldNamespaces, namespaceLineNums)...)
-	return showAllComments(allComments), addedHistograms, removedHistograms
+	allFindings = append(allFindings, generateFindingsForAddedNamespaces(filePath, newNamespaces, oldNamespaces, namespaceLineNums)...)
+	return allFindings, addedHistograms, removedHistograms
 }
 
-func analyzeHistogramSuffixesFile(f io.Reader, filePath string, filesChanged *diffsPerFile) []*tricium.Data_Comment {
+func analyzeHistogramSuffixesFile(f io.Reader, filePath string, filesChanged *diffsPerFile) []*findingspb.Finding {
 	log.Printf("ANALYZING File: %s", filePath)
-	var comments []*tricium.Data_Comment
+	var findings []*findingspb.Finding
 	// Warn on the first changed line whenever users add / update histogram_suffixes_list.
 	if linesChanged := filesChanged.addedLines[filePath]; len(linesChanged) > 0 {
-		log.Printf("ADDING Comment for histogram_suffixes_list at line %d: %s", linesChanged[0], "[WARNING]: Deprecated suffixes")
-		comments = append(comments, createHistogramSuffixesComment(filePath, linesChanged[0]))
+		log.Printf("ADDING finding for histogram_suffixes_list at line %d: %s", linesChanged[0], "[WARNING]: Deprecated suffixes")
+		findings = append(findings, createHistogramSuffixesFinding(filePath, linesChanged[0]))
 	}
-	return showAllComments(comments)
+	return findings
 }
 
-func analyzeCommitMessage(obsoletedHistograms stringset.Set, removedHistograms stringset.Set, globalObsoleteTagAdded bool) []*tricium.Data_Comment {
-	var comments []*tricium.Data_Comment
+func analyzeCommitMessage(obsoletedHistograms stringset.Set, removedHistograms stringset.Set, globalObsoleteTagAdded bool) []*findingspb.Finding {
+	var findings []*findingspb.Finding
 	// Check if there's at least one histogram removed when a CL-level obsoletion message is added.
 	if len(removedHistograms) == 0 && globalObsoleteTagAdded {
-		comment := &tricium.Data_Comment{
-			Category: category + "/Obsolete",
-			Message:  globalObsoletionMessageError,
+		finding := &findingspb.Finding{
+			Category:      category,
+			Message:       globalObsoletionMessageError,
+			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+			Location: &findingspb.Location{
+				FilePath: "/COMMIT_MSG",
+			},
 		}
-		comments = append(comments, comment)
+		findings = append(findings, finding)
 	}
 
 	// Check if there's any obsoletion message added without a corresponding histogram removed.
 	obsoletedWithoutRemovalHistograms := obsoletedHistograms.Difference(removedHistograms).ToSlice()
 	if len(obsoletedWithoutRemovalHistograms) > 0 {
-		comment := &tricium.Data_Comment{
-			Category: category + "/Obsolete",
-			Message:  fmt.Sprintf(obsoletionMessageError, strings.Join(obsoletedWithoutRemovalHistograms, ", ")),
+		finding := &findingspb.Finding{
+			Category:      category,
+			Message:       fmt.Sprintf(obsoletionMessageError, strings.Join(obsoletedWithoutRemovalHistograms, ", ")),
+			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+			Location: &findingspb.Location{
+				FilePath: "/COMMIT_MSG",
+			},
 		}
-		comments = append(comments, comment)
+		findings = append(findings, finding)
 	}
 
 	// If a CL-level obsoletion message was added, we don't need to check if there's any histogram removed without
 	// an obsoletion message.
 	if globalObsoleteTagAdded {
-		return comments
+		return findings
 	}
 
 	// Check if there's any histogram removed without an obsoletion message.
 	removedWithoutMessageHistograms := removedHistograms.Difference(obsoletedHistograms).ToSlice()
 	if len(removedWithoutMessageHistograms) > 0 {
-		comment := &tricium.Data_Comment{
-			Category: category + "/Obsolete",
-			Message:  fmt.Sprintf(removedHistogramInfo, strings.Join(removedWithoutMessageHistograms, ", ")),
+		finding := &findingspb.Finding{
+			Category:      category,
+			Message:       fmt.Sprintf(removedHistogramInfo, strings.Join(removedWithoutMessageHistograms, ", ")),
+			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_INFO,
+			Location: &findingspb.Location{
+				FilePath: "/COMMIT_MSG",
+			},
 		}
-		comments = append(comments, comment)
+		findings = append(findings, finding)
 	}
-	return comments
+	return findings
 }
 
 // analyzeChangedLines analyzes a version of the file and returns:
-// 1. A list of comments generated from analyzing changed histograms.
+// 1. A list of findings generated from analyzing changed histograms.
 // 2. A map containing all histograms keyed by their names in the file.
 // 3. A set containing all the names of namespaces in the file.
 // 4. A map from namespace to line number.
 // 5. A map containing all out-of-line variants keyed by their names in the file.
-func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int, singletonEnums stringset.Set, oldHistograms map[string]*histogram, mode changeMode) ([]*tricium.Data_Comment, map[string]*histogram, stringset.Set, map[string]int, map[string]*variants) {
-	var comments []*tricium.Data_Comment
+func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int, singletonEnums stringset.Set, oldHistograms map[string]*histogram, mode changeMode) ([]*findingspb.Finding, map[string]*histogram, stringset.Set, map[string]int, map[string]*variants) {
+	var findings []*findingspb.Finding
 	// meta is a struct that holds line numbers of different tags in histogram.
 	var meta *metadata
 	// currHistogram is a buffer that holds the current histogram.
@@ -303,7 +313,7 @@ func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int
 			if histogramChanged {
 				// Only check new (added) histograms are correct.
 				if mode == ADDED {
-					comments = append(comments, checkHistogram(path, hist, meta, singletonEnums, oldHistograms)...)
+					findings = append(findings, checkHistogram(path, hist, meta, singletonEnums, oldHistograms)...)
 				}
 			}
 			currHistogram = nil
@@ -325,43 +335,48 @@ func analyzeChangedLines(scanner *bufio.Scanner, path string, linesChanged []int
 		}
 		lineNum++
 	}
-	return comments, allHistograms, namespaces, namespaceLineNums, allVariants
+	return findings, allHistograms, namespaces, namespaceLineNums, allVariants
 }
 
 func parseNamespaceFromHistogramName(histogramName string) string {
 	return strings.SplitN(histogramName, ".", 2)[0]
 }
 
-func checkHistogram(path string, hist *histogram, meta *metadata, singletonEnums stringset.Set, oldHistograms map[string]*histogram) []*tricium.Data_Comment {
-	var comments []*tricium.Data_Comment
-	comments = append(comments, checkExpiry(path, hist, meta, oldHistograms)...)
-	if comment := checkOwners(path, hist, meta); comment != nil {
-		comments = append(comments, comment)
+func checkHistogram(path string, hist *histogram, meta *metadata, singletonEnums stringset.Set, oldHistograms map[string]*histogram) []*findingspb.Finding {
+	var findings []*findingspb.Finding
+	findings = append(findings, checkExpiry(path, hist, meta, oldHistograms)...)
+	if finding := checkOwners(path, hist, meta); finding != nil {
+		findings = append(findings, finding)
 	}
-	if comment := checkUnits(path, hist, meta); comment != nil {
-		comments = append(comments, comment)
+	if finding := checkUnits(path, hist, meta); finding != nil {
+		findings = append(findings, finding)
 	}
-	if comment := checkEnums(path, hist, meta, singletonEnums); comment != nil {
-		comments = append(comments, comment)
+	if finding := checkEnums(path, hist, meta, singletonEnums); finding != nil {
+		findings = append(findings, finding)
 	}
-	if comment := checkDeprecatedNamespaces(path, hist, meta); comment != nil {
-		comments = append(comments, comment)
+	if finding := checkDeprecatedNamespaces(path, hist, meta); finding != nil {
+		findings = append(findings, finding)
 	}
-	return comments
+	return findings
 }
 
-func checkDeprecatedNamespaces(path string, hist *histogram, meta *metadata) *tricium.Data_Comment {
+func checkDeprecatedNamespaces(path string, hist *histogram, meta *metadata) *findingspb.Finding {
 	namespace := parseNamespaceFromHistogramName(hist.Name)
 	if osxNamespaceDeprecated.MatchString(namespace) {
-		comment := &tricium.Data_Comment{
-			Category:  category + "/Namespace",
-			Message:   osxNamespaceDeprecationError,
-			Path:      path,
-			StartLine: int32(meta.HistogramLineNum),
-			EndLine:   int32(meta.HistogramLineNum) + 1,
+		finding := &findingspb.Finding{
+			Category:      category,
+			Message:       osxNamespaceDeprecationError,
+			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_ERROR,
+			Location: &findingspb.Location{
+				FilePath: path,
+				Range: &findingspb.Location_Range{
+					StartLine: int32(meta.HistogramLineNum),
+					EndLine:   int32(meta.HistogramLineNum) + 1,
+				},
+			},
 		}
-		log.Printf("ADDING Comment for %s at line %d: %s", hist.Name, comment.StartLine, "[ERROR]: Deprecated Namespace")
-		return comment
+		log.Printf("ADDING finding for %s at line %d: %s", hist.Name, finding.Location.Range.StartLine, "[ERROR]: Deprecated Namespace")
+		return finding
 	}
 	return nil
 }
@@ -382,104 +397,124 @@ func bytesToVariants(variantsBytes []byte, variantsStart int) *variants {
 	return variants
 }
 
-func checkOwners(path string, hist *histogram, meta *metadata) *tricium.Data_Comment {
-	var comment *tricium.Data_Comment
+func checkOwners(path string, hist *histogram, meta *metadata) *findingspb.Finding {
+	var finding *findingspb.Finding
 
 	// Check that there is more than 1 owner
 	if len(hist.Owners) <= 1 {
-		comment = createOwnerComment(oneOwnerError, path, meta)
-		log.Printf("ADDING Comment for %s at line %d: %s", hist.Name, comment.StartLine, "[ERROR]: One Owner")
+		finding = createOwnerFinding(oneOwnerError, path, meta)
+		log.Printf("ADDING finding for %s at line %d: %s", hist.Name, finding.Location.Range.StartLine, "[ERROR]: One Owner")
 	}
 	// Check first owner is a not a team or OWNERS file.
 	if len(hist.Owners) > 0 && (strings.Contains(hist.Owners[0], "-") || strings.Contains(hist.Owners[0], "OWNERS")) {
-		if comment != nil {
-			comment.Message = oneOwnerTeamError
+		if finding != nil {
+			finding.Message = oneOwnerTeamError
 		} else {
-			comment = createOwnerComment(firstOwnerTeamError, path, meta)
+			finding = createOwnerFinding(firstOwnerTeamError, path, meta)
 		}
-		log.Printf("ADDING Comment for %s at line %d: %s", hist.Name, comment.StartLine, "[ERROR]: First Owner Team")
+		log.Printf("ADDING finding for %s at line %d: %s", hist.Name, finding.Location.Range.StartLine, "[ERROR]: First Owner Team")
 	}
-	return comment
+	return finding
 }
 
-func createOwnerComment(message, path string, meta *metadata) *tricium.Data_Comment {
-	return &tricium.Data_Comment{
-		Category:  category + "/Owners",
-		Message:   message,
-		Path:      path,
-		StartLine: int32(meta.OwnerStartLineNum),
-		EndLine:   int32(meta.tagMap[ownerEndTag]),
-	}
-}
-
-func createHistogramSuffixesComment(path string, lineNum int) *tricium.Data_Comment {
-	return &tricium.Data_Comment{
-		Category:  category + "/Suffixes",
-		Message:   SuffixesDeprecationWarning,
-		Path:      path,
-		StartLine: int32(lineNum),
-		EndLine:   int32(lineNum),
+func createOwnerFinding(message, path string, meta *metadata) *findingspb.Finding {
+	return &findingspb.Finding{
+		Category:      category,
+		Message:       message,
+		SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+		Location: &findingspb.Location{
+			FilePath: path,
+			Range: &findingspb.Location_Range{
+				StartLine: int32(meta.OwnerStartLineNum),
+				EndLine:   int32(meta.tagMap[ownerEndTag]),
+			},
+		},
 	}
 }
 
-func checkUnits(path string, hist *histogram, meta *metadata) *tricium.Data_Comment {
+func createHistogramSuffixesFinding(path string, lineNum int) *findingspb.Finding {
+	return &findingspb.Finding{
+		Category:      category,
+		Message:       SuffixesDeprecationWarning,
+		SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+		Location: &findingspb.Location{
+			FilePath: path,
+			Range: &findingspb.Location_Range{
+				StartLine: int32(lineNum),
+				EndLine:   int32(lineNum),
+			},
+		},
+	}
+}
+
+func checkUnits(path string, hist *histogram, meta *metadata) *findingspb.Finding {
 	if highResolutionUnits.MatchString(hist.Units) && !highResolutionUnitsSummary.MatchString(hist.Summary) {
 		unitsLine := meta.attributeMap[unitsAttribute]
-		comment := &tricium.Data_Comment{
-			Category:  category + "/Units",
-			Message:   unitsHighResolutionWarning,
-			Path:      path,
-			StartLine: int32(unitsLine.LineNum),
-			EndLine:   int32(unitsLine.LineNum),
-			StartChar: int32(unitsLine.StartIndex),
-			EndChar:   int32(unitsLine.EndIndex),
+		finding := &findingspb.Finding{
+			Category:      category,
+			Message:       unitsHighResolutionWarning,
+			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+			Location: &findingspb.Location{
+				FilePath: path,
+				Range: &findingspb.Location_Range{
+					StartLine:   int32(unitsLine.LineNum),
+					EndLine:     int32(unitsLine.LineNum),
+					StartColumn: int32(unitsLine.StartIndex),
+					EndColumn:   int32(unitsLine.EndIndex),
+				},
+			},
 		}
-		log.Printf("ADDING Comment for %s at line %d: %s", hist.Name, comment.StartLine, "[ERROR]: Units Microseconds Bad Summary")
-		return comment
+		log.Printf("ADDING finding for %s at line %d: %s", hist.Name, finding.Location.Range.StartLine, "[ERROR]: Units Microseconds Bad Summary")
+		return finding
 	}
 	return nil
 }
 
-func checkExpiry(path string, hist *histogram, meta *metadata, oldHistograms map[string]*histogram) []*tricium.Data_Comment {
-	var commentMessage string
+func checkExpiry(path string, hist *histogram, meta *metadata, oldHistograms map[string]*histogram) []*findingspb.Finding {
+	var findingMessage string
 	var logMessage string
-	var expiryComments []*tricium.Data_Comment
+	var sevLevel findingspb.Finding_SeverityLevel
+	var expiryFindings []*findingspb.Finding
 	expiry := hist.Expiry
 	// Check if there is any data discontinuity when |hist| already exists and is already
 	// expired for more than a month.
 	if oldHist, ok := oldHistograms[hist.Name]; ok {
-		// Show a Tricium warning if the histogram has been expired for more than 30 days.
+		// Show a warning if the histogram has been expired for more than 30 days.
 		if hasExpiredBy(oldHist, 30) {
-			expiryComments = append(expiryComments, createExpiryComment(dataDiscontinuityWarning, path, meta))
+			expiryFindings = append(expiryFindings, createExpiryFinding(dataDiscontinuityWarning, path, findingspb.Finding_SEVERITY_LEVEL_WARNING, meta))
 		}
 	}
 	if expiry == "" {
-		commentMessage = noExpiryError
+		findingMessage = noExpiryError
 		logMessage = "[ERROR]: No Expiry"
+		sevLevel = findingspb.Finding_SEVERITY_LEVEL_ERROR
 	} else if expiry == "never" {
 		if !meta.HasNeverExpiryComment {
-			commentMessage = neverExpiryError
+			findingMessage = neverExpiryError
 			logMessage = "[ERROR]: Never Expiry, No Comment"
+			sevLevel = findingspb.Finding_SEVERITY_LEVEL_ERROR
 		} else {
-			commentMessage = neverExpiryInfo
+			findingMessage = neverExpiryInfo
 			logMessage = "[INFO]: Never Expiry"
+			sevLevel = findingspb.Finding_SEVERITY_LEVEL_INFO
 		}
 	} else if expiry != "" {
-		if inputDate, comment, log, ok := getExpiryDate(expiry); ok {
-			commentMessage, logMessage = processExpiryDateDiff(inputDate)
+		if inputDate, msg, log, level, ok := getExpiryDate(expiry); ok {
+			findingMessage, logMessage, sevLevel = processExpiryDateDiff(inputDate)
 		} else {
-			commentMessage = comment
+			findingMessage = msg
 			logMessage = log
+			sevLevel = level
 		}
 	}
-	if commentMessage != "" {
-		expiryComments = append(expiryComments, createExpiryComment(commentMessage, path, meta))
-		log.Printf("ADDING Comment for %s at line %d: %s", hist.Name, meta.HistogramLineNum, logMessage)
+	if findingMessage != "" {
+		expiryFindings = append(expiryFindings, createExpiryFinding(findingMessage, path, sevLevel, meta))
+		log.Printf("ADDING finding for %s at line %d: %s", hist.Name, meta.HistogramLineNum, logMessage)
 	}
-	return expiryComments
+	return expiryFindings
 }
 
-func getExpiryDate(expiry string) (inputDate time.Time, commentMessage string, logMessage string, ok bool) {
+func getExpiryDate(expiry string) (inputDate time.Time, findingMessage string, logMessage string, level findingspb.Finding_SeverityLevel, ok bool) {
 	var err error
 	ok = true
 	dateMatch := expiryDatePattern.MatchString(expiry)
@@ -497,22 +532,23 @@ func getExpiryDate(expiry string) (inputDate time.Time, commentMessage string, l
 		}
 		if inputDate, err = getMilestoneDate(milestone); err != nil {
 			ok = false
-			commentMessage = milestoneFailure
+			findingMessage = milestoneFailure
 			logMessage = fmt.Sprintf("[WARNING] Milestone Fetch Failure: %v", err)
+			level = findingspb.Finding_SEVERITY_LEVEL_WARNING
 		}
 	} else {
 		ok = false
-		commentMessage = badExpiryError
+		findingMessage = badExpiryError
 		logMessage = "[ERROR]: Expiry condition badly formatted"
+		level = findingspb.Finding_SEVERITY_LEVEL_ERROR
 	}
 	return
 }
 
-func processExpiryDateDiff(inputDate time.Time) (commentMessage string, logMessage string) {
+func processExpiryDateDiff(inputDate time.Time) (findingMessage string, logMessage string, level findingspb.Finding_SeverityLevel) {
 	dateDiff := int(inputDate.Sub(now()).Hours() / 24)
 	if dateDiff < 0 {
-		commentMessage = pastExpiryWarning
-		logMessage = "[WARNING]: Expiry in past"
+		return pastExpiryWarning, "[WARNING]: Expiry in past", findingspb.Finding_SEVERITY_LEVEL_WARNING
 	} else if dateDiff >= 420 {
 		// Use a threshold of 420 days to give users a 2-month grace period for
 		// expiry dates past 1 year. When a histogram is nearing expiry, an
@@ -521,10 +557,9 @@ func processExpiryDateDiff(inputDate time.Time) (commentMessage string, logMessa
 		// about a month or two before the histogram will expire, and it's common
 		// for developers to simply bump the expiry year, without changing the month
 		// nor day.
-		commentMessage = farExpiryWarning
-		logMessage = "[WARNING]: Expiry past one year"
+		return farExpiryWarning, "[WARNING]: Expiry past one year", findingspb.Finding_SEVERITY_LEVEL_WARNING
 	}
-	return
+	return "", "", findingspb.Finding_SEVERITY_LEVEL_UNSPECIFIED
 }
 
 func getMilestoneDateImpl(milestone int) (time.Time, error) {
@@ -556,7 +591,7 @@ func milestoneRequest(url string) (milestones, error) {
 	if err != nil {
 		return newMilestones, err
 	}
-	body, err := ioutil.ReadAll(res.Body)
+	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		return newMilestones, err
 	}
@@ -571,32 +606,42 @@ func milestoneRequest(url string) (milestones, error) {
 	return newMilestones, nil
 }
 
-func createExpiryComment(message, path string, meta *metadata) *tricium.Data_Comment {
+func createExpiryFinding(message, path string, level findingspb.Finding_SeverityLevel, meta *metadata) *findingspb.Finding {
 	expiryLine := meta.attributeMap[expiryAttribute]
-	log.Printf("ADDING Comment at line %d: %s", expiryLine.LineNum, message)
-	return &tricium.Data_Comment{
-		Category:  category + "/Expiry",
-		Message:   message,
-		Path:      path,
-		StartLine: int32(expiryLine.LineNum),
-		EndLine:   int32(expiryLine.LineNum),
-		StartChar: int32(expiryLine.StartIndex),
-		EndChar:   int32(expiryLine.EndIndex),
+	log.Printf("ADDING finding at line %d: %s", expiryLine.LineNum, message)
+	return &findingspb.Finding{
+		Category:      category,
+		Message:       message,
+		SeverityLevel: level,
+		Location: &findingspb.Location{
+			FilePath: path,
+			Range: &findingspb.Location_Range{
+				StartLine:   int32(expiryLine.LineNum),
+				EndLine:     int32(expiryLine.LineNum),
+				StartColumn: int32(expiryLine.StartIndex),
+				EndColumn:   int32(expiryLine.EndIndex),
+			},
+		},
 	}
 }
 
-func checkEnums(path string, hist *histogram, meta *metadata, singletonEnums stringset.Set) *tricium.Data_Comment {
+func checkEnums(path string, hist *histogram, meta *metadata, singletonEnums stringset.Set) *findingspb.Finding {
 	if singletonEnums.Has(hist.Enum) && !strings.Contains(hist.Summary, "baseline") {
 		enumLine := meta.attributeMap[enumAttribute]
-		log.Printf("ADDING Comment for %s at line %d: %s", hist.Name, enumLine.LineNum, "Single Element Enum No Baseline")
-		return &tricium.Data_Comment{
-			Category:  category + "/Enums",
-			Message:   singleElementEnumWarning,
-			Path:      path,
-			StartLine: int32(enumLine.LineNum),
-			EndLine:   int32(enumLine.LineNum),
-			StartChar: int32(enumLine.StartIndex),
-			EndChar:   int32(enumLine.EndIndex),
+		log.Printf("ADDING finding for %s at line %d: %s", hist.Name, enumLine.LineNum, "Single Element Enum No Baseline")
+		return &findingspb.Finding{
+			Category:      category,
+			Message:       singleElementEnumWarning,
+			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+			Location: &findingspb.Location{
+				FilePath: path,
+				Range: &findingspb.Location_Range{
+					StartLine:   int32(enumLine.LineNum),
+					EndLine:     int32(enumLine.LineNum),
+					StartColumn: int32(enumLine.StartIndex),
+					EndColumn:   int32(enumLine.EndIndex),
+				},
+			},
 		}
 	}
 	return nil
@@ -610,22 +655,27 @@ func generateAddedAndRemovedHistograms(newHistograms map[string]*histogram, oldH
 	return allAddedHistograms, allRemovedHistograms
 }
 
-func generateCommentsForAddedNamespaces(path string, newNamespaces stringset.Set, oldNamespaces stringset.Set, namespaceLineNums map[string]int) []*tricium.Data_Comment {
-	var comments []*tricium.Data_Comment
+func generateFindingsForAddedNamespaces(path string, newNamespaces stringset.Set, oldNamespaces stringset.Set, namespaceLineNums map[string]int) []*findingspb.Finding {
+	var findings []*findingspb.Finding
 	allAddedNamespaces := newNamespaces.Difference(oldNamespaces).ToSlice()
 	sort.Strings(allAddedNamespaces)
 	for _, namespace := range allAddedNamespaces {
-		comment := &tricium.Data_Comment{
-			Category:  category + "/Namespace",
-			Message:   fmt.Sprintf(addedNamespaceWarning, namespace),
-			Path:      path,
-			StartLine: int32(namespaceLineNums[namespace]),
-			EndLine:   int32(namespaceLineNums[namespace]),
+		finding := &findingspb.Finding{
+			Category:      category,
+			Message:       fmt.Sprintf(addedNamespaceWarning, namespace),
+			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+			Location: &findingspb.Location{
+				FilePath: path,
+				Range: &findingspb.Location_Range{
+					StartLine: int32(namespaceLineNums[namespace]),
+					EndLine:   int32(namespaceLineNums[namespace]),
+				},
+			},
 		}
-		log.Printf("ADDING Comment for %s at line %d: %s", namespace, comment.StartLine, "[WARNING]: Added Namespace")
-		comments = append(comments, comment)
+		log.Printf("ADDING finding for %s at line %d: %s", namespace, finding.Location.Range.StartLine, "[WARNING]: Added Namespace")
+		findings = append(findings, finding)
 	}
-	return comments
+	return findings
 }
 
 // newMetadata is a constructor for creating a Metadata struct with defaultLineNum.
@@ -644,13 +694,6 @@ func newMetadata(defaultLineNum int) *metadata {
 		tagMap:            tagMap,
 		attributeMap:      attributeMap,
 	}
-}
-
-func showAllComments(comments []*tricium.Data_Comment) []*tricium.Data_Comment {
-	for _, comment := range comments {
-		comment.ShowOnUnchangedLines = true
-	}
-	return comments
 }
 
 // expandHistograms generates a map containing all histograms that are not obsolete keyed by their
@@ -696,7 +739,7 @@ func expandHistograms(hists map[string]*histogram, variants map[string]*variants
 // hasExpiredBy returns whether the given histogram has been expired for more than the give number of days.
 func hasExpiredBy(hist *histogram, numDays int) bool {
 	if hist.Expiry != "" {
-		if inputDate, _, _, ok := getExpiryDate(hist.Expiry); ok {
+		if inputDate, _, _, _, ok := getExpiryDate(hist.Expiry); ok {
 			dateDiff := int(inputDate.Sub(now()).Hours() / 24)
 			return dateDiff < -1*numDays
 		}

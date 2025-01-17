@@ -13,10 +13,10 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	tricium "infra/tricium/api/v1"
+	findingspb "go.chromium.org/luci/common/proto/findings"
 )
 
-func analyzeJSONTestFile(t testing.TB, filePath string) []*tricium.Data_Comment {
+func analyzeJSONTestFile(t testing.TB, filePath string) []*findingspb.Finding {
 	// Mock current time for testing
 	inputPath := filepath.Join(inputDir, filePath)
 	f := openFileOrDie(inputPath)
@@ -37,30 +37,48 @@ func TestConfigCheck(t *testing.T) {
 
 	ftt.Run("Analyze Config JSON file with warning: many experiments", t, func(t *ftt.Test) {
 		results := analyzeJSONTestFile(t, "configs/many_experiments.json")
-		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
+		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
-				Category:  category + "/Experiments",
-				Message:   fmt.Sprintf(manyExperimentsWarning, "TestConfig1"),
-				StartLine: 7,
-				Path:      "configs/many_experiments.json",
+				Category:      category,
+				Message:       fmt.Sprintf(manyExperimentsWarning, "TestConfig1"),
+				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Location: &findingspb.Location{
+					FilePath: "configs/many_experiments.json",
+					Range: &findingspb.Location_Range{
+						StartLine: 7,
+						EndLine:   7,
+					},
+				},
 			},
 		}))
 	})
 
 	ftt.Run("Analyze Config JSON file with two warnings: many configs many experiments", t, func(t *ftt.Test) {
 		results := analyzeJSONTestFile(t, "configs/many_configs_many_exp.json")
-		assert.Loosely(t, results, should.Resemble([]*tricium.Data_Comment{
+		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
-				Category:  category + "/Experiments",
-				Message:   fmt.Sprintf(manyExperimentsWarning, "TestConfig1"),
-				StartLine: 7,
-				Path:      "configs/many_configs_many_exp.json",
+				Category:      category,
+				Message:       fmt.Sprintf(manyExperimentsWarning, "TestConfig1"),
+				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Location: &findingspb.Location{
+					FilePath: "configs/many_configs_many_exp.json",
+					Range: &findingspb.Location_Range{
+						StartLine: 7,
+						EndLine:   7,
+					},
+				},
 			},
 			{
-				Category:  category + "/Experiments",
-				Message:   fmt.Sprintf(manyExperimentsWarning, "TestConfig1"),
-				StartLine: 26,
-				Path:      "configs/many_configs_many_exp.json",
+				Category:      category,
+				Message:       fmt.Sprintf(manyExperimentsWarning, "TestConfig1"),
+				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Location: &findingspb.Location{
+					FilePath: "configs/many_configs_many_exp.json",
+					Range: &findingspb.Location_Range{
+						StartLine: 26,
+						EndLine:   26,
+					},
+				},
 			},
 		}))
 	})

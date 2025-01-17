@@ -8,7 +8,7 @@ import (
 	"encoding/xml"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -16,8 +16,10 @@ import (
 	"strings"
 
 	"github.com/waigani/diffparser"
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/luci/common/data/stringset"
+	findingspb "go.chromium.org/luci/common/proto/findings"
 
 	tricium "infra/tricium/api/v1"
 )
@@ -45,7 +47,7 @@ type diffsPerFile struct {
 
 func main() {
 	inputDir := flag.String("input", "", "Path to directory with current versions of changed files")
-	outputDir := flag.String("output", "", "Path to root of Tricium output")
+	outputDir := flag.String("output", "", "Path to root of output")
 	prevDir := flag.String("previous", "", "Path to directory with previous versions of changed files")
 	// patchPath is an absolute path to the patch.
 	patchPath := flag.String("patch", "", "Path to patch of changed files")
@@ -63,7 +65,7 @@ func main() {
 	}
 	singletonEnums := getSingleElementEnums(filepath.Join(*inputDir, *enumsPath))
 
-	results := &tricium.Data_Results{}
+	var allFindings []*findingspb.Finding
 	allAddedHistograms := make(stringset.Set)
 	allRemovedHistograms := make(stringset.Set)
 	for _, filePath := range filePaths {
@@ -73,44 +75,50 @@ func main() {
 		if ext := filepath.Ext(filePath); ext == ".xml" {
 			switch strings.TrimSuffix(filepath.Base(filePath), ext) {
 			case "histograms":
-				comments, addedHistograms, removedHistograms := analyzeHistogramFile(f, filePath, *prevDir, filesChanged, singletonEnums)
-				results.Comments = append(results.Comments, comments...)
+				findings, addedHistograms, removedHistograms := analyzeHistogramFile(f, filePath, *prevDir, filesChanged, singletonEnums)
+				allFindings = append(allFindings, findings...)
 				allAddedHistograms = allAddedHistograms.Union(addedHistograms)
 				allRemovedHistograms = allRemovedHistograms.Union(removedHistograms)
 			case "histogram_suffixes_list":
-				results.Comments = append(results.Comments, analyzeHistogramSuffixesFile(f, filePath, filesChanged)...)
+				allFindings = append(allFindings, analyzeHistogramSuffixesFile(f, filePath, filesChanged)...)
 			}
 		} else if filepath.Ext(filePath) == ".json" {
-			results.Comments = append(results.Comments, analyzeFieldTrialTestingConfig(f, filePath)...)
+			allFindings = append(allFindings, analyzeFieldTrialTestingConfig(f, filePath)...)
 		}
 	}
 
 	globalObsoleteTagAdded := regexp.MustCompile(`OBSOLETE_HISTOGRAMS=(.+)`).Match([]byte(*commitMessage))
 	removedHistograms := allRemovedHistograms.Difference(allAddedHistograms)
 	// Check if all obsoletion messages and all removed histograms have their counterpart.
-	results.Comments = append(results.Comments, analyzeCommitMessage(
+	allFindings = append(allFindings, analyzeCommitMessage(
 		getObsoletedHistograms(*commitMessage), removedHistograms, globalObsoleteTagAdded)...)
 
 	// Record all removed histograms in the CL.
 	if removedHistograms.Len() > 0 {
-		comment := &tricium.Data_Comment{
-			Category: category + "/Removed",
-			Message:  fmt.Sprintf(allRemovedHistogramInfo, strings.Join(removedHistograms.ToSlice(), ", ")),
+		message := fmt.Sprintf(allRemovedHistogramInfo, strings.Join(removedHistograms.ToSlice(), ", "))
+		finding := &findingspb.Finding{
+			Category:      category,
+			Message:       message,
+			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_INFO,
+			Location: &findingspb.Location{
+				FilePath: "/COMMIT_MSG",
+			},
 		}
-		results.Comments = append(results.Comments, comment)
+		allFindings = append(allFindings, finding)
 	}
 
-	// Write Tricium RESULTS data.
-	path, err := tricium.WriteDataType(*outputDir, results)
-	if err != nil {
-		log.Panicf("Failed to write RESULTS data: %v. Did you specify an output directory with -output?", err)
+	if err := writeFindingsOutput(allFindings, *outputDir); err != nil {
+		log.Fatalf("Failed to write findings output: %v", err)
 	}
-	log.Printf("Wrote RESULTS data to path %q.", path)
+
+	if err := writeTriciumResults(allFindings, *outputDir); err != nil {
+		log.Fatalf("Failed to write Tricium results: %v", err)
+	}
 }
 
 // getDiffsPerFile gets the added and removed line numbers for a particular file.
 func getDiffsPerFile(filePaths []string, patchPath string) (*diffsPerFile, error) {
-	patch, err := ioutil.ReadFile(patchPath)
+	patch, err := os.ReadFile(patchPath)
 	if err != nil {
 		return &diffsPerFile{}, err
 	}
@@ -144,7 +152,7 @@ func getSingleElementEnums(inputPath string) stringset.Set {
 	singletonEnums := make(stringset.Set)
 	f := openFileOrDie(inputPath)
 	defer closeFileOrDie(f)
-	enumBytes, err := ioutil.ReadAll(f)
+	enumBytes, err := io.ReadAll(f)
 	if err != nil {
 		log.Panicf("Failed to read enums into buffer: %v. Did you specify the enums file correctly with -enums?", err)
 	}
@@ -182,4 +190,53 @@ func getObsoletedHistograms(commitMessage string) stringset.Set {
 		histogramsSet.Add(match[1])
 	}
 	return histogramsSet
+}
+
+func writeFindingsOutput(findings []*findingspb.Finding, outputDir string) error {
+	findingsData, err := proto.Marshal(&findingspb.Findings{Findings: findings})
+	if err != nil {
+		return fmt.Errorf("failed to marshal the findings: %w", err)
+	}
+	if err := os.MkdirAll(outputDir, 0777); err != nil {
+		return fmt.Errorf("failed to create output dir %s: %w", outputDir, err)
+	}
+	path := filepath.Join(outputDir, "findings.out")
+	if err := os.WriteFile(path, findingsData, 0644); err != nil {
+		return fmt.Errorf("failed to write the findings to %s: %w", path, err)
+	}
+	log.Printf("Wrote findings data to %s", path)
+	return nil
+}
+
+// TODO(crbug/388321980) : stop writing tricium data after deprecation
+func writeTriciumResults(findings []*findingspb.Finding, outputDir string) error {
+	results := &tricium.Data_Results{
+		Comments: make([]*tricium.Data_Comment, len(findings)),
+	}
+
+	for i, finding := range findings {
+		results.Comments[i] = &tricium.Data_Comment{
+			Category:  finding.GetCategory(),
+			Message:   finding.GetMessage(),
+			Path:      finding.GetLocation().GetFilePath(),
+			StartLine: finding.GetLocation().GetRange().GetStartLine(),
+			EndLine:   finding.GetLocation().GetRange().GetEndLine(),
+			StartChar: finding.GetLocation().GetRange().GetStartColumn(),
+			EndChar:   finding.GetLocation().GetRange().GetEndColumn(),
+		}
+		switch finding.GetSeverityLevel() {
+		case findingspb.Finding_SEVERITY_LEVEL_INFO:
+			results.Comments[i].Message = "[INFO] " + results.Comments[i].Message
+		case findingspb.Finding_SEVERITY_LEVEL_WARNING:
+			results.Comments[i].Message = "[WARNING] " + results.Comments[i].Message
+		case findingspb.Finding_SEVERITY_LEVEL_ERROR:
+			results.Comments[i].Message = "[ERROR] " + results.Comments[i].Message
+		}
+	}
+	path, err := tricium.WriteDataType(outputDir, results)
+	if err != nil {
+		return err
+	}
+	log.Printf("Wrote RESULTS data to %s", path)
+	return nil
 }
