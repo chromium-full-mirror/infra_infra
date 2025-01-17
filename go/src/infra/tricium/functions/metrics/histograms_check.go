@@ -31,30 +31,95 @@ const (
 	ownerStartTag       = "<owner"
 	ownerEndTag         = "</owner"
 	variantsEndTag      = "</variants>"
-
-	oneOwnerError                = `It's preferred to list at least two owners, where the second is often a team mailing list or a src/path/to/OWNERS reference: https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Owners.`
-	firstOwnerTeamError          = `Please list an individual as the primary owner for this metric: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Owners.`
-	oneOwnerTeamError            = `Please list an individual as the primary owner for this metric. Note that it's preferred to list at least two owners, where the second is often a team mailing list or a src/path/to/OWNERS reference: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Owners.`
-	noExpiryError                = `Please specify an expiry condition for this histogram: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
-	badExpiryError               = `Could not parse histogram expiry. Please format as YYYY-MM-DD or MXXX: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
-	pastExpiryWarning            = `This expiry date is in the past. Did you mean to set an expiry date in the future?`
-	farExpiryWarning             = `It's a best practice to choose an expiry that is at most one year out: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
-	dataDiscontinuityWarning     = `This histogram is expired for more than a month. It might have already stopped reporting. If you're extending this histogram, please be careful of data discontinuity: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#extending.`
-	neverExpiryInfo              = `The expiry should only be set to "never" in rare cases. Please double-check that this use of "never" is appropriate: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
-	neverExpiryError             = `The expiry should only be set to "never" in rare cases. If you believe this use of "never" is appropriate, you must include an XML comment describing why, such as <!-- expires-never: "heartbeat" metric (internal: go/uma-heartbeats) -->: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`
-	milestoneFailure             = `Failed to fetch milestone branch date. Please double-check that this milestone is correct, because the tool is currently not able to check for you.`
-	unitsHighResolutionWarning   = `Histograms using microseconds should document whether the metric is reported for all clients or only clients with high-resolution clocks. If your histogram logging macro or function calls HistogramBase::AddTimeMicrosecondsGranularity() under the hood, then the metric is reported for only clients with high-resolution clocks. Separately, samples from clients with low-resolution clocks (e.g. on Windows, see TimeTicks::IsHighResolution()) may be as coarse as ~15.6ms.`
-	addedNamespaceWarning        = `Are you sure you want to add the namespace %s to histograms.xml? For most new histograms, it's appropriate to re-use one of the existing top-level histogram namespaces. For histogram names, the namespace is defined as everything preceding the first dot '.' in the name.`
-	singleElementEnumWarning     = `It looks like this is an enumerated histogram that contains only a single bucket. UMA metrics are difficult to interpret in isolation, so please either add one or more additional buckets that can serve as a baseline for comparison, or document what other metric should be used as a baseline during analysis. https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#enum-histograms.`
-	SuffixesDeprecationWarning   = `The <histogram_suffixes> syntax is deprecated. If you're adding a new list of suffixes, please use patterned histograms instead. If you're modifying an existing list of suffixes, please consider migrating that list to use patterned histograms. See https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#patterned-histograms.`
-	osxNamespaceDeprecationError = `The namespace "OSX" is deprecated. Prefer adding new Mac histograms to the "Mac" namespace.`
-	removedHistogramInfo         = `The following histograms were removed without an obsoletion message: %s. It is preferred to add an obsoletion message when a histogram is removed: https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#add-an-obsoletion-message.`
-	obsoletionMessageError       = `An obsoletion message has been added to following histograms: %s, but they are not removed. Please double check if there're typos.`
-	allRemovedHistogramInfo      = `The following histograms have been removed and obsoleted in this CL: %s.`
-	globalObsoletionMessageError = `A CL-level obsoletion message was added but no histogram has been removed in the CL.`
 )
 
+type findingDefinition struct {
+	message string
+	level   findingspb.Finding_SeverityLevel
+}
+
 var (
+	oneOwnerFinding = findingDefinition{
+		message: `It's preferred to list at least two owners, where the second is often a team mailing list or a src/path/to/OWNERS reference: https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Owners.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_WARNING,
+	}
+	firstOwnerTeamFinding = findingDefinition{
+		message: `Please list an individual as the primary owner for this metric: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Owners.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_WARNING,
+	}
+	oneOwnerTeamFinding = findingDefinition{
+		message: `Please list an individual as the primary owner for this metric. Note that it's preferred to list at least two owners, where the second is often a team mailing list or a src/path/to/OWNERS reference: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Owners.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_WARNING,
+	}
+	noExpiryFinding = findingDefinition{
+		message: `Please specify an expiry condition for this histogram: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_ERROR,
+	}
+	badExpiryFinding = findingDefinition{
+		message: `Could not parse histogram expiry. Please format as YYYY-MM-DD or MXXX: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_ERROR,
+	}
+	pastExpiryFinding = findingDefinition{
+		message: `This expiry date is in the past. Did you mean to set an expiry date in the future?`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_WARNING,
+	}
+	farExpiryFinding = findingDefinition{
+		message: `It's a best practice to choose an expiry that is at most one year out: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_WARNING,
+	}
+	dataDiscontinuityFinding = findingDefinition{
+		message: `This histogram is expired for more than a month. It might have already stopped reporting. If you're extending this histogram, please be careful of data discontinuity: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#extending.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_WARNING,
+	}
+	neverExpiryInfoFinding = findingDefinition{
+		message: `The expiry should only be set to "never" in rare cases. Please double-check that this use of "never" is appropriate: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_INFO,
+	}
+	neverExpiryErrorFinding = findingDefinition{
+		message: `The expiry should only be set to "never" in rare cases. If you believe this use of "never" is appropriate, you must include an XML comment describing why, such as <!-- expires-never: "heartbeat" metric (internal: go/uma-heartbeats) -->: https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#Histogram-Expiry.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_ERROR,
+	}
+	milestoneFailureFinding = findingDefinition{
+		message: `Failed to fetch milestone branch date. Please double-check that this milestone is correct, because the tool is currently not able to check for you.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_WARNING,
+	}
+	unitsHighResolutionFinding = findingDefinition{
+		message: `Histograms using microseconds should document whether the metric is reported for all clients or only clients with high-resolution clocks. If your histogram logging macro or function calls HistogramBase::AddTimeMicrosecondsGranularity() under the hood, then the metric is reported for only clients with high-resolution clocks. Separately, samples from clients with low-resolution clocks (e.g. on Windows, see TimeTicks::IsHighResolution()) may be as coarse as ~15.6ms.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_WARNING,
+	}
+	addedNamespaceFinding = findingDefinition{
+		message: `Are you sure you want to add the namespace %s to histograms.xml? For most new histograms, it's appropriate to re-use one of the existing top-level histogram namespaces. For histogram names, the namespace is defined as everything preceding the first dot '.' in the name.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_WARNING,
+	}
+	singleElementEnumFinding = findingDefinition{
+		message: `It looks like this is an enumerated histogram that contains only a single bucket. UMA metrics are difficult to interpret in isolation, so please either add one or more additional buckets that can serve as a baseline for comparison, or document what other metric should be used as a baseline during analysis. https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#enum-histograms.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_WARNING,
+	}
+	suffixesDeprecationFinding = findingDefinition{
+		message: `The <histogram_suffixes> syntax is deprecated. If you're adding a new list of suffixes, please use patterned histograms instead. If you're modifying an existing list of suffixes, please consider migrating that list to use patterned histograms. See https://chromium.googlesource.com/chromium/src/+/HEAD/tools/metrics/histograms/README.md#patterned-histograms.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_WARNING,
+	}
+	osxNamespaceDeprecationFinding = findingDefinition{
+		message: `The namespace "OSX" is deprecated. Prefer adding new Mac histograms to the "Mac" namespace.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_ERROR,
+	}
+	removedHistogramFinding = findingDefinition{
+		message: `The following histograms were removed without an obsoletion message: %s. It is preferred to add an obsoletion message when a histogram is removed: https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#add-an-obsoletion-message.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_INFO,
+	}
+	obsoletionMessageFinding = findingDefinition{
+		message: `An obsoletion message has been added to following histograms: %s, but they are not removed. Please double check if there're typos.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_WARNING,
+	}
+	allRemovedHistogramFinding = findingDefinition{
+		message: `The following histograms have been removed and obsoleted in this CL: %s.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_INFO,
+	}
+	globalObsoletionMessageFinding = findingDefinition{
+		message: `A CL-level obsoletion message was added but no histogram has been removed in the CL.`,
+		level:   findingspb.Finding_SEVERITY_LEVEL_WARNING,
+	}
+
 	// We need a pattern for matching the histogram start tag because
 	// there are other tags that share the "histogram" prefix like "histogram-suffixes"
 	histogramStartPattern     = regexp.MustCompile(`^<histogram($|\s|>)`)
@@ -191,8 +256,8 @@ func analyzeCommitMessage(obsoletedHistograms stringset.Set, removedHistograms s
 	if len(removedHistograms) == 0 && globalObsoleteTagAdded {
 		finding := &findingspb.Finding{
 			Category:      category,
-			Message:       globalObsoletionMessageError,
-			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+			Message:       globalObsoletionMessageFinding.message,
+			SeverityLevel: globalObsoletionMessageFinding.level,
 			Location: &findingspb.Location{
 				FilePath: "/COMMIT_MSG",
 			},
@@ -205,8 +270,8 @@ func analyzeCommitMessage(obsoletedHistograms stringset.Set, removedHistograms s
 	if len(obsoletedWithoutRemovalHistograms) > 0 {
 		finding := &findingspb.Finding{
 			Category:      category,
-			Message:       fmt.Sprintf(obsoletionMessageError, strings.Join(obsoletedWithoutRemovalHistograms, ", ")),
-			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+			Message:       fmt.Sprintf(obsoletionMessageFinding.message, strings.Join(obsoletedWithoutRemovalHistograms, ", ")),
+			SeverityLevel: obsoletionMessageFinding.level,
 			Location: &findingspb.Location{
 				FilePath: "/COMMIT_MSG",
 			},
@@ -225,8 +290,8 @@ func analyzeCommitMessage(obsoletedHistograms stringset.Set, removedHistograms s
 	if len(removedWithoutMessageHistograms) > 0 {
 		finding := &findingspb.Finding{
 			Category:      category,
-			Message:       fmt.Sprintf(removedHistogramInfo, strings.Join(removedWithoutMessageHistograms, ", ")),
-			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_INFO,
+			Message:       fmt.Sprintf(removedHistogramFinding.message, strings.Join(removedWithoutMessageHistograms, ", ")),
+			SeverityLevel: removedHistogramFinding.level,
 			Location: &findingspb.Location{
 				FilePath: "/COMMIT_MSG",
 			},
@@ -365,8 +430,8 @@ func checkDeprecatedNamespaces(path string, hist *histogram, meta *metadata) *fi
 	if osxNamespaceDeprecated.MatchString(namespace) {
 		finding := &findingspb.Finding{
 			Category:      category,
-			Message:       osxNamespaceDeprecationError,
-			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_ERROR,
+			Message:       osxNamespaceDeprecationFinding.message,
+			SeverityLevel: osxNamespaceDeprecationFinding.level,
 			Location: &findingspb.Location{
 				FilePath: path,
 				Range: &findingspb.Location_Range{
@@ -402,26 +467,26 @@ func checkOwners(path string, hist *histogram, meta *metadata) *findingspb.Findi
 
 	// Check that there is more than 1 owner
 	if len(hist.Owners) <= 1 {
-		finding = createOwnerFinding(oneOwnerError, path, meta)
+		finding = createOwnerFinding(oneOwnerFinding, path, meta)
 		log.Printf("ADDING finding for %s at line %d: %s", hist.Name, finding.Location.Range.StartLine, "[ERROR]: One Owner")
 	}
 	// Check first owner is a not a team or OWNERS file.
 	if len(hist.Owners) > 0 && (strings.Contains(hist.Owners[0], "-") || strings.Contains(hist.Owners[0], "OWNERS")) {
 		if finding != nil {
-			finding.Message = oneOwnerTeamError
+			finding = createOwnerFinding(oneOwnerTeamFinding, path, meta)
 		} else {
-			finding = createOwnerFinding(firstOwnerTeamError, path, meta)
+			finding = createOwnerFinding(firstOwnerTeamFinding, path, meta)
 		}
 		log.Printf("ADDING finding for %s at line %d: %s", hist.Name, finding.Location.Range.StartLine, "[ERROR]: First Owner Team")
 	}
 	return finding
 }
 
-func createOwnerFinding(message, path string, meta *metadata) *findingspb.Finding {
+func createOwnerFinding(f findingDefinition, path string, meta *metadata) *findingspb.Finding {
 	return &findingspb.Finding{
 		Category:      category,
-		Message:       message,
-		SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+		Message:       f.message,
+		SeverityLevel: f.level,
 		Location: &findingspb.Location{
 			FilePath: path,
 			Range: &findingspb.Location_Range{
@@ -435,8 +500,8 @@ func createOwnerFinding(message, path string, meta *metadata) *findingspb.Findin
 func createHistogramSuffixesFinding(path string, lineNum int) *findingspb.Finding {
 	return &findingspb.Finding{
 		Category:      category,
-		Message:       SuffixesDeprecationWarning,
-		SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+		Message:       suffixesDeprecationFinding.message,
+		SeverityLevel: suffixesDeprecationFinding.level,
 		Location: &findingspb.Location{
 			FilePath: path,
 			Range: &findingspb.Location_Range{
@@ -452,8 +517,8 @@ func checkUnits(path string, hist *histogram, meta *metadata) *findingspb.Findin
 		unitsLine := meta.attributeMap[unitsAttribute]
 		finding := &findingspb.Finding{
 			Category:      category,
-			Message:       unitsHighResolutionWarning,
-			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+			Message:       unitsHighResolutionFinding.message,
+			SeverityLevel: unitsHighResolutionFinding.level,
 			Location: &findingspb.Location{
 				FilePath: path,
 				Range: &findingspb.Location_Range{
@@ -471,9 +536,8 @@ func checkUnits(path string, hist *histogram, meta *metadata) *findingspb.Findin
 }
 
 func checkExpiry(path string, hist *histogram, meta *metadata, oldHistograms map[string]*histogram) []*findingspb.Finding {
-	var findingMessage string
+	var findingDef findingDefinition
 	var logMessage string
-	var sevLevel findingspb.Finding_SeverityLevel
 	var expiryFindings []*findingspb.Finding
 	expiry := hist.Expiry
 	// Check if there is any data discontinuity when |hist| already exists and is already
@@ -481,40 +545,36 @@ func checkExpiry(path string, hist *histogram, meta *metadata, oldHistograms map
 	if oldHist, ok := oldHistograms[hist.Name]; ok {
 		// Show a warning if the histogram has been expired for more than 30 days.
 		if hasExpiredBy(oldHist, 30) {
-			expiryFindings = append(expiryFindings, createExpiryFinding(dataDiscontinuityWarning, path, findingspb.Finding_SEVERITY_LEVEL_WARNING, meta))
+			expiryFindings = append(expiryFindings, createExpiryFinding(dataDiscontinuityFinding, path, meta))
 		}
 	}
 	if expiry == "" {
-		findingMessage = noExpiryError
+		findingDef = noExpiryFinding
 		logMessage = "[ERROR]: No Expiry"
-		sevLevel = findingspb.Finding_SEVERITY_LEVEL_ERROR
 	} else if expiry == "never" {
 		if !meta.HasNeverExpiryComment {
-			findingMessage = neverExpiryError
+			findingDef = neverExpiryErrorFinding
 			logMessage = "[ERROR]: Never Expiry, No Comment"
-			sevLevel = findingspb.Finding_SEVERITY_LEVEL_ERROR
 		} else {
-			findingMessage = neverExpiryInfo
+			findingDef = neverExpiryInfoFinding
 			logMessage = "[INFO]: Never Expiry"
-			sevLevel = findingspb.Finding_SEVERITY_LEVEL_INFO
 		}
 	} else if expiry != "" {
-		if inputDate, msg, log, level, ok := getExpiryDate(expiry); ok {
-			findingMessage, logMessage, sevLevel = processExpiryDateDiff(inputDate)
+		if inputDate, f, log, ok := getExpiryDate(expiry); ok {
+			findingDef, logMessage = processExpiryDateDiff(inputDate)
 		} else {
-			findingMessage = msg
+			findingDef = f
 			logMessage = log
-			sevLevel = level
 		}
 	}
-	if findingMessage != "" {
-		expiryFindings = append(expiryFindings, createExpiryFinding(findingMessage, path, sevLevel, meta))
+	if findingDef.message != "" {
+		expiryFindings = append(expiryFindings, createExpiryFinding(findingDef, path, meta))
 		log.Printf("ADDING finding for %s at line %d: %s", hist.Name, meta.HistogramLineNum, logMessage)
 	}
 	return expiryFindings
 }
 
-func getExpiryDate(expiry string) (inputDate time.Time, findingMessage string, logMessage string, level findingspb.Finding_SeverityLevel, ok bool) {
+func getExpiryDate(expiry string) (inputDate time.Time, findingDef findingDefinition, logMessage string, ok bool) {
 	var err error
 	ok = true
 	dateMatch := expiryDatePattern.MatchString(expiry)
@@ -532,23 +592,21 @@ func getExpiryDate(expiry string) (inputDate time.Time, findingMessage string, l
 		}
 		if inputDate, err = getMilestoneDate(milestone); err != nil {
 			ok = false
-			findingMessage = milestoneFailure
+			findingDef = milestoneFailureFinding
 			logMessage = fmt.Sprintf("[WARNING] Milestone Fetch Failure: %v", err)
-			level = findingspb.Finding_SEVERITY_LEVEL_WARNING
 		}
 	} else {
 		ok = false
-		findingMessage = badExpiryError
+		findingDef = badExpiryFinding
 		logMessage = "[ERROR]: Expiry condition badly formatted"
-		level = findingspb.Finding_SEVERITY_LEVEL_ERROR
 	}
 	return
 }
 
-func processExpiryDateDiff(inputDate time.Time) (findingMessage string, logMessage string, level findingspb.Finding_SeverityLevel) {
+func processExpiryDateDiff(inputDate time.Time) (findingDef findingDefinition, logMessage string) {
 	dateDiff := int(inputDate.Sub(now()).Hours() / 24)
 	if dateDiff < 0 {
-		return pastExpiryWarning, "[WARNING]: Expiry in past", findingspb.Finding_SEVERITY_LEVEL_WARNING
+		return pastExpiryFinding, "[WARNING]: Expiry in past"
 	} else if dateDiff >= 420 {
 		// Use a threshold of 420 days to give users a 2-month grace period for
 		// expiry dates past 1 year. When a histogram is nearing expiry, an
@@ -557,9 +615,9 @@ func processExpiryDateDiff(inputDate time.Time) (findingMessage string, logMessa
 		// about a month or two before the histogram will expire, and it's common
 		// for developers to simply bump the expiry year, without changing the month
 		// nor day.
-		return farExpiryWarning, "[WARNING]: Expiry past one year", findingspb.Finding_SEVERITY_LEVEL_WARNING
+		return farExpiryFinding, "[WARNING]: Expiry past one year"
 	}
-	return "", "", findingspb.Finding_SEVERITY_LEVEL_UNSPECIFIED
+	return findingDefinition{}, ""
 }
 
 func getMilestoneDateImpl(milestone int) (time.Time, error) {
@@ -606,13 +664,13 @@ func milestoneRequest(url string) (milestones, error) {
 	return newMilestones, nil
 }
 
-func createExpiryFinding(message, path string, level findingspb.Finding_SeverityLevel, meta *metadata) *findingspb.Finding {
+func createExpiryFinding(f findingDefinition, path string, meta *metadata) *findingspb.Finding {
 	expiryLine := meta.attributeMap[expiryAttribute]
-	log.Printf("ADDING finding at line %d: %s", expiryLine.LineNum, message)
+	log.Printf("ADDING finding at line %d: %s", expiryLine.LineNum, f.message)
 	return &findingspb.Finding{
 		Category:      category,
-		Message:       message,
-		SeverityLevel: level,
+		Message:       f.message,
+		SeverityLevel: f.level,
 		Location: &findingspb.Location{
 			FilePath: path,
 			Range: &findingspb.Location_Range{
@@ -631,8 +689,8 @@ func checkEnums(path string, hist *histogram, meta *metadata, singletonEnums str
 		log.Printf("ADDING finding for %s at line %d: %s", hist.Name, enumLine.LineNum, "Single Element Enum No Baseline")
 		return &findingspb.Finding{
 			Category:      category,
-			Message:       singleElementEnumWarning,
-			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+			Message:       singleElementEnumFinding.message,
+			SeverityLevel: singleElementEnumFinding.level,
 			Location: &findingspb.Location{
 				FilePath: path,
 				Range: &findingspb.Location_Range{
@@ -662,8 +720,8 @@ func generateFindingsForAddedNamespaces(path string, newNamespaces stringset.Set
 	for _, namespace := range allAddedNamespaces {
 		finding := &findingspb.Finding{
 			Category:      category,
-			Message:       fmt.Sprintf(addedNamespaceWarning, namespace),
-			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+			Message:       fmt.Sprintf(addedNamespaceFinding.message, namespace),
+			SeverityLevel: addedNamespaceFinding.level,
 			Location: &findingspb.Location{
 				FilePath: path,
 				Range: &findingspb.Location_Range{
@@ -739,7 +797,7 @@ func expandHistograms(hists map[string]*histogram, variants map[string]*variants
 // hasExpiredBy returns whether the given histogram has been expired for more than the give number of days.
 func hasExpiredBy(hist *histogram, numDays int) bool {
 	if hist.Expiry != "" {
-		if inputDate, _, _, _, ok := getExpiryDate(hist.Expiry); ok {
+		if inputDate, _, _, ok := getExpiryDate(hist.Expiry); ok {
 			dateDiff := int(inputDate.Sub(now()).Hours() / 24)
 			return dateDiff < -1*numDays
 		}

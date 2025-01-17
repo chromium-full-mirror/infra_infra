@@ -19,8 +19,12 @@ import (
 const (
 	trialConfigStartPattern = "\": ["
 	experimentStart         = "\"experiments\": ["
-	manyExperimentsWarning  = `Due to infrastructure capacity limitations, only the first experiment listed in %s will be tested. It's ok to list the others as documentation, but they will not be tested. So, please make sure that the first-listed experiment is the one most likely to launch!`
 )
+
+var manyExperimentsFinding = findingDefinition{
+	message: `Due to infrastructure capacity limitations, only the first experiment listed in %s will be tested. It's ok to list the others as documentation, but they will not be tested. So, please make sure that the first-listed experiment is the one most likely to launch!`,
+	level:   findingspb.Finding_SEVERITY_LEVEL_WARNING,
+}
 
 // experiment contains all info about experiment to enable.
 type experiment struct {
@@ -85,8 +89,8 @@ func checkExperiments(configs allConfigs, path string) []*findingspb.Finding {
 			if len(config.Experiments) > 1 {
 				finding := &findingspb.Finding{
 					Category:      category,
-					Message:       fmt.Sprintf(manyExperimentsWarning, name),
-					SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+					Message:       fmt.Sprintf(manyExperimentsFinding.message, name),
+					SeverityLevel: manyExperimentsFinding.level,
 					Location: &findingspb.Location{
 						FilePath: path,
 						Range: &findingspb.Location_Range{

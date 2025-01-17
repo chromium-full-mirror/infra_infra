@@ -95,11 +95,11 @@ func main() {
 
 	// Record all removed histograms in the CL.
 	if removedHistograms.Len() > 0 {
-		message := fmt.Sprintf(allRemovedHistogramInfo, strings.Join(removedHistograms.ToSlice(), ", "))
+		message := fmt.Sprintf(allRemovedHistogramFinding.message, strings.Join(removedHistograms.ToSlice(), ", "))
 		finding := &findingspb.Finding{
 			Category:      category,
 			Message:       message,
-			SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_INFO,
+			SeverityLevel: allRemovedHistogramFinding.level,
 			Location: &findingspb.Location{
 				FilePath: "/COMMIT_MSG",
 			},

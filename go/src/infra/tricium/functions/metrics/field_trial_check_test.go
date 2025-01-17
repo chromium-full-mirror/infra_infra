@@ -40,8 +40,8 @@ func TestConfigCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       fmt.Sprintf(manyExperimentsWarning, "TestConfig1"),
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       fmt.Sprintf(manyExperimentsFinding.message, "TestConfig1"),
+				SeverityLevel: manyExperimentsFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "configs/many_experiments.json",
 					Range: &findingspb.Location_Range{
@@ -58,8 +58,8 @@ func TestConfigCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       fmt.Sprintf(manyExperimentsWarning, "TestConfig1"),
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       fmt.Sprintf(manyExperimentsFinding.message, "TestConfig1"),
+				SeverityLevel: manyExperimentsFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "configs/many_configs_many_exp.json",
 					Range: &findingspb.Location_Range{
@@ -70,8 +70,8 @@ func TestConfigCheck(t *testing.T) {
 			},
 			{
 				Category:      category,
-				Message:       fmt.Sprintf(manyExperimentsWarning, "TestConfig1"),
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       fmt.Sprintf(manyExperimentsFinding.message, "TestConfig1"),
+				SeverityLevel: manyExperimentsFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "configs/many_configs_many_exp.json",
 					Range: &findingspb.Location_Range{

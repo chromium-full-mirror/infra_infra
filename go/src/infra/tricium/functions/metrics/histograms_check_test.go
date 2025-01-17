@@ -118,8 +118,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       singleElementEnumWarning,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       singleElementEnumFinding.message,
+				SeverityLevel: singleElementEnumFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "enums/enum_tests/single_element_no_baseline.xml",
 					Range: &findingspb.Location_Range{
@@ -150,8 +150,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       noExpiryError,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_ERROR,
+				Message:       noExpiryFinding.message,
+				SeverityLevel: noExpiryFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "expiry/no_expiry.xml",
 					Range: &findingspb.Location_Range{
@@ -168,8 +168,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       neverExpiryInfo,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_INFO,
+				Message:       neverExpiryInfoFinding.message,
+				SeverityLevel: neverExpiryInfoFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "expiry/never_expiry_with_comment.xml",
 					Range: &findingspb.Location_Range{
@@ -188,8 +188,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       neverExpiryError,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_ERROR,
+				Message:       neverExpiryErrorFinding.message,
+				SeverityLevel: neverExpiryErrorFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "expiry/never_expiry_no_comment.xml",
 					Range: &findingspb.Location_Range{
@@ -208,8 +208,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       neverExpiryError,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_ERROR,
+				Message:       neverExpiryErrorFinding.message,
+				SeverityLevel: neverExpiryErrorFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "expiry/never_expiry_new_line.xml",
 					Range: &findingspb.Location_Range{
@@ -228,8 +228,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       farExpiryWarning,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       farExpiryFinding.message,
+				SeverityLevel: farExpiryFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "expiry/over_year_expiry.xml",
 					Range: &findingspb.Location_Range{
@@ -248,8 +248,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       pastExpiryWarning,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       pastExpiryFinding.message,
+				SeverityLevel: pastExpiryFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "expiry/past_expiry.xml",
 					Range: &findingspb.Location_Range{
@@ -268,8 +268,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       badExpiryError,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_ERROR,
+				Message:       badExpiryFinding.message,
+				SeverityLevel: badExpiryFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "expiry/unformatted_expiry.xml",
 					Range: &findingspb.Location_Range{
@@ -288,8 +288,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       dataDiscontinuityWarning,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       dataDiscontinuityFinding.message,
+				SeverityLevel: dataDiscontinuityFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "expiry/good_date.xml",
 					Range: &findingspb.Location_Range{
@@ -315,8 +315,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       milestoneFailure,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       milestoneFailureFinding.message,
+				SeverityLevel: milestoneFailureFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "expiry/milestone/milestone_fetch_failed.xml",
 					Range: &findingspb.Location_Range{
@@ -335,8 +335,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       farExpiryWarning,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       farExpiryFinding.message,
+				SeverityLevel: farExpiryFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "expiry/milestone/over_year_milestone.xml",
 					Range: &findingspb.Location_Range{
@@ -355,8 +355,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       farExpiryWarning,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       farExpiryFinding.message,
+				SeverityLevel: farExpiryFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "expiry/milestone/over_year_milestone_3.xml",
 					Range: &findingspb.Location_Range{
@@ -375,8 +375,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       pastExpiryWarning,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       pastExpiryFinding.message,
+				SeverityLevel: pastExpiryFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "expiry/milestone/past_milestone.xml",
 					Range: &findingspb.Location_Range{
@@ -395,8 +395,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       badExpiryError,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_ERROR,
+				Message:       badExpiryFinding.message,
+				SeverityLevel: badExpiryFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "expiry/milestone/unformatted_milestone.xml",
 					Range: &findingspb.Location_Range{
@@ -415,8 +415,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       dataDiscontinuityWarning,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       dataDiscontinuityFinding.message,
+				SeverityLevel: dataDiscontinuityFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "expiry/milestone/good_milestone.xml",
 					Range: &findingspb.Location_Range{
@@ -447,8 +447,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       oneOwnerError,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       oneOwnerFinding.message,
+				SeverityLevel: oneOwnerFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "owners/one_owner.xml",
 					Range: &findingspb.Location_Range{
@@ -465,8 +465,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       oneOwnerError,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       oneOwnerFinding.message,
+				SeverityLevel: oneOwnerFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "owners/no_owners.xml",
 					Range: &findingspb.Location_Range{
@@ -483,8 +483,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       firstOwnerTeamError,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       firstOwnerTeamFinding.message,
+				SeverityLevel: firstOwnerTeamFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "owners/first_team_owner.xml",
 					Range: &findingspb.Location_Range{
@@ -501,8 +501,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       firstOwnerTeamError,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       firstOwnerTeamFinding.message,
+				SeverityLevel: firstOwnerTeamFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "owners/first_owner_file.xml",
 					Range: &findingspb.Location_Range{
@@ -519,8 +519,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       oneOwnerTeamError,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       oneOwnerTeamFinding.message,
+				SeverityLevel: oneOwnerTeamFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "owners/first_team_one_owner.xml",
 					Range: &findingspb.Location_Range{
@@ -537,8 +537,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       oneOwnerTeamError,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       oneOwnerTeamFinding.message,
+				SeverityLevel: oneOwnerTeamFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "owners/first_file_one_owner.xml",
 					Range: &findingspb.Location_Range{
@@ -572,8 +572,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       unitsHighResolutionWarning,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       unitsHighResolutionFinding.message,
+				SeverityLevel: unitsHighResolutionFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "units/microseconds_bad_summary.xml",
 					Range: &findingspb.Location_Range{
@@ -607,8 +607,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       unitsHighResolutionWarning,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       unitsHighResolutionFinding.message,
+				SeverityLevel: unitsHighResolutionFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "units/us_bad_summary.xml",
 					Range: &findingspb.Location_Range{
@@ -642,8 +642,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       unitsHighResolutionWarning,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       unitsHighResolutionFinding.message,
+				SeverityLevel: unitsHighResolutionFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "units/usec_bad_summary.xml",
 					Range: &findingspb.Location_Range{
@@ -663,8 +663,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       SuffixesDeprecationWarning,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       suffixesDeprecationFinding.message,
+				SeverityLevel: suffixesDeprecationFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "suffixes/histogram_suffixes_list.xml",
 					Range: &findingspb.Location_Range{
@@ -758,8 +758,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       globalObsoletionMessageError,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       globalObsoletionMessageFinding.message,
+				SeverityLevel: globalObsoletionMessageFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "/COMMIT_MSG",
 				},
@@ -772,8 +772,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       fmt.Sprintf(obsoletionMessageError, "Test.Histogram"),
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       fmt.Sprintf(obsoletionMessageFinding.message, "Test.Histogram"),
+				SeverityLevel: obsoletionMessageFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "/COMMIT_MSG",
 				},
@@ -786,8 +786,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       fmt.Sprintf(removedHistogramInfo, "Test.Histogram"),
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_INFO,
+				Message:       fmt.Sprintf(removedHistogramFinding.message, "Test.Histogram"),
+				SeverityLevel: removedHistogramFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "/COMMIT_MSG",
 				},
@@ -801,16 +801,16 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       fmt.Sprintf(obsoletionMessageError, "Test.Histogram"),
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       fmt.Sprintf(obsoletionMessageFinding.message, "Test.Histogram"),
+				SeverityLevel: obsoletionMessageFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "/COMMIT_MSG",
 				},
 			},
 			{
 				Category:      category,
-				Message:       fmt.Sprintf(removedHistogramInfo, "Test.Histogram2"),
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_INFO,
+				Message:       fmt.Sprintf(removedHistogramFinding.message, "Test.Histogram2"),
+				SeverityLevel: removedHistogramFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "/COMMIT_MSG",
 				},
@@ -825,8 +825,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       fmt.Sprintf(obsoletionMessageError, "Test.Histogram"),
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       fmt.Sprintf(obsoletionMessageFinding.message, "Test.Histogram"),
+				SeverityLevel: obsoletionMessageFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "/COMMIT_MSG",
 				},
@@ -846,8 +846,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       fmt.Sprintf(addedNamespaceWarning, "Test2"),
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Message:       fmt.Sprintf(addedNamespaceFinding.message, "Test2"),
+				SeverityLevel: addedNamespaceFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "namespace/add_namespace.xml",
 					Range: &findingspb.Location_Range{
@@ -866,8 +866,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       osxNamespaceDeprecationError,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_ERROR,
+				Message:       osxNamespaceDeprecationFinding.message,
+				SeverityLevel: osxNamespaceDeprecationFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "namespace/add_deprecated_namespace.xml",
 					Range: &findingspb.Location_Range{
@@ -884,8 +884,8 @@ func TestHistogramsCheck(t *testing.T) {
 		assert.That(t, results, should.Match([]*findingspb.Finding{
 			{
 				Category:      category,
-				Message:       osxNamespaceDeprecationError,
-				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_ERROR,
+				Message:       osxNamespaceDeprecationFinding.message,
+				SeverityLevel: osxNamespaceDeprecationFinding.level,
 				Location: &findingspb.Location{
 					FilePath: "namespace/change_deprecated_namespace.xml",
 					Range: &findingspb.Location_Range{
