@@ -51,6 +51,9 @@ func GetDimensionDescriptors() []*DimensionDescriptor {
 				return a.Address.Port < b.Address.Port
 			},
 			StringValueGetter: func(d *fleetconsolerpc.Device) string {
+				if d.Address.Port == 0 {
+					return ""
+				}
 				return strconv.Itoa(int(d.Address.Port))
 			},
 		},

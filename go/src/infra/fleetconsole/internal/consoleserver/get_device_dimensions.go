@@ -41,6 +41,11 @@ func getDimensions(devices []*fleetconsolerpc.Device) *fleetconsolerpc.GetDevice
 		if _, ok := dimensionMap[key]; !ok {
 			dimensionMap[key] = map[string]bool{}
 		}
+
+		if value == "" {
+			return
+		}
+
 		dimensionMap[key][value] = true
 	}
 
