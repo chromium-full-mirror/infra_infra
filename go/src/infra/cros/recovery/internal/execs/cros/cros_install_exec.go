@@ -123,6 +123,18 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 				}
 			}
 		}
+		if am.AsBool(ctx, "set_dev_default_boot", false) {
+			timeout := am.AsDuration(ctx, "set_dev_default_boot_timeout", 30, time.Second)
+			allowedToFail := am.AsBool(ctx, "set_dev_default_boot_allowed_to_fail", true)
+			if _, err := dutRun(ctx, timeout, "crossystem dev_default_boot=disk"); err != nil {
+				if allowedToFail {
+					logger.Debugf("Install from USB drive: (non-critical) fail to reset tmp: Error: %s", err)
+				} else {
+					return errors.Annotate(err, "set dev_default_boot=disk").Err()
+				}
+			}
+			dutRun(ctx, timeout, "crossystem")
+		}
 		if am.AsBool(ctx, "run_tpm_reset", false) {
 			// Clear TPM is not critical as can fail in some cases.
 			tpmResetTimeout := am.AsDuration(ctx, "tpm_reset_timeout", 60, time.Second)

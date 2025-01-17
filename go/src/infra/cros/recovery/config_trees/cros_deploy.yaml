@@ -7860,6 +7860,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -8045,15 +8047,18 @@ plans:
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
-                    - badblocks_mode:not
                     - run_custom_commands:true
+                    - custom_command_allowed_to_fail:true
+                    - custom_command_timeout:60
+                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                    - set_dev_default_boot:true
+                    - run_tpm_reset:false
+                    - run_os_install:false
                     - boot_timeout:480
                     - boot_interval:10
                     - boot_retry:1
                     - halt_timeout:120
-                    - custom_command_allowed_to_fail:true
-                    - custom_command_timeout:60
-                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                    - badblocks_mode:not
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:150
@@ -8307,6 +8312,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -9437,6 +9444,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -9622,15 +9631,18 @@ plans:
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
-                    - badblocks_mode:not
                     - run_custom_commands:true
+                    - custom_command_allowed_to_fail:true
+                    - custom_command_timeout:60
+                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                    - set_dev_default_boot:true
+                    - run_tpm_reset:false
+                    - run_os_install:false
                     - boot_timeout:480
                     - boot_interval:10
                     - boot_retry:1
                     - halt_timeout:120
-                    - custom_command_allowed_to_fail:true
-                    - custom_command_timeout:60
-                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                    - badblocks_mode:not
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:150
@@ -9884,6 +9896,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -11647,6 +11661,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -11832,15 +11848,18 @@ plans:
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
-                    - badblocks_mode:not
                     - run_custom_commands:true
+                    - custom_command_allowed_to_fail:true
+                    - custom_command_timeout:60
+                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                    - set_dev_default_boot:true
+                    - run_tpm_reset:false
+                    - run_os_install:false
                     - boot_timeout:480
                     - boot_interval:10
                     - boot_retry:1
                     - halt_timeout:120
-                    - custom_command_allowed_to_fail:true
-                    - custom_command_timeout:60
-                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                    - badblocks_mode:not
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:150
@@ -12094,6 +12113,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -13352,6 +13373,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -13537,15 +13560,18 @@ plans:
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
-                    - badblocks_mode:not
                     - run_custom_commands:true
+                    - custom_command_allowed_to_fail:true
+                    - custom_command_timeout:60
+                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                    - set_dev_default_boot:true
+                    - run_tpm_reset:false
+                    - run_os_install:false
                     - boot_timeout:480
                     - boot_interval:10
                     - boot_retry:1
                     - halt_timeout:120
-                    - custom_command_allowed_to_fail:true
-                    - custom_command_timeout:60
-                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                    - badblocks_mode:not
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:150
@@ -13799,6 +13825,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -15058,10 +15086,11 @@ plans:
             - name: Verify boot in recovery mode (time:'25m0s')
               exec_name: cros_install_in_recovery_mode
               exec_args:
+                - run_custom_commands:false
+                - set_dev_default_boot:true
                 - run_tpm_reset:true
                 - tpm_reset_timeout:60
                 - run_os_install:false
-                - run_custom_commands:false
                 - boot_timeout:480
                 - boot_retry:1
                 - boot_interval:10
@@ -15584,6 +15613,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -15769,15 +15800,18 @@ plans:
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
-                        - badblocks_mode:not
                         - run_custom_commands:true
+                        - custom_command_allowed_to_fail:true
+                        - custom_command_timeout:60
+                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - set_dev_default_boot:true
+                        - run_tpm_reset:false
+                        - run_os_install:false
                         - boot_timeout:480
                         - boot_interval:10
                         - boot_retry:1
                         - halt_timeout:120
-                        - custom_command_allowed_to_fail:true
-                        - custom_command_timeout:60
-                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - badblocks_mode:not
                         - ignore_reboot_failure:true
                         - after_reboot_check:true
                         - after_reboot_timeout:150
@@ -16031,6 +16065,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -16986,6 +17022,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -17171,15 +17209,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -17433,6 +17474,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -18439,6 +18482,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -18624,15 +18669,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -18886,6 +18934,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -20020,6 +20070,8 @@ plans:
                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
+                    - run_custom_commands:false
+                    - set_dev_default_boot:true
                     - run_tpm_reset:true
                     - run_os_install:true
                     - boot_timeout:480
@@ -20347,6 +20399,8 @@ plans:
                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
+                    - run_custom_commands:false
+                    - set_dev_default_boot:true
                     - run_tpm_reset:true
                     - run_os_install:true
                     - boot_timeout:480
@@ -21666,6 +21720,8 @@ plans:
                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
+                    - run_custom_commands:false
+                    - set_dev_default_boot:true
                     - run_tpm_reset:true
                     - run_os_install:true
                     - boot_timeout:480
@@ -21851,15 +21907,18 @@ plans:
             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
               exec_name: cros_install_in_recovery_mode
               exec_args:
-                - badblocks_mode:not
                 - run_custom_commands:true
+                - custom_command_allowed_to_fail:true
+                - custom_command_timeout:60
+                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                - set_dev_default_boot:true
+                - run_tpm_reset:false
+                - run_os_install:false
                 - boot_timeout:480
                 - boot_interval:10
                 - boot_retry:1
                 - halt_timeout:120
-                - custom_command_allowed_to_fail:true
-                - custom_command_timeout:60
-                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                - badblocks_mode:not
                 - ignore_reboot_failure:true
                 - after_reboot_check:true
                 - after_reboot_timeout:150
@@ -22113,6 +22172,8 @@ plans:
                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
+                    - run_custom_commands:false
+                    - set_dev_default_boot:true
                     - run_tpm_reset:true
                     - run_os_install:true
                     - boot_timeout:480
@@ -23172,6 +23233,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -23357,15 +23420,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -23619,6 +23685,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -24536,6 +24604,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -24721,15 +24791,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -24983,6 +25056,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -25900,6 +25975,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -26085,15 +26162,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -26347,6 +26427,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -27264,6 +27346,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -27449,15 +27533,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -27711,6 +27798,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -28725,6 +28814,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -28910,15 +29001,18 @@ plans:
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
-                    - badblocks_mode:not
                     - run_custom_commands:true
+                    - custom_command_allowed_to_fail:true
+                    - custom_command_timeout:60
+                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                    - set_dev_default_boot:true
+                    - run_tpm_reset:false
+                    - run_os_install:false
                     - boot_timeout:480
                     - boot_interval:10
                     - boot_retry:1
                     - halt_timeout:120
-                    - custom_command_allowed_to_fail:true
-                    - custom_command_timeout:60
-                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                    - badblocks_mode:not
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
                     - after_reboot_timeout:150
@@ -29172,6 +29266,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -30145,6 +30241,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -30330,15 +30428,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -30592,6 +30693,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -31597,6 +31700,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -32018,6 +32123,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -32203,15 +32310,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -32465,6 +32575,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -33470,6 +33582,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -33939,6 +34053,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -34409,6 +34525,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -34879,6 +34997,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -35391,6 +35511,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -35576,15 +35698,18 @@ plans:
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
-                        - badblocks_mode:not
                         - run_custom_commands:true
+                        - custom_command_allowed_to_fail:true
+                        - custom_command_timeout:60
+                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - set_dev_default_boot:true
+                        - run_tpm_reset:false
+                        - run_os_install:false
                         - boot_timeout:480
                         - boot_interval:10
                         - boot_retry:1
                         - halt_timeout:120
-                        - custom_command_allowed_to_fail:true
-                        - custom_command_timeout:60
-                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - badblocks_mode:not
                         - ignore_reboot_failure:true
                         - after_reboot_check:true
                         - after_reboot_timeout:150
@@ -35838,6 +35963,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -36742,6 +36869,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -37255,6 +37384,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -37440,15 +37571,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -37702,6 +37836,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -38707,6 +38843,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -39529,6 +39667,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -39856,6 +39996,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -40817,6 +40959,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -41002,15 +41146,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -41264,6 +41411,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -42269,6 +42418,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -42698,6 +42849,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -42883,15 +43036,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -43145,6 +43301,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -44150,6 +44308,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -44613,6 +44773,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -45102,6 +45264,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -45429,6 +45593,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -46390,6 +46556,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -46575,15 +46743,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -46837,6 +47008,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -47842,6 +48015,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -48271,6 +48446,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -48456,15 +48633,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -48718,6 +48898,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -49723,6 +49905,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -50186,6 +50370,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -50675,6 +50861,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -51105,6 +51293,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -51290,15 +51480,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -51552,6 +51745,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -52557,6 +52752,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -53114,6 +53311,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -53741,6 +53940,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -54227,6 +54428,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -54692,6 +54895,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -54877,15 +55082,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -55139,6 +55347,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -56144,6 +56354,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -56560,6 +56772,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -57052,6 +57266,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -57237,15 +57453,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -57499,6 +57718,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -58504,6 +58725,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -58874,6 +59097,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -59323,6 +59548,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -59508,15 +59735,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -59770,6 +60000,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -60775,6 +61007,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -61238,6 +61472,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -61781,6 +62017,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -62292,6 +62530,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -62477,15 +62717,18 @@ plans:
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
-                        - badblocks_mode:not
                         - run_custom_commands:true
+                        - custom_command_allowed_to_fail:true
+                        - custom_command_timeout:60
+                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - set_dev_default_boot:true
+                        - run_tpm_reset:false
+                        - run_os_install:false
                         - boot_timeout:480
                         - boot_interval:10
                         - boot_retry:1
                         - halt_timeout:120
-                        - custom_command_allowed_to_fail:true
-                        - custom_command_timeout:60
-                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - badblocks_mode:not
                         - ignore_reboot_failure:true
                         - after_reboot_check:true
                         - after_reboot_timeout:150
@@ -62739,6 +62982,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -63704,6 +63949,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -63889,15 +64136,18 @@ plans:
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
-                        - badblocks_mode:not
                         - run_custom_commands:true
+                        - custom_command_allowed_to_fail:true
+                        - custom_command_timeout:60
+                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - set_dev_default_boot:true
+                        - run_tpm_reset:false
+                        - run_os_install:false
                         - boot_timeout:480
                         - boot_interval:10
                         - boot_retry:1
                         - halt_timeout:120
-                        - custom_command_allowed_to_fail:true
-                        - custom_command_timeout:60
-                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - badblocks_mode:not
                         - ignore_reboot_failure:true
                         - after_reboot_check:true
                         - after_reboot_timeout:150
@@ -64151,6 +64401,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -65146,6 +65398,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -65331,15 +65585,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -65593,6 +65850,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -66586,6 +66845,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -66771,15 +67032,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -67033,6 +67297,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -68039,6 +68305,8 @@ plans:
                                     - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                       exec_name: cros_install_in_recovery_mode
                                       exec_args:
+                                        - run_custom_commands:false
+                                        - set_dev_default_boot:true
                                         - run_tpm_reset:true
                                         - run_os_install:true
                                         - boot_timeout:480
@@ -68224,15 +68492,18 @@ plans:
                                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
-                                    - badblocks_mode:not
                                     - run_custom_commands:true
+                                    - custom_command_allowed_to_fail:true
+                                    - custom_command_timeout:60
+                                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                    - set_dev_default_boot:true
+                                    - run_tpm_reset:false
+                                    - run_os_install:false
                                     - boot_timeout:480
                                     - boot_interval:10
                                     - boot_retry:1
                                     - halt_timeout:120
-                                    - custom_command_allowed_to_fail:true
-                                    - custom_command_timeout:60
-                                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                    - badblocks_mode:not
                                     - ignore_reboot_failure:true
                                     - after_reboot_check:true
                                     - after_reboot_timeout:150
@@ -68486,6 +68757,8 @@ plans:
                                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                       exec_name: cros_install_in_recovery_mode
                                       exec_args:
+                                        - run_custom_commands:false
+                                        - set_dev_default_boot:true
                                         - run_tpm_reset:true
                                         - run_os_install:true
                                         - boot_timeout:480
@@ -69481,6 +69754,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -69666,15 +69941,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -69928,6 +70206,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -70919,6 +71199,8 @@ plans:
                                     - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                       exec_name: cros_install_in_recovery_mode
                                       exec_args:
+                                        - run_custom_commands:false
+                                        - set_dev_default_boot:true
                                         - run_tpm_reset:true
                                         - run_os_install:true
                                         - boot_timeout:480
@@ -71104,15 +71386,18 @@ plans:
                                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
-                                    - badblocks_mode:not
                                     - run_custom_commands:true
+                                    - custom_command_allowed_to_fail:true
+                                    - custom_command_timeout:60
+                                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                    - set_dev_default_boot:true
+                                    - run_tpm_reset:false
+                                    - run_os_install:false
                                     - boot_timeout:480
                                     - boot_interval:10
                                     - boot_retry:1
                                     - halt_timeout:120
-                                    - custom_command_allowed_to_fail:true
-                                    - custom_command_timeout:60
-                                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                    - badblocks_mode:not
                                     - ignore_reboot_failure:true
                                     - after_reboot_check:true
                                     - after_reboot_timeout:150
@@ -71366,6 +71651,8 @@ plans:
                                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                       exec_name: cros_install_in_recovery_mode
                                       exec_args:
+                                        - run_custom_commands:false
+                                        - set_dev_default_boot:true
                                         - run_tpm_reset:true
                                         - run_os_install:true
                                         - boot_timeout:480
@@ -72358,6 +72645,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -72543,15 +72832,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -72805,6 +73097,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -73734,6 +74028,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -73919,15 +74215,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -74181,6 +74480,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -75159,6 +75460,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -75344,15 +75647,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -75606,6 +75912,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -76535,6 +76843,8 @@ plans:
                                     - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                       exec_name: cros_install_in_recovery_mode
                                       exec_args:
+                                        - run_custom_commands:false
+                                        - set_dev_default_boot:true
                                         - run_tpm_reset:true
                                         - run_os_install:true
                                         - boot_timeout:480
@@ -76720,15 +77030,18 @@ plans:
                                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
-                                    - badblocks_mode:not
                                     - run_custom_commands:true
+                                    - custom_command_allowed_to_fail:true
+                                    - custom_command_timeout:60
+                                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                    - set_dev_default_boot:true
+                                    - run_tpm_reset:false
+                                    - run_os_install:false
                                     - boot_timeout:480
                                     - boot_interval:10
                                     - boot_retry:1
                                     - halt_timeout:120
-                                    - custom_command_allowed_to_fail:true
-                                    - custom_command_timeout:60
-                                    - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                    - badblocks_mode:not
                                     - ignore_reboot_failure:true
                                     - after_reboot_check:true
                                     - after_reboot_timeout:150
@@ -76982,6 +77295,8 @@ plans:
                                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                       exec_name: cros_install_in_recovery_mode
                                       exec_args:
+                                        - run_custom_commands:false
+                                        - set_dev_default_boot:true
                                         - run_tpm_reset:true
                                         - run_os_install:true
                                         - boot_timeout:480
@@ -77967,6 +78282,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -78152,15 +78469,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -78414,6 +78734,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -79366,6 +79688,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -79551,15 +79875,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -79813,6 +80140,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -80735,6 +81064,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -80920,15 +81251,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -81182,6 +81516,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -82114,6 +82450,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -82299,15 +82637,18 @@ plans:
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
-                        - badblocks_mode:not
                         - run_custom_commands:true
+                        - custom_command_allowed_to_fail:true
+                        - custom_command_timeout:60
+                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - set_dev_default_boot:true
+                        - run_tpm_reset:false
+                        - run_os_install:false
                         - boot_timeout:480
                         - boot_interval:10
                         - boot_retry:1
                         - halt_timeout:120
-                        - custom_command_allowed_to_fail:true
-                        - custom_command_timeout:60
-                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - badblocks_mode:not
                         - ignore_reboot_failure:true
                         - after_reboot_check:true
                         - after_reboot_timeout:150
@@ -82561,6 +82902,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -83519,6 +83862,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -83704,15 +84049,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -83966,6 +84314,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -84971,6 +85321,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -85701,6 +86053,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -85886,15 +86240,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -86148,6 +86505,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -87153,6 +87512,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -88076,6 +88437,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -88261,15 +88624,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -88523,6 +88889,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -89528,6 +89896,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -89957,6 +90327,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -90142,15 +90514,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -90404,6 +90779,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -91409,6 +91786,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -91872,6 +92251,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -92487,6 +92868,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -93043,6 +93426,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -93402,6 +93787,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -93587,15 +93974,18 @@ plans:
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
-                        - badblocks_mode:not
                         - run_custom_commands:true
+                        - custom_command_allowed_to_fail:true
+                        - custom_command_timeout:60
+                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - set_dev_default_boot:true
+                        - run_tpm_reset:false
+                        - run_os_install:false
                         - boot_timeout:480
                         - boot_interval:10
                         - boot_retry:1
                         - halt_timeout:120
-                        - custom_command_allowed_to_fail:true
-                        - custom_command_timeout:60
-                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - badblocks_mode:not
                         - ignore_reboot_failure:true
                         - after_reboot_check:true
                         - after_reboot_timeout:150
@@ -93849,6 +94239,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -94805,6 +95197,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -94990,15 +95384,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -95252,6 +95649,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -96257,6 +96656,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -97413,6 +97814,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -97598,15 +98001,18 @@ plans:
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
-                        - badblocks_mode:not
                         - run_custom_commands:true
+                        - custom_command_allowed_to_fail:true
+                        - custom_command_timeout:60
+                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - set_dev_default_boot:true
+                        - run_tpm_reset:false
+                        - run_os_install:false
                         - boot_timeout:480
                         - boot_interval:10
                         - boot_retry:1
                         - halt_timeout:120
-                        - custom_command_allowed_to_fail:true
-                        - custom_command_timeout:60
-                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - badblocks_mode:not
                         - ignore_reboot_failure:true
                         - after_reboot_check:true
                         - after_reboot_timeout:150
@@ -97860,6 +98266,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -98961,6 +99369,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -99146,15 +99556,18 @@ plans:
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
-                        - badblocks_mode:not
                         - run_custom_commands:true
+                        - custom_command_allowed_to_fail:true
+                        - custom_command_timeout:60
+                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - set_dev_default_boot:true
+                        - run_tpm_reset:false
+                        - run_os_install:false
                         - boot_timeout:480
                         - boot_interval:10
                         - boot_retry:1
                         - halt_timeout:120
-                        - custom_command_allowed_to_fail:true
-                        - custom_command_timeout:60
-                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                        - badblocks_mode:not
                         - ignore_reboot_failure:true
                         - after_reboot_check:true
                         - after_reboot_timeout:150
@@ -99408,6 +99821,8 @@ plans:
                         - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
+                            - run_custom_commands:false
+                            - set_dev_default_boot:true
                             - run_tpm_reset:true
                             - run_os_install:true
                             - boot_timeout:480
@@ -100720,6 +101135,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -100905,15 +101322,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -101167,6 +101587,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -102102,6 +102524,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -102287,15 +102711,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -102549,6 +102976,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -103466,6 +103895,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -103651,15 +104082,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -103913,6 +104347,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -104830,6 +105266,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -105015,15 +105453,18 @@ plans:
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
-                            - badblocks_mode:not
                             - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
                             - boot_timeout:480
                             - boot_interval:10
                             - boot_retry:1
                             - halt_timeout:120
-                            - custom_command_allowed_to_fail:true
-                            - custom_command_timeout:60
-                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - badblocks_mode:not
                             - ignore_reboot_failure:true
                             - after_reboot_check:true
                             - after_reboot_timeout:150
@@ -105277,6 +105718,8 @@ plans:
                             - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
+                                - run_custom_commands:false
+                                - set_dev_default_boot:true
                                 - run_tpm_reset:true
                                 - run_os_install:true
                                 - boot_timeout:480
@@ -106194,6 +106637,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -106379,15 +106824,18 @@ plans:
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
-                                - badblocks_mode:not
                                 - run_custom_commands:true
+                                - custom_command_allowed_to_fail:true
+                                - custom_command_timeout:60
+                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - set_dev_default_boot:true
+                                - run_tpm_reset:false
+                                - run_os_install:false
                                 - boot_timeout:480
                                 - boot_interval:10
                                 - boot_retry:1
                                 - halt_timeout:120
-                                - custom_command_allowed_to_fail:true
-                                - custom_command_timeout:60
-                                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                                - badblocks_mode:not
                                 - ignore_reboot_failure:true
                                 - after_reboot_check:true
                                 - after_reboot_timeout:150
@@ -106641,6 +107089,8 @@ plans:
                                 - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
+                                    - run_custom_commands:false
+                                    - set_dev_default_boot:true
                                     - run_tpm_reset:true
                                     - run_os_install:true
                                     - boot_timeout:480
@@ -107552,6 +108002,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -108525,6 +108977,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -109271,6 +109725,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -109922,6 +110378,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480
@@ -110249,6 +110707,8 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
+                        - run_custom_commands:false
+                        - set_dev_default_boot:true
                         - run_tpm_reset:true
                         - run_os_install:true
                         - boot_timeout:480

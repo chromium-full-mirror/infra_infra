@@ -267,10 +267,11 @@ func deployActions() map[string]*Action {
 			},
 			ExecName: "cros_install_in_recovery_mode",
 			ExecExtraArgs: []string{
+				"run_custom_commands:false",
+				"set_dev_default_boot:true",
 				"run_tpm_reset:true",
 				"tpm_reset_timeout:60",
 				"run_os_install:false",
-				"run_custom_commands:false",
 				"boot_timeout:480",
 				"boot_retry:1",
 				"boot_interval:10",
