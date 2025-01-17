@@ -6,6 +6,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"testing"
 
 	"google.golang.org/protobuf/types/known/anypb"
@@ -297,7 +298,7 @@ func getInternalTestPlan() *api.InternalTestplan {
 	return req
 }
 func TestUpdateTestCases_OneTestFlaky_OneSchedulingUnitRemoved(t *testing.T) {
-
+	log := log.New(os.Stdout, "test", 1)
 	internalTestPlanReq := getInternalTestPlan()
 
 	// stabilityData result
@@ -305,7 +306,7 @@ func TestUpdateTestCases_OneTestFlaky_OneSchedulingUnitRemoved(t *testing.T) {
 	// test1 is scheduled on Octopus, it's expected to be removed
 	removeBoardTestMap["octopus"] = []string{"test1"}
 
-	err := updateTestCases(internalTestPlanReq, removeBoardTestMap)
+	err := updateTestCases(internalTestPlanReq, removeBoardTestMap, log)
 	if err != nil {
 		t.Errorf("Error not expected. Recieved %s", err)
 	}
@@ -325,7 +326,7 @@ func TestUpdateTestCases_OneTestFlaky_OneSchedulingUnitRemoved(t *testing.T) {
 }
 
 func TestUpdateTestCases_NoTestFlaky_NoSchedulingUnitRemoved(t *testing.T) {
-
+	log := log.New(os.Stdout, "test", 1)
 	internalTestPlanReq := getInternalTestPlan()
 
 	// stabilityData result
@@ -333,7 +334,7 @@ func TestUpdateTestCases_NoTestFlaky_NoSchedulingUnitRemoved(t *testing.T) {
 	// test3 is not in request, so no scheduling unit should be removed
 	removeBoardTestMap["octopus"] = []string{"test3"}
 
-	err := updateTestCases(internalTestPlanReq, removeBoardTestMap)
+	err := updateTestCases(internalTestPlanReq, removeBoardTestMap, log)
 	if err != nil {
 		t.Errorf("Error not expected. Recieved %s", err)
 	}
@@ -353,7 +354,7 @@ func TestUpdateTestCases_NoTestFlaky_NoSchedulingUnitRemoved(t *testing.T) {
 }
 
 func TestUpdateTestCases_OneTestFlaky_BothSchedulingUnitsRemoved(t *testing.T) {
-
+	log := log.New(os.Stdout, "test", 1)
 	internalTestPlanReq := getInternalTestPlan()
 
 	// stabilityData result
@@ -362,7 +363,7 @@ func TestUpdateTestCases_OneTestFlaky_BothSchedulingUnitsRemoved(t *testing.T) {
 	removeBoardTestMap["octopus"] = []string{"test1"}
 	removeBoardTestMap["skyrim"] = []string{"test1"}
 
-	err := updateTestCases(internalTestPlanReq, removeBoardTestMap)
+	err := updateTestCases(internalTestPlanReq, removeBoardTestMap, log)
 	if err != nil {
 		t.Errorf("Error not expected. Recieved %s", err)
 	}
@@ -380,7 +381,7 @@ func TestUpdateTestCases_OneTestFlaky_BothSchedulingUnitsRemoved(t *testing.T) {
 }
 
 func TestUpdateTestCases_TwoTestsFlaky_TwoSchedulingUnitsRemoved(t *testing.T) {
-
+	log := log.New(os.Stdout, "test", 1)
 	internalTestPlanReq := getInternalTestPlan()
 
 	// stabilityData result
@@ -388,7 +389,7 @@ func TestUpdateTestCases_TwoTestsFlaky_TwoSchedulingUnitsRemoved(t *testing.T) {
 	// test1 is scheduled on Octopus & Skyrim only & test 2 is scheduled on Octopus only. Updated internal test plan request should only have test1 scheduled for Skyrim
 	removeBoardTestMap["octopus"] = []string{"test1", "test2"}
 
-	err := updateTestCases(internalTestPlanReq, removeBoardTestMap)
+	err := updateTestCases(internalTestPlanReq, removeBoardTestMap, log)
 	if err != nil {
 		t.Errorf("Error not expected. Recieved %s", err)
 	}
@@ -406,6 +407,7 @@ func TestUpdateTestCases_TwoTestsFlaky_TwoSchedulingUnitsRemoved(t *testing.T) {
 }
 
 func TestUpdateTestCases_TwoTestsFlaky_TwoDistinctSchedulingUnitsRemoved(t *testing.T) {
+	log := log.New(os.Stdout, "test", 1)
 
 	internalTestPlanReq := getInternalTestPlan()
 
@@ -415,7 +417,7 @@ func TestUpdateTestCases_TwoTestsFlaky_TwoDistinctSchedulingUnitsRemoved(t *test
 	removeBoardTestMap["skyrim"] = []string{"test1"}
 	removeBoardTestMap["octopus"] = []string{"test2"}
 
-	err := updateTestCases(internalTestPlanReq, removeBoardTestMap)
+	err := updateTestCases(internalTestPlanReq, removeBoardTestMap, log)
 	if err != nil {
 		t.Errorf("Error not expected. Recieved %s", err)
 	}
@@ -433,7 +435,7 @@ func TestUpdateTestCases_TwoTestsFlaky_TwoDistinctSchedulingUnitsRemoved(t *test
 }
 
 func TestUpdateTestCases_TwoTestsFlaky_AllSchedulingUnitsRemoved(t *testing.T) {
-
+	log := log.New(os.Stdout, "test", 1)
 	internalTestPlanReq := getInternalTestPlan()
 
 	// stabilityData result
@@ -442,7 +444,7 @@ func TestUpdateTestCases_TwoTestsFlaky_AllSchedulingUnitsRemoved(t *testing.T) {
 	removeBoardTestMap["skyrim"] = []string{"test1"}
 	removeBoardTestMap["octopus"] = []string{"test1", "test2"}
 
-	err := updateTestCases(internalTestPlanReq, removeBoardTestMap)
+	err := updateTestCases(internalTestPlanReq, removeBoardTestMap, log)
 	if err != nil {
 		t.Errorf("Error not expected. Recieved %s", err)
 	}

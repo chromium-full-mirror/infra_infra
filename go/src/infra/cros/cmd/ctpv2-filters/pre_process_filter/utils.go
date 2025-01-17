@@ -10,15 +10,17 @@ import (
 	"regexp"
 	"strings"
 
+	"infra/cros/cmd/ctpv2-filters/pre_process_filter/interfaces"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/test/pre_process/cmd/pre-process/interfaces"
 )
 
 // BoardTestInfo holds list of tests and milestone for a given board.
 type BoardTestInfo struct {
 	tests     []string
 	milestone string
+	variant   string
 }
 
 // testMDToSet returns a set of test case names froma Test suite if type TestCaseMetadata.
@@ -148,7 +150,8 @@ func createBoardTestMap(req *api.InternalTestplan, log *log.Logger) (map[string]
 	for _, tc := range req.TestCases {
 		for _, units := range tc.GetSchedulingUnitOptions() {
 			for _, unit := range units.GetSchedulingUnits() {
-				board := getBoardWVariant(unit)
+				board := getBoard(unit)
+				variant := getBoardWVariant(unit)
 				milestone, err := getMilestone(unit.GetDynamicUpdateLookupTable()["installPath"])
 				if err != nil {
 					log.Printf("skipping as scheduling unit doesn't have install path")
@@ -159,6 +162,7 @@ func createBoardTestMap(req *api.InternalTestplan, log *log.Logger) (map[string]
 					boardTestMap[board] = &BoardTestInfo{
 						tests:     []string{tc.Name},
 						milestone: milestone,
+						variant:   variant,
 					}
 				} else {
 					boardTestMap[board].tests = append(boardTestMap[board].tests, tc.Name)
@@ -182,7 +186,7 @@ func flakeFilteringLogAndResults(rspn *api.FilterFlakyResponse, board string, re
 	}
 	log.Printf("***********Flake filtering for board %s end***********\n", board)
 
-	err := interfaces.WriteResults(rspn.RemovedTests, req, filter.data)
+	err := interfaces.WriteResults(rspn.RemovedTests, req, filter.data, log)
 	if err != nil {
 
 		log.Println("!!!")

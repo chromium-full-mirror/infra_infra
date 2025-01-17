@@ -7,8 +7,9 @@ package main
 import (
 	"log"
 
+	"infra/cros/cmd/ctpv2-filters/pre_process_filter/structs"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/pre_process/cmd/pre-process/structs"
 )
 
 // Filter struct tracks the data that was removed, items not found, and other relevant details.

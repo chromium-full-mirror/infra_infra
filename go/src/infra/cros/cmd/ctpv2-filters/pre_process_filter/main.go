@@ -10,11 +10,12 @@ import (
 	"log"
 	"os"
 
+	"infra/cros/cmd/ctpv2-filters/pre_process_filter/interfaces"
+	"infra/cros/cmd/ctpv2-filters/pre_process_filter/policies"
+	"infra/cros/cmd/ctpv2-filters/pre_process_filter/structs"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
-	"go.chromium.org/chromiumos/test/pre_process/cmd/pre-process/interfaces"
-	"go.chromium.org/chromiumos/test/pre_process/cmd/pre-process/policies"
-	"go.chromium.org/chromiumos/test/pre_process/cmd/pre-process/structs"
 )
 
 const (
@@ -22,7 +23,7 @@ const (
 )
 
 // getStabilityData gets the flaky tests data BQ FlakeCacheTest.
-func getStabilityData(req *api.FilterFlakyRequest, tcList map[string]struct{}) (map[string]structs.SignalFormat, error) {
+func getStabilityData(req *api.FilterFlakyRequest, tcList map[string]struct{}, log *log.Logger) (map[string]structs.SignalFormat, error) {
 	var data map[string]structs.SignalFormat
 
 	// TODO: this datatype will need to evolve from a board string to something more complex.
@@ -32,23 +33,21 @@ func getStabilityData(req *api.FilterFlakyRequest, tcList map[string]struct{}) (
 		variant = variantOp.Board
 	}
 	if variant == "" {
-		fmt.Println("No variant")
-		return nil, fmt.Errorf("no variant provided, cannot filter")
+		log.Println("No Board Provided")
+		return nil, fmt.Errorf("no board provided, cannot filter")
 	}
-
 	// Currently 2 types of policies will be supported. This can be expanded if newer types are added.
 	switch op := req.Policy.(type) {
 	case *api.FilterFlakyRequest_PassRatePolicy:
-		return policies.StabilityFromPolicy(op, variant, req.Milestone, tcList)
-	case *api.FilterFlakyRequest_StabilitySensorPolicy:
-		return policies.StabilityFromStabilitySensor()
+		return policies.StabilityFromPolicy(op, variant, req.Milestone, tcList, log)
+
 	}
 
 	return data, nil
 }
 
 // updateSchedulingUnitOption updates the list of Scheduling units.
-func updateSchedulingUnitOption(schedulingUnitOption *api.SchedulingUnitOptions, removeTestToBoardsMap map[string]struct{}) (*api.SchedulingUnitOptions, error) {
+func updateSchedulingUnitOption(schedulingUnitOption *api.SchedulingUnitOptions, removeTestToBoardsMap map[string]struct{}, log *log.Logger) (*api.SchedulingUnitOptions, error) {
 	var filteredSchedulingUnits []*api.SchedulingUnit
 	for _, schedulingUnit := range schedulingUnitOption.GetSchedulingUnits() {
 		board := getBoard(schedulingUnit)
@@ -69,12 +68,12 @@ func updateSchedulingUnitOption(schedulingUnitOption *api.SchedulingUnitOptions,
 }
 
 // filterSchedulingUnitOptionsBasedOnUseFlag returns a new updated schedulingUnitOptions object.
-func filterSchedulingUnitOptionsBasedOnUseFlag(schedulingUnitOptions []*api.SchedulingUnitOptions, removeTestToBoardsMap map[string]struct{}) ([]*api.SchedulingUnitOptions, error) {
+func filterSchedulingUnitOptionsBasedOnUseFlag(schedulingUnitOptions []*api.SchedulingUnitOptions, removeTestToBoardsMap map[string]struct{}, log *log.Logger) ([]*api.SchedulingUnitOptions, error) {
 
 	var filteredSchedulingUnitOptions []*api.SchedulingUnitOptions
 	for _, schedulingUnitOption := range schedulingUnitOptions {
 		// scheduling units will be removed if no buildDeps in test metadata is present in scheduling unit use flag set in useFlagDict
-		updatedSchedulingUnitOption, err := updateSchedulingUnitOption(schedulingUnitOption, removeTestToBoardsMap)
+		updatedSchedulingUnitOption, err := updateSchedulingUnitOption(schedulingUnitOption, removeTestToBoardsMap, log)
 		if err != nil {
 			log.Printf("Error while updating scheduling unit option: %s", err)
 		}
@@ -88,14 +87,16 @@ func filterSchedulingUnitOptionsBasedOnUseFlag(schedulingUnitOptions []*api.Sche
 }
 
 // updateTestCases updates the schedulingUnitOptions for each test case in internal test plan request.
-func updateTestCases(req *api.InternalTestplan, removeBoardTestMap map[string][]string) error {
+func updateTestCases(req *api.InternalTestplan, removeBoardTestMap map[string][]string, log *log.Logger) error {
 
 	// this is to simplyfy removal logic as Test is at top level in internal test plan
 	removeTestToBoardsMap := inverseRemoveBoardTestMap(removeBoardTestMap)
+
+	log.Printf("-----Map-----: %s\n", removeBoardTestMap)
 	for _, testCase := range req.GetTestCases() {
 
 		log.Printf("Filtering scheduling units for test : %s", testCase.GetName())
-		filteredSchedulingUnitOptions, err := filterSchedulingUnitOptionsBasedOnUseFlag(testCase.GetSchedulingUnitOptions(), removeTestToBoardsMap[testCase.GetName()])
+		filteredSchedulingUnitOptions, err := filterSchedulingUnitOptionsBasedOnUseFlag(testCase.GetSchedulingUnitOptions(), removeTestToBoardsMap[testCase.GetName()], log)
 		if err != nil {
 			return fmt.Errorf("error while filtering scheduling unit options: %w", err)
 		}
@@ -127,17 +128,18 @@ func flakyTestPerBoard(req *api.FilterFlakyRequest, board string, log *log.Logge
 
 			// Generate a set of tests, these will be used when searching for signal on the tests.
 			testCases := op.TestCases.TestCases
-			filter.data, err = getStabilityData(filter.req, testCasesToSet(testCases))
+			tcS := testCasesToSet(testCases)
+			filter.data, err = getStabilityData(filter.req, tcS, log)
 			if err != nil {
-				fmt.Printf("err during stability fetching, will apply rules as possible %s,", err)
+				log.Printf("err during stability fetching, will apply rules as possible %s,", err)
 			}
 			filteredSuite = filter.filterCases(testCases, testSuite.Name, log)
 		case *api.TestSuite_TestCasesMetadata:
 			// Generate a set of tests, these will be used when searching for signal on the tests.
 			metadataList := op.TestCasesMetadata.Values
-			filter.data, err = getStabilityData(filter.req, testMDToSet(op))
+			filter.data, err = getStabilityData(filter.req, testMDToSet(op), log)
 			if err != nil {
-				fmt.Printf("err during stability fetching, will apply rules as possible %s,", err)
+				log.Printf("err during stability fetching, will apply rules as possible %s,", err)
 			}
 			filteredSuite = filter.filterMetadata(metadataList, testSuite.Name, log)
 		}
@@ -153,12 +155,12 @@ func flakyTestPerBoard(req *api.FilterFlakyRequest, board string, log *log.Logge
 	// log filtering results and write results
 	flakeFilteringLogAndResults(rspn, board, req, &filter, log)
 
-	err = interfaces.WriteResults(rspn.RemovedTests, req, filter.data)
+	err = interfaces.WriteResults(rspn.RemovedTests, req, filter.data, log)
 	if err != nil {
-
-		log.Println("!!!")
-		log.Println(err)
+		log.Println("error observed during results bq insertion: ", err)
 	}
+
+	log.Println("Removing the following: ", rspn.RemovedTests)
 	return rspn, nil
 }
 
@@ -175,7 +177,7 @@ func generateFlakyTestMap(boardTestMap map[string]*BoardTestInfo, log *log.Logge
 			Policy:     policy,
 			TestSuites: []*api.TestSuite{makeSuite(boardTestInfo.tests)},
 			Variant: &api.FilterFlakyRequest_Board{
-				Board: board,
+				Board: boardTestInfo.variant,
 			},
 			DefaultEnabled: true,
 			Milestone:      boardTestInfo.milestone,
@@ -204,9 +206,8 @@ func innerMain(req *api.InternalTestplan, log *log.Logger) *api.InternalTestplan
 
 	// removeBoardTestMap will hold all tests to be removed for a given board
 	removeBoardTestMap := generateFlakyTestMap(boardTestMap, log)
-
 	//update/remove flaky tests from each board under internal test plan request
-	err = updateTestCases(req, removeBoardTestMap)
+	err = updateTestCases(req, removeBoardTestMap, log)
 	if err != nil {
 		log.Printf("Error while updating internalTestPlan request %v\n", err)
 	}
