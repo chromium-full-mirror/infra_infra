@@ -11,6 +11,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"go/ast"
+	"go/parser"
+	"go/token"
 	goversion "go/version"
 	"hash/crc32"
 	"io"
@@ -18,6 +21,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"golang.org/x/exp/slices"
@@ -301,6 +305,20 @@ func runSubrepoTests(ctx context.Context, spec *buildSpec, repoDir string, ports
 		return infraErrorf("runSubrepoTests called for a main Go repo builder")
 	}
 
+	// If we're supposed to upgrade to the latest language version of Go, read it out of the
+	// GOROOT we downloaded earlier.
+	var goModUpgradeVersion string
+	if spec.inputs.UpgradeGoModLang {
+		if spec.inputs.GoBranch != mainBranch {
+			return infraErrorf("requested to upgrade go.mod language, but not running against Go tip")
+		}
+		ver, err := gorootVersion(ctx, spec.goroot)
+		if err != nil {
+			return err
+		}
+		goModUpgradeVersion = "1." + strconv.Itoa(ver)
+	}
+
 	// skippedByGoTool reports whether the go tool's ignoring behavior, quoted below,
 	// applies to the '/'-separated path.
 	//
@@ -399,6 +417,16 @@ Testing any Go packages inside such modules is not supported.`, m.Path, m.RepoRe
 	var testErrors []error
 	for _, m := range modules {
 		ctx := setupModuleEnv(ctx, m)
+
+		// Upgrade go.mod language version if needed before running tests.
+		if goModUpgradeVersion != "" {
+			upgradeCmd := spec.goCmd(ctx, m.RootDir, "mod", "edit", "-go="+goModUpgradeVersion)
+			if err := cmdStepRun(ctx, "go mod edit -go="+goModUpgradeVersion, upgradeCmd, true); err != nil {
+				return err
+			}
+		}
+
+		// Run tests.
 		jsonDumpFile := filepath.Join(spec.workdir, "go.testjson")
 		testCmd := spec.wrapTestCmd(ctx, spec.goCmd(ctx, m.RootDir, spec.goTestArgs("./...")...), jsonDumpFile)
 		if err := cmdStepRun(ctx, fmt.Sprintf("test %s module", m.Path), testCmd, false, jsonDumpFile); err != nil {
@@ -733,4 +761,45 @@ func compileOptOut(project string, p *golangbuildpb.Port, modulePath string) boo
 	}
 	// The default policy decision is not to opt out.
 	return performCompileOnlyTestingAsUsual
+}
+
+// gorootVersion reads the GOROOT/src/internal/goversion/goversion.go
+// file and reports the Version declaration value found therein.
+//
+// Adapted from x/build/cmd/updatestd.
+func gorootVersion(ctx context.Context, goroot string) (ver int, err error) {
+	step, ctx := build.StartStep(ctx, "read go toolchain language version")
+	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
+
+	// Parse the goversion.go file, extract the declaration from the AST.
+	//
+	// This is a pragmatic approach that relies on the trajectory of the
+	// internal/goversion package being predictable and unlikely to change.
+	// If that stops being true, this small helper is easy to re-write.
+	//
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, filepath.Join(goroot, "src", "internal", "goversion", "goversion.go"), nil, 0)
+	if os.IsNotExist(err) {
+		return 0, fmt.Errorf("did not find goversion.go file (%v); wrong goroot or did internal/goversion package change?", err)
+	} else if err != nil {
+		return 0, err
+	}
+	for _, d := range f.Decls {
+		g, ok := d.(*ast.GenDecl)
+		if !ok {
+			continue
+		}
+		for _, s := range g.Specs {
+			v, ok := s.(*ast.ValueSpec)
+			if !ok || len(v.Names) != 1 || v.Names[0].String() != "Version" || len(v.Values) != 1 {
+				continue
+			}
+			l, ok := v.Values[0].(*ast.BasicLit)
+			if !ok || l.Kind != token.INT {
+				continue
+			}
+			return strconv.Atoi(l.Value)
+		}
+	}
+	return 0, fmt.Errorf("did not find Version declaration in %s; wrong goroot or did internal/goversion package change?", fset.File(f.Pos()).Name())
 }

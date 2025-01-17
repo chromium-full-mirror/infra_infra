@@ -43,6 +43,14 @@ message Inputs {
   // toolchain when needed.
   string bootstrap_version = 16;
 
+  // UpgradeGoModLang controls whether to upgrade the language version in go.mod
+  // to the language version in development.
+  //
+  // Setting this to true only has any effect if project != "go". Setting this
+  // when go_branch is not the main branch is unsupported and will cause golangbuild
+  // to fail.
+  bool upgrade_go_mod_lang = 34;
+
   // LongTest controls whether the build runs in long test mode.
   bool long_test = 3;
 
