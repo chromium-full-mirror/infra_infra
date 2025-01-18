@@ -13,7 +13,7 @@ func androidActions(actions map[string]*Action) {
 				"Run DUT readiness checks for Android based DUTs.",
 			},
 			Conditions: []string{
-				"Is Andoid based",
+				"Is Android based",
 			},
 			Dependencies: []string{
 				"Android is accessable",
@@ -35,7 +35,7 @@ func androidActions(actions map[string]*Action) {
 				"Validate is Andoid OS is accessable by reading data from the host.",
 			},
 			Conditions: []string{
-				"Is Andoid based",
+				"Is Android based",
 			},
 			ExecName:    "cros_ssh",
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
@@ -55,7 +55,7 @@ func androidActions(actions map[string]*Action) {
 				"Set Android to be awake always.",
 			},
 			Conditions: []string{
-				"Is Andoid based",
+				"Is Android based",
 			},
 			ExecName: "ctr_make_awake_always",
 			RecoveryActions: []string{
@@ -68,7 +68,7 @@ func androidActions(actions map[string]*Action) {
 				"Install OS in recovery mode by booting from servo USB-drive",
 			},
 		},
-		"Is Andoid based": {
+		"Is Android based": {
 			ExecName:      "cros_is_android_based",
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
@@ -91,7 +91,7 @@ func androidActions(actions map[string]*Action) {
 				"Only executed if DUT is Android based.",
 			},
 			Conditions: []string{
-				"Is Andoid based",
+				"Is Android based",
 			},
 			ExecName: "ctr_adb_connect",
 			ExecExtraArgs: []string{
@@ -106,7 +106,7 @@ func androidActions(actions map[string]*Action) {
 				"Reboot by ADB util.",
 			},
 			Conditions: []string{
-				"Is Andoid based",
+				"Is Android based",
 			},
 			ExecName: "ctr_adb_command",
 			ExecExtraArgs: []string{

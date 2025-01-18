@@ -2094,7 +2094,7 @@ plans:
     - name: cros_audit
       criticalactions:
         - name: Device is pingable (simple) ('cros_ping') (ALWAYS_RUN) (time:'15s')
-        - name: Is Android based ('cros_set_as_android_based')
+        - name: Mark DUT as Android if applicable ('cros_set_as_android_based')
           conditions:
             - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
             - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)

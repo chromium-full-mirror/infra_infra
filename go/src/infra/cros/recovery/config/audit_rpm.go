@@ -19,7 +19,7 @@ func CrosAuditRPMConfig() *Configuration {
 			PlanCrOSAudit: {
 				CriticalActions: []string{
 					"Device is pingable (simple)",
-					"Is Android based",
+					"Mark DUT as Android if applicable",
 					"Verify RPM config",
 				},
 				Actions:   crosRepairActions(),

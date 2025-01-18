@@ -3240,7 +3240,7 @@ plans:
                 - name: Check if servo is not connected by hub ('servo_not_connected_by_hub')
               dependencies:
                 - name: Create request to reboot labstation ('labstation_create_reboot_request') (RUN_ONCE)
-        - name: Is Android based ('cros_set_as_android_based')
+        - name: Mark DUT as Android if applicable ('cros_set_as_android_based')
           conditions:
             - name: Is not cloudbot ('env_is_not_cloudbot') (RUN_ONCE)
             - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
@@ -8039,7 +8039,7 @@ plans:
                     - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
+                    - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
@@ -25299,7 +25299,7 @@ plans:
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                           conditions:
-                            - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
+                            - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                     - name: Provision Android OS ('ctr_foil_provision_install') (time:'1h0m0s')
                       conditions:
                         - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
@@ -25352,7 +25352,7 @@ plans:
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                           conditions:
-                            - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
+                            - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                     - name: Provision Android OS ('ctr_foil_provision_install') (time:'1h0m0s')
                       conditions:
                         - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
@@ -28587,15 +28587,15 @@ plans:
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
         - name: Android OS checks ('sample_pass')
           conditions:
-            - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
+            - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
           dependencies:
             - name: Android is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               conditions:
-                - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
+                - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
               recoveries:
                 - name: Reboot by ADB (Allow to fail) ('ctr_adb_command')
                   conditions:
-                    - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
+                    - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                 - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -28660,7 +28660,7 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
+                    - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
@@ -28828,11 +28828,11 @@ plans:
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: ADB set Android as always awake ('ctr_make_awake_always')
               conditions:
-                - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
+                - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
               recoveries:
                 - name: Reboot by ADB (Allow to fail) ('ctr_adb_command')
                   conditions:
-                    - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
+                    - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                 - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -28897,7 +28897,7 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
+                    - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
@@ -29081,7 +29081,7 @@ plans:
                     - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
+                    - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
@@ -29589,7 +29589,7 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                       conditions:
-                        - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
+                        - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                 - name: Provision Android OS ('ctr_foil_provision_install') (time:'1h0m0s')
                   conditions:
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
@@ -29642,7 +29642,7 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                       conditions:
-                        - name: Is Andoid based ('cros_is_android_based') (ALWAYS_RUN)
+                        - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                 - name: Provision Android OS ('ctr_foil_provision_install') (time:'1h0m0s')
                   conditions:
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)

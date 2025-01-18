@@ -26,7 +26,7 @@ func crosRepairCriticalActions() []string {
 		"Has repair-request for reflash-firmware",
 		"Has repair-request for re-image by USB-key",
 		"Device is pingable",
-		"Is Android based",
+		"Mark DUT as Android if applicable",
 		"Chrome OS checks",
 		"Android OS checks",
 		"All repair-requests resolved",
@@ -104,7 +104,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
-		"Is Android based": {
+		"Mark DUT as Android if applicable": {
 			Docs: []string{
 				"Mark DUT as Android, based on ADB responses.",
 			},
@@ -335,7 +335,7 @@ func crosRepairActions() map[string]*Action {
 				"The request will be applied when plan restarted and reached action to address it.",
 			},
 			Conditions: []string{
-				"Is Andoid based",
+				"Is Android based",
 				"Is a Chromebook",
 				"Recovery version has OS image path",
 				"Recovery version has firmware image path",

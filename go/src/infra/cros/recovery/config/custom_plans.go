@@ -15,6 +15,9 @@ func DownloadImageToServoUSBDrive(gsImagePath, imageName string) *Configuration 
 		PlanServo,
 		PlanCrOS,
 	}
+	if rc.Plans[PlanClosing] == nil {
+		panic("Closing plan is expected but not found!")
+	}
 	rc.Plans[PlanClosing].CriticalActions = []string{
 		"Close Servo-host",
 	}

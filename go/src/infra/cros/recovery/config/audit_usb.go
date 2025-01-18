@@ -23,7 +23,7 @@ func CrosAuditUSBConfig() *Configuration {
 			PlanCrOSAudit: {
 				CriticalActions: []string{
 					"Device is pingable (simple)",
-					"Is Android based",
+					"Mark DUT as Android if applicable",
 					"Audit USB-drive from DUT",
 				},
 				// We use CrOS repair actions as it has all action it requires.

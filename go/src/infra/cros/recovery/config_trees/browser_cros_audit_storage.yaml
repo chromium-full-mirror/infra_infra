@@ -44,7 +44,7 @@ plans:
           docs:
             - Verify that device is reachable by ping.
             - Limited to 15 seconds.
-        - name: Is Android based
+        - name: Mark DUT as Android if applicable
           exec_name: cros_set_as_android_based
           docs:
             - Mark DUT as Android, based on ADB responses.

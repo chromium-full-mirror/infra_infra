@@ -22927,7 +22927,7 @@ plans:
                   exec_name: labstation_create_reboot_request
                   docs:
                     - Try to create reboot flag file request in the connected labstation.
-        - name: Is Android based
+        - name: Mark DUT as Android if applicable
           exec_name: cros_set_as_android_based
           docs:
             - Mark DUT as Android, based on ADB responses.
@@ -39111,7 +39111,7 @@ plans:
                     - 'Place repair-request: reflash firmware of the DUT and re-image by USB-drive.'
                     - The request will be applied when plan restarted and reached action to address it.
                   conditions:
-                    - name: Is Andoid based (ALWAYS_RUN)
+                    - name: Is Android based (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                     - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
@@ -97080,7 +97080,7 @@ plans:
                             - Connect to DUT by ADB if not connected.
                             - Only executed if DUT is Android based.
                           conditions:
-                            - name: Is Andoid based (ALWAYS_RUN)
+                            - name: Is Android based (ALWAYS_RUN)
                               exec_name: cros_is_android_based
                     - name: Provision Android OS (time:'1h0m0s')
                       exec_name: ctr_foil_provision_install
@@ -97287,7 +97287,7 @@ plans:
                             - Connect to DUT by ADB if not connected.
                             - Only executed if DUT is Android based.
                           conditions:
-                            - name: Is Andoid based (ALWAYS_RUN)
+                            - name: Is Android based (ALWAYS_RUN)
                               exec_name: cros_is_android_based
                     - name: Provision Android OS (time:'1h0m0s')
                       exec_name: ctr_foil_provision_install
@@ -108261,7 +108261,7 @@ plans:
           docs:
             - Run DUT readiness checks for Android based DUTs.
           conditions:
-            - name: Is Andoid based (ALWAYS_RUN)
+            - name: Is Android based (ALWAYS_RUN)
               exec_name: cros_is_android_based
           dependencies:
             - name: Android is accessable (ALWAYS_RUN) (time:'15s')
@@ -108269,7 +108269,7 @@ plans:
               docs:
                 - Validate is Andoid OS is accessable by reading data from the host.
               conditions:
-                - name: Is Andoid based (ALWAYS_RUN)
+                - name: Is Android based (ALWAYS_RUN)
                   exec_name: cros_is_android_based
               recoveries:
                 - name: Reboot by ADB (Allow to fail)
@@ -108279,7 +108279,7 @@ plans:
                   docs:
                     - Reboot by ADB util.
                   conditions:
-                    - name: Is Andoid based (ALWAYS_RUN)
+                    - name: Is Android based (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: Cold reset by servo and wait for ping (ALWAYS_RUN)
                   exec_name: sample_pass
@@ -108467,7 +108467,7 @@ plans:
                     - 'Place repair-request: reflash firmware of the DUT and re-image by USB-drive.'
                     - The request will be applied when plan restarted and reached action to address it.
                   conditions:
-                    - name: Is Andoid based (ALWAYS_RUN)
+                    - name: Is Android based (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                     - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
@@ -109017,7 +109017,7 @@ plans:
               docs:
                 - Set Android to be awake always.
               conditions:
-                - name: Is Andoid based (ALWAYS_RUN)
+                - name: Is Android based (ALWAYS_RUN)
                   exec_name: cros_is_android_based
               recoveries:
                 - name: Reboot by ADB (Allow to fail)
@@ -109027,7 +109027,7 @@ plans:
                   docs:
                     - Reboot by ADB util.
                   conditions:
-                    - name: Is Andoid based (ALWAYS_RUN)
+                    - name: Is Android based (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: Cold reset by servo and wait for ping (ALWAYS_RUN)
                   exec_name: sample_pass
@@ -109215,7 +109215,7 @@ plans:
                     - 'Place repair-request: reflash firmware of the DUT and re-image by USB-drive.'
                     - The request will be applied when plan restarted and reached action to address it.
                   conditions:
-                    - name: Is Andoid based (ALWAYS_RUN)
+                    - name: Is Android based (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                     - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
@@ -109822,7 +109822,7 @@ plans:
                     - 'Place repair-request: reflash firmware of the DUT and re-image by USB-drive.'
                     - The request will be applied when plan restarted and reached action to address it.
                   conditions:
-                    - name: Is Andoid based (ALWAYS_RUN)
+                    - name: Is Android based (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                     - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
@@ -111547,7 +111547,7 @@ plans:
                         - Connect to DUT by ADB if not connected.
                         - Only executed if DUT is Android based.
                       conditions:
-                        - name: Is Andoid based (ALWAYS_RUN)
+                        - name: Is Android based (ALWAYS_RUN)
                           exec_name: cros_is_android_based
                 - name: Provision Android OS (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
@@ -111754,7 +111754,7 @@ plans:
                         - Connect to DUT by ADB if not connected.
                         - Only executed if DUT is Android based.
                       conditions:
-                        - name: Is Andoid based (ALWAYS_RUN)
+                        - name: Is Android based (ALWAYS_RUN)
                           exec_name: cros_is_android_based
                 - name: Provision Android OS (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
