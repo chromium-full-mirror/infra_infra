@@ -75134,6 +75134,11 @@ plans:
                     - background:false
                   docs:
                     - Check FPMCU is working and can provide version info.
+                  conditions:
+                    - name: Has valid Fingerprint board value (ALWAYS_RUN)
+                      exec_name: cros_is_valid_fingerprint_board
+                      docs:
+                        - Validate fingerprint board.
                   recoveries:
                     - name: Provision OS if needed
                       exec_name: sample_pass

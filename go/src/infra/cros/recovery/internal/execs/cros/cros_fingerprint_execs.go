@@ -41,18 +41,16 @@ func checkFingerprintInfo(board, mcu, sensor string) bool {
 
 }
 
-// collectFingerprint read fingerprint_mcu, fingerprint_board, and fingerprint_sensor from dut to inventory.
+// collectFingerprintExec read fingerprint_mcu, fingerprint_board, and fingerprint_sensor from dut to inventory.
 //
 // Find the fingerprint info with commands and set it on ChromeOS struct
-func collectFingerprint(ctx context.Context, info *execs.ExecInfo) error {
+func collectFingerprintExec(ctx context.Context, info *execs.ExecInfo) error {
 	r := info.DefaultRunner()
-
 	cros := info.GetChromeos()
 	if cros == nil {
 		return errors.Reason("collect fingerprint: only for chromeos devices").Err()
 	}
-
-	log.Debugf(ctx, "fingerprint info before update: %s", cros.GetFingerprint())
+	log.Debugf(ctx, "Fingerprint info before update: %s", cros.GetFingerprint())
 
 	// command to grab the fingerprint_board from dut
 	const boardCmd = `cros_config /fingerprint board`
@@ -111,12 +109,26 @@ func collectFingerprint(ctx context.Context, info *execs.ExecInfo) error {
 		cros.Fingerprint.Board = strings.ToUpper(board)
 		cros.Fingerprint.Mcu = strings.ToUpper(mcu)
 		cros.Fingerprint.Sensor = strings.ToUpper(sensor)
-		log.Debugf(ctx, "fingerprint set to: %s", cros.GetFingerprint())
+		log.Debugf(ctx, "Fingerprint data: %s", cros.GetFingerprint())
 		return nil
 	}
 	return errors.Reason("Unexpected fingerprint hw/sw combo. Board: %s, Mcu:%s, Sensor: %s", board, mcu, sensor).Err()
 }
 
+func isValidFingerprintBoardExec(ctx context.Context, info *execs.ExecInfo) error {
+	res, err := info.DefaultHostAccess().Run(ctx, info.GetExecTimeout(), `cros_config /fingerprint board`)
+	if err != nil {
+		return errors.Annotate(err, "is fingerprint board specified").Err()
+	}
+	board := res.GetStdout()
+	log.Debugf(ctx, "Fingerprint board: %q", board)
+	if board == "" {
+		return errors.Reason("is fingerprint board specified: invalid board value").Err()
+	}
+	return nil
+}
+
 func init() {
-	execs.Register("cros_collect_fingerprint", collectFingerprint)
+	execs.Register("cros_collect_fingerprint", collectFingerprintExec)
+	execs.Register("cros_is_valid_fingerprint_board", isValidFingerprintBoardExec)
 }

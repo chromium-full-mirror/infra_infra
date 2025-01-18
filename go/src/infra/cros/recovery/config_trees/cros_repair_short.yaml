@@ -22641,6 +22641,8 @@ plans:
                         - name: Erase keyboard map ('cros_run_shell_command') (time:'2m0s')
                         - name: Write keyboard map ('cros_run_shell_command') (time:'2m0s')
                 - name: FPMCU is working (Allow to fail) ('cros_run_command')
+                  conditions:
+                    - name: Has valid Fingerprint board value ('cros_is_valid_fingerprint_board') (ALWAYS_RUN)
                   recoveries:
                     - name: Provision OS if needed ('sample_pass')
                       conditions:

@@ -4912,6 +4912,14 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "cros_collect_fingerprint",
 			AllowFailAfterRecovery: true,
 		},
+		"Has valid Fingerprint board value": {
+			Docs: []string{
+				"Validate fingerprint board.",
+			},
+			ExecName:      "cros_is_valid_fingerprint_board",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			RunControl:    RunControl_ALWAYS_RUN,
+		},
 		"Power-off the DUT using AMT": {
 			Docs: []string{
 				"Ensure the DUT is powered-off using Intel AMT.",
@@ -4977,6 +4985,9 @@ func crosRepairActions() map[string]*Action {
 		"FPMCU is working": {
 			Docs: []string{
 				"Check FPMCU is working and can provide version info.",
+			},
+			Conditions: []string{
+				"Has valid Fingerprint board value",
 			},
 			ExecName: "cros_run_command",
 			ExecExtraArgs: []string{
