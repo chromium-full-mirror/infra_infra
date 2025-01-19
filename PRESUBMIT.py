@@ -94,13 +94,13 @@ JSHINT_PROJECTS_BLACKLIST = THIRD_PARTY_DIRS
 NOFORK_PATHS = []
 
 
-def CommandInGoEnv(input_api, output_api, name, cmd, kwargs):
+def CommandInGoEnv(input_api, output_api, name, cmd, kwargs, blocking=True):
   """Returns input_api.Command that wraps |cmd| with invocation to go/env.py.
 
   env.py makes golang tools available in PATH. It also bootstraps Golang dev
   environment if necessary.
   """
-  if input_api.is_committing:
+  if input_api.is_committing and blocking:
     error_type = output_api.PresubmitError
   else:
     error_type = output_api.PresubmitPromptWarning
@@ -122,12 +122,12 @@ def GoCheckers(input_api, output_api):
       files_to_check=[r'.*\.go$'],
       files_to_skip=THIRD_PARTY_DIRS + [r'.*\.pb\.go$', r'.*\.gen\.go$'])
   affected_files = sorted([
-      f.AbsoluteLocalPath() for f in input_api.AffectedFiles(
+      f for f in input_api.AffectedFiles(
           include_deletes=False, file_filter=file_filter)
   ])
   if not affected_files:
     return []
-  stdin = '\n'.join(affected_files).encode()
+  stdin = '\n'.join([f.AbsoluteLocalPath() for f in affected_files]).encode()
 
   tool_names = ['gofmt', 'govet']
   ret = []
@@ -147,6 +147,41 @@ def GoCheckers(input_api, output_api):
           cmd=cmd,
           kwargs={'stdin': stdin}),
     )
+
+    # Isinstance doesn't work since the GitChange class isn't accessible.
+    if hasattr(input_api.change, 'UpstreamBranch'):
+      since = ['--new-from-rev', input_api.change.UpstreamBranch()]
+    else:
+      since = []
+
+    # In case of multiple files in the same directory, use dict to dedupe.
+    dirs = {
+        os.path.dirname(f.AbsoluteLocalPath()): os.path.dirname(f.LocalPath())
+        for f in affected_files
+    }
+    for absolute, pretty in sorted(dirs.items()):
+      ret.append(
+          CommandInGoEnv(
+              input_api,
+              output_api,
+              # TODO: --fix exists. Maybe we could either perform the fix for
+              # them, or if the lint has a fix, inform them to run the command
+              # with --fix.
+              name=f'Check golint on {pretty}',
+              # This command cannot be run from any directory.
+              # Eg. for the package "infra/build/siso/build":
+              # * `golangci-lint .` from `src/infra/build/sisa/build` works
+              # * `golangci-lint siso/build` from `src/infra/build` works
+              # * `golangci-lint build/siso/build` from `src/infra` works
+              # * `golangci-lint infra/build/siso/build` from `src` doesn't
+
+              # The easiest way to bypass this problem is to just always run
+              # from the directory you're trying to lint.
+              cmd=['golangci-lint', 'run', *since, '.'],
+              kwargs={'cwd': absolute},
+              # Revisit at some point after leaving on for a while.
+              blocking=False))
+
   return ret
 
 
