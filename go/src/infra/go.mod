@@ -1,10 +1,5 @@
 module infra
 
-// WARNING: When changing this, please first make sure that golangci-lint is
-// updated to a version that supports it.
-// See https://github.com/golangci/golangci-lint/issues/5225 for details on how
-// golangci-lint version support works.
-// For an example update CL, see https://crrev.com/c/6038926
 go 1.23.0
 
 toolchain go1.23.5
