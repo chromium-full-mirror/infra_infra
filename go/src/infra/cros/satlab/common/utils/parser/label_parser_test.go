@@ -142,3 +142,56 @@ func TestExtractFwImageBuildVersion(t *testing.T) {
 		}
 	}
 }
+
+func TestExtractFwBuildVersion(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		input  string
+		output string
+		err    error
+	}{
+		{
+			"Google_Chronicler.16112.0.0",
+			"16112.0.0",
+			nil,
+		},
+		{
+			"Google_Craask.16112.0.0",
+			"16112.0.0",
+			nil,
+		},
+		{
+			"board-release/R111/6112.0.0/firmware_from_source.tar.bz2",
+			"",
+			e.NotMatch,
+		},
+		{
+			"Google_Craask.16112.0",
+			"",
+			e.NotMatch,
+		},
+		{
+			"Google_Craask-15749.126.0",
+			"",
+			e.NotMatch,
+		},
+		{
+			"Google_Chronicler.R89-13527.574.0",
+			"",
+			e.NotMatch,
+		},
+	}
+
+	for _, tt := range cases {
+		expected := tt.output
+		actual, err := ExtractFwBuildVersionFrom(tt.input)
+		if diff := cmp.Diff(expected, actual); diff != "" {
+			t.Errorf("Expected: %v, unexpected diff: %s", expected, diff)
+		}
+
+		if !errors.Is(err, tt.err) {
+			t.Errorf("Expected: %v, got: %v", tt.err, err)
+		}
+	}
+}

@@ -9,9 +9,10 @@ import (
 	"infra/cros/satlab/common/utils/errors"
 )
 
-var milestoneRegex = regexp.MustCompile(`milestones/(?P<Milestone>\d+)$`)
 var boardAndModelRegex = regexp.MustCompile(`^buildTargets/(?P<Board>\w+)/models/(?P<Model>\w+)$`)
+var fwBuildVersionRegex = regexp.MustCompile(`\w+\.(?P<BuildVersion>\d+\.\d+\.\d+)`)
 var fwImageBuildVersionRegex = regexp.MustCompile(`\/R\d+-(?P<BuildVersion>\d+\.\d+\.\d+)`)
+var milestoneRegex = regexp.MustCompile(`milestones/(?P<Milestone>\d+)$`)
 
 type BoardAndModelPair struct {
 	Board string
@@ -58,6 +59,21 @@ func ExtractFwImageBuildVersionFrom(s string) (string, error) {
 
 	matches := fwImageBuildVersionRegex.FindStringSubmatch(s)
 	index := fwImageBuildVersionRegex.SubexpIndex("BuildVersion")
+
+	return matches[index], nil
+}
+
+// ExtractFwBuildVersionFrom extract the firmware
+// build version information from the given string.
+//
+// string s the string we want to get the information from.
+func ExtractFwBuildVersionFrom(s string) (string, error) {
+	if !fwBuildVersionRegex.MatchString(s) {
+		return "", errors.NotMatch
+	}
+
+	matches := fwBuildVersionRegex.FindStringSubmatch(s)
+	index := fwBuildVersionRegex.SubexpIndex("BuildVersion")
 
 	return matches[index], nil
 }

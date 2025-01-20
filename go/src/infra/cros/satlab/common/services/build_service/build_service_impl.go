@@ -215,19 +215,11 @@ func (b *BuildServiceImpl) FindMostStableBuildByBoardAndModel(ctx context.Contex
 		return nil, errors.New("Invalid milestone")
 	}
 	fwMilestone := fwMilestoneList[1]
-
-	// fetch firmware build version
-	listBuildRequest := &moblabapipb.ListBuildsRequest{
-		Parent:   ParseModelPath(board, model),
-		Filter:   fmt.Sprintf("type=firmware+milestone=milestones/%s", fwMilestone),
-		PageSize: 1,
-	}
-	listBuildResponse := b.client.ListBuilds(ctx, listBuildRequest)
-	firmwareBuild, err := listBuildResponse.Next()
+	fwBuildVersion, err := parser.ExtractFwBuildVersionFrom(fw)
 	if err != nil {
 		return nil, err
 	}
-	fwImage := fmt.Sprintf("%s-firmware/R%s-%s", board, fwMilestone, firmwareBuild.GetBuildVersion())
+	fwImage := fmt.Sprintf("%s-firmware/R%s-%s", board, fwMilestone, fwBuildVersion)
 
 	return &models.RecoveryVersion{
 		Board:     board,
