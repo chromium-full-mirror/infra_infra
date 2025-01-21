@@ -128,10 +128,11 @@ func InternalTF(ctx context.Context, dir string) error {
 
 	// 1. Download metadata JSONs from GCS.
 	fileNames := map[string]string{
-		"cts.json": "gs://cros-xts-metadata/cts-metadata-git_main-latest.json",
-		"dts.json": "gs://cros-xts-metadata/dts-metadata-git_main-al-dev-latest.json",
-		"vts.json": "gs://cros-xts-metadata/vts-metadata-git_main-latest.json",
-		"gts.json": "gs://cros-xts-metadata/gts-metadata-git_main-latest.json",
+		"cts.json":     "gs://cros-xts-metadata/cts-metadata-git_main-latest.json",
+		"dts.json":     "gs://cros-xts-metadata/dts-metadata-git_main-al-dev-latest.json",
+		"vts.json":     "gs://cros-xts-metadata/vts-metadata-git_main-latest.json",
+		"gts.json":     "gs://cros-xts-metadata/gts-metadata-git_main-latest.json",
+		"general.json": "gs://cros-xts-metadata/general-metadata-git_main-latest.json",
 	}
 	var mdFiles []string
 	for lp, gp := range fileNames {
