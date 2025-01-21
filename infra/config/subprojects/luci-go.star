@@ -102,20 +102,6 @@ try_builder(
 )
 
 try_builder(
-    name = "luci-go-analysis",
-    os = "Ubuntu-22.04",
-    recipe = "tricium_infra",
-    properties = {
-        "gclient_config_name": "luci_go",
-        "patch_root": "infra/go/src/go.chromium.org/luci",
-        "analyzers": ["Spellchecker"],
-    },
-    disable_reuse = True,
-    owner_whitelist = ["project-infra-tryjob-access"],
-    mode_allowlist = [cq.MODE_NEW_PATCHSET_RUN],
-)
-
-try_builder(
     name = "luci-go-lint",
     os = "Ubuntu-22.04",
     properties = {

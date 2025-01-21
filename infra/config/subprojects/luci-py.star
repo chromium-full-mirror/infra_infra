@@ -53,20 +53,6 @@ build.presubmit(
 )
 
 try_builder(
-    name = "luci-py-analysis",
-    os = "Ubuntu-22.04",
-    recipe = "tricium_infra",
-    properties = {
-        "gclient_config_name": "luci_py",
-        "patch_root": "infra/luci",
-        "analyzers": ["Spellchecker"],
-    },
-    disable_reuse = True,
-    owner_whitelist = ["project-infra-tryjob-access"],
-    mode_allowlist = [cq.MODE_NEW_PATCHSET_RUN],
-)
-
-try_builder(
     name = "luci-py-try-jammy-64",
     os = "Ubuntu-22.04",
 )
