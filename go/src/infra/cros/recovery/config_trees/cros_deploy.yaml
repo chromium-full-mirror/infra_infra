@@ -7,7 +7,7 @@ plans:
             - state:needs_deploy
           docs:
             - The action set devices with request to be redeployed.
-        - name: Start ADB-base
+        - name: Start ADB-base (time:'2m0s')
           exec_name: ctr_start_adb_container
           docs:
             - Pull and run adb-base container
@@ -21,7 +21,7 @@ plans:
               docs:
                 - 'Verify that cros-tool-runner service is up and running, '
                 - the tool expected to start as part of system preparation.
-        - name: Start Servo-Nexus
+        - name: Start Servo-Nexus (time:'4m0s')
           exec_name: ctr_servo_nexus_start_container
           docs:
             - Pull and run servo-nexus container

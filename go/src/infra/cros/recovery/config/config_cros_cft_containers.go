@@ -4,6 +4,12 @@
 
 package config
 
+import (
+	"time"
+
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
+)
+
 // Actions to start and stop cft containers.
 func addCrosCftContainers(actions map[string]*Action) {
 	am := map[string]*Action{
@@ -22,7 +28,8 @@ func addCrosCftContainers(actions map[string]*Action) {
 				"Is not cloudbot",
 				"CrosToolRunner is up",
 			},
-			ExecName: "ctr_start_adb_container",
+			ExecName:    "ctr_start_adb_container",
+			ExecTimeout: durationpb.New(time.Minute * 2),
 		},
 		"Stop ADB-base": {
 			Docs: []string{
@@ -40,7 +47,8 @@ func addCrosCftContainers(actions map[string]*Action) {
 				"Testbed has Servo",
 				"CrosToolRunner is up",
 			},
-			ExecName: "ctr_servo_nexus_start_container",
+			ExecName:    "ctr_servo_nexus_start_container",
+			ExecTimeout: durationpb.New(time.Minute * 4),
 		},
 		"Stop Servo-Nexus": {
 			Docs: []string{
