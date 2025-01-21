@@ -512,12 +512,6 @@ func (r *GoTestRenderer) Ingest(ev *GoTestEvent) error {
 	// If we get this far, this is a test event.
 	// Ingest it.
 	switch ev.Action {
-	case "error":
-		// Error reading JSON.
-		if _, err := fmt.Fprint(r.w, ev.Output); err != nil {
-			return err
-		}
-
 	case "run":
 		if ev.Test != "" {
 			r.testOut[ev.Package].tests[ev.Test] = new(lines)
