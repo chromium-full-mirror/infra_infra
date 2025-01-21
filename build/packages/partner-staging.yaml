@@ -1,0 +1,10 @@
+package: chromiumos/infra/ctpv2-filters/partner-staging/${platform}
+description: CTPv2 filter responsible for staging images to partner bucket.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/ctpv2-filters/partner-staging
+root: ../../go/bin
+data:
+  - file: partner-staging${exe_suffix}
+  - version_file: .versions/partner-staging${exe_suffix}.cipd_version
