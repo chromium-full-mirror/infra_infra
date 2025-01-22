@@ -2323,7 +2323,7 @@ func (s *DecoratedFleet) DeleteDefaultWifi(ctx context.Context, req *DeleteDefau
 	return
 }
 
-func (s *DecoratedFleet) GetDeviceLabels(ctx context.Context, req *GetDeviceLabelsRequest) (rsp *GetDeviceLabelsResponse, err error) {
+func (s *DecoratedFleet) GetDeviceLabels(ctx context.Context, req *GetDeviceLabelsRequest) (rsp *models.DeviceLabels, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context
 		newCtx, err = s.Prelude(ctx, "GetDeviceLabels", req)

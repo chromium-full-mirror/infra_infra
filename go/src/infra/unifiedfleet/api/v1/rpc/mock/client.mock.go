@@ -1366,14 +1366,14 @@ func (mr *MockFleetClientMockRecorder) GetDeviceData(ctx, in interface{}, opts .
 }
 
 // GetDeviceLabels mocks base method.
-func (m *MockFleetClient) GetDeviceLabels(ctx context.Context, in *ufspb1.GetDeviceLabelsRequest, opts ...grpc.CallOption) (*ufspb1.GetDeviceLabelsResponse, error) {
+func (m *MockFleetClient) GetDeviceLabels(ctx context.Context, in *ufspb1.GetDeviceLabelsRequest, opts ...grpc.CallOption) (*ufspb.DeviceLabels, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "GetDeviceLabels", varargs...)
-	ret0, _ := ret[0].(*ufspb1.GetDeviceLabelsResponse)
+	ret0, _ := ret[0].(*ufspb.DeviceLabels)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -3834,10 +3834,10 @@ func (mr *MockFleetServerMockRecorder) GetDeviceData(arg0, arg1 interface{}) *go
 }
 
 // GetDeviceLabels mocks base method.
-func (m *MockFleetServer) GetDeviceLabels(arg0 context.Context, arg1 *ufspb1.GetDeviceLabelsRequest) (*ufspb1.GetDeviceLabelsResponse, error) {
+func (m *MockFleetServer) GetDeviceLabels(arg0 context.Context, arg1 *ufspb1.GetDeviceLabelsRequest) (*ufspb.DeviceLabels, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetDeviceLabels", arg0, arg1)
-	ret0, _ := ret[0].(*ufspb1.GetDeviceLabelsResponse)
+	ret0, _ := ret[0].(*ufspb.DeviceLabels)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

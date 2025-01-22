@@ -10,10 +10,11 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/grpcutil"
 
+	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
-func (*FleetServerImpl) GetDeviceLabels(ctx context.Context, req *ufsAPI.GetDeviceLabelsRequest) (rsp *ufsAPI.GetDeviceLabelsResponse, err error) {
+func (*FleetServerImpl) GetDeviceLabels(ctx context.Context, req *ufsAPI.GetDeviceLabelsRequest) (rsp *ufspb.DeviceLabels, err error) {
 	defer func() {
 		err = grpcutil.GRPCifyAndLogErr(ctx, err)
 	}()

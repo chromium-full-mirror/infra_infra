@@ -448,7 +448,7 @@ service Fleet {
 
   // GetDeviceLabels gets the scheduling labels for the specified device.
   // This should only be used by the Fleet Console prototype
-  rpc GetDeviceLabels(GetDeviceLabelsRequest) returns (GetDeviceLabelsResponse);
+  rpc GetDeviceLabels(GetDeviceLabelsRequest) returns (models.DeviceLabels);
 
   // ListDeviceLabels gets the scheduling labels for devices by filters.
   // This should only be used by the Fleet Console prototype

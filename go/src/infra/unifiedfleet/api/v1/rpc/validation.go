@@ -54,6 +54,7 @@ var (
 	MachineLSEPrototypeNameFormat  string = "Invalid input - Entity Name pattern should be machineLSEPrototypes/{machineLSEPrototype}."
 	RackLSEPrototypeNameFormat     string = "Invalid input - Entity Name pattern should be rackLSEPrototypes/{rackLSEPrototype}."
 	DefaultWifiNameFormat          string = "Invalid input - Entity Name pattern should be defaultwifis/{defaultwifi}."
+	DeviceLabelsNameFormat         string = "Invalid input - Entity Name pattern should be defaultwifis/{defaultwifi}."
 	ResourceFormat                 string = "Invalid input - Entity Name pattern should be in a format of resource_names/XXX, resource_names includes machines/racks/vms/hosts/vlans."
 	EmptyMachineName               string = "Invalid input - Machine name cannot be empty."
 	EmptyHostName                  string = "Invalid input - Host name cannot be empty."
@@ -90,6 +91,7 @@ var assetRegex = regexp.MustCompile(`assets\.*`)
 var machineLSEDeploymentRegex = regexp.MustCompile(`machineLSEDeployments\.*`)
 var schedulingUnitRegex = regexp.MustCompile(`schedulingunits\.*`)
 var defaultWifiRegex = regexp.MustCompile(`defaultwifis\.*`)
+var deviceLabelsRegex = regexp.MustCompile(`devicelabels\.*`)
 
 // matches "cachingservices/{hostname or ipv4}"
 var cachingServiceRegex = regexp.MustCompile(`cachingservices/[a-zA-Z0-9-.]{1,63}$`)
@@ -1558,4 +1560,9 @@ func (r *UpdateDefaultWifiRequest) Validate() error {
 		return status.Errorf(codes.InvalidArgument, NilEntity)
 	}
 	return validateResourceName(defaultWifiRegex, DefaultWifiNameFormat, r.DefaultWifi.GetName())
+}
+
+// Validate validates input requests of GetDeviceLabels.
+func (r *GetDeviceLabelsRequest) Validate() error {
+	return validateResourceNameAllowAllCharacters(deviceLabelsRegex, DeviceLabelsNameFormat, r.Hostname)
 }
