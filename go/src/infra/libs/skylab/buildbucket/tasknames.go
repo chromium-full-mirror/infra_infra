@@ -27,6 +27,8 @@ const (
 	Recovery TaskName = "recovery"
 	// Task used to run deep repair flow in the lab.
 	DeepRecovery TaskName = "deep_recovery"
+	// Task used to run auto recovery/repair flow in MH.
+	MHRecovery TaskName = "mh_recovery"
 	// Task used to prepare device to be used in the lab.
 	Deploy TaskName = "deploy"
 	// Task used to execute custom plans.
@@ -65,6 +67,8 @@ func NormalizeTaskName(name string) (TaskName, error) {
 		return AuditRPM, nil
 	case "repair", "recovery":
 		return Recovery, nil
+	case "mhrepair", "mh_recovery", "mh-recovery":
+		return MHRecovery, nil
 	case "deep-repair", "deep_repair":
 		return DeepRecovery, nil
 	case "deploy":
@@ -87,6 +91,7 @@ func ValidateTaskName(tn TaskName) error {
 	case AuditStorage:
 	case AuditUSB:
 	case Recovery:
+	case MHRecovery:
 	case DeepRecovery:
 	case Deploy:
 	case Custom:
@@ -115,7 +120,7 @@ func TaskNameToBuilderNamePerVersion(tn TaskName, v CIPDVersion) string {
 			return "audit-servo-usb-key-latest"
 		}
 		return "audit-servo-usb-key"
-	case Recovery, DeepRecovery:
+	case Recovery, MHRecovery, DeepRecovery:
 		if v == CIPDLatest {
 			return "repair-latest"
 		}

@@ -37,6 +37,8 @@ var TaskNameToBuilderPerVersionCases = []struct {
 	{"audit-servo-usb-key-latest", AuditUSB, CIPDLatest},
 	{"repair", Recovery, CIPDProd},
 	{"repair-latest", Recovery, CIPDLatest},
+	{"repair", MHRecovery, CIPDProd},
+	{"repair-latest", MHRecovery, CIPDLatest},
 	{"repair", DeepRecovery, CIPDProd},
 	{"repair-latest", DeepRecovery, CIPDLatest},
 	{"deploy", Deploy, CIPDProd},

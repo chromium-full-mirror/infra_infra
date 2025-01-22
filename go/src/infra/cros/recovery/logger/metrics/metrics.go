@@ -304,8 +304,8 @@ func CountFailedRepairFromMetrics(ctx context.Context, dutName string, taskName 
 
 // TasknameToMetricsKind returns a Karte action kind based on taskname.
 func TasknameToMetricsKind(tn string) string {
-	switch tn {
-	case buildbucket.Recovery.String(), buildbucket.DeepRecovery.String():
+	switch buildbucket.TaskName(tn) {
+	case buildbucket.Recovery, buildbucket.MHRecovery, buildbucket.DeepRecovery:
 		// Normal repair and deep repair shares a same set of metrics(e.g. failure count).
 		return fmt.Sprintf(PerResourceTaskKindGlob, buildbucket.Recovery)
 	default:
