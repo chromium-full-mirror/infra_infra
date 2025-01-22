@@ -421,9 +421,15 @@ func populateEnvInfo(
 	if pool := getSingleTagValue(botDims, "pool"); pool != "" {
 		swarmingInfo.Pool = pool
 	}
-	if labelPool := getSingleTagValue(botDims, "label-pool"); labelPool != "" {
+
+	labelPool := getSingleTagValue(botDims, "label-pool")
+	if labelPool == "" {
+		labelPool = getSingleTagValue(build.Tags, "label-pool")
+	}
+	if labelPool != "" {
 		swarmingInfo.LabelPool = labelPool
 	}
+
 	if botID := getSingleTagValue(botDims, "id"); botID != "" {
 		swarmingInfo.BotId = botID
 	}
@@ -589,7 +595,7 @@ func populateProjectTrackerMetadata(
 		if tag.GetKey() == "bug_id" {
 			projectTrackerMetadata.BugId = tag.GetValue()
 
-			// Remove the break if adding more fields whitin the loop.
+			// Remove the break if adding more fields within the loop.
 			break
 		}
 	}
@@ -661,6 +667,9 @@ func populateTestCaseInfo(
 	testCaseInfo.TestCaseResult = testCaseResult
 
 	suite := common.GetValueFromRequestKeyvals(ctx, sk.CftTestRequest, sk.CrosTestRunnerRequest, "suite")
+	if suite == "" {
+		suite = getSingleTagValue(build.Tags, "suite")
+	}
 	if suite != "" {
 		testCaseInfo.Suite = suite
 	}

@@ -1081,7 +1081,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		assert.Loosely(t, sk.TestResultForRdb, should.Resemble(wantTestResult))
 	})
 
-	ftt.Run("Populate ancestor buildbucket ids from buildbucket tags", t, func(t *ftt.Test) {
+	ftt.Run("Populate additional info from buildbucket tags", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		wantTestResult := &artifactpb.TestResult{
 			TestInvocation: &artifactpb.TestInvocation{
@@ -1118,7 +1118,9 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 								Id:          100,
 								AncestorIds: []int64{99},
 							},
-							SwarmingInfo: &artifactpb.SwarmingInfo{},
+							SwarmingInfo: &artifactpb.SwarmingInfo{
+								LabelPool: "vmlab",
+							},
 						},
 					},
 					InventoryInfo: &artifactpb.InventoryInfo{},
@@ -1126,7 +1128,9 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				DutTopology: &labapi.DutTopology{Duts: []*labapi.Dut{{}}},
 				SchedulingMetadata: &artifactpb.SchedulingMetadata{
 					SchedulingArgs: map[string]string{
+						"label-pool":            "vmlab",
 						"parent_buildbucket_id": "99",
+						"suite":                 "bvt-tast-cq",
 					},
 				},
 				ProjectTrackerMetadata: &artifactpb.ProjectTrackerMetadata{},
@@ -1148,6 +1152,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 							},
 							Verdict: &testapi.TestCaseResult_Pass_{},
 						},
+						Suite: "bvt-tast-cq",
 					},
 					LogsInfo: []*configpb.StoragePath{
 						{
@@ -1165,7 +1170,9 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 			Id:     100,
 			Status: bbpb.Status_SUCCESS,
 			Tags: []*buildbucketpb.StringPair{
+				{Key: "label-pool", Value: "vmlab"},
 				{Key: "parent_buildbucket_id", Value: "99"},
+				{Key: "suite", Value: "bvt-tast-cq"},
 			},
 		}
 		buildState, ctx, err := build.Start(ctx, buildPb)
