@@ -107,6 +107,15 @@ type Repository struct {
 func GetConfigs() []*UprevConfig {
 	configs := []*UprevConfig{
 		{
+			Name: "partner-staging",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/ctpv2-filters/partner-staging/${platform}"),
+			},
+			Repositories: []*Repository{
+				PartnerRepository,
+			},
+		},
+		{
 			Name: "provision-filter",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/provision-filter/${platform}"),
