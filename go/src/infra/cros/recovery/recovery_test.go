@@ -47,6 +47,13 @@ var dutPlansCases = []struct {
 		false,
 	},
 	{
+		"default MH recovery",
+		tlw.DUTSetupType_UNSPECIFIED,
+		buildbucket.MHRecovery,
+		nil,
+		false,
+	},
+	{
 		"default deploy",
 		tlw.DUTSetupType_UNSPECIFIED,
 		buildbucket.Deploy,
@@ -73,6 +80,22 @@ var dutPlansCases = []struct {
 		buildbucket.Recovery,
 		[]string{
 			config.PlanCrOSBase,
+			config.PlanDolos,
+			config.PlanServo,
+			config.PlanBluetoothPeer,
+			config.PlanWifiRouter,
+			config.PlanCrOS,
+			config.PlanChameleon,
+			config.PlanHMR,
+			config.PlanAMT,
+			config.PlanClosing},
+		true,
+	},
+	{
+		"MH recovery",
+		tlw.DUTSetupType_CROS,
+		buildbucket.MHRecovery,
+		[]string{
 			config.PlanDolos,
 			config.PlanServo,
 			config.PlanBluetoothPeer,

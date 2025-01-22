@@ -243,8 +243,10 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 			return config.CrosVMSuccessConfig(), nil
 		case tlw.DUTSetupType_DEV_BOARD:
 			return config.CrosDevBoardConfig(), nil
-		default:
-			return nil, errors.Reason("Setup type: %q is not supported for task: %q!", ds, tn).Err()
+		}
+	case buildbucket.MHRecovery:
+		if ds == tlw.DUTSetupType_CROS {
+			return config.MHRepairConfig(), nil
 		}
 	case buildbucket.DeepRecovery:
 		// No need to keep the configurations for deep recovery as the same as normal recovery.
@@ -315,6 +317,7 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 	default:
 		return nil, errors.Reason("TaskName: %q is not supported..", tn).Err()
 	}
+	return nil, errors.Reason("setup type: %q is not supported for task: %q!", ds, tn).Err()
 }
 
 // readInventory reads single resource info from inventory.

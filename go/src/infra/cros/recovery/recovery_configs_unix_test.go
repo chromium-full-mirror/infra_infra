@@ -35,6 +35,12 @@ var configTreeChangesCases = []struct {
 		"cros_repair",
 	},
 	{
+		"MH AutoRepair",
+		tlw.DUTSetupType_CROS,
+		buildbucket.MHRecovery,
+		"mh_repair",
+	},
+	{
 		"CROS Deploy",
 		tlw.DUTSetupType_CROS,
 		buildbucket.Deploy,

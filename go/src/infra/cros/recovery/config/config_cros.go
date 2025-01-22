@@ -73,6 +73,34 @@ func CrosRepairWithDeepRepairConfig() *Configuration {
 		}}
 }
 
+// MHRepairConfig provides config for repair AndroidOS setup in the MH.
+func MHRepairConfig() *Configuration {
+	return &Configuration{
+		PlanNames: []string{
+			PlanDolos,
+			PlanServo,
+			PlanBluetoothPeer,
+			PlanWifiRouter,
+			PlanCrOS,
+			PlanChameleon,
+			PlanHMR,
+			PlanAMT,
+			PlanClosing,
+		},
+		Plans: map[string]*Plan{
+			PlanServo:         setAllowFail(servoRepairPlan(), true),
+			PlanCrOS:          setAllowFail(mhRepairPlan(), false),
+			PlanChameleon:     setAllowFail(chameleonPlan(), true),
+			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
+			PlanWifiRouter:    setAllowFail(wifiRouterRepairPlan(), true),
+			PlanHMR:           setAllowFail(hmrRepairPlan(), true),
+			PlanDolos:         setAllowFail(dolosRepairPlan(), true),
+			PlanAMT:           setAllowFail(amtRepairPlan(), true),
+			PlanClosing:       setAllowFail(crosClosePlan(), true),
+		},
+	}
+}
+
 // CrosDeployConfig provides config for deploy cros setup in the lab task.
 func CrosDeployConfig() *Configuration {
 	return &Configuration{

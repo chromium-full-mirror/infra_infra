@@ -19,6 +19,34 @@ func crosRepairPlan() *Plan {
 	}
 }
 
+func mhRepairPlan() *Plan {
+	return &Plan{
+		CriticalActions: []string{
+			"Mark as Android based",
+			"Has repair-request for re-image USB-key",
+			"Has repair-request for reflash-firmware",
+			"Device is pingable",
+			"ADB Connect DUT",
+			"Android is accessable",
+			"ADB set Android as always awake",
+			"Read bootId",
+			"Device Uptime",
+			"Android: Has repair-request for re-provision",
+			"Reset provisioned info",
+			"Verify that DUT is not in DEV mode",
+			"Verify that DUT has default GBB flags",
+			"Missing HWID",
+			"Match HWID",
+			"Reset provisioned info",
+			"All repair-requests resolved",
+			"Reset DUT-state reason",
+			"Servo is in WORKING state",
+			"Set state: ready",
+		},
+		Actions: crosRepairActions(),
+	}
+}
+
 func crosRepairCriticalActions() []string {
 	actions := []string{
 		"Mark labstation as servod is in-use",
@@ -117,7 +145,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_set_as_android_based",
 		},
-		"Mark as Android based OS": {
+		"Mark as Android based": {
 			Docs: []string{
 				"Mark DUT as Android based.",
 			},
@@ -533,6 +561,18 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in recovery mode by booting from servo USB-drive (with FW update)",
 				"Install OS in recovery mode by booting from servo USB-drive (Flex with AMT)",
 				"Install OS in DEV mode, with force to DEV-mode",
+			},
+		},
+		"Android: Has repair-request for re-provision": {
+			Docs: []string{
+				"Check if PROVISION repair-request is present.",
+			},
+			ExecName: "dut_has_any_repair_requests",
+			ExecExtraArgs: []string{
+				"requests:PROVISION",
+			},
+			RecoveryActions: []string{
+				"Provision Android OS",
 			},
 		},
 		"Has repair-request for re-image USB-key": {

@@ -1,4 +1,4 @@
-// Copyright 2021 The ChromiumOS Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,6 +50,12 @@ func TestLabstationDeployConfig(t *testing.T) {
 func TestCrosRepairConfig(t *testing.T) {
 	t.Parallel()
 	verifyConfig("dut-repair", t, config.CrosRepairConfig())
+}
+
+// TestMHRepairConfig verifies the ATE repair configuration.
+func TestMHRepairConfig(t *testing.T) {
+	t.Parallel()
+	verifyConfig("mh-repair", t, config.MHRepairConfig())
 }
 
 // TestCrosDeployConfig verifies the cros deploy configuration.
