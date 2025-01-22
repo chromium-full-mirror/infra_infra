@@ -19,7 +19,7 @@ import (
 
 // GetDeviceDimensions returns dimensions of all devices
 func (frontend *FleetConsoleFrontend) GetDeviceDimensions(ctx context.Context, req *emptypb.Empty) (*fleetconsolerpc.GetDeviceDimensionsResponse, error) {
-	deviceManagerClient, err := frontend.deviceManagerClient(ctx)
+	deviceManagerClient, err := frontend.deviceManagerClient(ctx, frontend.cloudProject)
 	if err != nil {
 		return nil, errors.Annotate(err, "get device dimensions").Err()
 	}

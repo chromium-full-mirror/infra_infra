@@ -25,7 +25,7 @@ const maxPageSize int = 50
 
 // ListDevices lists devices provided via DeviceManager.
 func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *fleetconsolerpc.ListDevicesRequest) (*fleetconsolerpc.ListDevicesResponse, error) {
-	deviceManagerClient, err := frontend.deviceManagerClient(ctx)
+	deviceManagerClient, err := frontend.deviceManagerClient(ctx, frontend.cloudProject)
 	if err != nil {
 		return nil, errors.Annotate(err, "list devices").Err()
 	}

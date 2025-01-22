@@ -89,8 +89,11 @@ func ConfigureCORS(ctx context.Context, srv *server.Server) {
 	})
 }
 
-func GetDeviceManagerClient(ctx context.Context) (*devicemanagerclient.Client, error) {
+func GetDeviceManagerClient(ctx context.Context, cloudProject string) (*devicemanagerclient.Client, error) {
 	deviceManagerAddr := devicemanagerclient.DMDevURL
+	if isProdEnvironment(cloudProject) {
+		deviceManagerAddr = devicemanagerclient.DMProdURL
+	}
 	deviceManagerPort := devicemanagerclient.DMLeasesPort
 	if *flags.UseLocalDeviceManager {
 		logging.Infof(ctx, "using local device manager")
@@ -118,7 +121,10 @@ func GetDeviceManagerClient(ctx context.Context) (*devicemanagerclient.Client, e
 }
 
 func GetUfsClient(ctx context.Context, cloudProject string) (ufsclient.Client, error) {
-	ufsAddr := getUFSName(cloudProject)
+	ufsAddr := ufsclient.UfsDevURL
+	if isProdEnvironment(cloudProject) {
+		ufsAddr = ufsclient.UfsProdURL
+	}
 	ufsPort := ufsclient.UfsPort
 	if *flags.UseLocalUfs {
 		ufsAddr = "localhost"
@@ -152,9 +158,6 @@ func GetUfsClient(ctx context.Context, cloudProject string) (ufsclient.Client, e
 	return ufsClient, nil
 }
 
-func getUFSName(cloudProject string) string {
-	if strings.HasSuffix(cloudProject, "dev") {
-		return ufsclient.UfsDevURL
-	}
-	return ufsclient.UfsProdURL
+func isProdEnvironment(cloudProject string) bool {
+	return !strings.HasSuffix(cloudProject, "dev")
 }
