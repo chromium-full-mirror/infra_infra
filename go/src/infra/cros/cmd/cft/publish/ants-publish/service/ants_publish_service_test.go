@@ -231,6 +231,7 @@ func TestTestProperties(t *testing.T) {
 		name                string
 		dut                 *labapi.Dut
 		invID               string
+		abiTag              *api.TestCase_Tag
 		wantProps           []*atp.Property
 		wantIdentifierProps []*atp.Property
 	}{
@@ -247,6 +248,25 @@ func TestTestProperties(t *testing.T) {
 					},
 				},
 			},
+			wantProps: []*atp.Property{
+				{Name: luciInvPropName, Value: ""},
+			},
+			wantIdentifierProps: trProps,
+		},
+		{
+			name: "crosDutWithResultTags",
+			dut: &labapi.Dut{
+				DutType: &labapi.Dut_Chromeos{
+					Chromeos: &labapi.Dut_ChromeOS{
+						DutModel: &labapi.DutModel{
+							BuildTarget: "brya",
+							ModelName:   "mithrax",
+						},
+						Sku: "pujja_10G",
+					},
+				},
+			},
+			abiTag: &api.TestCase_Tag{Value: "abi:x86"},
 			wantProps: []*atp.Property{
 				{Name: luciInvPropName, Value: ""},
 			},
@@ -310,22 +330,27 @@ func TestTestProperties(t *testing.T) {
 				skuProp.Value = "pujja_10G"
 			}
 
-			tc.wantIdentifierProps = append(tc.wantIdentifierProps, skuProp)
-
-			gotProps, gotIdentifierProps, err := aps.testProperties()
-			if err != nil {
-				t.Errorf("error calling dut properties: %q", err)
+			result := &api.TestCaseResult{}
+			if tc.abiTag != nil {
+				result.Tags = []*api.TestCase_Tag{tc.abiTag}
+				tc.wantIdentifierProps = append(tc.wantIdentifierProps, &atp.Property{Name: abiKey, Value: "x86"})
 			}
+			tc.wantIdentifierProps = append(tc.wantIdentifierProps, skuProp)
 			tc.wantProps = append(tc.wantProps, tc.wantIdentifierProps...)
 			for k, v := range schedArgs {
 				tc.wantProps = append(tc.wantProps, &atp.Property{Name: k, Value: v})
+			}
+
+			gotProps, gotIdentifierProps, err := aps.testProperties(result)
+			if err != nil {
+				t.Errorf("error calling dut properties: %q", err)
 			}
 
 			sortFn := cmpopts.SortSlices(func(m1, m2 *atp.Property) bool { return m1.Name < m2.Name })
 			if diff := cmp.Diff(tc.wantProps, gotProps, protocmp.Transform(), sortFn); diff != "" {
 				t.Errorf("Unexpected properties diff: diff: %s", diff)
 			}
-			if diff := cmp.Diff(tc.wantIdentifierProps, gotIdentifierProps, protocmp.Transform()); diff != "" {
+			if diff := cmp.Diff(tc.wantIdentifierProps, gotIdentifierProps, protocmp.Transform(), sortFn); diff != "" {
 				t.Errorf("Unexpected identifier properties diff: diff: %s", diff)
 			}
 		})
@@ -698,7 +723,7 @@ func TestUpdateParentWorkUnitProperties(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			wu := &atp.WorkUnit{Id: wuID, Properties: tc.props}
 			wantWU := &atp.WorkUnit{Id: wuID, Properties: tc.props}
-			_, props, _ := aps.testProperties()
+			_, props, _ := aps.testProperties(nil)
 			wantWU.Properties = append(wantWU.Properties, props...)
 			mockWU.EXPECT().Get(wuID).Return(wu, nil)
 			if tc.wantErr {

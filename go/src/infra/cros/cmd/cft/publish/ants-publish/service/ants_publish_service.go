@@ -36,6 +36,7 @@ const (
 	luciInvPropName   = "luci_invocation_id"
 	defaultChunkSize  = 1000
 	internalAccountID = 1
+	abiKey            = "abi"
 )
 
 type AntsPublishService struct {
@@ -82,7 +83,7 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 	start := time.Now()
 	defer timeTrack(start, fmt.Sprintf("insert workunit with name: %s type: %s", name, wuType))
 
-	dutProps, _, err := aps.testProperties()
+	dutProps, _, err := aps.testProperties(nil)
 	if err != nil {
 		return nil, err
 	}
@@ -100,13 +101,13 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 
 func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.WorkUnit, token int64, results []*api.TestCaseResult, buildInfo *atp.BuildDescriptor) ([]*atp.BatchInsertEntry, int64, error) {
 	tcWorkunits := make(map[string]string)
-	dutProps, testIdentifierProps, err := aps.testProperties()
-	if err != nil {
-		log.Printf("Cannot find dut properties due to: %q", err)
-	}
-
 	var entries []*atp.BatchInsertEntry
 	for _, result := range results {
+		dutProps, testIdentifierProps, err := aps.testProperties(result)
+		if err != nil {
+			log.Printf("Cannot find dut properties due to: %q", err)
+		}
+
 		names := strings.SplitN(result.GetTestCaseId().GetValue(), "#", 2)
 		var parentWUID string
 		var testID *atp.TestIdentifier
@@ -156,7 +157,7 @@ func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.Wo
 		})
 	}
 
-	if err = g.Wait(); err != nil {
+	if err := g.Wait(); err != nil {
 		return nil, token, err
 	}
 
@@ -167,7 +168,7 @@ func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.Wo
 		}
 	}
 
-	return entries, token, err
+	return entries, token, nil
 }
 
 func (aps *AntsPublishService) antsResult(result *api.TestCaseResult, props []*atp.Property, parentWUID string, testID *atp.TestIdentifier, buildInfo *atp.BuildDescriptor) *atp.TestResult {
@@ -244,7 +245,7 @@ func (aps *AntsPublishService) updateParentWorkUnitProperties() error {
 		return err
 	}
 
-	_, props, err := aps.testProperties()
+	_, props, err := aps.testProperties(nil)
 	if err != nil {
 		return err
 	}
@@ -306,7 +307,7 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	return aps.uploadResults(ctx, entries, defaultChunkSize)
 }
 
-func (aps *AntsPublishService) testProperties() ([]*atp.Property, []*atp.Property, error) {
+func (aps *AntsPublishService) testProperties(result *api.TestCaseResult) ([]*atp.Property, []*atp.Property, error) {
 	dutInfo := aps.metadata.GetPrimaryExecutionInfo().GetDutInfo()
 	var model *labapi.DutModel
 	var sku string
@@ -339,6 +340,16 @@ func (aps *AntsPublishService) testProperties() ([]*atp.Property, []*atp.Propert
 	}
 
 	props = append(props, testIdentifierProps...)
+	for _, tag := range result.GetTags() {
+		tags := strings.SplitN(tag.GetValue(), ":", 2)
+		if len(tags) == 2 {
+			props = append(props, &atp.Property{Name: tags[0], Value: tags[1]})
+			if tags[0] == abiKey {
+				testIdentifierProps = append(testIdentifierProps, &atp.Property{Name: abiKey, Value: tags[1]})
+			}
+		}
+	}
+
 	return props, testIdentifierProps, nil
 }
 
