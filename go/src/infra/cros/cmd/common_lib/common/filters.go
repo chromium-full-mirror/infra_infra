@@ -31,7 +31,7 @@ var (
 
 	hwPlaceHolder = "PLACEHOLDER"
 	// DefaultKarbonFilterNames defines Default karbon filters (SetDefaultFilters may add/remove)
-	DefaultKarbonFilterNames = []string{TestFinderContainerName, ProvisionContainerName, hwPlaceHolder, UseFlagFilterContainerName, PreProcessFilterContainerName}
+	DefaultKarbonFilterNames = []string{TestFinderContainerName, ProvisionContainerName, hwPlaceHolder}
 
 	// DefaultKoffeeFilterNames defines Default koffee filters (SetDefaultFilters may add/remove)
 	// Deprecated: Falls under KarbonFilters.
@@ -90,8 +90,11 @@ func MakeDefaultFilters(ctx context.Context, suiteReq *api.SuiteRequest, experim
 
 		}
 	}
-	if isExperimentEnabled("chromeos.cros_infra_config.autovm_test_shifter", experiments) && isSuiteSchedulerConfig(suiteReq) {
+	if isExperimentEnabled("chromeos.cros_infra_config.autovm_test_shifter", experiments) && isSuiteSchedulerConfig(suiteReq) && !isAlRun {
 		filters = append(filters, AutoVMTestShifterFilterContainerName)
+	}
+	if !isAlRun {
+		filters = append(filters, UseFlagFilterContainerName, PreProcessFilterContainerName)
 	}
 
 	return filters
