@@ -654,6 +654,31 @@ func (hc *HistoryClient) LogDutStateChanges(oldData, newData *chromeosLab.DutSta
 	hc.logMsgEntity(resourceName, false, newData)
 }
 
+// LogDeviceLabelsChanges logs the change of the given device labels.
+func (hc *HistoryClient) LogDeviceLabelsChanges(oldData, newData *ufspb.DeviceLabels) {
+	if oldData == nil && newData == nil {
+		return
+	}
+	resourceName := util.AddPrefix(util.DeviceLabelsCollection, newData.GetName())
+	if newData == nil {
+		resourceName = util.AddPrefix(util.DeviceLabelsCollection, oldData.GetName())
+	}
+	if oldData == nil {
+		hc.changes = append(hc.changes, logLifeCycle(resourceName, "device_labels", LifeCycleRegistration)...)
+		hc.logMsgEntity(resourceName, false, newData)
+		return
+	}
+	if newData == nil {
+		hc.changes = append(hc.changes, logLifeCycle(resourceName, "device_labels", LifeCycleRetire)...)
+		hc.logMsgEntity(resourceName, true, oldData)
+		return
+	}
+	if oldData.GetName() != newData.GetName() {
+		return
+	}
+	hc.logMsgEntity(resourceName, false, newData)
+}
+
 // LogDHCPChanges logs the change of the given dhcp.
 func LogDHCPChanges(oldData, newData *ufspb.DHCPConfig) ([]*ufspb.ChangeEvent, *history.SnapshotMsgEntity) {
 	changes := make([]*ufspb.ChangeEvent, 0)

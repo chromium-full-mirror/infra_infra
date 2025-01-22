@@ -232,6 +232,17 @@ func GetDefaultWifiResource(defaultWifiID string) *Resource {
 	}
 }
 
+// GetDeviceLabelsResource returns a Resource with DeviceLabelsEntity.
+func GetDeviceLabelsResource(deviceLabelsID string) *Resource {
+	return &Resource{
+		Kind: inventory.DeviceLabelsKind,
+		ID:   deviceLabelsID,
+		Entity: &inventory.DeviceLabelsEntity{
+			ID: deviceLabelsID,
+		},
+	}
+}
+
 // ResourceExist checks if the given resources exists in the datastore
 //
 // Returns error if any one resource does not exist in the system.
@@ -652,6 +663,14 @@ func resetLogicalZoneFilter(filterMap map[string][]interface{}, getIndexedFieldN
 		getIndexedFieldName,
 		func(v string) string { return util.ToLogicalZone(v).String() },
 		util.LogicalZoneFilterName)
+}
+
+func resetResourceTypeFilter(filterMap map[string][]interface{}, getIndexedFieldName getFieldFunc) map[string][]interface{} {
+	return resetFilter(
+		filterMap,
+		getIndexedFieldName,
+		func(v string) string { return util.ToResourceType(v).String() },
+		util.ResourceTypeFilterName)
 }
 
 func parseIntTypeFilter(filterMap map[string][]interface{}, filterNames ...string) (map[string][]interface{}, error) {

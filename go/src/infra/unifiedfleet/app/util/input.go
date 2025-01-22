@@ -73,6 +73,8 @@ const (
 	SchedulingUnitCollection string = "schedulingunits"
 	// DefaultWifiCollection refers to the prefix of the DefaultWifi.
 	DefaultWifiCollection string = "defaultwifis"
+	// DeviceLabelsCollection refers to the prefix of the DeviceLabels.
+	DeviceLabelsCollection string = "devicelabels"
 
 	defaultPageSize int32 = 100
 	// MaxPageSize maximum page size for list operations
@@ -1160,6 +1162,43 @@ func ToNetworkType(networkType string) chromeosLab.NetworkProvider {
 func ValidModemTypeStr() []string {
 	ks := make([]string, 0, len(chromeosLab.ModemType_value))
 	for k := range chromeosLab.ModemType_value {
+		ks = append(ks, k)
+	}
+	return ks
+}
+
+// StrToResourceType refers a map between a string to a ResourceType map.
+var StrToResourceType = genStrToResourceType()
+
+func genStrToResourceType() map[string]string {
+	res := make(map[string]string, len(ufspb.ResourceType_name))
+	for _, value := range ufspb.ResourceType_name {
+		// Generate the mapping by removing the prefix and converting text to lower case.
+		res[strings.ToLower(strings.TrimPrefix(value, "RESOURCE_TYPE_"))] = value
+	}
+	return res
+}
+
+// IsResourceType checks if a string is a valid resource type
+func IsResourceType(resourceType string) bool {
+	_, ok := StrToResourceType[resourceType]
+	return ok
+}
+
+// ToResourceType returns an ResourceType object corresponding to string
+func ToResourceType(resourceType string) ufspb.ResourceType {
+	resourceType = RemoveGivenPrefix(resourceType, "resource_type_")
+	v, ok := StrToResourceType[resourceType]
+	if !ok {
+		return ufspb.ResourceType_RESOURCE_TYPE_UNSPECIFIED
+	}
+	return ufspb.ResourceType(ufspb.ResourceType_value[v])
+}
+
+// ValidResourceTypeStr returns a valid str list for ResourceType
+func ValidResourceTypeStr() []string {
+	ks := make([]string, 0, len(StrToResourceType))
+	for k := range StrToResourceType {
 		ks = append(ks, k)
 	}
 	return ks
