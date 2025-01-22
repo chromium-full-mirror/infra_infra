@@ -21,7 +21,6 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
-	"strconv"
 	"strings"
 
 	"golang.org/x/exp/slices"
@@ -305,20 +304,6 @@ func runSubrepoTests(ctx context.Context, spec *buildSpec, repoDir string, ports
 		return infraErrorf("runSubrepoTests called for a main Go repo builder")
 	}
 
-	// If we're supposed to upgrade to the latest language version of Go, read it out of the
-	// GOROOT we downloaded earlier.
-	var goModUpgradeVersion string
-	if spec.inputs.UpgradeGoModLang {
-		if spec.inputs.GoBranch != mainBranch {
-			return infraErrorf("requested to upgrade go.mod language, but not running against Go tip")
-		}
-		ver, err := gorootVersion(ctx, spec.goroot)
-		if err != nil {
-			return err
-		}
-		goModUpgradeVersion = "1." + strconv.Itoa(ver)
-	}
-
 	// skippedByGoTool reports whether the go tool's ignoring behavior, quoted below,
 	// applies to the '/'-separated path.
 	//
@@ -401,6 +386,18 @@ Testing any Go packages inside such modules is not supported.`, m.Path, m.RepoRe
 		}
 	}
 
+	// If we're supposed to upgrade to the latest language version of Go, read it out of the
+	// GOROOT we downloaded earlier, and edit the language version in all testable modules
+	// before they're tested. (Some of them may have local replace directives to each other.)
+	if spec.inputs.UpgradeGoModLang {
+		if spec.inputs.GoBranch != mainBranch {
+			return infraErrorf("requested to upgrade go.mod language, but not running against Go tip")
+		}
+		if err := upgradeGoModLang(ctx, spec, modules); err != nil {
+			return err
+		}
+	}
+
 	// Fetch module dependencies ahead of time, to mark temporary network errors as an infra
 	// failures and because 'go test' may not have network access (see spec.inputs.NoNetwork).
 	if err := fetchDependencies(ctx, spec, modules); err != nil {
@@ -417,16 +414,6 @@ Testing any Go packages inside such modules is not supported.`, m.Path, m.RepoRe
 	var testErrors []error
 	for _, m := range modules {
 		ctx := setupModuleEnv(ctx, m)
-
-		// Upgrade go.mod language version if needed before running tests.
-		if goModUpgradeVersion != "" {
-			upgradeCmd := spec.goCmd(ctx, m.RootDir, "mod", "edit", "-go="+goModUpgradeVersion)
-			if err := cmdStepRun(ctx, "go mod edit -go="+goModUpgradeVersion, upgradeCmd, true); err != nil {
-				return err
-			}
-		}
-
-		// Run tests.
 		jsonDumpFile := filepath.Join(spec.workdir, "go.testjson")
 		testCmd := spec.wrapTestCmd(ctx, spec.goCmd(ctx, m.RootDir, spec.goTestArgs("./...")...), jsonDumpFile)
 		if err := cmdStepRun(ctx, fmt.Sprintf("test %s module", m.Path), testCmd, false, jsonDumpFile); err != nil {
@@ -654,6 +641,26 @@ func goDistList(ctx context.Context, spec *buildSpec, shard testShard) (ports []
 	return ports, nil
 }
 
+// upgradeGoModLang uses 'go mod edit' to upgrade language version in the given modules
+// to that of the Go toolchain in spec.goroot.
+func upgradeGoModLang(ctx context.Context, spec *buildSpec, modules []module) (err error) {
+	step, ctx := build.StartStep(ctx, "upgrade language version in testable modules")
+	defer endStep(step, &err)
+
+	langVer, err := gorootVersion(ctx, spec.goroot)
+	if err != nil {
+		return err
+	}
+	var errs []error
+	for _, m := range modules {
+		ctx := setupModuleEnv(ctx, m)
+		editCmd := spec.goCmd(ctx, m.RootDir, "mod", "edit", "-go="+langVer)
+		err := cmdStepRun(ctx, fmt.Sprintf("set go directive to %s in %q", langVer, m.RepoRelativeGoMod), editCmd, true)
+		errs = append(errs, err)
+	}
+	return errors.Join(errs...)
+}
+
 // compileOptOut is a policy function that reports whether the provided
 // port and module pair is considered opted out of compile-only testing.
 //
@@ -763,11 +770,13 @@ func compileOptOut(project string, p *golangbuildpb.Port, modulePath string) boo
 	return performCompileOnlyTestingAsUsual
 }
 
-// gorootVersion reads the GOROOT/src/internal/goversion/goversion.go
-// file and reports the Version declaration value found therein.
+// gorootVersion reads the GOROOT/src/internal/goversion/goversion.go file
+// and reports the Version declaration value found therein, along with the
+// implied "1." prefix. For example, the string "1.24" represents a GOROOT
+// that implements the Go 1.24 language version.
 //
 // Adapted from x/build/cmd/updatestd.
-func gorootVersion(ctx context.Context, goroot string) (ver int, err error) {
+func gorootVersion(ctx context.Context, goroot string) (langVer string, err error) {
 	step, ctx := build.StartStep(ctx, "read go toolchain language version")
 	defer endInfraStep(step, &err) // Any failure in this function is an infrastructure failure.
 
@@ -780,9 +789,9 @@ func gorootVersion(ctx context.Context, goroot string) (ver int, err error) {
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, filepath.Join(goroot, "src", "internal", "goversion", "goversion.go"), nil, 0)
 	if os.IsNotExist(err) {
-		return 0, fmt.Errorf("did not find goversion.go file (%v); wrong goroot or did internal/goversion package change?", err)
+		return "", fmt.Errorf("did not find goversion.go file (%v); wrong goroot or did internal/goversion package change?", err)
 	} else if err != nil {
-		return 0, err
+		return "", err
 	}
 	for _, d := range f.Decls {
 		g, ok := d.(*ast.GenDecl)
@@ -798,8 +807,13 @@ func gorootVersion(ctx context.Context, goroot string) (ver int, err error) {
 			if !ok || l.Kind != token.INT {
 				continue
 			}
-			return strconv.Atoi(l.Value)
+			// The goversion.Version constant is the Go 1.x version.
+			langVer = "1." + l.Value
+			if _, err := io.WriteString(step.Log("language version"), langVer); err != nil {
+				return "", err
+			}
+			return langVer, nil
 		}
 	}
-	return 0, fmt.Errorf("did not find Version declaration in %s; wrong goroot or did internal/goversion package change?", fset.File(f.Pos()).Name())
+	return "", fmt.Errorf("did not find Version declaration in %s; wrong goroot or did internal/goversion package change?", fset.File(f.Pos()).Name())
 }
