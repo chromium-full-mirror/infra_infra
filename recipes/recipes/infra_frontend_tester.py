@@ -101,10 +101,6 @@ def RunLuciGoTests(api, root_path):
   then this function will run those commands on the UI too.
   """
 
-  cwd = root_path.joinpath('analysis', 'frontend', 'ui')
-  RunNpmInstall(api, cwd, 'analysis')
-  RunFrontendTests(api, cwd, 'analysis')
-
   cwd = root_path.joinpath('milo', 'ui')
   RunNpmInstall(api, cwd, 'milo')
   BuildAndLintFrontend(api, cwd, 'milo')
