@@ -501,7 +501,12 @@ func batchCTPRequests(ctpEvents []*ctpEvent, isProd, dryRun bool) ([]*ctpEventBa
 			}
 
 			batches = append(batches, batch)
+
+			// Reset the tracking lists/maps so that the next batch starts
+			// fresh.
 			currentBatch = []*ctpEvent{}
+			currentConfigs = []*suschpb.SchedulerConfig{}
+			dupeConfigs = map[string]struct{}{}
 		}
 	}
 
