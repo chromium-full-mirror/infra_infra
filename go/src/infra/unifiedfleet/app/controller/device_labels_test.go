@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
+	"infra/cros/dutstate"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	"infra/unifiedfleet/app/external"
 	. "infra/unifiedfleet/app/model/datastore"
@@ -258,6 +259,89 @@ func TestBatchGetDeviceLabels(t *testing.T) {
 			resp, err = inventory.BatchGetDeviceLabels(ctx, input)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.HaveLength(0))
+		})
+	})
+}
+
+func TestGetMachineLSELabels(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	ctx = external.WithTestingContext(ctx)
+	ftt.Run("getMachineLSELabels", t, func(t *ftt.Test) {
+		t.Run("getMachineLSELabels - no/other lse", func(t *ftt.Test) {
+			lse1 := &ufspb.MachineLSE{
+				Name:     "machinelse-1",
+				Machines: []string{"machine-1"},
+				Lse:      nil,
+			}
+			resp, err := getMachineLSELabels(ctx, lse1)
+			assert.Loosely(t, resp, should.BeNil)
+			assert.Loosely(t, err, should.BeNil)
+		})
+		t.Run("getMachineLSELabels - browser lse", func(t *ftt.Test) {
+			lse1 := &ufspb.MachineLSE{
+				Name:     "machinelse-2",
+				Machines: []string{"machine-2"},
+				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
+				},
+				ResourceState: ufspb.State_STATE_SERVING,
+			}
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesCreate, util.BrowserLabAdminRealm)
+			lseResp, err := inventory.CreateMachineLSE(ctx, lse1)
+			assert.Loosely(t, err, should.BeNil)
+
+			resp, err := getMachineLSELabels(ctx, lseResp)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetName(), should.Equal(util.AddPrefix(util.MachineLSECollection, lse1.GetName())))
+			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_BROWSER_DEVICE))
+			labels := resp.GetLabels()
+			assert.Loosely(t, labels, should.HaveLength(3))
+			assert.Loosely(t, labels["ufs_zone"], should.NotBeNil)
+			assert.Loosely(t, labels["ufs_zone"].GetLabelValues(), should.NotBeEmpty)
+			assert.Loosely(t, labels["ufs_zone"].GetLabelValues()[0], should.Equal(lseResp.GetZone()))
+			expectedState := dutstate.ConvertFromUFSState(lseResp.GetResourceState()).String()
+			assert.Loosely(t, labels["ufs_state"], should.NotBeNil)
+			assert.Loosely(t, labels["ufs_state"].GetLabelValues(), should.NotBeEmpty)
+			assert.Loosely(t, labels["ufs_state"].GetLabelValues()[0], should.Equal(expectedState))
+			assert.Loosely(t, labels["dut_state"], should.NotBeNil)
+			assert.Loosely(t, labels["dut_state"].GetLabelValues(), should.NotBeEmpty)
+			assert.Loosely(t, labels["dut_state"].GetLabelValues()[0], should.Equal(expectedState))
+		})
+		t.Run("getMachineLSELabels - attached device lse", func(t *ftt.Test) {
+			machine1 := &ufspb.Machine{
+				Name:         "machine-3",
+				SerialNumber: "machine-3-serial",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_BROWSER_GOOGLER_DESK,
+				},
+			}
+			_, err := registration.CreateMachine(ctx, machine1)
+			assert.Loosely(t, err, should.BeNil)
+
+			lse1 := &ufspb.MachineLSE{
+				Name:     "machinelse-3",
+				Machines: []string{"machine-3"},
+				Lse: &ufspb.MachineLSE_AttachedDeviceLse{
+					AttachedDeviceLse: &ufspb.AttachedDeviceLSE{},
+				},
+			}
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesCreate, util.BrowserLabAdminRealm)
+			lseResp, err := inventory.CreateMachineLSE(ctx, lse1)
+			assert.Loosely(t, err, should.BeNil)
+
+			resp, err := getMachineLSELabels(ctx, lseResp)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetName(), should.Equal(util.AddPrefix(util.MachineLSECollection, lse1.GetName())))
+			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_ATTACHED_DEVICE))
+			labels := resp.GetLabels()
+			assert.Loosely(t, labels, should.NotBeEmpty)
+			assert.Loosely(t, labels["lab_config_version_index"], should.NotBeNil)
+			assert.Loosely(t, labels["lab_config_version_index"].GetLabelValues(), should.NotBeEmpty)
+			assert.Loosely(t, labels["lab_config_version_index"].GetLabelValues()[0], should.Equal(lse1.GetUpdateTime().AsTime().Format(util.TimestampBasedVersionKeyFormat)))
+		})
+		t.Run("getMachineLSELabels - chromeos lse", func(t *ftt.Test) {
+			// not implemented
 		})
 	})
 }

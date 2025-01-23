@@ -179,6 +179,12 @@ func createBrowserServer(ctx context.Context, lse *ufspb.MachineLSE, nwOpt *ufsA
 			return errors.Annotate(err, "Failed to BatchUpdate MachineLSEs %s", lse.Name).Err()
 		}
 		hc.LogMachineLSEChanges(nil, lse)
+		// Create corresponding device labels
+		deviceLabels := getBrowserHostLabels(lse)
+		if _, err := inventory.BatchUpdateDeviceLabels(ctx, []*ufspb.DeviceLabels{deviceLabels}); err != nil {
+			return errors.Annotate(err, "unable to batch update device labels").Err()
+		}
+		hc.LogDeviceLabelsChanges(nil, deviceLabels)
 		if lse.GetChromeBrowserMachineLse() != nil {
 			// We fill the machinelse object with newly created vms
 			lse.GetChromeBrowserMachineLse().Vms = vms
@@ -249,7 +255,7 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 
 	var oldMachinelse *ufspb.MachineLSE
 	var updatedMachinelse *ufspb.MachineLSE
-	// If its a Chrome browser host, ChromeOS server or a ChormeOS labstation
+	// If its a Chrome browser host, ChromeOS server or a ChromeOS labstation
 	// ChromeBrowserMachineLSE, ChromeOSMachineLSE for a Server and Labstation
 	f := func(ctx context.Context) error {
 		hc := getHostHistoryClient(machinelse)
@@ -359,6 +365,23 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 			return errors.Annotate(err, "Unable to batch update MachineLSE %s", machinelse.Name).Err()
 		}
 		hc.LogMachineLSEChanges(oldMachinelseCopy, machinelse)
+
+		// Update corresponding device labels
+		if machinelse.GetChromeBrowserMachineLse() != nil || machinelse.GetAttachedDeviceLse() != nil || machinelse.GetChromeosMachineLse() != nil {
+			oldDeviceLabelsName := util.AddPrefix(util.MachineLSECollection, machinelse.GetName())
+			oldDeviceLabels, err := inventory.GetDeviceLabels(ctx, oldDeviceLabelsName)
+			if err != nil {
+				logging.Infof(ctx, "Could not find existing device labels. Continuing with update")
+			}
+			deviceLabels, err := getMachineLSELabels(ctx, machinelse)
+			if err != nil {
+				return errors.Annotate(err, "Error generating device labels").Err()
+			}
+			if _, err := inventory.BatchUpdateDeviceLabels(ctx, []*ufspb.DeviceLabels{deviceLabels}); err != nil {
+				return errors.Annotate(err, "unable to batch update device labels").Err()
+			}
+			hc.LogDeviceLabelsChanges(oldDeviceLabels, deviceLabels)
+		}
 
 		updatedMachinelse = machinelse
 		return hc.SaveChangeEvents(ctx)
@@ -821,6 +844,15 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 			return err
 		}
 
+		// Delete device labels
+		deviceLabelsName := util.AddPrefix(util.MachineLSECollection, id)
+		deviceLabels, err := inventory.GetDeviceLabels(ctx, deviceLabelsName)
+		if err != nil {
+			logging.Warningf(ctx, "Error getting device labels during machine lse deletion: %s", err)
+		} else if err := inventory.DeleteDeviceLabels(ctx, deviceLabelsName); err != nil {
+			return err
+		}
+
 		// Delete machine lse deployment
 		if machine.GetChromeBrowserMachine() != nil && machine.GetSerialNumber() != "" {
 			err := inventory.DeleteDeployment(ctx, machine.GetSerialNumber())
@@ -831,6 +863,7 @@ func DeleteMachineLSE(ctx context.Context, id string) error {
 		}
 
 		hc.LogMachineLSEChanges(existingMachinelse, nil)
+		hc.LogDeviceLabelsChanges(deviceLabels, nil)
 		return hc.SaveChangeEvents(ctx)
 	}
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {

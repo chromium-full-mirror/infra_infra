@@ -70,11 +70,18 @@ func CreateVM(ctx context.Context, vm *ufspb.VM, nwOpt *ufsAPI.NetworkOption) (*
 			return errors.Annotate(err, "Failed to create vm %q", vm.GetName()).Err()
 		}
 
+		// Create corresponding device labels
+		deviceLabels := getBrowserVMLabels(vm)
+		if _, err := inventory.BatchUpdateDeviceLabels(ctx, []*ufspb.DeviceLabels{deviceLabels}); err != nil {
+			return errors.Annotate(err, "unable to batch update device labels").Err()
+		}
+
 		// Update states
 		if err := hc.stUdt.updateStateHelper(ctx, vm.ResourceState); err != nil {
 			return errors.Annotate(err, "Fail to update state to vm %s", vm.GetName()).Err()
 		}
 		hc.LogVMChanges(nil, vm)
+		hc.LogDeviceLabelsChanges(nil, deviceLabels)
 		return hc.SaveChangeEvents(ctx)
 	}
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
@@ -131,6 +138,17 @@ func UpdateVM(ctx context.Context, vm *ufspb.VM, mask *field_mask.FieldMask) (*u
 			}
 		}
 
+		// Update corresponding device labels
+		oldDeviceLabelsName := util.AddPrefix(util.VMCollection, vm.GetName())
+		oldDeviceLabels, err := inventory.GetDeviceLabels(ctx, oldDeviceLabelsName)
+		if err != nil {
+			logging.Infof(ctx, "UpdateVM - could not find existing device labels. Continuing with update")
+		}
+		deviceLabels := getBrowserVMLabels(vm)
+		if _, err := inventory.BatchUpdateDeviceLabels(ctx, []*ufspb.DeviceLabels{deviceLabels}); err != nil {
+			return errors.Annotate(err, "unable to batch update device labels").Err()
+		}
+
 		// update state
 		if err := hc.stUdt.updateStateHelper(ctx, vm.GetResourceState()); err != nil {
 			return errors.Annotate(err, "Fail to update state to vm %s", vm.GetName()).Err()
@@ -140,6 +158,7 @@ func UpdateVM(ctx context.Context, vm *ufspb.VM, mask *field_mask.FieldMask) (*u
 			return errors.Annotate(err, "Failed to create vm %q", vm.GetName()).Err()
 		}
 		hc.LogVMChanges(oldVMCopy, vm)
+		hc.LogDeviceLabelsChanges(oldDeviceLabels, deviceLabels)
 		return hc.SaveChangeEvents(ctx)
 	}
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
@@ -341,7 +360,16 @@ func DeleteVM(ctx context.Context, id string) error {
 			return err
 		}
 
+		deviceLabelsName := util.AddPrefix(util.VMCollection, id)
+		deviceLabels, err := inventory.GetDeviceLabels(ctx, deviceLabelsName)
+		if err != nil {
+			logging.Warningf(ctx, "Error getting device labels during VM deletion: %s", err)
+		} else if err := inventory.DeleteDeviceLabels(ctx, deviceLabelsName); err != nil {
+			return err
+		}
+
 		hc.LogVMChanges(vm, nil)
+		hc.LogDeviceLabelsChanges(deviceLabels, nil)
 		return hc.SaveChangeEvents(ctx)
 	}
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {

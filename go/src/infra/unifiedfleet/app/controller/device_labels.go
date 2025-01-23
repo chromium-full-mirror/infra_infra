@@ -17,7 +17,11 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
+	"infra/cros/dutstate"
+	"infra/libs/fleet/device/attacheddevice"
+	"infra/libs/skylab/inventory/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
+	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/util"
 )
@@ -232,4 +236,90 @@ func validateDeleteDeviceLabels(ctx context.Context, deviceLabels *ufspb.DeviceL
 	}
 
 	return nil
+}
+
+func getMachineLSELabels(ctx context.Context, lse *ufspb.MachineLSE) (*ufspb.DeviceLabels, error) {
+	// Get data based on device type
+	if lse.GetChromeBrowserMachineLse() != nil {
+		return getBrowserHostLabels(lse), nil
+	} else if lse.GetChromeosMachineLse() != nil {
+		return nil, errors.New("chromeos device label generation not implemented")
+	} else if lse.GetAttachedDeviceLse() != nil {
+		device, err := GetAttachedDeviceData(ctx, lse)
+		if err != nil {
+			return nil, errors.Annotate(err, "failed to get attached device data").Err()
+		}
+		return getAttachedDeviceLabels(ctx, device), nil
+
+	}
+	// Ignore other LSEs (eg. labstation)
+	return nil, nil
+}
+
+func getBrowserVMLabels(vm *ufspb.VM) *ufspb.DeviceLabels {
+	name := util.AddPrefix(util.VMCollection, vm.GetName())
+	state := dutstate.ConvertFromUFSState(vm.GetResourceState()).String()
+	zone := vm.GetZone()
+	return getBrowserLabelsResponse(name, state, zone)
+}
+
+func getBrowserHostLabels(lse *ufspb.MachineLSE) *ufspb.DeviceLabels {
+	name := util.AddPrefix(util.MachineLSECollection, lse.GetName())
+	state := dutstate.ConvertFromUFSState(lse.GetResourceState()).String()
+	zone := lse.GetZone()
+	return getBrowserLabelsResponse(name, state, zone)
+}
+
+func getBrowserLabelsResponse(name, state, zone string) *ufspb.DeviceLabels {
+	return &ufspb.DeviceLabels{
+		Name:         name,
+		ResourceType: ufspb.ResourceType_RESOURCE_TYPE_BROWSER_DEVICE,
+		Labels: map[string]*ufspb.DeviceLabelValues{
+			"ufs_state": {LabelValues: []string{state}},
+			// Duplicate state to dut_state to reuse analytics logic built for ChromeOS lab
+			"dut_state": {LabelValues: []string{state}},
+			"ufs_zone":  {LabelValues: []string{zone}},
+		},
+	}
+}
+
+func getAttachedDeviceLabels(ctx context.Context, deviceData *ufsAPI.AttachedDeviceData) *ufspb.DeviceLabels {
+	dims := getAttachedDeviceSwarmingDimensions(ctx, deviceData)
+	deviceLabels := convertSwarmingDimensionsToDeviceLabels(dims)
+	deviceLabels.Name = util.AddPrefix(util.MachineLSECollection, deviceData.GetLabConfig().GetName())
+	deviceLabels.ResourceType = ufspb.ResourceType_RESOURCE_TYPE_ATTACHED_DEVICE
+	// botstate labels from shivas internal-print-bot-info
+	deviceLabels.Labels["lab_config_version_index"] = &ufspb.DeviceLabelValues{LabelValues: []string{deviceData.GetLabConfig().GetUpdateTime().AsTime().Format(util.TimestampBasedVersionKeyFormat)}}
+	deviceLabels.Labels["dut_state_version_index"] = &ufspb.DeviceLabelValues{LabelValues: []string{deviceData.GetDutState().GetUpdateTime().AsTime().Format(util.TimestampBasedVersionKeyFormat)}}
+	return deviceLabels
+}
+
+func getAttachedDeviceSwarmingDimensions(ctx context.Context, deviceData *ufsAPI.AttachedDeviceData) *swarming.Dimensions {
+	r := func(e error) {
+		logging.Warningf(ctx, "Problem getting device data for AttachedDevice %s: %s", deviceData.GetLabConfig().GetName(), e.Error())
+	}
+	var machine string
+	if len(deviceData.GetLabConfig().GetMachines()) > 0 {
+		machine = deviceData.GetLabConfig().GetMachines()[0]
+	}
+	dutState := dutstate.Info{
+		State:    dutstate.ConvertFromUFSState(deviceData.GetLabConfig().GetResourceState()),
+		Time:     deviceData.GetLabConfig().GetUpdateTime().GetSeconds(),
+		DeviceId: machine,
+	}
+	dims := attacheddevice.GetAttachedDeviceBotDims(ctx, r, dutState, deviceData)
+	return &dims
+}
+
+func convertSwarmingDimensionsToDeviceLabels(dims *swarming.Dimensions) *ufspb.DeviceLabels {
+	deviceLabels := &ufspb.DeviceLabels{
+		Name:         "",
+		ResourceType: ufspb.ResourceType_RESOURCE_TYPE_UNSPECIFIED,
+		Labels:       make(map[string]*ufspb.DeviceLabelValues),
+	}
+	for k, v := range *dims {
+		deviceLabels.Labels[k] = &ufspb.DeviceLabelValues{LabelValues: v}
+	}
+	return deviceLabels
+
 }

@@ -68,6 +68,12 @@ func TestCreateVM(t *testing.T) {
 			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("state_record.state"))
 			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(ufspb.State_STATE_UNSPECIFIED.String()))
 			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(ufspb.State_STATE_REGISTERED.String()))
+			changes, err = history.QueryChangesByPropertyName(ctx, "name", "devicelabels/vms/vm-create-1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("device_labels"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
 		})
 
 		t.Run("Create new VM with specifying vlan", func(t *ftt.Test) {
@@ -102,6 +108,12 @@ func TestCreateVM(t *testing.T) {
 			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("state_record.state"))
 			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(ufspb.State_STATE_UNSPECIFIED.String()))
 			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(ufspb.State_STATE_DEPLOYING.String()))
+			changes, err = history.QueryChangesByPropertyName(ctx, "name", "devicelabels/vms/vm-create-2")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("device_labels"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dhcps/vm-create-2")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, changes, should.HaveLength(1))
@@ -158,6 +170,12 @@ func TestCreateVM(t *testing.T) {
 			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("state_record.state"))
 			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(ufspb.State_STATE_UNSPECIFIED.String()))
 			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(ufspb.State_STATE_DEPLOYING.String()))
+			changes, err = history.QueryChangesByPropertyName(ctx, "name", "devicelabels/vms/vm-create-3")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("device_labels"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dhcps/vm-create-3")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, changes, should.HaveLength(1))
@@ -403,14 +421,22 @@ func TestUpdateVM(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, changes, should.HaveLength(0))
 			// snapshots
+
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "vms/vm-update-4")
 			assert.Loosely(t, err, should.BeNil)
 			// 1 create, 1 update
 			assert.Loosely(t, msgs, should.HaveLength(2))
+
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "states/vms/vm-update-4")
 			assert.Loosely(t, err, should.BeNil)
 			// 1 create, 1 update
 			assert.Loosely(t, msgs, should.HaveLength(2))
+
+			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "devicelabels/vms/vm-update-4")
+			assert.Loosely(t, err, should.BeNil)
+			// 1 create, 1 update
+			assert.Loosely(t, msgs, should.HaveLength(2))
+
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "dhcps/vm-update-4")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, msgs, should.HaveLength(0))
@@ -441,6 +467,10 @@ func TestUpdateVM(t *testing.T) {
 			assert.Loosely(t, resp.GetOsVersion().GetValue(), should.Equal("windows"))
 			assert.Loosely(t, resp.GetCpuCores(), should.Equal(16))
 			assert.Loosely(t, resp.GetMemory(), should.Equal(1000))
+			// DeviceLabels
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "devicelabels/vms/vm-7")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(2))
 		})
 	})
 }
@@ -515,6 +545,12 @@ func TestDeleteVM(t *testing.T) {
 			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("state_record.state"))
 			assert.Loosely(t, changes[1].GetOldValue(), should.Equal(ufspb.State_STATE_DEPLOYING.String()))
 			assert.Loosely(t, changes[1].GetNewValue(), should.Equal(ufspb.State_STATE_UNSPECIFIED.String()))
+			changes, err = history.QueryChangesByPropertyName(ctx, "name", "devicelabels/vms/vm-delete-1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(2))
+			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("device_labels"))
+			assert.Loosely(t, changes[1].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[1].GetNewValue(), should.Equal(LifeCycleRetire))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "dhcps/vm-delete-1")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, changes, should.HaveLength(2))
@@ -527,18 +563,27 @@ func TestDeleteVM(t *testing.T) {
 			assert.Loosely(t, changes[1].GetEventLabel(), should.Equal("ip.occupied"))
 			assert.Loosely(t, changes[1].GetOldValue(), should.Equal("true"))
 			assert.Loosely(t, changes[1].GetNewValue(), should.Equal("false"))
+
 			// snapshots
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "vms/vm-delete-1")
 			assert.Loosely(t, err, should.BeNil)
 			// 1 create, 1 deletion
 			assert.Loosely(t, msgs, should.HaveLength(2))
 			assert.Loosely(t, msgs[1].Delete, should.BeTrue)
+
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "states/vms/vm-delete-1")
 			assert.Loosely(t, err, should.BeNil)
 			// 1 create, 1 deletion
 			assert.Loosely(t, msgs, should.HaveLength(2))
 			assert.Loosely(t, msgs[1].Delete, should.BeTrue)
+
 			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "dhcps/vm-delete-1")
+			assert.Loosely(t, err, should.BeNil)
+			// 1 create, 1 deletion
+			assert.Loosely(t, msgs, should.HaveLength(2))
+			assert.Loosely(t, msgs[1].Delete, should.BeTrue)
+
+			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "devicelabels/vms/vm-delete-1")
 			assert.Loosely(t, err, should.BeNil)
 			// 1 create, 1 deletion
 			assert.Loosely(t, msgs, should.HaveLength(2))
