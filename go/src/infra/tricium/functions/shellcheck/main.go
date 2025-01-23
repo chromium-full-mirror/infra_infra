@@ -13,12 +13,16 @@ import (
 	"path/filepath"
 	"strings"
 
+	"google.golang.org/protobuf/proto"
+
+	findingspb "go.chromium.org/luci/common/proto/findings"
+
 	tricium "infra/tricium/api/v1"
 	"infra/tricium/functions/shellcheck/runner"
 )
 
 const (
-	analyzerName   = "ShellCheck"
+	analyzerName   = "shellcheck"
 	bundledBinPath = "shellcheck_subtool/bin/shellcheck"
 )
 
@@ -100,28 +104,43 @@ func run(r *runner.Runner, inputDir, outputDir, pathFilters string) {
 		log.Printf("No files to check.")
 	}
 
-	// Convert shellcheck warnings into Tricium results.
-	results := &tricium.Data_Results{}
-	for _, warn := range warns {
-		results.Comments = append(results.Comments, &tricium.Data_Comment{
-			// e.g. "ShellCheck/SC1234"
-			Category: fmt.Sprintf("%s/SC%d", analyzerName, warn.Code),
-			Message:  fmt.Sprintf("%s: %s\n\n%s", warn.Level, warn.Message, warn.WikiURL()),
-			Path:     warn.File,
-			// shellcheck uses 1-based columns, but Tricium needs 0-based columns.
-			StartLine: warn.Line,
-			EndLine:   warn.EndLine,
-			StartChar: warn.Column - 1,
-			EndChar:   warn.EndColumn - 1,
-		})
+	// Convert shellcheck warnings into findings
+	findings := make([]*findingspb.Finding, len(warns))
+	for i, warn := range warns {
+		findings[i] = &findingspb.Finding{
+			Category: analyzerName,
+			Message:  fmt.Sprintf("error code: SC%d\n\n%s\n\n%s", warn.Code, warn.Message, warn.WikiURL()),
+			Location: &findingspb.Location{
+				FilePath: warn.File,
+				Range: &findingspb.Location_Range{
+					StartLine: warn.Line,
+					EndLine:   warn.EndLine,
+					// shellcheck uses 1-based columns, but finding needs 0-based columns.
+					StartColumn: warn.Column - 1,
+					EndColumn:   warn.EndColumn - 1,
+				},
+			},
+		}
+		switch strings.ToLower(warn.Level) {
+		case "error":
+			findings[i].SeverityLevel = findingspb.Finding_SEVERITY_LEVEL_ERROR
+		case "warning":
+			findings[i].SeverityLevel = findingspb.Finding_SEVERITY_LEVEL_WARNING
+		case "info", "style":
+			findings[i].SeverityLevel = findingspb.Finding_SEVERITY_LEVEL_INFO
+		default:
+			findings[i].SeverityLevel = findingspb.Finding_SEVERITY_LEVEL_WARNING
+		}
 	}
 
-	// Write Tricium RESULTS data.
-	path, err := tricium.WriteDataType(outputDir, results)
-	if err != nil {
-		log.Panicf("Failed to write RESULTS data: %v", err)
+	if err := writeFindingsOutput(findings, outputDir); err != nil {
+		log.Fatalf("Failed to write findings output: %v", err)
 	}
-	log.Printf("Wrote RESULTS data to path %q.", path)
+
+	// TODO: b/388321980 - stop writing tricium data after deprecation
+	if err := writeTriciumResults(findings, outputDir); err != nil {
+		log.Fatalf("Failed to write Tricium results: %v", err)
+	}
 }
 
 func findShellCheckBin() string {
@@ -138,4 +157,53 @@ func findShellCheckBin() string {
 		return path
 	}
 	return ""
+}
+
+func writeFindingsOutput(findings []*findingspb.Finding, outputDir string) error {
+	findingsData, err := proto.Marshal(&findingspb.Findings{Findings: findings})
+	if err != nil {
+		return fmt.Errorf("failed to marshal the findings: %w", err)
+	}
+	if err := os.MkdirAll(outputDir, 0777); err != nil {
+		return fmt.Errorf("failed to create output dir %s: %w", outputDir, err)
+	}
+	path := filepath.Join(outputDir, "findings.out")
+	if err := os.WriteFile(path, findingsData, 0644); err != nil {
+		return fmt.Errorf("failed to write the findings to %s: %w", path, err)
+	}
+	log.Printf("Wrote findings data to %s", path)
+	return nil
+}
+
+// TODO(crbug/388321980) : stop writing tricium data after deprecation
+func writeTriciumResults(findings []*findingspb.Finding, outputDir string) error {
+	results := &tricium.Data_Results{
+		Comments: make([]*tricium.Data_Comment, len(findings)),
+	}
+
+	for i, finding := range findings {
+		results.Comments[i] = &tricium.Data_Comment{
+			Category:  finding.GetCategory(),
+			Message:   finding.GetMessage(),
+			Path:      finding.GetLocation().GetFilePath(),
+			StartLine: finding.GetLocation().GetRange().GetStartLine(),
+			EndLine:   finding.GetLocation().GetRange().GetEndLine(),
+			StartChar: finding.GetLocation().GetRange().GetStartColumn(),
+			EndChar:   finding.GetLocation().GetRange().GetEndColumn(),
+		}
+		switch finding.GetSeverityLevel() {
+		case findingspb.Finding_SEVERITY_LEVEL_INFO:
+			results.Comments[i].Message = "INFO: " + results.Comments[i].Message
+		case findingspb.Finding_SEVERITY_LEVEL_WARNING:
+			results.Comments[i].Message = "WARNING: " + results.Comments[i].Message
+		case findingspb.Finding_SEVERITY_LEVEL_ERROR:
+			results.Comments[i].Message = "ERROR: " + results.Comments[i].Message
+		}
+	}
+	path, err := tricium.WriteDataType(outputDir, results)
+	if err != nil {
+		return err
+	}
+	log.Printf("Wrote RESULTS data to %s", path)
+	return nil
 }

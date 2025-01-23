@@ -8,25 +8,22 @@
 package main
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
-	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
-	"go.chromium.org/luci/common/testing/ftt"
+	"google.golang.org/protobuf/proto"
+
+	findingspb "go.chromium.org/luci/common/proto/findings"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/tricium/functions/shellcheck/runner"
 )
 
-const (
-	testInputDir       = "testdata"
-	triciumResultsPath = "tricium/data/results.json"
-)
+const testInputDir = "testdata"
 
 func TestRun(t *testing.T) {
 	r := &runner.Runner{
@@ -43,91 +40,92 @@ func TestRun(t *testing.T) {
 		t.Skipf("got shellcheck version %q want 0.8.x; skipping test", version)
 	}
 
-	outputDir, err := ioutil.TempDir("", "tricium-shellcheck-test")
-	if err != nil {
-		panic(err)
-	}
-	defer os.RemoveAll(outputDir)
+	outputDir := t.TempDir()
 
 	run(r, testInputDir, outputDir, "*.other,*.sh")
 
-	resultsData, err := ioutil.ReadFile(filepath.Join(outputDir, triciumResultsPath))
-	if err != nil {
-		panic(err)
-	}
+	findingsData, err := os.ReadFile(filepath.Join(outputDir, "findings.out"))
+	assert.NoErr(t, err)
 
-	var results map[string][]map[string]interface{}
+	findings := &findingspb.Findings{}
+	assert.NoErr(t, proto.Unmarshal(findingsData, findings))
 
-	if err := json.Unmarshal(resultsData, &results); err != nil {
-		t.Fatalf("unmarshal failed: %v", err)
-	}
-
-	comments, ok := results["comments"]
-	ftt.Run("Results should be properly formatted", t, func(t *ftt.Test) {
-		t.Run("Results should have comments", func(t *ftt.Test) {
-			assert.Loosely(t, ok, should.BeTrue)
-		})
-
-		t.Run("There should be multiple comments", func(t *ftt.Test) {
-			assert.Loosely(t, len(comments), should.Equal(5))
-		})
-
-		t.Run("Comments should have specific contents", func(t *ftt.Test) {
-			assert.Loosely(t, comments, should.Match([]map[string]interface{}{
-				{
-					"category":  "ShellCheck/SC2034",
-					"message":   "warning: FLAGS_flag appears unused. Verify use (or export if used externally).\n\nhttps://github.com/koalaman/shellcheck/wiki/SC2034",
-					"path":      "bad.sh",
-					"startLine": float64(3),
-					"endLine":   float64(3),
-					"startChar": float64(15),
-					"endChar":   float64(19),
-				},
-				{
-					"category":  "ShellCheck/SC2034",
-					"message":   "warning: unused appears unused. Verify use (or export if used externally).\n\nhttps://github.com/koalaman/shellcheck/wiki/SC2034",
-					"path":      "bad.sh",
-					"startLine": float64(5),
-					"endLine":   float64(5),
-					"startChar": float64(1),
-					"endChar":   float64(7),
-				},
-				{
-					"category":  "ShellCheck/SC1037",
-					"message":   "error: Braces are required for positionals over 9, e.g. ${10}.\n\nhttps://github.com/koalaman/shellcheck/wiki/SC1037",
-					"path":      "bad.sh",
-					"startLine": float64(6),
-					"endLine":   float64(6),
-					"startChar": float64(6),
-					"endChar":   float64(6),
-				},
-				{
-					"category":  "ShellCheck/SC2086",
-					"message":   "info: Double quote to prevent globbing and word splitting.\n\nhttps://github.com/koalaman/shellcheck/wiki/SC2086",
-					"path":      "bad.sh",
-					"startLine": float64(8),
-					"endLine":   float64(8),
-					"startChar": float64(5),
-					"endChar":   float64(9),
-				},
-				{
-					"category":  "ShellCheck/SC2250",
-					"message":   "style: Prefer putting braces around variable references even when not strictly required.\n\nhttps://github.com/koalaman/shellcheck/wiki/SC2250",
-					"path":      "bad.sh",
-					"startLine": float64(8),
-					"endLine":   float64(8),
-					"startChar": float64(5),
-					"endChar":   float64(9),
-				},
-			}))
-		})
+	slices.SortFunc(findings.Findings, func(a, b *findingspb.Finding) int {
+		return strings.Compare(a.Message, b.Message)
 	})
-}
 
-func assertMapKeyEqual(t *testing.T, m map[string]interface{}, k string, want interface{}) {
-	t.Helper()
-	got, _ := m[k]
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("key %q got %v want %v", k, got, want)
-	}
+	assert.That(t, findings, should.Match(&findingspb.Findings{
+		Findings: []*findingspb.Finding{
+			{
+				Category:      "shellcheck",
+				Message:       "error code: SC1037\n\nBraces are required for positionals over 9, e.g. ${10}.\n\nhttps://github.com/koalaman/shellcheck/wiki/SC1037",
+				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_ERROR,
+				Location: &findingspb.Location{
+					FilePath: "bad.sh",
+					Range: &findingspb.Location_Range{
+						StartLine:   6,
+						EndLine:     6,
+						StartColumn: 6,
+						EndColumn:   6,
+					},
+				},
+			},
+			{
+				Category:      "shellcheck",
+				Message:       "error code: SC2034\n\nFLAGS_flag appears unused. Verify use (or export if used externally).\n\nhttps://github.com/koalaman/shellcheck/wiki/SC2034",
+				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Location: &findingspb.Location{
+					FilePath: "bad.sh",
+					Range: &findingspb.Location_Range{
+						StartLine:   3,
+						EndLine:     3,
+						StartColumn: 15,
+						EndColumn:   19,
+					},
+				},
+			},
+			{
+				Category:      "shellcheck",
+				Message:       "error code: SC2034\n\nunused appears unused. Verify use (or export if used externally).\n\nhttps://github.com/koalaman/shellcheck/wiki/SC2034",
+				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_WARNING,
+				Location: &findingspb.Location{
+					FilePath: "bad.sh",
+					Range: &findingspb.Location_Range{
+						StartLine:   5,
+						EndLine:     5,
+						StartColumn: 1,
+						EndColumn:   7,
+					},
+				},
+			},
+			{
+				Category:      "shellcheck",
+				Message:       "error code: SC2086\n\nDouble quote to prevent globbing and word splitting.\n\nhttps://github.com/koalaman/shellcheck/wiki/SC2086",
+				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_INFO,
+				Location: &findingspb.Location{
+					FilePath: "bad.sh",
+					Range: &findingspb.Location_Range{
+						StartLine:   8,
+						EndLine:     8,
+						StartColumn: 5,
+						EndColumn:   9,
+					},
+				},
+			},
+			{
+				Category:      "shellcheck",
+				Message:       "error code: SC2250\n\nPrefer putting braces around variable references even when not strictly required.\n\nhttps://github.com/koalaman/shellcheck/wiki/SC2250",
+				SeverityLevel: findingspb.Finding_SEVERITY_LEVEL_INFO,
+				Location: &findingspb.Location{
+					FilePath: "bad.sh",
+					Range: &findingspb.Location_Range{
+						StartLine:   8,
+						EndLine:     8,
+						StartColumn: 5,
+						EndColumn:   9,
+					},
+				},
+			},
+		},
+	}))
 }
