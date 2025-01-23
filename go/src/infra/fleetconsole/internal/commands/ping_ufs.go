@@ -13,12 +13,11 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/cmdsupport/cmdlib"
 	"infra/fleetconsole/api/fleetconsolerpc"
 	"infra/fleetconsole/internal/site"
 	"infra/fleetconsole/internal/ufsclient"
+	"infra/unifiedfleet/api/ufsclients"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
@@ -68,15 +67,10 @@ func (c *pingUFSCommand) innerRun(ctx context.Context, a subcommands.Application
 		_, err = showProto(a.GetOut(), resp)
 		return errors.Annotate(err, "ping (default)").Err()
 	case "direct":
-		hc, err := cmdlib.NewHTTPClient(ctx, &c.AuthFlags)
+		ufsClient, err := ufsclients.NewUFSClientFromCLI(ctx, ufsclient.UfsProdURL, &c.AuthFlags, nil)
 		if err != nil {
 			return err
 		}
-		ufsClient := ufsAPI.NewFleetPRPCClient(&prpc.Client{
-			C:       hc,
-			Host:    ufsclient.UfsProdURL,
-			Options: nil,
-		})
 		resp, err := ufsClient.ListMachineLSEs(ctx, &ufsAPI.ListMachineLSEsRequest{
 			PageSize: 3,
 		})
