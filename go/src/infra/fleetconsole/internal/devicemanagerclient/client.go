@@ -7,6 +7,7 @@ package devicemanagerclient
 
 import (
 	"context"
+	"iter"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/server/auth"
@@ -76,4 +77,30 @@ func mapLabels(labels map[string]*api.HardwareRequirements_LabelValues) map[stri
 		}
 	}
 	return mappedLabels
+}
+
+// ListDevicesIter lists devices.
+func ListDevicesIter(ctx context.Context, leaser api.DeviceLeaseServiceClient, request *api.ListDevicesRequest) iter.Seq2[*api.Device, error] {
+	if request.GetPageToken() != "" {
+		panic("cannot provide token to ListDevicesIter")
+	}
+	return func(yield func(*api.Device, error) bool) {
+		for {
+			response, err := leaser.ListDevices(ctx, request)
+			if err != nil {
+				yield(nil, err)
+				return
+			}
+			request.PageToken = response.GetNextPageToken()
+			for _, device := range response.GetDevices() {
+				keepGoing := yield(device, nil)
+				if !keepGoing {
+					return
+				}
+			}
+			if response.GetNextPageToken() == "" {
+				return
+			}
+		}
+	}
 }

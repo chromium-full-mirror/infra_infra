@@ -34,6 +34,7 @@ func Application(ctxFuncs ...func(context.Context) context.Context) *cli.Applica
 			commands.PingCommand,
 			commands.PingDeviceManagerCommand,
 			commands.PingUFSCommand,
+			commands.ListDevicesCommand,
 			subcommands.Section("Authentication"),
 			authcli.SubcommandInfo(site.DefaultAuthOptions, "whoami", false),
 			authcli.SubcommandLogin(site.DefaultAuthOptions, "login", false),
