@@ -624,28 +624,19 @@ func getKarbonFilters() []*api.CTPFilter {
 
 func buildSchedulerInfo(pool string, triggerType ATPTriggerType) *api.SchedulerInfo {
 	if pool == common.DefaultQuotaPool {
-		// For mainpool, run through QS
-		qsAccount := "unmanaged_p2"
+		// For mainpool, run through Scheduke with QSaccount specified for different priority
+		qsAccount := "unmanaged_p1"
 		if triggerType == PRESUBMIT_BLOCKING {
-			qsAccount = "cq"
+			qsAccount = common.ATPBlockingQuotaAccount
 		} else if triggerType == POSTSUBMIT_BLOCKING {
 			qsAccount = "postsubmit"
 		}
 
 		return &api.SchedulerInfo{
 			QsAccount: qsAccount,
-			Scheduler: api.SchedulerInfo_QSCHEDULER,
+			Scheduler: api.SchedulerInfo_SCHEDUKE,
 		}
 	}
-
-	// default path goes through scheduke
-	// TODO: enable using different qs account when mainpool traffic goes through scheduke
-	// qsAccount := "unmanaged_p1"
-	// if triggerType == PRESUBMIT_BLOCKING {
-	// 	qsAccount = common.ATPBlockingQuotaAccount
-	// } else if triggerType == POSTSUBMIT_BLOCKING {
-	// 	qsAccount = "postsubmit"
-	// }
 
 	return &api.SchedulerInfo{
 		QsAccount: common.ATPBlockingQuotaAccount, // In non-mainpool, everything runs with highest pri now
