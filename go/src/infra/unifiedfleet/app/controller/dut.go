@@ -1004,16 +1004,59 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 		}
 		lse = machinelses[0]
 	}
-	dutState, err := state.GetDutState(ctx, id)
-	if err != nil {
-		logging.Warningf(ctx, "DutState for %s not found. Error: %s", id, err)
-	}
 	machine, err := GetMachine(ctx, id)
 	if err != nil {
 		logging.Errorf(ctx, "Machine for %s not found. Error: %s", id, err)
 		return &ufspb.ChromeOSDeviceData{
 			LabConfig: lse,
 		}, nil
+	}
+	return getChromeOSDeviceDataWithLSEAndMachine(ctx, lse, machine)
+}
+
+// GetChromeOSDeviceDataWithLSEAndMachine returns ChromeOSDeviceData using the provided lse/machine
+// Succeeds if at least one of lse and machine are non-nil
+func getChromeOSDeviceDataWithLSEAndMachine(ctx context.Context, lse *ufspb.MachineLSE, machine *ufspb.Machine) (*ufspb.ChromeOSDeviceData, error) {
+	if lse == nil && machine == nil {
+		return nil, fmt.Errorf("both the MachineLSE and Machine are nil")
+	}
+
+	// If lse is nil, fetch based on machine
+	if lse == nil {
+		id := machine.GetName()
+		logging.Debugf(ctx, "getting full configs for machine %s", id)
+		machinelses, err := inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", id, false)
+		if err != nil {
+			return nil, err
+		}
+		if len(machinelses) == 0 {
+			return nil, status.Error(codes.NotFound, fmt.Sprintf("DUT not found for asset id %s", id))
+		}
+		lse = machinelses[0]
+	}
+	// If machine is nil, fetch based on lse
+	var err error
+	if machine == nil {
+		if len(lse.GetMachines()) == 0 {
+			logging.Warningf(ctx, "MachineLSE %d does not include machine info.", lse.GetName())
+			return &ufspb.ChromeOSDeviceData{
+				LabConfig: lse,
+			}, nil
+		}
+		id := lse.GetMachines()[0]
+		machine, err = GetMachine(ctx, id)
+		if err != nil {
+			logging.Errorf(ctx, "Machine for %s not found. Error: %s", id, err)
+			return &ufspb.ChromeOSDeviceData{
+				LabConfig: lse,
+			}, nil
+		}
+	}
+
+	id := machine.GetName()
+	dutState, err := state.GetDutState(ctx, id)
+	if err != nil {
+		logging.Warningf(ctx, "DutState for %s not found. Error: %s", id, err)
 	}
 	devCfgClient, err := GetDeviceConfigClient(ctx)
 	if err != nil {
