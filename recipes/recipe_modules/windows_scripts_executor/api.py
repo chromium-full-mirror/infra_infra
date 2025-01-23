@@ -17,9 +17,9 @@ from PB.recipes.infra.windows_image_builder import dest as dest_pb
 
 # Customization to Builder mapping
 CUST_BUILDER = {
-    'offline_winpe_customization': 'Wim Customization Builder',
-    'online_windows_customization': 'Windows Customization Builder',
-    'windows_iso_customization': 'Windows Customization Builder',
+    'offline_winpe_customization': 'wib-wim-customization',
+    'online_windows_customization': 'wib-windows-customization',
+    'windows_iso_customization': 'wib-windows-customization',
 }
 
 BUILDERS = set(CUST_BUILDER.values())

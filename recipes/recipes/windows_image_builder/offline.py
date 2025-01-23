@@ -437,7 +437,7 @@ def GenTests(api):
   BATCH_RESPONSE_WIM = bs_pb2.BatchResponse(responses=[
       dict(
           schedule_build=dict(
-              builder=dict(builder='Wim Customization Builder'),
+              builder=dict(builder='wib-wim-customization'),
               input=prop_wim,
               id=1234567890123456789)),
   ])
@@ -445,7 +445,7 @@ def GenTests(api):
   BATCH_RESPONSE_WIN = bs_pb2.BatchResponse(responses=[
       dict(
           schedule_build=dict(
-              builder=dict(builder='Windows Customization Builder'),
+              builder=dict(builder='wib-windows-customization'),
               input=prop_win,
               id=9016911228971028736,
           )),
@@ -465,7 +465,7 @@ def GenTests(api):
   # Test the happy path for the scheduler. We give scheduler the TEST_IMAGE
   # as input. As there are 3 customizations in that image with one dependent on
   # the other. It is expected that the scheduler will schedule the WinPE builder
-  # first (Wim Customization Builder) followed by the Windows customization
+  # first (wib-wim-customization) followed by the Windows customization
   # builder (for the remaining 2 customizations).
   yield (
       api.test('basic_scheduled', api.platform('win', 64)) + api.properties(
