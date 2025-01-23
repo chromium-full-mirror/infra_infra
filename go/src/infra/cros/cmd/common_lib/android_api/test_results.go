@@ -52,9 +52,9 @@ func (w *TestResultServiceImpl) BatchInsert(ctx context.Context, invocationID st
 		return nil, errInit
 	}
 
-	call := w.client.Batchinsert(request)
+	call := w.client.Batchinsert(request).Context(ctx).InvocationId(invocationID)
 
-	return call.Context(ctx).InvocationId(invocationID).Do()
+	return retry(ctx, call.Do)
 }
 
 // Update implementation for testResults.

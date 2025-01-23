@@ -178,7 +178,7 @@ func (a *AlStateInfo) sealInvocation(ctx context.Context, tree *androidapi.WorkU
 
 	// Refresh the invocation in case we are not using the most up-to-date
 	// revision.
-	a.ATPInvocation, err = service.InvocationService.Get(a.ATPInvocation.InvocationId)
+	a.ATPInvocation, err = service.InvocationService.Get(ctx, a.ATPInvocation.InvocationId)
 	if err != nil {
 		return errors.Annotate(err, "error while refreshing ATP Invocation").Err()
 	}
@@ -205,7 +205,7 @@ func (a *AlStateInfo) CloseWUTree(ctx context.Context, service *androidapi.Servi
 	}
 
 	invocationID := tree.Head.GetWorkUnit().InvocationId
-	inv, err := service.InvocationService.Get(invocationID)
+	inv, err := service.InvocationService.Get(ctx, invocationID)
 	if err != nil {
 		return err
 	}

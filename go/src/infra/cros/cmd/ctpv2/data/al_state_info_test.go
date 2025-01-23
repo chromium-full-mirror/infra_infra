@@ -54,7 +54,7 @@ func TestSealInvocation(t *testing.T) {
 
 	mockWU.EXPECT().Get(wu.Id).Return(wu, nil)
 	mockWU.EXPECT().Update(wu.Id, wu).Return(wu, nil)
-	mockInv.EXPECT().Get(inv.InvocationId).Return(inv, nil)
+	mockInv.EXPECT().Get(ctx, inv.InvocationId).Return(inv, nil)
 	mockInv.EXPECT().Update(inv.InvocationId, inv).Return(inv, nil)
 
 	err := a.sealInvocation(ctx, tree, s)
@@ -112,9 +112,9 @@ func TestCloseWUTree(t *testing.T) {
 			}
 
 			if tc.invErr != nil {
-				mockInv.EXPECT().Get(inv.InvocationId).Return(inv, nil)
+				mockInv.EXPECT().Get(ctx, inv.InvocationId).Return(inv, nil)
 			} else {
-				mockInv.EXPECT().Get(inv.InvocationId).Return(inv, nil).Times(2)
+				mockInv.EXPECT().Get(ctx, inv.InvocationId).Return(inv, nil).Times(2)
 				mockInv.EXPECT().Update(inv.InvocationId, gomock.Any()).Return(inv, nil)
 			}
 

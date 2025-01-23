@@ -278,7 +278,7 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	defer timeTrack(start, "Overall result upload")
 
 	var buildInfo *atp.BuildDescriptor
-	inv, err := aps.service.InvocationService.Get(aps.metadata.AntsInvocationId)
+	inv, err := aps.service.InvocationService.Get(ctx, aps.metadata.AntsInvocationId)
 	if err != nil {
 		log.Printf("Could not get invocation id. skipping adding build info to results due to: %q. ", err)
 	} else {

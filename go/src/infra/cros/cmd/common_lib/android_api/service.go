@@ -7,11 +7,16 @@ package androidapi
 import (
 	"context"
 	"fmt"
+	"time"
 
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 	"infra/cros/cmd/common_lib/common"
+	"infra/cros/servo/logging"
 )
 
 const (
@@ -19,6 +24,8 @@ const (
 	// by the list endpoints in android build API.
 	defaultMaxResults = int64(1000)
 	quotaProject      = "chromeos-bot"
+	maxAttempts       = 3
+	delayTime         = 1 * time.Second
 )
 
 var (
@@ -46,6 +53,46 @@ type AndroidBuildAPIOptions struct {
 	// The max results to be returned by the API.
 	// If empty, the default max results will be used.
 	MaxResults int64
+}
+
+func retriableError(err error) bool {
+	if err == nil {
+		return false
+	}
+
+	if e, ok := status.FromError(err); ok {
+		switch e.Code() {
+		case codes.Unavailable:
+			return true
+		}
+	}
+
+	return false
+}
+
+func retry[K comparable](ctx context.Context, fn func(opts ...googleapi.CallOption) (K, error)) (K, error) {
+	var ret K
+	var err error
+	for i := 0; i < maxAttempts; i++ {
+		select {
+		case <-ctx.Done():
+			return ret, ctx.Err()
+		default:
+		}
+		ret, err = fn()
+		if err == nil {
+			return ret, nil
+		}
+
+		if !retriableError(err) {
+			logging.Infof(ctx, "Found unretriable error: %v", err)
+		}
+
+		logging.Infof(ctx, "Retry request %d for error: %v", i, err)
+		time.Sleep(delayTime)
+	}
+
+	return ret, err
 }
 
 // NewAndroidBuildService returns a new service which is used to interact with the android build api.

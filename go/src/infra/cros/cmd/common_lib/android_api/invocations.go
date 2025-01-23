@@ -47,7 +47,7 @@ const (
 
 // InvocationService handles API calls related to invocations.
 type InvocationService interface {
-	Get(resourceID string) (*atp.Invocation, error)
+	Get(ctx context.Context, resourceID string) (*atp.Invocation, error)
 	Insert(invocation *atp.Invocation) (*atp.Invocation, error)
 	Update(resourceID string, invocation *atp.Invocation) (*atp.Invocation, error)
 	Patch(resourceID string, invocation *atp.Invocation) (*atp.Invocation, error)
@@ -60,14 +60,13 @@ type InvocationServiceImpl struct {
 }
 
 // Get implementation for invocations.
-func (w *InvocationServiceImpl) Get(resourceID string) (*atp.Invocation, error) {
+func (w *InvocationServiceImpl) Get(ctx context.Context, resourceID string) (*atp.Invocation, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
 
 	call := w.client.Get(resourceID)
-
-	return call.Do()
+	return retry(ctx, call.Do)
 }
 
 // Insert implementation for invocations.

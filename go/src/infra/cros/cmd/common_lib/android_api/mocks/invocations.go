@@ -37,18 +37,18 @@ func (m *MockInvocationService) EXPECT() *MockInvocationServiceMockRecorder {
 }
 
 // Get mocks base method.
-func (m *MockInvocationService) Get(resourceID string) (*androidbuildinternal.Invocation, error) {
+func (m *MockInvocationService) Get(ctx context.Context, resourceID string) (*androidbuildinternal.Invocation, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Get", resourceID)
+	ret := m.ctrl.Call(m, "Get", ctx, resourceID)
 	ret0, _ := ret[0].(*androidbuildinternal.Invocation)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Get indicates an expected call of Get.
-func (mr *MockInvocationServiceMockRecorder) Get(resourceID interface{}) *gomock.Call {
+func (mr *MockInvocationServiceMockRecorder) Get(ctx, resourceID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockInvocationService)(nil).Get), resourceID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Get", reflect.TypeOf((*MockInvocationService)(nil).Get), ctx, resourceID)
 }
 
 // Insert mocks base method.

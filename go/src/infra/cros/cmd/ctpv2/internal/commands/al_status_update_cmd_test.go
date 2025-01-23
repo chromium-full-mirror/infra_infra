@@ -78,7 +78,7 @@ func TestUpdateInvocationProperties(t *testing.T) {
 				if tc.sealInv {
 					inv.SchedulerState = "error"
 				}
-				mockInvService.EXPECT().Get("I123").Return(inv, nil)
+				mockInvService.EXPECT().Get(ctx, "I123").Return(inv, nil)
 				inv.Properties = []*androidbuildinternal.Property{
 					{Name: common.CbPropName, Value: "yes"},
 					{Name: common.CbMetricsPropName, Value: "yes"},

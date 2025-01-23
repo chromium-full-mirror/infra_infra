@@ -379,7 +379,7 @@ func (cmd *AlStatusUpdateCmd) updateInvocationProperties(ctx context.Context, se
 		return nil
 	}
 
-	inv, err := service.InvocationService.Get(invocationID)
+	inv, err := service.InvocationService.Get(ctx, invocationID)
 	if err != nil {
 		return err
 	}

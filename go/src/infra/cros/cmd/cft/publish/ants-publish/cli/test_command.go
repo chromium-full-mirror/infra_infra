@@ -61,7 +61,7 @@ func (tc *TestCommand) Run() error {
 	}
 
 	if tc.invocationID != "" {
-		inv, err := s.InvocationService.Get(tc.invocationID)
+		inv, err := s.InvocationService.Get(ctx, tc.invocationID)
 		if err != nil {
 			fmt.Println("cannot get invocation details due to: ", err)
 		}
@@ -89,7 +89,7 @@ func (tc *TestCommand) Run() error {
 	}
 
 	if tc.workunitID != "" {
-		wu, err := s.InvocationService.Get(tc.invocationID)
+		wu, err := s.InvocationService.Get(ctx, tc.invocationID)
 		if err != nil {
 			fmt.Println("cannot get work unit details due to: ", err)
 		}
