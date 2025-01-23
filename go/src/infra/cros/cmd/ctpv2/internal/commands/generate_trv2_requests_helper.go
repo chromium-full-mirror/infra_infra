@@ -118,7 +118,6 @@ func FakeHwTarget(board, model, variant string) *HwTarget {
 
 // GenerateTrv2Req generates ScheduleBuildRequest.
 func GenerateTrv2Req(ctx context.Context, canOutliveParent bool, trHelper *TrV2ReqHelper, isLED bool) (*buildbucketpb.ScheduleBuildRequest, error) {
-	populateHelper(ctx, trHelper)
 	err := populateHelper(ctx, trHelper)
 	if err != nil {
 		return nil, errors.Annotate(err, "unable to build up context: ").Err()
