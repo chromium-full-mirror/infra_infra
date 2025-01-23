@@ -74,11 +74,9 @@ type ScheduleTasksCmd struct {
 	AlStateInfo *data.AlStateInfo // will be used as dep as well
 
 	// For logging
-	BQClient              *bigquery.Client
-	StartCmdTime          time.Time
-	StartTrSchedulingTime time.Time
-	StartTrBuildTime      time.Time
-	Config                *config.Config
+	BQClient     *bigquery.Client
+	StartCmdTime time.Time
+	Config       *config.Config
 
 	ExecutionError error
 }
@@ -581,18 +579,14 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 
 	builderID := common.TestRunnerBuilderID(cmd.Config)
 
-	// b/377196624 - limit analytics to avoid bot run oom
-	if buildsMapLen < logsAndAnalyticsLimit {
-		cmd.ObserveTrSchedulingStart(ctx, buildReq)
-	}
-
+	trSchedulingStart := time.Now()
 	cmd.ObserveTrSchedulingStart(ctx, buildReq)
 
 	// BQ TODO log the request is in the scheduling tool (ie log the scheduke ID if possible?)
 	scheduledBuild, leaseID, err := cmd.Scheduler.ScheduleRequest(ctx, req, step)
 	if err != nil {
 		err = fmt.Errorf("error while scheduling req: %s", err)
-		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error())
+		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error(), trSchedulingStart)
 		return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
 	}
 	if leaseID != "" {
@@ -628,21 +622,18 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	} else {
 		errStr := "no bbid found from scheduler"
 		err = fmt.Errorf(errStr)
-		// b/377196624 - limit analytics to avoid bot run oom
-		if buildsMapLen < logsAndAnalyticsLimit {
-			cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error())
-		}
+		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error(), trSchedulingStart)
 
 		return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
 	}
-	// b/377196624 - limit analytics to avoid bot run oom
-	if buildsMapLen < logsAndAnalyticsLimit {
-		// Log the successful start.
-		cmd.ObserveTrSchedulingSuccess(ctx, buildReq, fmt.Sprint(scheduledBuild.GetId()))
 
-		// Re-init the data for the run build step. Keep the previously populated data.
-		cmd.ObserveTrBuildStart(ctx, buildReq)
-	}
+	// Log the successful start.
+	cmd.ObserveTrSchedulingSuccess(ctx, buildReq, fmt.Sprint(scheduledBuild.GetId()), trSchedulingStart)
+
+	// Re-init the data for the run build step. Keep the previously populated
+	// data.
+	trBuildStart := time.Now()
+	cmd.ObserveTrBuildStart(ctx, buildReq)
 
 	// Since the requests are combined in CTPv2 and untangled later we need to
 	// fetch the real request key name so that we can separate the merged
@@ -663,11 +654,6 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	loopSleepInterval := 30 * time.Second
 	statusReq := &buildbucketpb.GetBuildStatusRequest{
 		Id: scheduledBuild.GetId(),
-	}
-
-	// b/377196624 - limit analytics to avoid bot run oom
-	if buildsMapLen < logsAndAnalyticsLimit {
-		cmd.ObserveTrSchedulingStart(ctx, buildReq)
 	}
 
 	for {
@@ -740,11 +726,8 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		common.WriteAnyObjectToStepLog(ctx, step, buildInfo, "final build info")
 		result.EndTimestamp = time.Now()
 
-		// b/377196624 - limit analytics to avoid bot run oom
-		if buildsMapLen < logsAndAnalyticsLimit {
-			// Log success as we found a completed build. The status is not of the child build itself.
-			cmd.ObserveTrBuildSuccess(ctx, buildReq, buildInfo)
-		}
+		// Log success as we found a completed build. The status is not of the child build itself.
+		cmd.ObserveTrBuildSuccess(ctx, buildReq, buildInfo, trBuildStart)
 
 		logging.Infof(ctx, "bb status: %s", buildInfo.GetStatus())
 		if buildInfo.GetStatus() != buildbucketpb.Status_SUCCESS {
@@ -1151,7 +1134,6 @@ func (cmd *ScheduleTasksCmd) ObserveSchedulerSetupFailure(ctx context.Context, e
 }
 
 func (cmd *ScheduleTasksCmd) ObserveTrSchedulingStart(ctx context.Context, buildReq *data.BuildRequest) {
-	cmd.StartTrSchedulingTime = time.Now()
 	data := &analytics.TaskData{
 		Step:          "ScheduleBuild",
 		DisplayName:   buildReq.Key,
@@ -1161,32 +1143,31 @@ func (cmd *ScheduleTasksCmd) ObserveTrSchedulingStart(ctx context.Context, build
 	analytics.SoftInsertStepWTrReq(ctx, cmd.BQClient, data, buildReq.OriginalTrReq, buildReq.SuiteInfo, cmd.BuildState)
 }
 
-func (cmd *ScheduleTasksCmd) ObserveTrSchedulingSuccess(ctx context.Context, buildReq *data.BuildRequest, taskBBId string) {
+func (cmd *ScheduleTasksCmd) ObserveTrSchedulingSuccess(ctx context.Context, buildReq *data.BuildRequest, taskBBId string, start time.Time) {
 	data := &analytics.TaskData{
 		Step:          "ScheduleBuild",
 		DisplayName:   buildReq.Key,
 		AnalyticsName: buildReq.SuiteInfo.GetSuiteRequest().GetAnalyticsName(),
 		Status:        analytics.Success,
 		TrTaskID:      taskBBId,
-		Duration:      float32(time.Since(cmd.StartTrSchedulingTime).Seconds()),
+		Duration:      float32(time.Since(start).Seconds()),
 	}
 	analytics.SoftInsertStepWTrReq(ctx, cmd.BQClient, data, buildReq.OriginalTrReq, buildReq.SuiteInfo, cmd.BuildState)
 }
 
-func (cmd *ScheduleTasksCmd) ObserveTrSchedulingFail(ctx context.Context, buildReq *data.BuildRequest, err string) {
+func (cmd *ScheduleTasksCmd) ObserveTrSchedulingFail(ctx context.Context, buildReq *data.BuildRequest, err string, start time.Time) {
 	data := &analytics.TaskData{
 		Step:          "ScheduleBuild",
 		DisplayName:   buildReq.Key,
 		AnalyticsName: buildReq.SuiteInfo.GetSuiteRequest().GetAnalyticsName(),
 		Status:        analytics.Fail,
 		Freeform:      err,
-		Duration:      float32(time.Since(cmd.StartTrSchedulingTime).Seconds()),
+		Duration:      float32(time.Since(start).Seconds()),
 	}
 	analytics.SoftInsertStepWTrReq(ctx, cmd.BQClient, data, buildReq.OriginalTrReq, buildReq.SuiteInfo, cmd.BuildState)
 }
 
 func (cmd *ScheduleTasksCmd) ObserveTrBuildStart(ctx context.Context, buildReq *data.BuildRequest) {
-	cmd.StartTrBuildTime = time.Now()
 	data := &analytics.TaskData{
 		Step:          "RunBuild",
 		DisplayName:   buildReq.Key,
@@ -1196,7 +1177,7 @@ func (cmd *ScheduleTasksCmd) ObserveTrBuildStart(ctx context.Context, buildReq *
 	analytics.SoftInsertStepWTrReq(ctx, cmd.BQClient, data, buildReq.OriginalTrReq, buildReq.SuiteInfo, cmd.BuildState)
 }
 
-func (cmd *ScheduleTasksCmd) ObserveTrBuildSuccess(ctx context.Context, buildReq *data.BuildRequest, buildInfo *buildbucketpb.Build) {
+func (cmd *ScheduleTasksCmd) ObserveTrBuildSuccess(ctx context.Context, buildReq *data.BuildRequest, buildInfo *buildbucketpb.Build, start time.Time) {
 	data := &analytics.TaskData{
 		Step:          "RunBuild",
 		DisplayName:   buildReq.Key,
@@ -1204,19 +1185,19 @@ func (cmd *ScheduleTasksCmd) ObserveTrBuildSuccess(ctx context.Context, buildReq
 		Status:        analytics.Success,
 		TrTaskID:      fmt.Sprint(buildInfo.GetId()),
 		Freeform:      fmt.Sprint("build status: ", buildInfo.GetStatus()),
-		Duration:      float32(time.Since(cmd.StartTrBuildTime).Seconds()),
+		Duration:      float32(time.Since(start).Seconds()),
 	}
 	analytics.SoftInsertStepWTrReq(ctx, cmd.BQClient, data, buildReq.OriginalTrReq, buildReq.SuiteInfo, cmd.BuildState)
 }
 
-func (cmd *ScheduleTasksCmd) ObserveTrBuildFail(ctx context.Context, buildReq *data.BuildRequest, err string) {
+func (cmd *ScheduleTasksCmd) ObserveTrBuildFail(ctx context.Context, buildReq *data.BuildRequest, err string, start time.Time) {
 	data := &analytics.TaskData{
 		Step:          "RunBuild",
 		DisplayName:   buildReq.Key,
 		AnalyticsName: buildReq.SuiteInfo.GetSuiteRequest().GetAnalyticsName(),
 		Status:        analytics.Fail,
 		Freeform:      err,
-		Duration:      float32(time.Since(cmd.StartTrBuildTime).Seconds()),
+		Duration:      float32(time.Since(start).Seconds()),
 	}
 	analytics.SoftInsertStepWTrReq(ctx, cmd.BQClient, data, buildReq.OriginalTrReq, buildReq.SuiteInfo, cmd.BuildState)
 }
