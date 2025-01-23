@@ -313,23 +313,6 @@ func isVmlabPoolReq(v1 *test_platform.Request) bool {
 	return v1.GetParams().GetScheduling().GetUnmanagedPool() == "vmlab"
 }
 
-// getTags reaches into the v1 request tags to pull out tags that we have deemed
-// acceptable to translate to the v2 request.
-func getTags(v1 *test_platform.Request) []string {
-	acceptedTags := []string{}
-
-	v1Tags := v1.GetParams().GetDecorations().GetTags()
-
-	// Iterate through the tags and fetch explicitly accepted ones.
-	for _, tag := range v1Tags {
-		if strings.HasPrefix(tag, "event-id:") {
-			acceptedTags = append(acceptedTags, tag)
-		}
-	}
-
-	return acceptedTags
-}
-
 // buildSuiteRequest converts a v1 ctp request into a SuiteRequest.
 func buildSuiteRequest(v1 *test_platform.Request) *testapi.SuiteRequest {
 	return &testapi.SuiteRequest{
@@ -342,7 +325,6 @@ func buildSuiteRequest(v1 *test_platform.Request) *testapi.SuiteRequest {
 		MaxInShard:      v1.GetTestPlan().GetMaxInShard(),
 		DddSuite:        IsDDDSuite(v1),
 		RetryCount:      GetRetryCount(v1),
-		Tags:            getTags(v1),
 	}
 }
 

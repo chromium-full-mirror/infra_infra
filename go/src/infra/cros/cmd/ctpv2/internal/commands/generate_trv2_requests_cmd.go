@@ -234,16 +234,6 @@ func (cmd *GenerateTrv2RequestsCmd) Execute(ctx context.Context) error {
 	return nil
 }
 
-func getKronEventID(tags []string) string {
-	for _, tag := range tags {
-		if strings.HasPrefix(tag, "event-id:") {
-			return tag
-		}
-	}
-
-	return ""
-}
-
 // GenerateRequests generates trv2 requests
 func (cmd *GenerateTrv2RequestsCmd) GenerateRequests(ctx context.Context, step *build.Step) (map[string]*data.BuildRequest, error) {
 	var err error
@@ -295,7 +285,6 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateRequests(ctx context.Context, step *
 	cmd.SealTrReqGenEnd(ctx)
 	return buildMap, err
 }
-
 func (cmd *GenerateTrv2RequestsCmd) GenerateReq(ctx context.Context, trReq *data.TrRequest, key string, shardNum int) (*buildbucketpb.ScheduleBuildRequest, error) {
 	var err error
 
@@ -351,7 +340,6 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateReq(ctx context.Context, trReq *data
 		envVersion:           cmd.EnvVersion,
 		firestoreDBName:      cmd.FirestoreDBName,
 		is3DRun:              cmd.InternalTestPlan.GetSuiteInfo().GetSuiteRequest().GetDddSuite(),
-		eventID:              getKronEventID(cmd.InternalTestPlan.GetSuiteInfo().GetSuiteRequest().GetTags()),
 	}
 
 	req, err := GenerateTrv2Req(ctx, false, helper, common.IsLedRun(cmd.BuildState.Build().GetBuilder()))
