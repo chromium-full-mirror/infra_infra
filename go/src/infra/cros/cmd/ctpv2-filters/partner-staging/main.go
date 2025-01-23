@@ -12,14 +12,13 @@ import (
 	"strings"
 	"sync"
 
+	"google.golang.org/api/option"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
-
 	"go.chromium.org/chromiumos/test/ctpv2/partner-staging/moblab"
 	"go.chromium.org/chromiumos/test/ctpv2/partner-staging/site"
 	"go.chromium.org/chromiumos/test/ctpv2/partner-staging/tools"
-
-	"google.golang.org/api/option"
 )
 
 const (

@@ -9,11 +9,10 @@ import (
 	"path/filepath"
 	"testing"
 
+	findingspb "go.chromium.org/luci/common/proto/findings"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
-
-	findingspb "go.chromium.org/luci/common/proto/findings"
 )
 
 func analyzeJSONTestFile(t testing.TB, filePath string) []*findingspb.Finding {

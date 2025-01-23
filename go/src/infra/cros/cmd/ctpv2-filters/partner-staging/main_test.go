@@ -12,9 +12,10 @@ import (
 	"testing"
 
 	gax "github.com/googleapis/gax-go/v2"
+	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/test/ctpv2/partner-staging/moblab"
-	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 )
 
 type MockMoblabClient struct {

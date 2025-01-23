@@ -14,9 +14,9 @@ import (
 	"cloud.google.com/go/bigquery"
 	"google.golang.org/api/option"
 
-	"infra/cros/cmd/ctpv2-filters/pre_process_filter/structs"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
+
+	"infra/cros/cmd/ctpv2-filters/pre_process_filter/structs"
 )
 
 const dataset = "analytics"

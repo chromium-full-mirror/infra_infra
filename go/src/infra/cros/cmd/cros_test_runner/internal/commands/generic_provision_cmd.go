@@ -8,12 +8,12 @@ import (
 	"context"
 	"fmt"
 
+	"google.golang.org/protobuf/types/known/anypb"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
-	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/protobuf/types/known/anypb"
 
 	"infra/cros/cmd/common_lib/common"
 	"infra/cros/cmd/common_lib/common_commands"
@@ -31,8 +31,8 @@ type GenericProvisionCmd struct {
 	TargetDevice     string
 
 	// Updates
-	InstallResp *testapi.InstallResponse
-	StartUpResp *testapi.ProvisionStartupResponse
+	InstallResp *api.InstallResponse
+	StartUpResp *api.ProvisionStartupResponse
 }
 
 // Instantiate extracts initial state info from the state keeper.
@@ -73,7 +73,7 @@ func (cmd *GenericProvisionCmd) instantiateWithHwTestStateKeeper(
 	}
 
 	if cmd.ProvisionRequest.GetDynamicIdentifier() == "cros-provision_primary" && cmd.ProvisionRequest.GetTarget() == "primary" && shouldUpdateFirmware(sk.CommonConfig, pool, sk.CrosTestRunnerRequest.GetParams().GetPrimaryDut()) {
-		metadata := &testapi.CrOSProvisionMetadata{
+		metadata := &api.CrOSProvisionMetadata{
 			UpdateFirmware: true,
 		}
 		anyMetadata, err := anypb.New(metadata)
@@ -158,7 +158,7 @@ func (cmd *GenericProvisionCmd) updateHwTestStateKeeper(
 	if cmd.InstallResp != nil {
 		responses := sk.ProvisionResponses[cmd.TargetDevice]
 		if responses == nil {
-			responses = []*testapi.InstallResponse{}
+			responses = []*api.InstallResponse{}
 		}
 		responses = append(responses, cmd.InstallResp)
 		sk.ProvisionResponses[cmd.TargetDevice] = responses
@@ -179,8 +179,8 @@ func (cmd *GenericProvisionCmd) updateHwTestStateKeeper(
 		if err := common.Inject(deviceMetadata, "", sk.Injectables, key); err != nil {
 			logging.Infof(ctx, "Warning: could not retrieve '%s' from InjectableStorage, %s", key, err)
 		} else if cmd.ProvisionRequest.GetInstallRequest().GetImagePath().GetPath() != "" {
-			deviceMetadata.ProvisionState = &testapi.ProvisionState{
-				SystemImage: &testapi.ProvisionState_SystemImage{
+			deviceMetadata.ProvisionState = &api.ProvisionState{
+				SystemImage: &api.ProvisionState_SystemImage{
 					SystemImagePath: cmd.ProvisionRequest.GetInstallRequest().GetImagePath(),
 				},
 			}

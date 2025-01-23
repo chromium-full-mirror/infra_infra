@@ -5,9 +5,10 @@ package rpc_services
 
 import (
 	"context"
-	"infra/cros/satlab/common/run"
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
+
+	"infra/cros/satlab/common/run"
 )
 
 // RunBvt run a bvt test with special parameters

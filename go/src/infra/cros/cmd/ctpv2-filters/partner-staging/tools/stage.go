@@ -11,10 +11,10 @@ import (
 	"path"
 	"time"
 
-	"go.chromium.org/chromiumos/test/ctpv2/partner-staging/moblab"
-
 	gax "github.com/googleapis/gax-go/v2"
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
+
+	"go.chromium.org/chromiumos/test/ctpv2/partner-staging/moblab"
 )
 
 // MoblabClient interface provides subset of Moblab API methods relevant to CTPV2

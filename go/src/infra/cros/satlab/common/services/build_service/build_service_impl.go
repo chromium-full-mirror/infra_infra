@@ -11,10 +11,11 @@ import (
 	"strings"
 	"time"
 
-	"go.chromium.org/luci/common/logging"
 	"google.golang.org/api/option"
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 	"google.golang.org/genproto/protobuf/field_mask"
+
+	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/recovery/models"
 	moblabapi "infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"

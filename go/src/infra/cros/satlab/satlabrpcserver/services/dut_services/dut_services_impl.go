@@ -15,8 +15,9 @@ import (
 	"strings"
 	"sync"
 
-	"go.chromium.org/luci/common/logging"
 	"golang.org/x/crypto/ssh"
+
+	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/satlab/common/enumeration"
 	"infra/cros/satlab/common/paths"

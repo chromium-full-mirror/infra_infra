@@ -10,12 +10,12 @@ import (
 	"log"
 	"os"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
+	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
+
 	"infra/cros/cmd/ctpv2-filters/pre_process_filter/interfaces"
 	"infra/cros/cmd/ctpv2-filters/pre_process_filter/policies"
 	"infra/cros/cmd/ctpv2-filters/pre_process_filter/structs"
-
-	"go.chromium.org/chromiumos/config/go/test/api"
-	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 )
 
 const (

@@ -10,14 +10,14 @@ import (
 	"math"
 	"strconv"
 
-	"infra/cros/cmd/ctpv2-filters/pre_process_filter/interfaces"
-
-	"infra/cros/cmd/ctpv2-filters/pre_process_filter/structs"
-
 	"cloud.google.com/go/bigquery"
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"golang.org/x/exp/slices"
 	"google.golang.org/api/iterator"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+
+	"infra/cros/cmd/ctpv2-filters/pre_process_filter/interfaces"
+	"infra/cros/cmd/ctpv2-filters/pre_process_filter/structs"
 )
 
 // PassRatePolicy is a helper struct for GetFile.
