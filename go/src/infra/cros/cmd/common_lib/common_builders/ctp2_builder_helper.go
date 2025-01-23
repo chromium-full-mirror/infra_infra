@@ -289,20 +289,12 @@ func buildSchedulerInfo(v1 *test_platform.Request, buildState *build.State) *tes
 	scheduler := testapi.SchedulerInfo_SCHEDUKE
 	if dryRun {
 		scheduler = testapi.SchedulerInfo_PRINT_REQUEST_ONLY
+		// TODO (varun): remove runWithQS support
 	} else if runWithQs || isVmlabPoolReq(v1) {
 		scheduler = testapi.SchedulerInfo_QSCHEDULER
 	}
 
-	// Run via QS if external CTP bucket.
-	builder := buildState.Build().GetBuilder()
-	if builder != nil {
-		if builder.Bucket != common.CTPBucket && builder.Bucket != common.CTPBucketShadow {
-			scheduler = testapi.SchedulerInfo_QSCHEDULER
-		}
-	}
-
 	return &testapi.SchedulerInfo{
-		// TODO(cdelagarza): Update to upstream variable.
 		Scheduler: scheduler,
 		QsAccount: v1.GetParams().GetScheduling().GetQsAccount(),
 	}
