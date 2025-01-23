@@ -1,0 +1,37 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package unifiedfleet.api.v1.models;
+
+option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
+
+// Defines configurations – user defined or default – for a group of bots.
+// The configurations are used to create a dashboard for SLOs.
+message MaintenanceConfig {
+  // The name of the maintenance configuration. should be unique/succinct
+  string name = 1;
+  // Emails of owners of these bots. Optional.
+  repeated string owners = 2;
+  // An enumeration of bot IDs belonging to this group
+  repeated string bot_id = 3;
+  // A prefix to match against bot ID string. Optional
+  repeated string bot_id_prefix = 4;
+  // The dimensions assigned to these bots
+  repeated string dimensions = 5;
+
+  // Defines the slo requirements for this maintenance configuration
+  message ServiceLevel {
+    string desciption = 1;
+    bool is_slo = 2;
+    uint32 min_availability = 3;
+  }
+  ServiceLevel service_level = 6;
+}
+
+// List maintenance configurations for each bots group
+message MaintenanceConfigs {
+  repeated MaintenanceConfig maintenance_config = 1;
+}
