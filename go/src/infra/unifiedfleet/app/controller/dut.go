@@ -1105,6 +1105,7 @@ func getChromeOSDeviceDataWithLSEAndMachine(ctx context.Context, lse *ufspb.Mach
 			logging.Warningf(ctx, "SchedulableLabels not found. Error: %s", err)
 		}
 	}
+	recoveryConfig := createRecoveryConfig(devConfig)
 
 	data := &ufspb.ChromeOSDeviceData{
 		LabConfig:                         lse,
@@ -1114,6 +1115,7 @@ func getChromeOSDeviceDataWithLSEAndMachine(ctx context.Context, lse *ufspb.Mach
 		DutState:                          dutState,
 		SchedulableLabels:                 schedulableLabels,
 		RespectAutomatedSchedulableLabels: enableUFSSchedulableLabels,
+		RecoveryConfig:                    recoveryConfig,
 	}
 	dutV1, err := osutil.AdaptToV1DutSpec(data, devConfig)
 	if err != nil {
@@ -1123,6 +1125,21 @@ func getChromeOSDeviceDataWithLSEAndMachine(ctx context.Context, lse *ufspb.Mach
 	dutV1.GetCommon().GetLabels().Stability = &isStable
 	data.DutV1 = dutV1
 	return data, nil
+}
+
+func createRecoveryConfig(devConfig *deviceconfig.Config) *ufspb.RecoveryConfig {
+	if devConfig == nil {
+		return nil
+	}
+	var hfs []string
+	for _, hf := range devConfig.GetHardwareFeatures() {
+		hfs = append(hfs, hf.String())
+	}
+	return &ufspb.RecoveryConfig{
+		PowerSupply:      devConfig.GetPower().String(),
+		Storage:          devConfig.GetStorage().String(),
+		HardwareFeatures: hfs,
+	}
 }
 
 // getDeviceConfig get device config form InvV2

@@ -14,6 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/api"
 	"go.chromium.org/chromiumos/config/go/payload"
+	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/testing/ftt"
@@ -3222,6 +3223,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetSchedulableLabels()["hw-test-component"].GetLabelValues(), should.Match([]string{"test_component_value"}))
 			assert.Loosely(t, resp.GetRespectAutomatedSchedulableLabels(), should.BeTrue)
 			assert.Loosely(t, resp.GetDutV1().GetCommon().GetLabels().GetStability(), should.BeTrue)
+			assert.Loosely(t, resp.GetRecoveryConfig(), should.NotBeNil)
 		})
 
 		t.Run("GetChromeOSDevicedata - hostname happy path", func(t *ftt.Test) {
@@ -3238,6 +3240,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetSchedulableLabels(), should.ContainKey("hw-test-component"))
 			assert.Loosely(t, resp.GetSchedulableLabels()["hw-test-component"].GetLabelValues(), should.Match([]string{"test_component_value"}))
 			assert.Loosely(t, resp.GetRespectAutomatedSchedulableLabels(), should.BeTrue)
+			assert.Loosely(t, resp.GetRecoveryConfig(), should.NotBeNil)
 		})
 
 		t.Run("GetChromeOSDevicedata - turn off schedulable label flag", func(t *ftt.Test) {
@@ -3257,6 +3260,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetHwidData(), should.Match(hwidMockData))
 			assert.Loosely(t, resp.GetSchedulableLabels(), should.Match(map[string]*ufspb.SchedulableLabelValues(nil)))
 			assert.Loosely(t, resp.GetRespectAutomatedSchedulableLabels(), should.BeFalse)
+			assert.Loosely(t, resp.GetRecoveryConfig(), should.NotBeNil)
 		})
 
 		t.Run("GetChromeOSDevicedata - InvV2 errors", func(t *ftt.Test) {
@@ -3310,6 +3314,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
 			// So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"testerr"})
 			assert.Loosely(t, resp.GetRespectAutomatedSchedulableLabels(), should.BeTrue)
+			assert.Loosely(t, resp.GetRecoveryConfig(), should.BeNil)
 		})
 
 		t.Run("GetChromeOSDevicedata - data not found", func(t *ftt.Test) {
@@ -3362,6 +3367,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			// So(resp.GetSchedulableLabels(), ShouldContainKey, "attr-design")
 			// So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"testerr"})
 			assert.Loosely(t, resp.GetRespectAutomatedSchedulableLabels(), should.BeTrue)
+			assert.Loosely(t, resp.GetRecoveryConfig(), should.BeNil)
 		})
 
 		t.Run("GetChromeOSDevicedata - machine not found by hostname", func(t *ftt.Test) {
@@ -3380,6 +3386,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetHwidData(), should.BeNil)
 			assert.Loosely(t, resp.GetSchedulableLabels(), should.Match(map[string]*ufspb.SchedulableLabelValues(nil)))
 			assert.Loosely(t, resp.GetRespectAutomatedSchedulableLabels(), should.BeFalse)
+			assert.Loosely(t, resp.GetRecoveryConfig(), should.BeNil)
 		})
 
 		t.Run("GetChromeOSDevicedata - machine not found by id", func(t *ftt.Test) {
@@ -3398,6 +3405,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetHwidData(), should.BeNil)
 			assert.Loosely(t, resp.GetSchedulableLabels(), should.Match(map[string]*ufspb.SchedulableLabelValues(nil)))
 			assert.Loosely(t, resp.GetRespectAutomatedSchedulableLabels(), should.BeFalse)
+			assert.Loosely(t, resp.GetRecoveryConfig(), should.BeNil)
 		})
 
 		t.Run("GetChromeOSDevicedata - machinelse not found Error", func(t *ftt.Test) {
@@ -3452,6 +3460,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			// So(resp.GetSchedulableLabels()["attr-design"].GetLabelValues(), ShouldResemble, []string{"test"})
 			assert.Loosely(t, resp.GetRespectAutomatedSchedulableLabels(), should.BeTrue)
 			assert.Loosely(t, resp.GetDutV1().GetCommon().GetLabels().GetStability(), should.BeTrue)
+			assert.Loosely(t, resp.GetRecoveryConfig(), should.NotBeNil)
 		})
 
 		t.Run("GetChromeOSDevicedata - happy path; hwid out of date and new cache", func(t *ftt.Test) {
@@ -3525,6 +3534,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetSchedulableLabels()["hw-test-component"].GetLabelValues(), should.Match([]string{"test_component_value"}))
 			assert.Loosely(t, resp.GetRespectAutomatedSchedulableLabels(), should.BeTrue)
 			assert.Loosely(t, resp.GetDutV1().GetCommon().GetLabels().GetStability(), should.BeTrue)
+			assert.Loosely(t, resp.GetRecoveryConfig(), should.NotBeNil)
 
 			hwidEnt, err = configuration.GetHwidData(ctx, hwid)
 			assert.Loosely(t, err, should.BeNil)
@@ -3576,6 +3586,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetSchedulableLabels(), should.NotContainKey("hw-test-component"))
 			assert.Loosely(t, resp.GetRespectAutomatedSchedulableLabels(), should.BeTrue)
 			assert.Loosely(t, resp.GetDutV1().GetCommon().GetLabels().GetStability(), should.BeTrue)
+			assert.Loosely(t, resp.GetRecoveryConfig(), should.NotBeNil)
 		})
 
 		t.Run("GetChromeOSDevicedata - normal hwid server traffic and no data in datastore", func(t *ftt.Test) {
@@ -3625,6 +3636,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetSchedulableLabels()["hw-test-component"].GetLabelValues(), should.Match([]string{"test_component_value"}))
 			assert.Loosely(t, resp.GetRespectAutomatedSchedulableLabels(), should.BeTrue)
 			assert.Loosely(t, resp.GetDutV1().GetCommon().GetLabels().GetStability(), should.BeTrue)
+			assert.Loosely(t, resp.GetRecoveryConfig(), should.NotBeNil)
 		})
 
 		t.Run("GetChromeOSDevicedata - legacy DutLabel data in datastore", func(t *ftt.Test) {
@@ -3684,6 +3696,7 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			assert.Loosely(t, resp.GetSchedulableLabels(), should.NotContainKey("hw-test-component"))
 			assert.Loosely(t, resp.GetRespectAutomatedSchedulableLabels(), should.BeTrue)
 			assert.Loosely(t, resp.GetDutV1().GetCommon().GetLabels().GetStability(), should.BeTrue)
+			assert.Loosely(t, resp.GetRecoveryConfig(), should.NotBeNil)
 		})
 	})
 }
@@ -3900,4 +3913,84 @@ func TestUpdateRecoveryData(t *testing.T) {
 		})
 	})
 
+}
+
+func TestCreateRecoveryConfig(t *testing.T) {
+	cases := []struct {
+		name string
+		in   *deviceconfig.Config
+		out  *ufspb.RecoveryConfig
+	}{
+		{
+			"empty",
+			nil,
+			nil,
+		},
+		{
+			"empty 2",
+			&deviceconfig.Config{},
+			&ufspb.RecoveryConfig{
+				PowerSupply:      "POWER_SUPPLY_UNSPECIFIED",
+				Storage:          "STORAGE_UNSPECIFIED",
+				HardwareFeatures: nil,
+			},
+		},
+		{
+			"only power",
+			&deviceconfig.Config{
+				Power: deviceconfig.Config_POWER_SUPPLY_BATTERY,
+			},
+			&ufspb.RecoveryConfig{
+				PowerSupply: "POWER_SUPPLY_BATTERY",
+				Storage:     "STORAGE_UNSPECIFIED",
+			},
+		},
+		{
+			"only storage",
+			&deviceconfig.Config{
+				Storage: deviceconfig.Config_STORAGE_SSD,
+			},
+			&ufspb.RecoveryConfig{
+				PowerSupply: "POWER_SUPPLY_UNSPECIFIED",
+				Storage:     "STORAGE_SSD",
+			},
+		},
+		{
+			"only hardware features",
+			&deviceconfig.Config{
+				HardwareFeatures: []deviceconfig.Config_HardwareFeature{
+					deviceconfig.Config_HARDWARE_FEATURE_TOUCHSCREEN,
+				},
+			},
+			&ufspb.RecoveryConfig{
+				PowerSupply:      "POWER_SUPPLY_UNSPECIFIED",
+				Storage:          "STORAGE_UNSPECIFIED",
+				HardwareFeatures: []string{"HARDWARE_FEATURE_TOUCHSCREEN"},
+			},
+		},
+		{
+			"happy path",
+			&deviceconfig.Config{
+				Power: deviceconfig.Config_POWER_SUPPLY_AC_ONLY,
+				HardwareFeatures: []deviceconfig.Config_HardwareFeature{
+					deviceconfig.Config_HARDWARE_FEATURE_WEBCAM,
+					deviceconfig.Config_HARDWARE_FEATURE_TOUCHSCREEN,
+				},
+				Storage: deviceconfig.Config_STORAGE_SSD,
+			},
+			&ufspb.RecoveryConfig{
+				PowerSupply:      "POWER_SUPPLY_AC_ONLY",
+				HardwareFeatures: []string{"HARDWARE_FEATURE_WEBCAM", "HARDWARE_FEATURE_TOUCHSCREEN"},
+				Storage:          "STORAGE_SSD",
+			},
+		},
+	}
+	t.Parallel()
+	for _, c := range cases {
+		cs := c
+		t.Run(cs.name, func(t *testing.T) {
+			mc := createRecoveryConfig(cs.in)
+			assert.Loosely(t, mc, should.Match(cs.out))
+		})
+	}
 }
