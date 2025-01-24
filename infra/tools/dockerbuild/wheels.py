@@ -2383,6 +2383,7 @@ SPECS.update({
         Universal('protobuf', '4.24.2', pyversions=['py3']),
         Universal('protobuf', '4.25.1', pyversions=['py3']),
         Universal('protobuf', '4.25.3', pyversions=['py3']),
+        Universal('protobuf', '5.29.3', pyversions=['py3']),
         Universal('py', '1.5.3'),
         Universal('py', '1.10.0'),
         Universal('py', '1.11.0'),
