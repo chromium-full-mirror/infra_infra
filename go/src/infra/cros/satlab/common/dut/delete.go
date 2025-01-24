@@ -237,7 +237,7 @@ func DeleteDNSEntry(hostname string) error {
 		"dns",
 		"sed",
 		"-i",
-		"/" + hostname + "/d",
+		"/" + hostname + "$/d",
 		"/etc/dut_hosts/hosts",
 	}
 	return exec.Command(args[0], args[1:]...).Run()
