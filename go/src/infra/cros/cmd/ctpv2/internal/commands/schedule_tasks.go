@@ -552,7 +552,6 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	}
 	req := buildReq.ScheduleBuildRequest
 
-	// Spit out the request
 	// b/377196624,b/388180876 - enable log streaming for test runner requests only if there are fewer requests than number defined by logsAndAnalyticsLimit.
 	// exceeding this limit may lead to an oom issue. (This metric is when executed on a bot with 8 GB memory)
 	logsAndAnalyticsLimit := 50
@@ -620,7 +619,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		summaries = append(summaries, fmt.Sprintf("* [latest attempt](%s)", common.BBUrl(builderID, scheduledBuild.GetId())))
 		step.SetSummaryMarkdown(strings.Join(summaries, "\n"))
 	} else {
-		errStr := "no bbid found from scheduler"
+		errStr := "no bbid found from scheduler as no device found due to unavailability or priority"
 		err = fmt.Errorf(errStr)
 		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error(), trSchedulingStart)
 
