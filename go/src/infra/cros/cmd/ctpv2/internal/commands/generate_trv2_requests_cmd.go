@@ -311,7 +311,7 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateReq(ctx context.Context, trReq *data
 	if len(testCases) == 0 {
 		errStr := "no test is found so, rejecting task"
 		logging.Infof(ctx, errStr)
-		err = fmt.Errorf("%s", errStr)
+		err = fmt.Errorf(errStr)
 		cmd.ObserveTrReqGenFail(ctx, trReq, key, errStr)
 		return nil, err
 

@@ -312,7 +312,7 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 		errmsg := "error while setting up scheduler"
 		cmd.ObserveSchedulerSetupFailure(ctx, errmsg)
 		logging.Infof(ctx, "%s: %s", errmsg, err)
-		return errors.Annotate(err, "%s", errmsg).Err()
+		return errors.Annotate(err, errmsg).Err()
 	}
 	dmc, err := dm.NewClient(ctx, pool)
 	if err != nil {
@@ -620,7 +620,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		step.SetSummaryMarkdown(strings.Join(summaries, "\n"))
 	} else {
 		errStr := "no bbid found from scheduler as no device found due to unavailability or priority"
-		err = fmt.Errorf("%s", errStr)
+		err = fmt.Errorf(errStr)
 		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error(), trSchedulingStart)
 
 		return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
@@ -684,7 +684,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 				if err != nil {
 					err = fmt.Errorf("error while extending lease %s with Device Manager: %w", leaseID, err)
 					summaries = append(summaries, fmt.Sprintf("* %s", err))
-					err = fmt.Errorf("%s", strings.Join(summaries, "\n"))
+					err = fmt.Errorf(strings.Join(summaries, "\n"))
 					return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, scheduledBuild, bbClient)
 				}
 				lastLeaseExtensionTime = time.Now()
@@ -819,7 +819,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		if err != nil {
 			err = fmt.Errorf("error while extracting results from test_runner build %d: %s", buildInfo.Id, err)
 			summaries = append(summaries, fmt.Sprintf("* %s", err))
-			err = fmt.Errorf("%s", strings.Join(summaries, "\n"))
+			err = fmt.Errorf(strings.Join(summaries, "\n"))
 			return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, scheduledBuild, bbClient)
 		}
 		common.WriteAnyObjectToStepLog(ctx, step, result, "extracted result from trv2")
@@ -897,7 +897,7 @@ func (cmd *ScheduleTasksCmd) GenerateReqForRetry(ctx context.Context, buildReq *
 	if len(testCases) == 0 {
 		errStr := "no test found for retry, no retry will be attempted"
 		logging.Infof(ctx, errStr)
-		err = fmt.Errorf("%s", errStr)
+		err = fmt.Errorf(errStr)
 		return nil, err
 
 	}
