@@ -52,7 +52,7 @@ func (pru *ALProvisionRequestUpdater) executor(req *api.InternalTestplan, log *l
 		log.Printf("Error while generating dynamic updates, %s", err)
 		return req, err
 	}
-	log.Println("Finished generating dyanmic updates.")
+	log.Println("Finished generating dynamic updates.")
 
 	return req, nil
 

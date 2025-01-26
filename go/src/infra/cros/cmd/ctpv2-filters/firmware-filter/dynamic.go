@@ -43,18 +43,32 @@ func generateProvisionRequests(req *api.InternalTestplan, specs *FirmwareSpecs) 
 		}
 	}
 
+	// TODO (oldProto-azrahman): remove when schedulingOptions is fully rolled.
 	if len(suiteMetadata.GetSchedulingUnits()) > 0 {
-		schedulingUnit := suiteMetadata.GetSchedulingUnits()[0]
-		swarmingDef := schedulingUnit.GetPrimaryTarget().GetSwarmingDef()
-		dynamicHelper.GenerateProvisionRequest(req, swarmingDef)
+		for _, schedulingUnit := range suiteMetadata.GetSchedulingUnits() {
+			generateProvisionRequestForSchedUnit(schedulingUnit, req, dynamicHelper)
+		}
+	}
 
-		for _, companion := range schedulingUnit.GetCompanionTargets() {
-			swarmingDef := companion.GetSwarmingDef()
-			dynamicHelper.GenerateProvisionRequest(req, swarmingDef)
+	if len(suiteMetadata.GetSchedulingUnitOptions()) > 0 {
+		for _, schedOption := range suiteMetadata.GetSchedulingUnitOptions() {
+			for _, schedulingUnit := range schedOption.GetSchedulingUnits() {
+				generateProvisionRequestForSchedUnit(schedulingUnit, req, dynamicHelper)
+			}
 		}
 	}
 
 	return nil
+}
+
+func generateProvisionRequestForSchedUnit(schedUnit *api.SchedulingUnit, req *api.InternalTestplan, dynamicHelper *DynamicFirmwareProvisionHelper) {
+	swarmingDef := schedUnit.GetPrimaryTarget().GetSwarmingDef()
+	dynamicHelper.GenerateProvisionRequest(req, swarmingDef)
+
+	for _, companion := range schedUnit.GetCompanionTargets() {
+		swarmingDef := companion.GetSwarmingDef()
+		dynamicHelper.GenerateProvisionRequest(req, swarmingDef)
+	}
 }
 
 // generateDynamicUpdateLookupTables populates the lookup table for the primary
@@ -62,25 +76,18 @@ func generateProvisionRequests(req *api.InternalTestplan, specs *FirmwareSpecs) 
 func generateDynamicUpdateLookupTables(req *api.InternalTestplan, specs *FirmwareSpecs, log *log.Logger) error {
 	suiteMetadata := req.GetSuiteInfo().GetSuiteMetadata()
 
+	// TODO (oldProto-azrahman): remove when schedulingOptions is fully rolled in.
 	for _, target := range suiteMetadata.GetSchedulingUnits() {
-		dynamicHelper := NewDynamicFirmwareProvisionHelper(specs)
-		if target.DynamicUpdateLookupTable == nil {
-			target.DynamicUpdateLookupTable = map[string]string{}
-		}
-		lookup := target.DynamicUpdateLookupTable
+		updateDynamicLookupTableForSchedUnit(target, specs, log)
+	}
 
-		// Do primary
-		primarySwarming := target.PrimaryTarget.GetSwarmingDef()
-		addFwProvisionValuesToLookup(lookup, primarySwarming, dynamicHelper, specs, log)
-
-		// Do companions
-		for _, companion := range target.GetCompanionTargets() {
-			swarmingDef := companion.GetSwarmingDef()
-			addFwProvisionValuesToLookup(lookup, swarmingDef, dynamicHelper, specs, log)
+	for _, schedOptions := range suiteMetadata.GetSchedulingUnitOptions() {
+		for _, target := range schedOptions.GetSchedulingUnits() {
+			updateDynamicLookupTableForSchedUnit(target, specs, log)
 		}
 	}
 
-	// Support legacy.
+	// TODO (oldProto-azrahman): remove when schedulingOptions is fully rolled in.
 	for _, targetReq := range suiteMetadata.GetTargetRequirements() {
 		for _, hwDef := range targetReq.GetHwRequirements().GetHwDefinition() {
 			dynamicHelper := NewDynamicFirmwareProvisionHelper(specs)
@@ -92,6 +99,24 @@ func generateDynamicUpdateLookupTables(req *api.InternalTestplan, specs *Firmwar
 		}
 	}
 	return nil
+}
+
+func updateDynamicLookupTableForSchedUnit(schedUnit *api.SchedulingUnit, specs *FirmwareSpecs, log *log.Logger) {
+	dynamicHelper := NewDynamicFirmwareProvisionHelper(specs)
+	if schedUnit.DynamicUpdateLookupTable == nil {
+		schedUnit.DynamicUpdateLookupTable = map[string]string{}
+	}
+	lookup := schedUnit.DynamicUpdateLookupTable
+
+	// Do primary
+	primarySwarming := schedUnit.PrimaryTarget.GetSwarmingDef()
+	addFwProvisionValuesToLookup(lookup, primarySwarming, dynamicHelper, specs, log)
+
+	// Do companions
+	for _, companion := range schedUnit.GetCompanionTargets() {
+		swarmingDef := companion.GetSwarmingDef()
+		addFwProvisionValuesToLookup(lookup, swarmingDef, dynamicHelper, specs, log)
+	}
 }
 
 func resolveSpec(spec string, specs *FirmwareSpecs, swarmingDef *api.SwarmingDefinition, fallbackToOSSource bool) string {

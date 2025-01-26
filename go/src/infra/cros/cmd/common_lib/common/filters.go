@@ -139,7 +139,6 @@ func CreateCTPDefaultWithContainerName(name string, digest string, build int) (*
 	binaryName := binaryName(name, build)
 
 	return &api.CTPFilter{ContainerInfo: &api.ContainerInfo{Container: c, BinaryName: binaryName}}, nil
-
 }
 
 func defaultName(ctx context.Context, name string) bool {

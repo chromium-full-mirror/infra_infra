@@ -283,17 +283,25 @@ func buildDataFromInternalTP(data *BqData, req *api.InternalTestplan) *BqData {
 	aName := req.GetSuiteInfo().GetSuiteRequest().GetAnalyticsName()
 	poolName := req.GetSuiteInfo().GetSuiteMetadata().GetPool()
 	sName := req.GetSuiteInfo().GetSuiteRequest().GetTestSuite().GetName()
+	schedUnitsInSuite := req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits()
+	schedUnitOptionsInSuite := req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnitOptions()
 	if len(req.GetSuiteInfo().GetSuiteMetadata().GetTargetRequirements()) > 0 {
 		b := req.GetSuiteInfo().GetSuiteMetadata().GetTargetRequirements()[0].GetSwRequirement().GetGcsPath()
 		if b != "" {
 			data.Build = buildFromGcs(b)
 		}
-	} else if len(req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits()) > 0 {
-		b := req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits()[0].GetPrimaryTarget().GetSwReq().GetGcsPath()
+	} else if len(schedUnitsInSuite) > 0 {
+		b := schedUnitsInSuite[0].GetPrimaryTarget().GetSwReq().GetGcsPath()
+		if b != "" {
+			data.Build = buildFromGcs(b)
+		}
+	} else if len(schedUnitOptionsInSuite) > 0 && len(schedUnitOptionsInSuite[0].GetSchedulingUnits()) > 0 {
+		b := schedUnitOptionsInSuite[0].GetSchedulingUnits()[0].GetPrimaryTarget().GetSwReq().GetGcsPath()
 		if b != "" {
 			data.Build = buildFromGcs(b)
 		}
 	}
+
 	if aName != "" {
 		data.AnalyticsName = aName
 	}

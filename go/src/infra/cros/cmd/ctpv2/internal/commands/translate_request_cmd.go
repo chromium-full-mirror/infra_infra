@@ -18,6 +18,7 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
@@ -152,7 +153,8 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 	bmvToDimsMap := updateSchedulingTargetsBasedOnBotAvailability(ctx, cmd.CtpReq)
 
 	// new field that supports multi-dut
-	suitemd.SchedulingUnits = getSchedulingUnits(cmd.CtpReq)
+	suitemd.SchedulingUnits = schedTargetstoSchedUnits(cmd.CtpReq.GetScheduleTargets())
+	suitemd.SchedulingUnitOptions = groupedSchedTargetsToSchedUnitOptions(cmd.CtpReq.GetGroupedScheduleTargets())
 
 	// non-multi-dut legacy flow to support backwards compatibility
 	// TODO(azrahman): remove this when not needed any more
@@ -185,7 +187,7 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 	}
 
 	// Validations
-	if len(suitemd.GetSchedulingUnits()) == 0 {
+	if len(suitemd.GetSchedulingUnits()) == 0 && len(suitemd.GetSchedulingUnitOptions()) == 0 {
 		logging.Infof(ctx, fmt.Sprintf("no scheduling units found at the end of translation. check logs to see if all of the targets are dropped."))
 		err = fmt.Errorf("No device targets found at the end of translation. Perhaps invalid targets provided in request.")
 		step.SetSummaryMarkdown(err.Error())
@@ -208,17 +210,49 @@ func updateSchedulingTargetsBasedOnBotAvailability(ctx context.Context, ctpReq *
 	}
 	botAvailabilityCache := make(map[string]bool)
 
+	if len(ctpReq.GetGroupedScheduleTargets()) > 0 {
+		// New proto flow
+		// Example: input: [(a, b, c), (d, e, f), (g)]
+		// b, f, g - these are invalid
+		// output: [(a, c), (d, e)]
+		newGroupedScheduleTargets := []*testapi.GroupedScheduleTargets{}
+		for _, groupedSchedTargets := range ctpReq.GetGroupedScheduleTargets() {
+			localBmvToDimsMap := map[string][]string{}
+			newSchedTargets := getNewSchedulingTargetsBasedOnBotAvailability(ctx, groupedSchedTargets.GetGroupedTargets(), localBmvToDimsMap, pool, botAvailabilityCache, swarmingServ)
+			if len(newSchedTargets) > 0 {
+				// at least one valid target is there so we don't need to report the other targets as bot params rejected.
+				// if the current valid target result into bot params rejected later (MO, request_generator), they will report it as bot params rejected.
+				newGroupedScheduleTargets = append(newGroupedScheduleTargets, &testapi.GroupedScheduleTargets{GroupedTargets: newSchedTargets})
+			} else {
+				// all potential targets were removed
+				// so this will mean that a required target will not get scheduled due to all targets in the list resulted in bot params rejected.
+				// example: input: [(a, b), (c, d)]
+				// c, d - these are invalid
+				// output: [(a, b)]; so we should generate bot params rejected for (c,d)
+				mergeMaps(localBmvToDimsMap, bmvToDimsMap)
+			}
+		}
+		ctpReq.GroupedScheduleTargets = newGroupedScheduleTargets
+	} else {
+		// TODO (oldProto-azrahman): remove when makes sense
+		ctpReq.ScheduleTargets = getNewSchedulingTargetsBasedOnBotAvailability(ctx, ctpReq.GetScheduleTargets(), bmvToDimsMap, pool, botAvailabilityCache, swarmingServ)
+	}
+
+	return bmvToDimsMap
+}
+
+func getNewSchedulingTargetsBasedOnBotAvailability(ctx context.Context, schedTargets []*testapi.ScheduleTargets, bmvToDimsMap map[string][]string, pool string, botAvailabilityCache map[string]bool, swarmingServ *swarming.Service) []*testapi.ScheduleTargets {
 	// this will hold all new available schedule targets
 	newSchedulingTargets := []*testapi.ScheduleTargets{}
 
-	for _, schedulingTargets := range ctpReq.GetScheduleTargets() {
+	for _, schedulingTargets := range schedTargets {
 		newTargets := []*testapi.Targets{}
 		for _, target := range schedulingTargets.GetTargets() {
 			model := target.HwTarget.GetLegacyHw().GetModel()
 			board := target.HwTarget.GetLegacyHw().GetBoard()
 			// vmlab fork has been historically based on supported boards and not solely based on pool value, this allows to handle cases where users are still sending pool value as DUT_POOL_QUOTA and expecting vm run.
 			if common.IsSupportedVMBoard(board) {
-				return bmvToDimsMap
+				return schedTargets
 			}
 			variant := target.GetHwTarget().GetLegacyHw().GetVariant()
 			bmvKey := common.ConstructKey(board, model, variant)
@@ -257,9 +291,14 @@ func updateSchedulingTargetsBasedOnBotAvailability(ctx context.Context, ctpReq *
 			newSchedulingTargets = append(newSchedulingTargets, newSchedulingTarget)
 		}
 	}
-	ctpReq.ScheduleTargets = newSchedulingTargets
 
-	return bmvToDimsMap
+	return newSchedulingTargets
+}
+
+func mergeMaps(inputMap map[string][]string, outputMap map[string][]string) {
+	for k, v := range inputMap {
+		outputMap[k] = v
+	}
 }
 
 func newBBClient(ctx context.Context) (buildbucketpb.BuildsClient, error) {
@@ -325,23 +364,43 @@ func targetRequirements(req *testapi.CTPRequest) []*testapi.TargetRequirements {
 	return targs
 }
 
-func getSchedulingUnits(req *testapi.CTPRequest) []*testapi.SchedulingUnit {
-	schedUnits := []*testapi.SchedulingUnit{}
-	for _, scheduleTarget := range req.GetScheduleTargets() {
-		newSchedUnit := &api.SchedulingUnit{CompanionTargets: []*api.Target{}}
-		for i, targ := range scheduleTarget.GetTargets() {
-			newTarget := TargetsToNewTarget(targ)
-			if i == 0 {
-				// primary target
-				newSchedUnit.PrimaryTarget = newTarget
-			} else {
-				// secondary target
-				newSchedUnit.CompanionTargets = append(newSchedUnit.CompanionTargets, newTarget)
-			}
+func schedTargetToSchedUnit(scheduleTarget *testapi.ScheduleTargets) *testapi.SchedulingUnit {
+	newSchedUnit := &api.SchedulingUnit{CompanionTargets: []*api.Target{}}
+	for i, targ := range scheduleTarget.GetTargets() {
+		newTarget := TargetsToNewTarget(targ)
+		if i == 0 {
+			// primary target
+			newSchedUnit.PrimaryTarget = newTarget
+		} else {
+			// secondary target
+			newSchedUnit.CompanionTargets = append(newSchedUnit.CompanionTargets, newTarget)
 		}
-		schedUnits = append(schedUnits, newSchedUnit)
+	}
+
+	return newSchedUnit
+}
+
+func schedTargetstoSchedUnits(schedTargets []*testapi.ScheduleTargets) []*testapi.SchedulingUnit {
+	schedUnits := []*testapi.SchedulingUnit{}
+	for _, scheduleTarget := range schedTargets {
+		schedUnits = append(schedUnits, schedTargetToSchedUnit(scheduleTarget))
 	}
 	return schedUnits
+}
+
+func groupedSchedTargetsToSchedUnitOptions(grouped_schedule_targets []*testapi.GroupedScheduleTargets) []*testapi.SchedulingUnitOptions {
+	schedUnitOptions := []*testapi.SchedulingUnitOptions{}
+	// Grouped targets allow setting and/or relationship between targets.
+	// inner i.e. {a, b} is OR relationship: a or b
+	// outer i.e. {a}, {b} is AND relationship: a and b
+	// [{schedTarget1, schedTarget2}, {schedTarget3, schedTarget4}]
+	// --> (schedTarget1 OR schedTarget2) AND (schedTarget3 OR schedTarget4)
+	for _, grouped_schedule_targets := range grouped_schedule_targets {
+		schedUnits := schedTargetstoSchedUnits(grouped_schedule_targets.GetGroupedTargets())
+		schedUnitOptions = append(schedUnitOptions, &testapi.SchedulingUnitOptions{SchedulingUnits: schedUnits, State: api.SchedulingUnitOptions_ONEOF})
+	}
+
+	return schedUnitOptions
 }
 
 func TargetsToNewTarget(targ *testapi.Targets) *api.Target {

@@ -23,16 +23,15 @@ func executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.C
 
 	var swRequirements *api.LegacySW
 
-	for _, target := range req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits() {
-		swRequirements = target.GetPrimaryTarget().GetSwReq()
-		primaryHwTarget := target.GetPrimaryTarget().GetSwarmingDef()
-		addToFoundCache(primaryHwTarget, foundHW)
-		generateProvisionInfo(primaryHwTarget, target.GetPrimaryTarget().GetSwReq(), log)
-
-		for _, t := range target.GetCompanionTargets() {
-			generateProvisionInfo(t.GetSwarmingDef(), t.GetSwReq(), log)
-			addToFoundCache(t.GetSwarmingDef(), foundHW)
+	for _, targetOptions := range req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnitOptions() {
+		for _, target := range targetOptions.GetSchedulingUnits() {
+			generateProvisionInfoForSchedUnit(target, foundHW, log)
 		}
+	}
+
+	// TODO(oldProto-azrahman): remove when schedulingOptions are fully rolled in.
+	for _, target := range req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits() {
+		generateProvisionInfoForSchedUnit(target, foundHW, log)
 	}
 
 	// TODO (oldProto-azrahman): remove old proto stuffs when schedulingUnits are fully rolled in.
@@ -52,6 +51,18 @@ func executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.C
 	}
 
 	return req, nil
+}
+
+// generateProvisionInfoForSchedUnit generates provision info for provided scheduling unit
+func generateProvisionInfoForSchedUnit(target *api.SchedulingUnit, hwFoundMap map[string]bool, log *log.Logger) {
+	primaryHwTarget := target.GetPrimaryTarget().GetSwarmingDef()
+	addToFoundCache(primaryHwTarget, hwFoundMap)
+	generateProvisionInfo(primaryHwTarget, target.GetPrimaryTarget().GetSwReq(), log)
+
+	for _, t := range target.GetCompanionTargets() {
+		generateProvisionInfo(t.GetSwarmingDef(), t.GetSwReq(), log)
+		addToFoundCache(t.GetSwarmingDef(), hwFoundMap)
+	}
 }
 
 func addToFoundCache(hwTarget *api.SwarmingDefinition, foundHW map[string]bool) {

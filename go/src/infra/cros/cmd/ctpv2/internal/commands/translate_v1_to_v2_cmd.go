@@ -340,7 +340,7 @@ func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg 
 	if err != nil {
 		return errors.Annotate(err, "build suite request err: %s", err.Error()).Err()
 	}
-	ctpReq.ScheduleTargets, err = buildScheduleTargets(testJobMsg, buildState)
+	ctpReq.GroupedScheduleTargets, err = buildScheduleTargets(testJobMsg, buildState)
 	if err != nil {
 		return errors.Annotate(err, "build schedule targets err: %s", err.Error()).Err()
 	}
@@ -510,9 +510,10 @@ func excludeFormatting(exclude string) string {
 	return fmt.Sprintf("--compatibility:exclude-filter,\"%s\"", exclude)
 }
 
-func buildScheduleTargets(testJobMsg *common.TestJobMessage, buildState *build.State) ([]*api.ScheduleTargets, error) {
+func buildScheduleTargets(testJobMsg *common.TestJobMessage, buildState *build.State) ([]*api.GroupedScheduleTargets, error) {
 	primaryBoard := ""
 	models := []string{}
+	oneOfModelsList := []string{}
 	swarmingDims := []string{}
 
 	// build related
@@ -526,11 +527,14 @@ func buildScheduleTargets(testJobMsg *common.TestJobMessage, buildState *build.S
 			if len(kv) == 2 { // needs to be exactly 2
 				key := kv[0]
 				value := kv[1]
-				if key == "models" {
-					models = append(models, value)
-				}
-				if key == "swarming_dimensions" {
-					swarmingDims = append(swarmingDims, value)
+				if value != "" {
+					if key == "models" {
+						models = append(models, value)
+					} else if key == "swarming_dimensions" {
+						swarmingDims = append(swarmingDims, value)
+					} else if key == "oneof_models" {
+						oneOfModelsList = append(oneOfModelsList, value)
+					}
 				}
 			}
 		}
@@ -564,8 +568,14 @@ func buildScheduleTargets(testJobMsg *common.TestJobMessage, buildState *build.S
 		swarmingDims = []string{"label-servo_state:WORKING", "label-servo_usb_state:NORMAL"}
 	}
 
-	scheduleTargetsList := []*api.ScheduleTargets{}
-	if len(models) == 0 {
+	// Models takes priority. If models list isn't empty, use it.
+	// so, force make oneOfModelsList empty.
+	if len(models) > 0 {
+		oneOfModelsList = []string{}
+	}
+
+	// If both models and oneOfModelsList is empty, then just schedule on the board.
+	if len(models) == 0 && len(oneOfModelsList) == 0 {
 		// add empty models so that request with board moves forward
 		models = append(models, "")
 	}
@@ -573,20 +583,49 @@ func buildScheduleTargets(testJobMsg *common.TestJobMessage, buildState *build.S
 	// Do not set AL gcs path for staging
 	// so that the filter grabs the latest build from prod
 	if common.IsStaging(buildState.Build().GetBuilder()) {
-		// These are set to avoid validation errors donw the line
+		// These are set to avoid validation errors down the line
 		// but these won't really be used anywhere
 		crosBuild := "brya-release/R131-16063.0.0"
 		crosBuildGcsBucket := "chromeos-image-archive"
 		installPath = fmt.Sprintf("gs://%s/%s", crosBuildGcsBucket, crosBuild)
 	}
+
+	groupedScheduleTargetsList := buildGroupedScheduleTargetsList(models, oneOfModelsList, primaryBoard, swarmingDims, buildType, installPath)
+	return groupedScheduleTargetsList, nil
+}
+
+// buildGroupedScheduleTargetsList creates grouped schedule targets list based on provided models or oneOfModelsList.
+func buildGroupedScheduleTargetsList(models []string, oneOfModelsList []string, primaryBoard string, swarmingDims []string, buildType string, installPath string) []*api.GroupedScheduleTargets {
+	scheduleTargetsList := []*api.ScheduleTargets{}
+	groupedScheduleTargetsList := []*api.GroupedScheduleTargets{}
+	// swTarget is same for all models
+	swTarget := &api.SWTarget{SwTarget: &api.SWTarget_LegacySw{LegacySw: &api.LegacySW{Build: buildType, GcsPath: installPath}}}
 	for _, model := range models {
-		hwTarget := &api.HWTarget{Target: &api.HWTarget_LegacyHw{LegacyHw: &api.LegacyHW{Board: primaryBoard, Model: model, SwarmingDimensions: swarmingDims}}}
-		swTarget := &api.SWTarget{SwTarget: &api.SWTarget_LegacySw{LegacySw: &api.LegacySW{Build: buildType, GcsPath: installPath}}}
-		target := &api.Targets{HwTarget: hwTarget, SwTarget: swTarget}
-		scheduleTargetsList = append(scheduleTargetsList, &api.ScheduleTargets{Targets: []*api.Targets{target}})
+		schedTarget := getScheduleTarget(primaryBoard, model, swarmingDims, swTarget)
+		// add them as individual schedule target so each of the target gets scheduled. (AND relation)
+		groupedScheduleTargetsList = append(groupedScheduleTargetsList, &api.GroupedScheduleTargets{GroupedTargets: []*api.ScheduleTargets{schedTarget}})
 	}
 
-	return scheduleTargetsList, nil
+	// return if we already have scheduleTargets that we need.
+	if len(groupedScheduleTargetsList) > 0 {
+		return groupedScheduleTargetsList
+	}
+
+	// If models list isn't provided, consider any models list
+	for _, model := range oneOfModelsList {
+		schedTarget := getScheduleTarget(primaryBoard, model, swarmingDims, swTarget)
+		// add these all to one scheduletargetlist so that only one single target gets scheduled among them. (OR relation)
+		scheduleTargetsList = append(scheduleTargetsList, schedTarget)
+	}
+	groupedScheduleTargetsList = append(groupedScheduleTargetsList, &api.GroupedScheduleTargets{GroupedTargets: scheduleTargetsList})
+
+	return groupedScheduleTargetsList
+}
+
+func getScheduleTarget(board string, model string, swarmingDims []string, swTarget *api.SWTarget) *api.ScheduleTargets {
+	hwTarget := &api.HWTarget{Target: &api.HWTarget_LegacyHw{LegacyHw: &api.LegacyHW{Board: board, Model: model, SwarmingDimensions: swarmingDims}}}
+	target := &api.Targets{HwTarget: hwTarget, SwTarget: swTarget}
+	return &api.ScheduleTargets{Targets: []*api.Targets{target}}
 }
 
 func getKarbonFilters() []*api.CTPFilter {

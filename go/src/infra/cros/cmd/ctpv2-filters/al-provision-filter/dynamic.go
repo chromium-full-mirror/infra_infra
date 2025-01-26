@@ -129,8 +129,19 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 		log.Printf("suite Metadata found nil")
 	}
 	schedulingUnits := suiteMetadata.GetSchedulingUnits()
-	if schedulingUnits == nil {
-		log.Printf("scheduling Units found nil")
+	updateSchedulingUnits(schedulingUnits, updater, log)
+
+	// handle schedulingOptions as well
+	for _, option := range suiteMetadata.GetSchedulingUnitOptions() {
+		schedUnits := option.GetSchedulingUnits()
+		updateSchedulingUnits(schedUnits, updater, log)
+	}
+}
+
+func updateSchedulingUnits(schedulingUnits []*api.SchedulingUnit, updater *ALProvisionRequestUpdater, log *log.Logger) {
+	if schedulingUnits == nil || len(schedulingUnits) == 0 {
+		log.Printf("scheduling Units found nil or empty")
+		return
 	}
 	for _, su := range schedulingUnits {
 		gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath()
@@ -140,8 +151,10 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 			su.DynamicUpdateLookupTable["installPath"] = gcsPath
 			continue
 		}
-
 		// Look up latest for board as not provided in gcs path.
+		if su.GetDynamicUpdateLookupTable() == nil {
+			log.Printf("dynamic lookup table is nil")
+		}
 		board, ok := su.GetDynamicUpdateLookupTable()["board"]
 		if !ok {
 			log.Printf("board not found")
@@ -169,7 +182,6 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 		su.GetPrimaryTarget().GetSwReq().GcsPath = installPath
 		applyBuildInfoFromInstallPathToTarget(su.GetPrimaryTarget(), installPath)
 	}
-
 }
 
 // applyBuildInfoFromInstallPathToTarget extracts the buildId and buildTarget

@@ -197,42 +197,60 @@ func (cmd *AlStatusUpdateCmd) alInvocationInformation() (string, string, string)
 			break
 		}
 
-		for _, unit := range item.SuiteInfo.GetSuiteMetadata().GetSchedulingUnits() {
-			if buildID != "" && buildTarget != "" {
-				break
-			}
-
-			for _, pair := range unit.GetPrimaryTarget().GetSwReq().GetKeyValues() {
+		for _, schedUnitOption := range item.SuiteInfo.GetSuiteMetadata().GetSchedulingUnitOptions() {
+			for _, unit := range schedUnitOption.GetSchedulingUnits() {
+				buildID, buildTarget, runTarget = cmd.fetchInvocationInfo(unit)
 				if buildID != "" && buildTarget != "" {
 					break
 				}
-
-				if pair.GetKey() == "al_build_id" {
-					buildID = pair.GetValue()
-				} else if pair.GetKey() == "al_build_target" {
-					buildTarget = pair.GetValue()
-				}
-			}
-			if cmd.BuildState != nil && !common.IsProd(cmd.BuildState.Build().GetBuilder()) {
-				// TODO (b/380912126): remove hardcoded build once filter supports fetching latest staging
-				buildID = "3618514"
-			}
-
-			dutInfo := unit.GetPrimaryTarget().GetSwarmingDef().GetDutInfo()
-			var board, model string
-			switch dutInfo.GetDutType().(type) {
-			case *api.Dut_Chromeos:
-				board = dutInfo.GetChromeos().GetDutModel().GetBuildTarget()
-				model = dutInfo.GetChromeos().GetDutModel().GetModelName()
-			}
-			if board == "" && model == "" {
-				continue
-			} else if model == "" {
-				runTarget = board
-			} else {
-				runTarget = fmt.Sprintf("%s_%s", board, model)
 			}
 		}
+
+		// TODO (oldProto-azrahman): remove after new proto change rolls in
+		for _, unit := range item.SuiteInfo.GetSuiteMetadata().GetSchedulingUnits() {
+			buildID, buildTarget, runTarget = cmd.fetchInvocationInfo(unit)
+			if buildID != "" && buildTarget != "" {
+				break
+			}
+		}
+	}
+
+	return buildID, buildTarget, runTarget
+}
+
+func (cmd *AlStatusUpdateCmd) fetchInvocationInfo(schedUnit *testapi.SchedulingUnit) (string, string, string) {
+	var buildID, buildTarget, runTarget string
+
+	for _, pair := range schedUnit.GetPrimaryTarget().GetSwReq().GetKeyValues() {
+		if buildID != "" && buildTarget != "" {
+			break
+		}
+
+		if pair.GetKey() == "al_build_id" {
+			buildID = pair.GetValue()
+		} else if pair.GetKey() == "al_build_target" {
+			buildTarget = pair.GetValue()
+		}
+	}
+
+	if cmd.BuildState != nil && !common.IsProd(cmd.BuildState.Build().GetBuilder()) {
+		// TODO (b/380912126): remove hardcoded build once filter supports fetching latest staging
+		buildID = "3618514"
+	}
+
+	dutInfo := schedUnit.GetPrimaryTarget().GetSwarmingDef().GetDutInfo()
+	var board, model string
+	switch dutInfo.GetDutType().(type) {
+	case *api.Dut_Chromeos:
+		board = dutInfo.GetChromeos().GetDutModel().GetBuildTarget()
+		model = dutInfo.GetChromeos().GetDutModel().GetModelName()
+	}
+	if board == "" && model == "" {
+		return buildID, buildTarget, runTarget
+	} else if model == "" {
+		runTarget = board
+	} else {
+		runTarget = fmt.Sprintf("%s_%s", board, model)
 	}
 
 	return buildID, buildTarget, runTarget

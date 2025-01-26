@@ -49,28 +49,61 @@ func generateProvisionRequests(req *api.InternalTestplan) (err error) {
 	}
 
 	// Create companion requests for chromeos devices.
+	// TODO (oldProto-azrahman): remove when SchedulingUnitsOptions are fully rolled in.
 	if len(suiteMetadata.GetSchedulingUnits()) > 0 {
 		// 0 index as we only need to count the length of one companions list.
-		schedulingUnit := suiteMetadata.GetSchedulingUnits()[0]
+		generateProvisionRequestForSchedUnit(suiteMetadata.GetSchedulingUnits()[0], req, provisionHelper)
+	}
 
-		// Create primary request.
-		swarmingDef := schedulingUnit.GetPrimaryTarget().GetSwarmingDef()
-		provisionHelper.GenerateProvisionRequest(req, swarmingDef, true)
-
-		// Create companion requests.
-		for _, companion := range schedulingUnit.GetCompanionTargets() {
-			swarmingDef := companion.GetSwarmingDef()
-			provisionHelper.GenerateProvisionRequest(req, swarmingDef, false)
+	if len(suiteMetadata.GetSchedulingUnitOptions()) > 0 {
+		for _, schedUnitOption := range suiteMetadata.GetSchedulingUnitOptions() {
+			// 0 index as we only need to count the length of one companions list.
+			generateProvisionRequestForSchedUnit(schedUnitOption.GetSchedulingUnits()[0], req, provisionHelper)
 		}
 	}
 
 	return
 }
 
+// generateProvisionRequestForSchedUnit generates provision request for provided scheduling unit
+func generateProvisionRequestForSchedUnit(schedulingUnit *api.SchedulingUnit, req *api.InternalTestplan, provisionHelper *helpers.DynamicProvisionHelper) {
+	// Create primary request.
+	swarmingDef := schedulingUnit.GetPrimaryTarget().GetSwarmingDef()
+	provisionHelper.GenerateProvisionRequest(req, swarmingDef, true)
+
+	// Create companion requests.
+	for _, companion := range schedulingUnit.GetCompanionTargets() {
+		swarmingDef := companion.GetSwarmingDef()
+		provisionHelper.GenerateProvisionRequest(req, swarmingDef, false)
+	}
+}
+
 // generateDynamicUpdateLookupTables adds provision related info to
 // each HwDefinition's dynamic lookup table.
 func generateDynamicUpdateLookupTables(req *api.InternalTestplan) {
-	for _, target := range req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits() {
+	for _, schedOption := range req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnitOptions() {
+		generateLookupTableForSchedUnits(schedOption.GetSchedulingUnits())
+	}
+
+	// TODO (oldProto-azrahman): remove when schedulingUnitOptions are fully rolled in.
+	generateLookupTableForSchedUnits(req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnits())
+
+	// TODO (oldProto-azrahman): remove old proto stuffs when schedulingUnits are fully rolled in.
+	// Support legacy.
+	for _, targetReq := range req.GetSuiteInfo().GetSuiteMetadata().GetTargetRequirements() {
+		for _, hwDef := range targetReq.GetHwRequirements().GetHwDefinition() {
+			lookupHelper := helpers.NewDynamicProvisionHelper()
+			if hwDef.DynamicUpdateLookupTable == nil {
+				hwDef.DynamicUpdateLookupTable = map[string]string{}
+			}
+			lookup := hwDef.DynamicUpdateLookupTable
+			addProvisionValuesToLookup(lookup, hwDef, lookupHelper)
+		}
+	}
+}
+
+func generateLookupTableForSchedUnits(schedUnits []*api.SchedulingUnit) {
+	for _, target := range schedUnits {
 		lookupHelper := helpers.NewDynamicProvisionHelper()
 		if target.DynamicUpdateLookupTable == nil {
 			target.DynamicUpdateLookupTable = map[string]string{}
@@ -91,19 +124,6 @@ func generateDynamicUpdateLookupTables(req *api.InternalTestplan) {
 		for _, companion := range target.GetCompanionTargets() {
 			swarmingDef := companion.GetSwarmingDef()
 			addProvisionValuesToLookup(lookup, swarmingDef, lookupHelper)
-		}
-	}
-
-	// TODO (oldProto-azrahman): remove old proto stuffs when schedulingUnits are fully rolled in.
-	// Support legacy.
-	for _, targetReq := range req.GetSuiteInfo().GetSuiteMetadata().GetTargetRequirements() {
-		for _, hwDef := range targetReq.GetHwRequirements().GetHwDefinition() {
-			lookupHelper := helpers.NewDynamicProvisionHelper()
-			if hwDef.DynamicUpdateLookupTable == nil {
-				hwDef.DynamicUpdateLookupTable = map[string]string{}
-			}
-			lookup := hwDef.DynamicUpdateLookupTable
-			addProvisionValuesToLookup(lookup, hwDef, lookupHelper)
 		}
 	}
 }

@@ -25,7 +25,6 @@ import (
 
 	goconfig "go.chromium.org/chromiumos/config/go"
 	gobuildapi "go.chromium.org/chromiumos/config/go/build/api"
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
@@ -104,7 +103,7 @@ type HwTarget struct {
 	boardWVaraint   string
 	provisionInfo   []*testapi.ProvisionInfo
 	gcsArtifactPath string // if cros type
-	apiTarget       *api.Target
+	apiTarget       *testapi.Target
 }
 
 // FakeHwTarget is for testing since fields are private.
@@ -219,14 +218,14 @@ func populateHelperNewProto(ctx context.Context, trHelper *TrV2ReqHelper) error 
 // FindSchedulingUnit matches scheduling targets by board-variant, then attempts to find by
 // model. If the requested target has a model then try to match on model, fall back to match on
 // no model. If no request model, choose first match.
-func FindSchedulingUnit(primary *HwTarget, companions []*HwTarget, schedUnitMetadataMap map[string][]*testapi.SchedulingUnit) *api.SchedulingUnit {
+func FindSchedulingUnit(primary *HwTarget, companions []*HwTarget, schedUnitMetadataMap map[string][]*testapi.SchedulingUnit) *testapi.SchedulingUnit {
 	primaryKey := primary.board + "-" + primary.variant
 	// If no scheduling unit is found in the map which matched the board, exit immediately.
 	schedulingUnitCandidates, ok := schedUnitMetadataMap[primaryKey]
 	if !ok {
 		return nil
 	}
-	var matchedSchedUnit *api.SchedulingUnit
+	var matchedSchedUnit *testapi.SchedulingUnit
 	for _, schedulingUnitCandidate := range schedulingUnitCandidates {
 		_, model, _ := targetToBoardModelVariant(schedulingUnitCandidate.GetPrimaryTarget())
 		// If not requested model, models must match.
@@ -276,24 +275,40 @@ func FindSchedulingUnit(primary *HwTarget, companions []*HwTarget, schedUnitMeta
 
 // buildSchedUnitMap converts the metadata scheduling units into
 // a map keyed by board-variant.
-func buildSchedUnitMap(suiteInfo *api.SuiteInfo) map[string][]*api.SchedulingUnit {
-	schedMap := map[string][]*api.SchedulingUnit{}
+func buildSchedUnitMap(suiteInfo *testapi.SuiteInfo) map[string][]*testapi.SchedulingUnit {
+	schedMap := map[string][]*testapi.SchedulingUnit{}
 
-	for _, schedUnit := range suiteInfo.GetSuiteMetadata().GetSchedulingUnits() {
-		board, _, variant := targetToBoardModelVariant(schedUnit.PrimaryTarget)
-		key := board + "-" + variant
-		if _, ok := schedMap[key]; !ok {
-			schedMap[key] = []*api.SchedulingUnit{}
+	for _, schedUnitOptions := range suiteInfo.GetSuiteMetadata().GetSchedulingUnitOptions() {
+		for _, schedUnit := range schedUnitOptions.GetSchedulingUnits() {
+			updateSchedUnitMapFromSchedUnit(schedUnit, schedMap)
 		}
-		schedMap[key] = append(schedMap[key], schedUnit)
+	}
+
+	if len(schedMap) > 0 {
+		// map already formed with newer proto, so return
+		return schedMap
+	}
+
+	// TODO (oldProto-azrahman): remove once new proto flow is rolled in
+	for _, schedUnit := range suiteInfo.GetSuiteMetadata().GetSchedulingUnits() {
+		updateSchedUnitMapFromSchedUnit(schedUnit, schedMap)
 	}
 
 	return schedMap
 }
 
+func updateSchedUnitMapFromSchedUnit(schedUnit *testapi.SchedulingUnit, schedMap map[string][]*testapi.SchedulingUnit) {
+	board, _, variant := targetToBoardModelVariant(schedUnit.PrimaryTarget)
+	key := board + "-" + variant
+	if _, ok := schedMap[key]; !ok {
+		schedMap[key] = []*testapi.SchedulingUnit{}
+	}
+	schedMap[key] = append(schedMap[key], schedUnit)
+}
+
 // findCompanionMatch matches companions to the candidate based
 // on board-variant, and same model matching as primary.
-func findCompanionMatch(companions []*HwTarget, candidate *api.Target) int {
+func findCompanionMatch(companions []*HwTarget, candidate *testapi.Target) int {
 	board, model, variant := targetToBoardModelVariant(candidate)
 	matchedIndex := -1
 	for i, companion := range companions {
@@ -342,7 +357,7 @@ func strictestTargetsFirst(targets []*HwTarget) []*HwTarget {
 	return res
 }
 
-func targetToBoardModelVariant(target *api.Target) (string, string, string) {
+func targetToBoardModelVariant(target *testapi.Target) (string, string, string) {
 	return strings.ToLower(getBuildTargetFromSchedulingTarget(target)),
 		strings.ToLower(getModelFromSchedulingTarget(target)),
 		strings.ToLower(target.GetSwarmingDef().GetVariant())
@@ -383,7 +398,7 @@ func populateHelper(ctx context.Context, trHelper *TrV2ReqHelper) error {
 	return nil
 }
 
-func populateHwTargetHelper(ctx context.Context, board string, model string, variant string, suiteInfo *api.SuiteInfo, dutInfo *labapi.Dut, apiTarget *api.Target) (*HwTarget, error) {
+func populateHwTargetHelper(ctx context.Context, board string, model string, variant string, suiteInfo *testapi.SuiteInfo, dutInfo *labapi.Dut, apiTarget *testapi.Target) (*HwTarget, error) {
 	hwTarget := &HwTarget{apiTarget: apiTarget}
 	hwTarget.board = strings.ToLower(board)
 	hwTarget.model = strings.ToLower(model)
@@ -493,7 +508,7 @@ func createCommand(ctx context.Context, trHelper *TrV2ReqHelper) *worker.Command
 	return cmd
 }
 
-func getFreeFormDimsForTarget(target *api.Target) []string {
+func getFreeFormDimsForTarget(target *testapi.Target) []string {
 	dims := []string{}
 	hwId := target.GetSwarmingDef().GetDutInfo().GetChromeos().GetHwid()
 	if hwId != "" {
@@ -543,7 +558,7 @@ func formatLabel(label string) string {
 	}
 }
 
-func getProvisionInfoFromTarget(target *api.Target, board string, variant string) []*testapi.ProvisionInfo {
+func getProvisionInfoFromTarget(target *testapi.Target, board string, variant string) []*testapi.ProvisionInfo {
 	if strings.ToLower(getBuildTargetFromSchedulingTarget(target)) == board && strings.ToLower(target.GetSwarmingDef().GetVariant()) == variant {
 		return target.GetSwarmingDef().GetProvisionInfo()
 	}
@@ -560,7 +575,7 @@ func getGcsPathFromProvisionInfos(provInfos []*testapi.ProvisionInfo) string {
 	return ""
 }
 
-func findGcsPathFromTarget(target *api.Target, board string, variant string) string {
+func findGcsPathFromTarget(target *testapi.Target, board string, variant string) string {
 	provInfos := getProvisionInfoFromTarget(target, board, variant)
 	if provInfos != nil {
 		return getGcsPathFromProvisionInfos(provInfos)
@@ -573,20 +588,26 @@ func findGcsPathFromTarget(target *api.Target, board string, variant string) str
 // This is based on the given board + id; then looping through the suite metadata to find
 // the target which matched these. We then will return the GCS path from there.
 func findGcsPath(suiteInfo *testapi.SuiteInfo, board string, variant string) string {
+	schedUnitOptions := suiteInfo.GetSuiteMetadata().GetSchedulingUnitOptions()
+	for _, groupedSchedUnitOptions := range schedUnitOptions {
+		// new proto flow
+		if groupedSchedUnitOptions != nil && len(groupedSchedUnitOptions.GetSchedulingUnits()) != 0 {
+			for _, schedUnit := range groupedSchedUnitOptions.GetSchedulingUnits() {
+				if gcsPath := findGcsPathFromSchedUnit(schedUnit, board, variant); gcsPath != "" {
+					return gcsPath
+				}
+			}
+			return ""
+		}
+	}
 
+	// TODO (oldProto-azrahman): remove after schedUnitOptions fully rolled in
 	schedUnits := suiteInfo.GetSuiteMetadata().GetSchedulingUnits()
 	if schedUnits != nil && len(schedUnits) != 0 {
 		// new proto flow
 		for _, schedUnit := range schedUnits {
-			// search primary target first
-			if gcsPath := findGcsPathFromTarget(schedUnit.PrimaryTarget, board, variant); gcsPath != "" {
+			if gcsPath := findGcsPathFromSchedUnit(schedUnit, board, variant); gcsPath != "" {
 				return gcsPath
-			}
-			// search secondary targets
-			for _, secondary := range schedUnit.CompanionTargets {
-				if gcsPath := findGcsPathFromTarget(secondary, board, variant); gcsPath != "" {
-					return gcsPath
-				}
 			}
 		}
 		return ""
@@ -610,6 +631,21 @@ func findGcsPath(suiteInfo *testapi.SuiteInfo, board string, variant string) str
 			}
 		}
 	}
+	return ""
+}
+
+func findGcsPathFromSchedUnit(schedUnit *testapi.SchedulingUnit, board string, variant string) string {
+	// search primary target first
+	if gcsPath := findGcsPathFromTarget(schedUnit.PrimaryTarget, board, variant); gcsPath != "" {
+		return gcsPath
+	}
+	// search secondary targets
+	for _, secondary := range schedUnit.CompanionTargets {
+		if gcsPath := findGcsPathFromTarget(secondary, board, variant); gcsPath != "" {
+			return gcsPath
+		}
+	}
+
 	return ""
 }
 
@@ -670,7 +706,7 @@ func getBuildTargetWVariantFromSchedulingTarget(target *testapi.Target) string {
 	return fmt.Sprintf("%s-%s", getBuildTargetFromSchedulingTarget(target), target.GetSwarmingDef().GetVariant())
 }
 
-func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*api.CrosTestRunnerDynamicRequest, error) {
+func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*testapi.CrosTestRunnerDynamicRequest, error) {
 	testSuites := []*testapi.TestSuite{
 		{
 			Name: trHelper.suiteName,
@@ -909,7 +945,7 @@ func createCftDeviceRequestFromTarget(target *HwTarget) (*skylab_test_runner.CFT
 	}, nil
 }
 
-func tryAttachFirmwareConfig(provisionState *testapi.ProvisionState, target *api.Target) {
+func tryAttachFirmwareConfig(provisionState *testapi.ProvisionState, target *testapi.Target) {
 	imageBucket := common_builders.DefaultChromeosBuildGcsBucket
 	firmwareRO := ""
 	firmwareRW := ""
@@ -1148,7 +1184,7 @@ func makeDisplayName(buildStr string, suite string, TRName string) string {
 	return fmt.Sprintf("%s/%s-%s", buildStr, suite, TRName)
 }
 
-func buildCrosProvisionState(target *api.Target) (*testapi.ProvisionState, error) {
+func buildCrosProvisionState(target *testapi.Target) (*testapi.ProvisionState, error) {
 	if target == nil {
 		return nil, fmt.Errorf("nil target")
 	}
@@ -1174,7 +1210,7 @@ func buildCrosProvisionState(target *api.Target) (*testapi.ProvisionState, error
 	return provisionState, nil
 }
 
-func buildAndroidProvisionState(target *api.Target) (*testapi.ProvisionState, error) {
+func buildAndroidProvisionState(target *testapi.Target) (*testapi.ProvisionState, error) {
 	if target == nil {
 		return nil, fmt.Errorf("nil target")
 	}
