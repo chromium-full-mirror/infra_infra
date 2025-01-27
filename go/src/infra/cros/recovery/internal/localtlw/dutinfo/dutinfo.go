@@ -10,12 +10,12 @@ import (
 	"runtime/debug"
 	"strings"
 
+	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/dutstate"
 	"infra/cros/recovery/tlw"
 	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	ufslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsmake "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -131,22 +131,20 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 	dut := lc.GetChromeosMachineLse().GetDeviceLse().GetDut()
 	p := dut.GetPeripherals()
 	ds := data.GetDutState()
-	dc := data.GetDeviceConfig()
+	rc := data.GetRecoveryConfig()
 	machine := data.GetMachine()
 	make := data.GetManufacturingConfig()
 	name := lc.GetName()
 	var battery *tlw.Battery
 	supplyType := tlw.ChromeOS_POWER_SUPPLY_UNSPECIFIED
-	if dc != nil {
-		switch dc.GetPower() {
-		case ufsdevice.Config_POWER_SUPPLY_BATTERY:
-			supplyType = tlw.ChromeOS_BATTERY
-			battery = &tlw.Battery{
-				State: convertHardwareState(ds.GetBatteryState()),
-			}
-		case ufsdevice.Config_POWER_SUPPLY_AC_ONLY:
-			supplyType = tlw.ChromeOS_AC_ONLY
+	switch deviceconfig.Config_PowerSupply(deviceconfig.Config_PowerSupply_value[rc.GetPowerSupply()]) {
+	case deviceconfig.Config_POWER_SUPPLY_BATTERY:
+		supplyType = tlw.ChromeOS_BATTERY
+		battery = &tlw.Battery{
+			State: convertHardwareState(ds.GetBatteryState()),
 		}
+	case deviceconfig.Config_POWER_SUPPLY_AC_ONLY:
+		supplyType = tlw.ChromeOS_AC_ONLY
 	}
 	setup := tlw.DUTSetupType_CROS
 	// TODO(b/270274087): return DUT setup type from lab service directly
@@ -186,9 +184,9 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			Cr50KeyEnv:          convertCr50KeyEnv(ds.GetCr50KeyEnv()),
 			DeviceSku:           machine.GetChromeosMachine().GetSku(),
 			DlmSkuId:            machine.GetChromeosMachine().GetDlmSkuId(),
-			Storage:             createDUTStorage(dc, ds),
+			Storage:             createDUTStorage(rc, ds),
 			Wifi:                createDUTWifi(make, ds),
-			Bluetooth:           createDUTBluetooth(ds, dc),
+			Bluetooth:           createDUTBluetooth(ds, rc),
 			Cellular:            createDUTCellular(ds, p, dut.GetModeminfo(), dut.GetSiminfo()),
 			Battery:             battery,
 			Chameleon:           createChameleon(p, ds),
@@ -276,7 +274,7 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 	lc := data.GetLabConfig()
 	l := lc.GetChromeosMachineLse().GetDeviceLse().GetLabstation()
 	ds := data.GetDutState()
-	dc := data.GetDeviceConfig()
+	rc := data.GetRecoveryConfig()
 	machine := data.GetMachine()
 	make := data.GetManufacturingConfig()
 	name := lc.GetName()
@@ -296,7 +294,7 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 			Cr50KeyEnv: convertCr50KeyEnv(ds.GetCr50KeyEnv()),
 			DeviceSku:  machine.GetChromeosMachine().GetSku(),
 			DlmSkuId:   machine.GetChromeosMachine().GetDlmSkuId(),
-			Storage:    createDUTStorage(dc, ds),
+			Storage:    createDUTStorage(rc, ds),
 			RpmOutlet:  createRPMOutlet(l.GetRpm(), ds),
 		},
 		ExtraAttributes: map[string][]string{
@@ -407,9 +405,9 @@ func createDUTHumanMotionRobot(p *ufslab.Peripherals, ds *ufslab.DutState) *tlw.
 	return tlwHmr
 }
 
-func createDUTStorage(dc *ufsdevice.Config, ds *ufslab.DutState) *tlw.Storage {
+func createDUTStorage(rc *ufspb.RecoveryConfig, ds *ufslab.DutState) *tlw.Storage {
 	return &tlw.Storage{
-		Type:  convertStorageType(dc.GetStorage()),
+		Type:  convertStorageType(deviceconfig.Config_Storage(deviceconfig.Config_Storage_value[rc.GetStorage()])),
 		State: convertHardwareState(ds.GetStorageState()),
 	}
 }
@@ -449,9 +447,9 @@ func createWifiRouterHosts(wifi *ufslab.Wifi) []*tlw.WifiRouterHost {
 	return routers
 }
 
-func createDUTBluetooth(ds *ufslab.DutState, dc *ufsdevice.Config) *tlw.Bluetooth {
+func createDUTBluetooth(ds *ufslab.DutState, rc *ufspb.RecoveryConfig) *tlw.Bluetooth {
 	return &tlw.Bluetooth{
-		Expected: configHasFeature(dc, ufsdevice.Config_HARDWARE_FEATURE_BLUETOOTH),
+		Expected: configHasFeature(rc, "HARDWARE_FEATURE_BLUETOOTH"),
 		State:    convertHardwareState(ds.GetBluetoothState()),
 	}
 }
@@ -567,9 +565,9 @@ func createDUTVersionInfo(v *ufslab.VersionInfo) *tlw.VersionInfo {
 	}
 }
 
-func configHasFeature(dc *ufsdevice.Config, hf ufsdevice.Config_HardwareFeature) bool {
-	for _, f := range dc.GetHardwareFeatures() {
-		if f == hf {
+func configHasFeature(mc *ufspb.RecoveryConfig, hf string) bool {
+	for _, f := range mc.GetHardwareFeatures() {
+		if strings.EqualFold(f, hf) {
 			return true
 		}
 	}

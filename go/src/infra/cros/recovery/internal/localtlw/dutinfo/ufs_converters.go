@@ -5,8 +5,9 @@
 package dutinfo
 
 import (
+	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
+
 	"infra/cros/recovery/tlw"
-	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
 	ufslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
@@ -49,15 +50,15 @@ func convertFirmwareChannel(s ufslab.ServoFwChannel) tlw.ServoFwChannel {
 	return tlw.ServoFwChannel_STABLE
 }
 
-var storageTypes = map[ufsdevice.Config_Storage]tlw.Storage_Type{
-	ufsdevice.Config_STORAGE_SSD:  tlw.Storage_SSD,
-	ufsdevice.Config_STORAGE_HDD:  tlw.Storage_HDD,
-	ufsdevice.Config_STORAGE_MMC:  tlw.Storage_MMC,
-	ufsdevice.Config_STORAGE_NVME: tlw.Storage_NVME,
-	ufsdevice.Config_STORAGE_UFS:  tlw.Storage_UFS,
+var storageTypes = map[deviceconfig.Config_Storage]tlw.Storage_Type{
+	deviceconfig.Config_STORAGE_SSD:  tlw.Storage_SSD,
+	deviceconfig.Config_STORAGE_HDD:  tlw.Storage_HDD,
+	deviceconfig.Config_STORAGE_MMC:  tlw.Storage_MMC,
+	deviceconfig.Config_STORAGE_NVME: tlw.Storage_NVME,
+	deviceconfig.Config_STORAGE_UFS:  tlw.Storage_UFS,
 }
 
-func convertStorageType(t ufsdevice.Config_Storage) tlw.Storage_Type {
+func convertStorageType(t deviceconfig.Config_Storage) tlw.Storage_Type {
 	if v, ok := storageTypes[t]; ok {
 		return v
 	}
