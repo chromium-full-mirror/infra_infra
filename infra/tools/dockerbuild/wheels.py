@@ -2163,6 +2163,7 @@ SPECS.update({
         Universal('google-api-core', '2.5.0', pyversions=['py3']),
         Universal('google-api-core', '2.11.0', pyversions=['py3']),
         Universal('google-api-core', '2.14.0', pyversions=['py3']),
+        Universal('google-api-core', '2.24.0', pyversions=['py3']),
         Universal('google-api-python-client', '1.6.2'),
         Universal('google-api-python-client', '1.12.8'),
         Universal('google-api-python-client', '2.2.0', pyversions=['py3']),

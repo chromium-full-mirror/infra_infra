@@ -3229,6 +3229,18 @@ wheel: <
 
 * *universal*
 
+### 2.24.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-api-core-py3"
+  version: "version:2.24.0"
+>
+```
+
+
+* *universal*
+
 ## **google-api-python-client**
 
 ### 1.6.2
