@@ -18,20 +18,28 @@ import (
 // isOnDevTPMKernelVersionExec verifies dev's tpm kernel version is match to expected value.
 //
 // For dev-signed firmware, tpm_kernver reported from
-// crossystem should always be 0x10001. Firmware update on DUTs with
-// incorrect tpm_kernver may fail due to firmware rollback protection.
+// crossystem should always be 0x10001 or 0x10000. OS update on DUTs with
+// incorrect tpm_kernver may fail due to kernel rollback protection.
 func matchDevTPMKernelVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	err := cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "tpm_kernver", "0x00010001")
+	err := cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "tpm_kernver", "0x00010000")
+	if err == nil {
+		return nil
+	}
+	err = cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "tpm_kernver", "0x00010001")
 	return errors.Annotate(err, "match dev tpm kernel version").Err()
 }
 
 // matchDevTPMFirmwareVersionExec verifies dev's tpm firmware version is match to expected value.
 //
 // For dev-signed firmware, tpm_fwver reported from
-// crossystem should always be 0x10001. Firmware update on DUTs with
+// crossystem should always be 0x10001 or 0x10000. Firmware update on DUTs with
 // incorrect tpm_fwver may fail due to firmware rollback protection.
 func matchDevTPMFirmwareVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	err := cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "tpm_fwver", "0x00010001")
+	err := cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "tpm_fwver", "0x00010000")
+	if err == nil {
+		return nil
+	}
+	err = cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), "tpm_fwver", "0x00010001")
 	return errors.Annotate(err, "match dev tpm firmware version").Err()
 }
 
