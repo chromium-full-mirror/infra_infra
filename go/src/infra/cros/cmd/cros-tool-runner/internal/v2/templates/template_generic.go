@@ -7,6 +7,7 @@ package templates
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -39,9 +40,16 @@ func (p *genericProcessor) Process(request *api.StartTemplatedContainerRequest) 
 	volumes = append(volumes, t.AdditionalVolumes...)
 	envs := []string{}
 	for _, env := range t.Env {
-		envValue := os.Getenv(env)
-		if envValue != "" {
+		// Check if environment variable is already set within the request
+		// via the <NAME>=<VALUE> format.
+		if len(strings.Split(env, "=")) == 2 {
 			envs = append(envs, env)
+		} else {
+			// Check if environment variable exists.
+			envValue := os.Getenv(env)
+			if envValue != "" {
+				envs = append(envs, env)
+			}
 		}
 	}
 	additionalOptions := &api.StartContainerRequest_Options{
