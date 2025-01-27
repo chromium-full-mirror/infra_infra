@@ -57,7 +57,7 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 
 	ftt.Run("Multi Translation, no grouping", t, func(t *ftt.Test) {
 		requests := map[string]*test_platform.Request{
-			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", true, false),
+			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", false, false),
 			"r2": getCTPv1Request("board", "model", "board-release/R124.0.0", "suite", "", "", false, false),
 		}
 		v2RequestMap, _, _ := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher, &build.State{}).BuildRequest()
@@ -81,7 +81,7 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 			request1 = request2
 			request2 = swap
 		}
-		assert.Loosely(t, request1.GetSchedulerInfo().GetScheduler(), should.Equal(testapi.SchedulerInfo_QSCHEDULER))
+		assert.Loosely(t, request1.GetSchedulerInfo().GetScheduler(), should.Equal(testapi.SchedulerInfo_SCHEDUKE))
 		assert.Loosely(t, request2.GetSchedulerInfo().GetScheduler(), should.Equal(testapi.SchedulerInfo_SCHEDUKE))
 		target1 := request1.GetScheduleTargets()[0].GetTargets()[0]
 		target2 := request2.GetScheduleTargets()[0].GetTargets()[0]

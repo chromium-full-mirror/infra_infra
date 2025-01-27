@@ -285,12 +285,10 @@ func buildCTPRequest(v1 *test_platform.Request, buildState *build.State) *testap
 // as well as the qs account for qs scheduling.
 func buildSchedulerInfo(v1 *test_platform.Request, buildState *build.State) *testapi.SchedulerInfo {
 	dryRun := v1.GetParams().GetDryRunCtpv2()
-	runWithQs := v1.GetParams().GetRunCtpv2WithQs()
 	scheduler := testapi.SchedulerInfo_SCHEDUKE
 	if dryRun {
 		scheduler = testapi.SchedulerInfo_PRINT_REQUEST_ONLY
-		// TODO (varun): remove runWithQS support
-	} else if runWithQs || isVmlabPoolReq(v1) {
+	} else if isVmlabPoolReq(v1) {
 		scheduler = testapi.SchedulerInfo_QSCHEDULER
 	}
 
