@@ -30,6 +30,12 @@ WINDOWS_ASSET_RE = {
 
 
 def do_latest():
+  if os.environ['_3PP_PLATFORM'].split('-')[-1] == '386':
+    # New prebuilt git on windows-386 is broken (no post-install.bat script).
+    # Pin to last known good version.
+    print("2.47.0.windows.2")
+    return
+
   print(
       json.load(
           urllib.request.urlopen(
