@@ -79,7 +79,8 @@ class FilesAbsCoverageTest(WaterfallTestCase):
         'covered_lines': 50,
         'commit_timestamp': '2020-01-07T00:00:00',
         'insert_timestamp': '2020-09-21T00:00:00',
-        'builder': 'linux-code-coverage'
+        'builder': 'linux-code-coverage',
+        'bucket': 'ci'
     }]
     mocked_report_rows.assert_called_with(expected_bq_rows, 'findit-for-me',
                                           'code_coverage_summaries',

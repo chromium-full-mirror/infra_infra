@@ -147,6 +147,7 @@ def _CreateBigqueryRows(file_coverage_results, commit_timestamp):
         'covered_lines': covered_lines,
         'commit_timestamp': commit_timestamp.isoformat(),
         'insert_timestamp': time_util.GetUTCNow().isoformat(),
-        'builder': file_coverage_result.builder
+        'builder': file_coverage_result.builder,
+        'bucket': file_coverage_result.bucket
     })
   return bq_rows
