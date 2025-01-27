@@ -3577,6 +3577,18 @@ wheel: <
 
 * *universal*
 
+### 2.27.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-bigquery-storage-py3"
+  version: "version:2.27.0"
+>
+```
+
+
+* *universal*
+
 ## **google-cloud-bigtable**
 
 ### 0.28.1
