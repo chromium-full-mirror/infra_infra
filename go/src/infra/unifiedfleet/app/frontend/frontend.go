@@ -44,8 +44,6 @@ func InstallServices(apiServer *server.Server) {
 		// Some clients send field masks as JSON dict, not as strings. This requires
 		// enabling non-standard field masks semantics.
 		p.EnableNonStandardFieldMasks = true
-		// TODO(vadimsh): This will be default soon.
-		p.UseProtobufV2 = true
 	})
 	api.RegisterFleetServer(apiServer, &api.DecoratedFleet{
 		Service: &FleetServerImpl{},
