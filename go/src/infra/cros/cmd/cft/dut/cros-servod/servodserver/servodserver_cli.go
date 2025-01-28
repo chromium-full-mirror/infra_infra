@@ -70,13 +70,13 @@ func (s *ServodService) getSatlabServodContainerIP(ctx context.Context, containe
 		s.logger.Println("dockerClient is null.... creating the docker client now.")
 		s.dockerClient, err = s.getDockerClient()
 		if err != nil {
-			s.logger.Println("failed to create the docker client.")
+			s.logger.Println("failed to create the docker client.", err)
 			return "", fmt.Errorf("failed to create the docker client")
 		}
 	}
 	containers, err := s.dockerClient.ContainerList(ctx, container.ListOptions{Filters: f})
 	if err != nil {
-		s.logger.Println("\n Error occurred while getting the docker containers list")
+		s.logger.Println("\n Error occurred while getting the docker containers list : ", err)
 		return "", err
 	}
 	// Return error if the container is not found or is not in running state.
