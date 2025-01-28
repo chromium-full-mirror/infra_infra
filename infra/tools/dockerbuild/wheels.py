@@ -1885,7 +1885,8 @@ SPECS.update({
         UniversalSource('PyYAML', '5.3.1', pyversions=['py3']),
         UniversalSource('PyYAML', '6.0.1', pyversions=['py3']),
         UniversalSource('Pympler', '0.8'),
-        UniversalSource('absl-py', '0.7.1', default=False), # https://github.com/abseil/abseil-py/issues/161
+        UniversalSource('absl-py', '0.7.1', default=False
+                       ),  # https://github.com/abseil/abseil-py/issues/161
         UniversalSource('apache-beam', '2.0.0'),
         UniversalSource('backports.ssl_match_hostname', '3.5.0.1'),
         UniversalSource('beartype', '0.15.0', pyversions=['py3']),
@@ -1919,6 +1920,7 @@ SPECS.update({
             pypi_name='google-compute-engine'),
         UniversalSource('googleapis-common-protos', '1.5.3'),
         UniversalSource('googleapis-common-protos', '1.59.0'),
+        UniversalSource('googleapis-common-protos', '1.66.0'),
         UniversalSource('grpc-google-iam-admin-v1', '0.10.0'),
         UniversalSource('grpc-google-iam-v1', '0.11.4'),
         UniversalSource('grpc-google-iam-v1', '0.12.3', pyversions=['py3']),
