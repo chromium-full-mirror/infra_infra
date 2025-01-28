@@ -119,6 +119,13 @@ func UpdateDutState(ctx context.Context, ds *chromeosLab.DutState) (*chromeosLab
 			return errors.Annotate(err, "Unable to update dut state for %s", ds.GetId().GetValue()).Err()
 		}
 		hc.LogDutStateChanges(oldDS, ds)
+
+		// Update corresponding device labels for DUTs if applicable
+		if machineLSE != nil && machineLSE.GetChromeosMachineLse() != nil {
+			if err = updateChromeOSDeviceLabels(ctx, hc, machineLSE, nil, true); err != nil {
+				return errors.Annotate(err, "Error updating device labels").Err()
+			}
+		}
 		return hc.SaveChangeEvents(ctx)
 	}
 
@@ -230,6 +237,14 @@ func UpdateDutStateWithMasks(ctx context.Context, maskSet map[string]bool, ds *c
 			return errors.Annotate(err, "Unable to update dut state for %s", newDs.GetId().GetValue()).Err()
 		}
 		hc.LogDutStateChanges(oldDs, newDs)
+
+		// Update corresponding device labels for DUTs if applicable
+		if machineLSE != nil && machineLSE.GetChromeosMachineLse() != nil {
+			if err = updateChromeOSDeviceLabels(ctx, hc, machineLSE, nil, true); err != nil {
+				return errors.Annotate(err, "Error updating device labels").Err()
+			}
+		}
+
 		return hc.SaveChangeEvents(ctx)
 	}
 

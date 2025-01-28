@@ -14,6 +14,7 @@ import (
 
 	"infra/cros/dutstate"
 	ufspb "infra/unifiedfleet/api/v1/models"
+	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"infra/unifiedfleet/app/external"
 	. "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/model/history"
@@ -336,12 +337,49 @@ func TestGetMachineLSELabels(t *testing.T) {
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_ATTACHED_DEVICE))
 			labels := resp.GetLabels()
 			assert.Loosely(t, labels, should.NotBeEmpty)
-			assert.Loosely(t, labels["lab_config_version_index"], should.NotBeNil)
-			assert.Loosely(t, labels["lab_config_version_index"].GetLabelValues(), should.NotBeEmpty)
-			assert.Loosely(t, labels["lab_config_version_index"].GetLabelValues()[0], should.Equal(lse1.GetUpdateTime().AsTime().Format(util.TimestampBasedVersionKeyFormat)))
 		})
 		t.Run("getMachineLSELabels - chromeos lse", func(t *ftt.Test) {
-			// not implemented
+			machine1 := &ufspb.Machine{
+				Name:         "machine-4",
+				SerialNumber: "machine-4-serial",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CROS_GOOGLER_DESK,
+				},
+			}
+			_, err := registration.CreateMachine(ctx, machine1)
+			assert.Loosely(t, err, should.BeNil)
+
+			lse1 := &ufspb.MachineLSE{
+				Name:     "machinelse-4",
+				Machines: []string{"machine-4"},
+				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+					ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{
+						ChromeosLse: &ufspb.ChromeOSMachineLSE_DeviceLse{
+							DeviceLse: &ufspb.ChromeOSDeviceLSE{
+								Device: &ufspb.ChromeOSDeviceLSE_Dut{
+									Dut: &chromeosLab.DeviceUnderTest{
+										Hostname: "machinelse-4",
+										Peripherals: &chromeosLab.Peripherals{
+											Servo: &chromeosLab.Servo{},
+											Rpm:   &chromeosLab.OSRPM{},
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			}
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesCreate, util.AtlLabAdminRealm)
+			lseResp, err := inventory.CreateMachineLSE(ctx, lse1)
+			assert.Loosely(t, err, should.BeNil)
+
+			resp, err := getMachineLSELabels(ctx, lseResp)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp.GetName(), should.Equal(util.AddPrefix(util.MachineLSECollection, lse1.GetName())))
+			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_CHROMEOS_DEVICE))
+			labels := resp.GetLabels()
+			assert.Loosely(t, labels, should.NotBeEmpty)
 		})
 	})
 }

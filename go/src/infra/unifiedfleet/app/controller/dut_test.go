@@ -473,6 +473,9 @@ func TestCreateDUT(t *testing.T) {
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "hosts/labstation-5")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, changes, should.HaveLength(1))
+			changes, err = history.QueryChangesByPropertyName(ctx, "name", "devicelabels/machineLSEs/dut-7")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
 		})
 		t.Run("CreateDUT - Existing DUT", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
@@ -3492,8 +3495,6 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 				},
 			}
 			const hwid = "test"
-			fakeUpdateHwidData(ctx, expiredHwidData, hwid, expiredTime)
-
 			machineHwid := &ufspb.Machine{
 				Name: "machine-using-hwid-server",
 				Device: &ufspb.Machine_ChromeosMachine{
@@ -3515,6 +3516,8 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			dutStateHwid := mockDutState("machine-using-hwid-server", "lse-using-hwid-server")
 			UpdateDutState(ctx, dutStateHwid)
 
+			_, err := fakeUpdateHwidData(ctx, expiredHwidData, hwid, expiredTime)
+			assert.Loosely(t, err, should.BeNil)
 			hwidEnt, err := configuration.GetHwidData(ctx, hwid)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, hwidEnt, should.NotBeNil)
@@ -3571,7 +3574,8 @@ func TestGetChromeOSDeviceData(t *testing.T) {
 			inventory.CreateMachineLSE(ctx, dutMachinelseThrottle)
 
 			dutStateThrottle := mockDutState("machine-throttle-hwid", "lse-throttle-hwid")
-			UpdateDutState(ctx, dutStateThrottle)
+			_, err := UpdateDutState(trafficCtx, dutStateThrottle)
+			assert.Loosely(t, err, should.BeNil)
 
 			resp, err := GetChromeOSDeviceData(trafficCtx, "machine-throttle-hwid", "")
 			assert.Loosely(t, err, should.BeNil)

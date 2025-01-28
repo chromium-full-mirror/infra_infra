@@ -137,6 +137,11 @@ func CreateDUT(ctx context.Context, machinelse *ufspb.MachineLSE) (*ufspb.Machin
 		}
 		hc.LogMachineLSEChanges(nil, machinelse)
 
+		// Create corresponding device labels
+		if err = updateChromeOSDeviceLabels(ctx, hc, machinelse, machine, false); err != nil {
+			return errors.Annotate(err, "Error creating device labels").Err()
+		}
+
 		// Update states
 		if err := hc.stUdt.addLseStateHelper(ctx, machinelse, machine); err != nil {
 			return err
@@ -340,6 +345,11 @@ func UpdateDUT(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_ma
 			return err
 		}
 		hc.LogMachineLSEChanges(oldMachinelse, machinelse)
+
+		// Update corresponding device labels
+		if err = updateChromeOSDeviceLabels(ctx, hc, machinelse, machine, true); err != nil {
+			return errors.Annotate(err, "Error updating device labels").Err()
+		}
 
 		// Update state changes.
 		dutState := machinelse.GetResourceState()
@@ -1450,5 +1460,35 @@ func validateUpdateTestData(ctx context.Context, hostname string) error {
 		return err
 	}
 
+	return nil
+}
+
+// updateChromeOSDeviceLabels updates the DeviceLabels for a DUT
+// This function must be called in a transaction
+func updateChromeOSDeviceLabels(ctx context.Context, hc *HistoryClient, lse *ufspb.MachineLSE, machine *ufspb.Machine, update bool) error {
+	if lse == nil {
+		return errors.New("updateChromeOSDeviceLabels - MachineLSE is nil")
+	}
+	if lse.GetChromeosMachineLse() == nil {
+		return fmt.Errorf("updateChromeOSDeviceLabels - MachineLSE %s is not a ChromeOS device", lse.GetName())
+	}
+
+	var oldDeviceLabels, newDeviceLabels *ufspb.DeviceLabels
+	var err error
+	if update {
+		oldDeviceLabelsName := util.AddPrefix(util.MachineLSECollection, lse.GetName())
+		oldDeviceLabels, err = inventory.GetDeviceLabels(ctx, oldDeviceLabelsName)
+		if err != nil {
+			logging.Infof(ctx, "updateChromeOSDeviceLabels - Could not find existing device labels for DUT %s. Continuing with update", lse.GetName())
+		}
+	}
+	newDeviceLabels, err = getChromeOSDeviceLabelsWithLSEAndMachine(ctx, lse, machine)
+	if err != nil {
+		return errors.Annotate(err, "updateChromeOSDeviceLabels - Error generating device labels").Err()
+	}
+	if _, err = inventory.BatchUpdateDeviceLabels(ctx, []*ufspb.DeviceLabels{newDeviceLabels}); err != nil {
+		return errors.Annotate(err, "updateChromeOSDeviceLabels - Unable to batch update device labels").Err()
+	}
+	hc.LogDeviceLabelsChanges(oldDeviceLabels, newDeviceLabels)
 	return nil
 }

@@ -985,6 +985,60 @@ func TestUpdateMachine(t *testing.T) {
 	})
 }
 
+func TestUpdateMachineDeviceLabels(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	ftt.Run("UpdateMachines with DeviceLabels", t, func(t *ftt.Test) {
+		t.Run("Update machine with device labels happy path", func(t *ftt.Test) {
+			machine1 := &ufspb.Machine{
+				Name: "machine-update-with-devicelabels-1",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS5,
+					Rack: "chromeos5-test",
+				},
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{},
+				},
+			}
+			_, err := registration.CreateMachine(ctx, machine1)
+			assert.Loosely(t, err, should.BeNil)
+			lse1 := &ufspb.MachineLSE{
+				Name:     "machine-update-with-devicelabels-lse-1",
+				Machines: []string{"machine-update-with-devicelabels-1"},
+				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
+					ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{},
+				},
+			}
+			_, err = inventory.CreateMachineLSE(ctx, lse1)
+			assert.Loosely(t, err, should.BeNil)
+
+			machine2 := &ufspb.Machine{
+				Name: "machine-update-with-devicelabels-1",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS7,
+					Rack: "chromeos7-test",
+				},
+			}
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AcsLabAdminRealm)
+			_, err = UpdateMachine(ctx, machine2, &field_mask.FieldMask{Paths: []string{"zone", "rack"}})
+			assert.Loosely(t, err, should.BeNil)
+
+			resp, err := inventory.GetDeviceLabels(ctx, util.AddPrefix(util.MachineLSECollection, "machine-update-with-devicelabels-lse-1"))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetName(), should.Equal("machineLSEs/machine-update-with-devicelabels-lse-1"))
+			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_CHROMEOS_DEVICE))
+
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "devicelabels/machineLSEs/machine-update-with-devicelabels-lse-1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("device_labels"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+		})
+	})
+}
+
 func TestUpdateDutMeta(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()

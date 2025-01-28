@@ -19,6 +19,7 @@ import (
 
 	"infra/cros/dutstate"
 	"infra/libs/fleet/device/attacheddevice"
+	"infra/libs/fleet/device/dut"
 	"infra/libs/skylab/inventory/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -243,7 +244,11 @@ func getMachineLSELabels(ctx context.Context, lse *ufspb.MachineLSE) (*ufspb.Dev
 	if lse.GetChromeBrowserMachineLse() != nil {
 		return getBrowserHostLabels(lse), nil
 	} else if lse.GetChromeosMachineLse() != nil {
-		return nil, errors.New("chromeos device label generation not implemented")
+		device, err := getChromeOSDeviceDataWithLSEAndMachine(ctx, lse, nil)
+		if err != nil {
+			return nil, errors.Annotate(err, "failed to get chromeos device data").Err()
+		}
+		return getChromeOSDeviceLabels(ctx, device), nil
 	} else if lse.GetAttachedDeviceLse() != nil {
 		device, err := GetAttachedDeviceData(ctx, lse)
 		if err != nil {
@@ -254,6 +259,19 @@ func getMachineLSELabels(ctx context.Context, lse *ufspb.MachineLSE) (*ufspb.Dev
 	}
 	// Ignore other LSEs (eg. labstation)
 	return nil, nil
+}
+
+func getChromeOSDeviceLabelsWithLSEAndMachine(ctx context.Context, lse *ufspb.MachineLSE, machine *ufspb.Machine) (*ufspb.DeviceLabels, error) {
+	if lse.GetChromeosMachineLse() == nil {
+		// Ignore other LSEs (eg. labstation)
+		return nil, nil
+	}
+
+	deviceData, err := getChromeOSDeviceDataWithLSEAndMachine(ctx, lse, machine)
+	if err != nil {
+		return nil, errors.Annotate(err, "failed to get chromeos device data").Err()
+	}
+	return getChromeOSDeviceLabels(ctx, deviceData), nil
 }
 
 func getBrowserVMLabels(vm *ufspb.VM) *ufspb.DeviceLabels {
@@ -283,14 +301,36 @@ func getBrowserLabelsResponse(name, state, zone string) *ufspb.DeviceLabels {
 	}
 }
 
+func getChromeOSDeviceLabels(ctx context.Context, deviceData *ufspb.ChromeOSDeviceData) *ufspb.DeviceLabels {
+	dims := getChromeOSBotSwarmingDimensions(ctx, deviceData)
+	deviceLabels := convertSwarmingDimensionsToDeviceLabels(dims)
+	deviceLabels.Name = util.AddPrefix(util.MachineLSECollection, deviceData.GetLabConfig().GetName())
+	deviceLabels.ResourceType = ufspb.ResourceType_RESOURCE_TYPE_CHROMEOS_DEVICE
+	return deviceLabels
+}
+
+func getChromeOSBotSwarmingDimensions(ctx context.Context, deviceData *ufspb.ChromeOSDeviceData) *swarming.Dimensions {
+	r := func(e error) {
+		logging.Warningf(ctx, "Problem getting device data for DUT %s: %s", deviceData.GetLabConfig().GetName(), e.Error())
+	}
+	var machine string
+	if len(deviceData.GetLabConfig().GetMachines()) > 0 {
+		machine = deviceData.GetLabConfig().GetMachines()[0]
+	}
+	dutState := dutstate.Info{
+		State:    dutstate.ConvertFromUFSState(deviceData.GetLabConfig().GetResourceState()),
+		Time:     deviceData.GetLabConfig().GetUpdateTime().GetSeconds(),
+		DeviceId: machine,
+	}
+	dims := dut.GetDUTBotDims(ctx, r, dutState, deviceData)
+	return &dims
+}
+
 func getAttachedDeviceLabels(ctx context.Context, deviceData *ufsAPI.AttachedDeviceData) *ufspb.DeviceLabels {
 	dims := getAttachedDeviceSwarmingDimensions(ctx, deviceData)
 	deviceLabels := convertSwarmingDimensionsToDeviceLabels(dims)
 	deviceLabels.Name = util.AddPrefix(util.MachineLSECollection, deviceData.GetLabConfig().GetName())
 	deviceLabels.ResourceType = ufspb.ResourceType_RESOURCE_TYPE_ATTACHED_DEVICE
-	// botstate labels from shivas internal-print-bot-info
-	deviceLabels.Labels["lab_config_version_index"] = &ufspb.DeviceLabelValues{LabelValues: []string{deviceData.GetLabConfig().GetUpdateTime().AsTime().Format(util.TimestampBasedVersionKeyFormat)}}
-	deviceLabels.Labels["dut_state_version_index"] = &ufspb.DeviceLabelValues{LabelValues: []string{deviceData.GetDutState().GetUpdateTime().AsTime().Format(util.TimestampBasedVersionKeyFormat)}}
 	return deviceLabels
 }
 

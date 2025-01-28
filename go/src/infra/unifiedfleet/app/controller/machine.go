@@ -257,6 +257,18 @@ func UpdateMachine(ctx context.Context, machine *ufspb.Machine, mask *field_mask
 			return errors.Annotate(err, "unable to batch update machine %s", machine.Name).Err()
 		}
 
+		// Update corresponding device labels for DUTs if applicable
+		if machine.GetChromeosMachine() != nil {
+			machinelses, err := inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", machine.GetName(), false)
+			if err != nil {
+				logging.Infof(ctx, "fail to get hosts for machine %s", machine.GetName())
+			} else if len(machinelses) != 0 {
+				if err = updateChromeOSDeviceLabels(ctx, hc, machinelses[0], machine, true); err != nil {
+					return errors.Annotate(err, "Error updating device labels").Err()
+				}
+			}
+		}
+
 		updatedMachine = machine
 		hc.LogMachineChanges(oldMachineCopy, machine)
 		return hc.SaveChangeEvents(ctx)
