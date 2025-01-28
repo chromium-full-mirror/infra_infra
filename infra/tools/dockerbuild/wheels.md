@@ -9210,12 +9210,72 @@ wheel: <
 
 * *universal*
 
-### 7.3.1
+### 7.3.2
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/pytest-py3"
-  version: "version:7.3.1"
+  version: "version:7.3.2"
+>
+```
+
+
+* *universal*
+
+### 7.4.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-py3"
+  version: "version:7.4.4"
+>
+```
+
+
+* *universal*
+
+### 8.0.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-py3"
+  version: "version:8.0.2"
+>
+```
+
+
+* *universal*
+
+### 8.1.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-py3"
+  version: "version:8.1.2"
+>
+```
+
+
+* *universal*
+
+### 8.2.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-py3"
+  version: "version:8.2.2"
+>
+```
+
+
+* *universal*
+
+### 8.3.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-py3"
+  version: "version:8.3.4"
 >
 ```
 
@@ -9298,6 +9358,78 @@ wheel: <
 
 * *universal*
 
+### 2.12.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-cov-py2_py3"
+  version: "version:2.12.1"
+>
+```
+
+
+* *universal*
+
+### 3.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-cov-py2_py3"
+  version: "version:3.0.0"
+>
+```
+
+
+* *universal*
+
+### 4.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-cov-py2_py3"
+  version: "version:4.0.0"
+>
+```
+
+
+* *universal*
+
+### 4.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-cov-py2_py3"
+  version: "version:4.1.0"
+>
+```
+
+
+* *universal*
+
+### 5.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-cov-py2_py3"
+  version: "version:5.0.0"
+>
+```
+
+
+* *universal*
+
+### 6.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-cov-py2_py3"
+  version: "version:6.0.0"
+>
+```
+
+
+* *universal*
+
 ## **pytest-forked**
 
 ### 1.3.0
@@ -9306,6 +9438,42 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/pytest-forked-py2_py3"
   version: "version:1.3.0"
+>
+```
+
+
+* *universal*
+
+### 1.4.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-forked-py2_py3"
+  version: "version:1.4.0"
+>
+```
+
+
+* *universal*
+
+### 1.5.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-forked-py2_py3"
+  version: "version:1.5.0"
+>
+```
+
+
+* *universal*
+
+### 1.6.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-forked-py2_py3"
+  version: "version:1.6.0"
 >
 ```
 
@@ -9404,6 +9572,42 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/pytest-xdist-py3"
   version: "version:3.3.1"
+>
+```
+
+
+* *universal*
+
+### 3.4.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-xdist-py3"
+  version: "version:3.4.0"
+>
+```
+
+
+* *universal*
+
+### 3.5.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-xdist-py3"
+  version: "version:3.5.0"
+>
+```
+
+
+* *universal*
+
+### 3.6.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-xdist-py3"
+  version: "version:3.6.1"
 >
 ```
 
