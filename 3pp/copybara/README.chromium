@@ -1,8 +1,8 @@
 Name: copybara
 URL: https://github.com/google/copybara
-Version: b3a5c15fa03bfcce7e03c75dcbcb181333058997
+Version: e00ac09be88bcd3b924bc382e0eee4db16071935
 Date: 2025-01-13
-Revision: b3a5c15fa03bfcce7e03c75dcbcb181333058997
+Revision: e00ac09be88bcd3b924bc382e0eee4db16071935
 License: Apache 2.0
 License File: LICENSE
 Security Critical: No
