@@ -28,6 +28,9 @@ service FleetConsole {
 
   // CountDevices provides a count of the devices
   rpc CountDevices(CountDevicesRequest) returns (CountDevicesResponse) {};
+
+  // RepopulateCache repopulates the cache, meant to be triggered by cron.
+  rpc RepopulateCache(RepopulateCacheRequest) returns (RepopulateCacheResponse) {};
 }
 
 // PingRequest intentionally contains nothing.
@@ -158,3 +161,6 @@ message DeviceStateCounts {
   int32 repair_failed = 4;
 }
 
+message RepopulateCacheRequest {}
+
+message RepopulateCacheResponse {}
