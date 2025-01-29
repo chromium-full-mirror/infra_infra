@@ -67,7 +67,7 @@ func NormalizeTaskName(name string) (TaskName, error) {
 		return AuditRPM, nil
 	case "repair", "recovery":
 		return Recovery, nil
-	case "mhrepair", "mh_recovery", "mh-recovery":
+	case "mhrepair", "mh_recovery", "mh-recovery", "mh-repair", "mh_repair":
 		return MHRecovery, nil
 	case "deep-repair", "deep_repair":
 		return DeepRecovery, nil
