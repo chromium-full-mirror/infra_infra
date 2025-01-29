@@ -16,6 +16,9 @@ import os
 import pathlib
 
 __PYPROJECT_TOML = """
+[project]
+name = {}
+version = {}
 [build-system]
 requires = [ {} ]
 """
@@ -24,8 +27,11 @@ if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   # TODO(fancl): We should remove '--remotes' eventually and having all
   # dependencies available locally
+  parser.add_argument('--name')
+  parser.add_argument('--version')
   parser.add_argument('--remotes', nargs='*', default=[])
   parser.add_argument('--locals', nargs='*', default=[])
+  parser.add_argument('--backend', default=None)
   args = parser.parse_args()
 
   deps = args.remotes
@@ -35,4 +41,8 @@ if __name__ == "__main__":
     deps.append('@'.join((name, pathlib.Path(path).as_uri())))
 
   with open('pyproject.toml', 'w') as f:
-    f.write(__PYPROJECT_TOML.format(','.join('\'{}\''.format(d) for d in deps)))
+    f.write(__PYPROJECT_TOML.format(
+        repr(args.name), repr(args.version),
+        ','.join(repr(d) for d in deps)))
+    if args.backend:
+      f.write('build-backend = {}\n'.format(repr(args.backend)))

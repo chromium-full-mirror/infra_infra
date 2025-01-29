@@ -7034,6 +7034,20 @@ wheel: <
 * *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
+### 2.2.3.chromium.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pandas/${vpython_platform}"
+  version: "version:2.2.3.chromium.1"
+>
+```
+
+
+* *mac-arm64-py3.11*
+* *manylinux-x64-py3.11*
+* *windows-x64-py3.11*
+
 ## **parameterized**
 
 ### 0.7.0

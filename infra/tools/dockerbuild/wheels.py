@@ -1134,6 +1134,31 @@ SPECS.update({
             patch_version='chromium.1',
         ),
         SourceOrPrebuilt(
+            'pandas',
+            '2.2.3',
+            build_deps=BuildDependencies(
+                remote=[
+                    'meson-python>=0.13.1',
+                    'meson>=1.2.1,<2',
+                    'wheel',
+                    'Cython~=3.0.5',
+                    'versioneer',
+                ],
+                local=[_LATEST_NUMPY],
+                backend='mesonpy',
+            ),
+            only_plat=[
+                # TODO(fancl): We should copy msvcp140.dll and
+                # msvcp140_1.dll for windows build. See also:
+                # https://github.com/MacPython/pandas-wheels/blob/master/azure/windows.yml
+                'windows-x64-py3.11',
+                'manylinux-x64-py3.11',
+                'mac-arm64-py3.11',
+            ],
+            pyversions=['py3'],
+            patch_version='chromium.1',
+        ),
+        SourceOrPrebuilt(
             'psutil',
             '5.6.2',
             packaged=(),

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import collections
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import glob
 import os
 import platform
@@ -464,17 +464,14 @@ def SetupPythonPackages(system, wheel, base_dir, work_root):
   return interpreter, env
 
 
-class BuildDependencies(
-    collections.namedtuple(
-        'BuildDependencies',
-        (
-            # remote (List[str]): Wheels fetched from pip repository
-            'remote',
-
-            # local (List[Builder]): Wheels installed from local path
-            'local',
-        ))):
-  pass
+@dataclass
+class BuildDependencies:
+  # remote (List[str]): Wheels fetched from pip repository
+  remote: List[str] = field(default_factory=list)
+  # local (List[Builder]): Wheels installed from local path
+  local: List[Builder] = field(default_factory=list)
+  # backend (str): Extra pyproject.toml content.
+  backend: str = ''
 
 
 @dataclass
@@ -690,11 +687,16 @@ def PrepareBuildDependenciesCmd(system, wheel, build_dir, deps_dir, deps):
       local_wheels.append('{}@{}'.format(sub.spec.name, sub_rel))
 
   # Generate pyproject.toml to control build dependencies
-  cmd = ['generate_pyproject.py']
+  cmd = ['generate_pyproject.py',
+      '--name', wheel.spec.name,
+      '--version', wheel.spec.version,
+  ]
   if deps.remote:
     cmd.append('--remotes')
     cmd.extend(deps.remote)
   if deps.local:
     cmd.append('--locals')
     cmd.extend(local_wheels)
+  if deps.backend:
+    cmd.extend(('--backend', deps.backend))
   return cmd
