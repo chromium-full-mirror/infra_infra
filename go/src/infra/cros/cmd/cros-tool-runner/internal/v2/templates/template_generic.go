@@ -15,7 +15,6 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
-	"infra/cros/internal/env"
 )
 
 type genericProcessor struct {
@@ -59,11 +58,12 @@ func (p *genericProcessor) Process(request *api.StartTemplatedContainerRequest) 
 		Env:     envs,
 	}
 	// Add cloudbots related options
-	if env.IsCloudBot() {
-		cloudbotsOptions := cloudbotsAdditionalOptions()
-		additionalOptions.Volume = append(additionalOptions.Volume, cloudbotsOptions.Volume...)
-		additionalOptions.Env = append(additionalOptions.Env, cloudbotsOptions.Env...)
-	}
+	// TODO (cdelagarza): fix this before uncommenting.
+	// if env.IsCloudBot() {
+	//	cloudbotsOptions := cloudbotsAdditionalOptions()
+	// additionalOptions.Volume = append(additionalOptions.Volume, cloudbotsOptions.Volume...)
+	//	additionalOptions.Env = append(additionalOptions.Env, cloudbotsOptions.Env...)
+	// }
 	startCommand := []string{
 		t.BinaryName,
 	}
