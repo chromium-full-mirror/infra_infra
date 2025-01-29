@@ -6,10 +6,15 @@ package consoleserver
 
 import (
 	"context"
+	"database/sql"
 
 	"google.golang.org/grpc"
 
+	"go.chromium.org/luci/server/secrets"
+
 	"infra/fleetconsole/api/fleetconsolerpc"
+	"infra/fleetconsole/cmd/fleetconsoleserver/flags"
+	"infra/fleetconsole/internal/database"
 	"infra/fleetconsole/internal/devicemanagerclient"
 	"infra/fleetconsole/internal/ufsclient"
 )
@@ -26,6 +31,7 @@ type FleetConsoleFrontend struct {
 	cloudProject        string
 	deviceManagerClient func(context.Context, string) (*devicemanagerclient.Client, error)
 	ufsClient           func(context.Context, string) (ufsclient.Client, error)
+	dbConnection        *sql.DB
 }
 
 // InstallServices installs services into the server.
@@ -38,7 +44,7 @@ func SetDeviceManagerClient(consoleFrontend *FleetConsoleFrontend, deviceManager
 	consoleFrontend.deviceManagerClient = deviceManagerClient
 }
 
-// SeUFSClient sets the UFS client.
+// SetUFSClient sets the UFS client.
 func SetUFSClient(consoleFrontend *FleetConsoleFrontend, ufsClient func(context.Context, string) (ufsclient.Client, error)) {
 	consoleFrontend.ufsClient = ufsClient
 }
@@ -46,4 +52,17 @@ func SetUFSClient(consoleFrontend *FleetConsoleFrontend, ufsClient func(context.
 // SetCloudProject sets the cloud project
 func SetCloudProject(consoleFrontend *FleetConsoleFrontend, cloudProject string) {
 	consoleFrontend.cloudProject = cloudProject
+}
+
+// MustSetDBConnection sets the db connection and panics if it can't retrieve the secret or connect to the database.
+func MustSetDBConnection(ctx context.Context, consoleFrontend *FleetConsoleFrontend) {
+	secret, err := secrets.StoredSecret(ctx, *flags.DBSecret)
+	if err != nil {
+		panic(err)
+	}
+	dbURI := string(secret.Active)
+	consoleFrontend.dbConnection, err = database.Connect(dbURI)
+	if err != nil {
+		panic(err)
+	}
 }

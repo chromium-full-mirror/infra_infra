@@ -64,7 +64,7 @@ func (c *listDevicesCommand) innerRun(ctx context.Context, a subcommands.Applica
 			if err != nil {
 				return err
 			}
-			showProto(a.GetOut(), device)
+			_, _ = showProto(a.GetOut(), device)
 			tally++
 		}
 

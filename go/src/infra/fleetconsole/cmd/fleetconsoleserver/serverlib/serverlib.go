@@ -20,6 +20,7 @@ import (
 	"go.chromium.org/luci/server/auth/rpcacl"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
+	"go.chromium.org/luci/server/secrets"
 
 	"infra/fleetconsole/cmd/fleetconsoleserver/flags"
 	"infra/fleetconsole/internal/consoleserver"
@@ -38,6 +39,8 @@ func Options() *server.Options {
 func Modules() []module.Module {
 	return []module.Module{
 		gaeemulation.NewModuleFromFlags(),
+		// For the database info and password.
+		secrets.NewModuleFromFlags(),
 	}
 }
 
@@ -64,6 +67,7 @@ func ServerMain(srv *server.Server) error {
 	consoleserver.InstallServices(consoleFrontend, srv)
 	consoleserver.SetDeviceManagerClient(consoleFrontend, GetDeviceManagerClient)
 	consoleserver.SetUFSClient(consoleFrontend, GetUfsClient)
+	consoleserver.MustSetDBConnection(srv.Context, consoleFrontend)
 	logging.Infof(srv.Context, "End initialization of console server.")
 	return nil
 }

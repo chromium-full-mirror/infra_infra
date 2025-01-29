@@ -7,6 +7,7 @@ package commands
 
 import (
 	"context"
+	"os/exec"
 
 	"github.com/maruel/subcommands"
 
@@ -41,6 +42,11 @@ func (c *pingDBCommand) Run(a subcommands.Application, args []string, env subcom
 }
 
 func (c *pingDBCommand) innerRun(ctx context.Context, a subcommands.Application, _ []string, _ subcommands.Env) error {
+	if c.CommonFlags.Local() {
+		if err := validateLocalPostgres(); err != nil {
+			return err
+		}
+	}
 	host, err := c.CommonFlags.Host()
 	if err != nil {
 		return errors.Annotate(err, "ping db").Err()
@@ -55,4 +61,13 @@ func (c *pingDBCommand) innerRun(ctx context.Context, a subcommands.Application,
 	}
 	_, err = showProto(a.GetOut(), resp)
 	return errors.Annotate(err, "ping db").Err()
+}
+
+func validateLocalPostgres() error {
+	cmd := exec.Command("psql", "--user=postgres", `--command=\describe tables`)
+	err := cmd.Run()
+	if err != nil {
+		return errors.Annotate(err, "validate local postgres failed").Err()
+	}
+	return nil
 }
