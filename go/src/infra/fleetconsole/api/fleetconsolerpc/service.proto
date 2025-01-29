@@ -31,6 +31,9 @@ service FleetConsole {
 
   // RepopulateCache repopulates the cache, meant to be triggered by cron.
   rpc RepopulateCache(RepopulateCacheRequest) returns (RepopulateCacheResponse) {};
+
+  // PingDB attempts to establish contact with the database and does nothing else.
+  rpc PingDB(PingDBRequest) returns (PingDBResponse) {};
 }
 
 // PingRequest intentionally contains nothing.
@@ -164,3 +167,7 @@ message DeviceStateCounts {
 message RepopulateCacheRequest {}
 
 message RepopulateCacheResponse {}
+
+message PingDBRequest {}
+
+message PingDBResponse {}

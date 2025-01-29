@@ -31,6 +31,7 @@ const (
 	FleetConsole_GetDeviceDimensions_FullMethodName = "/fleetconsole.FleetConsole/GetDeviceDimensions"
 	FleetConsole_CountDevices_FullMethodName        = "/fleetconsole.FleetConsole/CountDevices"
 	FleetConsole_RepopulateCache_FullMethodName     = "/fleetconsole.FleetConsole/RepopulateCache"
+	FleetConsole_PingDB_FullMethodName              = "/fleetconsole.FleetConsole/PingDB"
 )
 
 // FleetConsoleClient is the client API for FleetConsole service.
@@ -51,6 +52,8 @@ type FleetConsoleClient interface {
 	CountDevices(ctx context.Context, in *CountDevicesRequest, opts ...grpc.CallOption) (*CountDevicesResponse, error)
 	// RepopulateCache repopulates the cache, meant to be triggered by cron.
 	RepopulateCache(ctx context.Context, in *RepopulateCacheRequest, opts ...grpc.CallOption) (*RepopulateCacheResponse, error)
+	// PingDB attempts to establish contact with the database and does nothing else.
+	PingDB(ctx context.Context, in *PingDBRequest, opts ...grpc.CallOption) (*PingDBResponse, error)
 }
 
 type fleetConsoleClient struct {
@@ -131,6 +134,16 @@ func (c *fleetConsoleClient) RepopulateCache(ctx context.Context, in *Repopulate
 	return out, nil
 }
 
+func (c *fleetConsoleClient) PingDB(ctx context.Context, in *PingDBRequest, opts ...grpc.CallOption) (*PingDBResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PingDBResponse)
+	err := c.cc.Invoke(ctx, FleetConsole_PingDB_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FleetConsoleServer is the server API for FleetConsole service.
 // All implementations must embed UnimplementedFleetConsoleServer
 // for forward compatibility.
@@ -149,6 +162,8 @@ type FleetConsoleServer interface {
 	CountDevices(context.Context, *CountDevicesRequest) (*CountDevicesResponse, error)
 	// RepopulateCache repopulates the cache, meant to be triggered by cron.
 	RepopulateCache(context.Context, *RepopulateCacheRequest) (*RepopulateCacheResponse, error)
+	// PingDB attempts to establish contact with the database and does nothing else.
+	PingDB(context.Context, *PingDBRequest) (*PingDBResponse, error)
 	mustEmbedUnimplementedFleetConsoleServer()
 }
 
@@ -179,6 +194,9 @@ func (UnimplementedFleetConsoleServer) CountDevices(context.Context, *CountDevic
 }
 func (UnimplementedFleetConsoleServer) RepopulateCache(context.Context, *RepopulateCacheRequest) (*RepopulateCacheResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RepopulateCache not implemented")
+}
+func (UnimplementedFleetConsoleServer) PingDB(context.Context, *PingDBRequest) (*PingDBResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PingDB not implemented")
 }
 func (UnimplementedFleetConsoleServer) mustEmbedUnimplementedFleetConsoleServer() {}
 func (UnimplementedFleetConsoleServer) testEmbeddedByValue()                      {}
@@ -327,6 +345,24 @@ func _FleetConsole_RepopulateCache_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FleetConsole_PingDB_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PingDBRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FleetConsoleServer).PingDB(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FleetConsole_PingDB_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FleetConsoleServer).PingDB(ctx, req.(*PingDBRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FleetConsole_ServiceDesc is the grpc.ServiceDesc for FleetConsole service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -361,6 +397,10 @@ var FleetConsole_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RepopulateCache",
 			Handler:    _FleetConsole_RepopulateCache_Handler,
+		},
+		{
+			MethodName: "PingDB",
+			Handler:    _FleetConsole_PingDB_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
