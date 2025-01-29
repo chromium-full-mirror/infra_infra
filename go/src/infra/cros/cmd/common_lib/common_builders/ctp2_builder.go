@@ -69,7 +69,7 @@ func (builder *CTPV2FromV1) BuildRequest() (map[string]*api.CTPRequest, map[stri
 	reqKeyMap := map[string]*api.CTPRequest{}
 	dddTrackerMap := map[string]bool{}
 	for key, v1Request := range builder.v1 {
-		ctpReq := buildCTPRequest(v1Request, builder.buildState)
+		ctpReq := buildCTPRequest(v1Request)
 		builder.v2.Requests = append(builder.v2.Requests, ctpReq)
 		v2sWithKeyList = append(v2sWithKeyList, &V2WithKey{Key: key, V2: ctpReq})
 		dddTrackerMap[key] = ctpReq.GetSuiteRequest().GetDddSuite()
