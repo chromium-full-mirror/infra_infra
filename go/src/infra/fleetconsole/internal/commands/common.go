@@ -77,16 +77,19 @@ func authenticatedClient(ctx context.Context, host string, authFlags authcli.Fla
 	return httpClient, nil
 }
 
-// showProto writes a proto message as an indentend object. Always adds a newline.
-func showProto(dst io.Writer, message proto.Message) (int, error) {
+// showProto writes a proto message as an indented object. Always adds a newline.
+func showProto(dst io.Writer, message proto.Message) {
 	if dst == nil {
-		return 0, errors.New("dest cannot be nil")
+		panic("dest cannot be nil")
 	}
 	bytes, err := (&protojson.MarshalOptions{
 		Indent: "  ",
 	}).Marshal(message)
 	if err != nil {
-		return 0, errors.Annotate(err, "show proto").Err()
+		panic(err)
 	}
-	return dst.Write(append(bytes, byte('\n')))
+	_, err = dst.Write(append(bytes, byte('\n')))
+	if err != nil {
+		panic(err)
+	}
 }

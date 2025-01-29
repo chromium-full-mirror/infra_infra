@@ -59,8 +59,8 @@ func (c *pingDBCommand) innerRun(ctx context.Context, a subcommands.Application,
 	if err != nil {
 		return errors.Annotate(err, "ping db").Err()
 	}
-	_, err = showProto(a.GetOut(), resp)
-	return errors.Annotate(err, "ping db").Err()
+	showProto(a.GetOut(), resp)
+	return nil
 }
 
 func validateLocalPostgres() error {

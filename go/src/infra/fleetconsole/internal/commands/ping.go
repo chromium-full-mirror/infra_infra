@@ -53,6 +53,6 @@ func (c *pingCommand) innerRun(ctx context.Context, a subcommands.Application, a
 	if err != nil {
 		return errors.Annotate(err, "ping").Err()
 	}
-	_, err = showProto(a.GetOut(), resp)
-	return errors.Annotate(err, "ping").Err()
+	showProto(a.GetOut(), resp)
+	return nil
 }

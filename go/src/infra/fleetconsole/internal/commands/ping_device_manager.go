@@ -63,7 +63,7 @@ func (c *pingDeviceManagerCommand) innerRun(ctx context.Context, a subcommands.A
 		if err != nil {
 			return errors.Annotate(err, "ping (default)").Err()
 		}
-		_, err = showProto(a.GetOut(), resp)
+		showProto(a.GetOut(), resp)
 		return errors.Annotate(err, "ping (default)").Err()
 	case "direct":
 		client, err := dmClient(ctx, devicemanagerclient.DMProdURL, c.AuthFlags)
@@ -76,8 +76,8 @@ func (c *pingDeviceManagerCommand) innerRun(ctx context.Context, a subcommands.A
 		if err != nil {
 			return errors.Annotate(err, "ping (direct)").Err()
 		}
-		_, err = showProto(a.GetOut(), resp)
-		return errors.Annotate(err, "ping (direct)").Err()
+		showProto(a.GetOut(), resp)
+		return nil
 	}
 	return fmt.Errorf("bad mode %q", c.mode)
 }
