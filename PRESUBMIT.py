@@ -94,13 +94,13 @@ JSHINT_PROJECTS_BLACKLIST = THIRD_PARTY_DIRS
 NOFORK_PATHS = []
 
 
-def CommandInGoEnv(input_api, output_api, name, cmd, kwargs, blocking=True):
+def CommandInGoEnv(input_api, output_api, name, cmd, kwargs):
   """Returns input_api.Command that wraps |cmd| with invocation to go/env.py.
 
   env.py makes golang tools available in PATH. It also bootstraps Golang dev
   environment if necessary.
   """
-  if input_api.is_committing and blocking:
+  if input_api.is_committing:
     error_type = output_api.PresubmitError
   else:
     error_type = output_api.PresubmitPromptWarning
@@ -181,9 +181,7 @@ def GoCheckers(input_api, output_api):
             cmd=[
                 'golangci-lint', 'run', '--allow-parallel-runners', *since, '.'
             ],
-            kwargs={'cwd': absolute},
-            # Revisit at some point after leaving on for a while.
-            blocking=False))
+            kwargs={'cwd': absolute}))
 
   return ret
 
