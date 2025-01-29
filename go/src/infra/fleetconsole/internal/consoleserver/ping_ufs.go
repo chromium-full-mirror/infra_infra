@@ -8,13 +8,15 @@ import (
 	"context"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/grpc/grpcutil"
 
 	"infra/fleetconsole/api/fleetconsolerpc"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
 // PingUfs pings UFS.
-func (frontend *FleetConsoleFrontend) PingUfs(ctx context.Context, req *fleetconsolerpc.PingUfsRequest) (*fleetconsolerpc.PingUfsResponse, error) {
+func (frontend *FleetConsoleFrontend) PingUfs(ctx context.Context, req *fleetconsolerpc.PingUfsRequest) (_ *fleetconsolerpc.PingUfsResponse, err error) {
+	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
 	ufsClient, err := frontend.ufsClient(ctx, frontend.cloudProject)
 	if err != nil {
 		return nil, errors.Annotate(err, "ping ufs").Err()

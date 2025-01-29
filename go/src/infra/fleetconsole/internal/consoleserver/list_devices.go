@@ -13,6 +13,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/grpc/grpcutil"
 
 	"infra/fleetconsole/api/fleetconsolerpc"
 	"infra/fleetconsole/internal/consoleserver/filtering"
@@ -24,7 +25,8 @@ import (
 const maxPageSize int = 50
 
 // ListDevices lists devices provided via DeviceManager.
-func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *fleetconsolerpc.ListDevicesRequest) (*fleetconsolerpc.ListDevicesResponse, error) {
+func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *fleetconsolerpc.ListDevicesRequest) (_ *fleetconsolerpc.ListDevicesResponse, err error) {
+	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
 	deviceManagerClient, err := frontend.deviceManagerClient(ctx, frontend.cloudProject)
 	if err != nil {
 		return nil, errors.Annotate(err, "list devices").Err()

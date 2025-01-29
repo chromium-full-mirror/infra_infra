@@ -11,6 +11,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/grpc/grpcutil"
 
 	"infra/fleetconsole/api/fleetconsolerpc"
 	"infra/fleetconsole/internal/consoleserver/dimensions"
@@ -18,7 +19,8 @@ import (
 )
 
 // GetDeviceDimensions returns dimensions of all devices
-func (frontend *FleetConsoleFrontend) GetDeviceDimensions(ctx context.Context, req *emptypb.Empty) (*fleetconsolerpc.GetDeviceDimensionsResponse, error) {
+func (frontend *FleetConsoleFrontend) GetDeviceDimensions(ctx context.Context, req *emptypb.Empty) (_ *fleetconsolerpc.GetDeviceDimensionsResponse, err error) {
+	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
 	deviceManagerClient, err := frontend.deviceManagerClient(ctx, frontend.cloudProject)
 	if err != nil {
 		return nil, errors.Annotate(err, "get device dimensions").Err()

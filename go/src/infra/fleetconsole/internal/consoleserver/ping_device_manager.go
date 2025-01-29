@@ -10,12 +10,14 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/grpc/grpcutil"
 
 	"infra/fleetconsole/api/fleetconsolerpc"
 )
 
 // PingDeviceManager pings device manager.
-func (frontend *FleetConsoleFrontend) PingDeviceManager(ctx context.Context, req *fleetconsolerpc.PingDeviceManagerRequest) (*fleetconsolerpc.PingDeviceManagerResponse, error) {
+func (frontend *FleetConsoleFrontend) PingDeviceManager(ctx context.Context, req *fleetconsolerpc.PingDeviceManagerRequest) (_ *fleetconsolerpc.PingDeviceManagerResponse, err error) {
+	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
 	deviceManagerClient, err := frontend.deviceManagerClient(ctx, frontend.cloudProject)
 	if err != nil {
 		return nil, errors.Annotate(err, "ping device manager").Err()
