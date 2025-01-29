@@ -21,7 +21,7 @@ import (
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
 )
 
-// PingUFSManagerCommand pings ufs, via the Console UI server by default.
+// PingUFSCommand pings ufs, via the Console UI server by default.
 var PingUFSCommand *subcommands.Command = &subcommands.Command{
 	UsageLine: "ping-ufs [options...]",
 	ShortDesc: "ping UFS through a fleet console instance",
