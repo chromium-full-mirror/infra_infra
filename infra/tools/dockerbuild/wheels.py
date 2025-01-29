@@ -3048,6 +3048,13 @@ SPECS.update({
             'expect_tests', '0.4.2',
             'https://chromium.googlesource.com/infra/testing/expect_tests',
             '3d14313e7eeb56b9f058984b6b8d4c27c99dd89d'),
+        GitUniversalSource(
+            'portage',
+            '2.3.75',
+            'https://chromium.googlesource.com/chromiumos/third_party/portage_tool',
+            # This is refs/tags/portage-2.3.75, but specifying exact git tag
+            # doesn't work currently.
+            '9f4bd7f3a37600687438c13e728071975a3f6756'),
     )
 })
 
