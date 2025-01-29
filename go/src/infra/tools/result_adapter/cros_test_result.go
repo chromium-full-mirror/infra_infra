@@ -39,15 +39,24 @@ type CrosTestResult struct {
 
 // ConvertFromJSON reads the provided reader into the receiver.
 // The TestResult is cleared and overwritten.
-func (r *CrosTestResult) ConvertFromJSON(reader io.Reader) error {
+func (r *CrosTestResult) ConvertFromJSON(ctx context.Context, reader io.Reader) error {
 	r.TestResult = &artifactpb.TestResult{}
 	var rawMessage json.RawMessage
 	if err := json.NewDecoder(reader).Decode(&rawMessage); err != nil {
 		return err
 	}
+
 	if err := protojson.Unmarshal(rawMessage, r.TestResult); err != nil {
-		return err
+		logging.Warningf(ctx, "Warning: found unknown field(s) in test result proto: %+v", rawMessage, err)
+
+		unmarshalOpts := protojson.UnmarshalOptions{
+			DiscardUnknown: true,
+		}
+		if err := unmarshalOpts.Unmarshal(rawMessage, r.TestResult); err != nil {
+			return err
+		}
 	}
+
 	return nil
 }
 

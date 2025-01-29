@@ -73,7 +73,7 @@ func (r *crosTestResultRun) generateTestResults(ctx context.Context, _ []byte) (
 
 	// Convert the results to ResultSink native format.
 	crosTestResultFormat := &CrosTestResult{testhausBaseURL: r.testhausBaseURL}
-	if err = crosTestResultFormat.ConvertFromJSON(f); err != nil {
+	if err = crosTestResultFormat.ConvertFromJSON(ctx, f); err != nil {
 		return nil, errors.Annotate(err, "failed to recognize as cros_test_result result").Err()
 	}
 	trs, err := crosTestResultFormat.ToProtos(ctx)

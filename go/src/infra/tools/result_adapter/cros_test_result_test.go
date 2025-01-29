@@ -31,6 +31,10 @@ const (
 	// Test result JSON file with a subset of common information.
 	simpleTestResultFile = "test_data/cros_test_result/simple_test_result.json"
 
+	// Test result JSON file with a subset of common information and an unknown
+	// field.
+	simpleTestResultFileWithUnknownField = "test_data/cros_test_result/unknown_field.json"
+
 	// Test result JSON file with full information.
 	fullTestResultFile = "test_data/cros_test_result/full_test_result.json"
 
@@ -162,16 +166,26 @@ func TestCrosTestResultConversions(t *testing.T) {
 	}
 
 	ftt.Run(`From JSON works`, t, func(t *ftt.Test) {
-		results := &CrosTestResult{}
-		err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
-		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, results.TestResult, should.Match(testResult))
+		t.Run("Basic", func(t *ftt.Test) {
+			results := &CrosTestResult{}
+			err := results.ConvertFromJSON(ctx, strings.NewReader(testResultsJSON))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, results.TestResult, should.Match(testResult))
+		})
+
+		t.Run(`Ignore the unknown field`, func(t *ftt.Test) {
+			testResultsJSON := ReadJSONFileToString(simpleTestResultFileWithUnknownField)
+			results := &CrosTestResult{}
+			err := results.ConvertFromJSON(ctx, strings.NewReader(testResultsJSON))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, results.TestResult, should.Match(testResult))
+		})
 	})
 
 	ftt.Run(`ToProtos works`, t, func(t *ftt.Test) {
 		t.Run("Basic", func(t *ftt.Test) {
 			results := &CrosTestResult{}
-			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			err := results.ConvertFromJSON(ctx, strings.NewReader(testResultsJSON))
 			assert.Loosely(t, err, should.BeNil)
 			testResults, err := results.ToProtos(ctx)
 			assert.Loosely(t, err, should.BeNil)
@@ -267,7 +281,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 			}
 			testResultsJSON := ReadJSONFileToString(testResultDirPathFile)
 			results := &CrosTestResult{testhausBaseURL: testhausBaseURL}
-			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			err := results.ConvertFromJSON(ctx, strings.NewReader(testResultsJSON))
 			assert.Loosely(t, err, should.BeNil)
 
 			gotTestResults, err := results.ToProtos(ctx)
@@ -284,7 +298,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 		t.Run("Skips test artifacts upload when result dir is invalid", func(t *ftt.Test) {
 			testResultsJSON := ReadJSONFileToString(testResultDirPathFile)
 			results := &CrosTestResult{testhausBaseURL: testhausBaseURL}
-			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			err := results.ConvertFromJSON(ctx, strings.NewReader(testResultsJSON))
 			assert.Loosely(t, err, should.BeNil)
 
 			// Update the test case result dir to an invalid path
@@ -303,7 +317,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 		t.Run(`Check expected skip and unexpected skip tests`, func(t *ftt.Test) {
 			testResultsJSON := ReadJSONFileToString(skippedTestResultFile)
 			results := &CrosTestResult{}
-			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			err := results.ConvertFromJSON(ctx, strings.NewReader(testResultsJSON))
 			assert.Loosely(t, err, should.BeNil)
 			testResults, err := results.ToProtos(ctx)
 			assert.Loosely(t, err, should.BeNil)
@@ -353,7 +367,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 		t.Run(`Warning results`, func(t *ftt.Test) {
 			testResultsJSON := ReadJSONFileToString(warnTestResultFile)
 			results := &CrosTestResult{}
-			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			err := results.ConvertFromJSON(ctx, strings.NewReader(testResultsJSON))
 			assert.Loosely(t, err, should.BeNil)
 			testResults, err := results.ToProtos(ctx)
 			assert.Loosely(t, err, should.BeNil)
@@ -385,7 +399,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 		t.Run(`Failed results`, func(t *ftt.Test) {
 			testResultsJSON := ReadJSONFileToString(failedTestResultFile)
 			results := &CrosTestResult{}
-			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			err := results.ConvertFromJSON(ctx, strings.NewReader(testResultsJSON))
 			assert.Loosely(t, err, should.BeNil)
 			testResults, err := results.ToProtos(ctx)
 			assert.Loosely(t, err, should.BeNil)
@@ -437,7 +451,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 		t.Run(`Check the full list of tags`, func(t *ftt.Test) {
 			testResultsJSON := ReadJSONFileToString(fullTestResultFile)
 			results := &CrosTestResult{}
-			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			err := results.ConvertFromJSON(ctx, strings.NewReader(testResultsJSON))
 			assert.Loosely(t, err, should.BeNil)
 			testResults, err := results.ToProtos(ctx)
 			assert.Loosely(t, err, should.BeNil)
@@ -559,7 +573,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 		t.Run(`Check multi DUT testing`, func(t *ftt.Test) {
 			testResultsJSON := ReadJSONFileToString(multiDUTTestResultFile)
 			results := &CrosTestResult{}
-			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			err := results.ConvertFromJSON(ctx, strings.NewReader(testResultsJSON))
 			assert.Loosely(t, err, should.BeNil)
 			testResults, err := results.ToProtos(ctx)
 			assert.Loosely(t, err, should.BeNil)
@@ -613,7 +627,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 			// skipped.
 			testResultsJSON := ReadJSONFileToString(missingTestIdFile)
 			results := &CrosTestResult{}
-			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			err := results.ConvertFromJSON(ctx, strings.NewReader(testResultsJSON))
 			assert.Loosely(t, err, should.BeNil)
 			_, err = results.ToProtos(ctx)
 			assert.Loosely(t, err, should.ErrLike("testId is unspecified due to the missing id in test case"))
@@ -622,7 +636,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 		t.Run(`Truncate reason field when stored in the properties of test result`, func(t *ftt.Test) {
 			testResultsJSON := ReadJSONFileToString(warnTestResultWithLongReasonFile)
 			results := &CrosTestResult{}
-			err := results.ConvertFromJSON(strings.NewReader(testResultsJSON))
+			err := results.ConvertFromJSON(ctx, strings.NewReader(testResultsJSON))
 			assert.Loosely(t, err, should.BeNil)
 			testResults, err := results.ToProtos(ctx)
 			assert.Loosely(t, err, should.BeNil)
@@ -812,3 +826,5 @@ func TestPopulateProperties(t *testing.T) {
 		})
 	}
 }
+
+// Generate unit tests for ConvertFromJSON function.
