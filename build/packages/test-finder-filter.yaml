@@ -1,0 +1,10 @@
+package: chromiumos/infra/ctpv2-filters/test_finder_filter/${platform}
+description: CTPv2 filter responsible for test finding resolution.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/ctpv2-filters/test_finder_filter
+root: ../../go/bin
+data:
+  - file: test_finder_filter${exe_suffix}
+  - version_file: .versions/test_finder_filter${exe_suffix}.cipd_version

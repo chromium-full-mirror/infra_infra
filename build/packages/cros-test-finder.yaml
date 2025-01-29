@@ -1,0 +1,10 @@
+package: chromiumos/infra/cft/cros-test-finder/${platform}
+description: cros-test-finder is the CFT container handling test finding resolution.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/cft/cros-test-finder
+root: ../../go/bin
+data:
+  - file: cros-test-finder${exe_suffix}
+  - version_file: .versions/cros-test-finder${exe_suffix}.cipd_version
