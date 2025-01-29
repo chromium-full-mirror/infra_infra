@@ -26,16 +26,27 @@ type clientThatSendsRequests interface {
 	Do(*http.Request) (resp *http.Response, err error)
 }
 
-// AnyStringInGerritList checks for any overlap between the given list of
-// strings, and the list at the given Gerrit URL.
-func AnyStringInGerritList(ctx context.Context, c clientThatSendsRequests, list []string, listURL string) (bool, error) {
+// GetPoolsFromURL fetches a gerrit url having csv pool values and returns the array of pools
+func GetPoolsFromURL(ctx context.Context, c clientThatSendsRequests, listURL string) ([]string, error) {
 	fileText, err := fetchFileFromURL(ctx, c, listURL)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
-	listFromURL := strings.Split(string(fileText), ",")
+	return strings.Split(string(fileText), ","), nil
+}
+
+// AnyStringInGerritList checks for any overlap between the given list of
+// strings, and the list at the given Gerrit URL.
+func AnyStringInGerritList(ctx context.Context, c clientThatSendsRequests, list []string, listURL string, pools []string) (bool, error) {
+	if len(pools) == 0 {
+		fetchedPools, err := GetPoolsFromURL(ctx, c, listURL)
+		if err != nil {
+			return false, err
+		}
+		pools = fetchedPools
+	}
 	mapFromURL := map[string]bool{}
-	for _, str := range listFromURL {
+	for _, str := range pools {
 		mapFromURL[str] = true
 	}
 	for _, str := range list {

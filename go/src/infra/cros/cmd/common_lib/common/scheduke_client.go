@@ -50,6 +50,8 @@ type SchedukeClient struct {
 	baseURL                          string
 	gerritClient, schedukeHTTPClient *http.Client
 	ctx                              context.Context
+	dmPools                          []string
+	blockedPools                     []string
 }
 
 // NewSchedukeClientForCLI returns a Scheduke client that can be called from a
@@ -60,6 +62,14 @@ func NewSchedukeClientForCLI(ctx context.Context, dev bool, authOpts auth.Option
 	gc, err := SilentLoginHTTPClient(ctx, authOpts)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: setting up Gerrit client").Err()
+	}
+	dmPools, err := GetPoolsFromURL(ctx, gc, dmPoolsURL)
+	if err != nil {
+		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch dm pools").Err()
+	}
+	blockedPools, err := GetPoolsFromURL(ctx, gc, blockedPoolsURL)
+	if err != nil {
+		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch blocked pools").Err()
 	}
 
 	// Determine Scheduke instance to send requests to.
@@ -81,6 +91,8 @@ func NewSchedukeClientForCLI(ctx context.Context, dev bool, authOpts auth.Option
 		baseURL:            baseURL,
 		gerritClient:       gc,
 		schedukeHTTPClient: sc,
+		dmPools:            dmPools,
+		blockedPools:       blockedPools,
 	}
 
 	// Ping Scheduke base URL to confirm IAM works; don't use exponential backoff
@@ -102,6 +114,14 @@ func NewSchedukeClientForLUCIExe(ctx context.Context, pool string) (*SchedukeCli
 	gc, err := SilentLoginHTTPClient(ctx, gerritAuthOpts)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForLUCIExe: setting up Gerrit client").Err()
+	}
+	dmPools, err := GetPoolsFromURL(ctx, gc, dmPoolsURL)
+	if err != nil {
+		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch dm pools").Err()
+	}
+	blockedPools, err := GetPoolsFromURL(ctx, gc, blockedPoolsURL)
+	if err != nil {
+		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch blocked pools").Err()
 	}
 
 	// Determine Scheduke instance to send requests to.
@@ -125,6 +145,8 @@ func NewSchedukeClientForLUCIExe(ctx context.Context, pool string) (*SchedukeCli
 		baseURL:            baseURL,
 		gerritClient:       gc,
 		schedukeHTTPClient: sc,
+		dmPools:            dmPools,
+		blockedPools:       blockedPools,
 	}, nil
 }
 
@@ -136,6 +158,14 @@ func NewSchedukeClientForGCP(ctx context.Context, pool string) (*SchedukeClient,
 	gc, err := GCPHTTPClient(ctx, gerritRPCOpts)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForGCP: seeting up Gerrit client").Err()
+	}
+	dmPools, err := GetPoolsFromURL(ctx, gc, dmPoolsURL)
+	if err != nil {
+		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch dm pools").Err()
+	}
+	blockedPools, err := GetPoolsFromURL(ctx, gc, blockedPoolsURL)
+	if err != nil {
+		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch blocked pools").Err()
 	}
 
 	// Determine Scheduke instance to send requests to.
@@ -156,6 +186,8 @@ func NewSchedukeClientForGCP(ctx context.Context, pool string) (*SchedukeClient,
 		baseURL:            baseURL,
 		gerritClient:       gc,
 		schedukeHTTPClient: sc,
+		dmPools:            dmPools,
+		blockedPools:       blockedPools,
 	}, nil
 }
 
@@ -201,7 +233,7 @@ func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEven
 		resolvePool(e)
 		pools = append(pools, e.Pool)
 	}
-	poolsBlocked, err := AnyStringInGerritList(s.ctx, s.gerritClient, pools, blockedPoolsURL)
+	poolsBlocked, err := AnyStringInGerritList(s.ctx, s.gerritClient, pools, blockedPoolsURL, s.blockedPools)
 	if err != nil {
 		return nil, err
 	}
@@ -286,7 +318,7 @@ func (s *SchedukeClient) TestRunnerBBReqToSchedukeReq(bbReq *buildbucketpb.Sched
 	dims, deviceName, pool := dimensionsDeviceNameAndPool(bbReq.GetDimensions())
 
 	var experiments []string
-	useDM, err := ShouldUseDM(s.ctx, s.gerritClient, pool)
+	useDM, err := ShouldUseDM(s.ctx, s.gerritClient, pool, s.dmPools...)
 	if err != nil {
 		return nil, fmt.Errorf("error checking whether to use DM for pool %s: %w", pool, err)
 	}
@@ -362,7 +394,7 @@ func (s *SchedukeClient) AdminTaskReqToSchedukeReq(bbReq *buildbucketpb.Schedule
 // Scheduke with the given dimensions and lease length in minutes, for the given
 // user, at the given time.
 func (s *SchedukeClient) LeaseRequest(schedukeDims *schedukeapi.SwarmingDimensions, pool, deviceName, user string, mins int64, t time.Time) (*schedukeapi.KeyedTaskRequestEvents, error) {
-	useDM, err := ShouldUseDM(s.ctx, s.gerritClient, pool)
+	useDM, err := ShouldUseDM(s.ctx, s.gerritClient, pool, s.dmPools...)
 	if err != nil {
 		return nil, err
 	}
@@ -442,8 +474,8 @@ func (s *SchedukeClient) CancelTasks(taskStateIDs []int64, users, deviceNames []
 
 // ShouldUseDM returns a bool indicating whether a task request with the given
 // pool should enable the Device Manager experiment.
-func ShouldUseDM(ctx context.Context, c clientThatSendsRequests, pool string) (bool, error) {
-	return AnyStringInGerritList(ctx, c, []string{pool}, dmPoolsURL)
+func ShouldUseDM(ctx context.Context, c clientThatSendsRequests, pool string, dmPools ...string) (bool, error) {
+	return AnyStringInGerritList(ctx, c, []string{pool}, dmPoolsURL, dmPools)
 }
 
 // schedukeParams converts a list of task state IDs, users, and device names to
