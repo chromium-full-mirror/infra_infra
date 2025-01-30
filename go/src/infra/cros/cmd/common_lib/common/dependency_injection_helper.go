@@ -5,6 +5,7 @@
 package common
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
 	"strings"
@@ -44,6 +45,19 @@ func fmtHandler(storage *InjectableStorage, value string) string {
 		storage: storage,
 	}
 	return ResolvePlaceholders(value, lookup)
+}
+
+func jsonHandler(storage *InjectableStorage, value string) (obj interface{}, err error) {
+	lookup := &InjectablePlaceholderLookup{
+		storage: storage,
+	}
+	value = ResolvePlaceholders(value, lookup)
+	jsonMap := make(map[string]interface{})
+	err = json.Unmarshal([]byte(value), &jsonMap)
+	if err != nil {
+		return nil, err
+	}
+	return jsonMap, nil
 }
 
 // anyHandler attaches the @type field to the found object, setting it to

@@ -21,6 +21,44 @@ import (
 	"infra/cros/cmd/common_lib/common"
 )
 
+func TestDependencyInjectionJson(t *testing.T) {
+	ftt.Run("Add execution metadata", t, func(t *ftt.Test) {
+		originalProto := &api.TestTask{
+			TestRequest: &api.CrosTestRequest{
+				TestSuites: []*api.TestSuite{
+					{
+						ExecutionMetadata: &api.ExecutionMetadata{
+							Args: []*api.Arg{
+								{
+									Flag:  "FirstFlag",
+									Value: "FirstValue",
+								},
+							},
+						},
+					},
+				},
+			},
+			DynamicDeps: []*api.DynamicDep{
+				{
+					Key:   "testRequest.testSuites.0.executionMetadata.args",
+					Value: `JSON={"flag":"service-address","value":"${generic-service.address}:${generic-service.port}"}`,
+				},
+			},
+		}
+
+		storage := common.NewInjectableStorage()
+		_ = storage.Set("generic-service", &labapi.IpEndpoint{
+			Address: "localhost",
+			Port:    1234,
+		})
+
+		assert.Loosely(t, common.InjectDependencies(originalProto, storage, originalProto.DynamicDeps), should.BeNil)
+		assert.Loosely(t, len(originalProto.TestRequest.TestSuites[0].ExecutionMetadata.Args), should.Equal(2))
+		assert.Loosely(t, originalProto.TestRequest.TestSuites[0].ExecutionMetadata.Args[1].Flag, should.Equal("service-address"))
+		assert.Loosely(t, originalProto.TestRequest.TestSuites[0].ExecutionMetadata.Args[1].Value, should.Equal("localhost:1234"))
+	})
+}
+
 func TestDependencyInjectionAny(t *testing.T) {
 	ftt.Run("Concrete -> Any", t, func(t *ftt.Test) {
 		publishMetadata, _ := anypb.New(&artifact.TestResult{})
