@@ -26,9 +26,9 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/docker/docker/pkg/stdcopy"
 	"github.com/docker/go-connections/nat"
-
 	"go.chromium.org/luci/common/errors"
 
+	"infra/cros/recovery/dev"
 	"infra/cros/recovery/internal/log"
 )
 
@@ -53,7 +53,7 @@ type dockerClient struct {
 // NewClient creates client to work with docker client.
 func NewClient(ctx context.Context) (Client, error) {
 	// Disabled by b/292794064.
-	useSocketFile := false
+	useSocketFile := dev.IsActive(ctx)
 	if client, err := createDockerClient(ctx, useSocketFile); err != nil {
 		log.Debugf(ctx, "New docker client: failed to create docker client: %s", err)
 		if client != nil {
@@ -86,16 +86,16 @@ func createDockerClient(ctx context.Context, useSocketFile bool) (*client.Client
 			return client.NewClientWithOpts(client.WithAPIVersionNegotiation())
 		}
 	}
-	log.Debugf(ctx, "Docker client connecting over TCP")
 	// For TLS create Docker Client from env variables.
 	if path := os.Getenv("DOCKER_CERT_PATH"); path != "" {
+		log.Debugf(ctx, "Create client with DOCKER_CERT_PATH=%q", path)
 		// Use the tcp connection, host IP is defined by DOCKER_HOST env variable.
 		return client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 	}
 	// TODO(klimkowicz): remove this legacy Docker Client fallback when
 	// Satlab with TLS dockerd is fully rolled out.
 	dockerTCPPath := "tcp://192.168.231.1:2375"
-
+	log.Debugf(ctx, "Create client with "+dockerTCPPath)
 	// Default HTTPClient inside the Docker Client object fails to
 	// connects to docker daemon. Create the transport with DialContext and use
 	// this while initializing new docker client object.
@@ -146,8 +146,7 @@ func (d *dockerClient) Start(ctx context.Context, containerName string, req *Con
 	if timeout < time.Second {
 		return nil, errors.Reason("start: timeout %v is less than 1 second", timeout).Err()
 	}
-	err := d.Pull(ctx, req.ImageName, timeout)
-	if err != nil {
+	if err := d.Pull(ctx, req.ImageName, timeout); err != nil {
 		return nil, errors.Reason("start: fail to pull docker image %q", req.ImageName).Err()
 	}
 	var portsMapping []string

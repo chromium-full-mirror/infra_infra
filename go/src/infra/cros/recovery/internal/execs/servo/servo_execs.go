@@ -116,7 +116,7 @@ func servodInitActionExec(ctx context.Context, info *execs.ExecInfo) error {
 			}
 		}
 	}
-	info.NewLogger().Debugf("Servod options: %s", o)
+	log.Debugf(ctx, "Servod options: %s", o)
 	am := info.GetActionArgs(ctx)
 	req := &tlw.InitServodRequest{
 		Resource: d.Name,

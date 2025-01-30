@@ -60,7 +60,7 @@ func (c *tlwClient) InitServod(ctx context.Context, req *tlw.InitServodRequest) 
 				ServodPort: servoHost.GetServodPort(),
 			},
 		}); err != nil {
-			log.Debugf(ctx, "(Not critical) Fail to stop servod as requested to prepare servo-host without servod daemon: %s", err)
+			log.Infof(ctx, "(Not critical) Fail to stop servod as requested to prepare servo-host without servod daemon: %s", err)
 		}
 	default:
 		return errors.Reason("init servod %q: unexpected case", req.Resource).Err()

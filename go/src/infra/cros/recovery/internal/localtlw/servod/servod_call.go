@@ -70,7 +70,7 @@ func callServodOnLocalContainer(ctx context.Context, req *ServodCallRequest) (*x
 	if err != nil {
 		return nil, errors.Annotate(err, "call servod on local container").Err()
 	}
-	log.Debugf(ctx, "Call container by IP address: %v", addr)
+	log.Debugf(ctx, "Call servod on container by IP address: %v", addr)
 	c := xmlrpc.New(addr, int(req.Options.ServodPort))
 	return Call(ctx, c, req.CallTimeout, req.CallMethod, req.CallArguments)
 }

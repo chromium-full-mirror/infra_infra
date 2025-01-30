@@ -45,12 +45,15 @@ func WithTimeout(ctx context.Context, interval, duration time.Duration, f func()
 		next: func(ctx context.Context) error {
 			atomic.AddInt32(&attempts, 1)
 			err := f()
-			if err == nil {
-				log.Debugf(ctx, getSuccessMessage(opName, atomic.LoadInt32(&attempts), startTime))
-			}
 			spentTime := time.Since(startTime).Seconds()
-			log.Infof(ctx, "Retry %q: attempt %d (used %0.2f of %0.2f seconds), error: %s", opName, attempts, spentTime, duration.Seconds(), err)
-			return err
+			if err != nil {
+				log.Infof(ctx, "Retry %q (attempt %d, used %0.2f of %0.2f seconds): failed with error: %s", opName, attempts, spentTime, duration.Seconds(), err)
+				return err
+			} else {
+				log.Debugf(ctx, getSuccessMessage(opName, atomic.LoadInt32(&attempts), startTime))
+				log.Infof(ctx, "Retry %q (attempt %d, used %0.2f of %0.2f seconds): Succeed!", opName, attempts, spentTime, duration.Seconds())
+				return nil
+			}
 		},
 		hasNext: func(ctx context.Context) bool {
 			// Time tracking by context timeout.

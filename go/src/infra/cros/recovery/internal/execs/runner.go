@@ -183,7 +183,7 @@ func (b *hostAccess) run(ctx context.Context, inBackground bool, timeout time.Du
 	}
 	var errAnnotator *errors.Annotator
 	var res components.SSHRunResponse
-	if b.host == b.dut.Name && b.dut.Chromeos.GetIsAndroidBased() {
+	if b.host == b.dut.Name && b.dut.GetChromeos().GetIsAndroidBased() {
 		res, errAnnotator = adbRun()
 	} else {
 		res = b.access.Run(ctx, &tlw.RunRequest{
