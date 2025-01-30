@@ -665,6 +665,14 @@ func installXcode(ctx context.Context, args InstallArgs) error {
 	// Xcode will be removed, and the main process will fail and exit.
 	ch := make(chan error, 1)
 	go func() {
+		onMacOS14OrLater, _ := isMacOS14OrLater(ctx)
+		if onMacOS14OrLater {
+			logging.Warningf(ctx, "Running gatekeeper checks on Xcode.app...")
+			if err := RunCommand(ctx, "/usr/bin/gktool", "scan", downloadXcodePath); err != nil {
+				ch <- errors.Annotate(err, "Xcode failed to pass gatekeeper check").Err()
+				return
+			}
+		}
 		if err := acceptLicense(ctx, downloadXcodePath); err != nil {
 			ch <- err
 			return

@@ -253,7 +253,8 @@ func (c *installRun) Run(a subcommands.Application, args []string, env subcomman
 	if err != nil {
 		// TODO(crbug.com/359868027): Xcode sometimes fails to pass gatekeeper check.
 		// retry downloading xcode with another temp dir
-		if strings.Contains(err.Error(), "Xcode app is possibly corrupted") {
+		if strings.Contains(err.Error(), "Xcode app is possibly corrupted") ||
+			strings.Contains(err.Error(), "failed to pass gatekeeper check") {
 			logging.Warningf(ctx, "Downloaded Xcode might be corrupted, going to retry... Error: %s", err.Error())
 			xcodeTmpPath2, tmpDirErr := os.MkdirTemp(outputParentDir, "tmp")
 			defer os.RemoveAll(xcodeTmpPath2)

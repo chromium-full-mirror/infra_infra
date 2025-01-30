@@ -14,7 +14,7 @@ import (
 
 var MajorVersionRegex = regexp.MustCompile(`(\d+)\..*`)
 
-func isMacOS13OrLater(ctx context.Context) (bool, error) {
+func isMacOSVersionOrLater(ctx context.Context, requiredMajorVersion string) (bool, error) {
 	curVersion, err := getCurVersion(ctx)
 	if err != nil {
 		return false, errors.Annotate(err, "failed to get current os version").Err()
@@ -22,15 +22,20 @@ func isMacOS13OrLater(ctx context.Context) (bool, error) {
 
 	result := MajorVersionRegex.FindStringSubmatch(curVersion)
 	if len(result) == 0 {
-		error := errors.Reason("unable to parse MacOS Version from %s", result).Err()
-		return false, error
-	} else {
-		curMajorVersion := result[1]
-		if curMajorVersion >= "13" {
-			return true, nil
-		}
+		return false, errors.Reason("unable to parse MacOS Version from %s", curVersion).Err()
 	}
-	return false, nil
+
+	curMajorVersion := result[1]
+
+	return curMajorVersion >= requiredMajorVersion, nil
+}
+
+func isMacOS13OrLater(ctx context.Context) (bool, error) {
+	return isMacOSVersionOrLater(ctx, "13")
+}
+
+func isMacOS14OrLater(ctx context.Context) (bool, error) {
+	return isMacOSVersionOrLater(ctx, "14")
 }
 
 func getCurVersion(ctx context.Context) (string, error) {

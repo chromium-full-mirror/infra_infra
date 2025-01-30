@@ -96,7 +96,8 @@ func TestInstallXcode(t *testing.T) {
 				"cipd dry run",
 				"cipd ensures",
 				"chomod prints nothing",
-				"", // No original Xcode when running xcode-select -p
+				"12.2.1", // MacOS Version
+				"",       // No original Xcode when running xcode-select -p
 				"xcode-select -s prints nothing",
 				"accept license prints nothing",
 				"", // No original Xcode when running xcode-select -p
@@ -110,7 +111,7 @@ func TestInstallXcode(t *testing.T) {
 			// skip MacOS version check calls
 			callCounter++
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, s.Calls, should.HaveLength(12))
+			assert.Loosely(t, s.Calls, should.HaveLength(13))
 			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("cipd"))
 			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{
 				"puppet-check-updates", "-ensure-file", "-", "-root", "testdata/Xcode-old.app",
@@ -130,6 +131,7 @@ func TestInstallXcode(t *testing.T) {
 				"-R", "u+w", "testdata/Xcode-old.app",
 			}))
 
+			callCounter++
 			callCounter++
 			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
 			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
@@ -171,7 +173,8 @@ func TestInstallXcode(t *testing.T) {
 			s.ReturnOutput = []string{
 				"12.2.1", // MacOS Version
 				"cipd dry run",
-				"", // No original Xcode when running xcode-select -p
+				"12.2.1", // MacOS Version
+				"",       // No original Xcode when running xcode-select -p
 				"xcode-select -s prints nothing",
 				"accept license prints nothing",
 				"original/Xcode.app",
@@ -183,7 +186,7 @@ func TestInstallXcode(t *testing.T) {
 			}
 			err := installXcode(ctx, installArgs)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, s.Calls, should.HaveLength(11))
+			assert.Loosely(t, s.Calls, should.HaveLength(12))
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
@@ -194,6 +197,7 @@ func TestInstallXcode(t *testing.T) {
 			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/mac testVersion\n"))
 			assert.Loosely(t, s.Calls[callCounter].Env, should.Resemble([]string(nil)))
 
+			callCounter++
 			callCounter++
 			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
 			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
@@ -240,7 +244,8 @@ func TestInstallXcode(t *testing.T) {
 			s.ReturnOutput = []string{
 				"12.2.1", // MacOS Version
 				"",
-				"", // No original Xcode when running xcode-select -p
+				"12.2.1", // MacOS Version
+				"",       // No original Xcode when running xcode-select -p
 				"xcode-select -s prints nothing",
 				"accept license prints nothing",
 				"original/Xcode.app",
@@ -252,7 +257,7 @@ func TestInstallXcode(t *testing.T) {
 			}
 			err := installXcode(ctx, installArgs)
 			assert.Loosely(t, err.Error(), should.ContainSubstring("Developer mode is currently disabled! Please use `sudo /usr/sbin/DevToolsSecurity -enable` to enable."))
-			assert.Loosely(t, s.Calls, should.HaveLength(11))
+			assert.Loosely(t, s.Calls, should.HaveLength(12))
 
 			callCounter := 0
 			// skip MacOS version check calls
@@ -263,6 +268,7 @@ func TestInstallXcode(t *testing.T) {
 			}))
 			assert.Loosely(t, s.Calls[callCounter].ConsumedStdin, should.Equal("test/prefix/mac testVersion\n"))
 
+			callCounter++
 			callCounter++
 			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
 			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
@@ -306,7 +312,8 @@ func TestInstallXcode(t *testing.T) {
 				"cipd dry run",
 				"cipd ensures",
 				"chomod prints nothing",
-				"", // No original Xcode when running xcode-select -p
+				"12.2.1", // MacOS Version
+				"",       // No original Xcode when running xcode-select -p
 				"xcode-select -s prints nothing",
 				"xcodebuild -runFirstLaunch installs packages",
 				"", // No original Xcode when running xcode-select -p
@@ -318,7 +325,7 @@ func TestInstallXcode(t *testing.T) {
 			installArgs.serviceAccountJSON = "test/service-account.json"
 			err := installXcode(ctx, installArgs)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, s.Calls, should.HaveLength(12))
+			assert.Loosely(t, s.Calls, should.HaveLength(13))
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
@@ -343,6 +350,7 @@ func TestInstallXcode(t *testing.T) {
 				"-R", "u+w", "testdata/Xcode-old.app",
 			}))
 
+			callCounter++
 			callCounter++
 			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
 			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
@@ -386,6 +394,7 @@ func TestInstallXcode(t *testing.T) {
 				"12.2.1", // MacOS Version
 				"12.2.1", // MacOS Version
 				"cipd dry run",
+				"12.2.1", // MacOS Version
 				"old/xcode/path",
 				"xcode-select -s prints nothing",
 				"license accept",
@@ -403,7 +412,7 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForIOS.kind = iosKind
 			err := installXcode(ctx, installArgsForIOS)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, len(s.Calls), should.Equal(13))
+			assert.Loosely(t, len(s.Calls), should.Equal(14))
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
@@ -416,6 +425,7 @@ func TestInstallXcode(t *testing.T) {
 				"test/prefix/mac testVersion\n"+
 					"test/prefix/ios testVersion\n"))
 
+			callCounter++
 			callCounter++
 			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
 			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
@@ -480,6 +490,7 @@ func TestInstallXcode(t *testing.T) {
 				"cipd dry run",          // 0 (index in s.Calls, same below)
 				"cipd ensures",          // 1
 				"chomod prints nothing", // 2
+				"12.2.1",
 				"",
 				"xcode-select -s prints nothing",
 				"xcodebuild -license accept returns nothing",
@@ -499,7 +510,7 @@ func TestInstallXcode(t *testing.T) {
 			defer os.RemoveAll("testdata/Xcode-old.app/Contents/Developer/Platforms")
 			err := installXcode(ctx, installArgsForTest)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, s.Calls, should.HaveLength(17))
+			assert.Loosely(t, s.Calls, should.HaveLength(18))
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
@@ -523,6 +534,7 @@ func TestInstallXcode(t *testing.T) {
 				"-R", "u+w", "testdata/Xcode-old.app",
 			}))
 
+			callCounter++
 			callCounter++
 			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
 			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
@@ -592,6 +604,7 @@ func TestInstallXcode(t *testing.T) {
 				"cipd dry run",          // 0 (index in s.Calls, same below)
 				"cipd ensures",          // 1
 				"chomod prints nothing", // 2
+				"12.2.1",
 				"",
 				"xcode-select -s prints nothing",
 				"xcodebuild -license accept returns nothing",
@@ -606,7 +619,7 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-with-runtime.app"
 			err := installXcode(ctx, installArgsForTest)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, s.Calls, should.HaveLength(13))
+			assert.Loosely(t, s.Calls, should.HaveLength(14))
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
@@ -630,6 +643,7 @@ func TestInstallXcode(t *testing.T) {
 				"-R", "u+w", "testdata/Xcode-with-runtime.app",
 			}))
 
+			callCounter++
 			callCounter++
 			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
 			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
@@ -670,6 +684,7 @@ func TestInstallXcode(t *testing.T) {
 				"cipd dry run",          // 0 (index in s.Calls, same below)
 				"cipd ensures",          // 1
 				"chomod prints nothing", // 2
+				"12.2.1",
 				"",
 				"xcode-select -s prints nothing",
 				"xcodebuild -license accept returns nothing",
@@ -684,7 +699,7 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForTest.xcodeAppPath = "testdata/Xcode-old.app"
 			err := installXcode(ctx, installArgsForTest)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, s.Calls, should.HaveLength(13))
+			assert.Loosely(t, s.Calls, should.HaveLength(14))
 			callCounter := 0
 			// skip MacOS version check calls
 			callCounter++
@@ -708,6 +723,7 @@ func TestInstallXcode(t *testing.T) {
 				"-R", "u+w", "testdata/Xcode-old.app",
 			}))
 
+			callCounter++
 			callCounter++
 			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
 			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
@@ -758,12 +774,14 @@ func TestInstallXcode(t *testing.T) {
 
 		t.Run("install iOS Xcode on MacOS13+ should only install mac package", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
-				"13.2.1", // MacOS Version
-				"13.2.1", // MacOS Version
+				"14.2.1", // MacOS Version
+				"14.2.1", // MacOS Version
 				"cipd dry run",
 				"cipd ensures",
 				"chomod prints nothing",
-				"", // No original Xcode when running xcode-select -p
+				"14.2.1",                  // MacOS Version
+				"gatekeeper scan success", // MacOS Version
+				"",                        // No original Xcode when running xcode-select -p
 				"xcode-select -s prints nothing",
 				"license accpet",
 				"testdata/Xcode-new.app",
@@ -777,13 +795,15 @@ func TestInstallXcode(t *testing.T) {
 			installArgsForIOS.kind = iosKind
 			err := installXcode(ctx, installArgsForIOS)
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, s.Calls, should.HaveLength(14))
+			assert.Loosely(t, s.Calls, should.HaveLength(16))
 		})
 
 		t.Run("install Xcode with runtime dmg when not already exists", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
-				"13.2.1", // MacOS Version
-				"",       // No original Xcode when running xcode-select -p
+				"14.2.1", // MacOS Version
+				"14.2.1", // MacOS Version
+				"gatekeeper check success",
+				"", // No original Xcode when running xcode-select -p
 				"xcode-select -s prints nothing",
 				"license accpet",
 				"testdata/Xcode-without-runtime.app",
@@ -818,6 +838,10 @@ func TestInstallXcode(t *testing.T) {
 			assert.Loosely(t, err, should.NotBeNil)
 			callCounter := 0
 			// skip MacOS version check calls
+			callCounter++
+			callCounter++
+			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/gktool"))
+
 			callCounter++
 			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
 			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))
@@ -911,8 +935,9 @@ func TestInstallXcode(t *testing.T) {
 
 		t.Run("install Xcode with runtime dmg when already exists", func(t *ftt.Test) {
 			s.ReturnOutput = []string{
-				"13.2.1", // MacOS Version
-				"",       // No original Xcode when running xcode-select -p
+				"13.2", // MacOS Version
+				"13.2", // MacOS Version
+				"",     // No original Xcode when running xcode-select -p
 				"xcode-select -s prints nothing",
 				"license accpet",
 				"testdata/Xcode-without-runtime.app",
@@ -925,7 +950,7 @@ func TestInstallXcode(t *testing.T) {
 				"xcrun simctl delete -d prints a list of runtime being deleted",
 				"xcrun simctl list prints nothing",
 				"xcode-select -s prints nothing",
-				"descrone ios_runtime_dmg returns ios_runtime_version:ios-17-0",
+				"describe ios_runtime_dmg returns ios_runtime_version:ios-17-0",
 				"ios_runtime_build:21A5248u",
 				"testdata/Xcode-without-runtime.app",
 				"xcode-select -s prints nothing",
@@ -941,6 +966,7 @@ func TestInstallXcode(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			callCounter := 0
 			// skip MacOS version check calls
+			callCounter++
 			callCounter++
 			assert.Loosely(t, s.Calls[callCounter].Executable, should.Equal("/usr/bin/xcode-select"))
 			assert.Loosely(t, s.Calls[callCounter].Args, should.Resemble([]string{"-p"}))

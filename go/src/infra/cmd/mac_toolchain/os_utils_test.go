@@ -17,7 +17,7 @@ import (
 func TestParseOSVersion(t *testing.T) {
 	t.Parallel()
 
-	ftt.Run("check isMacOS13OrLater works", t, func(t *ftt.Test) {
+	ftt.Run("check isMacOSVersionOrLater works", t, func(t *ftt.Test) {
 		var s MockSession
 		ctx := useMockCmd(context.Background(), &s)
 
@@ -25,7 +25,7 @@ func TestParseOSVersion(t *testing.T) {
 			s.ReturnOutput = []string{
 				"13.0.1",
 			}
-			os13OrLater, err := isMacOS13OrLater(ctx)
+			os13OrLater, err := isMacOSVersionOrLater(ctx, "13")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, os13OrLater, should.Equal(true))
 		})
@@ -34,7 +34,7 @@ func TestParseOSVersion(t *testing.T) {
 			s.ReturnOutput = []string{
 				"13.0.0",
 			}
-			os13OrLater, err := isMacOS13OrLater(ctx)
+			os13OrLater, err := isMacOSVersionOrLater(ctx, "13")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, os13OrLater, should.Equal(true))
 		})
@@ -43,7 +43,7 @@ func TestParseOSVersion(t *testing.T) {
 			s.ReturnOutput = []string{
 				"12.1.2",
 			}
-			os13OrLater, err := isMacOS13OrLater(ctx)
+			os13OrLater, err := isMacOSVersionOrLater(ctx, "13")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, os13OrLater, should.Equal(false))
 		})
@@ -52,14 +52,14 @@ func TestParseOSVersion(t *testing.T) {
 			s.ReturnOutput = []string{
 				"invalid",
 			}
-			os13OrLater, err := isMacOS13OrLater(ctx)
+			os13OrLater, err := isMacOSVersionOrLater(ctx, "13")
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, os13OrLater, should.Equal(false))
 		})
 
 		t.Run("error output should return false", func(t *ftt.Test) {
 			s.ReturnError = []error{errors.Reason("random Error").Err()}
-			os13OrLater, err := isMacOS13OrLater(ctx)
+			os13OrLater, err := isMacOSVersionOrLater(ctx, "13")
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, os13OrLater, should.Equal(false))
 		})
