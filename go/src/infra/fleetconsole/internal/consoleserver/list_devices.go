@@ -13,6 +13,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
 
 	"infra/fleetconsole/api/fleetconsolerpc"
@@ -27,31 +28,37 @@ const maxPageSize int = 50
 // ListDevices lists devices provided via DeviceManager.
 func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *fleetconsolerpc.ListDevicesRequest) (_ *fleetconsolerpc.ListDevicesResponse, err error) {
 	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
+	logging.Infof(ctx, "beginning of list devices call")
 	deviceManagerClient, err := frontend.deviceManagerClient(ctx, frontend.cloudProject)
 	if err != nil {
+		logging.Errorf(ctx, "failed to connect to device manager: %s", err)
 		return nil, errors.Annotate(err, "list devices").Err()
 	}
 
 	afterDeviceID, err := pageTokenToDeviceID(ctx, req.PageToken)
 	if err != nil {
+		logging.Errorf(ctx, "failed to extract page token: %s", err)
 		return nil, err
 	}
 
 	d, err := deviceManagerClient.Leaser.ListDevices(ctx, &api.ListDevicesRequest{})
 
 	if err != nil {
+		logging.Errorf(ctx, "failed to list devices: %s", err)
 		return nil, err
 	}
 
 	devicesFiltered, err := filtering.FilterDevices(devicemanagerclient.MapDevices(d.Devices), req.Filter)
 
 	if err != nil {
+		logging.Errorf(ctx, "failed to filter devices: %s", err)
 		return nil, err
 	}
 
 	devices, err := sorting.SortDevices(devicesFiltered, req.OrderBy)
 
 	if err != nil {
+		logging.Errorf(ctx, "failed to sort devices: %s", err)
 		return nil, err
 	}
 
@@ -63,6 +70,7 @@ func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *flee
 	devicesPage, err := getPage(devices, afterDeviceID, pageSize)
 
 	if err != nil {
+		logging.Errorf(ctx, "failed to get page: %s", err)
 		return nil, err
 	}
 
@@ -71,10 +79,12 @@ func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *flee
 		deviceID := devicesPage[len(devicesPage)-1].Id
 		nextPageToken, err = deviceIDToPageToken(ctx, deviceID)
 		if err != nil {
+			logging.Errorf(ctx, "failed to next get page: %s", err)
 			return nil, err
 		}
 	}
 
+	logging.Infof(ctx, "successful end of list devices call")
 	return &fleetconsolerpc.ListDevicesResponse{
 		Devices:       devicesPage,
 		NextPageToken: nextPageToken,
