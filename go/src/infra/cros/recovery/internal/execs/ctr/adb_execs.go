@@ -7,8 +7,6 @@ package ctr
 
 import (
 	"context"
-	"fmt"
-	"strings"
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -18,9 +16,9 @@ import (
 	adbTool "infra/cros/recovery/internal/adb"
 	"infra/cros/recovery/internal/components/cft"
 	"infra/cros/recovery/internal/components/cft/adb"
+	"infra/cros/recovery/internal/components/cros/android"
 	"infra/cros/recovery/internal/execs"
 	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/internal/retry"
 )
 
 func startADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -125,61 +123,14 @@ func adbConnectExec(ctx context.Context, info *execs.ExecInfo) error {
 	if dut == nil {
 		return errors.Reason("adb connect: dut is not provided").Err()
 	}
-	var client api.ADBServiceClient
-	if !adbTool.UseLocal(ctx) {
-		var err error
-		client, err = cft.ADBClientFromScope(ctx, info.GetDut())
-		if err != nil {
-			return errors.Annotate(err, "adb connect").Err()
-		}
-	}
-	adbPort := adbTool.Port(ctx)
 	argsMap := info.GetActionArgs(ctx)
 	retryCount := argsMap.AsInt(ctx, "retry_count", 1)
 	retryinterval := argsMap.AsDuration(ctx, "retry_interval", 1, time.Second)
-	// Set 10 seconds so in total is 60 seconds, but mostly will run faster.
 	timeout := argsMap.AsDuration(ctx, "timeout", 2, time.Second)
-	deviceName := fmt.Sprintf("%s:%d", dut.Name, adbPort)
-	if argsMap.AsBool(ctx, "skip_when_connected", true) {
-		log.Infof(ctx, "Check if %q is already connected!", dut.Name)
-		if res, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
-			log.Debugf(ctx, "Device is not connected yet: %s", err)
-		} else if out := string(res.GetStdout()); out != "" && strings.Contains(out, deviceName) {
-			log.Debugf(ctx, "Device is listed, so not need to connect")
-			return nil
-		} else {
-			log.Debugf(ctx, "Device is not connected!")
-		}
-	}
-	if !adbTool.UseLocal(ctx) {
-		if _, err := adb.ExecCommand(ctx, client, timeout, "kill-server"); err != nil {
-			log.Debugf(ctx, "adb devices error: %s", err)
-		}
-		if _, err := adb.ExecCommand(ctx, client, timeout, "start-server"); err != nil {
-			log.Debugf(ctx, "adb devices error: %s", err)
-		}
-	}
-	connect := func() error {
-		log.Infof(ctx, "Try to connect to %q by adb", dut.Name)
-		if _, err := adb.ExecCommand(ctx, client, timeout, "connect", deviceName); err != nil {
-			return errors.Annotate(err, "fail to connect").Err()
-		}
-		if _, err := adb.ExecCommand(ctx, client, timeout, "root"); err != nil {
-			return errors.Annotate(err, "fail to root service, event when expected").Err()
-		}
-		if res, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
-			return errors.Annotate(err, "fail to read adb devices, after connection").Err()
-		} else if out := string(res.GetStdout()); out != "" {
-			if !strings.Contains(out, deviceName) {
-				return errors.Reason("fail to find connected device %q in list of devices", deviceName).Err()
-			}
-		} else {
-			return errors.Reason("fail to read adb devices, after connection").Err()
-		}
-		return nil
-	}
-	if retryErr := retry.LimitCount(ctx, retryCount, retryinterval, connect, "adb connect"); retryErr != nil {
-		return errors.Annotate(retryErr, "adb connect").Err()
+	skipWhenConnected := argsMap.AsBool(ctx, "skip_when_connected", true)
+	reconnect := !skipWhenConnected
+	if err := android.ADBConnect(ctx, retryCount, retryinterval, reconnect, timeout, dut); err != nil {
+		return errors.Annotate(err, "adb connect").Err()
 	}
 	return nil
 }
