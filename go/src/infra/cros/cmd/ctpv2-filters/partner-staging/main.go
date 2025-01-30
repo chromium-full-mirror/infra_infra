@@ -1,4 +1,4 @@
-// Copyright 2024 The ChromiumOS Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 package main
@@ -16,9 +16,10 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
-	"go.chromium.org/chromiumos/test/ctpv2/partner-staging/moblab"
-	"go.chromium.org/chromiumos/test/ctpv2/partner-staging/site"
-	"go.chromium.org/chromiumos/test/ctpv2/partner-staging/tools"
+
+	"infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
+	"infra/cros/cmd/ctpv2-filters/partner-staging/site"
+	"infra/cros/cmd/ctpv2-filters/partner-staging/tools"
 )
 
 const (

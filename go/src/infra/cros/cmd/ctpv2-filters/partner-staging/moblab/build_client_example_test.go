@@ -18,9 +18,9 @@ package moblab_test
 
 import (
 	"context"
-	"go.chromium.org/chromiumos/test/ctpv2/partner-staging/moblab"
 	"google.golang.org/api/iterator"
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
+	"infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
 	"testing"
 )
 

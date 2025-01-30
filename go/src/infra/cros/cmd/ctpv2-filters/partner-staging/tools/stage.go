@@ -1,7 +1,8 @@
-// Copyright 2024 The ChromiumOS Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Package tools provides tooling for staging builds through moblab.
 package tools
 
 import (
@@ -14,7 +15,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
-	"go.chromium.org/chromiumos/test/ctpv2/partner-staging/moblab"
+	"infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
 )
 
 // MoblabClient interface provides subset of Moblab API methods relevant to CTPV2
