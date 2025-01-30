@@ -31,7 +31,9 @@ type FleetConsoleFrontend struct {
 	cloudProject        string
 	deviceManagerClient func(context.Context, string) (*devicemanagerclient.Client, error)
 	ufsClient           func(context.Context, string) (ufsclient.Client, error)
-	dbConnection        *sql.DB
+	// dbConnectionSource is a diagnostic field set to the source of the secret.
+	dbConnectionSource string
+	dbConnection       *sql.DB
 }
 
 // InstallServices installs services into the server.
@@ -65,4 +67,5 @@ func MustSetDBConnection(ctx context.Context, consoleFrontend *FleetConsoleFront
 	if err != nil {
 		panic(err)
 	}
+	consoleFrontend.dbConnectionSource = *flags.DBSecret
 }

@@ -18,6 +18,7 @@ import (
 func (frontend *FleetConsoleFrontend) PingDB(ctx context.Context, req *fleetconsolerpc.PingDBRequest) (_ *fleetconsolerpc.PingDBResponse, err error) {
 	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
 	logging.Infof(ctx, "beginning of ping db call")
+	logging.Infof(ctx, "db secret source: %q", frontend.dbConnectionSource)
 	if err := frontend.dbConnection.Ping(); err != nil {
 		logging.Errorf(ctx, "ping db call failed: %s", err)
 		return nil, errors.Annotate(err, "pinging db").Err()
