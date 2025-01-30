@@ -17,9 +17,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang/protobuf/jsonpb"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"golang.org/x/exp/maps"
+	"google.golang.org/protobuf/encoding/protojson"
 
 	"infra/cros/cmd/cft/cros-test-finder/centralizedsuite"
 
@@ -31,6 +31,7 @@ import (
 
 const (
 	defaultRootPath        = "/tmp/test/cros-test-finder"
+	filterLogPath          = "/tmp/filters/cros-test-finder"
 	defaultInputFileName   = "request.json"
 	defaultOutputFileName  = "result.json"
 	defaultTestMetadataDir = "/tmp/test/metadata"
@@ -58,22 +59,24 @@ func createLogFile(fullPath string) (*os.File, error) {
 }
 
 // newLogger creates a logger. Using go default logger for now.
-func newLogger(logFile *os.File) *log.Logger {
-	mw := io.MultiWriter(logFile, os.Stderr)
+func newLogger(logFiles ...*os.File) *log.Logger {
+	writers := []io.Writer{os.Stderr}
+	for _, logFile := range logFiles {
+		writers = append(writers, logFile)
+	}
+	mw := io.MultiWriter(writers...)
 	return log.New(mw, "", log.LstdFlags|log.LUTC)
 }
 
 // readInput reads a CrosTestFinderRequest jsonproto file and returns a pointer to RunTestsRequest.
 func readInput(fileName string) (*api.CrosTestFinderRequest, error) {
-	f, err := os.Open(fileName)
+	f, err := os.ReadFile(fileName)
 	if err != nil {
 		return nil, errors.NewStatusError(errors.IOAccessError,
 			fmt.Errorf("fail to read file %v: %v", fileName, err))
 	}
 	req := api.CrosTestFinderRequest{}
-	umrsh := jsonpb.Unmarshaler{}
-	umrsh.AllowUnknownFields = true
-	if err := umrsh.Unmarshal(f, &req); err != nil {
+	if err := protojson.Unmarshal(f, &req); err != nil {
 		return nil, errors.NewStatusError(errors.UnmarshalError,
 			fmt.Errorf("fail to unmarshal file %v: %v", fileName, err))
 	}
@@ -87,10 +90,11 @@ func writeOutput(output string, resp *api.CrosTestFinderResponse) error {
 		return errors.NewStatusError(errors.IOCreateError,
 			fmt.Errorf("fail to create file %v: %v", output, err))
 	}
-	m := jsonpb.Marshaler{}
-	if err := m.Marshal(f, resp); err != nil {
+	if json, err := protojson.Marshal(resp); err != nil {
 		return errors.NewStatusError(errors.MarshalError,
 			fmt.Errorf("failed to marshall response to file %v: %v", output, err))
+	} else {
+		_, _ = f.Write(json)
 	}
 	return nil
 }
@@ -292,6 +296,11 @@ func startServer(d []string) int {
 	fs.IntVar(&a.port, "port", defaultPort, fmt.Sprintf("Specify the port for the server. Default value %d.", defaultPort))
 	fs.Parse(d)
 
+	filterLogFile, err := createLogFile(filepath.Join(filterLogPath, t.Format("20060102-150405")))
+	if err != nil {
+		log.Fatalln("Failed to create log file", err)
+		return 2
+	}
 	logFile, err := createLogFile(a.logPath)
 	if err != nil {
 		log.Fatalln("Failed to create log file", err)
@@ -299,7 +308,7 @@ func startServer(d []string) int {
 	}
 	defer logFile.Close()
 
-	logger := newLogger(logFile)
+	logger := newLogger(logFile, filterLogFile)
 
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))
 	if err != nil {
