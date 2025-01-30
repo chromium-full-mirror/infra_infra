@@ -7,6 +7,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -460,6 +461,12 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 				testCaseTagCriteria.TestNames = append(testCaseTagCriteria.TestNames, arg.Values...)
 			} else if arg.Key == "test_names_exclude_list" {
 				testCaseTagCriteria.TestNameExcludes = append(testCaseTagCriteria.TestNameExcludes, arg.Values...)
+			} else if arg.Key == "max_in_shard" {
+				// max_in_shard should only contain a single value.
+				if len(arg.Values) != 1 {
+					continue
+				}
+				maxInShard, _ = strconv.Atoi(arg.Values[0])
 			} else {
 				// directly plumb through any other args
 				for _, value := range arg.Values {
