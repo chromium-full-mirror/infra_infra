@@ -38,7 +38,7 @@ func MatchSuffixValueToExpectation(ctx context.Context, run components.Runner, s
 
 	splittedOut := strings.SplitN(strings.TrimSpace(out), delimiter, 2)
 	if len(splittedOut) != 2 {
-		return errors.Reason(fmt.Sprintf("match suffix value to expectation: cannot split output %s with delimiter %s", out, delimiter)).Err()
+		return errors.Reason("match suffix value to expectation: cannot split output %s with delimiter %s", out, delimiter).Err()
 	}
 	actual := splittedOut[1]
 	if actual == "" {
@@ -48,7 +48,7 @@ func MatchSuffixValueToExpectation(ctx context.Context, run components.Runner, s
 
 	splittedExpectedValue := strings.SplitN(expectedValue, delimiter, 2)
 	if len(splittedExpectedValue) != 2 {
-		return errors.Reason(fmt.Sprintf("match suffix value to expectation: cannot split expected value %s with delimiter %s", expectedValue, delimiter)).Err()
+		return errors.Reason("match suffix value to expectation: cannot split expected value %s with delimiter %s", expectedValue, delimiter).Err()
 	}
 	expected := splittedExpectedValue[1]
 	if expected == "" {

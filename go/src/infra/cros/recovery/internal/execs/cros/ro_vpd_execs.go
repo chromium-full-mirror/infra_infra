@@ -108,17 +108,17 @@ func verifyROVPDDSMCalibExec(ctx context.Context, info *execs.ExecInfo) error {
 
 	var fakeDSMVPD DSMVPD
 	if err = json.Unmarshal([]byte(fakeDSMVPDJson), &fakeDSMVPD); err != nil {
-		return errors.Annotate(err, "cannot parse fake DSM vpd json: "+string(fakeDSMVPDJson)).Err()
+		return errors.Annotate(err, "cannot parse fake DSM vpd json: %s", string(fakeDSMVPDJson)).Err()
 	}
 
 	for ch := 0; ch < len(fakeDSMVPD.Rdc); ch++ {
 		cmd := fmt.Sprintf("vpd -i RO_VPD -g dsm_calib_r0_%d", ch)
 		if _, err := r(ctx, time.Minute, cmd); err != nil {
-			return errors.Annotate(err, cmd).Err()
+			return errors.Annotate(err, "%s", cmd).Err()
 		}
 		cmd = fmt.Sprintf("vpd -i RO_VPD -g dsm_calib_temp_%d", ch)
 		if _, err := r(ctx, time.Minute, cmd); err != nil {
-			return errors.Annotate(err, cmd).Err()
+			return errors.Annotate(err, "%s", cmd).Err()
 		}
 	}
 	return nil
@@ -155,7 +155,7 @@ func setFakeROVPDDSMCalibExec(ctx context.Context, info *execs.ExecInfo) error {
 
 	var fakeDSMVPD DSMVPD
 	if err = json.Unmarshal([]byte(fakeDSMVPDJson), &fakeDSMVPD); err != nil {
-		return errors.Annotate(err, "cannot parse fake DSM vpd json: "+string(fakeDSMVPDJson)).Err()
+		return errors.Annotate(err, "cannot parse fake DSM vpd json: %s", string(fakeDSMVPDJson)).Err()
 	}
 
 	for ch := 0; ch < len(fakeDSMVPD.Rdc); ch++ {

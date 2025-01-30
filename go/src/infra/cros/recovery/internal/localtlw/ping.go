@@ -37,7 +37,7 @@ func ping(addr string, count int) error {
 	var stderr bytes.Buffer
 	cmd.Stderr = &stderr
 	if err = cmd.Run(); err != nil {
-		return errors.Annotate(err, stderr.String()).Err()
+		return errors.Annotate(err, "%s", stderr.String()).Err()
 	}
 	return nil
 }

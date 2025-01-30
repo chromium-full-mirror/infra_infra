@@ -247,11 +247,11 @@ func detectJedecState(ctx context.Context, ifaceName, jedecFailLifeGlob, jedecFa
 	log.Infof(ctx, "Extraction metrics for "+ifaceName+" storage")
 	jedecFailLiveRegexp, err := regexp.Compile(jedecFailLifeGlob)
 	if err != nil {
-		return StorageStateUndefined, errors.Annotate(err, "detect "+ifaceName+" state").Err()
+		return StorageStateUndefined, errors.Annotate(err, "detect %s state", ifaceName).Err()
 	}
 	jedecFailEolRegexp, err := regexp.Compile(jedecFailEolGlob)
 	if err != nil {
-		return StorageStateUndefined, errors.Annotate(err, "detect "+ifaceName+" state").Err()
+		return StorageStateUndefined, errors.Annotate(err, "detect %s state", ifaceName).Err()
 	}
 	eolValue := 0
 	lifeValue := 0

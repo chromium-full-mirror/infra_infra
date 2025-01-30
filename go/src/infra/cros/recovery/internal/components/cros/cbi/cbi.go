@@ -210,7 +210,7 @@ func VerifyRequiredFields(ctx context.Context, run components.Runner) error {
 			if err != nil {
 				errorString += fmt.Sprintf("\nerror: %s", err)
 			}
-			return errors.Reason(errorString).Err()
+			return errors.Reason("%s", errorString).Err()
 		}
 	}
 	return nil

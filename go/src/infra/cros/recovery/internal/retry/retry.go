@@ -62,7 +62,7 @@ func WithTimeout(ctx context.Context, interval, duration time.Duration, f func()
 		},
 		interval: interval,
 	})
-	return errors.Annotate(err, getEndErrorMessage(opName, atomic.LoadInt32(&attempts), startTime)).Err()
+	return errors.Annotate(err, "%s", getEndErrorMessage(opName, atomic.LoadInt32(&attempts), startTime)).Err()
 }
 
 // LimitCount retries execute function with limit by numbers attempts.
@@ -101,7 +101,7 @@ func LimitCount(ctx context.Context, count int, interval time.Duration, f func()
 		},
 		interval: interval,
 	})
-	return errors.Annotate(err, getEndErrorMessage(opName, atomic.LoadInt32(&attempts), startTime)).Err()
+	return errors.Annotate(err, "%s", getEndErrorMessage(opName, atomic.LoadInt32(&attempts), startTime)).Err()
 }
 
 type retryOptions struct {

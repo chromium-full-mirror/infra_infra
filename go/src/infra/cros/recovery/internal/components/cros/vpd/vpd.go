@@ -34,11 +34,10 @@ func readValue(ctx context.Context, ha components.HostAccess, partition string, 
 		cmd = fmt.Sprintf("%s -i %s", cmd, partition)
 		errorMessage = fmt.Sprintf("%s of %q partition", errorMessage, partition)
 	}
-	errorMessage = fmt.Sprintf("%s for %q", errorMessage, key)
 	cmd = fmt.Sprintf("%s -g %s", cmd, key)
 	res, err := ha.Run(ctx, timeout, cmd)
 	if err != nil {
-		return "", errors.Annotate(err, errorMessage).Err()
+		return "", errors.Annotate(err, "%s for %q", errorMessage, key).Err()
 	}
 	return strings.TrimSpace(res.GetStdout()), nil
 }

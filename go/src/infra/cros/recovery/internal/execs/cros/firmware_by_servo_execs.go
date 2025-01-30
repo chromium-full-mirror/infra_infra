@@ -67,7 +67,7 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 	// Example: `http://Addr:8082/download/my-bucket/board-firmware/RXX-XXXXX.XX.0/xyz.tar.bz2`
 	downloadFilename, err := info.GetAccess().GetCacheUrl(ctx, info.GetDut().Name, gsImagePath)
 	if err != nil {
-		return errors.Annotate(err, mn).Err()
+		return errors.Annotate(err, "%s", mn).Err()
 	}
 	log.Debugf(ctx, "Adapted fw path for cache service: %s", downloadFilename)
 	if !strings.HasSuffix(downloadFilename, firmwareTarSuffix) {
@@ -102,7 +102,7 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 		req.ECTarget = info.GetChromeos().GetFirmwareInfo().GetEcTarget()
 	}
 	err = firmware.InstallFirmwareImage(ctx, req, info.NewLogger())
-	return errors.Annotate(err, mn).Err()
+	return errors.Annotate(err, "%s", mn).Err()
 }
 
 // defaultFwFolderPath provides default path to directory used for firmware extraction.

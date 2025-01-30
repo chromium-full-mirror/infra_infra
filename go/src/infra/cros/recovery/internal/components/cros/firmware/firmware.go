@@ -137,31 +137,29 @@ func (req *InstallFirmwareImageRequest) targetHostRunner() components.Runner {
 func validateInstallFirmwareImageRequest(req *InstallFirmwareImageRequest) error {
 	prefix := "validate InstallFirmwareImageRequest: "
 	if req == nil {
-		return errors.Reason(prefix + "the request is nil").Err()
+		return errors.Reason("%sthe request is nil", prefix).Err()
 	} else if req.Board == "" || req.Model == "" {
-		return errors.Reason(prefix + "both Board and Model needs to be provided.").Err()
+		return errors.Reason("%sboth Board and Model needs to be provided.", prefix).Err()
 	} else if req.DownloadDir == "" || req.DownloadImagePath == "" || req.DownloadImageTimeout == 0 {
-		return errors.Reason(prefix + "both DownloadDir, DownloadImagePath and DownloadImageTimeout needs to be provided.").Err()
+		return errors.Reason("%sboth DownloadDir, DownloadImagePath and DownloadImageTimeout needs to be provided.", prefix).Err()
 	} else if req.UpdateEcAttemptCount == 0 && req.UpdateApAttemptCount == 0 {
 		return errors.Reason("validate InstallFirmwareImageRequest both EC and AP attempt count are set to 0, at least one need to be larger than 0.").Err()
 	}
 	if req.FlashThroughServo {
 		// Validating request in the case flash via servo.
-		template := prefix + "flash via servo selected but %s is not provided."
 		if req.Servod == nil {
-			return errors.Reason(fmt.Sprintf(template, "Servod")).Err()
+			return errors.Reason("%sflash via servo selected but Servod is not provided.", prefix).Err()
 		} else if req.ServoHostRunner == nil {
-			return errors.Reason(fmt.Sprintf(template, "ServoHostRunner")).Err()
+			return errors.Reason("%sflash via servo selected but ServoHostRunner is not provided.", prefix).Err()
 		}
 	} else {
 		// Validating request in the case flash from the DUT itself.
-		template := prefix + "lash from the DUT selected but %s is not provided."
 		if req.UpdaterMode == "" {
-			return errors.Reason(fmt.Sprintf(template, "UpdaterMode")).Err()
+			return errors.Reason("%sflash from the DUT selected but UpdaterMode is not provided.", prefix).Err()
 		} else if req.DutRunner == nil {
-			return errors.Reason(fmt.Sprintf(template, "DutRunner")).Err()
+			return errors.Reason("%sflash from the DUT selected but DutRunner is not provided.", prefix).Err()
 		} else if req.UpdaterTimeout == 0 {
-			return errors.Reason(fmt.Sprintf(template, "UpdaterTimeout")).Err()
+			return errors.Reason("%sflash from the DUT selected but UpdaterTimeout is not provided.", prefix).Err()
 		}
 	}
 	return nil
