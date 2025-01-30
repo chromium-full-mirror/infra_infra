@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Package executors defines the base executors type.
 package executors
 
 import (
@@ -12,7 +13,6 @@ import (
 
 	"google.golang.org/grpc"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -60,13 +60,13 @@ func (ex *FilterExecutor) ExecuteCommand(
 			status = analytics.Fail
 		}
 		if key != "" {
-			analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: status, Duration: float32(time.Now().Sub(start).Seconds())}, cmd.InputTestPlan, cmd.BuildState)
+			analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: status, Duration: float32(time.Since(start).Seconds())}, cmd.InputTestPlan, cmd.BuildState)
 		}
 		return err
 
 	default:
 		return fmt.Errorf(
-			"Command type %s is not supported by %s executor type!",
+			"command type %s is not supported by %s executor type",
 			cmd.GetCommandType(),
 			ex.GetExecutorType())
 	}
@@ -98,7 +98,7 @@ func (ex *FilterExecutor) filterExecutionCommandExecution(
 
 func executeTestFinderAdaptor(ctx context.Context, conn *grpc.ClientConn, filterReq *testapi.InternalTestplan) (*testapi.InternalTestplan, error) {
 	// Create new client.
-	TFServiceClient := api.NewTestFinderServiceClient(conn)
+	TFServiceClient := testapi.NewTestFinderServiceClient(conn)
 	if TFServiceClient == nil {
 		return nil, fmt.Errorf("filterServiceClient is nil")
 	}
@@ -130,33 +130,33 @@ func executeTestFinderAdaptor(ctx context.Context, conn *grpc.ClientConn, filter
 	return filterReq, nil
 }
 
-func toTestFinderRequest(testPlan *api.InternalTestplan) (*api.CrosTestFinderRequest, error) {
+func toTestFinderRequest(testPlan *testapi.InternalTestplan) (*testapi.CrosTestFinderRequest, error) {
 	centralizedSuitesPrefix := "centralizedsuite:"
 	// TODO... switch
-	requestedSuite, ok := testPlan.GetSuiteInfo().GetSuiteRequest().GetSuiteRequest().(*api.SuiteRequest_TestSuite)
+	requestedSuite, ok := testPlan.GetSuiteInfo().GetSuiteRequest().GetSuiteRequest().(*testapi.SuiteRequest_TestSuite)
 	if !ok {
 		return nil, errors.New("SuiteRequest is not TestSuite")
 	}
 	testSuite := requestedSuite.TestSuite
 	if testSuite != nil && strings.HasPrefix(testSuite.Name, centralizedSuitesPrefix) {
-		return &api.CrosTestFinderRequest{
+		return &testapi.CrosTestFinderRequest{
 			CentralizedSuite: strings.TrimPrefix(testSuite.Name, centralizedSuitesPrefix),
 			MetadataRequired: true,
 		}, nil
 	}
-	return &api.CrosTestFinderRequest{
-		TestSuites:       []*api.TestSuite{testSuite},
+	return &testapi.CrosTestFinderRequest{
+		TestSuites:       []*testapi.TestSuite{testSuite},
 		MetadataRequired: true,
 	}, nil
 }
 
-func fillTestCasesIntoTestPlan(ctx context.Context, testPlan *api.InternalTestplan, resp *api.CrosTestFinderResponse) error {
+func fillTestCasesIntoTestPlan(ctx context.Context, testPlan *testapi.InternalTestplan, resp *testapi.CrosTestFinderResponse) error {
 	if len(resp.GetTestSuites()) == 0 {
 		return nil
 	}
 
 	// Only need to check the [0] index; as test-finder only populates that.
-	metadataList, ok := resp.GetTestSuites()[0].Spec.(*api.TestSuite_TestCasesMetadata)
+	metadataList, ok := resp.GetTestSuites()[0].Spec.(*testapi.TestSuite_TestCasesMetadata)
 	if !ok {
 		return errors.New("no test cases metadata in the response")
 	}
@@ -167,8 +167,8 @@ func fillTestCasesIntoTestPlan(ctx context.Context, testPlan *api.InternalTestpl
 	return nil
 }
 
-func tfToCTPTestCase(metadata *api.TestCaseMetadata) *api.CTPTestCase {
-	tc := &api.CTPTestCase{
+func tfToCTPTestCase(metadata *testapi.TestCaseMetadata) *testapi.CTPTestCase {
+	tc := &testapi.CTPTestCase{
 		Name:     metadata.GetTestCase().GetId().GetValue(),
 		Metadata: metadata,
 	}
@@ -180,7 +180,7 @@ func tfToCTPTestCase(metadata *api.TestCaseMetadata) *api.CTPTestCase {
 	return tc
 }
 
-func Converter(deps []*api.TestCase_Dependency) []*api.TestCase_Dependency {
+func Converter(deps []*testapi.TestCase_Dependency) []*testapi.TestCase_Dependency {
 	convertedDeps := []string{}
 	for _, dep := range deps {
 		f := dep.GetValue()
@@ -192,9 +192,9 @@ func Converter(deps []*api.TestCase_Dependency) []*api.TestCase_Dependency {
 			convertedDeps = append(convertedDeps, converted...)
 		}
 	}
-	finalDeps := []*api.TestCase_Dependency{}
+	finalDeps := []*testapi.TestCase_Dependency{}
 	for _, dep := range convertedDeps {
-		tcD := &api.TestCase_Dependency{
+		tcD := &testapi.TestCase_Dependency{
 			Value: dep,
 		}
 		finalDeps = append(finalDeps, tcD)
@@ -216,19 +216,19 @@ func convertDep(dep string) []string {
 	return depsf
 }
 
-// ExecuteTests invokes the run tests endpoint of cros-test.
+// ExecuteFilter invokes the run tests endpoint of cros-test.
 func (ex *FilterExecutor) ExecuteFilter(
 	ctx context.Context,
 	filterReq *testapi.InternalTestplan) (*testapi.InternalTestplan, error) {
 
 	if filterReq == nil {
-		return nil, fmt.Errorf("Cannot execute filter for nil filter request.")
+		return nil, fmt.Errorf("cannot execute filter for nil filter request")
 	}
 	if ex.ContainerInfo == nil {
-		return nil, fmt.Errorf("Cannot execute filter with nil container info.")
+		return nil, fmt.Errorf("cannot execute filter with nil container info")
 	}
 	if ex.ContainerInfo.ServiceEndpoint == nil {
-		return nil, fmt.Errorf("Cannot execute filter for nil service endpoint.")
+		return nil, fmt.Errorf("cannot execute filter for nil service endpoint")
 	}
 
 	filterEndpointStr, err := ex.ContainerInfo.GetEndpointString()
@@ -246,7 +246,7 @@ func (ex *FilterExecutor) ExecuteFilter(
 			err.Error())
 		return nil, err
 	}
-	logging.Infof(ctx, "Connected with filter service.")
+	logging.Infof(ctx, "connected with filter service")
 
 	// If the filter is test-finder, build a test-finder command and run that instead. Translate both ways.
 	// This is to ensure full backwards compatibility with everything including LTS.
@@ -261,7 +261,7 @@ func (ex *FilterExecutor) ExecuteFilter(
 	}
 
 	// Create new client.
-	filterServiceClient := api.NewGenericFilterServiceClient(conn)
+	filterServiceClient := testapi.NewGenericFilterServiceClient(conn)
 	if filterServiceClient == nil {
 		return nil, fmt.Errorf("filterServiceClient is nil")
 	}

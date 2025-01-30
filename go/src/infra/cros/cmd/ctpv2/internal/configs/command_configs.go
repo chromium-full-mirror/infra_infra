@@ -115,7 +115,7 @@ func (cfg *CommandConfig) GetCommand(
 		cmd = common_commands.NewContainerCloseLogsCmd(exec)
 
 	default:
-		return nil, fmt.Errorf("Command type %s not supported in command configs!", cmdType)
+		return nil, fmt.Errorf("command type %s not supported in command configs", cmdType)
 	}
 
 	cfg.commandsMap[cmdType] = cmd

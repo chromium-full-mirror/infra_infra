@@ -7,23 +7,8 @@ package commands
 import (
 	"testing"
 
-	testapi "go.chromium.org/chromiumos/config/go/test/api"
-	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
-
 	"infra/libs/skylab/inventory"
 )
-
-func buildDutTestProto(boardName string, modelName string) *testapi.SwarmingDefinition {
-	dut := &dut_api.Dut{}
-
-	Cros := &dut_api.Dut_ChromeOS{DutModel: &dut_api.DutModel{
-		BuildTarget: boardName,
-		ModelName:   modelName,
-	}}
-	dut.DutType = &dut_api.Dut_Chromeos{Chromeos: Cros}
-
-	return &testapi.SwarmingDefinition{DutInfo: dut}
-}
 
 func TestCreateLabels(t *testing.T) {
 	testBoard := "board1"

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Package executions stores the infrastructure to run the CTPv2 builder.
 package executions
 
 import (
@@ -90,7 +91,7 @@ func executeRequests(
 
 	// Validation
 	if ctrCipdVersion == "" {
-		return nil, fmt.Errorf("Cros-tool-runner cipd version cannot be empty for hw test execution.")
+		return nil, fmt.Errorf("cros-tool-runner cipd version cannot be empty for hw test execution")
 	}
 	// Create ctr
 	ctrCipdInfo := crostoolrunner.CtrCipdInfo{
@@ -238,7 +239,7 @@ func executeFiltersInLuciBuild(
 	req *api.CTPRequest,
 	config *config.Config,
 	buildState *build.State,
-	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client, reqKey, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitTree, isPartnerRun, generateInvocation, workUnitsOnly bool) error {
+	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client, reqKey, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitTree, isPartnerRun, generateInvocation, workUnitsOnly bool) {
 	defer wg.Done()
 	var err error
 	step, ctx := build.StartStep(ctx, suiteDisplayName)
@@ -247,32 +248,35 @@ func executeFiltersInLuciBuild(
 	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
 	if err != nil {
 		err = fmt.Errorf("unable to locate dockerKeyFile during initialization: %w", err)
-		return err
+		logging.Errorf(ctx, "executeFiltersInLuciBuild: %w", err)
+		return
 	}
 
 	executorCfg := configs.NewExecutorConfig(ctr, nil)
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
-	alStateInfo := &data.AlStateInfo{}
+	var alStateInfo *data.AlStateInfo
 
 	if isReqFromATP(req) {
-		buildIdStr := strconv.FormatInt(buildState.Build().Id, 10)
+		buildIDStr := strconv.FormatInt(buildState.Build().Id, 10)
 		// TODO (azrahman:atp): infer this from the new test job field; create a deep copy for current state
 		inputTestJobMsg, err := common.DecodeTestJobMsg(ctx, req.GetEncodedAtpTestJobMsg())
 		if err != nil {
-			inputTestJobMsg = &common.TestJobMessage{Id: buildIdStr, Runner: "CTP", TestJobState: "QUEUED", StartTimestamp: buildState.Build().CreateTime.AsTime().Format(common.ATPSupportedTimeFormat)}
+			inputTestJobMsg = &common.TestJobMessage{Id: buildIDStr, Runner: "CTP", TestJobState: "QUEUED", StartTimestamp: buildState.Build().CreateTime.AsTime().Format(common.ATPSupportedTimeFormat)}
 		} else {
 			inputTestJobMsg.TestJobState = "QUEUED"
 			inputTestJobMsg.StartTimestamp = buildState.Build().CreateTime.AsTime().Format(common.ATPSupportedTimeFormat)
 		}
 
-		testJobEventState := &common.TestJobEventMessage{TestJobId: buildIdStr, TestJob: inputTestJobMsg, State: "QUEUED", Type: "STATE_CHANGED"}
+		testJobEventState := &common.TestJobEventMessage{TestJobId: buildIDStr, TestJob: inputTestJobMsg, State: "QUEUED", Type: "STATE_CHANGED"}
 		// create pubsub client
-		atpProjectId := common.GetAtpProjectID(buildState.Build().GetBuilder())
-		logging.Infof(ctx, "ATP project id that will be used for the run: %s", atpProjectId)
-		client, err := pubsub.NewClient(ctx, atpProjectId)
+		atpProjectID := common.GetAtpProjectID(buildState.Build().GetBuilder())
+		logging.Infof(ctx, "ATP project id that will be used for the run: %s", atpProjectID)
+		client, err := pubsub.NewClient(ctx, atpProjectID)
 		if err != nil {
-			return fmt.Errorf("Failed to create client for %s: %v", common.ATPSwitcherProjectIDProd, err)
+			err = fmt.Errorf("failed to create client for %s: %w", common.ATPSwitcherProjectIDProd, err)
+			logging.Errorf(ctx, "executeFiltersInLuciBuild: %w", err)
+			return
 		}
 		defer client.Close()
 		alStateInfo = &data.AlStateInfo{InputTestJob: inputTestJobMsg, CurrentTestJob: inputTestJobMsg, CurrentTestJobEvent: testJobEventState, TestJobEventPubSubClient: client, WorkUnitTrees: workUnitTrees, GenerateInvocation: generateInvocation}
@@ -331,7 +335,9 @@ func executeFiltersInLuciBuild(
 	// Send the result via channel
 	results <- map[string][]*data.TestResults{suiteDisplayName: resultsList}
 
-	return err
+	if err != nil {
+		logging.Errorf(ctx, "executeFiltersInLuciBuild: %w", err)
+	}
 }
 
 func getTotalFilters(ctx context.Context, req *api.CTPRequest, defaultKarbonFilterNames []string, defaultKoffeeFilterNames []string) int {

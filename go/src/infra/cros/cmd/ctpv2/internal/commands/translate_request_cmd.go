@@ -13,7 +13,6 @@ import (
 
 	"github.com/gogo/protobuf/jsonpb"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/auth"
@@ -30,7 +29,7 @@ import (
 	"infra/cros/cmd/ctpv2/data"
 )
 
-// FilterExecutionCmd represents test execution cmd.
+// TranslateRequestCmd represents translate command
 type TranslateRequestCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
@@ -58,7 +57,7 @@ func (cmd *TranslateRequestCmd) ExtractDependencies(
 		err = cmd.extractDepsFromFilterStateKeeper(ctx, sk)
 
 	default:
-		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
+		return fmt.Errorf("stateKeeper '%T' is not supported by cmd type %s", sk, cmd.GetCommandType())
 	}
 
 	if err != nil {
@@ -91,7 +90,7 @@ func (cmd *TranslateRequestCmd) extractDepsFromFilterStateKeeper(
 	sk *data.FilterStateKeeper) error {
 
 	if sk.CtpReq == nil {
-		return fmt.Errorf("Cmd %q missing dependency: CtpReq", cmd.GetCommandType())
+		return fmt.Errorf("cmd %q missing dependency: CtpReq", cmd.GetCommandType())
 	}
 
 	if sk.AlStateInfo == nil {
@@ -145,7 +144,7 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 	suitemd := &testapi.SuiteMetadata{
 		Pool:              cmd.CtpReq.GetPool(),
 		ExecutionMetadata: executionMetadata(cmd.CtpReq, cmd.IsPartnerRun),
-		DynamicUpdates:    []*api.UserDefinedDynamicUpdate{},
+		DynamicUpdates:    []*testapi.UserDefinedDynamicUpdate{},
 	}
 
 	// bmvToDimsMap holds the map to {key -> dims[]} for all the targets that are dropped.
@@ -167,8 +166,8 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 		SuiteRequest:  cmd.CtpReq.GetSuiteRequest(),
 	}
 
-	translated_req := step.Log("translated request")
-	if err = marsh.Marshal(translated_req, internalStruct); err != nil {
+	translatedReq := step.Log("translated request")
+	if err = marsh.Marshal(translatedReq, internalStruct); err != nil {
 		err = errors.Annotate(err, "failed to marshal proto").Err()
 	}
 
@@ -188,8 +187,8 @@ func (cmd *TranslateRequestCmd) Execute(ctx context.Context) error {
 
 	// Validations
 	if len(suitemd.GetSchedulingUnits()) == 0 && len(suitemd.GetSchedulingUnitOptions()) == 0 {
-		logging.Infof(ctx, fmt.Sprintf("no scheduling units found at the end of translation. check logs to see if all of the targets are dropped."))
-		err = fmt.Errorf("No device targets found at the end of translation. Perhaps invalid targets provided in request.")
+		logging.Infof(ctx, "no scheduling units found at the end of translation. check logs to see if all of the targets are dropped.")
+		err = fmt.Errorf("no device targets found at the end of translation. Perhaps invalid targets provided in request")
 		step.SetSummaryMarkdown(err.Error())
 	}
 
@@ -336,36 +335,8 @@ func httpClient(ctx context.Context) (*http.Client, error) {
 	return h, nil
 }
 
-func targetRequirements(req *testapi.CTPRequest) []*testapi.TargetRequirements {
-	targs := []*testapi.TargetRequirements{}
-	for _, scheduleTarget := range req.GetScheduleTargets() {
-		// TODO (azrahman): 0 indexing now for single dut. Add multi-dut support.
-		targ := scheduleTarget.GetTargets()[0]
-		switch hw := targ.HwTarget.Target.(type) {
-		case *testapi.HWTarget_LegacyHw:
-
-			// There will only be one set by the translation; but other filters might
-			// expand this as they see fit.
-			var hwDefs []*testapi.SwarmingDefinition
-			hwDefs = append(hwDefs, buildHwDef(hw.LegacyHw))
-
-			legacysw := legacyswpoper(targ.SwTarget)
-
-			builtTarget := &testapi.TargetRequirements{
-				HwRequirements: &testapi.HWRequirements{
-					HwDefinition: hwDefs,
-				},
-
-				SwRequirement: legacysw,
-			}
-			targs = append(targs, builtTarget)
-		}
-	}
-	return targs
-}
-
 func schedTargetToSchedUnit(scheduleTarget *testapi.ScheduleTargets) *testapi.SchedulingUnit {
-	newSchedUnit := &api.SchedulingUnit{CompanionTargets: []*api.Target{}}
+	newSchedUnit := &testapi.SchedulingUnit{CompanionTargets: []*testapi.Target{}}
 	for i, targ := range scheduleTarget.GetTargets() {
 		newTarget := TargetsToNewTarget(targ)
 		if i == 0 {
@@ -388,22 +359,22 @@ func schedTargetstoSchedUnits(schedTargets []*testapi.ScheduleTargets) []*testap
 	return schedUnits
 }
 
-func groupedSchedTargetsToSchedUnitOptions(grouped_schedule_targets []*testapi.GroupedScheduleTargets) []*testapi.SchedulingUnitOptions {
+func groupedSchedTargetsToSchedUnitOptions(groupedScheduleTargets []*testapi.GroupedScheduleTargets) []*testapi.SchedulingUnitOptions {
 	schedUnitOptions := []*testapi.SchedulingUnitOptions{}
 	// Grouped targets allow setting and/or relationship between targets.
 	// inner i.e. {a, b} is OR relationship: a or b
 	// outer i.e. {a}, {b} is AND relationship: a and b
 	// [{schedTarget1, schedTarget2}, {schedTarget3, schedTarget4}]
 	// --> (schedTarget1 OR schedTarget2) AND (schedTarget3 OR schedTarget4)
-	for _, grouped_schedule_targets := range grouped_schedule_targets {
-		schedUnits := schedTargetstoSchedUnits(grouped_schedule_targets.GetGroupedTargets())
-		schedUnitOptions = append(schedUnitOptions, &testapi.SchedulingUnitOptions{SchedulingUnits: schedUnits, State: api.SchedulingUnitOptions_ONEOF})
+	for _, groupedScheduleTargets := range groupedScheduleTargets {
+		schedUnits := schedTargetstoSchedUnits(groupedScheduleTargets.GetGroupedTargets())
+		schedUnitOptions = append(schedUnitOptions, &testapi.SchedulingUnitOptions{SchedulingUnits: schedUnits, State: testapi.SchedulingUnitOptions_ONEOF})
 	}
 
 	return schedUnitOptions
 }
 
-func TargetsToNewTarget(targ *testapi.Targets) *api.Target {
+func TargetsToNewTarget(targ *testapi.Targets) *testapi.Target {
 	switch hw := targ.HwTarget.Target.(type) {
 	case *testapi.HWTarget_LegacyHw:
 		// There will only be one set by the translation; but other filters might
@@ -411,7 +382,7 @@ func TargetsToNewTarget(targ *testapi.Targets) *api.Target {
 		swDef := buildHwDef(hw.LegacyHw)
 		legacysw := legacyswpoper(targ.SwTarget)
 
-		return &api.Target{SwarmingDef: swDef, SwReq: legacysw}
+		return &testapi.Target{SwarmingDef: swDef, SwReq: legacysw}
 	}
 	return nil
 }
@@ -454,11 +425,11 @@ func NewTranslateRequestCmd() *TranslateRequestCmd {
 	return &TranslateRequestCmd{AbstractSingleCmdByNoExecutor: abstractSingleCmdByNoExecutor}
 }
 
-func generateSchedulerInfo(req *api.CTPRequest) *api.SchedulerInfo {
+func generateSchedulerInfo(req *testapi.CTPRequest) *testapi.SchedulerInfo {
 	return req.GetSchedulerInfo()
 }
 
-func executionMetadata(req *api.CTPRequest, isPartnerRun bool) *api.ExecutionMetadata {
+func executionMetadata(req *testapi.CTPRequest, isPartnerRun bool) *testapi.ExecutionMetadata {
 	ta := req.GetSuiteRequest().GetTestArgs()
 	args := &testapi.ExecutionMetadata{}
 	things := []*testapi.Arg{

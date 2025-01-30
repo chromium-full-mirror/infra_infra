@@ -55,9 +55,9 @@ type testVars struct {
 	SU3 *api.SchedulingUnitOptions
 	SU4 *api.SchedulingUnitOptions
 
-	SU1_or_2      *api.SchedulingUnitOptions
-	SU2_or_3      *api.SchedulingUnitOptions
-	SU1_or_2_or_3 *api.SchedulingUnitOptions
+	SU1Or2    *api.SchedulingUnitOptions
+	SU2Or3    *api.SchedulingUnitOptions
+	SU1Or2Or3 *api.SchedulingUnitOptions
 
 	SU1W2Vars *api.SchedulingUnitOptions
 	SU1W3Vars *api.SchedulingUnitOptions
@@ -188,9 +188,9 @@ func buildTestVars() *testVars {
 		SU1WVariant2: suFor1WVariant2,
 		SU1WVariant3: suFor1WVariant3,
 
-		SU1_or_2:      suFor1_2,
-		SU2_or_3:      suFor2_3,
-		SU1_or_2_or_3: suFor1_2_3,
+		SU1Or2:    suFor1_2,
+		SU2Or3:    suFor2_3,
+		SU1Or2Or3: suFor1_2_3,
 
 		SU1W2Vars: sU1W2Vars,
 		SU1W3Vars: sU1W3Vars,
@@ -360,7 +360,7 @@ func TestFindMatches(t *testing.T) {
 	// This test assumes flattenList works; which has its own unittest coverage.
 	// Note: to ensure proper test coverage of the "findMatches" method, we must use flattenList
 	// to generate the data rather than hand crafting.
-	eqMap := flattenList(makeCtx(), []*api.SchedulingUnitOptions{vars.SU1_or_2_or_3})
+	eqMap := flattenList(makeCtx(), []*api.SchedulingUnitOptions{vars.SU1Or2Or3})
 	flatHWUUIDMap := make(map[uint64]*hwInfo)
 
 	for k, v := range eqMap {
@@ -368,7 +368,7 @@ func TestFindMatches(t *testing.T) {
 	}
 
 	// SU1 and SU2 should be found
-	if len(findMatches(makeCtx(), vars.SU1_or_2, flatHWUUIDMap)) != 2 {
+	if len(findMatches(makeCtx(), vars.SU1Or2, flatHWUUIDMap)) != 2 {
 		t.Fatal("Map did not match both items from test class")
 	}
 
@@ -610,7 +610,7 @@ func TestOldSharedDeviceLabLoadingDifferentProvision(t *testing.T) {
 		t.Fatalf("First test should go into new shard and did not")
 	}
 
-	selectedDevice2, expandCurrentShard := getDevices(solverData, 1, HwHash1, "tast")
+	selectedDevice2, _ := getDevices(solverData, 1, HwHash1, "tast")
 
 	if selectedDevice != selectedDevice2 {
 		t.Fatalf("Shard was not filled when it should have been")
@@ -823,7 +823,7 @@ func TestGreedyDistro(t *testing.T) {
 
 	cfg := distroCfg{isUnitTest: true, unitTestDevices: 3, maxInShard: 50}
 
-	eqMap := flattenList(makeCtx(), []*api.SchedulingUnitOptions{vars.SU1_or_2, vars.SU1_or_2_or_3, vars.SU4})
+	eqMap := flattenList(makeCtx(), []*api.SchedulingUnitOptions{vars.SU1Or2, vars.SU1Or2Or3, vars.SU4})
 
 	flatHWUUIDMap := make(map[uint64]*hwInfo)
 
@@ -1188,7 +1188,7 @@ func TestOldFlattenList(t *testing.T) {
 func TestFlattenList(t *testing.T) {
 	vars := buildTestVars()
 
-	allHw := []*api.SchedulingUnitOptions{vars.SU1_or_2, vars.SU2_or_3}
+	allHw := []*api.SchedulingUnitOptions{vars.SU1Or2, vars.SU2Or3}
 
 	flatList := flattenList(makeCtx(), allHw)
 	for _, given := range []*api.SchedulingUnitOptions{vars.SU1, vars.SU2, vars.SU3} {
@@ -1331,8 +1331,8 @@ func TestFlattenEqMap(t *testing.T) {
 	hwEqMap[HwHash0] = []uint64{HwHash0, HwHash1}
 	hwEqMap[HwHash1] = []uint64{HwHash1}
 
-	hwUUIDMap[HwHash0] = vars.SU1_or_2
-	hwUUIDMap[HwHash1] = vars.SU1_or_2_or_3
+	hwUUIDMap[HwHash0] = vars.SU1Or2
+	hwUUIDMap[HwHash1] = vars.SU1Or2Or3
 
 	newEq, newUUID := flattenEqMap(hwEqMap, vars.HwUUIDMap)
 
@@ -1392,7 +1392,7 @@ func TestGetDevices(t *testing.T) {
 		t.Fatalf("First test should go into new shard and did not")
 	}
 
-	selectedDevice2, expandCurrentShard := getDevices(solverData, 1, vars.HwHash1, "tast")
+	selectedDevice2, _ := getDevices(solverData, 1, vars.HwHash1, "tast")
 
 	if selectedDevice != selectedDevice2 {
 		t.Fatalf("Shard was not filled when it should have been")

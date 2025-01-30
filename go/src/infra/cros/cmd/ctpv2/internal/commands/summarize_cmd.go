@@ -16,6 +16,7 @@ import (
 	common_proto "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
@@ -51,7 +52,7 @@ func (cmd *SummarizeCmd) ExtractDependencies(
 		err = cmd.extractDepsFromFilterStateKeepr(ctx, sk)
 
 	default:
-		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
+		return fmt.Errorf("stateKeeper '%T' is not supported by cmd type %s", sk, cmd.GetCommandType())
 	}
 
 	if err != nil {
@@ -83,17 +84,17 @@ func (cmd *SummarizeCmd) extractDepsFromFilterStateKeepr(
 	ctx context.Context,
 	sk *data.PrePostFilterStateKeeper) error {
 
-	if sk.AllTestResults == nil || len(sk.AllTestResults) == 0 {
-		return fmt.Errorf("Cmd %q missing dependency: AllTestResults", cmd.GetCommandType())
+	if len(sk.AllTestResults) == 0 {
+		return fmt.Errorf("cmd %q missing dependency: AllTestResults", cmd.GetCommandType())
 	}
 
 	cmd.AllTestResults = sk.AllTestResults
 
-	if sk.RequestToTargetChainMap != nil && len(sk.RequestToTargetChainMap) > 0 {
+	if len(sk.RequestToTargetChainMap) > 0 {
 		cmd.RequestToTargetChainMap = sk.RequestToTargetChainMap
 	}
 
-	if sk.DddTrackerMap != nil && len(sk.DddTrackerMap) > 0 {
+	if len(sk.DddTrackerMap) > 0 {
 		cmd.DddTrackerMap = sk.DddTrackerMap
 	}
 
@@ -153,7 +154,7 @@ func (cmd *SummarizeCmd) Execute(ctx context.Context) error {
 	// If direct v2, the results will be organized by each separate request(suite).
 	// Otherwise, results will be linked back to the original request name.
 	resultsMap := cmd.AllTestResults
-	if cmd.RequestToTargetChainMap != nil && len(cmd.RequestToTargetChainMap) > 0 {
+	if len(cmd.RequestToTargetChainMap) > 0 {
 		resultsMap, err = cmd.RestructureResultsMap(cmd.AllTestResults)
 		if err != nil {
 			return err
@@ -181,7 +182,7 @@ func (cmd *SummarizeCmd) DisplaySuite(ctx context.Context, suite string) error {
 	defer func() { step.End(err) }()
 
 	if len(testResults) == 0 {
-		err = fmt.Errorf("No test results found for suite %s.", suite)
+		err = fmt.Errorf("no test results found for suite %s", suite)
 		step.SetSummaryMarkdown(err.Error())
 		return err
 	}
@@ -239,7 +240,7 @@ func (cmd *SummarizeCmd) RestructureResultsMap(testResultMap map[string][]*data.
 	for _, results := range testResultMap {
 		for _, result := range results {
 			reqChain := cmd.RequestToTargetChainMap[result.RequestKey]
-			if reqChain == nil || len(reqChain) == 0 {
+			if len(reqChain) == 0 {
 				// should not happen
 				return nil, fmt.Errorf("empty request map found")
 			}
@@ -322,7 +323,7 @@ func DisplayResult(ctx context.Context, key string, resultsList []*data.TestResu
 			DisplayError(ctx, result, step)
 			continue
 		}
-		buildUrl := result.BuildUrl
+		buildURL := result.BuildURL
 
 		linkStr := "* "
 		if result.Attempt > 0 {
@@ -334,8 +335,8 @@ func DisplayResult(ctx context.Context, key string, resultsList []*data.TestResu
 			linkStr = fmt.Sprintf("%s[log link](%s),", linkStr, logLink)
 		}
 
-		if buildUrl != "" {
-			linkStr = fmt.Sprintf("%s [task link](%s)", linkStr, buildUrl)
+		if buildURL != "" {
+			linkStr = fmt.Sprintf("%s [task link](%s)", linkStr, buildURL)
 		}
 
 		if linkStr != "* " {
@@ -359,26 +360,30 @@ func GroupErrAndNonErrResults(inputMap map[string][]*data.TestResults) ([]string
 	for _, resultList := range inputMap {
 		for _, eachResult := range resultList {
 			if eachResult.TopLevelError != nil {
-				switch (eachResult.TopLevelError).(type) {
-				case *data.EnumerationError:
+				var enumErr *data.EnumerationError
+				var bpErr *data.BotParamsRejectedError
+				var slErr *data.SuiteLimitsError
+
+				// Using a switch statement on error types will fail on wrapped errors.
+				if errors.As(eachResult.TopLevelError, &enumErr) {
 					errKey := common.EnumerationErrKey
 					if _, ok := errorResultMap[errKey]; !ok {
 						errorResultKeys = append(errorResultKeys, errKey)
 					}
 					addToMap(errorResultMap, errKey, eachResult)
-				case *data.BotParamsRejectedError:
+				} else if errors.As(eachResult.TopLevelError, &bpErr) {
 					errKey := common.BotParamsRejectedErrKey
 					if _, ok := errorResultMap[errKey]; !ok {
 						errorResultKeys = append(errorResultKeys, errKey)
 					}
 					addToMap(errorResultMap, errKey, eachResult)
-				case *data.SuiteLimitsError:
+				} else if errors.As(eachResult.TopLevelError, &slErr) {
 					errKey := common.SuiteLimitsErrKey
 					if _, ok := errorResultMap[errKey]; !ok {
 						errorResultKeys = append(errorResultKeys, errKey)
 					}
 					addToMap(errorResultMap, errKey, eachResult)
-				default:
+				} else {
 					errKey := common.OtherErrKey
 					if _, ok := errorResultMap[errKey]; !ok {
 						errorResultKeys = append(errorResultKeys, errKey)
@@ -416,22 +421,28 @@ func LogTestCasesIfAny(ctx context.Context, result *data.TestResults, step *buil
 			logNameSuffix = fmt.Sprintf("-retry-%d", result.Attempt)
 		}
 		log := step.Log(fmt.Sprintf("testcases for '%s'%s", result.Key, logNameSuffix))
-		log.Write([]byte(fmt.Sprintf("%s", strings.Join(testCasesNames, "\n"))))
+		_, err := log.Write([]byte(strings.Join(testCasesNames, "\n")))
+
+		if err != nil {
+			logging.Errorf(ctx, "LogTestCasesIfAny: %w", err)
+		}
 	}
 }
 
 func DisplayError(ctx context.Context, result *data.TestResults, step *build.Step) {
-	switch e := (result.TopLevelError).(type) {
-	case *data.EnumerationError:
-		log := step.Log(fmt.Sprintf("suite `%s`", e.SuiteName))
-		log.Write([]byte(e.Error()))
-	case *data.BotParamsRejectedError:
-		log := step.Log(fmt.Sprintf("bot params rejected for '%s'", e.Key))
-		log.Write([]byte(fmt.Sprintf("rejected params: [\n%s\n]", strings.Join(e.RejectedDims, "\n"))))
-		result.Key = common.BotParamsRejectedErrKey
-	default:
+	var enumErr *data.EnumerationError
+	var bpErr *data.BotParamsRejectedError
+
+	// Using a switch statement on error types will fail on wrapped errors.
+	if errors.As(result.TopLevelError, &enumErr) {
+		log := step.Log(fmt.Sprintf("suite `%s`", enumErr.SuiteName))
+		_, _ = log.Write([]byte(enumErr.Error()))
+	} else if errors.As(result.TopLevelError, &bpErr) {
+		log := step.Log(fmt.Sprintf("bot params rejected for '%s'", bpErr.Key))
+		_, _ = log.Write([]byte(fmt.Sprintf("rejected params: [\n%s\n]", strings.Join(bpErr.RejectedDims, "\n"))))
+	} else {
 		log := step.Log(fmt.Sprintf("error for '%s'", result.Key))
-		log.Write([]byte(e.Error()))
+		_, _ = log.Write([]byte(result.TopLevelError.Error()))
 	}
 }
 
@@ -480,10 +491,9 @@ func ToExecuteResponses(testResultMap map[string][]*data.TestResults) *steps.Exe
 
 func TrResultToErTaskResult(testResult *data.TestResults) *steps.ExecuteResponse_TaskResult {
 	if testResult.TopLevelError != nil {
-		switch e := (testResult.TopLevelError).(type) {
-
-		case *data.BotParamsRejectedError:
-			r1, r2 := common.GetDims(e.RejectedDims)
+		var bpErr *data.BotParamsRejectedError
+		if errors.As(testResult.TopLevelError, &bpErr) {
+			r1, r2 := common.GetDims(bpErr.RejectedDims)
 			r := &steps.ExecuteResponse_TaskResult{
 				Name:                   testResult.Name,
 				State:                  &test_platform.TaskState{LifeCycle: test_platform.TaskState_LIFE_CYCLE_REJECTED},
@@ -493,6 +503,7 @@ func TrResultToErTaskResult(testResult *data.TestResults) *steps.ExecuteResponse
 			return r
 			// TODO: Consider adding enumeration error (v1 does not propagate enumeration error on task level)
 		}
+
 		return nil
 	}
 	r := &steps.ExecuteResponse_TaskResult{
@@ -501,7 +512,7 @@ func TrResultToErTaskResult(testResult *data.TestResults) *steps.ExecuteResponse
 			LifeCycle: test_platform.TaskState_LIFE_CYCLE_COMPLETED, // at this point the task must be in completed state
 			Verdict:   common.GetTaskStateVerdict(testResult.Results),
 		},
-		TaskUrl:     testResult.BuildUrl,
+		TaskUrl:     testResult.BuildURL,
 		TestCases:   common.TestCasesToTestCaseResult(testResult.Results),
 		PrejobSteps: common.PrejobStepsToTestCaseResult(testResult.Results.GetPrejob().GetStep()),
 		Attempt:     int32(testResult.Attempt),

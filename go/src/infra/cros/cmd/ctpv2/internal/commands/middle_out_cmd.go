@@ -31,7 +31,7 @@ import (
 	"infra/cros/cmd/ctpv2/data"
 )
 
-// FilterExecutionCmd represents test execution cmd.
+// MiddleOutRequestCmd represents middle out command.
 type MiddleOutRequestCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
@@ -53,7 +53,7 @@ type MiddleOutRequestCmd struct {
 
 const (
 	TautoTastPrefix = "tauto.tast"
-	NO_DEVICES_INT  = math.MinInt32 + 1
+	NoDevicesInt    = math.MinInt32 + 1
 	TastPrefix      = "tast"
 )
 
@@ -105,14 +105,14 @@ func (cmd *MiddleOutRequestCmd) extractDepsFromFilterStateKeeper(
 	sk *data.FilterStateKeeper) error {
 
 	// If no plan...
-	if sk.TestPlanStates == nil || len(sk.TestPlanStates) == 0 {
+	if len(sk.TestPlanStates) == 0 {
 		if sk.InitialInternalTestPlan != nil {
 			// Set the first state from initial test plan
 			sk.TestPlanStates = append(sk.TestPlanStates, sk.InitialInternalTestPlan)
 			// Set the cmd input test plan
 			cmd.InternalTestPlan = proto.Clone(sk.InitialInternalTestPlan).(*api.InternalTestplan)
 		} else {
-			return fmt.Errorf("Cmd %q missing dependency: InputTestPlan", cmd.GetCommandType())
+			return fmt.Errorf("cmd %q missing dependency: InputTestPlan", cmd.GetCommandType())
 		}
 	} else {
 		// Get the last test plan state and set it as input test plan for current filter
@@ -202,13 +202,13 @@ func (cmd *MiddleOutRequestCmd) Execute(ctx context.Context) error {
 	if err != nil {
 		status = analytics.Fail
 		if cmd.BQClient != nil {
-			analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: status, Duration: float32(time.Now().Sub(start).Seconds())}, cmd.InternalTestPlan, cmd.BuildState)
+			analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: status, Duration: float32(time.Since(start).Seconds())}, cmd.InternalTestPlan, cmd.BuildState)
 		}
 
 		return errors.Annotate(err, "Failed to execute MiddleOPut: ").Err()
 	}
 	if cmd.BQClient != nil {
-		analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: status, Duration: float32(time.Now().Sub(start).Seconds())}, cmd.InternalTestPlan, cmd.BuildState)
+		analytics.SoftInsertStepWInternalPlan(ctx, cmd.BQClient, &analytics.BqData{Step: key, Status: status, Duration: float32(time.Since(start).Seconds())}, cmd.InternalTestPlan, cmd.BuildState)
 	}
 	logging.Infof(
 		ctx,
@@ -438,7 +438,7 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 		// Currently we will not try anymore than basic sharding.
 		// As in, we won't attempt to "fill" a pod, then spill over.
 		// Its either "you can take all these tests" or we get a new pod.
-		shards := [][]string{}
+		var shards [][]string
 
 		if solverData.cfg.durationBasedSharding {
 			var err error
@@ -465,26 +465,27 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 	return solverData.finalAssignments
 }
 
-// used to determine if an EQC class is comprised of 1 board, or several.
+// TODO(derek): uncomment when will be used. 01/27/25
+// allBoardsSameInEqc is used to determine if an EQC class is comprised of 1 board, or several.
 // If several, the returned board will be ""
-func allBoardsSameInEqc(hwHash uint64, solverData *middleOutData) (bool, string) {
-	board := ""
-	devices := solverData.hwEquivalenceMap[hwHash]
-	for _, device := range devices {
-		// if the shard is empty, we need to use the labloading process block
-		// not the shard filler.
-		d := solverData.flatHWUUIDMap[device]
-		for _, subbUnit := range d.req.GetSchedulingUnits() {
-			deviceBoard := subbUnit.GetPrimaryTarget().GetSwarmingDef().GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget()
-			if board == "" {
-				board = deviceBoard
-			} else if board != deviceBoard {
-				return false, ""
-			}
-		}
-	}
-	return true, board
-}
+// func allBoardsSameInEqc(hwHash uint64, solverData *middleOutData) (bool, string) {
+// 	board := ""
+// 	devices := solverData.hwEquivalenceMap[hwHash]
+// 	for _, device := range devices {
+// 		// if the shard is empty, we need to use the labloading process block
+// 		// not the shard filler.
+// 		d := solverData.flatHWUUIDMap[device]
+// 		for _, subbUnit := range d.req.GetSchedulingUnits() {
+// 			deviceBoard := subbUnit.GetPrimaryTarget().GetSwarmingDef().GetDutInfo().GetChromeos().GetDutModel().GetBuildTarget()
+// 			if board == "" {
+// 				board = deviceBoard
+// 			} else if board != deviceBoard {
+// 				return false, ""
+// 			}
+// 		}
+// 	}
+// 	return true, board
+// }
 
 // assignHardware will add the tests to the selectedDevice, being aware if it should go into a non-filled hard, or a new one.
 // assignHardware will also decrement the number of devices remaining every time device is assigned tests.
@@ -505,7 +506,7 @@ func assignHardware(solverData *middleOutData, selectedDevice uint64, expandCurr
 		solverData.finalAssignments[selectedDevice] = append(solverData.finalAssignments[selectedDevice], shardedtc)
 
 		// Only decrement real devices.
-		if solverData.flatHWUUIDMap[selectedDevice].labLoading.value > NO_DEVICES_INT {
+		if solverData.flatHWUUIDMap[selectedDevice].labLoading.value > NoDevicesInt {
 			solverData.flatHWUUIDMap[selectedDevice].labLoading.value--
 		}
 		// If the shard is not full, mark it as such.
@@ -517,8 +518,7 @@ func assignHardware(solverData *middleOutData, selectedDevice uint64, expandCurr
 }
 
 type helper struct {
-	hwOption *api.SwarmingDefinition
-	hashV    uint64
+	hashV uint64
 	// TODO remove `hashProvV` once hwRequirements has been fully removed.
 	hashProvV      uint64
 	swarmingLabels []string
@@ -927,7 +927,7 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 					// We will still ""assign"" a device; to later be rejected.
 					// Without this clause the tests with no devices would likely be silently rejected;
 					// which while functionally the same, it would be a rough UX for tests to be silently dropped.
-					hwInfoInput.labLoading = &loading{value: NO_DEVICES_INT}
+					hwInfoInput.labLoading = &loading{value: NoDevicesInt}
 				} else {
 					hwInfoInput.labLoading = &loading{value: int(botCount)}
 				}
@@ -1176,7 +1176,7 @@ func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness 
 		}
 
 		// Only assign it into a shard if there is actually devices.
-		if solverData.flatHWUUIDMap[device].labLoading.value > NO_DEVICES_INT {
+		if solverData.flatHWUUIDMap[device].labLoading.value > NoDevicesInt {
 			// There are cases where a test requires a device which doesn't exist (to later be rejected)
 			// But in these examples, its viewed as an "open shard", so we toss other tests with overlapping eq classes
 			// into the shard; resulting in those tests being skipped.

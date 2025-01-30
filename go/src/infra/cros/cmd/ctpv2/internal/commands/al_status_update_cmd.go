@@ -54,7 +54,7 @@ func (cmd *AlStatusUpdateCmd) ExtractDependencies(
 		err = cmd.extractDepsFromFilterStateKeeper(ctx, sk)
 
 	default:
-		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
+		return fmt.Errorf("stateKeeper '%T' is not supported by cmd type %s", sk, cmd.GetCommandType())
 	}
 
 	if err != nil {
@@ -403,7 +403,7 @@ func (cmd *AlStatusUpdateCmd) updateInvocationProperties(ctx context.Context, se
 	}
 
 	if common.InvocationSealed(inv) {
-		return fmt.Errorf("Cannot update sealed invocation %s. Invocation State: %s.", invocationID, inv.SchedulerState)
+		return fmt.Errorf("cannot update sealed invocation %s. Invocation State: %s", invocationID, inv.SchedulerState)
 	}
 
 	inv.Properties = append(inv.Properties, props...)

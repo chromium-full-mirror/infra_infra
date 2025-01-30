@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Represents the CLI command grouping
+// Package cli command grouping
 package cli
 
 import (
@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-// CLI command runs CTPv2 in CLI mode. This will only be used for local debugging, not deployment.
+// CLICommand runs CTPv2 in CLI mode. This will only be used for local debugging, not deployment.
 type CLICommand struct {
 	flagSet *flag.FlagSet
 	args    *argsStruct

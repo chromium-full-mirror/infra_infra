@@ -48,7 +48,7 @@ func (cmd *FilterExecutionCmd) ExtractDependencies(
 		err = cmd.extractDepsFromFilterStateKeeper(ctx, sk)
 
 	default:
-		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
+		return fmt.Errorf("stateKeeper '%T' is not supported by cmd type %s", sk, cmd.GetCommandType())
 	}
 
 	if err != nil {
@@ -91,14 +91,14 @@ func (cmd *FilterExecutionCmd) extractDepsFromFilterStateKeeper(
 		return fmt.Errorf("cmd %q missing dependency: ServiceEndpoint", cmd.GetCommandType())
 	}
 
-	if sk.TestPlanStates == nil || len(sk.TestPlanStates) == 0 {
+	if len(sk.TestPlanStates) == 0 {
 		if sk.InitialInternalTestPlan != nil {
 			// Set the first state from initial test plan
 			sk.TestPlanStates = append(sk.TestPlanStates, sk.InitialInternalTestPlan)
 			// Set the cmd input test plan
 			cmd.InputTestPlan = proto.Clone(sk.InitialInternalTestPlan).(*testapi.InternalTestplan)
 		} else {
-			return fmt.Errorf("Cmd %q missing dependency: InputTestPlan", cmd.GetCommandType())
+			return fmt.Errorf("cmd %q missing dependency: InputTestPlan", cmd.GetCommandType())
 		}
 	} else {
 		// Get the last test plan state and set it as input test plan for current filter
@@ -124,7 +124,7 @@ func (cmd *FilterExecutionCmd) extractDepsFromFilterStateKeeper(
 
 func (cmd *FilterExecutionCmd) updateFilterStateKeeper(ctx context.Context, sk *data.FilterStateKeeper) error {
 	if err := common.ValidateTestPlans(cmd.InputTestPlan, cmd.OutputTestPlan); err != nil {
-		return fmt.Errorf("Cmd %q failed with test plan validation: %s", cmd.GetCommandType(), err)
+		return fmt.Errorf("cmd %q failed with test plan validation: %w", cmd.GetCommandType(), err)
 	}
 
 	// Add the validated output testplan to test plan states.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Represents the CLI command grouping
+// Package cli command grouping
 package cli
 
 import (
@@ -12,8 +12,9 @@ import (
 	"infra/cros/cmd/ctpv2/executions"
 )
 
-// Run as build. This is in place to support backward-compatibility with
-// test_runner recipes invocation of cros_test_runner.
+// BuildCommand holds the necessary values to build the CLI. Run as build. This
+// is in place to support backward-compatibility with test_runner recipes
+// invocation of cros_test_runner.
 type BuildCommand struct {
 	flagSet *flag.FlagSet
 }

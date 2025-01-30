@@ -82,7 +82,7 @@ func (cmd *GenerateTrv2RequestsCmd) ExtractDependencies(
 		err = cmd.extractDepsFromFilterStateKeeper(ctx, sk)
 
 	default:
-		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
+		return fmt.Errorf("stateKeeper '%T' is not supported by cmd type %s", sk, cmd.GetCommandType())
 	}
 
 	if err != nil {
@@ -117,11 +117,11 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 	sk *data.FilterStateKeeper) error {
 
 	if sk.MiddledOutResp == nil {
-		return fmt.Errorf("Cmd %q missing dependency: MiddleOutResponse", cmd.GetCommandType())
+		return fmt.Errorf("cmd %q missing dependency: MiddleOutResponse", cmd.GetCommandType())
 	}
 
 	if sk.BuildState == nil {
-		return fmt.Errorf("Cmd %q missing dependency: Scheduler", cmd.GetCommandType())
+		return fmt.Errorf("cmd %q missing dependency: Scheduler", cmd.GetCommandType())
 	}
 
 	if sk.Config == nil {
@@ -134,7 +134,7 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 	cmd.InternalTestPlan = proto.Clone(sk.TestPlanStates[len(sk.TestPlanStates)-1]).(*api.InternalTestplan)
 
 	if sk.CtpReq == nil {
-		return fmt.Errorf("Cmd %q missing dependency: CtpReq", cmd.GetCommandType())
+		return fmt.Errorf("cmd %q missing dependency: CtpReq", cmd.GetCommandType())
 	}
 
 	if sk.RequestKey == "" {
@@ -171,7 +171,7 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 }
 
 func (cmd *GenerateTrv2RequestsCmd) updateScheduleStateKeeper(ctx context.Context, sk *data.FilterStateKeeper) error {
-	if cmd.BuildsMap != nil && len(cmd.BuildsMap) != 0 {
+	if len(cmd.BuildsMap) != 0 {
 		sk.BuildsMap = cmd.BuildsMap
 	}
 
@@ -179,7 +179,7 @@ func (cmd *GenerateTrv2RequestsCmd) updateScheduleStateKeeper(ctx context.Contex
 	// so it's safe to set it directly because we want the result to be carried till
 	// summarize step. And in this case, scheduleTasks will not add anything to the
 	// testResults.
-	if cmd.TestResults != nil && len(cmd.TestResults) != 0 {
+	if len(cmd.TestResults) != 0 {
 		for k, v := range cmd.TestResults {
 			sk.SuiteTestResults[k] = v
 		}
@@ -413,6 +413,7 @@ func GetBoardModelVariantKeyFromTarget(target *api.Target) string {
 }
 
 // ----- analytics funcs --------
+
 func (cmd *GenerateTrv2RequestsCmd) ObserveCmdStart(ctx context.Context) {
 	cmd.StartCmdTime = time.Now()
 	bqData := &analytics.BqData{Step: string(cmd.GetCommandType()), Status: analytics.Start}

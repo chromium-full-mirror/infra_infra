@@ -8,7 +8,6 @@ import (
 	"reflect"
 	"testing"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 )
 
@@ -24,8 +23,8 @@ func TestTranslateRequestCmd(t *testing.T) {
 		"max_run_sec=7200 " +
 		"run_private_tests=False"
 
-	ctpReq := &api.CTPRequest{
-		SuiteRequest: &api.SuiteRequest{
+	ctpReq := &testapi.CTPRequest{
+		SuiteRequest: &testapi.SuiteRequest{
 			TestArgs: ta,
 		},
 	}

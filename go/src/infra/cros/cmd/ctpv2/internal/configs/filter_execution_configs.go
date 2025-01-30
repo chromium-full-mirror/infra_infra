@@ -25,12 +25,11 @@ const (
 	UnSupportedFilterExecutionConfigType interfaces.ConfigType = "UnsupportedTest"
 )
 
-// TestExecutionConfig represents the configuration for any test execution.
+// Ctpv2ExecutionConfig represents the configuration for any test execution.
 type Ctpv2ExecutionConfig struct {
 	*common_configs.CmdExecutionConfig
 
-	TotalFilters     int
-	executedCommands map[interfaces.CommandType]bool
+	TotalFilters int
 }
 
 func NewCtpv2ExecutionConfig(
@@ -59,7 +58,7 @@ func (ctpv2cfg *Ctpv2ExecutionConfig) GenerateConfig(ctx context.Context) error 
 	case Ctpv2PostExecutionConfigType:
 		ctpv2cfg.Configs = GeneratePostConfigs(ctx)
 	default:
-		err = fmt.Errorf("Config type %s is not supported!", configType)
+		err = fmt.Errorf("config type %s is not supported", configType)
 	}
 
 	if ctpv2cfg.Configs != nil {

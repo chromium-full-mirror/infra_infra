@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Responsible for the abstraction layer representing each command grouping
+// Package cli is responsible for the abstraction layer representing each command grouping
 package cli
 
 import (
@@ -45,7 +45,7 @@ func ParseInputs() (AbstractCommand, error) {
 		options = append(options, cmd.Name())
 		if cmd.Is(subcommand) {
 			if err := cmd.Init(os.Args[2:]); err != nil {
-				return nil, fmt.Errorf("failed to initialize %s command, %s", cmd.Name(), err)
+				return nil, fmt.Errorf("failed to initialize %s command, %w", cmd.Name(), err)
 			}
 			return cmd, nil
 		}

@@ -24,7 +24,7 @@ type TestResults struct {
 	TopLevelError error
 	Results       *skylab_test_runner.Result
 	Attempt       int // 0 means no retry
-	BuildUrl      string
+	BuildURL      string
 	BuildID       int64
 	RequestKey    string // this is used to link back the results to original request
 	Name          string

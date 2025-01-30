@@ -92,7 +92,7 @@ func (cmd *ScheduleTasksCmd) ExtractDependencies(
 		err = cmd.extractDepsFromFilterStateKeeper(ctx, sk)
 
 	default:
-		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
+		return fmt.Errorf("stateKeeper '%T' is not supported by cmd type %s", sk, cmd.GetCommandType())
 	}
 
 	if err != nil {
@@ -125,15 +125,15 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 	sk *data.FilterStateKeeper) error {
 
 	if sk.MiddledOutResp == nil {
-		return fmt.Errorf("Cmd %q missing dependency: MiddleOutResponse", cmd.GetCommandType())
+		return fmt.Errorf("cmd %q missing dependency: MiddleOutResponse", cmd.GetCommandType())
 	}
 
-	if sk.BuildsMap == nil || len(sk.BuildsMap) == 0 {
-		return fmt.Errorf("Cmd %q missing dependency: BuildsMap", cmd.GetCommandType())
+	if len(sk.BuildsMap) == 0 {
+		return fmt.Errorf("cmd %q missing dependency: BuildsMap", cmd.GetCommandType())
 	}
 
 	if sk.BuildState == nil {
-		return fmt.Errorf("Cmd %q missing dependency: BuildState", cmd.GetCommandType())
+		return fmt.Errorf("cmd %q missing dependency: BuildState", cmd.GetCommandType())
 	}
 
 	if sk.Config == nil {
@@ -141,7 +141,7 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 	}
 
 	if sk.Scheduler == api.SchedulerInfo_UNSPECIFIED {
-		return fmt.Errorf("Cmd %q missing dependency: Scheduler", cmd.GetCommandType())
+		return fmt.Errorf("cmd %q missing dependency: Scheduler", cmd.GetCommandType())
 	}
 
 	if sk.AlStateInfo == nil {
@@ -154,7 +154,7 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 	cmd.InternalTestPlan = proto.Clone(sk.TestPlanStates[len(sk.TestPlanStates)-1]).(*api.InternalTestplan)
 
 	if sk.CtpReq == nil {
-		return fmt.Errorf("Cmd %q missing dependency: CtpReq", cmd.GetCommandType())
+		return fmt.Errorf("cmd %q missing dependency: CtpReq", cmd.GetCommandType())
 	}
 
 	if sk.RequestKey != "" {
@@ -191,7 +191,7 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 }
 
 func (cmd *ScheduleTasksCmd) updateScheduleStateKeeper(ctx context.Context, sk *data.FilterStateKeeper) error {
-	if cmd.TestResults != nil && len(cmd.TestResults) != 0 {
+	if len(cmd.TestResults) != 0 {
 		for k, v := range cmd.TestResults {
 			sk.SuiteTestResults[k] = v
 		}
@@ -472,7 +472,7 @@ func cancelRunningTask(ctx context.Context, scheduledBuild *buildbucketpb.Build,
 	return nil
 }
 
-func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key string, buildReq *data.BuildRequest, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, retryNum int, dmc *dm.Client, buildsMapLen int, bbClient buildbucketpb.BuildsClient) error {
+func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key string, buildReq *data.BuildRequest, wg *sync.WaitGroup, resultsChan chan<- *data.TestResults, retryNum int, dmc *dm.Client, buildsMapLen int, bbClient buildbucketpb.BuildsClient) {
 	defer wg.Done()
 	var err error
 	defer func(err error) {
@@ -498,14 +498,16 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 
 		attemptNode, err = androidapi.NewWorkUnitNode(ctx, shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().InvocationId, androidapi.WULayerAttempt, shardNode, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 		if err != nil {
-			return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
+			setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
+			return
 		}
 
 		fmt.Printf("ATTEMPT Node %s-%s: %+v\n", attemptNode.GetWorkUnit().Id, attemptNode.GetWorkUnit().Name, attemptNode.GetIndex())
 
 		head, err := attemptNode.FetchHead()
 		if err != nil {
-			return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
+			setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
+			return
 		}
 
 		invocationID := attemptNode.GetWorkUnit().InvocationId
@@ -548,7 +550,8 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 
 	if buildReq.Err != nil {
 		err = buildReq.Err
-		return setTopLevelError(ctx, step, result, resultsChan, buildReq.Err, attemptNode, nil, bbClient)
+		setTopLevelError(ctx, step, result, resultsChan, buildReq.Err, attemptNode, nil, bbClient)
+		return
 	}
 	req := buildReq.ScheduleBuildRequest
 
@@ -564,14 +567,19 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 				"error during writing request data to log: %s",
 				err.Error())
 		}
-		step.Log("BB Request").Write(requestData)
+		_, err = step.Log("BB Request").Write(requestData)
+		if err != nil {
+			logging.Errorf(ctx, "ScheduleAndMonitor: %w", err)
+			return
+		}
 
 		// Spit out requested dims since scheduke doesn't pass this info to swarming
 		common.WriteAnyObjectToStepLog(ctx, step, req.GetDimensions(), "requested dimensions")
 
 		botListURL, err := formatBotListURL(req.GetDimensions())
 		if err != nil {
-			return err
+			logging.Errorf(ctx, "ScheduleAndMonitor: %w", err)
+			return
 		}
 		common.WriteStringToStepLog(ctx, step, botListURL, "requested dimensions bot list")
 	}
@@ -584,9 +592,10 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	// BQ TODO log the request is in the scheduling tool (ie log the scheduke ID if possible?)
 	scheduledBuild, leaseID, err := cmd.Scheduler.ScheduleRequest(ctx, req, step)
 	if err != nil {
-		err = fmt.Errorf("error while scheduling req: %s", err)
+		err = fmt.Errorf("error while scheduling req: %w", err)
 		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error(), trSchedulingStart)
-		return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
+		setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
+		return
 	}
 	if leaseID != "" {
 		step.Log(fmt.Sprintf("Device Manager lease ID: %s", leaseID))
@@ -599,7 +608,8 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		// in the recipe summary step.
 		result.Results = getIncompleteRunResults(buildReq)
 		err = fmt.Errorf("dry run skipped running TR")
-		return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
+		setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
+		return
 	}
 
 	summaries := []string{}
@@ -609,12 +619,13 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		// can show test results in MILO at the CTP level.
 		rdbClient, err := newRDBClient(ctx, cmd.BuildState.Build().Infra.GetResultdb().GetHostname())
 		if err != nil {
-			return err
+			logging.Errorf(ctx, "ScheduleAndMonitor: %w", err)
+			return
 		}
 		rdb.InheritRDBInvocation(ctx, scheduledBuild.GetId(), bbClient, rdbClient)
 
 		result.BuildID = scheduledBuild.GetId()
-		result.BuildUrl = common.BBUrl(builderID, scheduledBuild.GetId())
+		result.BuildURL = common.BBUrl(builderID, scheduledBuild.GetId())
 
 		summaries = append(summaries, fmt.Sprintf("* [latest attempt](%s)", common.BBUrl(builderID, scheduledBuild.GetId())))
 		step.SetSummaryMarkdown(strings.Join(summaries, "\n"))
@@ -623,7 +634,8 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		err = fmt.Errorf("%s", errStr)
 		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error(), trSchedulingStart)
 
-		return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
+		setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
+		return
 	}
 
 	// Log the successful start.
@@ -639,13 +651,15 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	// requests.
 	target, err := suitelimits.ExtractTarget(result.Key)
 	if err != nil {
-		return err
+		logging.Errorf(ctx, "ScheduleAndMonitor: %w", err)
+		return
 	}
 
 	// Add the request to the SuiteLimits cache to begin being tracked.
 	err = suitelimits.AddRequestTask(cmd.RequestKey, suiteName, target, getPool(cmd.InternalTestPlan.SuiteInfo), scheduledBuild.GetId())
 	if err != nil {
-		return err
+		logging.Errorf(ctx, "ScheduleAndMonitor: %w", err)
+		return
 	}
 
 	// Monitor here
@@ -662,7 +676,8 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		// If the context has been closed then exit early.
 		if err = ctx.Err(); err != nil {
 			err = fmt.Errorf("user configured maximum duration exceeded. Cancelling")
-			return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, scheduledBuild, bbClient)
+			setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, scheduledBuild, bbClient)
+			return
 		}
 
 		buildInfo, err := CheckBuildInfoIfBuildEnded(ctx, statusReq, bbClient)
@@ -676,7 +691,8 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 				// A timeout while waiting for tests to complete is reported as
 				// aborts when summarizing individual tests' results.
 				// The execute step completes without errors.
-				return nil
+				logging.Errorf(ctx, "ScheduleAndMonitor: %w", err)
+				return
 			}
 
 			if leaseID != "" && time.Since(lastLeaseExtensionTime) >= dm.LeaseExtensionInterval {
@@ -685,14 +701,16 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 					err = fmt.Errorf("error while extending lease %s with Device Manager: %w", leaseID, err)
 					summaries = append(summaries, fmt.Sprintf("* %s", err))
 					err = fmt.Errorf("%s", strings.Join(summaries, "\n"))
-					return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, scheduledBuild, bbClient)
+					setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, scheduledBuild, bbClient)
+					return
 				}
 				lastLeaseExtensionTime = time.Now()
 			}
 
 			overLimit, err := suitelimits.UpdateTotalTime(cmd.RequestKey, suiteName, target, scheduledBuild.GetId())
 			if err != nil {
-				return err
+				logging.Errorf(ctx, "ScheduleAndMonitor: %w", err)
+				return
 			}
 
 			// If the request is over the allotted SuiteLimits maximum DUT hour
@@ -701,7 +719,8 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			if overLimit {
 				err := suitelimits.CancelTasks(ctx, cmd.RequestKey, target, bbClient)
 				if err != nil {
-					return err
+					logging.Errorf(ctx, "ScheduleAndMonitor: %w", err)
+					return
 				}
 			} else {
 				time.Sleep(loopSleepInterval)
@@ -745,7 +764,8 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			// can make updates without conflict.
 			refreshedAttemptWU, err := attemptNode.Service.Get(attemptNode.GetWorkUnit().Id)
 			if err != nil {
-				return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, scheduledBuild, bbClient)
+				setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, scheduledBuild, bbClient)
+				return
 			}
 			attemptNode.SetWorkUnit(refreshedAttemptWU)
 
@@ -783,19 +803,22 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		suiteLimited, slErr := suitelimits.ExceededLimit(cmd.RequestKey, target)
 		if slErr != nil {
 			logging.Infof(ctx, "suite limit exceed error: %s", slErr)
-			return setTopLevelError(ctx, step, result, resultsChan, slErr, attemptNode, scheduledBuild, bbClient)
+			setTopLevelError(ctx, step, result, resultsChan, slErr, attemptNode, scheduledBuild, bbClient)
+			return
 		}
 
 		slExempt, slErr := suitelimits.HasExemption(cmd.RequestKey, target)
 		if slErr != nil {
 			logging.Infof(ctx, "suite limit exemption check error: %s", slErr)
-			return setTopLevelError(ctx, step, result, resultsChan, slErr, attemptNode, scheduledBuild, bbClient)
+			setTopLevelError(ctx, step, result, resultsChan, slErr, attemptNode, scheduledBuild, bbClient)
+			return
 		}
 		if suiteLimited && !slExempt {
 			totalDUTHours, slErr := suitelimits.GetTotalDUTHours(cmd.RequestKey, target)
 			if slErr != nil {
 				logging.Infof(ctx, "err while getting total dut hours: %s", slErr)
-				return setTopLevelError(ctx, step, result, resultsChan, slErr, attemptNode, scheduledBuild, bbClient)
+				setTopLevelError(ctx, step, result, resultsChan, slErr, attemptNode, scheduledBuild, bbClient)
+				return
 			}
 
 			common.WriteAnyObjectToStepLog(ctx, step, fmt.Sprintf("total DUT hour runtime: %.2f", totalDUTHours.Hours()), "SUITE EXECUTION TIME LIMIT EXCEEDED")
@@ -808,7 +831,8 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			// TODO(b/360406127): This still is leaving the step green. This
 			// needs to be fixed so that the step ends in a red failure state.
 			err = build.AttachStatus(err, buildbucketpb.Status_FAILURE, nil)
-			return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, scheduledBuild, bbClient)
+			setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, scheduledBuild, bbClient)
+			return
 		}
 
 		trResult, err := extractResult(buildInfo, buildReq)
@@ -817,10 +841,11 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 			result.Results = trResult
 		}
 		if err != nil {
-			err = fmt.Errorf("error while extracting results from test_runner build %d: %s", buildInfo.Id, err)
+			err = fmt.Errorf("error while extracting results from test_runner build %d: %w", buildInfo.Id, err)
 			summaries = append(summaries, fmt.Sprintf("* %s", err))
 			err = fmt.Errorf("%s", strings.Join(summaries, "\n"))
-			return setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, scheduledBuild, bbClient)
+			setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, scheduledBuild, bbClient)
+			return
 		}
 		common.WriteAnyObjectToStepLog(ctx, step, result, "extracted result from trv2")
 
@@ -839,8 +864,6 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 		resultsChan <- result
 		break
 	}
-
-	return nil
 }
 
 func (cmd *ScheduleTasksCmd) RetryReqIfQualifies(ctx context.Context, trResult *skylab_test_runner.Result, step *build.Step, buildReq *data.BuildRequest) *data.BuildRequest {
@@ -1032,7 +1055,7 @@ func IsTcRetriable(verdict skylab_test_runner.Result_Autotest_TestCase_Verdict) 
 	}
 }
 
-func setTopLevelError(ctx context.Context, step *build.Step, result *data.TestResults, resultsChan chan<- *data.TestResults, err error, attemptNode *androidapi.WorkUnitNode, scheduledBuild *buildbucketpb.Build, bbClient buildbucketpb.BuildsClient) error {
+func setTopLevelError(ctx context.Context, step *build.Step, result *data.TestResults, resultsChan chan<- *data.TestResults, err error, attemptNode *androidapi.WorkUnitNode, scheduledBuild *buildbucketpb.Build, bbClient buildbucketpb.BuildsClient) {
 	logging.Infof(ctx, err.Error())
 	step.SetSummaryMarkdown(err.Error())
 	result.TopLevelError = err
@@ -1051,7 +1074,6 @@ func setTopLevelError(ctx context.Context, step *build.Step, result *data.TestRe
 
 	_ = cancelRunningTask(ctx, scheduledBuild, bbClient, err)
 
-	return err
 }
 
 func extractResult(from *buildbucketpb.Build, buildReq *data.BuildRequest) (*skylab_test_runner.Result, error) {

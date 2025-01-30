@@ -55,7 +55,7 @@ func (cmd *TranslateV1ToV2Cmd) ExtractDependencies(
 		err = cmd.extractDepsFromFilterStateKeepr(ctx, sk)
 
 	default:
-		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
+		return fmt.Errorf("stateKeeper '%T' is not supported by cmd type %s", sk, cmd.GetCommandType())
 	}
 
 	if err != nil {
@@ -89,8 +89,8 @@ func (cmd *TranslateV1ToV2Cmd) extractDepsFromFilterStateKeepr(
 
 	cmd.BuildState = sk.BuildState
 	if sk.CtpV2Request == nil || len(sk.CtpV2Request.GetRequests()) == 0 {
-		if sk.CtpV1Requests == nil || len(sk.CtpV1Requests) == 0 {
-			return fmt.Errorf("Cmd %q missing dependency: Either v1 or v2 request is required!", cmd.GetCommandType())
+		if len(sk.CtpV1Requests) == 0 {
+			return fmt.Errorf("cmd %q missing dependency: Either v1 or v2 request is required", cmd.GetCommandType())
 		} else {
 			cmd.CtpV1Requests = sk.CtpV1Requests
 		}
@@ -119,15 +119,15 @@ func (cmd *TranslateV1ToV2Cmd) updateLocalTestStateKeeper(
 		sk.CtpV2Request = cmd.CtpV2Request
 	}
 
-	if cmd.CtpV2RequestMap != nil && len(cmd.CtpV2RequestMap) > 0 {
+	if len(cmd.CtpV2RequestMap) > 0 {
 		sk.V1KeyToCTPv2Req = cmd.CtpV2RequestMap
 	}
 
-	if cmd.RequestToTargetChainMap != nil && len(cmd.RequestToTargetChainMap) > 0 {
+	if len(cmd.RequestToTargetChainMap) > 0 {
 		sk.RequestToTargetChainMap = cmd.RequestToTargetChainMap
 	}
 
-	if cmd.DddTrackerMap != nil && len(cmd.DddTrackerMap) > 0 {
+	if len(cmd.DddTrackerMap) > 0 {
 		sk.DddTrackerMap = cmd.DddTrackerMap
 	}
 
@@ -286,7 +286,7 @@ func (cmd *TranslateV1ToV2Cmd) CreateKeyToBMVTargetChain(v1KeysMap map[string]st
 }
 
 func (cmd *TranslateV1ToV2Cmd) CreateKeysForEachV1Request() map[string]string {
-	if cmd.CtpV1Requests == nil || len(cmd.CtpV1Requests) == 0 {
+	if len(cmd.CtpV1Requests) == 0 {
 		return nil
 	}
 	reqToTargetMap := map[string]string{}
@@ -360,8 +360,8 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 	// Default values
 	suiteName := "adhoc"
 	testCaseTagCriteria := &api.TestSuite_TestCaseTagCriteria{}
-	antsInvId := ""
-	antsWuId := ""
+	antsInvID := ""
+	antsWuID := ""
 	buildEnv := ""
 	totalShards := 0
 	retryCount := 0
@@ -370,13 +370,13 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 	dddSuite := false
 
 	// build related
-	buildId := ""
+	buildID := ""
 	branch := ""
 	buildFlavor := ""
 	buildType := ""
 	buildTarget := ""
 
-	extraBuildId := ""
+	extraBuildID := ""
 	extraBranch := ""
 	extraBuildFlavor := ""
 	extraBuildType := ""
@@ -384,9 +384,9 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 
 	for _, data := range testJobMsg.PluginData {
 		if data.Key == "ants_invocation_id" {
-			antsInvId = data.Values[0] // if the key is present, there should be only one value
+			antsInvID = data.Values[0] // if the key is present, there should be only one value
 		} else if data.Key == "ants_work_unit_id" {
-			antsWuId = data.Values[0] // if the key is present, there should be only one value
+			antsWuID = data.Values[0] // if the key is present, there should be only one value
 		}
 	}
 
@@ -397,7 +397,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 	}
 
 	if testJobMsg.Build != nil {
-		buildId = testJobMsg.Build.BuildId
+		buildID = testJobMsg.Build.BuildId
 		branch = testJobMsg.Build.Branch
 		buildFlavor = testJobMsg.Build.BuildTarget // Use buildTarget as buildFlavor since buildFlavor sometimes can hold incorrectly formatted value (context: b/379696736)
 		buildTarget = testJobMsg.Build.BuildTarget
@@ -407,7 +407,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 	if len(testJobMsg.ExtraBuilds) != 0 {
 		extraBuild := testJobMsg.ExtraBuilds[0] // TODO (azrahman): add multiple extra build support
 
-		extraBuildId = extraBuild.BuildId
+		extraBuildID = extraBuild.BuildId
 		extraBranch = extraBuild.Branch
 		extraBuildFlavor = extraBuild.BuildTarget // Use buildTarget as buildFlavor since buildFlavor sometimes can hold incorrectly formatted value (context: b/379696736)
 		extraBuildTarget = extraBuild.BuildTarget
@@ -420,12 +420,12 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 			Args: []*api.Arg{
 				{Flag: "branch", Value: branch},
 				{Flag: "build_flavor", Value: buildFlavor},
-				{Flag: "build_id", Value: buildId},
+				{Flag: "build_id", Value: buildID},
 				{Flag: "build_target", Value: buildTarget},
 				{Flag: "build_type", Value: buildType},
 				{Flag: "extra_branch", Value: extraBranch},
 				{Flag: "extra_build_flavor", Value: extraBuildFlavor},
-				{Flag: "extra_build", Value: extraBuildId},
+				{Flag: "extra_build", Value: extraBuildID},
 				{Flag: "extra_target", Value: extraBuildTarget},
 				{Flag: "extra_build_type", Value: extraBuildType},
 			},
@@ -433,11 +433,11 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 	}
 
 	// add ants info if they are not null
-	if antsInvId != "" {
-		executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "ants_invocation_id", Value: antsInvId})
+	if antsInvID != "" {
+		executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "ants_invocation_id", Value: antsInvID})
 	}
-	if antsWuId != "" {
-		executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "ants_work_unit_id", Value: antsWuId})
+	if antsWuID != "" {
+		executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "ants_work_unit_id", Value: antsWuID})
 	}
 
 	if common.IsProd(buildState.Build().GetBuilder()) {
@@ -478,10 +478,10 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 	}
 
 	// Validations
-	if antsInvId == "" {
+	if antsInvID == "" {
 		return nil, fmt.Errorf("no ants invocation id found")
 	}
-	if antsWuId == "" {
+	if antsWuID == "" {
 		return nil, fmt.Errorf("no ants workunit id found")
 	}
 	if buildEnv == "" {
@@ -517,7 +517,7 @@ func buildScheduleTargets(testJobMsg *common.TestJobMessage, buildState *build.S
 	swarmingDims := []string{}
 
 	// build related
-	buildId := ""
+	buildID := ""
 	buildTarget := ""
 	buildType := "ATP"
 
@@ -543,20 +543,20 @@ func buildScheduleTargets(testJobMsg *common.TestJobMessage, buildState *build.S
 	}
 
 	if testJobMsg.Build != nil {
-		buildId = testJobMsg.Build.BuildId
+		buildID = testJobMsg.Build.BuildId
 		buildTarget = testJobMsg.Build.BuildTarget
 		buildType = testJobMsg.Build.BuildType
 	}
 
 	installPath := fmt.Sprintf(
 		common.AndroidBuildPathFormat,
-		buildId, buildTarget, primaryBoard, buildId)
+		buildID, buildTarget, primaryBoard, buildID)
 
 	// Validations
 	if primaryBoard == "" {
 		return nil, fmt.Errorf("no board info found")
 	}
-	if buildId == "" {
+	if buildID == "" {
 		return nil, fmt.Errorf("no buildid found")
 	}
 	if buildTarget == "" {
@@ -665,9 +665,9 @@ func buildSchedulerInfo(pool string, triggerType ATPTriggerType) *api.SchedulerI
 	if pool == common.DefaultQuotaPool {
 		// For mainpool, run through Scheduke with QSaccount specified for different priority
 		qsAccount := "unmanaged_p1"
-		if triggerType == PRESUBMIT_BLOCKING {
+		if triggerType == PresubmitBlocking {
 			qsAccount = common.ATPBlockingQuotaAccount
-		} else if triggerType == POSTSUBMIT_BLOCKING {
+		} else if triggerType == PostsubmitBlocking {
 			qsAccount = "postsubmit"
 		}
 
@@ -705,16 +705,16 @@ func getSchedulingPool(testJobMsg *common.TestJobMessage) string {
 type ATPTriggerType int
 
 const (
-	PRESUBMIT_BLOCKING ATPTriggerType = iota
-	PRESUBMIT_WARN                    // not used yet
-	POSTSUBMIT_BLOCKING
-	POSTSUBMIT_WARN // not used yet
-	CRON
+	PresubmitBlocking ATPTriggerType = iota
+	PresubmitWarn                    // not used yet
+	PostsubmitBlocking
+	PostsubmitWarn // not used yet
+	Cron
 )
 
 func getTriggerType(testJobMsg *common.TestJobMessage) ATPTriggerType {
 	// default is cron
-	retVal := CRON
+	retVal := Cron
 	for _, eachVal := range testJobMsg.Context {
 		if eachVal.Key == "trigger" {
 			if len(eachVal.Values) == 0 {
@@ -724,14 +724,14 @@ func getTriggerType(testJobMsg *common.TestJobMessage) ATPTriggerType {
 			// Currently we don't know which is presubmit blocking and which is warning;
 			// Considering all presubmit to be blocking for now.
 			if triggerVal == "WORK_NODE" {
-				return PRESUBMIT_BLOCKING
+				return PresubmitBlocking
 			} else if triggerVal == "BUILD" {
 				// this actually means that run was created by build trigger type
 				// we still don't know if this was blocking or info/warning
 				// Considering all as BVT blocking for now.
-				return POSTSUBMIT_BLOCKING
+				return PostsubmitBlocking
 			} else if triggerVal == "CRON" {
-				return CRON
+				return Cron
 			}
 		}
 	}

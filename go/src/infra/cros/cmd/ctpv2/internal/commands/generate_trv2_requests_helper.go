@@ -426,7 +426,7 @@ func populateHwTargetHelper(ctx context.Context, board string, model string, var
 // GenerateArgs generates args for the builder request.
 func GenerateArgs(ctx context.Context, trHelper *TrV2ReqHelper) (*request.Args, error) {
 	if trHelper.build == nil {
-		return nil, fmt.Errorf("No Build Object set in helper.")
+		return nil, fmt.Errorf("no Build Object set in helper")
 	}
 	args := request.Args{
 		Cmd:               *createCommand(ctx, trHelper),
@@ -510,9 +510,9 @@ func createCommand(ctx context.Context, trHelper *TrV2ReqHelper) *worker.Command
 
 func getFreeFormDimsForTarget(target *testapi.Target) []string {
 	dims := []string{}
-	hwId := target.GetSwarmingDef().GetDutInfo().GetChromeos().GetHwid()
-	if hwId != "" {
-		dims = append(dims, fmt.Sprintf("hwid:%s", hwId))
+	hwID := target.GetSwarmingDef().GetDutInfo().GetChromeos().GetHwid()
+	if hwID != "" {
+		dims = append(dims, fmt.Sprintf("hwid:%s", hwID))
 	}
 
 	for _, label := range target.GetSwarmingDef().GetSwarmingLabels() {
@@ -603,7 +603,7 @@ func findGcsPath(suiteInfo *testapi.SuiteInfo, board string, variant string) str
 
 	// TODO (oldProto-azrahman): remove after schedUnitOptions fully rolled in
 	schedUnits := suiteInfo.GetSuiteMetadata().GetSchedulingUnits()
-	if schedUnits != nil && len(schedUnits) != 0 {
+	if len(schedUnits) != 0 {
 		// new proto flow
 		for _, schedUnit := range schedUnits {
 			if gcsPath := findGcsPathFromSchedUnit(schedUnit, board, variant); gcsPath != "" {
@@ -682,12 +682,6 @@ func getBuildTargetfromHwDef(TRRequesthwDef *testapi.SwarmingDefinition) string 
 func getModelTargetfromHwDef(TRRequesthwDef *testapi.SwarmingDefinition) string {
 	return TRRequesthwDef.GetDutInfo().GetChromeos().GetDutModel().GetModelName()
 }
-func getBuildTargetWVariantfromHwDef(TRRequesthwDef *testapi.SwarmingDefinition) string {
-	if TRRequesthwDef.GetVariant() == "" {
-		return getBuildTargetfromHwDef(TRRequesthwDef)
-	}
-	return fmt.Sprintf("%s-%s", getBuildTargetfromHwDef(TRRequesthwDef), TRRequesthwDef.GetVariant())
-}
 
 // --------------------
 
@@ -697,13 +691,6 @@ func getBuildTargetFromSchedulingTarget(target *testapi.Target) string {
 
 func getModelFromSchedulingTarget(target *testapi.Target) string {
 	return common.DutModelFromDut(target.GetSwarmingDef().GetDutInfo()).GetModelName()
-}
-
-func getBuildTargetWVariantFromSchedulingTarget(target *testapi.Target) string {
-	if target.GetSwarmingDef().GetVariant() == "" {
-		return getBuildTargetFromSchedulingTarget(target)
-	}
-	return fmt.Sprintf("%s-%s", getBuildTargetFromSchedulingTarget(target), target.GetSwarmingDef().GetVariant())
 }
 
 func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*testapi.CrosTestRunnerDynamicRequest, error) {
@@ -867,11 +854,11 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 // TODO (oldProto-azrahman): remove old proto
 func buildProvisionStateOldProto(provInfo []*testapi.ProvisionInfo) (*testapi.ProvisionState, error) {
 	if len(provInfo) == 0 {
-		return nil, fmt.Errorf("No Provision Info items given")
+		return nil, fmt.Errorf("no Provision Info items given")
 	}
 	gcsPath := provInfo[0].GetInstallRequest().GetImagePath().GetPath()
 	if gcsPath == "" {
-		return nil, fmt.Errorf("No gcs path found found")
+		return nil, fmt.Errorf("no gcs path found found")
 	}
 
 	provisionState := &testapi.ProvisionState{
@@ -933,7 +920,7 @@ func createCftDeviceRequestFromTarget(target *HwTarget) (*skylab_test_runner.CFT
 	}
 
 	if provisionState == nil {
-		return nil, fmt.Errorf("nil provisionState!")
+		return nil, fmt.Errorf("nil provisionState")
 	}
 
 	tryAttachFirmwareConfig(provisionState, target.apiTarget)
@@ -974,31 +961,6 @@ func getBuildFromGcsPath(gcsPath string) string {
 		return ""
 	}
 	return dirNames[len(dirNames)-2] + "/" + dirNames[len(dirNames)-1]
-}
-
-// createProvisionableDimensions creates provisionalbe dims.
-func createProvisionableDimensions() ([]string, error) {
-	dims := []string{}
-	// TODO (azrahman): add support post mvp. Should get these info from provision
-	// filter.
-	// dimChromeOS      = "provisionable-cros-version"
-	// dimFirmwareRO    = "provisionable-fwro-version"
-	// dimFirmwareRW    = "provisionable-fwrw-version"
-	// dimLacrosGCSPath = "provisionable-lacros-gcs-path"
-
-	// if b := builds.ChromeOS; b != "" {
-	// 	dims = append(dims, dimChromeOS+":"+b)
-	// }
-	// if b := builds.FirmwareRO; b != "" {
-	// 	dims = append(dims, dimFirmwareRO+":"+b)
-	// }
-	// if b := builds.FirmwareRW; b != "" {
-	// 	dims = append(dims, dimFirmwareRW+":"+b)
-	// }
-	// if b := builds.LacrosGCSPath; b != "" {
-	// 	dims = append(dims, dimLacrosGCSPath+":"+b)
-
-	return dims, nil
 }
 
 // createLabels creates labels.
@@ -1184,31 +1146,32 @@ func makeDisplayName(buildStr string, suite string, TRName string) string {
 	return fmt.Sprintf("%s/%s-%s", buildStr, suite, TRName)
 }
 
-func buildCrosProvisionState(target *testapi.Target) (*testapi.ProvisionState, error) {
-	if target == nil {
-		return nil, fmt.Errorf("nil target")
-	}
-	provInfo := target.GetSwarmingDef().GetProvisionInfo()[0]
-	if provInfo == nil {
-		return nil, fmt.Errorf("No Provision Info items given")
-	}
-	gcsPath := provInfo.GetInstallRequest().GetImagePath().GetPath()
-	if gcsPath == "" {
-		return nil, fmt.Errorf("No gcs path found found")
-	}
+// TODO(aziz): uncomment when will be used. 01/27/25
+// func buildCrosProvisionState(target *testapi.Target) (*testapi.ProvisionState, error) {
+// 	if target == nil {
+// 		return nil, fmt.Errorf("nil target")
+// 	}
+// 	provInfo := target.GetSwarmingDef().GetProvisionInfo()[0]
+// 	if provInfo == nil {
+// 		return nil, fmt.Errorf("no Provision Info items given")
+// 	}
+// 	gcsPath := provInfo.GetInstallRequest().GetImagePath().GetPath()
+// 	if gcsPath == "" {
+// 		return nil, fmt.Errorf("no gcs path found found")
+// 	}
 
-	provisionState := &testapi.ProvisionState{
+// 	provisionState := &testapi.ProvisionState{
 
-		SystemImage: &testapi.ProvisionState_SystemImage{
-			SystemImagePath: &goconfig.StoragePath{
-				HostType: goconfig.StoragePath_GS,
-				Path:     gcsPath,
-			},
-		},
-		ProvisionMetadata: nil,
-	}
-	return provisionState, nil
-}
+// 		SystemImage: &testapi.ProvisionState_SystemImage{
+// 			SystemImagePath: &goconfig.StoragePath{
+// 				HostType: goconfig.StoragePath_GS,
+// 				Path:     gcsPath,
+// 			},
+// 		},
+// 		ProvisionMetadata: nil,
+// 	}
+// 	return provisionState, nil
+// }
 
 func buildAndroidProvisionState(target *testapi.Target) (*testapi.ProvisionState, error) {
 	if target == nil {

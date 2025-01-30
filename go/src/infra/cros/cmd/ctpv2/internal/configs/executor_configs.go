@@ -42,7 +42,7 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 	switch execType {
 	case common_executors.CtrExecutorType:
 		if cfg.Ctr == nil {
-			return nil, fmt.Errorf("CrosToolRunner is nil!")
+			return nil, fmt.Errorf("crosToolRunner is nil")
 		}
 		exec = common_executors.NewCtrExecutor(cfg.Ctr)
 
@@ -51,12 +51,12 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 
 	case common_executors.ContainerExecutorType:
 		if cfg.Ctr == nil {
-			return nil, fmt.Errorf("CrosToolRunner is nil!")
+			return nil, fmt.Errorf("crosToolRunner is nil")
 		}
 		exec = common_executors.NewContainerExecutor(cfg.Ctr)
 
 	default:
-		return nil, fmt.Errorf("Executor type %s not supported in executor configs!", execType)
+		return nil, fmt.Errorf("executor type %s not supported in executor configs", execType)
 	}
 
 	cfg.execsMap[execType] = exec

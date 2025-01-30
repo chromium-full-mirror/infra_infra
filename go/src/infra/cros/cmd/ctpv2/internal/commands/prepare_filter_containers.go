@@ -14,7 +14,6 @@ import (
 	"strings"
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -53,7 +52,7 @@ func (cmd *PrepareFilterContainersInfoCmd) ExtractDependencies(
 		err = cmd.extractDepsFromFilterStateKeepr(ctx, sk)
 
 	default:
-		return fmt.Errorf("StateKeeper '%T' is not supported by cmd type %s.", sk, cmd.GetCommandType())
+		return fmt.Errorf("stateKeeper '%T' is not supported by cmd type %s", sk, cmd.GetCommandType())
 	}
 
 	if err != nil {
@@ -86,7 +85,7 @@ func (cmd *PrepareFilterContainersInfoCmd) extractDepsFromFilterStateKeepr(
 	sk *data.FilterStateKeeper) error {
 
 	if sk.CtpReq == nil {
-		return fmt.Errorf("Cmd %q missing dependency: CtpV2Req", cmd.GetCommandType())
+		return fmt.Errorf("cmd %q missing dependency: CtpV2Req", cmd.GetCommandType())
 	}
 	cmd.Experiments = sk.BuildState.Build().Input.Experiments
 	cmd.CTPversion = sk.CTPversion
@@ -177,8 +176,8 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 			"error during writing container metadata map to log: %s",
 			err.Error())
 	}
-	step.Log("Final container metadata map").Write(mapData)
 
+	common.WriteStringToStepLog(ctx, step, string(mapData), "Final container metadata map")
 	// -- Create ctp filters from default and input filters --
 
 	ctpFilters, err := common.ConstructCtpFilters(ctx, defK, finalMetadataMap, append(cmd.CtpReq.GetKarbonFilters(), cmd.CtpReq.GetKoffeeFilters()...), build)
@@ -211,9 +210,9 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 			"error during writing ctp filters to log: %s",
 			err.Error())
 	}
-	step.Log("Final Ctp filters list").Write(filterData)
+	common.WriteStringToStepLog(ctx, step, string(filterData), "Final Ctp filters list")
 
-	step.Log("CTPv2 Build").Write([]byte(fmt.Sprintf("%v", build)))
+	common.WriteStringToStepLog(ctx, step, fmt.Sprintf("%v", build), "CTPv2 Build")
 	// -- Create container info queue --
 
 	containerInfoList := list.New()
@@ -221,7 +220,8 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	for _, filter := range ctpFilters {
 		containerInfoList.PushBack(CtpFilterToContainerInfo(filter, build))
 	}
-	step.Log("Container Info queue").Write(common.ListToJson(containerInfoList))
+
+	common.WriteStringToStepLog(ctx, step, string(common.ListToJson(containerInfoList)), "Container Info queue")
 
 	cmd.ContainerInfoQueue = containerInfoList
 
@@ -318,7 +318,7 @@ func createContainerImagesInfoMap(
 }
 
 // CtpFilterToContainerInfo creates container info from provided ctp filter.
-func CtpFilterToContainerInfo(ctpFilter *api.CTPFilter, build int) *data.ContainerInfo {
+func CtpFilterToContainerInfo(ctpFilter *testapi.CTPFilter, build int) *data.ContainerInfo {
 	contName := ctpFilter.GetContainerInfo().GetContainer().GetName()
 	// TODO (azrahman): remove this once container creation is more generic.
 	if contName == common.TtcpContainerName {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Package commands contains the definitions for all commands used in CTPv2.
 package commands
 
 import (
