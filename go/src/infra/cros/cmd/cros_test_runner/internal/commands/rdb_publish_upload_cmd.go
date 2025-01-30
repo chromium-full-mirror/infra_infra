@@ -198,6 +198,12 @@ func populateTestInvocationInfo(
 		IsCftRun:  true,
 		IsTrv2Run: true,
 	}
+
+	requestedProperties := build.GetInfra().GetBuildbucket().GetRequestedProperties().GetFields()
+	if _, ok := requestedProperties["is_al_run"]; ok {
+		testInv.IsAlRun = requestedProperties["is_al_run"].GetBoolValue()
+	}
+
 	resultProto.TestInvocation = testInv
 
 	// Dut topology

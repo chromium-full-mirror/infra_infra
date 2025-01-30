@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/ptypes/duration"
+	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	_go "go.chromium.org/chromiumos/config/go"
@@ -293,14 +294,15 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				},
 				SchedulingMetadata: &artifactpb.SchedulingMetadata{
 					SchedulingArgs: map[string]string{
-						"display_name":      "hatch-cq/R102-14632.0.0-62834-8818718496810023809/wificell-cq/tast.wificell-cq",
-						"analytics_name":    "Bluetooth_Sa_Perbuild",
-						"ctp-fwd-task-name": "Bluetooth_Sa_Perbuild",
-						"qs_account":        "unmanaged_p2",
-						"parent_task_id":    "parentId1",
-						"branch-trigger":    "DEV",
-						"bug_id":            "1234",
-						"parent_created_by": parentCreatedBy,
+						"ants_invocation_id": "I70100010359918495",
+						"display_name":       "hatch-cq/R102-14632.0.0-62834-8818718496810023809/wificell-cq/tast.wificell-cq",
+						"analytics_name":     "Bluetooth_Sa_Perbuild",
+						"ctp-fwd-task-name":  "Bluetooth_Sa_Perbuild",
+						"qs_account":         "unmanaged_p2",
+						"parent_task_id":     "parentId1",
+						"branch-trigger":     "DEV",
+						"bug_id":             "1234",
+						"parent_created_by":  parentCreatedBy,
 					},
 				},
 				ProjectTrackerMetadata: &artifactpb.ProjectTrackerMetadata{
@@ -311,6 +313,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				},
 				IsCftRun:  true,
 				IsTrv2Run: true,
+				IsAlRun:   true,
 			},
 			TestRuns: []*artifactpb.TestRun{
 				{
@@ -367,6 +370,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 			},
 			AncestorIds: []int64{98, 99},
 			Tags: []*buildbucketpb.StringPair{
+				{Key: "ants_invocation_id", Value: "I70100010359918495"},
 				{Key: "display_name", Value: "hatch-cq/R102-14632.0.0-62834-8818718496810023809/wificell-cq/tast.wificell-cq"},
 				{Key: "analytics_name", Value: "Bluetooth_Sa_Perbuild"},
 				{Key: "ctp-fwd-task-name", Value: "Bluetooth_Sa_Perbuild"},
@@ -377,25 +381,38 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 				{Key: "parent_created_by", Value: parentCreatedBy},
 			},
 			CreateTime: createTime,
-			Infra: &bbpb.BuildInfra{Swarming: &bbpb.BuildInfra_Swarming{
-				TaskId:      "taskId1",
-				ParentRunId: "parentId1",
-				BotDimensions: []*buildbucketpb.StringPair{
-					{Key: "label-wifi_chip", Value: "INTEL_GFP2_AX211"},
-					{Key: "label-wifi_router_models", Value: "gale"},
-					{Key: "label-dlm_sku_id", Value: "16968"},
-					{Key: "label-carrier", Value: "CARRIER_ESIM"},
-					{Key: "drone", Value: "skylab-drone-deployment-prod-6dc79d4f9-czjlj"},
-					{Key: "drone_server", Value: "chromeos4-row4-rack1-drone8"},
-					{Key: "pool", Value: "ChromeOSSkylab"},
-					{Key: "label-pool", Value: "DUT_POOL_QUOTA"},
-					{Key: "ufs_zone", Value: "ZONE_SFO36_OS"},
-					{Key: "label-chameleon_type", Value: "CHAMELEON_TYPE_V2"},
-					{Key: "label-chameleon_connection_types", Value: "CHAMELEON_CONNECTION_TYPE_HDMI"},
-					{Key: "label-chameleon_type", Value: "CHAMELEON_TYPE_V3"},
-					{Key: "id", Value: "cloudbots-prod-1715342009263-7kz6"},
+			Infra: &bbpb.BuildInfra{
+				Swarming: &bbpb.BuildInfra_Swarming{
+					TaskId:      "taskId1",
+					ParentRunId: "parentId1",
+					BotDimensions: []*buildbucketpb.StringPair{
+						{Key: "label-wifi_chip", Value: "INTEL_GFP2_AX211"},
+						{Key: "label-wifi_router_models", Value: "gale"},
+						{Key: "label-dlm_sku_id", Value: "16968"},
+						{Key: "label-carrier", Value: "CARRIER_ESIM"},
+						{Key: "drone", Value: "skylab-drone-deployment-prod-6dc79d4f9-czjlj"},
+						{Key: "drone_server", Value: "chromeos4-row4-rack1-drone8"},
+						{Key: "pool", Value: "ChromeOSSkylab"},
+						{Key: "label-pool", Value: "DUT_POOL_QUOTA"},
+						{Key: "ufs_zone", Value: "ZONE_SFO36_OS"},
+						{Key: "label-chameleon_type", Value: "CHAMELEON_TYPE_V2"},
+						{Key: "label-chameleon_connection_types", Value: "CHAMELEON_CONNECTION_TYPE_HDMI"},
+						{Key: "label-chameleon_type", Value: "CHAMELEON_TYPE_V3"},
+						{Key: "id", Value: "cloudbots-prod-1715342009263-7kz6"},
+					},
 				},
-			}},
+				Buildbucket: &bbpb.BuildInfra_Buildbucket{
+					RequestedProperties: &structpb.Struct{
+						Fields: map[string]*structpb.Value{
+							"is_al_run": {
+								Kind: &structpb.Value_BoolValue{
+									BoolValue: true,
+								},
+							},
+						},
+					},
+				},
+			},
 		}
 		buildState, ctx, err := build.Start(ctx, buildPb)
 		defer func() { buildState.End(err) }()
