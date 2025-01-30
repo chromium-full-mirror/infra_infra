@@ -55,11 +55,9 @@ func generateProvisionRequests(req *api.InternalTestplan) (err error) {
 		generateProvisionRequestForSchedUnit(suiteMetadata.GetSchedulingUnits()[0], req, provisionHelper)
 	}
 
-	if len(suiteMetadata.GetSchedulingUnitOptions()) > 0 {
-		for _, schedUnitOption := range suiteMetadata.GetSchedulingUnitOptions() {
-			// 0 index as we only need to count the length of one companions list.
-			generateProvisionRequestForSchedUnit(schedUnitOption.GetSchedulingUnits()[0], req, provisionHelper)
-		}
+	if len(suiteMetadata.GetSchedulingUnitOptions()) > 0 && len(suiteMetadata.GetSchedulingUnitOptions()[0].GetSchedulingUnits()) > 0 {
+		// 0 index as we only need to count the length of one companions list.
+		generateProvisionRequestForSchedUnit(suiteMetadata.GetSchedulingUnitOptions()[0].GetSchedulingUnits()[0], req, provisionHelper)
 	}
 
 	return
