@@ -538,6 +538,9 @@ func GetBuildType(softwareDeps []*test_platform.Request_Params_SoftwareDependenc
 			chromeosBuildParts := strings.Split(chromeosBuildLeft, "-")
 			// Filter out excluded regex matches.
 			chromeosBuildParts = excludeRegexesFromChromeosBuildString(chromeosBuildParts)
+			if len(chromeosBuildParts) == 0 {
+				return ""
+			}
 			// Strip post-fixes.
 			if slices.Contains(ExcludedChromeosBuildPostfixes, chromeosBuildParts[len(chromeosBuildParts)-1]) {
 				chromeosBuildParts = chromeosBuildParts[:len(chromeosBuildParts)-1]
@@ -558,6 +561,9 @@ func GetVariant(softwareDeps []*test_platform.Request_Params_SoftwareDependency)
 			chromeosBuildParts := strings.Split(chromeosBuildLeft, "-")
 			// Filter out excluded regex matches.
 			chromeosBuildParts = excludeRegexesFromChromeosBuildString(chromeosBuildParts)
+			if len(chromeosBuildParts) == 0 {
+				return ""
+			}
 			// Strip post-fixes.
 			if slices.Contains(ExcludedChromeosBuildPostfixes, chromeosBuildParts[len(chromeosBuildParts)-1]) {
 				chromeosBuildParts = chromeosBuildParts[:len(chromeosBuildParts)-1]
