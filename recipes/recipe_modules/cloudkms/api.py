@@ -4,6 +4,8 @@
 
 from recipe_engine import recipe_api
 
+_CIPD_VERSION = 'git_revision:7b59e867853be758e6b98572e916439101a921d3'
+
 
 class CloudKMSApi(recipe_api.RecipeApi):
   """API for interacting with CloudKMS using the LUCI cloudkms tool."""
@@ -22,7 +24,7 @@ class CloudKMSApi(recipe_api.RecipeApi):
     if self._cloudkms_bin is None:
       cloudkms_dir = self.m.path.start_dir / 'cloudkms'
       ensure_file = self.m.cipd.EnsureFile().add_package(
-          'infra/tools/luci/cloudkms/${platform}', 'latest')
+          'infra/tools/luci/cloudkms/${platform}', _CIPD_VERSION)
       self.m.cipd.ensure(cloudkms_dir, ensure_file)
       self._cloudkms_bin = cloudkms_dir / 'cloudkms'
     return self._cloudkms_bin

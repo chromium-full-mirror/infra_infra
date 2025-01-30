@@ -300,18 +300,18 @@ Raises:
 [DEPS](/recipes/recipe_modules/cloudkms/__init__.py#7): [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
-#### **class [CloudKMSApi](/recipes/recipe_modules/cloudkms/api.py#8)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
+#### **class [CloudKMSApi](/recipes/recipe_modules/cloudkms/api.py#10)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
 API for interacting with CloudKMS using the LUCI cloudkms tool.
 
-&emsp; **@property**<br>&mdash; **def [cloudkms\_path](/recipes/recipe_modules/cloudkms/api.py#15)(self):**
+&emsp; **@property**<br>&mdash; **def [cloudkms\_path](/recipes/recipe_modules/cloudkms/api.py#17)(self):**
 
 Returns the path to LUCI cloudkms binary.
 
 When the property is accessed the first time, cloudkms will be installed
 using cipd.
 
-&mdash; **def [decrypt](/recipes/recipe_modules/cloudkms/api.py#30)(self, kms_crypto_key, input_file, output_file):**
+&mdash; **def [decrypt](/recipes/recipe_modules/cloudkms/api.py#32)(self, kms_crypto_key, input_file, output_file):**
 
 Decrypt a ciphertext file with a CloudKMS key.
 
@@ -323,7 +323,7 @@ Args:
     recommended that this is inside api.path.cleanup_dir to ensure the
     plaintext file will be cleaned up by recipe.
 
-&mdash; **def [sign](/recipes/recipe_modules/cloudkms/api.py#48)(self, kms_crypto_key, input_file, output_file, service_account_creds_file=None):**
+&mdash; **def [sign](/recipes/recipe_modules/cloudkms/api.py#50)(self, kms_crypto_key, input_file, output_file, service_account_creds_file=None):**
 
 Processes a plaintext and uploads the digest for signing by Cloud KMS.
 
@@ -336,7 +336,7 @@ Args:
   * service_account_creds_file (str) - Path to JSON file with service
     account credentials to use.
 
-&mdash; **def [verify](/recipes/recipe_modules/cloudkms/api.py#80)(self, kms_crypto_key, input_file, signature_file, output_file='-', service_account_creds_file=None):**
+&mdash; **def [verify](/recipes/recipe_modules/cloudkms/api.py#82)(self, kms_crypto_key, input_file, signature_file, output_file='-', service_account_creds_file=None):**
 
 Verifies a signature that was previously created with a key stored in
 CloudKMS.
