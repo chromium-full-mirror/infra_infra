@@ -59,6 +59,14 @@ func consoleClient(ctx context.Context, host string, authFlags authcli.Flags, us
 	return consoleClient, nil
 }
 
+func uiClient(ctx context.Context, host string, authFlags authcli.Flags) (*http.Client, error) {
+	httpClient, err := authenticatedClient(ctx, host, authFlags)
+	if err != nil {
+		return nil, errors.Annotate(err, "ui client").Err()
+	}
+	return httpClient, nil
+}
+
 // authenticatedClient creates an authenticated HTTPS client.
 func authenticatedClient(ctx context.Context, host string, authFlags authcli.Flags) (*http.Client, error) {
 	authOptions, err := authFlags.Options()

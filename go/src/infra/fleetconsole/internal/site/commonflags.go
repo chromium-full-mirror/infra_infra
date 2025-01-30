@@ -89,3 +89,19 @@ func (fl *CommonFlags) Host() (string, error) {
 		return "", errors.New("-dev and -local are alternatives")
 	}
 }
+
+// UIHost returns the UI host to contact for a given environment.
+func (fl *CommonFlags) UIHost() (string, error) {
+	switch {
+	case fl.address != "":
+		return fl.address, nil
+	case fl.dev && !fl.local:
+		panic("dev UI exists, but I haven't added it to this tool yet.")
+	case !fl.dev && fl.local:
+		panic("local UI also exists, but I haven't added it to this tool yet.")
+	case !fl.dev && !fl.local:
+		return "ci.chromium.org", nil
+	default:
+		return "", errors.New("-dev and -local are alternatives")
+	}
+}
