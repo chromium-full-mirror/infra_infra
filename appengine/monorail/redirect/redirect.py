@@ -5,6 +5,8 @@
 
 Handles traffic redirection before hitting main monorail app.
 """
+import json
+
 import flask
 
 from redirect import redirect_utils
@@ -64,7 +66,7 @@ def GenerateRedirectApp():
   def MappingApi(project_name: str, local_id: int) -> str:
     redirect_id = redirectissue.RedirectIssue.Get(project_name, local_id)
     if redirect_id:
-      return redirect_id
+      return str(redirect_id)
     flask.abort(404)
   redirect_app.route('/<string:project_name>/<int:local_id>')(MappingApi)
 
@@ -77,22 +79,29 @@ def GenerateRedirectApp():
 
 
 def _GenerateIssueDetailRedirectURL(local_id: int, project_name: str):
+  log = {
+      'action': 'redirect/issue',
+      'project': project_name,
+      'original_id': local_id,
+  }
+
   redirect_base_url = redirect_utils.GetRedirectURL(project_name)
   if not redirect_base_url:
+    print(json.dumps({**log, 'type': 'unknown_project'}))
     return None
 
   if local_id >= redirect_utils.MIN_ISSUETRACKER_ISSUE_ID:
+    print(json.dumps({**log, 'type': 'passthrough', 'redirect_id': local_id}))
     return redirect_base_url + '/' + str(local_id)
 
   tracker_id = redirectissue.RedirectIssue.Get(project_name, local_id)
   if not tracker_id:
+    print(json.dumps({**log, 'type': 'unknown_issue'}))
     return None
 
-  try:
-    tracker_id_int = int(tracker_id)
-    if tracker_id_int < redirect_utils.MIN_ISSUETRACKER_ISSUE_ID:
-      return redirect_utils.LAUNCH_BASE_URL + '/' + tracker_id
-  except ValueError:
-    pass
+  if tracker_id < redirect_utils.MIN_ISSUETRACKER_ISSUE_ID:
+    print(json.dumps({**log, 'type': 'launch', 'redirect_id': tracker_id}))
+    return redirect_utils.LAUNCH_BASE_URL + '/' + str(tracker_id)
 
-  return redirect_base_url + '/' + tracker_id
+  print(json.dumps({**log, 'type': 'issuetracker', 'redirect_id': tracker_id}))
+  return redirect_base_url + '/' + str(tracker_id)

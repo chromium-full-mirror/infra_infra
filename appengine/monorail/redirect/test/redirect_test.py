@@ -19,8 +19,8 @@ class TestRedirectApp(unittest.TestCase):
     response = client.get('/p/project1/issues/list')
     self.assertEqual(response.status_code, 404)
 
-  @mock.patch("redirect.redirect_utils.GetRedirectURL")
   @mock.patch("redirect.redirect_utils.GetSearchQuery")
+  @mock.patch("redirect.redirect_utils.GetRedirectURL")
   def testRedirectIssueList(self, fake_get_url, fake_get_search_query):
     client = self.app.test_client()
     response = client.get('/p/project1/issues/list')
@@ -43,12 +43,12 @@ class TestRedirectApp(unittest.TestCase):
     response = client.get('/p/project1/issues/detail?id=1')
     self.assertEqual(response.status_code, 404)
 
-  @mock.patch("redirect.redirect_utils.GetRedirectURL")
   @mock.patch("redirect.redirectissue.RedirectIssue.Get")
+  @mock.patch("redirect.redirect_utils.GetRedirectURL")
   def testRedirectIssueDetail_MonorailId(
       self, fake_get_url, fake_redirectIssue):
     fake_get_url.return_value = "test"
-    fake_redirectIssue.return_value = "10000001"
+    fake_redirectIssue.return_value = 10000001
     client = self.app.test_client()
     response = client.get('/p/project1/issues/detail?id=1')
     self.assertEqual(response.status_code, 200)
@@ -60,11 +60,11 @@ class TestRedirectApp(unittest.TestCase):
     response = client.get('/p/project1/issues/detail?id=10000001')
     self.assertEqual(response.status_code, 200)
 
-  @mock.patch("redirect.redirect_utils.GetRedirectURL")
   @mock.patch("redirect.redirectissue.RedirectIssue.Get")
+  @mock.patch("redirect.redirect_utils.GetRedirectURL")
   def testRedirectIssueDetail_LaunchId(self, fake_get_url, fake_redirectIssue):
     fake_get_url.return_value = "test"
-    fake_redirectIssue.return_value = "1"
+    fake_redirectIssue.return_value = 1
     client = self.app.test_client()
     response = client.get('/p/project1/issues/detail?id=1')
     self.assertEqual(response.status_code, 200)
