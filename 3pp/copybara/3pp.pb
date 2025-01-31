@@ -7,7 +7,7 @@ create {
   source {
     git {
       repo: "https://github.com/google/copybara.git"
-      fixed_commit: "e00ac09be88bcd3b924bc382e0eee4db16071935"
+      fixed_commit: "bc6e8d356022ba7eb73e0cd6e3526c83cdd165bf"
     }
     patch_version: "cr0"
   }
