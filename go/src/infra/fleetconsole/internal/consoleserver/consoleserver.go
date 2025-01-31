@@ -63,6 +63,9 @@ func MustSetDBConnection(ctx context.Context, consoleFrontend *FleetConsoleFront
 		panic(err)
 	}
 	dbURI := string(secret.Active)
+	if dbURI == "" {
+		panic("database secret cannot be empty")
+	}
 	consoleFrontend.dbConnection, err = database.Connect(dbURI)
 	if err != nil {
 		panic(err)
