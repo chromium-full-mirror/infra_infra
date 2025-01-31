@@ -13,8 +13,13 @@ from PB.recipes.infra.windows_image_builder import drive
 from PB.recipes.infra.windows_image_builder import (online_windows_customization
                                                     as owc)
 
-from recipe_engine.post_process import DropExpectation, StatusFailure
-from recipe_engine.post_process import StatusSuccess, StepCommandRE
+from recipe_engine.post_process import (
+    DropExpectation,
+    StatusFailure,
+    StatusSuccess,
+    StepCommandContains,
+    StepCommandRE,
+)
 
 from textwrap import dedent
 
@@ -584,23 +589,21 @@ def CHECK_CIPD_UPLOAD(api, image, cust, dest):
   """
       Post check the upload to GCS
   """
-  # Wildcard args for everything + tags
-  args = ['.*'] * (16 + len(dest.tags) * 2)
-  # ref arg check
-  args[7] = dest.cipd_src.refs  # check for correct refs
-  # tags added in reverse order
-  idx = 9 + len(dest.tags) * 2
-  for tag, value in dest.tags.items():
-    args[idx] = '{}:{}'.format(tag, value)
-    idx -= 2
   package = dest.cipd_src.package
   platform = dest.cipd_src.platform
-  return api.post_process(
-      StepCommandRE,
-      NEST(
-          NEST_CONFIG_STEP(image), NEST_WINPE_CUSTOMIZATION_STEP(cust),
-          NEST_WINPE_DEINIT_STEP(), NEST_UPLOAD_CUST_OUTPUT(cust),
-          'create {}/{}'.format(package, platform)), args)
+  step_name = NEST(
+      NEST_CONFIG_STEP(image), NEST_WINPE_CUSTOMIZATION_STEP(cust),
+      NEST_WINPE_DEINIT_STEP(), NEST_UPLOAD_CUST_OUTPUT(cust),
+      'create {}/{}'.format(package, platform))
+
+  result = api.post_process(StepCommandContains, step_name,
+                            ['-ref', dest.cipd_src.refs])
+
+  for tag, value in dest.tags.items():
+    result += api.post_process(StepCommandContains, step_name,
+                              ['-tag', '{}:{}'.format(tag, value)])
+
+  return result
 
 
 def CHECK_ADD_FILE(api, image, cust, url, dest):
