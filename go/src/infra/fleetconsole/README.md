@@ -10,6 +10,8 @@ unified UI for managing machines in the fleet.
 From the root directory for this repo.
 
 ```sh
+docker compose up -d # To start a local db instance
+
 go build ./cmd/fleetconsoleserver
 ./fleetconsoleserver
 ```

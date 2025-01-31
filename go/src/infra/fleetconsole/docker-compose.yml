@@ -1,0 +1,23 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This file is purely used for local development. Do not deploy the service
+# in any way using this.
+version: '3.9'
+
+services:
+  fleet_console_db:
+    container_name: fleet_console_db
+    image: postgres:17.2
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_DB: fleet_console_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql@16/data:rw
+
+volumes:
+  pgdata: {}

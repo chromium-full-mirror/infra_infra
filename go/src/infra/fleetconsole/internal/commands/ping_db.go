@@ -42,22 +42,17 @@ func (c *pingDBCommand) Run(a subcommands.Application, args []string, env subcom
 }
 
 func (c *pingDBCommand) innerRun(ctx context.Context, a subcommands.Application, _ []string, _ subcommands.Env) error {
-	if c.CommonFlags.Local() {
-		if err := validateLocalPostgres(); err != nil {
-			return err
-		}
-	}
 	host, err := c.CommonFlags.Host()
 	if err != nil {
-		return errors.Annotate(err, "ping db").Err()
+		return errors.Annotate(err, "ping db - getting host").Err()
 	}
 	client, err := consoleClient(ctx, host, c.AuthFlags, c.CommonFlags.HTTP())
 	if err != nil {
-		return errors.Annotate(err, "ping db").Err()
+		return errors.Annotate(err, "ping db - creating console client").Err()
 	}
 	resp, err := client.PingDB(ctx, &fleetconsolerpc.PingDBRequest{})
 	if err != nil {
-		return errors.Annotate(err, "ping db").Err()
+		return errors.Annotate(err, "ping db - calling PingDB").Err()
 	}
 	showProto(a.GetOut(), resp)
 	return nil
