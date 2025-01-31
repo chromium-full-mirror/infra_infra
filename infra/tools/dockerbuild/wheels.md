@@ -9766,6 +9766,18 @@ wheel: <
 
 * *universal*
 
+### 2.9.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/python-dateutil-py2_py3"
+  version: "version:2.9.0"
+>
+```
+
+
+* *universal*
+
 ## **python-magic**
 
 ### 0.4.24

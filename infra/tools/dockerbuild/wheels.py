@@ -2520,6 +2520,7 @@ SPECS.update({
         Universal('pytest-xdist', '3.6.1', pyversions=['py3']),
         Universal('python-dateutil', '2.7.3'),
         Universal('python-dateutil', '2.8.1'),
+        Universal('python-dateutil', '2.9.0'),
         Universal('python-magic', '0.4.24'),
         Universal('pytz', '2018.4'),
         Universal('pytz', '2021.1'),
