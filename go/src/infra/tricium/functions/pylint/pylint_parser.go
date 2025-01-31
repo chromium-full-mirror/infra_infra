@@ -74,8 +74,12 @@ func mainImpl() error {
 
 	// Filter the files to include only .py files.
 	files, err := tricium.FilterFiles(input.Files, "*.py")
-	if err != nil {
+	switch {
+	case err != nil:
 		return fmt.Errorf("failed to filter files: %w", err)
+	case len(files) == 0:
+		log.Printf("No python file to lint.")
+		return nil
 	}
 
 	// Construct the command args and invoke Pylint on the given paths.
