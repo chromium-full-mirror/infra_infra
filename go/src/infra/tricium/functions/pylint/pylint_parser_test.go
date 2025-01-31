@@ -163,29 +163,41 @@ func TestPylintParsing(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			assert.Loosely(t, comments, should.Match(expected))
+			assert.That(t, comments, should.Match(expected))
 		})
 	})
 
 	ftt.Run("isFatalPylintError", t, func(t *ftt.Test) {
 		t.Run("Returns false for nil error", func(t *ftt.Test) {
-			assert.Loosely(t, isFatalPylintError(nil), should.BeFalse)
+			assert.That(t, isFatalPylintError(nil), should.BeFalse)
 		})
 
 		t.Run("Returns true for non-exit error", func(t *ftt.Test) {
-			assert.Loosely(t, isFatalPylintError(os.ErrNotExist), should.BeTrue)
+			assert.That(t, isFatalPylintError(os.ErrNotExist), should.BeTrue)
 		})
 
 		t.Run("Returns false for non-fatal exit errors", func(t *ftt.Test) {
-			assert.Loosely(t, isFatalPylintError(fakeExitError{2}), should.BeFalse)
-			assert.Loosely(t, isFatalPylintError(fakeExitError{4}), should.BeFalse)
-			assert.Loosely(t, isFatalPylintError(fakeExitError{8}), should.BeFalse)
-			assert.Loosely(t, isFatalPylintError(fakeExitError{16}), should.BeFalse)
+			assert.That(t, isFatalPylintError(fakeExitError{2}), should.BeFalse)
+			assert.That(t, isFatalPylintError(fakeExitError{4}), should.BeFalse)
+			assert.That(t, isFatalPylintError(fakeExitError{6}), should.BeFalse)
+			assert.That(t, isFatalPylintError(fakeExitError{8}), should.BeFalse)
+			assert.That(t, isFatalPylintError(fakeExitError{12}), should.BeFalse)
+			assert.That(t, isFatalPylintError(fakeExitError{14}), should.BeFalse)
+			assert.That(t, isFatalPylintError(fakeExitError{16}), should.BeFalse)
+			assert.That(t, isFatalPylintError(fakeExitError{18}), should.BeFalse)
+			assert.That(t, isFatalPylintError(fakeExitError{20}), should.BeFalse)
+			assert.That(t, isFatalPylintError(fakeExitError{22}), should.BeFalse)
+			assert.That(t, isFatalPylintError(fakeExitError{24}), should.BeFalse)
+			assert.That(t, isFatalPylintError(fakeExitError{26}), should.BeFalse)
+			assert.That(t, isFatalPylintError(fakeExitError{28}), should.BeFalse)
+			assert.That(t, isFatalPylintError(fakeExitError{30}), should.BeFalse)
 		})
 
 		t.Run("Returns true for fatal exit errors", func(t *ftt.Test) {
-			assert.Loosely(t, isFatalPylintError(fakeExitError{1}), should.BeTrue)
-			assert.Loosely(t, isFatalPylintError(fakeExitError{32}), should.BeTrue)
+			assert.That(t, isFatalPylintError(fakeExitError{1}), should.BeTrue)
+			assert.That(t, isFatalPylintError(fakeExitError{19}), should.BeTrue)
+			assert.That(t, isFatalPylintError(fakeExitError{32}), should.BeTrue)
+			assert.That(t, isFatalPylintError(fakeExitError{123}), should.BeTrue)
 		})
 	})
 }

@@ -183,25 +183,29 @@ type execExitError interface {
 // Statically assert that exec.ExitError satisfies the execExitError interface.
 var _ execExitError = (*exec.ExitError)(nil)
 
+// Source: https://pylint.readthedocs.io/en/stable/user_guide/usage/run.html#exit-codes
+const (
+	errorExitCode      = 1 << 1
+	warningExitCode    = 1 << 2
+	refactorExitCode   = 1 << 3
+	conventionExitCode = 1 << 4
+
+	nonFatalExitCodeMask = errorExitCode | warningExitCode | refactorExitCode | conventionExitCode
+)
+
 func isFatalPylintError(err error) bool {
 	if err == nil {
 		return false
 	}
 
-	// If pylint produces one of these exit codes it means it successfully
-	// emitted messages about the code being analyzed. All other exit codes are
-	// assumed to represent unexpected errors that should cause the parser to
-	// fail, as pylint likely didn't produce valid results.
-	// https://docs.pylint.org/en/1.6.0/run.html#exit-codes
-	nonFatalPylintExitCodes := []int{2, 4, 8, 16}
-
+	// pylint exit code is bit encoded. If the exit code is only composed of
+	// error warning refactor and convention exit code, it means the code has
+	// been successfully analyzed. Other exit codes indicate unexpected error caused
+	// by pylint configuration or command to invoke pylint that should cause the
+	// parser to fail, as pylint likely didn't produce valid results.
 	var exitErr execExitError
 	if errors.As(err, &exitErr) {
-		for _, code := range nonFatalPylintExitCodes {
-			if code == exitErr.ExitCode() {
-				return false
-			}
-		}
+		return exitErr.ExitCode()&nonFatalExitCodeMask != exitErr.ExitCode()
 	}
 	return true
 }
