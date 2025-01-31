@@ -10,6 +10,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -123,7 +124,7 @@ func mainImpl() error {
 	env = append(env, fmt.Sprintf("PYTHONPATH=%s", absPylintPackagePath))
 	cmd.Env = env
 	cmd.Dir = *inputDir
-	cmd.Stdout = stdout
+	cmd.Stdout = io.MultiWriter(stdout, log.Writer())
 	cmd.Stderr = os.Stderr
 
 	if err := cmd.Run(); err != nil {
@@ -133,7 +134,6 @@ func mainImpl() error {
 		log.Printf("ignoring non-fatal error from pylint: %s", err)
 	}
 
-	log.Printf("pylint output: %s", stdout.String())
 	comments, err := parsePylintOutput(stdout.Bytes())
 	if err != nil {
 		return err
