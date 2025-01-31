@@ -21,7 +21,7 @@ func TestPylintParsing(t *testing.T) {
 	ftt.Run("parsePylintOutput", t, func(t *ftt.Test) {
 
 		t.Run("Parsing empty buffer gives no warnings", func(t *ftt.Test) {
-			comments, err := parsePylintOutput([]byte("[]"))
+			comments, err := parsePylintOutput([]byte("[]"), "path/to/pylintrc")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -86,6 +86,14 @@ func TestPylintParsing(t *testing.T) {
 						"path": "test.py",
 						"symbol": "undefined-variable",
 						"message": "Undefined variable 'main'"
+					},
+					{
+						"type": "error",
+						"line": 1,
+						"column": 0,
+						"path": "path/to/pylintrc",
+						"symbol": "useless-option-value",
+						"message": "Useless Option Value"
 					}
 				]
 			`
@@ -159,10 +167,8 @@ func TestPylintParsing(t *testing.T) {
 				},
 			}
 
-			comments, err := parsePylintOutput([]byte(output))
-			if err != nil {
-				t.Fatal(err)
-			}
+			comments, err := parsePylintOutput([]byte(output), "path/to/pylintrc")
+			assert.NoErr(t, err)
 			assert.That(t, comments, should.Match(expected))
 		})
 	})

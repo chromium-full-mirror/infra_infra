@@ -87,6 +87,7 @@ func mainImpl() error {
 	cmdName := filepath.Join(exPath, pythonPath)
 	absPylintPath := filepath.Join(exPath, pylintPath)
 	absPylintPackagePath := filepath.Join(exPath, pylintPackagePath)
+	absPylintrcPath := filepath.Join(exPath, "pylintrc")
 	if _, err := os.Stat(absPylintPath); err != nil {
 		if errors.Is(err, os.ErrNotExist) {
 			return fmt.Errorf("pylint executable does not exist at %s", absPylintPath)
@@ -95,7 +96,7 @@ func mainImpl() error {
 	}
 	cmdArgs := []string{
 		absPylintPath,
-		"--rcfile", filepath.Join(exPath, "pylintrc"),
+		"--rcfile", absPylintrcPath,
 		"--output-format", "json",
 	}
 	// With Pylint, the order of the disable and enable command line flags is
@@ -134,7 +135,7 @@ func mainImpl() error {
 		log.Printf("ignoring non-fatal error from pylint: %s", err)
 	}
 
-	comments, err := parsePylintOutput(stdout.Bytes())
+	comments, err := parsePylintOutput(stdout.Bytes(), absPylintrcPath)
 	if err != nil {
 		return err
 	}
@@ -151,13 +152,16 @@ func mainImpl() error {
 }
 
 // parsePylintOutput reads populates results from pylint JSON output.
-func parsePylintOutput(stdout []byte) ([]*tricium.Data_Comment, error) {
+func parsePylintOutput(stdout []byte, pylintrcPath string) ([]*tricium.Data_Comment, error) {
 	var results []pylintResult
 	if err := json.Unmarshal(stdout, &results); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal pylint output: %w", err)
 	}
 	var comments []*tricium.Data_Comment
 	for _, r := range results {
+		if r.Path == pylintrcPath {
+			continue
+		}
 		msg := r.Message
 		if r.Symbol == "undefined-variable" {
 			msg = (msg + ".\n" +
