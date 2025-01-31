@@ -41,7 +41,6 @@ import (
 	"go.chromium.org/luci/config"
 	"go.chromium.org/luci/config/cfgclient"
 	"go.chromium.org/luci/config/impl/remote"
-	triciumpb "go.chromium.org/luci/cv/api/config/legacy"
 	cvpb "go.chromium.org/luci/cv/api/config/v2"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	logdogpb "go.chromium.org/luci/logdog/api/config/svcconfig"
@@ -74,8 +73,6 @@ var messageMap map[string]protoreflect.Message = map[string]protoreflect.Message
 	"projects.cfg":           (*configpb.ProjectsCfg)(nil).ProtoReflect(),
 	"realms-dev.cfg":         (*realmspb.RealmsCfg)(nil).ProtoReflect(),
 	"realms.cfg":             (*realmspb.RealmsCfg)(nil).ProtoReflect(),
-	"tricium-dev.cfg":        (*triciumpb.ProjectConfig)(nil).ProtoReflect(),
-	"tricium-prod.cfg":       (*triciumpb.ProjectConfig)(nil).ProtoReflect(),
 }
 
 var stdoutLock sync.Mutex
