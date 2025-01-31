@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	DefaultPingCount = 3
+	DefaultPingCount = 2
 	// Default timeout for simple timeout check
 	DefaultSSHTimeout = 10 * time.Second
 )
@@ -69,23 +69,32 @@ const (
 
 // WaitUntilPingable waiting resource to be pingable.
 func WaitUntilPingable(ctx context.Context, waitTime, waitInterval time.Duration, countPerAttempt int, ping components.Pinger) error {
-	log.Debugf(ctx, "Start ping for the next %s.", waitTime)
 	return retry.WithTimeout(ctx, waitInterval, waitTime, func() error {
 		return IsPingable(ctx, countPerAttempt, ping)
-	}, "wait to ping")
+	}, "wait until ping")
 }
 
 // WaitUntilNotPingable waiting resource to be not pingable.
 func WaitUntilNotPingable(ctx context.Context, waitTime, waitInterval time.Duration, countPerAttempt int, ping components.Pinger) error {
 	return retry.WithTimeout(ctx, waitInterval, waitTime, func() error {
 		return IsNotPingable(ctx, countPerAttempt, ping)
-	}, "wait to be not pingable")
+	}, "wait until not pingable")
 }
 
 // WaitUntilSSHable waiting resource to be sshable.
 func WaitUntilSSHable(ctx context.Context, waitTime, waitInterval time.Duration, run components.Runner) error {
-	log.Debugf(ctx, "Start SSH check for the next %s.", waitTime)
 	return retry.WithTimeout(ctx, waitInterval, waitTime, func() error {
 		return IsSSHable(ctx, run, DefaultSSHTimeout)
-	}, "wait to ssh access")
+	}, "wait until sshable")
+}
+
+// WaitUntilAccessible waiting on resource until accessible.
+// First try to ping and then SSH to the resource.
+func WaitUntilAccessible(ctx context.Context, waitTime, waitInterval time.Duration, run components.Runner, ping components.Pinger) error {
+	return retry.WithTimeout(ctx, waitInterval, waitTime, func() error {
+		if err := IsPingable(ctx, DefaultPingCount, ping); err != nil {
+			return err
+		}
+		return IsSSHable(ctx, run, DefaultSSHTimeout)
+	}, "wait until accessible")
 }

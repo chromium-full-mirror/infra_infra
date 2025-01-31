@@ -111,6 +111,43 @@ func downloadImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Annotate(err, "download image to usb-drive").Err()
 }
 
+func downloadProvisionImageToUSBExec(ctx context.Context, info *execs.ExecInfo) error {
+	servo := info.GetDut().GetChromeos().GetServo()
+	if servo == nil {
+		return errors.Reason("download provision image to usb-drive: setup does not have servo").Err()
+	}
+	board := info.GetDut().GetChromeos().GetBoard()
+	if board == "" {
+		return errors.Reason("download provision image to usb-drive: board data is missing").Err()
+	}
+	info.AddObservation(metrics.NewStringObservation("usbkey_model", servo.GetUsbDrive().GetManufacturer()))
+	info.AddObservation(metrics.NewStringObservation("usbkey_state", servo.GetUsbkeyState().String()))
+	argsMap := info.GetActionArgs(ctx)
+	imageVersion := argsMap.AsString(ctx, "image_version", "v4")
+	// Example: `gs://chromeos-throw-away-bucket/kimjae/brya-provision-v4.bin`
+	imagePath := fmt.Sprintf("gs://chromeos-throw-away-bucket/kimjae/%s-provision-%s.bin", board, imageVersion)
+	log.Debugf(ctx, "Used image path: %s", imagePath)
+
+	// Requesting convert GC path to caches service path.
+	// Example: `http://Addr:8082/download/chromeos-image-archive/board-release/R99-XXXXX.XX.0/`
+	downloadPath, err := info.GetAccess().GetCacheUrl(ctx, info.GetDut().Name, imagePath)
+	if err != nil {
+		return errors.Annotate(err, "download image to usb-drive").Err()
+	}
+	log.Debugf(ctx, "Download image for USB-drive: %s", downloadPath)
+	val, err := info.NewServod().Call(ctx, "set", info.GetExecTimeout(), "download_image_to_usb_dev", downloadPath)
+	log.Debugf(ctx, "Received reponse: %v", val)
+
+	// If we fail we can detect issues with USB-drive, so we can mark it for replacement.
+	// Example:
+	if err != nil && strings.Contains(err.Error(), "Read-only file system:") {
+		log.Debugf(ctx, "USB-drive is read-only, it is recommended to replace the device.")
+		metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("servo_usb_replacement_reason", "read-only"))
+		servo.UsbkeyState = tlw.HardwareState_HARDWARE_NEED_REPLACEMENT
+	}
+	return errors.Annotate(err, "download image to usb-drive").Err()
+}
+
 const (
 	// provisionFailed - A flag file to indicate provision failures.
 	// The file's location in stateful means that on successful update
@@ -183,6 +220,7 @@ func provisionCameraboxTabletExec(ctx context.Context, info *execs.ExecInfo) err
 func init() {
 	execs.Register("cros_provision", provisionExec)
 	execs.Register("servo_download_image_to_usb", downloadImageToUSBExec)
+	execs.Register("servo_download_provision_image_to_usb", downloadProvisionImageToUSBExec)
 	execs.Register("cros_is_last_provision_successful", isLastProvisionSuccessfulExec)
 	execs.Register("is_camerabox_tablet_on_os_version", isCameraboxTabletOnOSVersionExec)
 	execs.Register("provision_camerabox_tablet", provisionCameraboxTabletExec)

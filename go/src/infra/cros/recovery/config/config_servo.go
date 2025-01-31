@@ -247,11 +247,11 @@ func servoPlanActions() map[string]*Action {
 				"Servod is not needed as on this stage we just verify that servo host is good.",
 				"If start container with servod and root servo device is not connected it will fail.",
 			},
-			Dependencies: []string{
-				"Set state:NO_SSH",
-			},
 			Conditions: []string{
 				"Uses servod container",
+			},
+			Dependencies: []string{
+				"Set state:NO_SSH",
 			},
 			ExecName: "servo_host_servod_init",
 			ExecExtraArgs: []string{

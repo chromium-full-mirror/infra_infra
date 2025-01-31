@@ -22,6 +22,20 @@ func addEnvActions(actions map[string]*Action) {
 			ExecName:   "env_is_not_cloudbot",
 			RunControl: RunControl_RUN_ONCE,
 		},
+		"Is MH": {
+			Docs: []string{
+				"Check that the process is running on MH box.",
+			},
+			ExecName:   "env_is_mh_box",
+			RunControl: RunControl_RUN_ONCE,
+		},
+		"Is not MH": {
+			Docs: []string{
+				"Check that the process is not running on MH box.",
+			},
+			ExecName:   "env_is_not_mh_box",
+			RunControl: RunControl_RUN_ONCE,
+		},
 	}
 	for k, v := range am {
 		if _, ok := actions[k]; ok {
