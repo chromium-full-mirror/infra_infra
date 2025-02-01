@@ -319,6 +319,8 @@
       "[CLEANUP]/tmp_tmp_2",
       "-hash-algo",
       "sha256",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -434,6 +436,8 @@
       "[CLEANUP]/tmp_tmp_3",
       "-hash-algo",
       "sha256",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -765,6 +769,8 @@
       "[CLEANUP]/tmp_tmp_4",
       "-hash-algo",
       "sha256",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -888,6 +894,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/self_dependency/linux-arm64/40-chars-fake-of-the-package-instance_id",
       "-tag",
       "version:2@2.0.0",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -1077,6 +1085,8 @@
       "[CLEANUP]/tmp_tmp_5",
       "-hash-algo",
       "sha256",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -1205,6 +1215,8 @@
       "3pp_ecosystem_hash:5428f29eb8e0873b4b5fd4ad30843f6b867b8ca49f9f22caaab8222bc4ef8841",
       "-tag",
       "version:2@2.0.0",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],

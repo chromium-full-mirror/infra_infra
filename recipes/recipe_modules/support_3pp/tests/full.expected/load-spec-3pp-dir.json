@@ -368,6 +368,8 @@
       "[CLEANUP]/tmp_tmp_2",
       "-hash-algo",
       "sha256",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -491,6 +493,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/script/p_something/package_repo/linux-amd64/40-chars-fake-of-the-package-instance_id",
       "-tag",
       "version:2@2.0.0",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -554,6 +558,8 @@
       "[CLEANUP]/tmp_tmp_3",
       "-hash-algo",
       "sha256",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -682,6 +688,8 @@
       "3pp_ecosystem_hash:c2719ea17aebff53d40f52891cdc3c4758212d89987565de4a740d6c46f8deb2",
       "-tag",
       "version:2@2.0.0",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -1012,6 +1020,8 @@
       "[CLEANUP]/tmp_tmp_4",
       "-hash-algo",
       "sha256",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -1135,6 +1145,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/script/p_something/something/linux-amd64/40-chars-fake-of-the-package-instance_id",
       "-tag",
       "version:2@2.0.0",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -1198,6 +1210,8 @@
       "[CLEANUP]/tmp_tmp_5",
       "-hash-algo",
       "sha256",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -1326,6 +1340,8 @@
       "3pp_ecosystem_hash:c2719ea17aebff53d40f52891cdc3c4758212d89987565de4a740d6c46f8deb2",
       "-tag",
       "version:2@2.0.0",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],

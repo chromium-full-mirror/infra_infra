@@ -92,6 +92,8 @@
       "git_repository:https://chromium.googlesource.com/infra/luci/recipes-py",
       "-tag",
       "git_revision:edcfe0cf57183aad8ad72a82355d966b34ff412c",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],

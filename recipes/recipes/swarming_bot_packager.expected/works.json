@@ -158,6 +158,8 @@
       "git_revision:deadbeef",
       "-tag",
       "luci_build:bucket/builder/123",
+      "-metadata",
+      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
