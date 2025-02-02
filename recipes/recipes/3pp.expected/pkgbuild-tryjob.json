@@ -634,6 +634,10 @@
       "[CACHE]/pkgbuild",
       "-target-platform",
       "linux-amd64",
+      "-update=True",
+      "-build=True",
+      "-upload=False",
+      "-update-source-lock=False",
       "-spec-pool",
       "[CACHE]/builder/0f38554a22313466508b9c8b803b851e8834a1e7/support_3pp"
     ],

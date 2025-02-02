@@ -224,9 +224,12 @@
       "[CACHE]/pkgbuild",
       "-target-platform",
       "linux-amd64",
+      "-update=True",
+      "-build=True",
+      "-upload=True",
+      "-update-source-lock=False",
       "-cipd-service",
       "https://chrome-infra-packages-dev.appspot.com/",
-      "-upload",
       "-spec-pool",
       "[CACHE]/builder/package_repo"
     ],

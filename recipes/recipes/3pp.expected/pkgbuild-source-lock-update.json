@@ -408,9 +408,9 @@
       "-target-platform",
       "linux-amd64",
       "-update=True",
-      "-build=True",
-      "-upload=True",
-      "-update-source-lock=False",
+      "-build=False",
+      "-upload=False",
+      "-update-source-lock=True",
       "-spec-pool",
       "[CACHE]/builder/4fe007e88bd1d4a88e88cc231ab4045dbeee1088/support_3pp"
     ],
@@ -442,6 +442,71 @@
       "@@@STEP_LOG_LINE@step.sub_build@  \"status\": \"SUCCESS\"@@@",
       "@@@STEP_LOG_LINE@step.sub_build@}@@@",
       "@@@STEP_LOG_END@step.sub_build@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "uploading source lock changes"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "RECIPE_REPO[depot_tools]/gerrit_client.py",
+      "changes",
+      "--verbose",
+      "--host",
+      "chromium-review.googlesource.com",
+      "--json_file",
+      "/path/to/tmp/json",
+      "-p",
+      "hashtag=3pp",
+      "-p",
+      "status=open",
+      "-p",
+      "uploader=self"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "PATH": "<PATH>:RECIPE_REPO[depot_tools]"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "project:ci"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "uploading source lock changes.gerrit changes",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@[@@@",
+      "@@@STEP_LOG_LINE@json.output@  {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"_number\": \"91827\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"branch\": \"main\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"change_id\": \"Ideadbeef\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"created\": \"2017-01-30 13:11:20.000000000\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"has_review_started\": false,@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"id\": \"fully~qualified~changeid\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"project\": \"chromium/src\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"revisions\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@      \"184ebe53805e102605d11f6b143486d15c23a09c\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"_number\": \"1\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"commit\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@          \"message\": \"Change commit message\"@@@",
+      "@@@STEP_LOG_LINE@json.output@        }@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    },@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"status\": \"NEW\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"subject\": \"Change title\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@]@@@",
+      "@@@STEP_LOG_END@json.output@@@"
     ]
   },
   {

@@ -110,6 +110,10 @@
       "[CACHE]/pkgbuild",
       "-target-platform",
       "linux-amd64",
+      "-update=True",
+      "-build=True",
+      "-upload=False",
+      "-update-source-lock=False",
       "-spec-pool",
       "[CACHE]/builder/package_repo"
     ],

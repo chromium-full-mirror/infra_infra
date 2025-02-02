@@ -90,13 +90,56 @@ PROPERTIES = {
             kind=bool,
             default=False,
             help=(
-                'Uses pkgbuild for building the packages given in to_build, '
-                'This should only be used for experimenting.')),
+                'Uses pkgbuild for building the packages given in to_build.')),
+    'use_source_lock':
+        Property(
+            kind=bool,
+            default=False,
+            help=(
+                'Uses source lock files for package versions. This will disable '
+                'auto updates for packages. Fail if source lock is unavailable')),
+    'update_source_only':
+        Property(
+            kind=bool,
+            default=False,
+            help=(
+                'Only update the source lock files without actually building '
+                'packages.')),
+    'update_platforms':
+        Property(
+            kind=List(str),
+            default=[],
+            help=(
+                'Platforms that will be updated. By default packages will only '
+                'be updated for build and target platforms.')),
+    'change_gerrit_host':
+        Property(
+            kind=str,
+            default='chromium-review.googlesource.com',
+            help=(
+                'Gerrit host which change list should be uploaded to. This '
+                'will also be used to determine whether there is any ongoing '
+                'Changes need to be settled first.')),
+    'change_tag':
+        Property(
+            kind=str,
+            default='3pp',
+            help=(
+                'Gerrit tag to be used in the change list. The tag also being '
+                'used to search for ongoing changes.')),
+    'change_trigger_commit':
+        Property(
+            kind=bool,
+            default=False,
+            help=(
+                'Trigger commit for the uploaded change list.')),
 }
 
 
 def RunSteps(api, package_locations, to_build, platform, force_build,
-             package_prefix, source_cache_prefix, use_pkgbuild):
+             package_prefix, source_cache_prefix, use_pkgbuild,
+             use_source_lock, update_source_only, update_platforms,
+             change_gerrit_host, change_tag, change_trigger_commit):
   if api.tryserver.is_tryserver:
     revision = api.tryserver.gerrit_change_fetch_ref
     force_build = True  # Disallow uploading packages from tryjobs
@@ -137,7 +180,8 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
     api.support_3pp.set_source_cache_prefix(source_cache_prefix)
 
     if use_pkgbuild:
-      spec_pools =  []
+      spec_pools = []
+      checkout_paths = set()
       actual_repos = set()
       rebuild_pkgbuild = False
       with api.step.nest('checkout repos containing package specs'):
@@ -154,6 +198,7 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
           api.git.checkout(repo, ref, checkout_path, submodules=False)
 
           spec_pools.append(checkout_path / subdir)
+          checkout_paths.add(checkout_path)
 
           if api.tryserver.is_tryserver:
             pkgbuild_changed_files = api.git(
@@ -175,9 +220,17 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
           spec_pools,
           to_build,
           platform,
-          upload=not api.tryserver.is_tryserver,
+          build=not update_source_only,
+          update=not use_source_lock or update_source_only,
+          upload=not api.tryserver.is_tryserver and not update_source_only,
+          update_platforms=update_platforms,
+          update_source_lock=update_source_only,
           rebuild_pkgbuild=rebuild_pkgbuild,
       )
+
+      if update_source_only and not api.tryserver.is_tryserver:
+        with api.step.nest('uploading source lock changes'):
+          api.support_3pp.roll_source_lock(checkout_paths, change_gerrit_host, change_tag, [], change_trigger_commit)
     else:
       actual_repos = set()
       tryserver_affected_files = []
@@ -270,6 +323,13 @@ def GenTests(api):
          api.step_data(
              'build packages (pkgbuild)',
              api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS))))
+
+  yield (api.test('pkgbuild-source-lock-update') + defaults() +
+         api.properties(use_pkgbuild=True, update_source_only=True) +
+         api.step_data(
+             'build packages (pkgbuild)',
+             api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS))) +
+         api.buildbucket.ci_build(experiments=['security.snoopy']))
 
   pkgs = sorted(dict(
     pkg_a='''

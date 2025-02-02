@@ -225,9 +225,13 @@
       "-target-platform",
       "linux-amd64",
       "-update=True",
-      "-build=True",
-      "-upload=True",
-      "-update-source-lock=False",
+      "-build=False",
+      "-upload=False",
+      "-update-source-lock=True",
+      "-update-source-platform",
+      "linux-amd64",
+      "-update-source-platform",
+      "mac-amd64",
       "-spec-pool",
       "[CACHE]/builder/package_repo"
     ],
@@ -247,6 +251,72 @@
       "@@@STEP_LOG_LINE@step.sub_build@  \"status\": \"SUCCESS\"@@@",
       "@@@STEP_LOG_LINE@step.sub_build@}@@@",
       "@@@STEP_LOG_END@step.sub_build@@@"
+    ]
+  },
+  {
+    "cmd": [],
+    "name": "uploading source lock changes"
+  },
+  {
+    "cmd": [
+      "vpython3",
+      "RECIPE_REPO[depot_tools]/gerrit_client.py",
+      "changes",
+      "--verbose",
+      "--host",
+      "chromium-review.googlesource.com",
+      "--json_file",
+      "/path/to/tmp/json",
+      "-p",
+      "hashtag=3pp",
+      "-p",
+      "status=open",
+      "-p",
+      "uploader=self"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "PATH": "<PATH>:RECIPE_REPO[depot_tools]"
+    },
+    "infra_step": true,
+    "name": "uploading source lock changes.gerrit changes",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@",
+      "@@@STEP_LOG_LINE@json.output@{}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "add",
+      "-A"
+    ],
+    "cwd": "[CACHE]/builder/package_repo",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "infra_step": true,
+    "name": "uploading source lock changes.git add",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
+    ]
+  },
+  {
+    "cmd": [
+      "git",
+      "diff",
+      "--name-only",
+      "HEAD"
+    ],
+    "cwd": "[CACHE]/builder/package_repo",
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "infra_step": true,
+    "name": "uploading source lock changes.git diff",
+    "~followup_annotations": [
+      "@@@STEP_NEST_LEVEL@1@@@"
     ]
   },
   {

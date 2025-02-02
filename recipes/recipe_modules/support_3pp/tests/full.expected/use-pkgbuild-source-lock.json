@@ -224,7 +224,7 @@
       "[CACHE]/pkgbuild",
       "-target-platform",
       "linux-amd64",
-      "-update=True",
+      "-update=False",
       "-build=True",
       "-upload=True",
       "-update-source-lock=False",

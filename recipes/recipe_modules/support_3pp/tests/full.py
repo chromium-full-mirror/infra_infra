@@ -41,11 +41,22 @@ PROPERTIES = {
     'to_build': Property(kind=List(str), default=[]),
     'tryserver_affected_files': Property(kind=List(str), default=[]),
     'use_pkgbuild': Property(kind=bool, default=False),
+    'use_source_lock': Property(kind=bool, default=False),
+    'update_source_only': Property(kind=bool, default=False),
+    'update_platforms': Property(kind=List(str), default=[]),
+    'change_gerrit_host': Property(
+        kind=str,
+        default='chromium-review.googlesource.com'),
+    'change_tag': Property(kind=str, default='3pp'),
+    'change_trigger_commit': Property(kind=bool, default=False),
 }
 
 
 def RunSteps(api, GOOS, GOARCH, experimental, load_dupe, package_prefix,
-             source_cache_prefix, to_build, tryserver_affected_files, use_pkgbuild):
+             source_cache_prefix, to_build, tryserver_affected_files,
+             use_pkgbuild, use_source_lock, update_source_only,
+             update_platforms, change_gerrit_host, change_tag,
+             change_trigger_commit):
   # set a cache directory to be similar to what the actual 3pp recipe does.
   # TODO(iannucci): just move the 3pp recipe into the recipe_module here...
   with api.cipd.cache_dir(api.path.mkdtemp()):
@@ -66,7 +77,6 @@ def RunSteps(api, GOOS, GOARCH, experimental, load_dupe, package_prefix,
 
     if use_pkgbuild:
       kargs = {
-        'upload': not api.tryserver.is_tryserver,
         'rebuild_pkgbuild': not api.tryserver.is_tryserver,
       }
       if experimental:
@@ -76,8 +86,17 @@ def RunSteps(api, GOOS, GOARCH, experimental, load_dupe, package_prefix,
           [checkout_path],
           to_build,
           cipd_platform,
+          build=not update_source_only,
+          update=not use_source_lock or update_source_only,
+          upload=not api.tryserver.is_tryserver and not update_source_only,
+          update_platforms=update_platforms,
+          update_source_lock=update_source_only,
           **kargs,
       )
+
+      if update_source_only and not api.tryserver.is_tryserver:
+        with api.step.nest('uploading source lock changes'):
+          api.support_3pp.roll_source_lock([checkout_path], change_gerrit_host, change_tag, [], change_trigger_commit)
       return
 
     # Legacy 3pp recipe
@@ -587,8 +606,7 @@ def GenTests(api):
   )
 
   # Test pkgbuild
-  yield (api.test('use-pkgbuild')
-      + api.properties(GOOS='linux', GOARCH='amd64', use_pkgbuild=True)
+  pkgbuild_base = (api.properties(GOOS='linux', GOARCH='amd64', use_pkgbuild=True)
       + api.step_data(
           'build packages (pkgbuild)',
           api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS)))
@@ -597,25 +615,40 @@ def GenTests(api):
           mk_name("build packages (pkgbuild)"))
   )
 
-  yield (api.test('use-pkgbuild-experimental')
-      + api.properties(GOOS='linux', GOARCH='amd64', use_pkgbuild=True, experimental=True)
-      + api.step_data(
-          'build packages (pkgbuild)',
-          api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS)))
-      + api.post_process(
-          post_process.MustRun,
-          mk_name("build packages (pkgbuild)"))
+  yield (api.test('use-pkgbuild') + pkgbuild_base)
+  yield (api.test('use-pkgbuild-experimental') + pkgbuild_base
+      + api.properties(experimental=True)
   )
-
-  yield (api.test('use-pkgbuild-tryjob')
-      + api.properties(GOOS='linux', GOARCH='amd64', use_pkgbuild=True)
+  yield (api.test('use-pkgbuild-tryjob') + pkgbuild_base
       + api.buildbucket.try_build('infra')
+  )
+
+  source_lock_base = pkgbuild_base + api.properties(use_source_lock=True)
+  yield (api.test('use-pkgbuild-source-lock') + source_lock_base)
+  source_lock_update_base = source_lock_base + api.properties(
+      update_source_only=True,
+      update_platforms=['linux-amd64', 'mac-amd64'])
+  yield (api.test('use-pkgbuild-source-lock-update-ongoing') + source_lock_update_base)
+  yield (api.test('use-pkgbuild-source-lock-update-nodiff') + source_lock_update_base
+    + api.override_step_data(
+          'uploading source lock changes.gerrit changes',
+          api.json.output({}))
+  )
+  souce_lock_update_changed = (source_lock_update_base
+      + api.override_step_data(
+            'uploading source lock changes.gerrit changes',
+            api.json.output({}))
       + api.step_data(
-          'build packages (pkgbuild)',
-          api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS)))
+            "uploading source lock changes.git diff",
+            api.raw_io.stream_output_text('something.lock'))
       + api.post_process(
-          post_process.MustRun,
-          mk_name("build packages (pkgbuild)"))
+            post_process.MustRun,
+            mk_name("uploading source lock changes.git cl upload"))
+  )
+  yield (api.test('use-pkgbuild-source-lock-update') + souce_lock_update_changed)
+  yield (api.test('use-pkgbuild-source-lock-update-mismatch', status='FAILURE')
+      + souce_lock_update_changed
+      + api.properties(change_gerrit_host="otherhost")
   )
 
   yield (api.test('empty-spec', status='FAILURE') +
