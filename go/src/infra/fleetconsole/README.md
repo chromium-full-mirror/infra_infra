@@ -9,9 +9,34 @@ unified UI for managing machines in the fleet.
 
 From the root directory for this repo.
 
-```sh
-docker compose up -d # To start a local db instance
+### Setup local db
 
+First start the db using docker docker:
+```sh
+docker compose up -d
+```
+
+The database is blank when the container first spins up. To set up the database,
+first create a virtualenv and install Alembic database migration tool:
+
+```bash
+python -m venv venv
+
+source venv/bin/activate
+
+pip install -r requirements.txt
+```
+
+The necessary tools to manage the Postgres or AlloyDB database are installed.
+
+You can now apply the migrations:
+```ssh
+alembic upgrade head
+```
+
+### Run the web server
+
+```sh
 go build ./cmd/fleetconsoleserver
 ./fleetconsoleserver
 ```
