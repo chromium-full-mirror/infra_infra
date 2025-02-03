@@ -39,21 +39,27 @@ func generateProvisionRequests(req *api.InternalTestplan, specs *FirmwareSpecs) 
 		hwDef := suiteMetadata.GetTargetRequirements()[0].GetHwRequirements().GetHwDefinition()
 		if len(hwDef) > 0 {
 			swarmingDef := hwDef[0]
-			dynamicHelper.GenerateProvisionRequest(req, swarmingDef)
+			if err := dynamicHelper.GenerateProvisionRequest(req, swarmingDef); err != nil {
+				return err
+			}
 		}
 	}
 
 	// TODO (oldProto-azrahman): remove when schedulingOptions is fully rolled.
 	if len(suiteMetadata.GetSchedulingUnits()) > 0 {
 		for _, schedulingUnit := range suiteMetadata.GetSchedulingUnits() {
-			generateProvisionRequestForSchedUnit(schedulingUnit, req, dynamicHelper)
+			if err := generateProvisionRequestForSchedUnit(schedulingUnit, req, dynamicHelper); err != nil {
+				return err
+			}
 		}
 	}
 
 	if len(suiteMetadata.GetSchedulingUnitOptions()) > 0 {
 		for _, schedOption := range suiteMetadata.GetSchedulingUnitOptions() {
 			for _, schedulingUnit := range schedOption.GetSchedulingUnits() {
-				generateProvisionRequestForSchedUnit(schedulingUnit, req, dynamicHelper)
+				if err := generateProvisionRequestForSchedUnit(schedulingUnit, req, dynamicHelper); err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -61,14 +67,19 @@ func generateProvisionRequests(req *api.InternalTestplan, specs *FirmwareSpecs) 
 	return nil
 }
 
-func generateProvisionRequestForSchedUnit(schedUnit *api.SchedulingUnit, req *api.InternalTestplan, dynamicHelper *DynamicFirmwareProvisionHelper) {
+func generateProvisionRequestForSchedUnit(schedUnit *api.SchedulingUnit, req *api.InternalTestplan, dynamicHelper *DynamicFirmwareProvisionHelper) error {
 	swarmingDef := schedUnit.GetPrimaryTarget().GetSwarmingDef()
-	dynamicHelper.GenerateProvisionRequest(req, swarmingDef)
+	if err := dynamicHelper.GenerateProvisionRequest(req, swarmingDef); err != nil {
+		return err
+	}
 
 	for _, companion := range schedUnit.GetCompanionTargets() {
 		swarmingDef := companion.GetSwarmingDef()
-		dynamicHelper.GenerateProvisionRequest(req, swarmingDef)
+		if err := dynamicHelper.GenerateProvisionRequest(req, swarmingDef); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 // generateDynamicUpdateLookupTables populates the lookup table for the primary

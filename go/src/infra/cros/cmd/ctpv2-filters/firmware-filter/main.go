@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -88,7 +89,7 @@ func (specs *FirmwareSpecs) executor(req *api.InternalTestplan, log *log.Logger,
 		for {
 			var r FirmwareBranchBuild
 			err := iter.Next(&r)
-			if err == iterator.Done {
+			if errors.Is(err, iterator.Done) {
 				break
 			}
 			if err != nil {

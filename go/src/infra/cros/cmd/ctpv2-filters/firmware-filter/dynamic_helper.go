@@ -73,18 +73,18 @@ func (DH *DynamicFirmwareProvisionHelper) ApplyFirmwareProvisionToLookup(lookupT
 func (DH *DynamicFirmwareProvisionHelper) GenerateProvisionRequest(req *api.InternalTestplan, swarmingDef *api.SwarmingDefinition) error {
 	switch swarmingDef.GetDutInfo().GetDutType().(type) {
 	case *dut_api.Dut_Chromeos:
-		deviceId := common.NewPrimaryDeviceIdentifier()
+		deviceID := common.NewPrimaryDeviceIdentifier()
 		if DH.count > 0 {
-			deviceId = common.NewCompanionDeviceIdentifier(helpers.Board.WithIndex(DH.count).AsPlaceholder())
+			deviceID = common.NewCompanionDeviceIdentifier(helpers.Board.WithIndex(DH.count).AsPlaceholder())
 		}
-		taskId := common.NewTaskIdentifier(CrosFwProvision).AddDeviceId(deviceId)
+		taskID := common.NewTaskIdentifier(CrosFwProvision).AddDeviceId(deviceID)
 		containerBuilders := []*builders.ContainerBuilder{
-			helpers.NewCrosDutContainer(deviceId),
-			newFirmwareProvisionContainer(taskId),
+			helpers.NewCrosDutContainer(deviceID),
+			newFirmwareProvisionContainer(taskID),
 		}
 
 		return helpers.GenerateProvisionRequest(
-			req, taskId, deviceId,
+			req, taskID, deviceID,
 			containerBuilders,
 			DH.newFirmwareInstallRequest(),
 		)
@@ -121,9 +121,9 @@ func (DH *DynamicFirmwareProvisionHelper) newFirmwareInstallRequest() *interface
 
 // newFirmwareProvisionContainer creates a default generic container
 // to run the cros-fw-provision container.
-func newFirmwareProvisionContainer(taskId *common.TaskIdentifier) *builders.ContainerBuilder {
+func newFirmwareProvisionContainer(taskID *common.TaskIdentifier) *builders.ContainerBuilder {
 	container := builders.NewContainerBuilder(
-		taskId.Id, CrosFwProvision, "",
+		taskID.Id, CrosFwProvision, "",
 		CrosFwProvisionArtifactDir,
 		fmt.Sprintf("%s %s", CrosFwProvision, CrosFwProvisionArgs),
 	)
