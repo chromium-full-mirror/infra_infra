@@ -88,9 +88,6 @@ func (s *SSHConnector) Connect(ctx context.Context, addr string, config *ssh.Cli
 		}
 	}
 
-	// We wait for every go routines we created
-	wg.Wait()
-
 	// Do the final check. If we can't get the client back, or reach
 	// the context deadline. It should reach the max retry.
 	select {
