@@ -6,6 +6,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"log"
@@ -286,19 +287,44 @@ func getLocalSSDQuotas(ctx context.Context, project string, quotasPerRegion map[
 }
 
 func getNetworkQuotas(ctx context.Context, project string) map[string]*quotaVals {
-	// Get the number of instances per network. Also need to query a quota
-	// metric for this.
-	client, err := monitoring.NewMetricClient(ctx)
+	// Get the number of instances per network. GCE's monitoring API refers to
+	// networks by their ID while while gce-provider uses their name. So need
+	// to build a mapping between the two.
+	networkClient, err := compute.NewNetworksRESTClient(ctx)
 	if err != nil {
 		log.Fatalln(err)
 	}
 	defer func() {
-		if err = client.Close(); err != nil {
+		if err = networkClient.Close(); err != nil {
 			log.Fatalln(err)
 		}
 	}()
+
+	metricClient, err := monitoring.NewMetricClient(ctx)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer func() {
+		if err = metricClient.Close(); err != nil {
+			log.Fatalln(err)
+		}
+	}()
+
 	quotasPerNetwork := make(map[string]*quotaVals)
-	timeSeriesIterator := queryTimeSeriesQuota(ctx, client, "instances_per_vpc_network/limit", project)
+	networkIDToName := make(map[uint64]string)
+	req := &computepb.ListNetworksRequest{
+		Project: project,
+	}
+	it := networkClient.List(ctx, req)
+	for {
+		resp, err := it.Next()
+		if errors.Is(err, iterator.Done) {
+			break
+		}
+		networkIDToName[*resp.Id] = *resp.Name
+	}
+
+	timeSeriesIterator := queryTimeSeriesQuota(ctx, metricClient, "instances_per_vpc_network/limit", project)
 	for {
 		timeSeriesResp, err := timeSeriesIterator.Next()
 		if err == iterator.Done {
@@ -307,29 +333,20 @@ func getNetworkQuotas(ctx context.Context, project string) map[string]*quotaVals
 		if err != nil {
 			log.Fatalln(err)
 		}
-		var networkName string
 		for labelKey, labelVal := range timeSeriesResp.Resource.Labels {
-			// Need to map network ID to network name since GCE's
-			// monitoring API uses the former while gce-provider
-			// uses the latter.
-			// FIXME: Get this mapping by querying the project?
 			if labelKey == "network_id" {
-				switch labelVal {
-				case "655963314494161580":
-					networkName = "c10"
-				case "2688805488330601365":
-					networkName = "c4"
-				case "13012605346896030474":
-					networkName = "default"
-				case "2893051718470468954":
-					networkName = "crbug1320004-test-network"
-				default:
+				labelValInt, err := strconv.ParseUint(labelVal, 10, 64)
+				if err != nil {
+					log.Fatalln("Uknown network ID format: ", labelVal)
+				}
+				networkName, ok := networkIDToName[labelValInt]
+				if !ok {
 					log.Fatalln("Unknown network id: ", labelVal)
 				}
+				quotasPerNetwork[networkName] = &quotaVals{max: timeSeriesResp.Points[0].Value.GetInt64Value(), desc: "Instances in network " + networkName}
 				break
 			}
 		}
-		quotasPerNetwork[networkName] = &quotaVals{max: timeSeriesResp.Points[0].Value.GetInt64Value(), desc: "Instances in network " + networkName}
 	}
 	return quotasPerNetwork
 }
@@ -365,7 +382,12 @@ func parseCfgFiles(project string, cfgPaths []string, regionNames []string, quot
 		}
 		network := config.Attributes.NetworkInterface[0].Network
 		network, _ = strings.CutPrefix(network, "global/networks/")
-		quotasPerNetwork[network].used += int64(maxInstances)
+		networkQuota, ok := quotasPerNetwork[network]
+		if ok {
+			// Some networks don't have a limit, in which case GCE's quota API won't
+			// have reported anything about it.
+			networkQuota.used += int64(maxInstances)
+		}
 
 		// Get IP address
 		if len(config.Attributes.NetworkInterface[0].AccessConfig) > 1 {

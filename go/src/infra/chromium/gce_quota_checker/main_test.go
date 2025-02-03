@@ -161,6 +161,9 @@ func TestParseCfgFiles(t *testing.T) {
 			generateVMConfig("project", zone, 1, network1, "g1-small"),
 			generateVMConfig("project", zone, 1, network1, "g1-small"),
 			generateVMConfig("project", zone, 1, network2, "g1-small"),
+			// Instances for "random-network" should be gracefully
+			// ignored since GCE didn't report a quota for it.
+			generateVMConfig("project", zone, 1, "random-network", "g1-small"),
 		}
 		configPaths := writeConfigs(t, configs...)
 
