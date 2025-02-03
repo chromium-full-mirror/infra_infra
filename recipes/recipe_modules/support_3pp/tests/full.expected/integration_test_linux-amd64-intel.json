@@ -2055,8 +2055,6 @@
       "[CLEANUP]/tmp_tmp_2",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -2483,8 +2481,6 @@
       "[CLEANUP]/tmp_tmp_3",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -3051,8 +3047,6 @@
       "[CLEANUP]/tmp_tmp_4",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -3477,8 +3471,6 @@
       "[CLEANUP]/tmp_tmp_5",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -4191,8 +4183,6 @@
       "[CLEANUP]/tmp_tmp_7",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -4858,8 +4848,6 @@
       "[CLEANUP]/tmp_tmp_8",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -5122,8 +5110,6 @@
       "[CLEANUP]/tmp_tmp_9",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -5639,8 +5625,6 @@
       "[CLEANUP]/tmp_tmp_10",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -6065,8 +6049,6 @@
       "[CLEANUP]/tmp_tmp_11",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -7072,8 +7054,6 @@
       "[CLEANUP]/tmp_tmp_14",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -7665,8 +7645,6 @@
       "[CLEANUP]/tmp_tmp_15",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -8091,8 +8069,6 @@
       "[CLEANUP]/tmp_tmp_16",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -9007,8 +8983,6 @@
       "[CLEANUP]/tmp_tmp_17",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -9600,8 +9574,6 @@
       "[CLEANUP]/tmp_tmp_18",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -10704,8 +10676,6 @@
       "[CLEANUP]/tmp_tmp_19",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -11295,8 +11265,6 @@
       "[CLEANUP]/tmp_tmp_20",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -12659,8 +12627,6 @@
       "[CLEANUP]/tmp_tmp_22",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -13398,8 +13364,6 @@
       "[CLEANUP]/tmp_tmp_23",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -14014,8 +13978,6 @@
       "[CLEANUP]/tmp_tmp_24",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -14753,8 +14715,6 @@
       "[CLEANUP]/tmp_tmp_25",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -15369,8 +15329,6 @@
       "[CLEANUP]/tmp_tmp_26",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -16061,8 +16019,6 @@
       "[CLEANUP]/tmp_tmp_27",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -16677,8 +16633,6 @@
       "[CLEANUP]/tmp_tmp_28",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -17416,8 +17370,6 @@
       "[CLEANUP]/tmp_tmp_29",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -18034,8 +17986,6 @@
       "[CLEANUP]/tmp_tmp_30",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],

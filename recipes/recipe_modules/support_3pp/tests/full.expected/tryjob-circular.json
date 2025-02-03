@@ -505,8 +505,6 @@
       "[CLEANUP]/tmp_tmp_2",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -670,8 +668,6 @@
       "[CLEANUP]/tmp_tmp_3",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -1093,8 +1089,6 @@
       "[CLEANUP]/tmp_tmp_4",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -1458,8 +1452,6 @@
       "[CLEANUP]/tmp_tmp_5",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],

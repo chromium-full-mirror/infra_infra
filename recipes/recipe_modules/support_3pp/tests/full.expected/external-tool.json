@@ -443,8 +443,6 @@
       "[CLEANUP]/tmp_tmp_3",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -759,8 +757,6 @@
       "[CLEANUP]/tmp_tmp_4",
       "-hash-algo",
       "sha256",
-      "-metadata",
-      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
