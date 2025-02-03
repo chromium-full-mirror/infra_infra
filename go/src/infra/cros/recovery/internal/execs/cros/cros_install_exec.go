@@ -6,12 +6,14 @@ package cros
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/dutstate"
+	"infra/cros/recovery/internal/components/cft"
 	"infra/cros/recovery/internal/components/cros"
 	"infra/cros/recovery/internal/components/cros/firmware"
 	"infra/cros/recovery/internal/components/cros/storage"
@@ -19,6 +21,7 @@ import (
 	"infra/cros/recovery/internal/log"
 	"infra/cros/recovery/internal/retry"
 	"infra/cros/recovery/logger/metrics"
+	"infra/cros/recovery/version"
 )
 
 // Boot device from servo USB drive when device is in DEV mode.
@@ -258,6 +261,95 @@ func installFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.Exec
 	return nil
 }
 
+func crosProvisionActionsFromUSBDriveInRecoveryModeExec(ctx context.Context, info *execs.ExecInfo) error {
+	am := info.GetActionArgs(ctx)
+	dut := info.GetDut()
+	dutHa := info.NewHostAccess(dut.Name)
+	dutRun := info.NewRunner(dut.Name)
+	dutBackgroundRun := info.NewBackgroundRunner(dut.Name)
+	dutPing := info.NewPinger(dut.Name)
+	servod := info.NewServod()
+	bootedInrecoveryMode := "no"
+	finishedOSInstall := "no"
+	defer func() {
+		info.AddObservation(metrics.NewStringObservation("bootedInrecoveryMode", bootedInrecoveryMode))
+		info.AddObservation(metrics.NewStringObservation("finishedOSInstall", finishedOSInstall))
+	}()
+
+	androidInstall := am.AsBool(ctx, "run_android_install", false)
+	crosInstall := am.AsBool(ctx, "run_cros_install", false)
+	var installCMD string
+	if androidInstall || crosInstall {
+		recoveryVerion, err := version.ByDut(ctx, dut)
+		if err != nil {
+			return errors.Annotate(err, "cros provision actions in recovery mode").Err()
+		}
+		log.Debugf(ctx, "Received vresoin: %v", recoveryVerion)
+		var cachingIPAddr string
+		if addr, err := cft.CacheServiceAddressFromScope(ctx); err != nil {
+			return errors.Annotate(err, "cros provision actions in recovery mode").Err()
+		} else if addr.GetAddress() != "" {
+			cachingIPAddr = addr.GetAddress()
+		} else {
+			return errors.Reason("cros provision actions in recovery mode: cache address not found").Err()
+		}
+		if androidInstall {
+			osVersion := recoveryVerion.GetOsVersion()
+			board := dut.GetBoard()
+			installCMD = fmt.Sprintf("al-install android-build/builds/%s/%s-trunk_staging-eng/attempts/latest/artifacts/android-desktop_image.bin.gz %s", osVersion, board, cachingIPAddr)
+		} else if crosInstall {
+			osImagePath := recoveryVerion.GetOsImagePath()
+			installCMD = fmt.Sprintf("cros-install chromeos-image-archive/%s %s", osImagePath, cachingIPAddr)
+		}
+	}
+
+	callback := func(_ context.Context) error {
+		// On Android everything tries to use ADB, so switch to Chrome OS to be able to use SSH access.
+		cacheIsAndroid := dut.GetChromeos().GetIsAndroidBased()
+		dut.GetChromeos().IsAndroidBased = false
+		defer func() {
+			dut.GetChromeos().IsAndroidBased = cacheIsAndroid
+		}()
+
+		bootedInrecoveryMode = "yes"
+		if androidInstall || crosInstall {
+			installTimeout := am.AsDuration(ctx, "install_timeout", 600, time.Second)
+			if _, err := dutRun(ctx, installTimeout, installCMD); err != nil {
+				finishedOSInstall = "failed"
+				log.Debugf(ctx, "Install from provision image failed: %s", err)
+				return errors.Annotate(err, "install from provision image").Err()
+			} else {
+				log.Debugf(ctx, "Install from USB drive: finished install process")
+				finishedOSInstall = "yes"
+			}
+		}
+		return nil
+	}
+	req := &cros.BootInRecoveryRequest{
+		DUT:             dut,
+		BootRetry:       am.AsInt(ctx, "boot_retry", 1),
+		BootTimeout:     am.AsDuration(ctx, "boot_timeout", 480, time.Second),
+		BootInterval:    am.AsDuration(ctx, "boot_interval", 10, time.Second),
+		PreventPowerSnk: am.AsBool(ctx, "prevent_power_snk", false),
+		// Register that device booted and sshable.
+		Callback:            callback,
+		AddObservation:      info.AddObservation,
+		IgnoreRebootFailure: am.AsBool(ctx, "ignore_reboot_failure", false),
+		// After reboot action settings.
+		AfterRebootVerify:             am.AsBool(ctx, "after_reboot_check", false),
+		AfterRebootTimeout:            am.AsDuration(ctx, "after_reboot_timeout", 150, time.Second),
+		AfterRebootAllowUseServoReset: am.AsBool(ctx, "after_reboot_allow_use_servo_reset", false),
+	}
+	if err := cros.BootInRecoveryMode(ctx, req, dutRun, dutBackgroundRun, dutPing, dutHa, servod, log.Get(ctx)); err != nil {
+		return errors.Annotate(err, "cros provision actions in recovery mode").Err()
+	}
+	// Time to wait DUT boot up from post installation.
+	postInstallationBootTime := am.AsDuration(ctx, "post_install_boot_time", 1, time.Second)
+	log.Debugf(ctx, "Wait %s for DUT to boot up.", postInstallationBootTime)
+	time.Sleep(postInstallationBootTime)
+	return nil
+}
+
 // isTimeToForceDownloadImageToUsbKeyExec verifies if we want to force download image to usbkey.
 //
 // @params: actionArgs should be in the format of:
@@ -288,5 +380,6 @@ func init() {
 	execs.Register("cros_dev_mode_boot_from_servo_usb_drive", devModeBootFromServoUSBDriveExec)
 	execs.Register("cros_run_chromeos_install_command_after_boot_usbdrive", runChromeosInstallCommandWhenBootFromUSBDriveExec)
 	execs.Register("cros_install_in_recovery_mode", installFromUSBDriveInRecoveryModeExec)
+	execs.Register("cros_provision_actions_from_recovery_mode", crosProvisionActionsFromUSBDriveInRecoveryModeExec)
 	execs.Register("cros_is_time_to_force_download_image_to_usbkey", isTimeToForceDownloadImageToUsbKeyExec)
 }

@@ -94,26 +94,21 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		}
 	}
 	log.Debugf("Servo OS Install Repair: needSink :%t", needSink)
-	restoreServoState := func() error {
+	restoreStates := func() error {
 		log.Debugf("Boot in recovery mode: recover servo states...")
-		// Register turn off for the DUT if at the end.
+		// Turn on the DUT at the end in case it was not.
 		// All errors just logging as the action to clean up the state.
-		if needSink {
-			if err := servo.SetPDRole(ctx, servod, servo.PD_ON, false); err != nil {
-				log.Debugf("Restore PD for DUT failed: %s", err)
-			}
+		if err := servo.SetPDRole(ctx, servod, servo.PD_ON); err != nil {
+			log.Debugf("Restore PD for DUT failed: %s", err)
 		}
 		// Waiting 10 seconds for USB re-enumerate after PD role switch.
 		time.Sleep(10 * time.Second)
 		if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueOFF); err != nil {
-			return errors.Annotate(err, "boot in recovery mode").Err()
+			log.Debugf("Turn off DUT failed: %s", err)
 		}
 		if err := servo.UpdateUSBVisibility(ctx, servo.USBVisibleOff, servod); err != nil {
 			log.Debugf("Turn off USB drive on servo failed: %s", err)
 		}
-		return nil
-	}
-	restoreDUTState := func() error {
 		// Waiting 10 seconds before turn it on as the device can be still in transition to off.
 		time.Sleep(10 * time.Second)
 		if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueON); err != nil {
@@ -126,20 +121,10 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 	}
 	// Always restore servo state by the end!
 	defer func() {
-		if err := restoreServoState(); err != nil {
+		if err := restoreStates(); err != nil {
 			log.Debugf("Boot in recovery mode: %s", err)
 			// Don't override the original error.
 			if !req.IgnoreServoRestoreFailure && rErr == nil {
-				// We cannot return it, so we set it.
-				// If we fail when restored the states then we have issues.
-				rErr = err
-				return
-			}
-		}
-		if err := restoreDUTState(); err != nil {
-			log.Debugf("Boot in recovery mode: %s", err)
-			// Don't override the original error.
-			if !req.IgnoreRebootFailure && rErr == nil {
 				// We cannot return it, so we set it.
 				// If we fail when restored the states then we have issues.
 				rErr = err
@@ -150,7 +135,7 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		if rErr == nil && req.AfterRebootVerify {
 			log.Debugf("Boot in recovery mode: starting verification of the boot...")
 			for {
-				if err := WaitUntilSSHable(ctx, req.AfterRebootTimeout, req.BootInterval, dutRun); err != nil {
+				if err := WaitUntilAccessible(ctx, req.AfterRebootTimeout, req.BootInterval, dutRun, dutPing); err != nil {
 					if req.AfterRebootAllowUseServoReset {
 						req.AfterRebootAllowUseServoReset = false
 						if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueReset); err != nil {
@@ -168,6 +153,13 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		}
 	}()
 	retryBootFunc := func() error {
+		// On Android everything tries to use ADB, so switch to Chrome OS to be able to use SSH access.
+		cacheIsAndroid := req.DUT.GetChromeos().GetIsAndroidBased()
+		req.DUT.GetChromeos().IsAndroidBased = false
+		defer func() {
+			req.DUT.GetChromeos().IsAndroidBased = cacheIsAndroid
+		}()
+
 		log.Infof("Boot in Recovery Mode: starting retry...")
 		// Turn power off.
 		if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueOFF); err != nil {
@@ -181,7 +173,7 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		// Step 2. For servo V4, switch power delivery to sink mode. c.f.:
 		// crbug.com/1129165.
 		if needSink {
-			if err := servo.SetPDRole(ctx, servod, servo.PD_OFF, false); err != nil {
+			if err := servo.SetPDRole(ctx, servod, servo.PD_OFF); err != nil {
 				return errors.Annotate(err, "retry boot").Err()
 			}
 		}
@@ -192,12 +184,22 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 			log.Debugf("Boot in Recovery Mode: Failure when trying to set power_state:rec with error: %s", err)
 		}
 		log.Debugf("Boot in Recovery Mode: Waiting to device to be SSH-able.")
-		if err := WaitUntilSSHable(ctx, req.BootTimeout, req.BootInterval, dutRun); err != nil {
+		if err := WaitUntilAccessible(ctx, req.BootTimeout, req.BootInterval, dutRun, dutPing); err != nil {
 			return errors.Annotate(err, "retry boot").Err()
 		}
-		if err := storage.IsBootedFromExternalStorage(ctx, dutRun); err != nil {
-			log.Infof("Device booted from internal storage.")
-			return errors.Annotate(err, "retry boot").Err()
+		if cacheIsAndroid {
+			// With Android we can SSH only to the provision image.
+			// The provision image is very limited and does not have many tools.
+		} else {
+			if err := storage.IsBootedFromExternalStorage(ctx, dutRun); err != nil {
+				log.Infof("Device booted from internal storage.")
+				return errors.Annotate(err, "retry boot").Err()
+			}
+			// List information about block devices.
+			// This informcation helps to understand which devices present and visible on the DUT.
+			if _, err := dutRun(ctx, 10*time.Second, "lsblk"); err != nil {
+				log.Infof("Fail to list device of the DUT: %s", err)
+			}
 		}
 		log.Infof("Device successfully booted in recovery mode from USB-drive.")
 		return nil
@@ -207,11 +209,6 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 	}
 	if req.Callback != nil {
 		log.Infof("Boot in recovery mode: passing control to call back.")
-		// List information about block devices.
-		// This informcation helps to understand which devices present and visible on the DUT.
-		if _, err := dutRun(ctx, 10*time.Second, "lsblk"); err != nil {
-			log.Infof("Fail to list device of the DUT: %s", err)
-		}
 		if err := req.Callback(ctx); err != nil {
 			return errors.Annotate(err, "boot in recovery mode: callback").Err()
 		}

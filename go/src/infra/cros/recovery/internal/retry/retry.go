@@ -23,9 +23,6 @@ func LoopBreakTag() errors.BoolTag {
 	return stopRetryLoopTag
 }
 
-// TODO(otabek@): Need to pass logger interface.
-// Note: Context is required for all retries and will be used with new logger in further CLs.
-
 // WithTimeout retries execute function in giving time duration.
 //
 // Example: Check if device is reachable, try during 1 hour with intervals 2 seconds.

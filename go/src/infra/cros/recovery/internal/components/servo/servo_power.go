@@ -6,7 +6,6 @@ package servo
 
 import (
 	"context"
-	"fmt"
 
 	"go.chromium.org/luci/common/errors"
 
@@ -65,20 +64,11 @@ var (
 
 // SetPDRole sets the power-delivery role for servo to the passed
 // role-value if the power-delivery control is supported by servod.
-func SetPDRole(ctx context.Context, servod components.Servod, role PDRole, pd_required bool) error {
-	if err := servod.Has(ctx, ServodPdRoleCmd()); err != nil {
-		msg := fmt.Sprintf("control %q is not supported, cannot set target role %q", ServodPdRoleCmd(), role)
-		log.Infof(ctx, "Set PD Role: %q", msg)
-		if pd_required {
-			log.Debugf(ctx, "Set PD Role: PD is not supported by this servo, but is required.")
-			return errors.Reason("set PD role: %q", msg).Err()
-		}
-		return nil
-	}
+func SetPDRole(ctx context.Context, servod components.Servod, role PDRole) error {
 	currentRole, err := GetString(ctx, servod, ServodPdRoleCmd())
 	if err != nil {
 		log.Debugf(ctx, "Set PD Role: could not determine current PD role")
-		errors.Annotate(err, "set PD role").Err()
+		return errors.Annotate(err, "set PD role").Err()
 	}
 	currentPDRole := PDRole{currentRole}
 	if currentPDRole == role {
