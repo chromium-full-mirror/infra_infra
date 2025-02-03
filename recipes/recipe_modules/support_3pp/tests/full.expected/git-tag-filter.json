@@ -585,8 +585,6 @@
       "external_hash:hash",
       "-tag",
       "version:2@1.4.1",
-      "-metadata",
-      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -778,8 +776,6 @@
       "3pp_ecosystem_hash:5428f29eb8e0873b4b5fd4ad30843f6b867b8ca49f9f22caaab8222bc4ef8841",
       "-tag",
       "version:2@1.4.1",
-      "-metadata",
-      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],

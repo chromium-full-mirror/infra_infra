@@ -3180,8 +3180,6 @@
       "external_hash:hash",
       "-tag",
       "version:2@1.5.0-rc1",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -3609,8 +3607,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@1.5.0-rc1",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -4831,8 +4827,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@1.2.3",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -5260,8 +5254,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@1.2.3",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -5976,8 +5968,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@1.2.3.cr0",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -7131,8 +7121,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@1.1.2",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -7558,8 +7546,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@1.1.2",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -8565,8 +8551,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@1.2.0",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -9151,8 +9135,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@2.0.0",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -9580,8 +9562,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@2.0.0",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -10674,8 +10654,6 @@
       "external_hash:hash",
       "-tag",
       "version:2@1.5.0-rc1",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -11529,8 +11507,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@1.5.0-rc1.chops.1",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -13904,8 +13880,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@1.5.0-rc1",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -14757,8 +14731,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@1.5.0-rc1.chops.1",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -15857,8 +15829,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@1.0.0",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -16589,8 +16559,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@2.0.0",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -17208,8 +17176,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@2.0.0",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -17940,8 +17906,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@2.0.0",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -18559,8 +18523,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@2.0.0",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -19244,8 +19206,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@2.0.0",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -19863,8 +19823,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@2.0.0",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -20595,8 +20553,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@2.0.0",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-verification-timeout",
       "30m",
       "-json-output",
@@ -21216,8 +21172,6 @@
       "build_id:8945511751514863184",
       "-tag",
       "version:2@2.0.0",
-      "-metadata",
-      "build_id:8945511751514863184",
       "-json-output",
       "/path/to/tmp/json"
     ],
