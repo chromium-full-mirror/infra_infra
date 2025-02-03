@@ -1,8 +1,0 @@
-{
-  "files": [
-    { "path": "src/commented_out.mojom" },
-    { "path": "src/good.mojom" },
-    { "path": "src/partial_comments.mojom" },
-    { "path": "src/bad.mojom" }
-  ]
-}

@@ -1,4 +1,0 @@
-package: infra/tricium/function/hello
-install_mode: symlink
-data:
-        - file: hello

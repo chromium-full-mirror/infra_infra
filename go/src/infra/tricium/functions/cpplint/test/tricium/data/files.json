@@ -1,6 +1,0 @@
-{
-	"files": [
-		{ "path": "test.cc", "is_binary": false },
-		{ "path": "test.h", "is_binary": false }
-	]
-}
