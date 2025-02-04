@@ -209,10 +209,8 @@ func (cmd *TranslateV1ToV2Cmd) initiateATPWorkUnits(ctx context.Context) error {
 		if err != nil {
 			return err
 		}
-		cmd.AlStateInfo.WorkUnitTrees["test"] = &androidapi.WorkUnitTree{
-			Head:        top,
-			ShardsByKey: map[string]*androidapi.WorkUnitNode{},
-		}
+		// Save the top level WU so the Async runs can point back to the same parent run.
+		cmd.AlStateInfo.Top = top
 		logging.Infof(ctx, "TOP Node %s: %+v\n", top.GetWorkUnit().Id, top)
 		logging.Infof(ctx, "parentWUID: %s\tinvocationID: %s\n", parentWUID, invocationID)
 	} else if isAlRun && !cmd.IsPartnerRun {
@@ -221,7 +219,6 @@ func (cmd *TranslateV1ToV2Cmd) initiateATPWorkUnits(ctx context.Context) error {
 		logging.Infof(ctx, "In AL run but no ATP details provided, generate invocation at runtime.")
 		cmd.AlStateInfo.GenerateInvocation = true
 		cmd.AlStateInfo.WorkUnitsOnly = true
-		cmd.AlStateInfo.WorkUnitTrees["test"] = &androidapi.WorkUnitTree{}
 	}
 
 	return nil

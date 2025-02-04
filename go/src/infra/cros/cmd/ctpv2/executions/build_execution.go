@@ -1,4 +1,4 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -151,18 +151,19 @@ func executeRequests(
 		keyReqMap = sk.V1KeyToCTPv2Req
 	}
 
-	var workUnitTrees map[string]*androidapi.WorkUnitTree
+	// var workUnitTrees map[string]*androidapi.WorkUnitTree
+	var top *androidapi.WorkUnitNode
 	var generateInvocation, workUnitsOnly bool
 	if sk.AlStateInfo != nil {
-		if sk.AlStateInfo.WorkUnitTrees != nil {
-			workUnitTrees = sk.AlStateInfo.WorkUnitTrees
+		if sk.AlStateInfo.Top != nil {
+			top = sk.AlStateInfo.Top
 		}
 
 		generateInvocation = sk.AlStateInfo.GenerateInvocation
 		workUnitsOnly = sk.AlStateInfo.WorkUnitsOnly
 	}
 
-	resultsMap := executeCtpv2Reqs(ctx, keyReqMap, input.Config, buildState, ctr, BQClient, ctpv2CipdVersion, workUnitTrees, isPartnerRun, generateInvocation, workUnitsOnly)
+	resultsMap := executeCtpv2Reqs(ctx, keyReqMap, input.Config, buildState, ctr, BQClient, ctpv2CipdVersion, top, isPartnerRun, generateInvocation, workUnitsOnly)
 	sk.AllTestResults = resultsMap
 
 	// Execute post configs
@@ -185,7 +186,7 @@ func executeRequests(
 }
 
 func executeCtpv2Reqs(ctx context.Context,
-	keyRequestMap map[string]*api.CTPRequest, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitTree, isPartnerRun, generateInvocation, workUnitsOnly bool) map[string][]*data.TestResults {
+	keyRequestMap map[string]*api.CTPRequest, config *config.Config, buildState *build.State, ctr *crostoolrunner.CrosToolRunner, BQClient *bigquery.Client, ctpVersion string, top *androidapi.WorkUnitNode, isPartnerRun, generateInvocation, workUnitsOnly bool) map[string][]*data.TestResults {
 	resultsMap := map[string][]*data.TestResults{}
 	var err error
 	step, ctx := build.StartStep(ctx, "Suite Executions (async)")
@@ -211,7 +212,7 @@ func executeCtpv2Reqs(ctx context.Context,
 			suiteDisplayName = fmt.Sprintf("%s_%d", suiteName, suiteNum)
 		}
 		wg.Add(1)
-		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient, key, ctpVersion, workUnitTrees, isPartnerRun, generateInvocation, workUnitsOnly)
+		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient, key, ctpVersion, top, isPartnerRun, generateInvocation, workUnitsOnly)
 	}
 	go func() {
 		wg.Wait()
@@ -239,7 +240,18 @@ func executeFiltersInLuciBuild(
 	req *api.CTPRequest,
 	config *config.Config,
 	buildState *build.State,
-	wg *sync.WaitGroup, ctr *crostoolrunner.CrosToolRunner, contInfoMap *data.ContainerInfoMap, results chan<- map[string][]*data.TestResults, suiteDisplayName string, BQClient *bigquery.Client, reqKey, ctpVersion string, workUnitTrees map[string]*androidapi.WorkUnitTree, isPartnerRun, generateInvocation, workUnitsOnly bool) {
+	wg *sync.WaitGroup,
+	ctr *crostoolrunner.CrosToolRunner,
+	contInfoMap *data.ContainerInfoMap,
+	results chan<- map[string][]*data.TestResults,
+	suiteDisplayName string,
+	BQClient *bigquery.Client,
+	reqKey,
+	ctpVersion string,
+	top *androidapi.WorkUnitNode,
+	isPartnerRun,
+	generateInvocation,
+	workUnitsOnly bool) {
 	defer wg.Done()
 	var err error
 	step, ctx := build.StartStep(ctx, suiteDisplayName)
@@ -256,6 +268,16 @@ func executeFiltersInLuciBuild(
 	cmdCfg := configs.NewCommandConfig(executorCfg)
 
 	var alStateInfo *data.AlStateInfo
+
+	workUnitTrees := make(map[string]*androidapi.WorkUnitTree)
+	if top != nil {
+		workUnitTrees["test"] = &androidapi.WorkUnitTree{
+			Head:        top,
+			ShardsByKey: map[string]*androidapi.WorkUnitNode{},
+		}
+	} else if generateInvocation {
+		workUnitTrees["test"] = &androidapi.WorkUnitTree{}
+	}
 
 	if isReqFromATP(req) {
 		buildIDStr := strconv.FormatInt(buildState.Build().Id, 10)

@@ -52,6 +52,8 @@ type AlStateInfo struct {
 	WorkUnitsOnly      bool
 	ATPWorkUnit        *androidbuildinternal.WorkUnit
 	ATPInvocation      *androidbuildinternal.Invocation
+
+	Top *androidapi.WorkUnitNode
 }
 
 // GetWorkUnitTree fetches the ATP work unit tree if one exists and is being

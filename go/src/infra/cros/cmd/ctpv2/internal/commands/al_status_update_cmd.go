@@ -173,10 +173,18 @@ func (cmd *AlStatusUpdateCmd) initRunAndShards(ctx context.Context) error {
 				return err
 			}
 
-			logging.Infof(ctx, "NEW SHARD Node %s-%s#%d: %+v\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex(), shardNode)
+			logging.Infof(ctx, "NEW SHARD Node %s-%s#%d: %+v added to map with key %s\n", shardNode.GetWorkUnit().Id, shardNode.GetWorkUnit().Name, shardNode.GetIndex(), shardNode, key)
 			tree.ShardsByKey[key] = shardNode
 		}
 	}
+
+	keys := []string{}
+
+	for key := range tree.ShardsByKey {
+		keys = append(keys, key)
+	}
+
+	logging.Infof(ctx, "Keys seen in shards map; %+v", keys)
 
 	return nil
 }
