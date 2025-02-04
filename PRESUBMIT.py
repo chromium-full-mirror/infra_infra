@@ -179,7 +179,8 @@ def GoCheckers(input_api, output_api):
             # The easiest way to bypass this problem is to just always run
             # from the directory you're trying to lint.
             cmd=[
-                'golangci-lint', 'run', '--allow-parallel-runners', *since, '.'
+                'golangci-lint', 'run', '--timeout=5m',
+                '--allow-parallel-runners', *since, '.'
             ],
             kwargs={'cwd': absolute}))
 
