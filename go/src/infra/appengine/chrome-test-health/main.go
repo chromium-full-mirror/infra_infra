@@ -230,8 +230,10 @@ type coverageServer struct {
 	CronClient CoverageCronClient
 }
 
+var getProjectDefaultConfigRequestWalker = protowalk.NewWalker[*api.GetProjectDefaultConfigRequest](&protowalk.RequiredProcessor{})
+
 func (covServer *coverageServer) GetProjectDefaultConfig(ctx context.Context, req *api.GetProjectDefaultConfigRequest) (*api.GetProjectDefaultConfigResponse, error) {
-	if err := validateRequest(ctx, req); err != nil {
+	if err := validateRequest(ctx, getProjectDefaultConfigRequestWalker, req); err != nil {
 		return nil, appstatus.Errorf(codes.InvalidArgument, "%s", err.Error())
 	}
 
@@ -360,8 +362,10 @@ func updatePresubmitData(ctx context.Context) error {
 	return nil
 }
 
+var updateMetricsRequiredWalker = protowalk.NewWalker[*api.UpdateMetricsTableRequest](&protowalk.RequiredProcessor{})
+
 func (s *testResourcesServer) UpdateMetricsTable(ctx context.Context, req *api.UpdateMetricsTableRequest) (*api.UpdateMetricsTableResponse, error) {
-	if err := validateRequest(ctx, req); err != nil {
+	if err := validateRequest(ctx, updateMetricsRequiredWalker, req); err != nil {
 		return nil, appstatus.Errorf(codes.InvalidArgument, "%s", err.Error())
 	}
 	fromDate, err := civil.ParseDate(req.FromDate)
@@ -394,8 +398,10 @@ func (s *testResourcesServer) ListComponents(ctx context.Context, req *api.ListC
 	return resp, nil
 }
 
+var fetchDirectoryMetricsRequestWalker = protowalk.NewWalker[*api.FetchDirectoryMetricsRequest](&protowalk.RequiredProcessor{})
+
 func (s *testResourcesServer) FetchDirectoryMetrics(ctx context.Context, req *api.FetchDirectoryMetricsRequest) (*api.FetchDirectoryMetricsResponse, error) {
-	if err := validateRequest(ctx, req); err != nil {
+	if err := validateRequest(ctx, fetchDirectoryMetricsRequestWalker, req); err != nil {
 		return nil, appstatus.Errorf(codes.InvalidArgument, "%s", err.Error())
 	}
 	resp, err := s.Client.FetchDirectoryMetrics(ctx, req)
@@ -405,8 +411,10 @@ func (s *testResourcesServer) FetchDirectoryMetrics(ctx context.Context, req *ap
 	return resp, nil
 }
 
+var fetchTestMetricsRequestWalker = protowalk.NewWalker[*api.FetchTestMetricsRequest](&protowalk.RequiredProcessor{})
+
 func (s *testResourcesServer) FetchTestMetrics(ctx context.Context, req *api.FetchTestMetricsRequest) (*api.FetchTestMetricsResponse, error) {
-	if err := validateRequest(ctx, req); err != nil {
+	if err := validateRequest(ctx, fetchTestMetricsRequestWalker, req); err != nil {
 		return nil, appstatus.Errorf(codes.InvalidArgument, "%s", err.Error())
 	}
 	resp, err := s.Client.FetchMetrics(ctx, req)
@@ -416,8 +424,8 @@ func (s *testResourcesServer) FetchTestMetrics(ctx context.Context, req *api.Fet
 	return resp, nil
 }
 
-func validateRequest(ctx context.Context, req proto.Message) error {
-	if procRes := protowalk.Fields(req, &protowalk.RequiredProcessor{}); procRes != nil {
+func validateRequest[T proto.Message](ctx context.Context, requiredChecker protowalk.Walker[T], req T) error {
+	if procRes := requiredChecker.Execute(req); procRes != nil {
 		if resStrs := procRes.Strings(); len(resStrs) > 0 {
 			logging.Infof(ctx, strings.Join(resStrs, ". "))
 		}

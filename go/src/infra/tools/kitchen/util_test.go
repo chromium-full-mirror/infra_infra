@@ -25,7 +25,7 @@ func TestDisableGRPCLogging(t *testing.T) {
 		)
 
 		// Install our memory logger.
-		ctx = logging.SetFactory(ctx, func(context.Context) logging.Logger { return &ml })
+		ctx = logging.SetFactory(ctx, func(context.Context, *logging.LogContext) logging.Logger { return &ml })
 
 		// Call "runWithLogdogButler". This should panic, but, more importantly for
 		// this test, should also install our gRPC log suppression. Note that this

@@ -14,14 +14,15 @@ import (
 
 // Use adds a logging.Logger implementation to the context which logs for a test.
 func Use(ctx context.Context, t *testing.T) context.Context {
-	return logging.SetFactory(ctx, func(ctx context.Context) logging.Logger {
-		return loggerImpl{ctx: ctx, t: t}
+	return logging.SetFactory(ctx, func(ctx context.Context, lc *logging.LogContext) logging.Logger {
+		return loggerImpl{ctx: ctx, level: lc.Level, t: t}
 	})
 }
 
 type loggerImpl struct {
-	ctx context.Context
-	t   *testing.T
+	ctx   context.Context
+	level logging.Level
+	t     *testing.T
 }
 
 func (gl loggerImpl) Debugf(format string, args ...interface{}) {
@@ -38,8 +39,7 @@ func (gl loggerImpl) Errorf(format string, args ...interface{}) {
 }
 
 func (gl loggerImpl) LogCall(l logging.Level, calldepth int, format string, args []interface{}) {
-	if !logging.IsLogging(gl.ctx, l) {
-		return
+	if l >= gl.level {
+		gl.t.Logf(format, args...)
 	}
-	gl.t.Logf(format, args...)
 }

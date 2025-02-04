@@ -266,17 +266,7 @@ func dumpStepToFolder(step *Step, parentFolder string) {
 }
 
 // NewLogger returns new go-logging based logger bound to the given context.
-//
-// It will use logging level and fields specified in the context. Pass 'nil' as
-// a context to completely disable context-related checks. Note that default
-// context (e.g. context.Background()) is configured for Info logging level, not
-// Debug.
-//
-// lc.NewLogger is in fact logging.Factory and can be used in SetFactory.
-//
-// All loggers produced by LoggerConfig share single underlying go-logging
-// Logger instance.
-func (lc *LoggerConfig) NewLogger(c context.Context) logging.Logger {
+func (lc *LoggerConfig) NewLogger(c context.Context, lctx *logging.LogContext) logging.Logger {
 	lc.initOnce.Do(func() {
 		logger := lc.Logger
 		if logger == nil {
@@ -297,11 +287,9 @@ func (lc *LoggerConfig) NewLogger(c context.Context) logging.Logger {
 		lc.w = &localLoggerWrapper{l: logger}
 	})
 	ret := &localLoggerImpl{localLoggerWrapper: lc.w, steps: lc.steps}
-	if c != nil {
-		ret.level = logging.GetLevel(c)
-		if fields := logging.GetFields(c); len(fields) > 0 {
-			ret.fields = fields.String()
-		}
+	ret.level = lctx.Level
+	if fields := lctx.Fields; len(fields) > 0 {
+		ret.fields = lctx.Fields.String()
 	}
 	return ret
 }

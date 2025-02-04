@@ -548,7 +548,7 @@ func TestRetries(t *testing.T) {
 					inv.Test.MaxRetries = c.testMaxRetry
 				}
 				var ml memlogger.MemLogger
-				ctx = logging.SetFactory(ctx, func(context.Context) logging.Logger { return &ml })
+				ctx = logging.SetFactory(ctx, func(context.Context, *logging.LogContext) logging.Logger { return &ml })
 				trClient := &trservice.CallCountingClientWrapper{
 					Client: c.trClient,
 				}

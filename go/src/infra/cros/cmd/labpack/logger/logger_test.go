@@ -74,13 +74,11 @@ func TestCreateFileLogger(t *testing.T) {
 				var fs []teelogger.Filtered
 				assert.Loosely(t, len(fs), should.BeZero)
 
-				c, nfs, err := l.createFileLogger(ctx, fc, fs, entry.L)
-				assert.Loosely(t, c, should.NotBeNil)
+				nfs, err := l.createFileLogger(ctx, fc, fs, entry.L)
 				assert.Loosely(t, nfs, should.NotBeNil)
 				assert.Loosely(t, err, should.BeNil)
 				assert.Loosely(t, len(nfs), should.Equal(1))
 				assert.Loosely(t, nfs[0].Factory, should.NotBeNil)
-				assert.Loosely(t, logging.GetLevel(c), should.Equal(entry.L))
 				assert.Loosely(t, nfs[0].Level, should.Equal(entry.L))
 			})
 		}

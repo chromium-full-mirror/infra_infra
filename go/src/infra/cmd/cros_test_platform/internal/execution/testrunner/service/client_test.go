@@ -110,7 +110,7 @@ func TestNonExistentBot(t *testing.T) {
 }
 
 func setLogger(ctx context.Context, l logging.Logger) context.Context {
-	return logging.SetFactory(ctx, func(context.Context) logging.Logger {
+	return logging.SetFactory(ctx, func(context.Context, *logging.LogContext) logging.Logger {
 		return l
 	})
 }
