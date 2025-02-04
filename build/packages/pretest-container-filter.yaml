@@ -1,0 +1,10 @@
+package: chromiumos/infra/ctpv2-filters/pretest-container-filter/${platform}
+description: CTPv2 filter for injecting a pretest container before tests start.
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/ctpv2-filters/pretest-container-filter
+root: ../../go/bin
+data:
+  - file: pretest-container-filter${exe_suffix}
+  - version_file: .versions/pretest-container-filter${exe_suffix}.cipd_version

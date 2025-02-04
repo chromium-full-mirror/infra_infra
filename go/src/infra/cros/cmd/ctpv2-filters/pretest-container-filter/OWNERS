@@ -1,0 +1,11 @@
+# Copyright 2025 The ChromiumOS Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+set noparent
+
+# ChromeOS PASIT (dev team)
+include chromiumos/owners:v1:/peripherals/OWNERS.pasit
+
+# ChromeOS Connectivity (EngProd)
+include chromiumos/owners:v1:/engprod/OWNERS.connectivity
