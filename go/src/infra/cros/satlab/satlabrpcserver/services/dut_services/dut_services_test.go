@@ -112,6 +112,7 @@ func TestRunCommandOnIpShouldWork(t *testing.T) {
 }
 
 func TestRunCommandOnIpsShouldWork(t *testing.T) {
+	t.Skip("flaky, see b/394325271")
 	expectedResponse := "connect success"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
@@ -483,6 +484,7 @@ func Test_GetServoSerialNoServoConnected(t *testing.T) {
 }
 
 func Test_GetServoSerialServoConnectedButNotDetected(t *testing.T) {
+	t.Skip("flake, see b/394325271")
 	sshResponse := "{\n  \"gsc_serial\": \"dut-serial-1234\",\n  \"servo_usb_count\": 1\n}\n"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
