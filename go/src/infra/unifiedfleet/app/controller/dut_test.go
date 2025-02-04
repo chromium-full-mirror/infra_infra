@@ -32,6 +32,7 @@ import (
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
 	"infra/unifiedfleet/app/model/state"
+	"infra/unifiedfleet/app/util"
 )
 
 func mockDUT(hostname, machine, servoHost, servoSerial, rpm, rpmOutlet string, servoPort int32, pools []string, dockerContainer string) *ufspb.MachineLSE {
@@ -2947,6 +2948,69 @@ func TestUpdateDUT(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			// State should be unchanged.
 			assert.Loosely(t, s.GetState(), should.Equal(dut2.GetResourceState()))
+		})
+
+		t.Run("UpdateDUT - With device labels", func(t *ftt.Test) {
+			// Create a DUT with labstation.
+			err := createValidDUTWithLabstation(ctx, t, "dut-47", "machine-86", "labstation-47", "machine-87")
+			assert.NoErr(t, err)
+			dut1, err := GetMachineLSE(ctx, "dut-47")
+			assert.NoErr(t, err)
+			resp, err := GetDeviceLabels(ctx, util.AddPrefix(util.MachineLSECollection, "dut-47"))
+			assert.NoErr(t, err)
+			assert.Loosely(t, resp, should.NotBeNil)
+			// Create SchedulingUnit
+			su1 := &ufspb.SchedulingUnit{
+				Name:        "su-47",
+				MachineLSEs: []string{"dut-47"},
+				PrimaryDut:  "dut-47",
+				ExposeType:  ufspb.SchedulingUnit_DEFAULT_PLUS_PRIMARY,
+			}
+			_, err = inventory.CreateSchedulingUnit(ctx, su1)
+			assert.NoErr(t, err)
+			// Add license to DUT.
+			dut1.GetChromeosMachineLse().GetDeviceLse().GetDut().Licenses =
+				[]*chromeosLab.License{
+					{
+						Type:       chromeosLab.LicenseType_LICENSE_TYPE_WINDOWS_10_PRO,
+						Identifier: "my-windows-identifier-A001",
+					},
+				}
+			// Update DUT with proper paths.
+			_, err = UpdateDUT(ctx, dut1, mockFieldMask("dut.licenses"))
+			assert.NoErr(t, err)
+
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "hosts/dut-47")
+			assert.NoErr(t, err)
+			assert.Loosely(t, msgs, should.HaveLength(2))
+
+			// DUT labels
+			resp, err = inventory.GetDeviceLabels(ctx, util.AddPrefix(util.MachineLSECollection, "dut-47"))
+			assert.NoErr(t, err)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.That(t, resp.GetName(), should.Equal("machineLSEs/dut-47"))
+			assert.That(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_CHROMEOS_DEVICE))
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "devicelabels/machineLSEs/dut-47")
+			assert.NoErr(t, err)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			labels := resp.GetLabels()
+			assert.Loosely(t, labels, should.ContainKey("label-license"))
+			assert.That(t, labels["label-license"].GetLabelValues(), should.Contain("LICENSE_TYPE_WINDOWS_10_PRO"))
+			// Scheduling Unit labels
+			resp, err = inventory.GetDeviceLabels(ctx, util.AddPrefix(util.SchedulingUnitCollection, "su-47"))
+			assert.NoErr(t, err)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.That(t, resp.GetName(), should.Equal("schedulingunits/su-47"))
+			assert.That(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_SCHEDULING_UNIT))
+			changes, err = history.QueryChangesByPropertyName(ctx, "name", "devicelabels/schedulingunits/su-47")
+			assert.NoErr(t, err)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.That(t, changes[0].GetEventLabel(), should.Equal("device_labels"))
+			assert.That(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.That(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			labels = resp.GetLabels()
+			assert.Loosely(t, labels, should.ContainKey("label-license"))
+			assert.That(t, labels["label-license"].GetLabelValues(), should.Contain("LICENSE_TYPE_WINDOWS_10_PRO"))
 		})
 
 		t.Run("UpdateDUT - With invalid dolos mask (delete host and update serial cable)", func(t *ftt.Test) {

@@ -20,6 +20,7 @@ import (
 	"infra/cros/dutstate"
 	"infra/libs/fleet/device/attacheddevice"
 	"infra/libs/fleet/device/dut"
+	"infra/libs/fleet/device/schedulingunit"
 	"infra/libs/skylab/inventory/swarming"
 	ufspb "infra/unifiedfleet/api/v1/models"
 	ufsAPI "infra/unifiedfleet/api/v1/rpc"
@@ -299,6 +300,55 @@ func getBrowserLabelsResponse(name, state, zone string) *ufspb.DeviceLabels {
 			"ufs_zone":  {LabelValues: []string{zone}},
 		},
 	}
+}
+
+func getSchedulingUnitLabels(ctx context.Context, su *ufspb.SchedulingUnit, lses []*ufspb.MachineLSE) (*ufspb.DeviceLabels, error) {
+	dims, err := getSchedulingUnitSwarmingDimensions(ctx, su, lses)
+	if err != nil {
+		return nil, err
+	}
+	deviceLabels := convertSwarmingDimensionsToDeviceLabels(dims)
+	deviceLabels.Name = util.AddPrefix(util.SchedulingUnitCollection, su.GetName())
+	deviceLabels.ResourceType = ufspb.ResourceType_RESOURCE_TYPE_SCHEDULING_UNIT
+	return deviceLabels, nil
+}
+
+func getSchedulingUnitSwarmingDimensions(ctx context.Context, su *ufspb.SchedulingUnit, lses []*ufspb.MachineLSE) (*swarming.Dimensions, error) {
+	var dutsDims []swarming.Dimensions
+	var botDimensions swarming.Dimensions
+	var lse *ufspb.MachineLSE
+	var err error
+	for _, hostname := range su.GetMachineLSEs() {
+		i := slices.IndexFunc(lses, func(l *ufspb.MachineLSE) bool { return l.GetName() == hostname })
+		if i == -1 {
+			lse, err = GetMachineLSE(ctx, hostname)
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			lse = lses[i]
+		}
+
+		// Get data based on device type
+		if lse.GetChromeosMachineLse() != nil {
+			device, err := getChromeOSDeviceDataWithLSEAndMachine(ctx, lse, nil)
+			if err != nil {
+				return nil, errors.Annotate(err, "getSchedulingUnitSwarmingDimensions: failed to get chromeos device data").Err()
+			}
+			botDimensions = *getChromeOSBotSwarmingDimensions(ctx, device)
+		} else if lse.GetAttachedDeviceLse() != nil {
+			device, err := GetAttachedDeviceData(ctx, lse)
+			if err != nil {
+				return nil, errors.Annotate(err, "getSchedulingUnitSwarmingDimensions: failed to get attached device data").Err()
+			}
+			botDimensions = *getAttachedDeviceSwarmingDimensions(ctx, device)
+		} else {
+			return nil, fmt.Errorf("getSchedulingUnitSwarmingDimensions: SchedulingUnit %s MachineLSE %s not recognized", su.GetName(), hostname)
+		}
+		dutsDims = append(dutsDims, botDimensions)
+	}
+	dims := swarming.Dimensions(schedulingunit.GetSchedulingUnitDimensions(su, dutsDims))
+	return &dims, nil
 }
 
 func getChromeOSDeviceLabels(ctx context.Context, deviceData *ufspb.ChromeOSDeviceData) *ufspb.DeviceLabels {

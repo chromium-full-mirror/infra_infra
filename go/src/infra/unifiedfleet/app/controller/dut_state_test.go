@@ -137,15 +137,36 @@ func TestUpdateDutStateWithDeviceLabels(t *testing.T) {
 			})
 			assert.Loosely(t, err, should.BeNil)
 
+			su1 := &ufspb.SchedulingUnit{
+				Name:        "update-dutstate-su-1",
+				MachineLSEs: []string{"update-dutstate-devicelabels-hostname1"},
+			}
+			_, err = inventory.CreateSchedulingUnit(ctx, su1)
+			assert.Loosely(t, err, should.BeNil)
+
 			_, err = UpdateDutState(ctx, ds1)
 			assert.Loosely(t, err, should.BeNil)
 
+			// DUT labels
 			resp, err := inventory.GetDeviceLabels(ctx, util.AddPrefix(util.MachineLSECollection, "update-dutstate-devicelabels-hostname1"))
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetName(), should.Equal("machineLSEs/update-dutstate-devicelabels-hostname1"))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_CHROMEOS_DEVICE))
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "devicelabels/machineLSEs/update-dutstate-devicelabels-hostname1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("device_labels"))
+
+			// Scheduling Unit labels
+			resp, err = inventory.GetDeviceLabels(ctx, util.AddPrefix(util.SchedulingUnitCollection, "update-dutstate-su-1"))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetName(), should.Equal("schedulingunits/update-dutstate-su-1"))
+			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_SCHEDULING_UNIT))
+			changes, err = history.QueryChangesByPropertyName(ctx, "name", "devicelabels/schedulingunits/update-dutstate-su-1")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, changes, should.HaveLength(1))
 			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))

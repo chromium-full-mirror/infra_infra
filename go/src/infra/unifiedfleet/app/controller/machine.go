@@ -266,6 +266,9 @@ func UpdateMachine(ctx context.Context, machine *ufspb.Machine, mask *field_mask
 				if err = updateChromeOSDeviceLabels(ctx, hc, machinelses[0], machine, true); err != nil {
 					return errors.Annotate(err, "Error updating device labels").Err()
 				}
+				if err = updateSchedulingUnitDeviceLabels(ctx, hc, machinelses[0], true); err != nil {
+					return errors.Annotate(err, "Error updating device labels").Err()
+				}
 			}
 		}
 

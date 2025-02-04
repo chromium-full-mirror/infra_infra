@@ -350,6 +350,9 @@ func UpdateDUT(ctx context.Context, machinelse *ufspb.MachineLSE, mask *field_ma
 		if err = updateChromeOSDeviceLabels(ctx, hc, machinelse, machine, true); err != nil {
 			return errors.Annotate(err, "Error updating device labels").Err()
 		}
+		if err = updateSchedulingUnitDeviceLabels(ctx, hc, machinelse, true); err != nil {
+			return errors.Annotate(err, "Error updating device labels").Err()
+		}
 
 		// Update state changes.
 		dutState := machinelse.GetResourceState()

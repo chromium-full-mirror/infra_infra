@@ -381,6 +381,10 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 				return errors.Annotate(err, "unable to batch update device labels").Err()
 			}
 			hc.LogDeviceLabelsChanges(oldDeviceLabels, deviceLabels)
+
+			if err = updateSchedulingUnitDeviceLabels(ctx, hc, machinelse, true); err != nil {
+				return errors.Annotate(err, "Error updating device labels").Err()
+			}
 		}
 
 		updatedMachinelse = machinelse

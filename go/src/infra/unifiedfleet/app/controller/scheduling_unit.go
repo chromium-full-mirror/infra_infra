@@ -14,6 +14,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "infra/unifiedfleet/api/v1/models"
@@ -30,8 +31,17 @@ func CreateSchedulingUnit(ctx context.Context, su *ufspb.SchedulingUnit) (*ufspb
 		if _, err := inventory.BatchUpdateSchedulingUnits(ctx, []*ufspb.SchedulingUnit{su}); err != nil {
 			return err
 		}
+		// Create corresponding device labels
+		deviceLabels, err := getSchedulingUnitLabels(ctx, su, nil)
+		if err != nil {
+			return errors.Annotate(err, "Error generating device labels").Err()
+		}
+		if _, err := inventory.BatchUpdateDeviceLabels(ctx, []*ufspb.DeviceLabels{deviceLabels}); err != nil {
+			return errors.Annotate(err, "unable to batch update device labels").Err()
+		}
 		hc := &HistoryClient{}
 		hc.logSchedulingUnitChanges(nil, su)
+		hc.LogDeviceLabelsChanges(nil, deviceLabels)
 		return hc.SaveChangeEvents(ctx)
 	}
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
@@ -71,8 +81,22 @@ func UpdateSchedulingUnit(ctx context.Context, su *ufspb.SchedulingUnit, mask *f
 		if _, err := inventory.BatchUpdateSchedulingUnits(ctx, []*ufspb.SchedulingUnit{su}); err != nil {
 			return err
 		}
+		// Update corresponding device labels
+		oldDeviceLabelsName := util.AddPrefix(util.SchedulingUnitCollection, su.GetName())
+		oldDeviceLabels, err := inventory.GetDeviceLabels(ctx, oldDeviceLabelsName)
+		if err != nil {
+			logging.Infof(ctx, "Could not find existing device labels. Continuing with update")
+		}
+		deviceLabels, err := getSchedulingUnitLabels(ctx, su, nil)
+		if err != nil {
+			return errors.Annotate(err, "Error generating device labels").Err()
+		}
+		if _, err := inventory.BatchUpdateDeviceLabels(ctx, []*ufspb.DeviceLabels{deviceLabels}); err != nil {
+			return errors.Annotate(err, "unable to batch update device labels").Err()
+		}
 		hc := &HistoryClient{}
 		hc.logSchedulingUnitChanges(oldsuCopy, su)
+		hc.LogDeviceLabelsChanges(oldDeviceLabels, deviceLabels)
 		return hc.SaveChangeEvents(ctx)
 	}
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
@@ -97,8 +121,17 @@ func DeleteSchedulingUnit(ctx context.Context, id string) error {
 		if err := inventory.DeleteSchedulingUnit(ctx, id); err != nil {
 			return err
 		}
+
+		deviceLabelsName := util.AddPrefix(util.SchedulingUnitCollection, id)
+		deviceLabels, err := inventory.GetDeviceLabels(ctx, deviceLabelsName)
+		if err != nil {
+			logging.Warningf(ctx, "Error getting device labels during SchedulingUnit deletion: %s", err)
+		} else if err := inventory.DeleteDeviceLabels(ctx, deviceLabelsName); err != nil {
+			return err
+		}
 		hc := &HistoryClient{}
 		hc.logSchedulingUnitChanges(su, nil)
+		hc.LogDeviceLabelsChanges(deviceLabels, nil)
 		return hc.SaveChangeEvents(ctx)
 	}
 	if err := datastore.RunInTransaction(ctx, f, nil); err != nil {
@@ -310,5 +343,39 @@ func validateLSEsShareHive(ctx context.Context, lseNames []string) error {
 			return status.Errorf(codes.InvalidArgument, fmt.Sprintf("DUTs have different hives: %s - %s", hive, h))
 		}
 	}
+	return nil
+}
+
+// updateSchedulingUnitDeviceLabels updates the DeviceLabels for a SchedulingUnit that references the given ChromeOS device
+// This function must be called in a transaction
+func updateSchedulingUnitDeviceLabels(ctx context.Context, hc *HistoryClient, lse *ufspb.MachineLSE, update bool) error {
+	if lse == nil {
+		return errors.New("updateSchedulingUnitDeviceLabels - MachineLSE is nil")
+	}
+	schedulingUnits, err := inventory.QuerySchedulingUnitByPropertyNames(ctx, map[string]string{"machinelses": lse.GetName()}, false)
+	if err != nil {
+		return errors.Annotate(err, "updateSchedulingUnitDeviceLabels - Failed to query SchedulingUnit for machinelses %s", lse).Err()
+	}
+	if len(schedulingUnits) == 0 {
+		return nil
+	}
+	su := schedulingUnits[0]
+
+	var oldDeviceLabels, newDeviceLabels *ufspb.DeviceLabels
+	if update {
+		oldDeviceLabelsName := util.AddPrefix(util.SchedulingUnitCollection, su.GetName())
+		oldDeviceLabels, err = inventory.GetDeviceLabels(ctx, oldDeviceLabelsName)
+		if err != nil {
+			logging.Infof(ctx, "updateSchedulingUnitDeviceLabels - Could not find existing device labels. Continuing with update")
+		}
+	}
+	newDeviceLabels, err = getSchedulingUnitLabels(ctx, su, []*ufspb.MachineLSE{lse})
+	if err != nil {
+		return errors.Annotate(err, "updateSchedulingUnitDeviceLabels - Error generating device labels").Err()
+	}
+	if _, err := inventory.BatchUpdateDeviceLabels(ctx, []*ufspb.DeviceLabels{newDeviceLabels}); err != nil {
+		return errors.Annotate(err, "updateSchedulingUnitDeviceLabels - Unable to batch update device labels").Err()
+	}
+	hc.LogDeviceLabelsChanges(oldDeviceLabels, newDeviceLabels)
 	return nil
 }

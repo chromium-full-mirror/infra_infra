@@ -125,6 +125,9 @@ func UpdateDutState(ctx context.Context, ds *chromeosLab.DutState) (*chromeosLab
 			if err = updateChromeOSDeviceLabels(ctx, hc, machineLSE, nil, true); err != nil {
 				return errors.Annotate(err, "Error updating device labels").Err()
 			}
+			if err = updateSchedulingUnitDeviceLabels(ctx, hc, machineLSE, true); err != nil {
+				return errors.Annotate(err, "Error updating device labels").Err()
+			}
 		}
 		return hc.SaveChangeEvents(ctx)
 	}
@@ -241,6 +244,9 @@ func UpdateDutStateWithMasks(ctx context.Context, maskSet map[string]bool, ds *c
 		// Update corresponding device labels for DUTs if applicable
 		if machineLSE != nil && machineLSE.GetChromeosMachineLse() != nil {
 			if err = updateChromeOSDeviceLabels(ctx, hc, machineLSE, nil, true); err != nil {
+				return errors.Annotate(err, "Error updating device labels").Err()
+			}
+			if err = updateSchedulingUnitDeviceLabels(ctx, hc, machineLSE, true); err != nil {
 				return errors.Annotate(err, "Error updating device labels").Err()
 			}
 		}

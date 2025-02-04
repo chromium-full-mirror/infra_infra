@@ -1653,6 +1653,54 @@ func TestUpdateMachineLSE(t *testing.T) {
 			assert.Loosely(t, msgs, should.HaveLength(1))
 		})
 
+		t.Run("Partially update machinelse without an lse", func(t *ftt.Test) {
+			machine := &ufspb.Machine{
+				Name: "machine-nolse",
+			}
+			_, err := registration.CreateMachine(ctx, machine)
+			assert.Loosely(t, err, should.BeNil)
+
+			lse := &ufspb.MachineLSE{
+				Name:     "no-lse",
+				Machines: []string{"machine-nolse"},
+			}
+			_, err = inventory.CreateMachineLSE(ctx, lse)
+			assert.Loosely(t, err, should.BeNil)
+
+			lse1 := &ufspb.MachineLSE{
+				Name: "no-lse",
+				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
+					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{
+						OsVersion: &ufspb.OSVersion{
+							Value: "windows-98",
+							Image: "win98-floppy-img",
+						},
+					},
+				},
+			}
+			resp, err := UpdateMachineLSE(ctx, lse1, &field_mask.FieldMask{Paths: []string{"osVersion", "osImage"}})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetChromeBrowserMachineLse().GetOsVersion().GetValue(), should.Equal("windows-98"))
+			assert.Loosely(t, resp.GetChromeBrowserMachineLse().GetOsVersion().GetImage(), should.Equal("win98-floppy-img"))
+
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/no-lse")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse.chrome_browser_machine_lse.os_version"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("<nil>"))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(fmt.Sprintf("%v", &ufspb.OSVersion{
+				Value: "windows-98",
+				Image: "win98-floppy-img",
+			})))
+
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "devicelabels/machineLSEs/no-lse")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+		})
+	})
+
+	ftt.Run("UpdateMachineLSE for an attached device machine", t, func(t *ftt.Test) {
 		t.Run("Partial Update attached device host", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
 				Name: "adm-1",
@@ -1717,50 +1765,90 @@ func TestUpdateMachineLSE(t *testing.T) {
 			assert.Loosely(t, msgs, should.HaveLength(1))
 		})
 
-		t.Run("Partially update machinelse without an lse", func(t *ftt.Test) {
+		t.Run("Update attached device host with device labels", func(t *ftt.Test) {
 			machine := &ufspb.Machine{
-				Name: "machine-nolse",
-			}
-			_, err := registration.CreateMachine(ctx, machine)
-			assert.Loosely(t, err, should.BeNil)
-
-			lse := &ufspb.MachineLSE{
-				Name:     "no-lse",
-				Machines: []string{"machine-nolse"},
-			}
-			_, err = inventory.CreateMachineLSE(ctx, lse)
-			assert.Loosely(t, err, should.BeNil)
-
-			lse1 := &ufspb.MachineLSE{
-				Name: "no-lse",
-				Lse: &ufspb.MachineLSE_ChromeBrowserMachineLse{
-					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{
-						OsVersion: &ufspb.OSVersion{
-							Value: "windows-98",
-							Image: "win98-floppy-img",
-						},
+				Name: "adm-2",
+				Device: &ufspb.Machine_AttachedDevice{
+					AttachedDevice: &ufspb.AttachedDevice{
+						DeviceType:   ufspb.AttachedDeviceType_ATTACHED_DEVICE_TYPE_APPLE_PHONE,
+						Manufacturer: "test-man",
+						BuildTarget:  "test-target",
+						Model:        "test-model",
 					},
 				},
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CROS_GOOGLER_DESK,
+				},
 			}
-			resp, err := UpdateMachineLSE(ctx, lse1, &field_mask.FieldMask{Paths: []string{"osVersion", "osImage"}})
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, resp, should.NotBeNil)
-			assert.Loosely(t, resp.GetChromeBrowserMachineLse().GetOsVersion().GetValue(), should.Equal("windows-98"))
-			assert.Loosely(t, resp.GetChromeBrowserMachineLse().GetOsVersion().GetImage(), should.Equal("win98-floppy-img"))
+			_, err := registration.CreateMachine(ctx, machine)
+			assert.NoErr(t, err)
 
-			changes, err := history.QueryChangesByPropertyName(ctx, "name", "hosts/no-lse")
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, changes, should.HaveLength(1))
-			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("machine_lse.chrome_browser_machine_lse.os_version"))
-			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("<nil>"))
-			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(fmt.Sprintf("%v", &ufspb.OSVersion{
-				Value: "windows-98",
-				Image: "win98-floppy-img",
-			})))
+			lse := &ufspb.MachineLSE{
+				Name:     "adh-lse-2",
+				Machines: []string{"adm-2"},
+				Lse: &ufspb.MachineLSE_AttachedDeviceLse{
+					AttachedDeviceLse: &ufspb.AttachedDeviceLSE{
+						OsVersion: &ufspb.OSVersion{
+							Value: "test-os",
+						},
+						AssociatedHostname: "adm-2",
+						AssociatedHostPort: "test-port-2",
+					},
+				},
+				Schedulable: false,
+			}
+			_, err = inventory.CreateMachineLSE(ctx, lse)
+			assert.NoErr(t, err)
 
-			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "devicelabels/machineLSEs/no-lse")
-			assert.Loosely(t, err, should.BeNil)
+			su1 := &ufspb.SchedulingUnit{
+				Name:        "adh-su-2",
+				MachineLSEs: []string{"adh-lse-2"},
+				ExposeType:  ufspb.SchedulingUnit_DEFAULT,
+			}
+			_, err = inventory.CreateSchedulingUnit(ctx, su1)
+			assert.NoErr(t, err)
+
+			resp, err := inventory.GetDeviceLabels(ctx, util.AddPrefix(util.SchedulingUnitCollection, "adh-su-2"))
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, resp, should.BeNil)
+
+			lse1 := &ufspb.MachineLSE{
+				Name:     "adh-lse-2",
+				Machines: []string{"adm-2"},
+				Lse: &ufspb.MachineLSE_AttachedDeviceLse{
+					AttachedDeviceLse: &ufspb.AttachedDeviceLSE{
+						OsVersion: &ufspb.OSVersion{
+							Value: "test-os-2",
+						},
+						AssociatedHostname: "adm-3",
+						AssociatedHostPort: "test-port-3",
+					},
+				},
+				Schedulable: true,
+			}
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.AtlLabAdminRealm)
+			_, err = UpdateMachineLSE(ctx, lse1, &field_mask.FieldMask{Paths: []string{
+				"osVersion",
+				"assocHostname",
+				"assocHostPort",
+				"schedulable",
+			}})
+			assert.NoErr(t, err)
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "devicelabels/machineLSEs/adh-lse-2")
+			assert.NoErr(t, err)
 			assert.Loosely(t, msgs, should.HaveLength(1))
+			// Scheduling Unit labels
+			resp, err = inventory.GetDeviceLabels(ctx, util.AddPrefix(util.SchedulingUnitCollection, "adh-su-2"))
+			assert.NoErr(t, err)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.That(t, resp.GetName(), should.Equal("schedulingunits/adh-su-2"))
+			assert.That(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_SCHEDULING_UNIT))
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "devicelabels/schedulingunits/adh-su-2")
+			assert.NoErr(t, err)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.That(t, changes[0].GetEventLabel(), should.Equal("device_labels"))
+			assert.That(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.That(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
 		})
 	})
 }

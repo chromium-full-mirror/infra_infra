@@ -1011,6 +1011,12 @@ func TestUpdateMachineDeviceLabels(t *testing.T) {
 			}
 			_, err = inventory.CreateMachineLSE(ctx, lse1)
 			assert.Loosely(t, err, should.BeNil)
+			su1 := &ufspb.SchedulingUnit{
+				Name:        "machine-update-with-devicelabels-su-1",
+				MachineLSEs: []string{"machine-update-with-devicelabels-lse-1"},
+			}
+			_, err = inventory.CreateSchedulingUnit(ctx, su1)
+			assert.Loosely(t, err, should.BeNil)
 
 			machine2 := &ufspb.Machine{
 				Name: "machine-update-with-devicelabels-1",
@@ -1023,13 +1029,25 @@ func TestUpdateMachineDeviceLabels(t *testing.T) {
 			_, err = UpdateMachine(ctx, machine2, &field_mask.FieldMask{Paths: []string{"zone", "rack"}})
 			assert.Loosely(t, err, should.BeNil)
 
+			// DUT labels
 			resp, err := inventory.GetDeviceLabels(ctx, util.AddPrefix(util.MachineLSECollection, "machine-update-with-devicelabels-lse-1"))
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetName(), should.Equal("machineLSEs/machine-update-with-devicelabels-lse-1"))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_CHROMEOS_DEVICE))
-
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "devicelabels/machineLSEs/machine-update-with-devicelabels-lse-1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("device_labels"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			// Scheduling Unit labels
+			resp, err = inventory.GetDeviceLabels(ctx, util.AddPrefix(util.SchedulingUnitCollection, "machine-update-with-devicelabels-su-1"))
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp.GetName(), should.Equal("schedulingunits/machine-update-with-devicelabels-su-1"))
+			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_SCHEDULING_UNIT))
+			changes, err = history.QueryChangesByPropertyName(ctx, "name", "devicelabels/schedulingunits/machine-update-with-devicelabels-su-1")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, changes, should.HaveLength(1))
 			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("device_labels"))

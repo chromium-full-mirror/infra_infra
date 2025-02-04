@@ -19,6 +19,7 @@ import (
 	. "infra/unifiedfleet/app/model/datastore"
 	"infra/unifiedfleet/app/model/history"
 	"infra/unifiedfleet/app/model/inventory"
+	"infra/unifiedfleet/app/util"
 )
 
 func mockSchedulingUnit(name string) *ufspb.SchedulingUnit {
@@ -38,14 +39,29 @@ func TestCreateSchedulingUnit(t *testing.T) {
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp, should.Match(su))
 
+			res, err := inventory.GetDeviceLabels(ctx, "schedulingunits/su-1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
+			assert.Loosely(t, res.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_SCHEDULING_UNIT))
+
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-1")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, changes, should.HaveLength(1))
 			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
 			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
 			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("schedulingunit"))
+			changes, err = history.QueryChangesByPropertyName(ctx, "name", "devicelabels/schedulingunits/su-1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("device_labels"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
+			msgs, err = history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "devicelabels/schedulingunits/su-1")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, msgs, should.HaveLength(1))
 			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
@@ -363,21 +379,26 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 		t.Run("Update SchedulingUnit for existing SchedulingUnit - partial update(append) machinelses", func(t *ftt.Test) {
 			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "dut-1",
+				Lse:  &ufspb.MachineLSE_ChromeosMachineLse{},
 			})
 			assert.Loosely(t, err, should.BeNil)
 
 			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name: "dut-2",
+				Lse:  &ufspb.MachineLSE_ChromeosMachineLse{},
 			})
 			assert.Loosely(t, err, should.BeNil)
 
 			su1 := mockSchedulingUnit("su-7")
 			su1.MachineLSEs = []string{"dut-1"}
-			inventory.CreateSchedulingUnit(ctx, su1)
+			_, err = inventory.CreateSchedulingUnit(ctx, su1)
+			assert.Loosely(t, err, should.BeNil)
 
 			su2 := mockSchedulingUnit("su-7")
 			su2.MachineLSEs = []string{"dut-2"}
-			resp, _ := UpdateSchedulingUnit(ctx, su2, &field_mask.FieldMask{Paths: []string{"machinelses"}})
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.AtlLabAdminRealm)
+			resp, err := UpdateSchedulingUnit(ctx, su2, &field_mask.FieldMask{Paths: []string{"machinelses"}})
+			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetName(), should.Equal(su2.GetName()))
 			assert.Loosely(t, resp.GetMachineLSEs(), should.Match([]string{"dut-1", "dut-2"}))
@@ -424,6 +445,38 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 			assert.Loosely(t, msgs, should.HaveLength(1))
 			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
+
+		t.Run("Update SchedulingUnit for existing SchedulingUnit - device labels updates", func(t *ftt.Test) {
+			su1 := mockSchedulingUnit("su-10")
+			su1.Pools = []string{"pool1"}
+			_, err := inventory.CreateSchedulingUnit(ctx, su1)
+			assert.Loosely(t, err, should.BeNil)
+
+			deviceLabels1 := &ufspb.DeviceLabels{
+				Name:         "schedulingunits/su10",
+				ResourceType: ufspb.ResourceType_RESOURCE_TYPE_SCHEDULING_UNIT,
+			}
+			_, err = inventory.BatchUpdateDeviceLabels(ctx, []*ufspb.DeviceLabels{deviceLabels1})
+			assert.Loosely(t, err, should.BeNil)
+
+			su2 := mockSchedulingUnit("su-10")
+			su2.Pools = []string{"pool2"}
+			resp, err := UpdateSchedulingUnit(ctx, su2, nil)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, resp, should.NotBeNil)
+			assert.Loosely(t, resp, should.Match(su2))
+
+			res, err := inventory.GetDeviceLabels(ctx, "schedulingunits/su-10")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, res, should.NotBeNil)
+
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "devicelabels/schedulingunits/su-10")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "devicelabels/schedulingunits/su-10")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+		})
 	})
 }
 
@@ -451,12 +504,13 @@ func TestGetSchedulingUnit(t *testing.T) {
 func TestDeleteSchedulingUnit(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
-	inventory.CreateSchedulingUnit(ctx, &ufspb.SchedulingUnit{
-		Name: "su-1",
-	})
 	ftt.Run("DeleteSchedulingUnit", t, func(t *ftt.Test) {
 		t.Run("Delete SchedulingUnit by existing ID - happy path", func(t *ftt.Test) {
-			err := DeleteSchedulingUnit(ctx, "su-1")
+			_, err := inventory.CreateSchedulingUnit(ctx, &ufspb.SchedulingUnit{
+				Name: "su-1",
+			})
+			assert.Loosely(t, err, should.BeNil)
+			err = DeleteSchedulingUnit(ctx, "su-1")
 			assert.Loosely(t, err, should.BeNil)
 
 			res, err := inventory.GetSchedulingUnit(ctx, "su-1")
@@ -482,6 +536,42 @@ func TestDeleteSchedulingUnit(t *testing.T) {
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
 		})
+
+		t.Run("Delete SchedulingUnit by existing ID with Devicelabels - happy path", func(t *ftt.Test) {
+			su1 := mockSchedulingUnit("su-3")
+			_, err := inventory.CreateSchedulingUnit(ctx, su1)
+			assert.Loosely(t, err, should.BeNil)
+			deviceLabels1 := &ufspb.DeviceLabels{
+				Name:         "schedulingunits/su-3",
+				ResourceType: ufspb.ResourceType_RESOURCE_TYPE_SCHEDULING_UNIT,
+			}
+			_, err = inventory.BatchUpdateDeviceLabels(ctx, []*ufspb.DeviceLabels{deviceLabels1})
+			assert.Loosely(t, err, should.BeNil)
+
+			err = DeleteSchedulingUnit(ctx, "su-3")
+			assert.Loosely(t, err, should.BeNil)
+
+			res, err := inventory.GetSchedulingUnit(ctx, "su-3")
+			assert.Loosely(t, res, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+			deviceLabelsRes, err := inventory.GetDeviceLabels(ctx, "schedulingunits/su-3")
+			assert.Loosely(t, deviceLabelsRes, should.BeNil)
+			assert.Loosely(t, err, should.NotBeNil)
+			assert.Loosely(t, err.Error(), should.ContainSubstring(NotFound))
+
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "devicelabels/schedulingunits/su-3")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRetire))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("device_labels"))
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "devicelabels/schedulingunits/su-3")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeTrue)
+		})
+
 	})
 }
 
