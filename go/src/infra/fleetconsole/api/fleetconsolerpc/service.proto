@@ -34,6 +34,9 @@ service FleetConsole {
 
   // PingDB attempts to establish contact with the database and does nothing else.
   rpc PingDB(PingDBRequest) returns (PingDBResponse) {};
+
+  // CleanExit just exits the current process.
+  rpc CleanExit(CleanExitRequest) returns (CleanExitResponse) {};
 }
 
 // PingRequest intentionally contains nothing.
@@ -171,3 +174,7 @@ message RepopulateCacheResponse {}
 message PingDBRequest {}
 
 message PingDBResponse {}
+
+message CleanExitRequest {}
+
+message CleanExitResponse {}
