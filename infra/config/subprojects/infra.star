@@ -232,7 +232,6 @@ tpp_tryjob("infra-internal:try/3pp linux-armv6l")
 tpp_tryjob("infra-internal:try/3pp linux-riscv64", experiment_percentage = 100)
 tpp_tryjob("infra-internal:try/3pp mac-amd64")
 tpp_tryjob("infra-internal:try/3pp mac-arm64")
-tpp_tryjob("infra-internal:try/3pp windows-386")
 tpp_tryjob("infra-internal:try/3pp windows-amd64")
 tpp_tryjob("infra-internal:try/3pp windows-arm64")
 
