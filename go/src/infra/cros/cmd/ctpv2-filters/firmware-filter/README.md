@@ -118,6 +118,16 @@ go fmt infra/cros/cmd/ctpv2-filters/firmware-filter && \
 golangci-lint run --fix cros/cmd/ctpv2-filters/firmware-filter
 ```
 
+## Unit tests
+
+```shell
+# If you fetched to somewhere other than ~/infra, change these paths.
+eval `~/infra/infra/go/env.py` && \
+cd ~/infra/infra/go/src/infra && \
+export CGO_ENABLED=0 && \
+go test infra/cros/cmd/ctpv2-filters/firmware-filter
+```
+
 ## Locally
 
 1) Get a request.json from a luci job such as https://logs.chromium.org/logs/chromeos/buildbucket/cr-buildbucket/8745841814552538721/+/u/ctpv2_sub-build__async_/u/step/39/log/1 and save it to ~/request.json
