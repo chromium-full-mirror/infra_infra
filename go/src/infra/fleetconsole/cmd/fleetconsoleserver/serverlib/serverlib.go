@@ -78,13 +78,18 @@ func ConfigureCORS(ctx context.Context, srv *server.Server) {
 		prpcSrv.AccessControl = func(ctx context.Context, origin string) prpc.AccessControlDecision {
 			// currently we are safe to allow localhost, especially as we are not storing auth state in a cookie
 			// in future it would be preferable to only allow localhost for dev environment and not on prod environment
-			addresses := []string{"localhost:", "luci-milo-dev.appspot.com", "luci-milo.appspot.com", "ci.chromium.org"}
+			allowedDomains := []string{"localhost:", "luci-milo-dev.appspot.com", "luci-milo.appspot.com", "ci.chromium.org"}
+			allowedSuffixes := []string{"luci-milo-dev.appspot.com"}
 
-			matches := slices.ContainsFunc(addresses, func(address string) bool {
+			matches := slices.ContainsFunc(allowedDomains, func(address string) bool {
 				return strings.HasPrefix(origin, "https://"+address) || strings.HasPrefix(origin, "http://"+address)
 			})
 
-			if matches {
+			matchesSuffix := slices.ContainsFunc(allowedSuffixes, func(address string) bool {
+				return strings.HasSuffix(origin, address)
+			})
+
+			if matches || matchesSuffix {
 				return prpc.AllowOriginAll(ctx, origin)
 			}
 			return prpc.AccessControlDecision{
