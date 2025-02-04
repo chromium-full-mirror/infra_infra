@@ -15,6 +15,15 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
+type TWriter struct {
+	t *testing.T
+}
+
+func (tw *TWriter) Write(p []byte) (n int, err error) {
+	tw.t.Logf("%s", string(p))
+	return len(p), nil
+}
+
 func TestGoldenFile(t *testing.T) {
 	// Read the input file
 	data, err := os.ReadFile("testdata/input1.textpb")
@@ -48,11 +57,19 @@ func TestGoldenFile(t *testing.T) {
 		ArtifactLink:    "gs://chromeos-image-archive/firmware-zork-13434.B-branch/R87-13434.899.0-1-8724259196952154561",
 	}
 
-	err = GenerateDynamicInfo(req, firmwareSpecs, log.Default())
+	err = GenerateDynamicInfo(req, firmwareSpecs, log.New(&TWriter{t: t}, "", log.Lshortfile))
 	if err != nil {
 		t.Fatal("GenerateDynamicInfo failed:", err)
 	}
 
+	// Diff just the dynamicUpdates section first, for a better diff.
+	if diff := cmp.Diff(expected.GetSuiteInfo().GetSuiteMetadata().GetDynamicUpdates(), req.GetSuiteInfo().GetSuiteMetadata().GetDynamicUpdates(), protocmp.Transform(),
+		protocmp.SortRepeated(func(a, b *api.DynamicDep) bool {
+			return a.GetKey() < b.GetKey()
+		}),
+	); diff != "" {
+		t.Errorf("messages are not equal: %v", diff)
+	}
 	if diff := cmp.Diff(expected, req, protocmp.Transform(),
 		protocmp.SortRepeated(func(a, b *api.DynamicDep) bool {
 			return a.GetKey() < b.GetKey()

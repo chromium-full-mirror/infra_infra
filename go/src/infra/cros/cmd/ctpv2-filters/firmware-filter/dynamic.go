@@ -18,7 +18,7 @@ import (
 // scheduling unit's dynamic lookup table.
 func GenerateDynamicInfo(req *api.InternalTestplan, specs *FirmwareSpecs, log *log.Logger) error {
 	// Create Dynamic Updates.
-	if err := generateProvisionRequests(req, specs); err != nil {
+	if err := generateProvisionRequests(req, specs, log); err != nil {
 		return err
 	}
 
@@ -30,56 +30,11 @@ func GenerateDynamicInfo(req *api.InternalTestplan, specs *FirmwareSpecs, log *l
 
 // generateProvisionRequests loops through each swarming definition and
 // builds out the firmware provision request.
-func generateProvisionRequests(req *api.InternalTestplan, specs *FirmwareSpecs) error {
+func generateProvisionRequests(req *api.InternalTestplan, specs *FirmwareSpecs, log *log.Logger) error {
 	dynamicHelper := NewDynamicFirmwareProvisionHelper(specs)
 
-	// Legacy primary
-	suiteMetadata := req.GetSuiteInfo().GetSuiteMetadata()
-	if len(suiteMetadata.GetTargetRequirements()) > 0 {
-		hwDef := suiteMetadata.GetTargetRequirements()[0].GetHwRequirements().GetHwDefinition()
-		if len(hwDef) > 0 {
-			swarmingDef := hwDef[0]
-			if err := dynamicHelper.GenerateProvisionRequest(req, swarmingDef); err != nil {
-				return err
-			}
-		}
-	}
-
-	// TODO (oldProto-azrahman): remove when schedulingOptions is fully rolled.
-	if len(suiteMetadata.GetSchedulingUnits()) > 0 {
-		for _, schedulingUnit := range suiteMetadata.GetSchedulingUnits() {
-			if err := generateProvisionRequestForSchedUnit(schedulingUnit, req, dynamicHelper); err != nil {
-				return err
-			}
-		}
-	}
-
-	if len(suiteMetadata.GetSchedulingUnitOptions()) > 0 {
-		for _, schedOption := range suiteMetadata.GetSchedulingUnitOptions() {
-			for _, schedulingUnit := range schedOption.GetSchedulingUnits() {
-				if err := generateProvisionRequestForSchedUnit(schedulingUnit, req, dynamicHelper); err != nil {
-					return err
-				}
-			}
-		}
-	}
-
-	return nil
-}
-
-func generateProvisionRequestForSchedUnit(schedUnit *api.SchedulingUnit, req *api.InternalTestplan, dynamicHelper *DynamicFirmwareProvisionHelper) error {
-	swarmingDef := schedUnit.GetPrimaryTarget().GetSwarmingDef()
-	if err := dynamicHelper.GenerateProvisionRequest(req, swarmingDef); err != nil {
-		return err
-	}
-
-	for _, companion := range schedUnit.GetCompanionTargets() {
-		swarmingDef := companion.GetSwarmingDef()
-		if err := dynamicHelper.GenerateProvisionRequest(req, swarmingDef); err != nil {
-			return err
-		}
-	}
-	return nil
+	// Add container request
+	return dynamicHelper.GenerateProvisionRequest(req, log)
 }
 
 // generateDynamicUpdateLookupTables populates the lookup table for the primary

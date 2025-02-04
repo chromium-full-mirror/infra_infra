@@ -6,13 +6,13 @@ package main
 
 import (
 	"fmt"
+	"log"
 
 	"google.golang.org/protobuf/types/known/anypb"
 
 	goconfig "go.chromium.org/chromiumos/config/go"
 	gobuildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/builders"
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/common"
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/helpers"
@@ -70,27 +70,21 @@ func (DH *DynamicFirmwareProvisionHelper) ApplyFirmwareProvisionToLookup(lookupT
 }
 
 // GenerateProvisionRequest creates a dynamic firmware request for chromeos devices.
-func (DH *DynamicFirmwareProvisionHelper) GenerateProvisionRequest(req *api.InternalTestplan, swarmingDef *api.SwarmingDefinition) error {
-	switch swarmingDef.GetDutInfo().GetDutType().(type) {
-	case *dut_api.Dut_Chromeos:
-		deviceID := common.NewPrimaryDeviceIdentifier()
-		if DH.count > 0 {
-			deviceID = common.NewCompanionDeviceIdentifier(helpers.Board.WithIndex(DH.count).AsPlaceholder())
-		}
-		taskID := common.NewTaskIdentifier(CrosFwProvision).AddDeviceId(deviceID)
-		containerBuilders := []*builders.ContainerBuilder{
-			helpers.NewCrosDutContainer(deviceID),
-			newFirmwareProvisionContainer(taskID),
-		}
-
-		return helpers.GenerateProvisionRequest(
-			req, taskID, deviceID,
-			containerBuilders,
-			DH.newFirmwareInstallRequest(),
-		)
+func (DH *DynamicFirmwareProvisionHelper) GenerateProvisionRequest(req *api.InternalTestplan, log *log.Logger) error {
+	deviceID := common.NewPrimaryDeviceIdentifier()
+	if DH.count > 0 {
+		deviceID = common.NewCompanionDeviceIdentifier(helpers.Board.WithIndex(DH.count).AsPlaceholder())
+	}
+	taskID := common.NewTaskIdentifier(CrosFwProvision).AddDeviceId(deviceID)
+	containerBuilders := []*builders.ContainerBuilder{
+		newFirmwareProvisionContainer(taskID),
 	}
 
-	return nil
+	return helpers.GenerateProvisionRequest(
+		req, taskID, deviceID,
+		containerBuilders,
+		DH.newFirmwareInstallRequest(),
+	)
 }
 
 // newFirmwareInstallRequest creates placeholder firmware configs
