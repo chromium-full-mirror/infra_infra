@@ -90,11 +90,11 @@ func (s *SchedukeScheduler) ScheduleRequest(ctx context.Context, req *buildbucke
 		case schedukepb.TaskState_EXPIRED:
 			summary := fmt.Sprintf("task %d expired while pending in Scheduke", taskID)
 			step.SetSummaryMarkdown(summary)
-			return nil, "", fmt.Errorf(summary)
+			return nil, "", fmt.Errorf("%s", summary)
 		default:
 			summary := fmt.Sprintf("task %d in unexpected state %s in Scheduke", taskID, s.String())
 			step.SetSummaryMarkdown(summary)
-			return nil, "", fmt.Errorf(summary)
+			return nil, "", fmt.Errorf("%s", summary)
 		}
 
 		time.Sleep(schedukePollingWait)

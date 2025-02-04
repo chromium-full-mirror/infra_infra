@@ -54,7 +54,7 @@ func CreateStepWithStatus(
 	}
 
 	var stepErr error
-	step, ctx := build.StartStep(ctx, stepName)
+	step, _ := build.StartStep(ctx, stepName)
 	defer func() {
 		step.End(build.AttachStatus(stepErr, bbpb.Status_FAILURE, nil))
 	}()

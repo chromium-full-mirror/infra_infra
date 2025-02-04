@@ -125,8 +125,8 @@ func WriteContainerLogToStepLog(ctx context.Context, container interfaces.Contai
 	return nil
 }
 
-// WriteProtoToJsonFile writes provided proto to a json file.
-func WriteProtoToJsonFile(
+// WriteProtoToJSONFile writes provided proto to a json file.
+func WriteProtoToJSONFile(
 	ctx context.Context,
 	dirPath string,
 	fileName string,

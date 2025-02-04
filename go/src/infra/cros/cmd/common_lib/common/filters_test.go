@@ -67,7 +67,7 @@ func TestGetDefaultFilters(t *testing.T) {
 	if filters[2].GetContainerInfo().GetContainer().GetName() != LegacyHWContainerName {
 		t.Fatal("No LegacyHWContainerName found in default filters (or is out of order).")
 	}
-	if filters[2].GetContainerInfo().GetContainer().GetDigest() != fmt.Sprintf("foo") {
+	if filters[2].GetContainerInfo().GetContainer().GetDigest() != "foo" {
 		t.Fatal("LegacyHWContainerName default has incorrect sha")
 	}
 
@@ -115,7 +115,7 @@ func TestGetDefaultFilters(t *testing.T) {
 	}
 
 	// Test missing filter errs.
-	filters, err = GetDefaultFilters(ctx, []string{"somerandomfilter"}, contMetadataMap, 15000)
+	_, err = GetDefaultFilters(ctx, []string{"somerandomfilter"}, contMetadataMap, 15000)
 	if err == nil {
 		t.Fatal("An undiscovered filter should have errored but didnt")
 	}

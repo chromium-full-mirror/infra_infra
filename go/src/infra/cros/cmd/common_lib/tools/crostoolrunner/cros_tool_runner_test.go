@@ -123,10 +123,10 @@ func TestStopCtrServer(t *testing.T) {
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 		ctr.isServerRunning = true
 
-		mocked_client := NewMockCrosToolRunnerContainerServiceClient(ctrl)
-		ctr.CtrClient = mocked_client
+		mockedClient := NewMockCrosToolRunnerContainerServiceClient(ctrl)
+		ctr.CtrClient = mockedClient
 
-		getMockedShutdown(mocked_client).Return(nil, fmt.Errorf("some error"))
+		getMockedShutdown(mockedClient).Return(nil, fmt.Errorf("some error"))
 
 		err := ctr.StopCTRServer(ctx)
 		assert.Loosely(t, err, should.NotBeNil)
@@ -140,10 +140,10 @@ func TestStopCtrServer(t *testing.T) {
 		ctr.wg = &sync.WaitGroup{}
 		ctr.isServerRunning = true
 
-		mocked_client := NewMockCrosToolRunnerContainerServiceClient(ctrl)
-		ctr.CtrClient = mocked_client
+		mockedClient := NewMockCrosToolRunnerContainerServiceClient(ctrl)
+		ctr.CtrClient = mockedClient
 
-		getMockedShutdown(mocked_client).Return(&testapi.ShutdownResponse{}, nil)
+		getMockedShutdown(mockedClient).Return(&testapi.ShutdownResponse{}, nil)
 
 		err := ctr.StopCTRServer(ctx)
 		assert.Loosely(t, err, should.BeNil)
@@ -180,10 +180,10 @@ func TestStartContainer(t *testing.T) {
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 
-		mocked_client := NewMockCrosToolRunnerContainerServiceClient(ctrl)
-		ctr.CtrClient = mocked_client
+		mockedClient := NewMockCrosToolRunnerContainerServiceClient(ctrl)
+		ctr.CtrClient = mockedClient
 
-		getMockedStartContainer(mocked_client).Return(nil, fmt.Errorf("some error"))
+		getMockedStartContainer(mockedClient).Return(nil, fmt.Errorf("some error"))
 		resp, err := ctr.StartContainer(ctx, &testapi.StartContainerRequest{})
 		assert.Loosely(t, err, should.NotBeNil)
 		assert.Loosely(t, resp, should.BeNil)
@@ -194,10 +194,10 @@ func TestStartContainer(t *testing.T) {
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 
-		mocked_client := NewMockCrosToolRunnerContainerServiceClient(ctrl)
-		ctr.CtrClient = mocked_client
+		mockedClient := NewMockCrosToolRunnerContainerServiceClient(ctrl)
+		ctr.CtrClient = mockedClient
 
-		getMockedStartContainer(mocked_client).Return(&testapi.StartContainerResponse{}, nil)
+		getMockedStartContainer(mockedClient).Return(&testapi.StartContainerResponse{}, nil)
 		resp, err := ctr.StartContainer(ctx, &testapi.StartContainerRequest{})
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, resp, should.NotBeNil)
@@ -232,10 +232,10 @@ func TestStartTemplatedContainer(t *testing.T) {
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 
-		mocked_client := NewMockCrosToolRunnerContainerServiceClient(ctrl)
-		ctr.CtrClient = mocked_client
+		mockedClient := NewMockCrosToolRunnerContainerServiceClient(ctrl)
+		ctr.CtrClient = mockedClient
 
-		getMockedStartTemplatedContainer(mocked_client).Return(nil, fmt.Errorf("some error"))
+		getMockedStartTemplatedContainer(mockedClient).Return(nil, fmt.Errorf("some error"))
 		resp, err := ctr.StartTemplatedContainer(ctx, &testapi.StartTemplatedContainerRequest{})
 		assert.Loosely(t, err, should.NotBeNil)
 		assert.Loosely(t, resp, should.BeNil)
@@ -246,10 +246,10 @@ func TestStartTemplatedContainer(t *testing.T) {
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 
-		mocked_client := NewMockCrosToolRunnerContainerServiceClient(ctrl)
-		ctr.CtrClient = mocked_client
+		mockedClient := NewMockCrosToolRunnerContainerServiceClient(ctrl)
+		ctr.CtrClient = mockedClient
 
-		getMockedStartTemplatedContainer(mocked_client).Return(&testapi.StartContainerResponse{}, nil)
+		getMockedStartTemplatedContainer(mockedClient).Return(&testapi.StartContainerResponse{}, nil)
 		resp, err := ctr.StartTemplatedContainer(ctx, &testapi.StartTemplatedContainerRequest{})
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, resp, should.NotBeNil)
@@ -310,10 +310,10 @@ func TestGetContainer(t *testing.T) {
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 
-		mocked_client := NewMockCrosToolRunnerContainerServiceClient(ctrl)
-		ctr.CtrClient = mocked_client
+		mockedClient := NewMockCrosToolRunnerContainerServiceClient(ctrl)
+		ctr.CtrClient = mockedClient
 
-		getMockedGetContainer(mocked_client).Return(nil, fmt.Errorf("some error"))
+		getMockedGetContainer(mockedClient).Return(nil, fmt.Errorf("some error"))
 		resp, err := ctr.GetContainer(ctx, containerName)
 		assert.Loosely(t, err, should.NotBeNil)
 		assert.Loosely(t, resp, should.BeNil)
@@ -324,10 +324,10 @@ func TestGetContainer(t *testing.T) {
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 
-		mocked_client := NewMockCrosToolRunnerContainerServiceClient(ctrl)
-		ctr.CtrClient = mocked_client
+		mockedClient := NewMockCrosToolRunnerContainerServiceClient(ctrl)
+		ctr.CtrClient = mockedClient
 
-		getMockedGetContainer(mocked_client).Return(&testapi.GetContainerResponse{
+		getMockedGetContainer(mockedClient).Return(&testapi.GetContainerResponse{
 			Container: &testapi.Container{
 				PortBindings: []*testapi.Container_PortBinding{
 					{
@@ -364,10 +364,10 @@ func TestGcloudAuth(t *testing.T) {
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 
-		mocked_client := NewMockCrosToolRunnerContainerServiceClient(ctrl)
-		ctr.CtrClient = mocked_client
+		mockedClient := NewMockCrosToolRunnerContainerServiceClient(ctrl)
+		ctr.CtrClient = mockedClient
 
-		getMockedLoginRegistry(mocked_client).Return(nil, fmt.Errorf("some error"))
+		getMockedLoginRegistry(mockedClient).Return(nil, fmt.Errorf("some error"))
 		resp, err := ctr.GcloudAuth(ctx, "", false)
 		assert.Loosely(t, err, should.NotBeNil)
 		assert.Loosely(t, resp, should.BeNil)
@@ -378,10 +378,10 @@ func TestGcloudAuth(t *testing.T) {
 		ctrCipd := CtrCipdInfo{Version: "prod"}
 		ctr := CrosToolRunner{CtrCipdInfo: ctrCipd}
 
-		mocked_client := NewMockCrosToolRunnerContainerServiceClient(ctrl)
-		ctr.CtrClient = mocked_client
+		mockedClient := NewMockCrosToolRunnerContainerServiceClient(ctrl)
+		ctr.CtrClient = mockedClient
 
-		getMockedLoginRegistry(mocked_client).Return(&testapi.LoginRegistryResponse{}, nil)
+		getMockedLoginRegistry(mockedClient).Return(&testapi.LoginRegistryResponse{}, nil)
 		resp, err := ctr.GcloudAuth(ctx, "docker/file/location", false)
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, resp, should.NotBeNil)

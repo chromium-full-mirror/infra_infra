@@ -268,7 +268,7 @@ func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, _ *build.S
 		return nil
 	}
 
-	service, err := androidapi.NewAndroidBuildService(ctx, androidapi.SERVICEACCOUNT, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
+	service, err := androidapi.NewAndroidBuildService(ctx, androidapi.ServiceAccount, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 	if err != nil {
 		return err
 	}
@@ -451,7 +451,7 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 	}
 
 	if cmd.AlStateInfo.DoneTesting {
-		service, err := androidapi.NewAndroidBuildService(ctx, androidapi.SERVICEACCOUNT, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
+		service, err := androidapi.NewAndroidBuildService(ctx, androidapi.ServiceAccount, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 		if err != nil {
 			return err
 		}
@@ -509,7 +509,7 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 
 	// Publish TestJobEvent
 	if cmd.AlStateInfo.CurrentTestJobEvent != nil {
-		updateItems.TestJobEventMsgJson = cmd.AlStateInfo.CurrentTestJobEvent
+		updateItems.TestJobEventMsgJSON = cmd.AlStateInfo.CurrentTestJobEvent
 		encodedTestJobEventMsg, err := common.EncodeAnyObj(cmd.AlStateInfo.CurrentTestJobEvent)
 		if err != nil {
 			common.WriteStringToStepLog(ctx, step, fmt.Sprintf("err while encoding test job event msg: %s", err.Error()), "testJobEventMsg encoding error")

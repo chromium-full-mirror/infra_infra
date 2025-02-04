@@ -1,0 +1,135 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package commonbuilders
+
+import (
+	"context"
+	"fmt"
+
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	buildapi "go.chromium.org/chromiumos/config/go/build/api"
+	"go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
+	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
+	"go.chromium.org/luci/common/logging"
+
+	"infra/cros/cmd/common_lib/common"
+	"infra/cros/cmd/common_lib/interfaces"
+)
+
+type DynamicTrv2FromCft struct {
+	interfaces.DynamicTRv2Builder
+
+	Cft *skylab_test_runner.CFTTestRequest
+}
+
+func NewDynamicTrv2FromCftBuilder(cft *skylab_test_runner.CFTTestRequest) *DynamicTrv2FromCft {
+	return &DynamicTrv2FromCft{
+		Cft: cft,
+	}
+}
+
+// BuildRequest extracts necessary information from the cft test request to build out the
+// dynamic trv2 request.
+func (builder *DynamicTrv2FromCft) BuildRequest(ctx context.Context, isALRun bool, isPartnerRun bool, botDims []*buildbucketpb.StringPair, buildExperiments []string) (*api.CrosTestRunnerDynamicRequest, error) {
+	// Grab correct firestore db name to be used
+	firestoreDBName := common.TestPlatformFireStore
+	if isALRun && isPartnerRun {
+		firestoreDBName = common.PartnerTestPlatformFireStore
+	}
+
+	dynamic := builder.buildDynamicRequest(firestoreDBName, botDims, buildExperiments, isALRun)
+
+	builder.tryAppendProvisionTask(dynamic)
+	builder.tryAppendTestTask(dynamic)
+	builder.tryAppendPostProcessTask(dynamic)
+	builder.tryAppendPublishTasks(dynamic)
+
+	for _, companionDut := range builder.Cft.GetCompanionDuts() {
+		dynamic.CompanionDuts = append(dynamic.CompanionDuts, companionDut.GetDutModel())
+	}
+
+	return dynamic.BuildRequest(ctx, isALRun)
+}
+
+type DynamicTaskBuilder func(*DynamicTrv2Builder) []*api.CrosTestRunnerDynamicRequest_Task
+
+type DynamicTrv2Builder struct {
+	// Inputs
+	ParentBuildID    int64
+	ParentRequestUID string
+	Deadline         *timestamppb.Timestamp
+	// Oneof
+	GcsArtifactPath   string
+	ContainerMetadata *buildapi.ContainerMetadata
+	// End Oneof
+	ContainerMetadataKey string
+	BuildString          string
+	TestSuites           []*api.TestSuite
+	PrimaryDut           *labapi.DutModel
+	CompanionDuts        []*labapi.DutModel
+	Keyvals              map[string]string
+	OrderedTaskBuilders  []DynamicTaskBuilder
+	CredentialsFile      string
+	// EnvVersion denotes whether the environment
+	// is prod or something else.
+	EnvVersion       string
+	FirestoreDBName  string
+	Is3DRun          bool
+	IsALRun          bool
+	BotDims          []*buildbucketpb.StringPair
+	BuildExperiments []string
+}
+
+// BuildRequest constructs the trv2 dynamic CrosTestRunnerDynamicRequest.
+func (builder *DynamicTrv2Builder) BuildRequest(ctx context.Context, isALRun bool) (*api.CrosTestRunnerDynamicRequest, error) {
+	if builder.ContainerMetadata == nil && !isALRun {
+		if builder.GcsArtifactPath == "" {
+			return nil, fmt.Errorf("request missing `GcsArtifactPath`, can't fetch container metadata")
+		}
+		containerMetadata, err := common.FetchContainerMetadata(ctx, builder.GcsArtifactPath+common.ContainerMetadataPath)
+		if err != nil {
+			logging.Infof(ctx, "error while fetching container metadata: %s", err)
+			return nil, err
+		}
+		builder.ContainerMetadata = containerMetadata
+	}
+
+	orderedTasks := []*api.CrosTestRunnerDynamicRequest_Task{}
+	for _, taskBuilder := range builder.OrderedTaskBuilders {
+		orderedTasks = append(orderedTasks, taskBuilder(builder)...)
+	}
+
+	return &api.CrosTestRunnerDynamicRequest{
+		StartRequest: builder.buildStartRequest(),
+		Params:       builder.buildParams(ctx),
+		OrderedTasks: orderedTasks,
+	}, nil
+}
+
+// buildStartRequest defaults to the BuildMode start request.
+func (builder *DynamicTrv2Builder) buildStartRequest() *api.CrosTestRunnerDynamicRequest_Build {
+	return &api.CrosTestRunnerDynamicRequest_Build{
+		Build: &api.BuildMode{
+			ParentBuildId:    builder.ParentBuildID,
+			ParentRequestUid: builder.ParentRequestUID,
+		},
+	}
+}
+
+// buildParams constructs the CrosTestRunnerParams.
+func (builder *DynamicTrv2Builder) buildParams(ctx context.Context) *api.CrosTestRunnerParams {
+	return &api.CrosTestRunnerParams{
+		ContainerMetadata:    PatchContainerMetadata(ctx, builder.ContainerMetadata, builder.BuildString, builder.CredentialsFile, builder.EnvVersion, builder.FirestoreDBName),
+		ContainerMetadataKey: builder.ContainerMetadataKey,
+		Keyvals:              builder.Keyvals,
+		PrimaryDut:           builder.PrimaryDut,
+		CompanionDuts:        builder.CompanionDuts,
+		TestSuites:           builder.TestSuites,
+		Deadline:             builder.Deadline,
+	}
+}

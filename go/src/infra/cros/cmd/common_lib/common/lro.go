@@ -19,19 +19,19 @@ import (
 // Don't use this, use WaitLro instead.
 func ProcessDoneLro(ctx context.Context, lro *longrunning.Operation) (*anypb.Any, error) {
 	if lro == nil {
-		return nil, fmt.Errorf("Provided lro is nil")
+		return nil, fmt.Errorf("provided lro is nil")
 	}
 
 	// Wait for the operation to be done
 	for !lro.Done {
-		return nil, fmt.Errorf("LRO is not done")
+		return nil, fmt.Errorf("lro is not done")
 	}
 
 	// Check operation result
 	switch x := lro.Result.(type) {
 	case *longrunning.Operation_Error:
 		logging.Infof(ctx, "LRO ERROR: %s", x.Error.Message)
-		return nil, fmt.Errorf(x.Error.Message)
+		return nil, fmt.Errorf("%s", x.Error.Message)
 	case *longrunning.Operation_Response:
 		logging.Infof(ctx, "LRO RESPONSE: %s", x.Response)
 		return x.Response, nil
@@ -66,11 +66,11 @@ func WaitLro(ctx context.Context, lroClient longrunning.OperationsClient, lro *l
 	switch x := lro.Result.(type) {
 	case *longrunning.Operation_Error:
 		logging.Infof(ctx, "LRO ERROR: %s", x.Error.Message)
-		return nil, fmt.Errorf(x.Error.Message)
+		return nil, fmt.Errorf("%s", x.Error.Message)
 	case *longrunning.Operation_Response:
 		logging.Infof(ctx, "LRO RESPONSE: %s", x.Response)
 		return x.Response, nil
 	default:
-		return nil, fmt.Errorf("Unexpected lro result type")
+		return nil, fmt.Errorf("unexpected lro result type")
 	}
 }

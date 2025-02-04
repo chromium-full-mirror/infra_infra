@@ -11,8 +11,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/cmd/common_lib/common_configs"
-	"infra/cros/cmd/common_lib/common_executors"
+	"infra/cros/cmd/common_lib/commonconfigs"
+	"infra/cros/cmd/common_lib/commonexecutors"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
 
@@ -21,9 +21,9 @@ func TestGetExecutor_UnsupportedExecutorType(t *testing.T) {
 	ftt.Run("Unsupported executor type", t, func(t *ftt.Test) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := common_configs.NewContainerConfig(ctr, nil, false)
+		contConfig := commonconfigs.NewContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
-		executor, err := execConfig.GetExecutor(common_executors.NoExecutorType)
+		executor, err := execConfig.GetExecutor(commonexecutors.NoExecutorType)
 		assert.Loosely(t, executor, should.BeNil)
 		assert.Loosely(t, err, should.NotBeNil)
 	})
@@ -36,7 +36,7 @@ func TestGetExecutor_UnsupportedExecutorType(t *testing.T) {
 // 	ftt.Run("Supported executor type", t, func(t *ftt.Test) {
 // 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 // 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-// 		contConfig := common_configs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
+// 		contConfig := commonconfigs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
 // 		execConfig := NewExecutorConfig(ctr, contConfig)
 //
 // 		executor, err := execConfig.GetExecutor(executors.NoExecutorType)

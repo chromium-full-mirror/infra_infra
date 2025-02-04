@@ -59,7 +59,7 @@ func (cmd *CpconPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 		logging.Warningf(ctx, "SWARMING_TASK_ID not set, setting to default %s", "local_run")
 		swarmingTaskId = "local_run"
 	}
-	formattedSwarmingTaskId := common.FormatSwarmingTaskId(swarmingTaskId)
+	formattedSwarmingTaskId := common.FormatSwarmingTaskID(swarmingTaskId)
 	jobName := fmt.Sprintf("swarming-%s0", formattedSwarmingTaskId)
 	cmd.CpconJobName = jobName
 

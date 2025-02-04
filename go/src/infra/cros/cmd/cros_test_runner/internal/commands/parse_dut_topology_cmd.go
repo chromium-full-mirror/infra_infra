@@ -119,7 +119,7 @@ func (cmd *ParseDutTopologyCmd) Execute(ctx context.Context) error {
 		if err != nil {
 			return fmt.Errorf("Failed to match primaryDevice, %s", err)
 		}
-		cmd.appendDevice(common.NewPrimaryDeviceIdentifier().Id, info)
+		cmd.appendDevice(common.NewPrimaryDeviceIdentifier().ID, info)
 	}
 
 	for _, companionDutModel := range cmd.CompanionDutModels {
@@ -128,20 +128,20 @@ func (cmd *ParseDutTopologyCmd) Execute(ctx context.Context) error {
 			return fmt.Errorf("Failed to match companionDevice, %s", err)
 		}
 		deviceId := common.NewCompanionDeviceIdentifier(companionDutModel.GetBuildTarget())
-		if _, ok := cmd.Devices[deviceId.Id]; ok {
+		if _, ok := cmd.Devices[deviceId.ID]; ok {
 			// deviceId already exists, try postfixing
 			// Standard within swarming when there are duplicate boards
 			// is to postfix with `_2`. (e.g. `brya | brya_2`)
 			postfix := 2
 			for {
-				if _, ok := cmd.Devices[deviceId.AddPostfix(strconv.Itoa(postfix)).Id]; !ok {
+				if _, ok := cmd.Devices[deviceId.AddPostfix(strconv.Itoa(postfix)).ID]; !ok {
 					deviceId = deviceId.AddPostfix(strconv.Itoa(postfix))
 					break
 				}
 				postfix += 1
 			}
 		}
-		cmd.appendDevice(deviceId.Id, info)
+		cmd.appendDevice(deviceId.ID, info)
 	}
 
 	return nil
@@ -211,7 +211,7 @@ func (cmd *ParseDutTopologyCmd) updateHwTestStateKeeper(
 			sk.CompanionDevices = append(sk.CompanionDevices, device)
 			sk.CompanionDevicesMetadata = append(sk.CompanionDevicesMetadata, deviceMetadata)
 		}
-		sk.Devices[deviceIdentifier.Id] = device
+		sk.Devices[deviceIdentifier.ID] = device
 
 		// Need to grab botDims for label-pool.
 		build := sk.BuildState.Build()
@@ -226,7 +226,7 @@ func (cmd *ParseDutTopologyCmd) updateHwTestStateKeeper(
 			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the injectable storage, %s", cmd.GetCommandType(), deviceIdentifier.GetDeviceMetadata(), err)
 		}
 		if err := sk.Injectables.Set(deviceIdentifier.GetUpdateFirmware(), updateFirmware); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the injectable storage, %s", cmd.GetCommandType(), deviceIdentifier.AddPostfix("updateFirmware").Id)
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the injectable storage, %s", cmd.GetCommandType(), deviceIdentifier.AddPostfix("updateFirmware").ID)
 		}
 	}
 

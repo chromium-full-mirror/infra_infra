@@ -6,6 +6,7 @@ package gensupport
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io"
 	"mime"
@@ -41,7 +42,7 @@ func newMultipartReader(parts []typeReader, boundary string) *multipartReader {
 	mp.pr, pw = io.Pipe()
 	mpw := multipart.NewWriter(pw)
 	if boundary != "" {
-		mpw.SetBoundary(boundary)
+		_ = mpw.SetBoundary(boundary)
 	}
 	mp.ctype = "multipart/related; boundary=" + mpw.Boundary()
 	go func() {
@@ -49,13 +50,13 @@ func newMultipartReader(parts []typeReader, boundary string) *multipartReader {
 			w, err := mpw.CreatePart(typeHeader(part.typ))
 			if err != nil {
 				mpw.Close()
-				pw.CloseWithError(fmt.Errorf("googleapi: CreatePart failed: %v", err))
+				pw.CloseWithError(fmt.Errorf("googleapi: CreatePart failed: %w", err))
 				return
 			}
 			_, err = io.Copy(w, part.Reader)
 			if err != nil {
 				mpw.Close()
-				pw.CloseWithError(fmt.Errorf("googleapi: Copy failed: %v", err))
+				pw.CloseWithError(fmt.Errorf("googleapi: Copy failed: %w", err))
 				return
 			}
 		}
@@ -128,7 +129,7 @@ func PrepareUpload(media io.Reader, chunkSize int) (r io.Reader, mb *MediaBuffer
 	// either nil or a non-EOF error. If it is the latter, then the next call to
 	// mb.Chunk will return the same error. Returning a MediaBuffer ensures that this
 	// error will be handled at some point.
-	return nil, mb, err == io.EOF
+	return nil, mb, errors.Is(err, io.EOF)
 }
 
 // MediaInfo holds information for media uploads. It is intended for use by generated

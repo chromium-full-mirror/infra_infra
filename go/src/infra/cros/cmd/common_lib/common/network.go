@@ -19,8 +19,8 @@ import (
 type SwarmingBotProvider string
 
 const (
-	// swarmingBotIdEnvName is the env variable name for bot ID
-	swarmingBotIdEnvName = "SWARMING_BOT_ID"
+	// swarmingBotIDEnvName is the env variable name for bot ID
+	swarmingBotIDEnvName = "SWARMING_BOT_ID"
 
 	// swarmingBotPrefixGce is the prefix used in all Gce bots for VMLab.
 	// The vmlab PROD pool has a more specific prefix: "chromeos-test-vmlab-"
@@ -43,15 +43,15 @@ const (
 	BotProviderUnknown SwarmingBotProvider = "Unknown"
 )
 
-// GetHostIp returns the IP address that is accessible from outside the host
-func GetHostIp() (string, error) {
+// GetHostIP returns the IP address that is accessible from outside the host
+func GetHostIP() (string, error) {
 	cmd := exec.Command("hostname", "-I")
 	stdout, stderr, err := RunCommand(context.Background(), cmd, "hostname", nil, true)
 	if err != nil {
-		return "", errors.Annotate(err, "Unable to find localhost IP: "+stderr).Err()
+		return "", errors.Annotate(err, "%s: %s", "unable to find localhost IP: ", stderr).Err()
 	}
 	if strings.TrimSpace(stdout) == "" {
-		return "", errors.New("Unable to find localhost IP: hostname -I returns no results")
+		return "", errors.New("unable to find localhost IP: hostname -I returns no results")
 	}
 	return strings.Fields(stdout)[0], nil
 }
@@ -63,7 +63,7 @@ func GetBotProvider() SwarmingBotProvider {
 			return BotProviderPVS
 		}
 	}
-	if lookup, found := os.LookupEnv(swarmingBotIdEnvName); found {
+	if lookup, found := os.LookupEnv(swarmingBotIDEnvName); found {
 		for _, p := range heuristics.HwSwarmingBotIDPrefixes {
 			if strings.HasPrefix(lookup, p) {
 				return BotProviderDrone
@@ -76,11 +76,11 @@ func GetBotProvider() SwarmingBotProvider {
 	return BotProviderUnknown
 }
 
-// WaitDutVmBoot uses a blocking SSH call to wait for a DUT VM to become ready.
+// WaitDutVMBoot uses a blocking SSH call to wait for a DUT VM to become ready.
 // It doesn't care about the output. If the connection is successful, it
 // executes `true` that returns nothing. If permission denied, it means SSH is
 // ready. If timeout, we leave it to the following step to detect the error.
-func WaitDutVmBoot(ctx context.Context, ip string) {
+func WaitDutVMBoot(ctx context.Context, ip string) {
 	cmd := exec.Command("/usr/bin/ssh",
 		"-o", "ConnectTimeout=120",
 		"-o", "StrictHostKeyChecking=no",

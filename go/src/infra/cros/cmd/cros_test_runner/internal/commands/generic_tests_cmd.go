@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/common_commands"
+	"infra/cros/cmd/common_lib/commoncommands"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 )
@@ -58,7 +58,7 @@ func (cmd *GenericTestsCmd) instantiateWithHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) (err error) {
 
-	if err := common_commands.Instantiate_PopFromQueue(sk.TestQueue, func(element any) {
+	if err := commoncommands.InstantiatePopFromQueue(sk.TestQueue, func(element any) {
 		cmd.TestRequest = element.(*api.TestTask)
 	}); err != nil {
 		return fmt.Errorf("cmd %s missing dependency: TestRequest, %s", cmd.GetCommandType(), err)
@@ -134,8 +134,8 @@ func (cmd *GenericTestsCmd) updateHwTestStateKeeper(
 	sk.TestExecutionEndTime = timestamppb.New(time.Now())
 	taskIdentifier := common.NewTaskIdentifier(cmd.TestRequest.DynamicIdentifier)
 	if cmd.TestResponses != nil {
-		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("runTests"), cmd.TestResponses); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcResponse("runTests"))
+		if err := sk.Injectables.Set(taskIdentifier.GetRPCResponse("runTests"), cmd.TestResponses); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRPCResponse("runTests"))
 		}
 		sk.TestResponses = cmd.TestResponses
 		rdbTestResult, err := constructTestResultFromStateKeeper(ctx, sk)
@@ -143,15 +143,15 @@ func (cmd *GenericTestsCmd) updateHwTestStateKeeper(
 			return errors.Annotate(err, "Cmd %q failed to construct update: TestResultForRdb", cmd.GetCommandType()).Err()
 		}
 		sk.TestResultForRdb = rdbTestResult
-		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("rdbTestResult"), sk.TestResultForRdb); err != nil {
-			logging.Infof(ctx, "Warning: failed to set %s into the InjectableStorage, %s", taskIdentifier.GetRpcResponse("rdbTestResult"), err)
+		if err := sk.Injectables.Set(taskIdentifier.GetRPCResponse("rdbTestResult"), sk.TestResultForRdb); err != nil {
+			logging.Infof(ctx, "Warning: failed to set %s into the InjectableStorage, %s", taskIdentifier.GetRPCResponse("rdbTestResult"), err)
 		}
 	}
 
 	// Upload request objects to storage
 	if cmd.TestRequest.TestRequest != nil {
-		if err := sk.Injectables.Set(taskIdentifier.GetRpcRequest("test"), cmd.TestRequest.TestRequest); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcRequest("test"))
+		if err := sk.Injectables.Set(taskIdentifier.GetRPCRequest("test"), cmd.TestRequest.TestRequest); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRPCRequest("test"))
 		}
 	}
 

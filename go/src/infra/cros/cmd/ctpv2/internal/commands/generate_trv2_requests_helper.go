@@ -37,8 +37,8 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/common_builders"
-	"infra/cros/cmd/common_lib/dynamic_updates"
+	"infra/cros/cmd/common_lib/commonbuilders"
+	"infra/cros/cmd/common_lib/dynamicupdates"
 	"infra/cros/cmd/ctpv2/data"
 	"infra/libs/skylab/inventory"
 	"infra/libs/skylab/request"
@@ -724,9 +724,9 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*te
 	primary, companions := createDutModelFromTargets(trHelper.primaryTarget, trHelper.secondaryTargets)
 	deadline := time.Now().UTC().Add(trHelper.maxDuration)
 	botDims, _ := protoutil.BotDimensions(trHelper.build.Build())
-	builder := common_builders.DynamicTrv2Builder{
-		ParentBuildId:        trHelper.currBBID,
-		ParentRequestUid:     trHelper.parentRequestUID,
+	builder := commonbuilders.DynamicTrv2Builder{
+		ParentBuildID:        trHelper.currBBID,
+		ParentRequestUID:     trHelper.parentRequestUID,
 		GcsArtifactPath:      trHelper.primaryTarget.gcsArtifactPath,
 		ContainerMetadataKey: trHelper.primaryTarget.boardWVaraint,
 		CredentialsFile:      trHelper.credentialsFile,
@@ -738,11 +738,11 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*te
 		PrimaryDut:           primary,
 		CompanionDuts:        companions,
 		Keyvals:              keyvals,
-		OrderedTaskBuilders: []common_builders.DynamicTaskBuilder{
-			common_builders.DefaultDynamicTestTaskWrapper(common.CrosTest),
-			common_builders.DefaultDynamicPostProcessTaskWrapper(),
-			common_builders.DefaultDynamicRdbPublishTaskWrapper(gsSourcePath, false, trHelper.is3DRun),
-			common_builders.DefaultDynamicGcsPublishTask,
+		OrderedTaskBuilders: []commonbuilders.DynamicTaskBuilder{
+			commonbuilders.DefaultDynamicTestTaskWrapper(common.CrosTest),
+			commonbuilders.DefaultDynamicPostProcessTaskWrapper(),
+			commonbuilders.DefaultDynamicRdbPublishTaskWrapper(gsSourcePath, false, trHelper.is3DRun),
+			commonbuilders.DefaultDynamicGcsPublishTask,
 		},
 		IsALRun:          trHelper.isAlRun,
 		BotDims:          botDims,
@@ -754,7 +754,7 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*te
 		return nil, errors.Annotate(err, "failed to build base dynamic request").Err()
 	}
 
-	if err = dynamic_updates.AddUserDefinedDynamicUpdates(
+	if err = dynamicupdates.AddUserDefinedDynamicUpdates(
 		dynamicRequest,
 		trHelper.suiteInfo.SuiteMetadata.DynamicUpdates,
 		trHelper.lookupTable); err != nil {
@@ -762,7 +762,7 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*te
 		return nil, errors.Annotate(err, "failed to add user defined dynamic updates to trv2 request").Err()
 	}
 
-	if err = dynamic_updates.AddUserDefinedDynamicUpdates(
+	if err = dynamicupdates.AddUserDefinedDynamicUpdates(
 		dynamicRequest,
 		trHelper.schedUnit.GetSecondaryDynamicUpdates(),
 		trHelper.lookupTable); err != nil {
@@ -837,7 +837,7 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 		ParentBuildId:                trHelper.currBBID,
 		PrimaryDut:                   primaryDut,
 		CompanionDuts:                companionDuts,
-		ContainerMetadata:            common_builders.PatchContainerMetadata(ctx, containerMetadata, trHelper.builderStr, trHelper.credentialsFile, trHelper.envVersion, firestoreDBName),
+		ContainerMetadata:            commonbuilders.PatchContainerMetadata(ctx, containerMetadata, trHelper.builderStr, trHelper.credentialsFile, trHelper.envVersion, firestoreDBName),
 		TestSuites:                   testSuites,
 		DefaultTestExecutionBehavior: test_platform.Request_Params_NON_CRITICAL,
 		AutotestKeyvals:              keyvals,
@@ -933,20 +933,20 @@ func createCftDeviceRequestFromTarget(target *HwTarget) (*skylab_test_runner.CFT
 }
 
 func tryAttachFirmwareConfig(provisionState *testapi.ProvisionState, target *testapi.Target) {
-	imageBucket := common_builders.DefaultChromeosBuildGcsBucket
+	imageBucket := commonbuilders.DefaultChromeosBuildGcsBucket
 	firmwareRO := ""
 	firmwareRW := ""
 
 	kvs := target.GetSwReq().GetKeyValues()
 
 	for _, kv := range kvs {
-		if kv.Key == common_builders.RoFirmwareBuild {
+		if kv.Key == commonbuilders.RoFirmwareBuild {
 			firmwareRO = kv.Value
 		}
-		if kv.Key == common_builders.RwFirmwareBuild {
+		if kv.Key == commonbuilders.RwFirmwareBuild {
 			firmwareRW = kv.Value
 		}
-		if kv.Key == common_builders.ChromeosBuildGcsBucket {
+		if kv.Key == commonbuilders.ChromeosBuildGcsBucket {
 			imageBucket = kv.Value
 		}
 	}
@@ -1185,10 +1185,10 @@ func buildAndroidProvisionState(target *testapi.Target) (*testapi.ProvisionState
 	kvs := target.GetSwReq().GetKeyValues()
 
 	for _, kv := range kvs {
-		if kv.Key == common_builders.GmsCorePackage {
+		if kv.Key == commonbuilders.GmsCorePackage {
 			gmsCorePackage = kv.Value
 		}
-		if kv.Key == common_builders.AndroidImageVersion {
+		if kv.Key == commonbuilders.AndroidImageVersion {
 			androidImageVersion = kv.Value
 		}
 	}

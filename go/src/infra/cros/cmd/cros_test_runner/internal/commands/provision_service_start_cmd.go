@@ -76,7 +76,7 @@ func (cmd *ProvisionServiceStartCmd) extractDepsFromHwTestStateKeeper(
 	common.LogWarningIfErr(ctx, common.InjectDependencies(cmd.ServoNexusAddress, sk.Injectables, []*testapi.DynamicDep{
 		{
 			Key:   "",
-			Value: common.NewTaskIdentifier(common.ServoNexus).AddDeviceId(common.NewPrimaryDeviceIdentifier()).Id,
+			Value: common.NewTaskIdentifier(common.ServoNexus).AddDeviceID(common.NewPrimaryDeviceIdentifier()).ID,
 		},
 	}))
 

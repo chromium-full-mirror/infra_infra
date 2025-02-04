@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/common_lib/common_commands"
+	"infra/cros/cmd/common_lib/commoncommands"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/ctpv2/internal/commands"
 )
@@ -73,46 +73,46 @@ func (cfg *CommandConfig) GetCommand(
 		}
 		cmd = commands.NewFilterExecutionCmd(exec)
 
-	case common_commands.CtrServiceStartAsyncCmdType:
+	case commoncommands.CtrServiceStartAsyncCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
 		}
-		cmd = common_commands.NewCtrServiceStartAsyncCmd(exec)
+		cmd = commoncommands.NewCtrServiceStartAsyncCmd(exec)
 
-	case common_commands.CtrServiceStopCmdType:
+	case commoncommands.CtrServiceStopCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
 		}
-		cmd = common_commands.NewCtrServiceStopCmd(exec)
+		cmd = commoncommands.NewCtrServiceStopCmd(exec)
 
-	case common_commands.GcloudAuthCmdType:
+	case commoncommands.GcloudAuthCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
 		}
-		cmd = common_commands.NewGcloudAuthCmd(exec)
-	case common_commands.ContainerStartCmdType:
+		cmd = commoncommands.NewGcloudAuthCmd(exec)
+	case commoncommands.ContainerStartCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
 		}
-		cmd = common_commands.NewContainerStartCmd(exec)
+		cmd = commoncommands.NewContainerStartCmd(exec)
 
-	case common_commands.ContainerReadLogsCmdType:
+	case commoncommands.ContainerReadLogsCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
 		}
-		cmd = common_commands.NewContainerReadLogsCmd(exec)
+		cmd = commoncommands.NewContainerReadLogsCmd(exec)
 
-	case common_commands.ContainerCloseLogsCmdType:
+	case commoncommands.ContainerCloseLogsCmdType:
 		exec, err := cfg.ExecutorConfig.GetExecutor(execType)
 		if err != nil {
 			return nil, errors.Annotate(err, "error during getting executor for command type %s: ", cmdType).Err()
 		}
-		cmd = common_commands.NewContainerCloseLogsCmd(exec)
+		cmd = commoncommands.NewContainerCloseLogsCmd(exec)
 
 	default:
 		return nil, fmt.Errorf("command type %s not supported in command configs", cmdType)

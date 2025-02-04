@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path"
 	"strings"
@@ -222,7 +221,7 @@ type LoggerConfig struct {
 func (lc *LoggerConfig) DumpStepsToFolder(basePath string) {
 	if basePath == "" {
 		// Use temporary folder
-		tempPath, err := ioutil.TempDir("/tmp", "cros_test_runner*")
+		tempPath, err := os.MkdirTemp("/tmp", "cros_test_runner*")
 		if err != nil {
 			panic(err)
 		}

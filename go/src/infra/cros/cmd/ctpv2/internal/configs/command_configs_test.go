@@ -11,9 +11,9 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/cmd/common_lib/common_commands"
-	"infra/cros/cmd/common_lib/common_configs"
-	"infra/cros/cmd/common_lib/common_executors"
+	"infra/cros/cmd/common_lib/commoncommands"
+	"infra/cros/cmd/common_lib/commonconfigs"
+	"infra/cros/cmd/common_lib/commonexecutors"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
 
@@ -22,10 +22,10 @@ func TestGetCommand_UnsupportedCmdType(t *testing.T) {
 	ftt.Run("Unsupported command type", t, func(t *ftt.Test) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := common_configs.NewContainerConfig(ctr, nil, false)
+		contConfig := commonconfigs.NewContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
-		cmd, err := cmdConfig.GetCommand(common_commands.UnSupportedCmdType, common_executors.NoExecutorType)
+		cmd, err := cmdConfig.GetCommand(commoncommands.UnSupportedCmdType, commonexecutors.NoExecutorType)
 		assert.Loosely(t, cmd, should.BeNil)
 		assert.Loosely(t, err, should.NotBeNil)
 	})
@@ -38,7 +38,7 @@ func TestGetCommand_UnsupportedCmdType(t *testing.T) {
 // 	ftt.Run("Supported command type", t, func(t *ftt.Test) {
 // 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 // 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-// 		contConfig := common_configs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
+// 		contConfig := commonconfigs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
 // 		execConfig := NewExecutorConfig(ctr, contConfig)
 // 		cmdConfig := NewCommandConfig(execConfig)
 //

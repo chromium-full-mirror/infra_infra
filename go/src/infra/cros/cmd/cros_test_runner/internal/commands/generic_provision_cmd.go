@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/common_commands"
+	"infra/cros/cmd/common_lib/commoncommands"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 )
@@ -60,7 +60,7 @@ func (cmd *GenericProvisionCmd) instantiateWithHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) (err error) {
 
-	if err := common_commands.Instantiate_PopFromQueue(sk.ProvisionQueue, func(element any) {
+	if err := commoncommands.InstantiatePopFromQueue(sk.ProvisionQueue, func(element any) {
 		cmd.ProvisionRequest = element.(*api.ProvisionTask)
 	}); err != nil {
 		return fmt.Errorf("cmd %s missing dependency: ProvisionRequest, %s", cmd.GetCommandType(), err)
@@ -162,14 +162,14 @@ func (cmd *GenericProvisionCmd) updateHwTestStateKeeper(
 		}
 		responses = append(responses, cmd.InstallResp)
 		sk.ProvisionResponses[cmd.TargetDevice] = responses
-		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("install"), cmd.InstallResp); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcResponse("install"))
+		if err := sk.Injectables.Set(taskIdentifier.GetRPCResponse("install"), cmd.InstallResp); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRPCResponse("install"))
 		}
 	}
 
 	if cmd.StartUpResp != nil {
-		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("startup"), cmd.StartUpResp); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcResponse("startup"))
+		if err := sk.Injectables.Set(taskIdentifier.GetRPCResponse("startup"), cmd.StartUpResp); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRPCResponse("startup"))
 		}
 	}
 
@@ -192,13 +192,13 @@ func (cmd *GenericProvisionCmd) updateHwTestStateKeeper(
 
 	// Upload request objects to storage
 	if cmd.ProvisionRequest.StartupRequest != nil {
-		if err := sk.Injectables.Set(taskIdentifier.GetRpcRequest("startup"), cmd.ProvisionRequest.StartupRequest); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcRequest("startup"))
+		if err := sk.Injectables.Set(taskIdentifier.GetRPCRequest("startup"), cmd.ProvisionRequest.StartupRequest); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRPCRequest("startup"))
 		}
 	}
 	if cmd.ProvisionRequest.InstallRequest != nil {
-		if err := sk.Injectables.Set(taskIdentifier.GetRpcRequest("install"), cmd.ProvisionRequest.InstallRequest); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcRequest("install"))
+		if err := sk.Injectables.Set(taskIdentifier.GetRPCRequest("install"), cmd.ProvisionRequest.InstallRequest); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRPCRequest("install"))
 		}
 	}
 

@@ -11,7 +11,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/common_configs"
+	"infra/cros/cmd/common_lib/commonconfigs"
 	"infra/cros/cmd/common_lib/interfaces"
 )
 
@@ -27,7 +27,7 @@ const (
 
 // Ctpv2ExecutionConfig represents the configuration for any test execution.
 type Ctpv2ExecutionConfig struct {
-	*common_configs.CmdExecutionConfig
+	*commonconfigs.CmdExecutionConfig
 
 	TotalFilters int
 }
@@ -38,7 +38,7 @@ func NewCtpv2ExecutionConfig(
 	cmdConfig interfaces.CommandConfigInterface,
 	ski interfaces.StateKeeperInterface) *Ctpv2ExecutionConfig {
 
-	cmdExecutionConfig := common_configs.NewCmdExecutionConfig(configType, cmdConfig, ski)
+	cmdExecutionConfig := commonconfigs.NewCmdExecutionConfig(configType, cmdConfig, ski)
 	return &Ctpv2ExecutionConfig{
 		CmdExecutionConfig: cmdExecutionConfig,
 		TotalFilters:       totalFilters,

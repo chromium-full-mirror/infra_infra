@@ -8,37 +8,37 @@ package configs
 import (
 	"context"
 
-	"infra/cros/cmd/common_lib/common_commands"
-	"infra/cros/cmd/common_lib/common_configs"
-	"infra/cros/cmd/common_lib/common_executors"
+	"infra/cros/cmd/common_lib/commoncommands"
+	"infra/cros/cmd/common_lib/commonconfigs"
+	"infra/cros/cmd/common_lib/commonexecutors"
 	"infra/cros/cmd/ctpv2/internal/commands"
 	"infra/cros/cmd/ctpv2/internal/executors"
 )
 
 // All currently supported command-executor pairs.
 
-var TranslateV1toV2RequestNoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.TranslateV1toV2RequestType, ExecutorType: common_executors.NoExecutorType}
-var TranslateRequestNoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.TranslateRequestType, ExecutorType: common_executors.NoExecutorType}
-var PrepareFilterContainersNoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.PrepareFilterContainersCmdType, ExecutorType: common_executors.NoExecutorType}
-var ExecuteFilterFilterExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.FilterExecutionCmdType, ExecutorType: executors.FilterExecutorType}
-var SummarizeNoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.SummarizeCmdType, ExecutorType: common_executors.NoExecutorType}
+var TranslateV1toV2RequestNoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.TranslateV1toV2RequestType, ExecutorType: commonexecutors.NoExecutorType}
+var TranslateRequestNoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.TranslateRequestType, ExecutorType: commonexecutors.NoExecutorType}
+var PrepareFilterContainersNoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.PrepareFilterContainersCmdType, ExecutorType: commonexecutors.NoExecutorType}
+var ExecuteFilterFilterExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.FilterExecutionCmdType, ExecutorType: executors.FilterExecutorType}
+var SummarizeNoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.SummarizeCmdType, ExecutorType: commonexecutors.NoExecutorType}
 
-var CtrStartAsyncCtrExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.CtrServiceStartAsyncCmdType, ExecutorType: common_executors.CtrExecutorType}
-var CtrStopCtrExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.CtrServiceStopCmdType, ExecutorType: common_executors.CtrExecutorType}
-var GcloudAuthCtrExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.GcloudAuthCmdType, ExecutorType: common_executors.CtrExecutorType}
-var ContainerStartContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerStartCmdType, ExecutorType: common_executors.ContainerExecutorType}
-var ContainerReadLogsContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerReadLogsCmdType, ExecutorType: common_executors.ContainerExecutorType}
-var ContainerCloseLogsContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerCloseLogsCmdType, ExecutorType: common_executors.ContainerExecutorType}
+var CtrStartAsyncCtrExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.CtrServiceStartAsyncCmdType, ExecutorType: commonexecutors.CtrExecutorType}
+var CtrStopCtrExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.CtrServiceStopCmdType, ExecutorType: commonexecutors.CtrExecutorType}
+var GcloudAuthCtrExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.GcloudAuthCmdType, ExecutorType: commonexecutors.CtrExecutorType}
+var ContainerStartContainerExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.ContainerStartCmdType, ExecutorType: commonexecutors.ContainerExecutorType}
+var ContainerReadLogsContainerExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.ContainerReadLogsCmdType, ExecutorType: commonexecutors.ContainerExecutorType}
+var ContainerCloseLogsContainerExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.ContainerCloseLogsCmdType, ExecutorType: commonexecutors.ContainerExecutorType}
 
-var MiddleOutNoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.MiddleoutExecutionType, ExecutorType: common_executors.NoExecutorType}
-var GenerateTrv2ReqsNoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenerateTrv2RequestsCmdType, ExecutorType: common_executors.NoExecutorType}
-var ScheduleTasksNoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ScheduleTasksCmdType, ExecutorType: common_executors.NoExecutorType}
-var AlStatusUpdateNoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.AlStatusUpdateCmdType, ExecutorType: common_executors.NoExecutorType}
-var AlStatusCleanUpNoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.AlStatusCleanUpCmdType, ExecutorType: common_executors.NoExecutorType}
+var MiddleOutNoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.MiddleoutExecutionType, ExecutorType: commonexecutors.NoExecutorType}
+var GenerateTrv2ReqsNoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.GenerateTrv2RequestsCmdType, ExecutorType: commonexecutors.NoExecutorType}
+var ScheduleTasksNoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.ScheduleTasksCmdType, ExecutorType: commonexecutors.NoExecutorType}
+var AlStatusUpdateNoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.AlStatusUpdateCmdType, ExecutorType: commonexecutors.NoExecutorType}
+var AlStatusCleanUpNoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.AlStatusCleanUpCmdType, ExecutorType: commonexecutors.NoExecutorType}
 
 // GenerateFilterConfigs generates cmd execution for ctpv2.
-func GenerateFilterConfigs(ctx context.Context, totalFilters int) *common_configs.Configs {
-	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
+func GenerateFilterConfigs(ctx context.Context, totalFilters int) *commonconfigs.Configs {
+	mainConfigs := []*commonconfigs.CommandExecutorPairedConfig{}
 
 	// Update AL first for AL runs
 	mainConfigs = append(mainConfigs, AlStatusUpdateNoExecutor)
@@ -71,17 +71,17 @@ func GenerateFilterConfigs(ctx context.Context, totalFilters int) *common_config
 	mainConfigs = append(mainConfigs, ScheduleTasksNoExecutor)
 	mainConfigs = append(mainConfigs, AlStatusUpdateNoExecutor)
 
-	cleanUpCommands := []*common_configs.CommandExecutorPairedConfig{
+	cleanUpCommands := []*commonconfigs.CommandExecutorPairedConfig{
 		AlStatusCleanUpNoExecutor,
 	}
 
-	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanUpCommands}
+	return &commonconfigs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanUpCommands}
 }
 
 // GeneratePreConfigs generates pre cmd execution for ctpv2.
-func GeneratePreConfigs(ctx context.Context) *common_configs.Configs {
-	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
-	cleanupConfigs := []*common_configs.CommandExecutorPairedConfig{}
+func GeneratePreConfigs(ctx context.Context) *commonconfigs.Configs {
+	mainConfigs := []*commonconfigs.CommandExecutorPairedConfig{}
+	cleanupConfigs := []*commonconfigs.CommandExecutorPairedConfig{}
 
 	// Translate v1 to v2, Start CTR and do GcloudAuth
 	mainConfigs = append(mainConfigs,
@@ -93,17 +93,17 @@ func GeneratePreConfigs(ctx context.Context) *common_configs.Configs {
 	cleanupConfigs = append(cleanupConfigs,
 		CtrStopCtrExecutor)
 
-	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
+	return &commonconfigs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
 }
 
 // GeneratePostConfigs generates post cmd execution for ctpv2.
-func GeneratePostConfigs(ctx context.Context) *common_configs.Configs {
-	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
+func GeneratePostConfigs(ctx context.Context) *commonconfigs.Configs {
+	mainConfigs := []*commonconfigs.CommandExecutorPairedConfig{}
 
 	// Stop Ctr
 	mainConfigs = append(mainConfigs,
 		SummarizeNoExecutor,
 		CtrStopCtrExecutor.WithRequired(true))
 
-	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: []*common_configs.CommandExecutorPairedConfig{}}
+	return &commonconfigs.Configs{MainConfigs: mainConfigs, CleanupConfigs: []*commonconfigs.CommandExecutorPairedConfig{}}
 }

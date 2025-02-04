@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/common_commands"
+	"infra/cros/cmd/common_lib/commoncommands"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 )
@@ -56,7 +56,7 @@ func (cmd *GenericPublishCmd) instantiateWithHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) (err error) {
 
-	if err := common_commands.Instantiate_PopFromQueue(sk.PublishQueue, func(element any) {
+	if err := commoncommands.InstantiatePopFromQueue(sk.PublishQueue, func(element any) {
 		cmd.PublishRequest = element.(*api.PublishTask)
 	}); err != nil {
 		return fmt.Errorf("cmd %s missing dependency: PublishRequest, %s", cmd.GetCommandType(), err)
@@ -131,15 +131,15 @@ func (cmd *GenericPublishCmd) updateHwTestStateKeeper(
 
 	taskIdentifier := common.NewTaskIdentifier(cmd.PublishRequest.DynamicIdentifier)
 	if cmd.PublishResp != nil {
-		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("publish"), cmd.PublishResp); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcResponse("publish"))
+		if err := sk.Injectables.Set(taskIdentifier.GetRPCResponse("publish"), cmd.PublishResp); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRPCResponse("publish"))
 		}
 	}
 
 	// Upload request objects to storage
 	if cmd.PublishRequest.PublishRequest != nil {
-		if err := sk.Injectables.Set(taskIdentifier.GetRpcRequest("publish"), cmd.PublishRequest.PublishRequest); err != nil {
-			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRpcRequest("publish"))
+		if err := sk.Injectables.Set(taskIdentifier.GetRPCRequest("publish"), cmd.PublishRequest.PublishRequest); err != nil {
+			logging.Infof(ctx, "Warning: cmd %s failed to set %s in the Injectables Storage, %s", string(cmd.GetCommandType()), taskIdentifier.GetRPCRequest("publish"))
 		}
 	}
 

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Package analytics defines all analytics tooling.
 package analytics
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -93,8 +95,8 @@ func InsertCTPMetrics(c *bigquery.Client, data []*BqData) error {
 }
 
 type resSchema struct {
-	Normalized_test string
-	Duration        float64
+	NormalizedTest string
+	Duration       float64
 }
 
 // ReadDurationMetrics will query the duration cache table, and return a map of the test results.
@@ -118,21 +120,21 @@ func ReadDurationMetrics(c *bigquery.Client, harness string, ctx context.Context
 	for {
 		var resp resSchema
 		err := it.Next(&resp)
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {
 			fmt.Println("found this err while parsing", err)
 			return nil, err
 		}
-		durs[resp.Normalized_test] = resp.Duration
+		durs[resp.NormalizedTest] = resp.Duration
 	}
 	logging.Infof(ctx, "done iter")
 
 	return durs, nil
 }
 
-// InsertCTPMetrics will insert the CTP Analytics Data into the CTPv2TaskMetrics Table.
+// InsertCTPTaskMetrics will insert the CTP Analytics Data into the CTPv2TaskMetrics Table.
 func InsertCTPTaskMetrics(c *bigquery.Client, data []*TaskData) error {
 	ctx := context.Background()
 	inserter := c.Dataset(dataset).Table(taskResultsTable).Inserter()
@@ -197,7 +199,7 @@ func CreateTrReqData(ctx context.Context, BQClient *bigquery.Client, data *TaskD
 	return data
 }
 
-// SoftInsertStepWTrReq insert a step info to BQ built from the Trreq. Do not fail on errors.
+// SoftInsertStepWTrReqBulk insert a step info to BQ built from the Trreq. Do not fail on errors.
 func SoftInsertStepWTrReqBulk(ctx context.Context, BQClient *bigquery.Client, td []*TaskData) {
 	if len(td) == 0 {
 		return

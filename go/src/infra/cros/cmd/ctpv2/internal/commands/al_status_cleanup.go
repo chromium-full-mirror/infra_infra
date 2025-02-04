@@ -105,7 +105,7 @@ func (cmd *AlStatusCleanUpCmd) Execute(ctx context.Context) error {
 		cmd.ExecutionError = fmt.Errorf("undefined error occurred during suite execution")
 	}
 
-	service, err := androidapi.NewAndroidBuildService(ctx, androidapi.SERVICEACCOUNT, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
+	service, err := androidapi.NewAndroidBuildService(ctx, androidapi.ServiceAccount, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
 	if err != nil {
 		return err
 	}

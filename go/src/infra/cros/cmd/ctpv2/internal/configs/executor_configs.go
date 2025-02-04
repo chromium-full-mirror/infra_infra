@@ -7,7 +7,7 @@ package configs
 import (
 	"fmt"
 
-	"infra/cros/cmd/common_lib/common_executors"
+	"infra/cros/cmd/common_lib/commonexecutors"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/ctpv2/internal/executors"
@@ -40,20 +40,20 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 
 	// Get executor type based on executor type.
 	switch execType {
-	case common_executors.CtrExecutorType:
+	case commonexecutors.CtrExecutorType:
 		if cfg.Ctr == nil {
 			return nil, fmt.Errorf("crosToolRunner is nil")
 		}
-		exec = common_executors.NewCtrExecutor(cfg.Ctr)
+		exec = commonexecutors.NewCtrExecutor(cfg.Ctr)
 
 	case executors.FilterExecutorType:
 		exec = executors.NewFilterExecutor()
 
-	case common_executors.ContainerExecutorType:
+	case commonexecutors.ContainerExecutorType:
 		if cfg.Ctr == nil {
 			return nil, fmt.Errorf("crosToolRunner is nil")
 		}
-		exec = common_executors.NewContainerExecutor(cfg.Ctr)
+		exec = commonexecutors.NewContainerExecutor(cfg.Ctr)
 
 	default:
 		return nil, fmt.Errorf("executor type %s not supported in executor configs", execType)

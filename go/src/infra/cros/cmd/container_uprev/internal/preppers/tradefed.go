@@ -121,7 +121,7 @@ func compileMetadata(metadata *TradefedMetadata) []*api.TestCaseMetadata {
 // InternalTF implements the prepper for tradefed internal container.
 func InternalTF(ctx context.Context, dir string) error {
 	downloadOptions := []option.ClientOption{}
-	credentialFile := common.VmLabDockerKeyFileLocation // common.LabDockerKeyFileLocation
+	credentialFile := common.VMLabDockerKeyFileLocation // common.LabDockerKeyFileLocation
 	if _, err := os.Stat(credentialFile); err == nil {
 		downloadOptions = append(downloadOptions, option.WithCredentialsFile(credentialFile))
 	}

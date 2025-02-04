@@ -33,7 +33,7 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/common_builders"
+	"infra/cros/cmd/common_lib/commonbuilders"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/analytics"
 	"infra/cros/cmd/cros_test_runner/data"
@@ -88,7 +88,7 @@ func HwExecution() {
 			// If the request is a CrosTestRunner non-dynamic request with translation flag...
 			botDims, _ := protoutil.BotDimensions(st.Build())
 			buildExperiments := st.Build().GetInput().GetExperiments()
-			crosTestRunnerRequest, err = common_builders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx, input.IsAlRun, isPartnerRun, botDims, buildExperiments)
+			crosTestRunnerRequest, err = commonbuilders.NewDynamicTrv2FromCftBuilder(input.CftTestRequest).BuildRequest(ctx, input.IsAlRun, isPartnerRun, botDims, buildExperiments)
 			if err == nil {
 				skylabResult, err = executeHwTestsV2(ctx, input.CftTestRequest, crosTestRunnerRequest, input.CommonConfig, ctrCipdInfo.GetVersion().GetCipdLabel(), input.GetConfig().GetOutput().GetLogDataGsRoot(), invocationName, st, input.IsAlRun)
 			}
@@ -180,7 +180,7 @@ func executeHwTests(
 			return nil, fmt.Errorf("container metadata is empty")
 		}
 	}
-	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
+	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VMLabDockerKeyFileLocation})
 	if err != nil {
 		return nil, fmt.Errorf("unable to locate dockerKeyFile during initialization: %w", err)
 	}
@@ -210,13 +210,13 @@ func executeHwTests(
 	// Hack the command/executor into non-dynamic.
 	if common.GetBotProvider() != common.BotProviderGce {
 		if _, ok := containerImagesMap[common.ServoNexus]; ok {
-			sk.ContainerQueue.PushBack(common_builders.BuildServoNexusContainerRequest(common.NewPrimaryDeviceIdentifier()))
+			sk.ContainerQueue.PushBack(commonbuilders.BuildServoNexusContainerRequest(common.NewPrimaryDeviceIdentifier()))
 		}
 	}
 	// Post process was only included in the dynamic format.
 	// Hack the command/executor into non-dynamic.
-	sk.ContainerQueue.PushBack(common_builders.BuildPostProcessContainerRequest(common.PostProcess))
-	sk.PostTestQueue.PushBack(common_builders.BuildPostProcessRequest(common.PostProcess))
+	sk.ContainerQueue.PushBack(commonbuilders.BuildPostProcessContainerRequest(common.PostProcess))
+	sk.PostTestQueue.PushBack(commonbuilders.BuildPostProcessRequest(common.PostProcess))
 
 	if sk.CftTestRequest.GetPrimaryDut() != nil {
 		sk.PrimaryDutModel = sk.CftTestRequest.GetPrimaryDut().GetDutModel()
@@ -346,7 +346,7 @@ func executeHwTestsV2(
 		common.PatchContainerMetadata(containerImagesMap, req.GetParams().GetKeyvals()["build"])
 	}
 
-	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
+	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VMLabDockerKeyFileLocation})
 	if err != nil {
 		return nil, &common.TestRunnerError{
 			Type: skylab_test_runner.TestRunnerErrorType_OTHER,
@@ -378,7 +378,7 @@ func executeHwTestsV2(
 	sk.ContainerImages = containerImagesMap
 	sk.PrimaryDutModel = req.GetParams().GetPrimaryDut()
 	sk.CompanionDutModels = req.GetParams().GetCompanionDuts()
-	sk.HostIp, _ = common.GetHostIp()
+	sk.HostIp, _ = common.GetHostIP()
 	sk.IsAlRun = isAlRun
 
 	common.LogWarningIfErr(ctx, sk.Injectables.Set("req", req))

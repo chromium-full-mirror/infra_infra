@@ -640,7 +640,7 @@ func readToken(dir string) (string, error) {
 
 // activateAccount actives the gcloud service account using the given keyfile
 func activateAccount(ctx context.Context, keyfile string) error {
-	keyfile, err := common_lib.LocateFile([]string{keyfile, common_lib.VmLabDockerKeyFileLocation})
+	keyfile, err := common_lib.LocateFile([]string{keyfile, common_lib.VMLabDockerKeyFileLocation})
 	if err != nil {
 		log.Printf("Skipping gcloud auth as keyfile does not exist")
 		return nil

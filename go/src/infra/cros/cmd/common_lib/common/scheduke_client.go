@@ -9,7 +9,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -192,7 +191,7 @@ func NewSchedukeClientForGCP(ctx context.Context, pool string) (*SchedukeClient,
 }
 
 func (s *SchedukeClient) parseSchedukeRequestResponse(response *http.Response) (*schedukeapi.CreateTaskStatesResponse, error) {
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, errors.Annotate(err, "parsing response").Err()
 	}
@@ -211,7 +210,7 @@ func (s *SchedukeClient) parseSchedukeRequestResponse(response *http.Response) (
 func (s *SchedukeClient) parseReadResponse(response *http.Response) (*schedukeapi.ReadTaskStatesResponse, error) {
 	defer response.Body.Close()
 
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
 	if err != nil {
 		return nil, errors.Annotate(err, "parsing response").Err()
 	}

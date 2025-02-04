@@ -21,7 +21,7 @@ import (
 
 	androidapi "infra/cros/cmd/common_lib/android_api"
 	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/common_builders"
+	"infra/cros/cmd/common_lib/commonbuilders"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/ctpv2/data"
 )
@@ -257,7 +257,7 @@ func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 	v1KeysMap := cmd.CreateKeysForEachV1Request()
 	common.WriteAnyObjectToStepLog(ctx, step, v1KeysMap, "RequestToBMVTargetKeyMap")
 
-	v2RequestMap, requestChainMap, dddTrackerMap := common_builders.NewCTPV2FromV1(ctx, cmd.CtpV1Requests, cmd.BuildState).BuildRequest()
+	v2RequestMap, requestChainMap, dddTrackerMap := commonbuilders.NewCTPV2FromV1(ctx, cmd.CtpV1Requests, cmd.BuildState).BuildRequest()
 	common.WriteAnyObjectToStepLog(ctx, step, requestChainMap, "RequestChainMap")
 	common.WriteAnyObjectToStepLog(ctx, step, dddTrackerMap, "DddTrackerMap")
 	cmd.CtpV2RequestMap = v2RequestMap // will be used to propagate the request key to each invocation
@@ -302,7 +302,7 @@ func (cmd *TranslateV1ToV2Cmd) CreateKeysForEachV1Request() map[string]string {
 func createBoardModelVariantKeyForRequest(req *test_platform.Request) string {
 	board := req.GetParams().GetSoftwareAttributes().GetBuildTarget().GetName()
 	model := req.GetParams().GetHardwareAttributes().GetModel()
-	variant := common_builders.GetVariant(req.GetParams().GetSoftwareDependencies())
+	variant := commonbuilders.GetVariant(req.GetParams().GetSoftwareDependencies())
 
 	return common.ConstructKey(board, model, variant)
 }

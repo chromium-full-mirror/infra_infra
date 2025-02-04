@@ -12,7 +12,7 @@ import (
 
 func ValidateTestPlans(input *api.InternalTestplan, output *api.InternalTestplan) error {
 	if output == nil {
-		return fmt.Errorf("Filter produced empty output")
+		return fmt.Errorf("filter produced empty output")
 	}
 	// TODO: Add real validations.
 	return nil

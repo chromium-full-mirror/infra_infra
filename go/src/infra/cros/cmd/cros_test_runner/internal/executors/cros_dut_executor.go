@@ -110,7 +110,7 @@ func (ex *CrosDutExecutor) Start(
 	logging.Infof(ctx, "Connected with dut service.")
 
 	// Process dut server address.
-	ex.DutServerAddress, err = common.GetIpEndpoint(serverAddress)
+	ex.DutServerAddress, err = common.GetIPEndpoint(serverAddress)
 	if err != nil {
 		return errors.Annotate(err, "error while creating ip endpoint from server address: ").Err()
 	}

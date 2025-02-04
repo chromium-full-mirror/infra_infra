@@ -55,7 +55,7 @@ func (tc *TestCommand) Run() error {
 	log.Printf("running test mode:")
 	ctx := context.Background()
 
-	s, err := androidlib.NewAndroidBuildService(ctx, androidlib.LOCAL, common.Prod)
+	s, err := androidlib.NewAndroidBuildService(ctx, androidlib.Local, common.Prod)
 	if err != nil {
 		return err
 	}

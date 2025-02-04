@@ -116,7 +116,7 @@ func (ex *CrosDutVmExecutor) dutStartCommandExecution(
 	}
 
 	// Process dut server address.
-	dutServerAddress, err := common.GetIpEndpoint(serverAddress)
+	dutServerAddress, err := common.GetIPEndpoint(serverAddress)
 
 	logging.Infof(ctx, "Cros-dut started at address: %v", dutServerAddress)
 	cmd.DutServerAddress = dutServerAddress

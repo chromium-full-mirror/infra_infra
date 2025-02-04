@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 
 	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/common_commands"
+	"infra/cros/cmd/common_lib/commoncommands"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 )
@@ -55,7 +55,7 @@ func (cmd *GenericPostProcessCmd) Instantiate(
 func (cmd *GenericPostProcessCmd) instantiateWithHwTestStateKeeper(
 	ctx context.Context,
 	sk *data.HwTestStateKeeper) (err error) {
-	if err := common_commands.Instantiate_PopFromQueue(sk.PostTestQueue, func(element any) {
+	if err := commoncommands.InstantiatePopFromQueue(sk.PostTestQueue, func(element any) {
 		cmd.PostProcessRequest = element.(*testapi.PostTestTask)
 	}); err != nil {
 		return fmt.Errorf("cmd: %s missing dependency: PostProcessRequest for err: %w", cmd.GetCommandType(), err)
@@ -128,13 +128,13 @@ func (cmd *GenericPostProcessCmd) updateHwTestStateKeeper(
 	taskIdentifier := common.NewTaskIdentifier(cmd.PostProcessRequest.DynamicIdentifier)
 	warningLogFormat := "Warning: cmd: %s failed to set: %s in the Injectables Storage"
 	if cmd.StartUpResp != nil {
-		startUpRespID := taskIdentifier.GetRpcResponse("startUp")
+		startUpRespID := taskIdentifier.GetRPCResponse("startUp")
 		if err := sk.Injectables.Set(startUpRespID, cmd.StartUpResp); err != nil {
 			logging.Infof(ctx, warningLogFormat, string(cmd.GetCommandType()), startUpRespID)
 		}
 	}
 	if cmd.RunActivitiesResp != nil {
-		runActivitiesRespID := taskIdentifier.GetRpcResponse("runActivities")
+		runActivitiesRespID := taskIdentifier.GetRPCResponse("runActivities")
 		if err := sk.Injectables.Set(runActivitiesRespID, cmd.RunActivitiesResp); err != nil {
 			logging.Infof(ctx, warningLogFormat, string(cmd.GetCommandType()), runActivitiesRespID)
 		}
@@ -142,13 +142,13 @@ func (cmd *GenericPostProcessCmd) updateHwTestStateKeeper(
 
 	// Upload request objects to storage
 	if cmd.PostProcessRequest.StartUpRequest != nil {
-		startUpReqID := taskIdentifier.GetRpcRequest("startUp")
+		startUpReqID := taskIdentifier.GetRPCRequest("startUp")
 		if err := sk.Injectables.Set(startUpReqID, cmd.PostProcessRequest.StartUpRequest); err != nil {
 			logging.Infof(ctx, warningLogFormat, string(cmd.GetCommandType()), startUpReqID)
 		}
 	}
 	if cmd.PostProcessRequest.RunActivitiesRequest != nil {
-		runActivitiesReqID := taskIdentifier.GetRpcRequest("runActivities")
+		runActivitiesReqID := taskIdentifier.GetRPCRequest("runActivities")
 		if err := sk.Injectables.Set(runActivitiesReqID, cmd.PostProcessRequest.RunActivitiesRequest); err != nil {
 			logging.Infof(ctx, warningLogFormat, string(cmd.GetCommandType()), runActivitiesReqID)
 		}

@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/common_lib/common_executors"
+	"infra/cros/cmd/common_lib/commonexecutors"
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -50,17 +50,17 @@ func (cfg *ExecutorConfig) GetExecutor(execType interfaces.ExecutorType) (interf
 		}
 		exec = executors.NewInvServiceExecutor(invServiceAddress)
 
-	case common_executors.CtrExecutorType:
+	case commonexecutors.CtrExecutorType:
 		if cfg.Ctr == nil {
 			return nil, fmt.Errorf("CrosToolRunner is nil!")
 		}
-		exec = common_executors.NewCtrExecutor(cfg.Ctr)
+		exec = commonexecutors.NewCtrExecutor(cfg.Ctr)
 
-	case common_executors.ContainerExecutorType:
+	case commonexecutors.ContainerExecutorType:
 		if cfg.Ctr == nil {
 			return nil, fmt.Errorf("CrosToolRunner is nil!")
 		}
-		exec = common_executors.NewContainerExecutor(cfg.Ctr)
+		exec = commonexecutors.NewContainerExecutor(cfg.Ctr)
 
 	case executors.GenericProvisionExecutorType:
 		exec = executors.NewGenericProvisionExecutor()

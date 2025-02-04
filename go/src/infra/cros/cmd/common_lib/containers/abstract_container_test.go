@@ -234,7 +234,7 @@ func TestProcessContainer(t *testing.T) {
 
 	ftt.Parallel("ProcessContainer_success", t, func(t *ftt.Test) {
 		ctx := context.Background()
-		hostIp := "localhost"
+		hostIP := "localhost"
 		hostPort := int32(1234)
 		contType := CrosProvisionTemplatedContainerType
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -243,7 +243,7 @@ func TestProcessContainer(t *testing.T) {
 		getResp := &api.GetContainerResponse{Container: &api.Container{
 			PortBindings: []*api.Container_PortBinding{
 				{
-					HostIp:   hostIp,
+					HostIp:   hostIP,
 					HostPort: hostPort,
 				},
 			},
@@ -257,7 +257,7 @@ func TestProcessContainer(t *testing.T) {
 			GetContainerErr:    nil}
 		address, err := absContainer.ProcessContainer(ctx, nil)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, address, should.Equal(fmt.Sprintf("%s:%v", hostIp, hostPort)))
+		assert.Loosely(t, address, should.Equal(fmt.Sprintf("%s:%v", hostIP, hostPort)))
 	})
 }
 

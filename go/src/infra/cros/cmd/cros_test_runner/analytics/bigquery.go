@@ -43,7 +43,7 @@ func TrAnalyticsBQClient(ctx context.Context) *bigquery.Client {
 			logging.Infof(ctx, "Unable to make BQ client: %s", err)
 		}
 	}(err)
-	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
+	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VMLabDockerKeyFileLocation})
 	if err != nil {
 		return nil
 	}

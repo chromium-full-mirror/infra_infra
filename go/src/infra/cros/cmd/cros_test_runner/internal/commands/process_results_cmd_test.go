@@ -62,7 +62,7 @@ func TestProcessResultsCmdDeps_Execute(t *testing.T) {
 			GcsURL:         "some/url",
 			TesthausURL:    "some/url",
 			ProvisionResponses: map[string][]*api.InstallResponse{
-				common.NewPrimaryDeviceIdentifier().Id: {
+				common.NewPrimaryDeviceIdentifier().ID: {
 					{Status: api.InstallResponse_STATUS_SUCCESS},
 				},
 			},
@@ -147,7 +147,7 @@ func TestProcessResultsCmdDeps_Execute(t *testing.T) {
 			GcsURL:      "some/url",
 			TesthausURL: "some/url",
 			ProvisionResponses: map[string][]*api.InstallResponse{
-				common.NewPrimaryDeviceIdentifier().Id: {
+				common.NewPrimaryDeviceIdentifier().ID: {
 					{Status: api.InstallResponse_STATUS_SUCCESS},
 				},
 			},

@@ -23,7 +23,7 @@ func PublishToTestJobEventPubSub(ctx context.Context, client *pubsub.Client, msg
 
 	msgBytes, err := msg.MarshalJSON()
 	if err != nil {
-		return "", fmt.Errorf("failed to marshal json: %v", err)
+		return "", fmt.Errorf("failed to marshal json: %w", err)
 	}
 
 	return PublishToPubSub(ctx, client, ATPSwitcherTestJobEventTopicID, msgBytes)
@@ -41,7 +41,7 @@ func PublishToPubSub(ctx context.Context, client *pubsub.Client, topicID string,
 	// ID is returned for the published message.
 	id, err := result.Get(ctx)
 	if err != nil {
-		return "", fmt.Errorf("err while publishing to %s pub/sub: %v", topicID, err)
+		return "", fmt.Errorf("err while publishing to %s pub/sub: %w", topicID, err)
 	}
 	fmt.Printf("Published a message to %s with ID: %s\n", topicID, id)
 	return id, nil

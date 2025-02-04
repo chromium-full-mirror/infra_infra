@@ -17,7 +17,7 @@ const (
 	DefaultPostProcessSha     = "e790463305397ba157cdfd836a23fc385d37cf9a72709f511a7e1973f64291c2"
 )
 
-// Create container with provided name and digest, setting repository
+// CreateTestServicesContainer create container with provided name and digest, setting repository
 // to the hostname `us-docker.pkg.dev` and project `cros-registry/test-services`.
 func CreateTestServicesContainer(name, digest string) *buildapi.ContainerImageInfo {
 	return &buildapi.ContainerImageInfo{
@@ -31,7 +31,7 @@ func CreateTestServicesContainer(name, digest string) *buildapi.ContainerImageIn
 	}
 }
 
-// Set name within images to be a test service container with given name and digest.
+// AddTestServiceContainerToImages Set name within images to be a test service container with given name and digest.
 func AddTestServiceContainerToImages(images map[string]*buildapi.ContainerImageInfo, name, digest string) {
 	images[name] = CreateTestServicesContainer(name, digest)
 }

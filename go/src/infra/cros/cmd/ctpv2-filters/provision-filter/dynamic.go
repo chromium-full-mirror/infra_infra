@@ -176,7 +176,7 @@ func modifyTestRequestForVM(sUnit *api.SchedulingUnit) {
 			// Update the cacheServer's address string to the
 			// external host ip address.
 			Key:   common.TestRequestPrimary + ".dut.cacheServer.address.address",
-			Value: common.HostIp,
+			Value: common.HostIP,
 		},
 		map[string]string{
 			common.TestDynamicDeps: "",

@@ -50,5 +50,5 @@ func InheritRDBInvocation(ctx context.Context, buildID int64, bbClient buildbuck
 	}
 
 	rreq := resultpb.UpdateIncludedInvocationsRequest{IncludingInvocation: parentInv, AddInvocations: []string{inv}}
-	recorderClient.UpdateIncludedInvocations(ctx, &rreq)
+	_, _ = recorderClient.UpdateIncludedInvocations(ctx, &rreq)
 }

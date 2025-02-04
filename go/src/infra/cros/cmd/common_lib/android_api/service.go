@@ -108,7 +108,7 @@ func NewAndroidBuildService(ctx context.Context, rt RunType, env common.Environm
 	}
 
 	// This breaks the other run types.
-	if rt == LOCAL {
+	if rt == Local {
 		opts = append(opts, option.WithQuotaProject(quotaProject))
 	}
 

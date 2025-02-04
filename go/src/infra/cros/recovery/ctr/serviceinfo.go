@@ -356,7 +356,7 @@ func dockerKeyFileLocation(ctx context.Context) string {
 		return ""
 	}
 	if env.IsCloudBot() {
-		return common.VmLabDockerKeyFileLocation
+		return common.VMLabDockerKeyFileLocation
 	}
 	return common.LabDockerKeyFileLocation
 }

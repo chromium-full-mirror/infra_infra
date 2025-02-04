@@ -29,22 +29,22 @@ type RunType int
 
 // Define constants for RunType
 const (
-	LOCAL RunType = iota
-	CONTAINER_GCE
-	CONTAINER_SATLAB
-	SERVICEACCOUNT
+	Local RunType = iota
+	ContainerGce
+	ContainerSatlab
+	ServiceAccount
 )
 
 // String method to get a string representation of RunType
 func (rt RunType) String() string {
 	switch rt {
-	case LOCAL:
+	case Local:
 		return "local"
-	case CONTAINER_GCE:
+	case ContainerGce:
 		return "containerGCE"
-	case CONTAINER_SATLAB:
+	case ContainerSatlab:
 		return "containerSatlab"
-	case SERVICEACCOUNT:
+	case ServiceAccount:
 		return "serviceAccount"
 	default:
 		return "unknown"
@@ -81,14 +81,14 @@ func getAuthorizedHTTP(credentials *oauth2.TokenSource, timeout time.Duration) (
 // FetchCredentials fetches creds for authentication.
 func FetchCredentials(rt RunType) (*google.Credentials, error) {
 	switch rt {
-	case LOCAL:
+	case Local:
 		localPath := guessUnixHomeDir() + "/.config/gcloud/application_default_credentials.json"
 		return fetchCredentialsFromJSON(localPath)
-	case CONTAINER_GCE:
+	case ContainerGce:
 		return fetchCredentialsFromJSON(gceServiceAccountJSONPath)
-	case CONTAINER_SATLAB:
+	case ContainerSatlab:
 		return fetchCredentialsFromJSON(satlabServiceAccountJSONPath)
-	case SERVICEACCOUNT:
+	case ServiceAccount:
 		return fetchDefaultCredentialsFromSA()
 	default:
 		return nil, fmt.Errorf("unknown run type")

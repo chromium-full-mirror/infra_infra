@@ -48,7 +48,7 @@ func (storage *InjectableStorage) LoadInjectables() error {
 	for key, val := range storage.injectables {
 		storage.Injectables[key], err = toInterface(val)
 		if err != nil {
-			allErrs = errors.Append(allErrs, fmt.Errorf("Failed to load injectables, %s", err))
+			allErrs = errors.Append(allErrs, fmt.Errorf("failed to load injectables, %w", err))
 		}
 	}
 	return allErrs
@@ -56,7 +56,7 @@ func (storage *InjectableStorage) LoadInjectables() error {
 
 // Get searches through the Storage and returns an error if the object is not found.
 func (storage *InjectableStorage) Get(key string) (interface{}, error) {
-	split_key := strings.Split(key, ".")
+	splitKey := strings.Split(key, ".")
 	switch {
 	// OS Environment variables aren't stored directly in the injectables dictionary.
 	case strings.HasPrefix(key, "env-"):
@@ -73,7 +73,7 @@ func (storage *InjectableStorage) Get(key string) (interface{}, error) {
 		return nil, nil
 
 	default:
-		return stepThroughInterface(storage.Injectables, split_key)
+		return stepThroughInterface(storage.Injectables, splitKey)
 	}
 }
 
@@ -83,18 +83,18 @@ func (storage *InjectableStorage) Set(key string, obj interface{}) error {
 	if storage.isValidType(obj) {
 		storage.injectables[key] = obj
 	} else {
-		err = fmt.Errorf("Failed to set %s in storage, %s is not a valid `proto` type", key, reflect.TypeOf(obj))
+		err = fmt.Errorf("failed to set %s in storage, %s is not a valid `proto` type", key, reflect.TypeOf(obj))
 	}
 	return err
 }
 
-// LogStorageToStep writes the json structure of the storage as a log in a step.
+// LogStorageToBuild writes the json structure of the storage as a log in a step.
 func (storage *InjectableStorage) LogStorageToBuild(ctx context.Context, buildState *build.State) {
 	_ = storage.LoadInjectables()
 
 	storageLog := buildState.Log("Injectable Storage Contents")
-	storageJson, _ := json.MarshalIndent(storage.Injectables, "", "    ")
-	storageStr := string(storageJson)
+	storageJSON, _ := json.MarshalIndent(storage.Injectables, "", "    ")
+	storageStr := string(storageJSON)
 	_, err := storageLog.Write([]byte(storageStr))
 	if err != nil {
 		logging.Infof(ctx, "Failed to write contents of injectable storage, %s", err)
@@ -152,7 +152,7 @@ func (storage *InjectableStorage) isValidType(obj interface{}) bool {
 //	receiver := Example {endpoint: {address: "localhost"}}
 //
 //	Inject(receiever, "endpoint.port", injectables, "example_endpoint.port")
-func Inject(receiver protoreflect.ProtoMessage, injection_point string, storage *InjectableStorage, injection_key string) (err error) {
+func Inject(receiver protoreflect.ProtoMessage, injectionPoint string, storage *InjectableStorage, injectionKey string) (err error) {
 	// Catch all thrown exceptions and recover to error instead.
 	defer func() {
 		if r := recover(); r != nil {
@@ -160,33 +160,33 @@ func Inject(receiver protoreflect.ProtoMessage, injection_point string, storage 
 		}
 	}()
 
-	receiver_map, err := protoToInterfaceMap(receiver)
+	receiverMap, err := protoToInterfaceMap(receiver)
 	if err != nil {
-		return fmt.Errorf("Failed to convert %s to map[string]interface{}, %s", getType(receiver), err)
+		return fmt.Errorf("failed to convert %s to map[string]interface{}, %w", getType(receiver), err)
 	}
 
-	injectable, err := storage.Get(injection_key)
+	injectable, err := storage.Get(injectionKey)
 	if err != nil {
-		return fmt.Errorf("Failed to get %s from injectables storage for %s, %s", injection_key, getType(receiver), err)
+		return fmt.Errorf("failed to get %s from injectables storage for %s, %w", injectionKey, getType(receiver), err)
 	}
 
-	if injection_point == "" {
-		receiver_map = injectable.(map[string]interface{})
+	if injectionPoint == "" {
+		receiverMap = injectable.(map[string]interface{})
 	} else {
-		injection_point_parts := strings.Split(injection_point, ".")
-		receiving_point, err := stepThroughInterface(receiver_map, injection_point_parts[0:len(injection_point_parts)-1])
+		injectionPointParts := strings.Split(injectionPoint, ".")
+		receivingPoint, err := stepThroughInterface(receiverMap, injectionPointParts[0:len(injectionPointParts)-1])
 		if err != nil {
-			return fmt.Errorf("Failed to reach point of injection %s for %s, %s", injection_point, getType(receiver), err)
+			return fmt.Errorf("failed to reach point of injection %s for %s, %w", injectionPoint, getType(receiver), err)
 		}
 
-		last_part := injection_point_parts[len(injection_point_parts)-1]
-		err = setValue(receiving_point, last_part, injectable)
+		lastPart := injectionPointParts[len(injectionPointParts)-1]
+		err = setValue(receivingPoint, lastPart, injectable)
 		if err != nil {
-			return fmt.Errorf("Failed to inject %s into %s for %s, %s", injection_key, injection_point, getType(receiver), err)
+			return fmt.Errorf("failed to inject %s into %s for %s, %w", injectionKey, injectionPoint, getType(receiver), err)
 		}
 	}
 
-	err = unmarshalInterfaceProtoMapToProto(receiver_map, receiver)
+	err = unmarshalInterfaceProtoMapToProto(receiverMap, receiver)
 	return
 }
 
@@ -195,11 +195,11 @@ func InjectDependencies(receiver protoreflect.ProtoMessage, storage *InjectableS
 	var allErrs error
 	err := storage.LoadInjectables()
 	if err != nil {
-		allErrs = errors.Append(allErrs, fmt.Errorf("Failed to load some injectables, %s", err))
+		allErrs = errors.Append(allErrs, fmt.Errorf("failed to load some injectable, %w", err))
 	}
 	for _, dep := range deps {
 		if err := Inject(receiver, dep.Key, storage, dep.Value); err != nil {
-			allErrs = errors.Append(allErrs, fmt.Errorf("Failed to inject dependency, %s", err))
+			allErrs = errors.Append(allErrs, fmt.Errorf("failed to inject dependency, %w", err))
 		}
 	}
 
@@ -208,16 +208,16 @@ func InjectDependencies(receiver protoreflect.ProtoMessage, storage *InjectableS
 
 // setValue stores the value into the obj at key.
 func setValue(obj interface{}, key string, value interface{}) error {
-	if key_num, err := strconv.ParseInt(key, 10, 64); err == nil {
+	if keyNum, err := strconv.ParseInt(key, 10, 64); err == nil {
 		if isSlice(obj) {
 			slice := TranslateSliceToInterface(obj)
-			if int(key_num) < len(slice) {
-				obj.([]interface{})[key_num] = value
+			if int(keyNum) < len(slice) {
+				obj.([]interface{})[keyNum] = value
 			} else {
-				return fmt.Errorf("Key %s not found in slice of length %d", key, len(slice))
+				return fmt.Errorf("key %s not found in slice of length %d", key, len(slice))
 			}
 		} else {
-			return fmt.Errorf("Expect slice for injecting at %s, found %s", key, getType(obj).String())
+			return fmt.Errorf("expect slice for injecting at %s, found %s", key, getType(obj).String())
 		}
 	} else {
 		if val, ok := obj.(map[string]interface{})[key]; ok {
@@ -235,18 +235,18 @@ func setValue(obj interface{}, key string, value interface{}) error {
 
 // indexAt indexes the object depending on what the index type is.
 func indexAt(obj interface{}, index string) (interface{}, error) {
-	if index_num, err := strconv.ParseInt(index, 10, 64); err == nil {
+	if indexNum, err := strconv.ParseInt(index, 10, 64); err == nil {
 		slice := TranslateSliceToInterface(obj)
-		if int(index_num) < len(slice) {
-			return slice[index_num], nil
+		if int(indexNum) < len(slice) {
+			return slice[indexNum], nil
 		} else {
-			return nil, fmt.Errorf("Failed to index %s, tried to index %d but length was %d", reflect.TypeOf(obj), index_num, len(slice))
+			return nil, fmt.Errorf("failed to index %s, tried to index %d but length was %d", reflect.TypeOf(obj), indexNum, len(slice))
 		}
 	} else {
 		if val, ok := obj.(map[string]interface{})[index]; ok {
 			return val, nil
 		} else {
-			return nil, fmt.Errorf("Failed to index %s, missing key: %s", reflect.TypeOf(obj), index)
+			return nil, fmt.Errorf("failed to index %s, missing key: %s", reflect.TypeOf(obj), index)
 		}
 	}
 }
@@ -263,8 +263,8 @@ func getType(obj interface{}) reflect.Type {
 
 // unmarshalInterfaceProtoMapToProto converts a map[string]interface{}
 // back into a provided proto message.
-func unmarshalInterfaceProtoMapToProto(proto_map map[string]interface{}, proto protoreflect.ProtoMessage) error {
-	json_bytes, err := json.Marshal(proto_map)
+func unmarshalInterfaceProtoMapToProto(protoMap map[string]interface{}, proto protoreflect.ProtoMessage) error {
+	jsonBytes, err := json.Marshal(protoMap)
 	if err != nil {
 		return errors.Annotate(err, "failed to marshal to json").Err()
 	}
@@ -273,7 +273,7 @@ func unmarshalInterfaceProtoMapToProto(proto_map map[string]interface{}, proto p
 		DiscardUnknown: true,
 		AllowPartial:   true,
 	}
-	err = unmarshaller.Unmarshal(json_bytes, proto)
+	err = unmarshaller.Unmarshal(jsonBytes, proto)
 	if err != nil {
 		return errors.Annotate(err, "failed to unmarshal to proto").Err()
 	}
@@ -316,18 +316,18 @@ func toInterfaceSlice(obj interface{}) ([]interface{}, error) {
 // Coverts protos into a map[string]interface{} by marshaling and unmarshaling through json.
 func protoToInterfaceMap(proto protoreflect.ProtoMessage) (map[string]interface{}, error) {
 	var err error
-	var json_bytes []byte
-	obj_map := map[string]interface{}{}
-	json_bytes, err = protojson.Marshal(proto)
+	var jsonBytes []byte
+	objMap := map[string]interface{}{}
+	jsonBytes, err = protojson.Marshal(proto)
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal(json_bytes, &obj_map)
+	err = json.Unmarshal(jsonBytes, &objMap)
 	if err != nil {
 		return nil, err
 	}
 
-	return obj_map, nil
+	return objMap, nil
 }
 
 // stepThroughInterface uses an array of keys to step through

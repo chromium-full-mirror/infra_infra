@@ -104,7 +104,7 @@ func executeRequests(
 		EnvVarsToPreserve: []string{},
 	}
 
-	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
+	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VMLabDockerKeyFileLocation})
 	if err != nil {
 		return nil, fmt.Errorf("unable to locate dockerKeyFile during initialization: %w", err)
 	}
@@ -245,7 +245,7 @@ func executeFiltersInLuciBuild(
 	step, ctx := build.StartStep(ctx, suiteDisplayName)
 	defer func() { step.End(err) }()
 
-	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
+	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VMLabDockerKeyFileLocation})
 	if err != nil {
 		err = fmt.Errorf("unable to locate dockerKeyFile during initialization: %w", err)
 		logging.Errorf(ctx, "executeFiltersInLuciBuild: %w", err)

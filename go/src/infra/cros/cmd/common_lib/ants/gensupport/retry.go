@@ -61,6 +61,8 @@ func shouldRetry(status int, err error) bool {
 	if errors.Is(err, net.ErrClosed) {
 		return true
 	}
+
+	// TODO(varunsrivastav): update to use errors.As() to avoid wrapping issues.
 	switch e := err.(type) {
 	case *net.OpError, *url.Error:
 		// Retry socket-level errors ECONNREFUSED and ECONNRESET (from syscall).

@@ -191,7 +191,7 @@ func (ex *CrosVMProvisionExecutor) vmProvisionLeaseCommandExecution(
 	cmd.LeaseVMResponse = leaseVMResponse
 
 	logging.Infof(ctx, "wait for SSH to become available")
-	common.WaitDutVmBoot(ctx, leaseVMResponse.GetVm().GetAddress().GetHost())
+	common.WaitDutVMBoot(ctx, leaseVMResponse.GetVm().GetAddress().GetHost())
 
 	logging.Infof(ctx, "completed wait for SSH")
 

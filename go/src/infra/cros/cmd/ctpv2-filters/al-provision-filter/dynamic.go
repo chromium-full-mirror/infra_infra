@@ -18,7 +18,7 @@ import (
 
 	androidapi "infra/cros/cmd/common_lib/android_api"
 	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/common_builders"
+	"infra/cros/cmd/common_lib/commonbuilders"
 )
 
 var (
@@ -163,7 +163,7 @@ func updateSchedulingUnits(schedulingUnits []*api.SchedulingUnit, updater *ALPro
 		var latestGreenBuild int
 		var err error
 		if latestGreenBuild, ok = updater.LatestBuildsByBoard[board]; !ok {
-			latestGreenBuild, err = androidapi.GetLatestGreenBuildNumber(androidapi.CONTAINER_GCE, buildGetReq(board, branch))
+			latestGreenBuild, err = androidapi.GetLatestGreenBuildNumber(androidapi.ContainerGce, buildGetReq(board, branch))
 			if err != nil {
 				log.Printf("Error getting latest green build number: %v", err)
 				continue
@@ -226,7 +226,7 @@ func getBranch(su *api.SchedulingUnit, log *log.Logger) string {
 		log.Printf("KeyValues found nil")
 	}
 	for _, kv := range kvs {
-		if kv.Key == common_builders.ChromeosBuildGcsBucket && kv.Value != common_builders.DefaultChromeosBuildGcsBucket {
+		if kv.Key == commonbuilders.ChromeosBuildGcsBucket && kv.Value != commonbuilders.DefaultChromeosBuildGcsBucket {
 			return PDKBranch
 		}
 	}

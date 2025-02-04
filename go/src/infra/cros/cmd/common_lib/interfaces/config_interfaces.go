@@ -8,7 +8,6 @@ import (
 	"context"
 )
 
-// Config type
 type ConfigType string
 
 // TestExecutionConfigInterface defines the contract an execution config

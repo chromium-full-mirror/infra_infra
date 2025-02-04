@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/cmd/common_lib/common_configs"
+	"infra/cros/cmd/common_lib/commonconfigs"
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
@@ -22,7 +22,7 @@ func TestGetContainer_UnsupportedContainerType(t *testing.T) {
 	ftt.Run("Unsupported container type", t, func(t *ftt.Test) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := common_configs.NewContainerConfig(ctr, nil, false)
+		contConfig := commonconfigs.NewContainerConfig(ctr, nil, false)
 		container, err := contConfig.GetContainer(containers.UnsupportedContainerType)
 		assert.Loosely(t, container, should.BeNil)
 		assert.Loosely(t, err, should.NotBeNil)
@@ -34,7 +34,7 @@ func TestGetContainer_SupportedContainerType(t *testing.T) {
 	ftt.Run("Supported container type", t, func(t *ftt.Test) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := common_configs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
+		contConfig := commonconfigs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
 
 		container, err := contConfig.GetContainer(containers.CrosDutTemplatedContainerType)
 		assert.Loosely(t, container, should.NotBeNil)

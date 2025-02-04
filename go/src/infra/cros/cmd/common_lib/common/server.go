@@ -16,7 +16,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
@@ -27,7 +26,7 @@ import (
 // ConnectWithService connects with the service at the provided server address.
 func ConnectWithService(ctx context.Context, serverAddress string) (*grpc.ClientConn, error) {
 	if serverAddress == "" {
-		return nil, fmt.Errorf("Cannot connect to empty service address.")
+		return nil, fmt.Errorf("cannot connect to empty service address")
 	}
 	var err error
 	step, ctx := build.StartStep(ctx, "Connect to server")
@@ -36,6 +35,7 @@ func ConnectWithService(ctx context.Context, serverAddress string) (*grpc.Client
 	logging.Infof(ctx, "Trying to connect with address %q with %s timeout", serverAddress, ServiceConnectionTimeout.String())
 	ctx, cancel := context.WithTimeout(context.Background(), ServiceConnectionTimeout)
 	defer cancel()
+	// TODO(azrahman): remove deprecated use.
 	conn, err := grpc.DialContext(ctx, serverAddress, getGrpcDialOpts(ctx)...)
 	if err != nil {
 		return nil, errors.Annotate(err, "error during connecting to service address %s: ", serverAddress).Err()
@@ -48,6 +48,7 @@ func ConnectWithService(ctx context.Context, serverAddress string) (*grpc.Client
 // to connect to a service.
 func getGrpcDialOpts(ctx context.Context) []grpc.DialOption {
 	opts := []grpc.DialOption{
+		// TODO(azrahman): remove deprecated use.
 		grpc.WithBlock(),
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithDefaultCallOptions(grpc.MaxCallRecvMsgSize(32 * 1024 * 1024)),
@@ -61,28 +62,28 @@ func getGrpcDialOpts(ctx context.Context) []grpc.DialOption {
 // from get container response.
 func GetServerAddressFromGetContResponse(resp *testapi.GetContainerResponse) (string, error) {
 	if resp == nil || len(resp.Container.GetPortBindings()) == 0 {
-		return "", fmt.Errorf("Cannot retrieve address from empty response.")
+		return "", fmt.Errorf("cannot retrieve address from empty response")
 	}
-	hostIp := resp.Container.GetPortBindings()[0].GetHostIp()
+	hostIP := resp.Container.GetPortBindings()[0].GetHostIp()
 	hostPort := resp.Container.GetPortBindings()[0].GetHostPort()
 
-	if hostIp == "" || hostPort == 0 {
-		return "", fmt.Errorf("HostIp or HostPort is empty.")
+	if hostIP == "" || hostPort == 0 {
+		return "", fmt.Errorf("hostIp or HostPort is empty")
 	}
 
-	return fmt.Sprintf("%s:%v", hostIp, hostPort), nil
+	return fmt.Sprintf("%s:%v", hostIP, hostPort), nil
 }
 
-// GetIpEndpoint creates IpEndpoint from provided server address.
+// GetIPEndpoint creates IpEndpoint from provided server address.
 // Server address example: (address:port) -> localhost:8080.
-func GetIpEndpoint(serverAddress string) (*labapi.IpEndpoint, error) {
+func GetIPEndpoint(serverAddress string) (*labapi.IpEndpoint, error) {
 	addressInfo := strings.Split(serverAddress, ":")
 	if len(addressInfo) != 2 {
-		return nil, fmt.Errorf("invalid dut server address!")
+		return nil, fmt.Errorf("invalid dut server address")
 	}
 	port, err := strconv.Atoi(addressInfo[1])
 	if err != nil {
-		return nil, fmt.Errorf("error during extracting port info: %s", err)
+		return nil, fmt.Errorf("error during extracting port info: %w", err)
 	}
 
 	return &labapi.IpEndpoint{Address: addressInfo[0], Port: int32(port)}, nil
@@ -98,7 +99,7 @@ func GetServerAddress(endpoint *labapi.IpEndpoint) string {
 	return fmt.Sprintf("%s:%d", endpoint.GetAddress(), endpoint.GetPort())
 }
 
-// Finds an available port on the running OS
+// GetFreePort finds an available port on the running OS
 // to prevent collisions between services
 func GetFreePort() uint16 {
 	l, err := net.Listen("tcp", ":0")
@@ -114,7 +115,7 @@ func GetFreePort() uint16 {
 var cqRunPattern = regexp.MustCompile(`^bvt-tast-cq.*|^cq-.*`)
 
 // IsCqRun determines if the current execution is a CQ run
-func IsCqRun(testSuite []*api.TestSuite) bool {
+func IsCqRun(testSuite []*testapi.TestSuite) bool {
 	for _, suite := range testSuite {
 		if cqRunPattern.MatchString(suite.Name) {
 			return true

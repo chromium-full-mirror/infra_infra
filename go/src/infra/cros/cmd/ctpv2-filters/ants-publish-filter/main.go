@@ -77,7 +77,7 @@ func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logg
 
 	log.Println("Executing ants publish request-updater filter")
 
-	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
+	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VMLabDockerKeyFileLocation})
 	if err != nil {
 		log.Println(fmt.Errorf("unable to locate dockerKeyFile: %w", err))
 	}

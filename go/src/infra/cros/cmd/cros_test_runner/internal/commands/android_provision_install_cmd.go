@@ -103,12 +103,12 @@ func (cmd *AndroidProvisionInstallCmd) updateAndroidHwTestsStateKeeper(
 	sk *data.HwTestStateKeeper) error {
 
 	if cmd.AndroidProvisionResponse != nil {
-		responses := sk.ProvisionResponses[common.NewCompanionDeviceIdentifier(cmd.AndroidCompanionDut.GetAndroid().GetDutModel().GetBuildTarget()).Id]
+		responses := sk.ProvisionResponses[common.NewCompanionDeviceIdentifier(cmd.AndroidCompanionDut.GetAndroid().GetDutModel().GetBuildTarget()).ID]
 		if responses == nil {
 			responses = []*testapi.InstallResponse{}
 		}
 		responses = append(responses, cmd.AndroidProvisionResponse)
-		sk.ProvisionResponses[common.NewCompanionDeviceIdentifier(cmd.AndroidCompanionDut.GetAndroid().GetDutModel().GetBuildTarget()).Id] = responses
+		sk.ProvisionResponses[common.NewCompanionDeviceIdentifier(cmd.AndroidCompanionDut.GetAndroid().GetDutModel().GetBuildTarget()).ID] = responses
 	}
 
 	return nil

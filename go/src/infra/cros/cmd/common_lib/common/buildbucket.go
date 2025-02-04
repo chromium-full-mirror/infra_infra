@@ -19,7 +19,7 @@ import (
 
 // NewBBClient creates new bb client.
 func NewBBClient(ctx context.Context) (buildbucketpb.BuildsClient, error) {
-	hClient, err := HttpClient(ctx)
+	hClient, err := HTTPClient(ctx)
 	if err != nil {
 		return nil, errors.Annotate(err, "create buildbucket client").Err()
 	}
@@ -30,8 +30,8 @@ func NewBBClient(ctx context.Context) (buildbucketpb.BuildsClient, error) {
 	return buildbucketpb.NewBuildsPRPCClient(pClient), nil
 }
 
-// HttpClient creates a http client.
-func HttpClient(ctx context.Context) (*http.Client, error) {
+// HTTPClient creates a http client.
+func HTTPClient(ctx context.Context) (*http.Client, error) {
 	a := auth.NewAuthenticator(ctx, auth.SilentLogin, auth.Options{
 		Scopes: []string{auth.OAuthScopeEmail},
 	})
@@ -60,8 +60,8 @@ func TestRunnerBuilderID(conf *config.Config) *buildbucketpb.BuilderID {
 }
 
 // BBUrl returns the Buildbucket URL of the task.
-func BBUrl(builderID *buildbucketpb.BuilderID, bbId int64) string {
-	return fmt.Sprintf("https://ci.chromium.org/p/%s/builders/%s/%s/b%d", builderID.Project, builderID.Bucket, builderID.Builder, bbId)
+func BBUrl(builderID *buildbucketpb.BuilderID, bbID int64) string {
+	return fmt.Sprintf("https://ci.chromium.org/p/%s/builders/%s/%s/b%d", builderID.Project, builderID.Bucket, builderID.Builder, bbID)
 }
 
 func IsLedRun(builderID *buildbucketpb.BuilderID) bool {

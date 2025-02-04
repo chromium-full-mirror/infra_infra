@@ -110,7 +110,7 @@ func (ex *AndroidDutExecutor) Start(
 	logging.Infof(ctx, "Connected with android dut service.")
 
 	// Process dut server address.
-	ex.AndroidDutServerAddress, err = common.GetIpEndpoint(serverAddress)
+	ex.AndroidDutServerAddress, err = common.GetIPEndpoint(serverAddress)
 	if err != nil {
 		return errors.Annotate(err, "error while creating ip endpoint from server address: ").Err()
 	}

@@ -101,7 +101,7 @@ func (cmd *VMProvisionLeaseCmd) updateVMTestStateKeeper(
 	}
 
 	duts := []*labapi.Dut{{
-		Id: &labapi.Dut_Id{Value: common.VmLabDutHostName},
+		Id: &labapi.Dut_Id{Value: common.VMLabDutHostName},
 		DutType: &labapi.Dut_Chromeos{
 			Chromeos: &labapi.Dut_ChromeOS{
 				Ssh: &labapi.IpEndpoint{

@@ -112,7 +112,7 @@ func ConstructKey(board string, model string, variant string) string {
 	return fmt.Sprintf("[%s]", key)
 }
 
-// ExtractPrefixUntilDelimiter: Extracts a prefix until a delimiter is found.
+// ExtractPrefixUntilDelimiter Extracts a prefix until a delimiter is found.
 func ExtractPrefixUntilDelimiter(str string, delimiter string) string {
 	index := strings.Index(str, delimiter)
 	if index == -1 {

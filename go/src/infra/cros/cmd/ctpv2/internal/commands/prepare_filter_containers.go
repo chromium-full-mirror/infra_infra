@@ -221,7 +221,7 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 		containerInfoList.PushBack(CtpFilterToContainerInfo(filter, build))
 	}
 
-	common.WriteStringToStepLog(ctx, step, string(common.ListToJson(containerInfoList)), "Container Info queue")
+	common.WriteStringToStepLog(ctx, step, string(common.ListToJSON(containerInfoList)), "Container Info queue")
 
 	cmd.ContainerInfoQueue = containerInfoList
 

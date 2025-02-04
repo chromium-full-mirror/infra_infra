@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/common_configs"
+	"infra/cros/cmd/common_lib/commonconfigs"
 	"infra/cros/cmd/common_lib/interfaces"
 	"infra/cros/cmd/cros_test_runner/data"
 )
@@ -29,7 +29,7 @@ const (
 
 // TestExecutionConfig represents the configuration for any test execution.
 type Trv2ExecutionConfig struct {
-	*common_configs.CmdExecutionConfig
+	*commonconfigs.CmdExecutionConfig
 
 	// commandConfig  interfaces.CommandConfigInterface
 	// stateKeeper    interfaces.StateKeeperInterface
@@ -45,7 +45,7 @@ func NewTrv2ExecutionConfig(
 	ski interfaces.StateKeeperInterface,
 	cftStepsConfig *tpcommon.CftStepsConfig) *Trv2ExecutionConfig {
 
-	cmdExecutionConfig := common_configs.NewCmdExecutionConfig(configType, cmdConfig, ski)
+	cmdExecutionConfig := commonconfigs.NewCmdExecutionConfig(configType, cmdConfig, ski)
 	return &Trv2ExecutionConfig{
 		CmdExecutionConfig: cmdExecutionConfig,
 		cftStepsConfig:     cftStepsConfig,

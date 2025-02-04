@@ -35,7 +35,7 @@ func LuciBuildExecution(targetConfig string) {
 				}
 			}
 			log.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
-			dockerKeyFile := common.VmLabDockerKeyFileLocation
+			dockerKeyFile := common.VMLabDockerKeyFileLocation
 			label := common.LabelStaging
 			if isProd {
 				label = common.LabelProd

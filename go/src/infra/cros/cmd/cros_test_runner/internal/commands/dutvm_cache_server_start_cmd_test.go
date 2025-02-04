@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/cmd/common_lib/common_executors"
+	"infra/cros/cmd/common_lib/commonexecutors"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
@@ -23,7 +23,7 @@ import (
 func buildDutVmCacheServerStartCmdForTest() *commands.DutVmCacheServerStartCmd {
 	ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 	ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-	exec := common_executors.NewCtrExecutor(ctr)
+	exec := commonexecutors.NewCtrExecutor(ctr)
 	cmd := commands.NewDutVmCacheServerStartCmd(exec)
 	return cmd
 }

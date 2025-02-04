@@ -26,6 +26,9 @@ const ufsHost = "ufs.api.cr.dev"
 // in-flight leases for the current user.
 func listLeasesFromScheduke(ctx context.Context, authOpts auth.Options, dev bool) ([]*schedukepb.TaskWithState, error) {
 	user, err := getUserEmail(ctx, authOpts)
+	if err != nil {
+		return nil, err
+	}
 
 	sc, err := NewSchedukeClientForCLI(ctx, dev, authOpts)
 	if err != nil {
@@ -102,6 +105,10 @@ func leaseDeviceFromScheduke(ctx context.Context, authOpts auth.Options, dims ma
 func addDeviceInfo(ctx context.Context, di *DeviceInfo, authOpts auth.Options) error {
 	ctx = ufsCTX(ctx)
 	uc, err := newUFSClient(ctx, authOpts)
+	if err != nil {
+		return err
+	}
+
 	di.LabSetup, err = uc.GetMachineLSE(ctx, &ufsapi.GetMachineLSERequest{
 		Name: ufsutil.AddPrefix(ufsutil.MachineLSECollection, di.Name),
 	})

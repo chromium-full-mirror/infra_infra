@@ -80,7 +80,7 @@ func TestProvisionInstallCmd_UpdateSK(t *testing.T) {
 		cmd.ProvisionResp = wantProvisionResp
 		err := cmd.UpdateStateKeeper(ctx, sk)
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, sk.ProvisionResponses[common.NewPrimaryDeviceIdentifier().Id][0], should.Equal(wantProvisionResp))
+		assert.Loosely(t, sk.ProvisionResponses[common.NewPrimaryDeviceIdentifier().ID][0], should.Equal(wantProvisionResp))
 	})
 }
 

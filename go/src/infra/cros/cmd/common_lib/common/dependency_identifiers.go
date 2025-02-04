@@ -7,35 +7,35 @@ package common
 import "fmt"
 
 type DeviceIdentifier struct {
-	Id string
+	ID string
 }
 
 func DeviceIdentifierFromString(str string) *DeviceIdentifier {
 	return &DeviceIdentifier{
-		Id: str,
+		ID: str,
 	}
 }
 
 func NewPrimaryDeviceIdentifier() *DeviceIdentifier {
 	return &DeviceIdentifier{
-		Id: Primary,
+		ID: Primary,
 	}
 }
 
 func NewCompanionDeviceIdentifier(board string) *DeviceIdentifier {
 	return &DeviceIdentifier{
-		Id: fmt.Sprintf("%s_%s", Companion, board),
+		ID: fmt.Sprintf("%s_%s", Companion, board),
 	}
 }
 
 func (id *DeviceIdentifier) AddPostfix(postfix string) *DeviceIdentifier {
 	return &DeviceIdentifier{
-		Id: fmt.Sprintf("%s_%s", id.Id, postfix),
+		ID: fmt.Sprintf("%s_%s", id.ID, postfix),
 	}
 }
 
 func (id *DeviceIdentifier) GetDevice(innerValueCallChain ...string) string {
-	resp := fmt.Sprintf("device_%s", id.Id)
+	resp := fmt.Sprintf("device_%s", id.ID)
 
 	for _, innerValueCall := range innerValueCallChain {
 		resp = fmt.Sprintf("%s.%s", resp, innerValueCall)
@@ -45,7 +45,7 @@ func (id *DeviceIdentifier) GetDevice(innerValueCallChain ...string) string {
 }
 
 func (id *DeviceIdentifier) GetDeviceMetadata(innerValueCallChain ...string) string {
-	resp := fmt.Sprintf("deviceMetadata_%s", id.Id)
+	resp := fmt.Sprintf("deviceMetadata_%s", id.ID)
 
 	for _, innerValueCall := range innerValueCallChain {
 		resp = fmt.Sprintf("%s.%s", resp, innerValueCall)
@@ -55,31 +55,31 @@ func (id *DeviceIdentifier) GetDeviceMetadata(innerValueCallChain ...string) str
 }
 
 func (id *DeviceIdentifier) GetCrosDutServer() string {
-	return fmt.Sprintf("crosDutServer_%s", id.Id)
+	return fmt.Sprintf("crosDutServer_%s", id.ID)
 }
 
 func (id *DeviceIdentifier) GetUpdateFirmware() string {
-	return fmt.Sprintf("updateFirmware_%s", id.Id)
+	return fmt.Sprintf("updateFirmware_%s", id.ID)
 }
 
 type TaskIdentifier struct {
-	Id string
+	ID string
 }
 
 func NewTaskIdentifier(taskBaseIdentifier string) *TaskIdentifier {
 	return &TaskIdentifier{
-		Id: taskBaseIdentifier,
+		ID: taskBaseIdentifier,
 	}
 }
 
-func (id *TaskIdentifier) AddDeviceId(deviceId *DeviceIdentifier) *TaskIdentifier {
+func (id *TaskIdentifier) AddDeviceID(deviceID *DeviceIdentifier) *TaskIdentifier {
 	return &TaskIdentifier{
-		Id: fmt.Sprintf("%s_%s", id.Id, deviceId.Id),
+		ID: fmt.Sprintf("%s_%s", id.ID, deviceID.ID),
 	}
 }
 
-func (id *TaskIdentifier) GetRpcResponse(rpc string, innerValueCallChain ...string) string {
-	resp := fmt.Sprintf("%s_%s", id.Id, rpc)
+func (id *TaskIdentifier) GetRPCResponse(rpc string, innerValueCallChain ...string) string {
+	resp := fmt.Sprintf("%s_%s", id.ID, rpc)
 
 	for _, innerValueCall := range innerValueCallChain {
 		resp = fmt.Sprintf("%s.%s", resp, innerValueCall)
@@ -88,8 +88,8 @@ func (id *TaskIdentifier) GetRpcResponse(rpc string, innerValueCallChain ...stri
 	return resp
 }
 
-func (id *TaskIdentifier) GetRpcRequest(rpc string, innerValueCallChain ...string) string {
-	resp := fmt.Sprintf("%s_%sRequest", id.Id, rpc)
+func (id *TaskIdentifier) GetRPCRequest(rpc string, innerValueCallChain ...string) string {
+	resp := fmt.Sprintf("%s_%sRequest", id.ID, rpc)
 
 	for _, innerValueCall := range innerValueCallChain {
 		resp = fmt.Sprintf("%s.%s", resp, innerValueCall)

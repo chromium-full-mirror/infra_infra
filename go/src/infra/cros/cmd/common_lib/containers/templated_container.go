@@ -45,7 +45,7 @@ func (cont *TemplatedContainer) Initialize(
 	}
 
 	if template == nil {
-		return fmt.Errorf("No template provided for templated container!")
+		return fmt.Errorf("no template provided for templated container")
 	}
 
 	switch t := template.Container.(type) {
@@ -78,7 +78,7 @@ func (cont *TemplatedContainer) Initialize(
 			return errors.Annotate(err, "initialization failed for cache-server template: ").Err()
 		}
 	case *api.Template_CrosVmProvision:
-		if err = cont.initializeCrosVmProvisionTemplate(ctx, t.CrosVmProvision); err != nil {
+		if err = cont.initializeCrosVMProvisionTemplate(ctx, t.CrosVmProvision); err != nil {
 			return errors.Annotate(err, "initialization failed for cros-vm-provision template: ").Err()
 		}
 	case *api.Template_Generic:
@@ -86,11 +86,11 @@ func (cont *TemplatedContainer) Initialize(
 			return errors.Annotate(err, "initialization failed for generic template: ").Err()
 		}
 	default:
-		return fmt.Errorf("Provided template %v not found!", t)
+		return fmt.Errorf("provided template %v not found", t)
 	}
 
 	if cont.TempDirLoc == "" {
-		return fmt.Errorf("TempDirLoc is empty but required for ArtifactDir")
+		return fmt.Errorf("tempDirLoc is empty but required for ArtifactDir")
 	}
 
 	if cont.Network == "" {
@@ -115,15 +115,15 @@ func (cont *TemplatedContainer) initializeCrosDutTemplate(
 	dutTemplate *api.CrosDutTemplate) error {
 
 	if dutTemplate == nil {
-		return fmt.Errorf("Provided CrosDutTemplate is nil!")
+		return fmt.Errorf("provided CrosDutTemplate is nil")
 	}
 
 	if dutTemplate.GetCacheServer() == nil {
-		return fmt.Errorf("No cache server provided for dut template!")
+		return fmt.Errorf("no cache server provided for dut template")
 	}
 
 	if dutTemplate.GetDutAddress() == nil {
-		return fmt.Errorf("No dut address provided for dut template")
+		return fmt.Errorf("no dut address provided for dut template")
 	}
 
 	return nil
@@ -135,11 +135,11 @@ func (cont *TemplatedContainer) initializeCrosProvisionTemplate(
 	provisionTemplate *api.CrosProvisionTemplate) error {
 
 	if provisionTemplate == nil {
-		return fmt.Errorf("Provided CrosProvisionTemplate is nil!")
+		return fmt.Errorf("provided CrosProvisionTemplate is nil")
 	}
 
 	if provisionTemplate.GetInputRequest() == nil {
-		return fmt.Errorf("No input request provided for provision template!")
+		return fmt.Errorf("no input request provided for provision template")
 	}
 
 	return nil
@@ -151,7 +151,7 @@ func (cont *TemplatedContainer) initializeCrosTestTemplate(
 	testTemplate *api.CrosTestTemplate) error {
 
 	if testTemplate == nil {
-		return fmt.Errorf("Provided CrosTestTemplate is nil!")
+		return fmt.Errorf("provided CrosTestTemplate is nil")
 	}
 
 	return nil
@@ -163,7 +163,7 @@ func (cont *TemplatedContainer) initializeCrosTestFinderTemplate(
 	testFinderTemplate *api.CrosTestFinderTemplate) error {
 
 	if testFinderTemplate == nil {
-		return fmt.Errorf("Provided CrosTestFinderTemplate is nil!")
+		return fmt.Errorf("provided CrosTestFinderTemplate is nil")
 	}
 
 	return nil
@@ -175,19 +175,19 @@ func (cont *TemplatedContainer) initializeCacheServerTemplate(
 	cacheTemplate *api.CacheServerTemplate) error {
 
 	if cacheTemplate == nil {
-		return fmt.Errorf("Provided CacheServerTemplate is nil!")
+		return fmt.Errorf("provided CacheServerTemplate is nil")
 	}
 
 	return nil
 }
 
 // initializeCacheServerTemplate initializes cros vm provision template.
-func (cont *TemplatedContainer) initializeCrosVmProvisionTemplate(
+func (cont *TemplatedContainer) initializeCrosVMProvisionTemplate(
 	ctx context.Context,
-	crosVmProvisionTemplate *api.CrosVMProvisionTemplate) error {
+	crosVMProvisionTemplate *api.CrosVMProvisionTemplate) error {
 
-	if crosVmProvisionTemplate == nil {
-		return fmt.Errorf("Provided CrosVmProvisionTemplate is nil!")
+	if crosVMProvisionTemplate == nil {
+		return fmt.Errorf("provided CrosVmProvisionTemplate is nil")
 	}
 
 	return nil
@@ -199,13 +199,13 @@ func (cont *TemplatedContainer) initializeCrosPublishTemplate(
 	publishTemplate *api.CrosPublishTemplate) error {
 
 	if publishTemplate == nil {
-		return fmt.Errorf("Provided CrosPublishTemplate is nil!")
+		return fmt.Errorf("provided CrosPublishTemplate is nil")
 	}
 
 	if publishTemplate.PublishType == api.CrosPublishTemplate_PUBLISH_GCS ||
 		publishTemplate.PublishType == api.CrosPublishTemplate_PUBLISH_TKO {
 		if publishTemplate.PublishSrcDir == "" {
-			return fmt.Errorf("PublishSrcDir is empty but required for GCS, TKO publish types!")
+			return fmt.Errorf("publishSrcDir is empty but required for GCS, TKO publish types")
 		}
 	}
 
@@ -230,15 +230,15 @@ func (cont *TemplatedContainer) initializeGenericTemplate(
 	genericTemplate *api.GenericTemplate) error {
 
 	if genericTemplate == nil {
-		return fmt.Errorf("Provided GenericTemplate is nil!")
+		return fmt.Errorf("provided GenericTemplate is nil")
 	}
 
 	if genericTemplate.GetDockerArtifactDir() == "" {
-		return fmt.Errorf("No docker artifact directory provided for generic template!")
+		return fmt.Errorf("no docker artifact directory provided for generic template")
 	}
 
 	if genericTemplate.GetBinaryArgs() == nil {
-		return fmt.Errorf("No args provided for generic template")
+		return fmt.Errorf("no args provided for generic template")
 	}
 
 	return nil
@@ -247,10 +247,10 @@ func (cont *TemplatedContainer) initializeGenericTemplate(
 // StartContainer starts the container.
 func (cont *TemplatedContainer) StartContainer(ctx context.Context) (*api.StartContainerResponse, error) {
 	if cont.StartTemplatedContainerReq == nil {
-		return nil, fmt.Errorf("StartTemplatedContainerRequest is nil!")
+		return nil, fmt.Errorf("startTemplatedContainerRequest is nil")
 	}
 	if cont.ctr == nil {
-		return nil, fmt.Errorf("Ctr is nil!")
+		return nil, fmt.Errorf("ctr is nil")
 	}
 	var err error
 	cont.StartContainerResp, err = cont.ctr.StartTemplatedContainer(ctx, cont.StartTemplatedContainerReq)

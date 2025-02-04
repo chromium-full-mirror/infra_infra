@@ -6,7 +6,6 @@ package interfaces
 
 import "context"
 
-// Executor type
 type ExecutorType string
 
 // ExecutorInterface defines the contract an executor will have to satisfy.

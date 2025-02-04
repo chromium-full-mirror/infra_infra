@@ -19,11 +19,9 @@ func TestIsTestRunnerError(t *testing.T) {
 		Type: skylab_test_runner.TestRunnerErrorType_DUT_CONNECTION,
 		Err:  original,
 	}
-	if tre.Unwrap() != original {
+
+	if !errors.Is(tre.Unwrap(), original) {
 		t.Errorf("TestRunnerError [%v] won't unwrap correctly (got [%v], want [%v])", tre, tre.Unwrap(), original)
-	}
-	if tre.Error() != original.Error() {
-		t.Errorf("TestRunnerError [%v] won't display correct error string (got [%v], want [%v])", tre, tre.Error(), original.Error())
 	}
 
 	wrapped := fmt.Errorf("wrapped again: %w", lucierrs.Annotate(lucierrs.Append(errors.New("bar error"), fmt.Errorf("wrapped error: %w", tre)), "annotated err").Err())

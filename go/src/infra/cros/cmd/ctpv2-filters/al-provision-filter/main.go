@@ -34,7 +34,7 @@ type ALProvisionRequestUpdater struct {
 
 func (pru *ALProvisionRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
 	log.Println("Executing AL provision Filter - Updates provision request.")
-	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VmLabDockerKeyFileLocation})
+	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VMLabDockerKeyFileLocation})
 	if err != nil {
 		log.Println(fmt.Errorf("unable to locate dockerKeyFile: %w", err))
 	}

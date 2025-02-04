@@ -11,70 +11,70 @@ import (
 	tpcommon "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 
 	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/common_commands"
-	"infra/cros/cmd/common_lib/common_configs"
-	"infra/cros/cmd/common_lib/common_executors"
+	"infra/cros/cmd/common_lib/commoncommands"
+	"infra/cros/cmd/common_lib/commonconfigs"
+	"infra/cros/cmd/common_lib/commonexecutors"
 	"infra/cros/cmd/cros_test_runner/data"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
 )
 
 // All currently supported command-executor pairs.
-var InputValidation_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.BuildInputValidationCmdType, ExecutorType: executors.NoExecutorType}
-var ParseEnvInfo_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ParseEnvInfoCmdType, ExecutorType: executors.NoExecutorType}
-var InvServiceStart_InvExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.InvServiceStartCmdType, ExecutorType: executors.InvServiceExecutorType}
-var InvServiceStop_InvExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.InvServiceStopCmdType, ExecutorType: executors.InvServiceExecutorType}
-var LoadDutTopology_InvExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.LoadDutTopologyCmdType, ExecutorType: executors.InvServiceExecutorType}
-var BuildDutTopology_InvExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.BuildDutTopologyCmdType, ExecutorType: executors.InvServiceExecutorType}
-var CtrStartAsync_CtrExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.CtrServiceStartAsyncCmdType, ExecutorType: common_executors.CtrExecutorType}
-var CtrStop_CtrExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.CtrServiceStopCmdType, ExecutorType: common_executors.CtrExecutorType}
-var GcloudAuth_CtrExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.GcloudAuthCmdType, ExecutorType: common_executors.CtrExecutorType}
-var DutServerStart_CrosDutExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.DutServiceStartCmdType, ExecutorType: executors.CrosDutExecutorType}
-var AndroidCompanionDutServerStart_AndroidDutExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.AndroidCompanionDutServiceStartCmdType, ExecutorType: executors.AndroidDutExecutorType}
-var AndroidProvisionServerStart_AndroidProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.AndroidProvisionServiceStartCmdType, ExecutorType: executors.AndroidProvisionExecutorType}
-var AndroidProvisionInstall_AndroidProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.AndroidProvisionInstallCmdType, ExecutorType: executors.AndroidProvisionExecutorType}
-var ProvisionServerStart_CrosProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ProvisionServiceStartCmdType, ExecutorType: executors.CrosProvisionExecutorType}
-var ProvisionInstall_CrosProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ProvisonInstallCmdType, ExecutorType: executors.CrosProvisionExecutorType}
-var TestServerStart_CrosTestExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.TestServiceStartCmdType, ExecutorType: executors.CrosTestExecutorType}
-var TestsExecution_CrosTestExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.TestsExecutionCmdType, ExecutorType: executors.CrosTestExecutorType}
-var TestFinderServerStart_CrosTestFinderExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.TestFinderServiceStartCmdType, ExecutorType: executors.CrosTestFinderExecutorType}
-var TestFinderExecution_CrosTestFinderExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.TestFinderExecutionCmdType, ExecutorType: executors.CrosTestFinderExecutorType}
-var GcsPublishStart_CrosGcsPublishExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GcsPublishStartCmdType, ExecutorType: executors.CrosGcsPublishExecutorType}
-var GcsPublishUpload_CrosGcsPublishExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GcsPublishUploadCmdType, ExecutorType: executors.CrosGcsPublishExecutorType}
-var RdbPublishStart_CrosRdbPublishExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.RdbPublishStartCmdType, ExecutorType: executors.CrosRdbPublishExecutorType}
-var RdbPublishUpload_CrosRdbPublishExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.RdbPublishUploadCmdType, ExecutorType: executors.CrosRdbPublishExecutorType}
-var TkoPublishStart_CrosTkoPublishExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.TkoPublishStartCmdType, ExecutorType: executors.CrosTkoPublishExecutorType}
-var TkoPublishUpload_CrosTkoPublishExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.TkoPublishUploadCmdType, ExecutorType: executors.CrosTkoPublishExecutorType}
-var CpconPublishStart_CrosCpconPublishExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.CpconPublishStartCmdType, ExecutorType: executors.CrosPublishExecutorType}
-var CpconPublishUpload_CrosCpconPublishExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.CpconPublishUploadCmdType, ExecutorType: executors.CrosPublishExecutorType}
-var ProcessResults_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ProcessResultsCmdType, ExecutorType: executors.NoExecutorType}
-var UpdateDutState_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.UpdateDutStateCmdType, ExecutorType: executors.NoExecutorType}
-var TkoDirectUpload_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.TkoDirectUploadCmdType, ExecutorType: executors.NoExecutorType}
-var SshStartTunnel_SshTunnelExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.SshStartTunnelCmdType, ExecutorType: executors.SshTunnelExecutorType}
-var SshStartReverseTunnel_SshTunnelExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.SshStartReverseTunnelCmdType, ExecutorType: executors.SshTunnelExecutorType}
-var SshStopTunnels_SshTunnelExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.SshStopTunnelsCmdType, ExecutorType: executors.SshTunnelExecutorType}
-var CacheServerStart_CacheServerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.CacheServerStartCmdType, ExecutorType: executors.CacheServerExecutorType}
-var UpdateContainerImagesLocally_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.UpdateContainerImagesLocallyCmdType, ExecutorType: executors.NoExecutorType}
-var FetchContainerMetadata_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.FetchContainerMetadataCmdType, ExecutorType: executors.NoExecutorType}
-var ParseArgs_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ParseArgsCmdType, ExecutorType: executors.NoExecutorType}
-var DutVmCacheServerStart_CacheServerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.DutVmCacheServerStartCmdType, ExecutorType: executors.CacheServerExecutorType}
-var DutVmGetImage_CrosDutVmExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.DutVmGetImageCmdType, ExecutorType: executors.CrosDutVmExecutorType}
-var DutServiceStart_CrosDutVmExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.DutServiceStartCmdType, ExecutorType: executors.CrosDutVmExecutorType}
-var VMProvisionServerStart_CrosVMProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.VMProvisionServiceStartCmdType, ExecutorType: executors.CrosVMProvisionExecutorType}
-var VMProvisionLease_CrosVMProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.VMProvisionLeaseCmdType, ExecutorType: executors.CrosVMProvisionExecutorType}
-var VMProvisionRelease_CrosVMProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.VMProvisionReleaseCmdType, ExecutorType: executors.CrosVMProvisionExecutorType}
-var ContainerStart_ContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerStartCmdType, ExecutorType: common_executors.ContainerExecutorType}
-var ContainerCloseLogs_ContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerCloseLogsCmdType, ExecutorType: common_executors.ContainerExecutorType}
-var ContainerReadLogs_ContainerExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: common_commands.ContainerReadLogsCmdType, ExecutorType: common_executors.ContainerExecutorType}
-var GenericProvision_GenericProvisionExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericProvisionCmdType, ExecutorType: executors.GenericProvisionExecutorType}
-var GenericTests_GenericTestsExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericTestsCmdType, ExecutorType: executors.GenericTestsExecutorType}
-var GenericPostProcess_GenericPostProcessExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericPostProcessCmdType, ExecutorType: executors.GenericPostProcessExecutorType}
-var GenericPublish_GenericPublishExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericPublishCmdType, ExecutorType: executors.GenericPublishExecutorType}
-var GenericService_GenericServiceExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.GenericServiceCmdType, ExecutorType: executors.GenericServiceExecutorType}
-var ParseDutTopology_NoExecutor = &common_configs.CommandExecutorPairedConfig{CommandType: commands.ParseDutTopologyCmdType, ExecutorType: common_executors.NoExecutorType}
+var InputValidation_NoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.BuildInputValidationCmdType, ExecutorType: executors.NoExecutorType}
+var ParseEnvInfo_NoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.ParseEnvInfoCmdType, ExecutorType: executors.NoExecutorType}
+var InvServiceStart_InvExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.InvServiceStartCmdType, ExecutorType: executors.InvServiceExecutorType}
+var InvServiceStop_InvExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.InvServiceStopCmdType, ExecutorType: executors.InvServiceExecutorType}
+var LoadDutTopology_InvExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.LoadDutTopologyCmdType, ExecutorType: executors.InvServiceExecutorType}
+var BuildDutTopology_InvExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.BuildDutTopologyCmdType, ExecutorType: executors.InvServiceExecutorType}
+var CtrStartAsync_CtrExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.CtrServiceStartAsyncCmdType, ExecutorType: commonexecutors.CtrExecutorType}
+var CtrStop_CtrExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.CtrServiceStopCmdType, ExecutorType: commonexecutors.CtrExecutorType}
+var GcloudAuth_CtrExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.GcloudAuthCmdType, ExecutorType: commonexecutors.CtrExecutorType}
+var DutServerStart_CrosDutExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.DutServiceStartCmdType, ExecutorType: executors.CrosDutExecutorType}
+var AndroidCompanionDutServerStart_AndroidDutExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.AndroidCompanionDutServiceStartCmdType, ExecutorType: executors.AndroidDutExecutorType}
+var AndroidProvisionServerStart_AndroidProvisionExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.AndroidProvisionServiceStartCmdType, ExecutorType: executors.AndroidProvisionExecutorType}
+var AndroidProvisionInstall_AndroidProvisionExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.AndroidProvisionInstallCmdType, ExecutorType: executors.AndroidProvisionExecutorType}
+var ProvisionServerStart_CrosProvisionExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.ProvisionServiceStartCmdType, ExecutorType: executors.CrosProvisionExecutorType}
+var ProvisionInstall_CrosProvisionExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.ProvisonInstallCmdType, ExecutorType: executors.CrosProvisionExecutorType}
+var TestServerStart_CrosTestExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.TestServiceStartCmdType, ExecutorType: executors.CrosTestExecutorType}
+var TestsExecution_CrosTestExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.TestsExecutionCmdType, ExecutorType: executors.CrosTestExecutorType}
+var TestFinderServerStart_CrosTestFinderExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.TestFinderServiceStartCmdType, ExecutorType: executors.CrosTestFinderExecutorType}
+var TestFinderExecution_CrosTestFinderExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.TestFinderExecutionCmdType, ExecutorType: executors.CrosTestFinderExecutorType}
+var GcsPublishStart_CrosGcsPublishExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.GcsPublishStartCmdType, ExecutorType: executors.CrosGcsPublishExecutorType}
+var GcsPublishUpload_CrosGcsPublishExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.GcsPublishUploadCmdType, ExecutorType: executors.CrosGcsPublishExecutorType}
+var RdbPublishStart_CrosRdbPublishExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.RdbPublishStartCmdType, ExecutorType: executors.CrosRdbPublishExecutorType}
+var RdbPublishUpload_CrosRdbPublishExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.RdbPublishUploadCmdType, ExecutorType: executors.CrosRdbPublishExecutorType}
+var TkoPublishStart_CrosTkoPublishExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.TkoPublishStartCmdType, ExecutorType: executors.CrosTkoPublishExecutorType}
+var TkoPublishUpload_CrosTkoPublishExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.TkoPublishUploadCmdType, ExecutorType: executors.CrosTkoPublishExecutorType}
+var CpconPublishStart_CrosCpconPublishExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.CpconPublishStartCmdType, ExecutorType: executors.CrosPublishExecutorType}
+var CpconPublishUpload_CrosCpconPublishExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.CpconPublishUploadCmdType, ExecutorType: executors.CrosPublishExecutorType}
+var ProcessResults_NoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.ProcessResultsCmdType, ExecutorType: executors.NoExecutorType}
+var UpdateDutState_NoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.UpdateDutStateCmdType, ExecutorType: executors.NoExecutorType}
+var TkoDirectUpload_NoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.TkoDirectUploadCmdType, ExecutorType: executors.NoExecutorType}
+var SshStartTunnel_SshTunnelExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.SshStartTunnelCmdType, ExecutorType: executors.SshTunnelExecutorType}
+var SshStartReverseTunnel_SshTunnelExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.SshStartReverseTunnelCmdType, ExecutorType: executors.SshTunnelExecutorType}
+var SshStopTunnels_SshTunnelExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.SshStopTunnelsCmdType, ExecutorType: executors.SshTunnelExecutorType}
+var CacheServerStart_CacheServerExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.CacheServerStartCmdType, ExecutorType: executors.CacheServerExecutorType}
+var UpdateContainerImagesLocally_NoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.UpdateContainerImagesLocallyCmdType, ExecutorType: executors.NoExecutorType}
+var FetchContainerMetadata_NoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.FetchContainerMetadataCmdType, ExecutorType: executors.NoExecutorType}
+var ParseArgs_NoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.ParseArgsCmdType, ExecutorType: executors.NoExecutorType}
+var DutVmCacheServerStart_CacheServerExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.DutVmCacheServerStartCmdType, ExecutorType: executors.CacheServerExecutorType}
+var DutVmGetImage_CrosDutVmExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.DutVmGetImageCmdType, ExecutorType: executors.CrosDutVmExecutorType}
+var DutServiceStart_CrosDutVmExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.DutServiceStartCmdType, ExecutorType: executors.CrosDutVmExecutorType}
+var VMProvisionServerStart_CrosVMProvisionExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.VMProvisionServiceStartCmdType, ExecutorType: executors.CrosVMProvisionExecutorType}
+var VMProvisionLease_CrosVMProvisionExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.VMProvisionLeaseCmdType, ExecutorType: executors.CrosVMProvisionExecutorType}
+var VMProvisionRelease_CrosVMProvisionExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.VMProvisionReleaseCmdType, ExecutorType: executors.CrosVMProvisionExecutorType}
+var ContainerStart_ContainerExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.ContainerStartCmdType, ExecutorType: commonexecutors.ContainerExecutorType}
+var ContainerCloseLogs_ContainerExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.ContainerCloseLogsCmdType, ExecutorType: commonexecutors.ContainerExecutorType}
+var ContainerReadLogs_ContainerExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commoncommands.ContainerReadLogsCmdType, ExecutorType: commonexecutors.ContainerExecutorType}
+var GenericProvision_GenericProvisionExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.GenericProvisionCmdType, ExecutorType: executors.GenericProvisionExecutorType}
+var GenericTests_GenericTestsExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.GenericTestsCmdType, ExecutorType: executors.GenericTestsExecutorType}
+var GenericPostProcess_GenericPostProcessExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.GenericPostProcessCmdType, ExecutorType: executors.GenericPostProcessExecutorType}
+var GenericPublish_GenericPublishExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.GenericPublishCmdType, ExecutorType: executors.GenericPublishExecutorType}
+var GenericService_GenericServiceExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.GenericServiceCmdType, ExecutorType: executors.GenericServiceExecutorType}
+var ParseDutTopology_NoExecutor = &commonconfigs.CommandExecutorPairedConfig{CommandType: commands.ParseDutTopologyCmdType, ExecutorType: commonexecutors.NoExecutorType}
 
 // GenerateHwConfigs generates hw tests execution for lab environment.
-func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig, sk *data.HwTestStateKeeper, inputV2 *api.CrosTestRunnerDynamicRequest, isAndroidProvisionRequired bool) *common_configs.Configs {
+func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestConfig, sk *data.HwTestStateKeeper, inputV2 *api.CrosTestRunnerDynamicRequest, isAndroidProvisionRequired bool) *commonconfigs.Configs {
 	platform := common.GetBotProvider()
 	if inputV2 != nil {
 		return hwConfigsForPlatformV2(cftHwStepsConfig, inputV2, platform)
@@ -85,7 +85,7 @@ func GenerateHwConfigs(ctx context.Context, cftHwStepsConfig *tpcommon.HwTestCon
 // hwConfigsForPlatform generates platform-specific configs.
 // GCE platform will get configs for VM test on GCE.
 // Non-GCE platforms (Drone and Unknown) will get configs for HW test on Drone.
-func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, sk *data.HwTestStateKeeper, platform common.SwarmingBotProvider, isAndroidProvisionRequired bool) *common_configs.Configs {
+func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, sk *data.HwTestStateKeeper, platform common.SwarmingBotProvider, isAndroidProvisionRequired bool) *commonconfigs.Configs {
 	// Overwrite configs that don't apply to VM test
 	if platform == common.BotProviderGce {
 		if cftHwStepsConfig == nil {
@@ -97,7 +97,7 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, sk *data.HwTe
 		cftHwStepsConfig.SkipProvision = true
 		cftHwStepsConfig.SkipStartingDutService = false
 	}
-	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
+	mainConfigs := []*commonconfigs.CommandExecutorPairedConfig{}
 
 	// Input validation and parse env commands
 	mainConfigs = append(mainConfigs,
@@ -216,11 +216,11 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, sk *data.HwTe
 			ProcessResults_NoExecutor.WithRequired(true))
 	}
 
-	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: []*common_configs.CommandExecutorPairedConfig{}}
+	return &commonconfigs.Configs{MainConfigs: mainConfigs, CleanupConfigs: []*commonconfigs.CommandExecutorPairedConfig{}}
 }
 
-func GeneratePreLocalConfigs(ctx context.Context) *common_configs.Configs {
-	mainConfigs := []*common_configs.CommandExecutorPairedConfig{
+func GeneratePreLocalConfigs(ctx context.Context) *commonconfigs.Configs {
+	mainConfigs := []*commonconfigs.CommandExecutorPairedConfig{
 		ParseArgs_NoExecutor,
 		FetchContainerMetadata_NoExecutor,
 		UpdateContainerImagesLocally_NoExecutor,
@@ -229,15 +229,15 @@ func GeneratePreLocalConfigs(ctx context.Context) *common_configs.Configs {
 	// Clean up configs. They will be executed if any failures occurs
 	// in main configs. If any of the cleanup cmd is already executed,
 	// they will be skipped.
-	cleanupConfigs := []*common_configs.CommandExecutorPairedConfig{}
+	cleanupConfigs := []*commonconfigs.CommandExecutorPairedConfig{}
 
-	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
+	return &commonconfigs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
 }
 
 // hwConfigsForPlatformV2 generates the command/executor pair configs for the CrosTestRunnerRequest.
-func hwConfigsForPlatformV2(cftHwStepsConfig *tpcommon.HwTestConfig, inputV2 *api.CrosTestRunnerDynamicRequest, platform common.SwarmingBotProvider) *common_configs.Configs {
-	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
-	cleanupConfigs := []*common_configs.CommandExecutorPairedConfig{}
+func hwConfigsForPlatformV2(cftHwStepsConfig *tpcommon.HwTestConfig, inputV2 *api.CrosTestRunnerDynamicRequest, platform common.SwarmingBotProvider) *commonconfigs.Configs {
+	mainConfigs := []*commonconfigs.CommandExecutorPairedConfig{}
+	cleanupConfigs := []*commonconfigs.CommandExecutorPairedConfig{}
 
 	// Overwrite configs that don't apply to VM test
 	if platform == common.BotProviderGce {
@@ -291,11 +291,11 @@ func hwConfigsForPlatformV2(cftHwStepsConfig *tpcommon.HwTestConfig, inputV2 *ap
 	}
 
 	mainConfigs = append(mainConfigs, ProcessResults_NoExecutor.WithRequired(true))
-	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
+	return &commonconfigs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
 }
 
-func GenerateLocalConfigs(ctx context.Context, sk *data.LocalTestStateKeeper) *common_configs.Configs {
-	mainConfigs := []*common_configs.CommandExecutorPairedConfig{
+func GenerateLocalConfigs(ctx context.Context, sk *data.LocalTestStateKeeper) *commonconfigs.Configs {
+	mainConfigs := []*commonconfigs.CommandExecutorPairedConfig{
 		CtrStartAsync_CtrExecutor,
 		GcloudAuth_CtrExecutor,
 	}
@@ -358,17 +358,17 @@ func GenerateLocalConfigs(ctx context.Context, sk *data.LocalTestStateKeeper) *c
 	// Clean up configs. They will be executed if any failures occurs
 	// in main configs. If any of the cleanup cmd is already executed,
 	// they will be skipped.
-	cleanupConfigs := []*common_configs.CommandExecutorPairedConfig{
+	cleanupConfigs := []*commonconfigs.CommandExecutorPairedConfig{
 		CtrStop_CtrExecutor,
 		SshStopTunnels_SshTunnelExecutor,
 		ProcessResults_NoExecutor,
 	}
 
-	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
+	return &commonconfigs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
 }
 
-func generateTaskConfigs(inputV2 *api.CrosTestRunnerDynamicRequest, platform common.SwarmingBotProvider) *common_configs.Configs {
-	mainConfigs := []*common_configs.CommandExecutorPairedConfig{}
+func generateTaskConfigs(inputV2 *api.CrosTestRunnerDynamicRequest, platform common.SwarmingBotProvider) *commonconfigs.Configs {
+	mainConfigs := []*commonconfigs.CommandExecutorPairedConfig{}
 	vmReleased := false
 
 	for _, task := range inputV2.GetOrderedTasks() {
@@ -403,5 +403,5 @@ func generateTaskConfigs(inputV2 *api.CrosTestRunnerDynamicRequest, platform com
 		}
 	}
 
-	return &common_configs.Configs{MainConfigs: mainConfigs}
+	return &commonconfigs.Configs{MainConfigs: mainConfigs}
 }

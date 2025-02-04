@@ -10,7 +10,6 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 
 	_go "go.chromium.org/chromiumos/config/go"
-	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
@@ -23,12 +22,12 @@ import (
 
 func TestDependencyInjectionJson(t *testing.T) {
 	ftt.Run("Add execution metadata", t, func(t *ftt.Test) {
-		originalProto := &api.TestTask{
-			TestRequest: &api.CrosTestRequest{
-				TestSuites: []*api.TestSuite{
+		originalProto := &testapi.TestTask{
+			TestRequest: &testapi.CrosTestRequest{
+				TestSuites: []*testapi.TestSuite{
 					{
-						ExecutionMetadata: &api.ExecutionMetadata{
-							Args: []*api.Arg{
+						ExecutionMetadata: &testapi.ExecutionMetadata{
+							Args: []*testapi.Arg{
 								{
 									Flag:  "FirstFlag",
 									Value: "FirstValue",
@@ -38,7 +37,7 @@ func TestDependencyInjectionJson(t *testing.T) {
 					},
 				},
 			},
-			DynamicDeps: []*api.DynamicDep{
+			DynamicDeps: []*testapi.DynamicDep{
 				{
 					Key:   "testRequest.testSuites.0.executionMetadata.args",
 					Value: `JSON={"flag":"service-address","value":"${generic-service.address}:${generic-service.port}"}`,
@@ -62,7 +61,7 @@ func TestDependencyInjectionJson(t *testing.T) {
 func TestDependencyInjectionAny(t *testing.T) {
 	ftt.Run("Concrete -> Any", t, func(t *ftt.Test) {
 		publishMetadata, _ := anypb.New(&artifact.TestResult{})
-		original_proto := &testapi.PublishRequest{
+		originalProto := &testapi.PublishRequest{
 			Metadata: publishMetadata,
 		}
 		testResult := &artifact.TestResult{
@@ -74,17 +73,17 @@ func TestDependencyInjectionAny(t *testing.T) {
 		storage := common.NewInjectableStorage()
 		assert.Loosely(t, storage.Set("testResult", testResult), should.BeNil)
 		assert.Loosely(t, storage.LoadInjectables(), should.BeNil)
-		assert.Loosely(t, common.Inject(original_proto, "metadata", storage, "ANY(type.googleapis.com/chromiumos.test.artifact.TestResult)=testResult"), should.BeNil)
+		assert.Loosely(t, common.Inject(originalProto, "metadata", storage, "ANY(type.googleapis.com/chromiumos.test.artifact.TestResult)=testResult"), should.BeNil)
 
-		assert.Loosely(t, original_proto.Metadata.TypeUrl, should.Equal("type.googleapis.com/chromiumos.test.artifact.TestResult"))
+		assert.Loosely(t, originalProto.Metadata.TypeUrl, should.Equal("type.googleapis.com/chromiumos.test.artifact.TestResult"))
 		extractedTestResult := &artifact.TestResult{}
-		assert.Loosely(t, original_proto.Metadata.UnmarshalTo(extractedTestResult), should.BeNil)
+		assert.Loosely(t, originalProto.Metadata.UnmarshalTo(extractedTestResult), should.BeNil)
 		assert.Loosely(t, extractedTestResult.Version, should.Equal(testResult.Version))
 		assert.Loosely(t, extractedTestResult.TestInvocation.IsCftRun, should.Equal(testResult.TestInvocation.IsCftRun))
 	})
 
 	ftt.Run("Concrete -> Undefined Any", t, func(t *ftt.Test) {
-		original_proto := &testapi.PublishRequest{}
+		originalProto := &testapi.PublishRequest{}
 		testResult := &artifact.TestResult{
 			Version: 12,
 			TestInvocation: &artifact.TestInvocation{
@@ -94,18 +93,18 @@ func TestDependencyInjectionAny(t *testing.T) {
 		storage := common.NewInjectableStorage()
 		assert.Loosely(t, storage.Set("testResult", testResult), should.BeNil)
 		assert.Loosely(t, storage.LoadInjectables(), should.BeNil)
-		assert.Loosely(t, common.Inject(original_proto, "metadata", storage, "ANY(type.googleapis.com/chromiumos.test.artifact.TestResult)=testResult"), should.BeNil)
+		assert.Loosely(t, common.Inject(originalProto, "metadata", storage, "ANY(type.googleapis.com/chromiumos.test.artifact.TestResult)=testResult"), should.BeNil)
 
-		assert.Loosely(t, original_proto.Metadata.TypeUrl, should.Equal("type.googleapis.com/chromiumos.test.artifact.TestResult"))
+		assert.Loosely(t, originalProto.Metadata.TypeUrl, should.Equal("type.googleapis.com/chromiumos.test.artifact.TestResult"))
 		extractedTestResult := &artifact.TestResult{}
-		assert.Loosely(t, original_proto.Metadata.UnmarshalTo(extractedTestResult), should.BeNil)
+		assert.Loosely(t, originalProto.Metadata.UnmarshalTo(extractedTestResult), should.BeNil)
 		assert.Loosely(t, extractedTestResult.Version, should.Equal(testResult.Version))
 		assert.Loosely(t, extractedTestResult.TestInvocation.IsCftRun, should.Equal(testResult.TestInvocation.IsCftRun))
 	})
 
 	ftt.Run("Any -> Any", t, func(t *ftt.Test) {
 		publishMetadata, _ := anypb.New(&artifact.TestResult{})
-		original_proto := &testapi.PublishRequest{
+		originalProto := &testapi.PublishRequest{
 			Metadata: publishMetadata,
 		}
 		testResult := &artifact.TestResult{
@@ -118,18 +117,18 @@ func TestDependencyInjectionAny(t *testing.T) {
 		storage := common.NewInjectableStorage()
 		assert.Loosely(t, storage.Set("testResult", testResultAny), should.BeNil)
 		assert.Loosely(t, storage.LoadInjectables(), should.BeNil)
-		assert.Loosely(t, common.Inject(original_proto, "metadata", storage, "testResult"), should.BeNil)
+		assert.Loosely(t, common.Inject(originalProto, "metadata", storage, "testResult"), should.BeNil)
 
-		assert.Loosely(t, original_proto.Metadata.TypeUrl, should.Equal("type.googleapis.com/chromiumos.test.artifact.TestResult"))
+		assert.Loosely(t, originalProto.Metadata.TypeUrl, should.Equal("type.googleapis.com/chromiumos.test.artifact.TestResult"))
 		extractedTestResult := &artifact.TestResult{}
-		assert.Loosely(t, original_proto.Metadata.UnmarshalTo(extractedTestResult), should.BeNil)
+		assert.Loosely(t, originalProto.Metadata.UnmarshalTo(extractedTestResult), should.BeNil)
 		assert.Loosely(t, extractedTestResult.Version, should.Equal(testResult.Version))
 		assert.Loosely(t, extractedTestResult.TestInvocation.IsCftRun, should.Equal(testResult.TestInvocation.IsCftRun))
 	})
 
 	ftt.Run("Overwrite with different Any", t, func(t *ftt.Test) {
 		publishMetadata, _ := anypb.New(&artifact.TestResult{})
-		original_proto := &testapi.PublishRequest{
+		originalProto := &testapi.PublishRequest{
 			Metadata: publishMetadata,
 		}
 		testInvocation := &artifact.TestInvocation{
@@ -139,18 +138,18 @@ func TestDependencyInjectionAny(t *testing.T) {
 		storage := common.NewInjectableStorage()
 		assert.Loosely(t, storage.Set("testResult", testInvocationAny), should.BeNil)
 		assert.Loosely(t, storage.LoadInjectables(), should.BeNil)
-		assert.Loosely(t, common.Inject(original_proto, "metadata", storage, "testResult"), should.BeNil)
+		assert.Loosely(t, common.Inject(originalProto, "metadata", storage, "testResult"), should.BeNil)
 
-		assert.Loosely(t, original_proto.Metadata.TypeUrl, should.Equal("type.googleapis.com/chromiumos.test.artifact.TestInvocation"))
+		assert.Loosely(t, originalProto.Metadata.TypeUrl, should.Equal("type.googleapis.com/chromiumos.test.artifact.TestInvocation"))
 		extractedTestInvocation := &artifact.TestInvocation{}
-		assert.Loosely(t, original_proto.Metadata.UnmarshalTo(extractedTestInvocation), should.BeNil)
+		assert.Loosely(t, originalProto.Metadata.UnmarshalTo(extractedTestInvocation), should.BeNil)
 		assert.Loosely(t, extractedTestInvocation.IsCftRun, should.Equal(testInvocation.IsCftRun))
 	})
 }
 
 func TestDependencyInjectionBasic(t *testing.T) {
 	ftt.Run("basic injection", t, func(t *ftt.Test) {
-		original_proto := &testapi.CrosProvisionRequest{
+		originalProto := &testapi.CrosProvisionRequest{
 			ProvisionState: &testapi.ProvisionState{
 				Id: &testapi.ProvisionState_Id{
 					Value: "Hello, World!",
@@ -158,56 +157,56 @@ func TestDependencyInjectionBasic(t *testing.T) {
 				PreventReboot: true,
 			},
 		}
-		dut_address_proto := &labapi.IpEndpoint{
+		dutAddressProtos := &labapi.IpEndpoint{
 			Address: "localhost",
 			Port:    4040,
 		}
 		storage := common.NewInjectableStorage()
-		err := storage.Set("dut_primary", dut_address_proto)
+		err := storage.Set("dut_primary", dutAddressProtos)
 		assert.Loosely(t, err, should.BeNil)
 		err = storage.LoadInjectables()
 		assert.Loosely(t, err, should.BeNil)
 
-		err = common.Inject(original_proto, "dutServer", storage, "dut_primary")
+		err = common.Inject(originalProto, "dutServer", storage, "dut_primary")
 
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, original_proto.DutServer, should.NotBeNil)
-		assert.Loosely(t, original_proto.DutServer.Address, should.Equal(dut_address_proto.Address))
-		assert.Loosely(t, original_proto.DutServer.Port, should.Equal(dut_address_proto.Port))
+		assert.Loosely(t, originalProto.DutServer, should.NotBeNil)
+		assert.Loosely(t, originalProto.DutServer.Address, should.Equal(dutAddressProtos.Address))
+		assert.Loosely(t, originalProto.DutServer.Port, should.Equal(dutAddressProtos.Port))
 	})
 
 	ftt.Run("IpEndpoint direct injection", t, func(t *ftt.Test) {
-		original_proto := &labapi.IpEndpoint{}
-		dut_address_proto := &labapi.IpEndpoint{
+		originalProto := &labapi.IpEndpoint{}
+		dutAddressProtos := &labapi.IpEndpoint{
 			Address: "localhost",
 			Port:    4040,
 		}
 		storage := common.NewInjectableStorage()
-		err := storage.Set("cros-dut", dut_address_proto)
+		err := storage.Set("cros-dut", dutAddressProtos)
 		assert.Loosely(t, err, should.BeNil)
 		err = storage.LoadInjectables()
 		assert.Loosely(t, err, should.BeNil)
 
-		err = common.Inject(original_proto, "", storage, "cros-dut")
+		err = common.Inject(originalProto, "", storage, "cros-dut")
 
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, original_proto, should.NotBeNil)
-		assert.Loosely(t, original_proto.Address, should.Equal(dut_address_proto.Address))
-		assert.Loosely(t, original_proto.Port, should.Equal(dut_address_proto.Port))
+		assert.Loosely(t, originalProto, should.NotBeNil)
+		assert.Loosely(t, originalProto.Address, should.Equal(dutAddressProtos.Address))
+		assert.Loosely(t, originalProto.Port, should.Equal(dutAddressProtos.Port))
 	})
 
 	ftt.Run("test injection", t, func(t *ftt.Test) {
-		original_proto := &api.ContainerRequest{
+		originalProto := &testapi.ContainerRequest{
 			DynamicIdentifier: "cros-provision",
-			Container: &api.Template{
-				Container: &api.Template_CrosProvision{
-					CrosProvision: &api.CrosProvisionTemplate{
-						InputRequest: &api.CrosProvisionRequest{},
+			Container: &testapi.Template{
+				Container: &testapi.Template_CrosProvision{
+					CrosProvision: &testapi.CrosProvisionTemplate{
+						InputRequest: &testapi.CrosProvisionRequest{},
 					},
 				},
 			},
 			ContainerImageKey: "cros-provision",
-			DynamicDeps: []*api.DynamicDep{
+			DynamicDeps: []*testapi.DynamicDep{
 				{
 					Key:   "crosProvision.inputRequest.dut",
 					Value: "dut_primary",
@@ -218,7 +217,7 @@ func TestDependencyInjectionBasic(t *testing.T) {
 				},
 			},
 		}
-		dut_address_proto := &labapi.IpEndpoint{
+		dutAddressProtos := &labapi.IpEndpoint{
 			Address: "localhost",
 			Port:    4040,
 		}
@@ -230,15 +229,15 @@ func TestDependencyInjectionBasic(t *testing.T) {
 			},
 		}
 		storage := common.NewInjectableStorage()
-		err := storage.Set("cros-dut", dut_address_proto)
+		err := storage.Set("cros-dut", dutAddressProtos)
 		assert.Loosely(t, err, should.BeNil)
 		err = storage.Set("dut_primary", dut)
 		assert.Loosely(t, err, should.BeNil)
 		err = storage.LoadInjectables()
 		assert.Loosely(t, err, should.BeNil)
 
-		for _, dep := range original_proto.DynamicDeps {
-			err := common.Inject(original_proto.Container, dep.Key, storage, dep.Value)
+		for _, dep := range originalProto.DynamicDeps {
+			err := common.Inject(originalProto.Container, dep.Key, storage, dep.Value)
 			assert.Loosely(t, err, should.BeNil)
 		}
 	})
@@ -246,7 +245,7 @@ func TestDependencyInjectionBasic(t *testing.T) {
 
 func TestDependencyInjectionArray(t *testing.T) {
 	ftt.Run("array injection", t, func(t *ftt.Test) {
-		original_proto := &testapi.CrosProvisionRequest{
+		originalProto := &testapi.CrosProvisionRequest{
 			ProvisionState: &testapi.ProvisionState{
 				Id: &testapi.ProvisionState_Id{
 					Value: "Hello, World!",
@@ -254,7 +253,7 @@ func TestDependencyInjectionArray(t *testing.T) {
 				PreventReboot: true,
 			},
 		}
-		dut_address_protos := []*labapi.IpEndpoint{
+		dutAddressProtos := []*labapi.IpEndpoint{
 			{
 				Address: "not_expected",
 				Port:    4040,
@@ -266,23 +265,23 @@ func TestDependencyInjectionArray(t *testing.T) {
 		}
 
 		storage := common.NewInjectableStorage()
-		err := storage.Set("duts", dut_address_protos)
+		err := storage.Set("duts", dutAddressProtos)
 		assert.Loosely(t, err, should.BeNil)
 		err = storage.LoadInjectables()
 		assert.Loosely(t, err, should.BeNil)
 
-		err = common.Inject(original_proto, "dutServer", storage, "duts.1")
+		err = common.Inject(originalProto, "dutServer", storage, "duts.1")
 
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, original_proto.DutServer, should.NotBeNil)
-		assert.Loosely(t, original_proto.DutServer.Address, should.Equal(dut_address_protos[1].Address))
-		assert.Loosely(t, original_proto.DutServer.Port, should.Equal(dut_address_protos[1].Port))
+		assert.Loosely(t, originalProto.DutServer, should.NotBeNil)
+		assert.Loosely(t, originalProto.DutServer.Address, should.Equal(dutAddressProtos[1].Address))
+		assert.Loosely(t, originalProto.DutServer.Port, should.Equal(dutAddressProtos[1].Port))
 	})
 }
 
 func TestDependencyInjectionArrayAppend(t *testing.T) {
 	ftt.Run("array injection", t, func(t *ftt.Test) {
-		original_proto := &testapi.CrosProvisionRequest{
+		originalProto := &testapi.CrosProvisionRequest{
 			ProvisionState: &testapi.ProvisionState{
 				Id: &testapi.ProvisionState_Id{
 					Value: "Hello, World!",
@@ -307,29 +306,29 @@ func TestDependencyInjectionArrayAppend(t *testing.T) {
 				},
 			},
 		}
-		new_package := &testapi.ProvisionState_Package{
+		newPackage := &testapi.ProvisionState_Package{
 			PackagePath: &_go.StoragePath{
 				Path: "d",
 			},
 		}
 
 		storage := common.NewInjectableStorage()
-		err := storage.Set("package", new_package)
+		err := storage.Set("package", newPackage)
 		assert.Loosely(t, err, should.BeNil)
 		err = storage.LoadInjectables()
 		assert.Loosely(t, err, should.BeNil)
 
-		err = common.Inject(original_proto, "provisionState.packages", storage, "package")
+		err = common.Inject(originalProto, "provisionState.packages", storage, "package")
 
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, original_proto.ProvisionState.Packages, should.HaveLength(4))
-		assert.Loosely(t, original_proto.ProvisionState.Packages[3].PackagePath.Path, should.Equal(new_package.PackagePath.Path))
+		assert.Loosely(t, originalProto.ProvisionState.Packages, should.HaveLength(4))
+		assert.Loosely(t, originalProto.ProvisionState.Packages[3].PackagePath.Path, should.Equal(newPackage.PackagePath.Path))
 	})
 }
 
 func TestDependencyInjectionArrayOverride(t *testing.T) {
 	ftt.Run("array override injection", t, func(t *ftt.Test) {
-		original_proto := &testapi.CrosProvisionRequest{
+		originalProto := &testapi.CrosProvisionRequest{
 			ProvisionState: &testapi.ProvisionState{
 				Id: &testapi.ProvisionState_Id{
 					Value: "Hello, World!",
@@ -338,7 +337,7 @@ func TestDependencyInjectionArrayOverride(t *testing.T) {
 				Packages:      []*testapi.ProvisionState_Package{},
 			},
 		}
-		new_packages := []*testapi.ProvisionState_Package{
+		newPackages := []*testapi.ProvisionState_Package{
 			{
 				PackagePath: &_go.StoragePath{
 					Path: "d",
@@ -357,28 +356,28 @@ func TestDependencyInjectionArrayOverride(t *testing.T) {
 		}
 
 		storage := common.NewInjectableStorage()
-		err := storage.Set("packages", new_packages)
+		err := storage.Set("packages", newPackages)
 		assert.Loosely(t, err, should.BeNil)
 		err = storage.LoadInjectables()
 		assert.Loosely(t, err, should.BeNil)
 
-		err = common.Inject(original_proto, "provisionState.packages", storage, "packages")
+		err = common.Inject(originalProto, "provisionState.packages", storage, "packages")
 
 		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, original_proto.ProvisionState.Packages, should.HaveLength(3))
-		assert.Loosely(t, original_proto.ProvisionState.Packages[0].PackagePath.Path, should.Equal(new_packages[0].PackagePath.Path))
-		assert.Loosely(t, original_proto.ProvisionState.Packages[1].PackagePath.Path, should.Equal(new_packages[1].PackagePath.Path))
-		assert.Loosely(t, original_proto.ProvisionState.Packages[2].PackagePath.Path, should.Equal(new_packages[2].PackagePath.Path))
+		assert.Loosely(t, originalProto.ProvisionState.Packages, should.HaveLength(3))
+		assert.Loosely(t, originalProto.ProvisionState.Packages[0].PackagePath.Path, should.Equal(newPackages[0].PackagePath.Path))
+		assert.Loosely(t, originalProto.ProvisionState.Packages[1].PackagePath.Path, should.Equal(newPackages[1].PackagePath.Path))
+		assert.Loosely(t, originalProto.ProvisionState.Packages[2].PackagePath.Path, should.Equal(newPackages[2].PackagePath.Path))
 	})
 }
 
 func TestDependencyInjectionFullTest(t *testing.T) {
 	storage := common.NewInjectableStorage()
-	req := &api.CrosTestRunnerDynamicRequest{
-		StartRequest: &api.CrosTestRunnerDynamicRequest_Build{
-			Build: &api.BuildMode{},
+	req := &testapi.CrosTestRunnerDynamicRequest{
+		StartRequest: &testapi.CrosTestRunnerDynamicRequest_Build{
+			Build: &testapi.BuildMode{},
 		},
-		Params: &api.CrosTestRunnerParams{},
+		Params: &testapi.CrosTestRunnerParams{},
 	}
 	err := storage.Set("req", req)
 	if err != nil {
@@ -420,7 +419,7 @@ func TestDependencyInjectionFullTest(t *testing.T) {
 	})
 
 	ftt.Run("CanAddAndPullParams", t, func(t *ftt.Test) {
-		req.Params.TestSuites = []*api.TestSuite{
+		req.Params.TestSuites = []*testapi.TestSuite{
 			{
 				Name: "Test1",
 			}, {
@@ -452,7 +451,7 @@ func TestDependencyInjectionFullTest(t *testing.T) {
 		}
 		err := storage.Set("cros-test", endpoint)
 		assert.Loosely(t, err, should.BeNil)
-		req.Params.TestSuites = []*api.TestSuite{
+		req.Params.TestSuites = []*testapi.TestSuite{
 			{
 				Name: "Test1",
 			}, {
@@ -461,10 +460,10 @@ func TestDependencyInjectionFullTest(t *testing.T) {
 				Name: "Test3",
 			},
 		}
-		testRequest := &api.TestTask{
+		testRequest := &testapi.TestTask{
 			ServiceAddress: &labapi.IpEndpoint{},
 			TestRequest:    &testapi.CrosTestRequest{},
-			DynamicDeps: []*api.DynamicDep{
+			DynamicDeps: []*testapi.DynamicDep{
 				{
 					Key:   "serviceAddress",
 					Value: "cros-test",
@@ -475,9 +474,9 @@ func TestDependencyInjectionFullTest(t *testing.T) {
 				},
 			},
 		}
-		req.OrderedTasks = []*api.CrosTestRunnerDynamicRequest_Task{
+		req.OrderedTasks = []*testapi.CrosTestRunnerDynamicRequest_Task{
 			{
-				Task: &api.CrosTestRunnerDynamicRequest_Task_Test{
+				Task: &testapi.CrosTestRunnerDynamicRequest_Task_Test{
 					Test: testRequest,
 				},
 			},
@@ -497,7 +496,7 @@ func TestGenericContainerOutputAsDependency(t *testing.T) {
 		Address: "localhost",
 		Port:    12345,
 	})
-	genericContainerOutput := &api.GenericStopResponse{
+	genericContainerOutput := &testapi.GenericStopResponse{
 		Message: &testapi.GenericMessage{
 			Values: map[string]*anypb.Any{
 				"devboard-server": devboardServer,
@@ -510,12 +509,12 @@ func TestGenericContainerOutputAsDependency(t *testing.T) {
 	}
 
 	ftt.Run("Anypb dep", t, func(t *ftt.Test) {
-		testRequest := &api.TestTask{
-			TestRequest: &api.CrosTestRequest{
-				Primary:  &api.CrosTestRequest_Device{},
+		testRequest := &testapi.TestTask{
+			TestRequest: &testapi.CrosTestRequest{
+				Primary:  &testapi.CrosTestRequest_Device{},
 				Metadata: &anypb.Any{},
 			},
-			DynamicDeps: []*api.DynamicDep{
+			DynamicDeps: []*testapi.DynamicDep{
 				{
 					Key:   "testRequest.primary.devboardServer",
 					Value: "user-container_stop.message.values.devboard-server",
@@ -578,13 +577,13 @@ func TestHandlersWithinDynamicDeps(t *testing.T) {
 	})
 
 	ftt.Run("bool handler", t, func(t *ftt.Test) {
-		crosProvisionMetadata, err := anypb.New(&api.CrOSProvisionMetadata{})
+		crosProvisionMetadata, err := anypb.New(&testapi.CrOSProvisionMetadata{})
 		assert.Loosely(t, err, should.BeNil)
-		provisionTaskRequest := &api.ProvisionTask{
-			InstallRequest: &api.InstallRequest{
+		provisionTaskRequest := &testapi.ProvisionTask{
+			InstallRequest: &testapi.InstallRequest{
 				Metadata: crosProvisionMetadata,
 			},
-			DynamicDeps: []*api.DynamicDep{
+			DynamicDeps: []*testapi.DynamicDep{
 				{
 					Key:   "installRequest.metadata.updateFirmware",
 					Value: "BOOL=true",
@@ -593,16 +592,16 @@ func TestHandlersWithinDynamicDeps(t *testing.T) {
 		}
 
 		assert.Loosely(t, common.InjectDependencies(provisionTaskRequest, storage, provisionTaskRequest.DynamicDeps), should.BeNil)
-		metadata := &api.CrOSProvisionMetadata{}
+		metadata := &testapi.CrOSProvisionMetadata{}
 		assert.Loosely(t, provisionTaskRequest.GetInstallRequest().GetMetadata().UnmarshalTo(metadata), should.BeNil)
 		assert.Loosely(t, metadata.UpdateFirmware, should.BeTrue)
 	})
 
 	ftt.Run("fmt handler", t, func(t *ftt.Test) {
-		containerRequest := &api.ContainerRequest{
-			Container: &api.Template{
-				Container: &api.Template_Generic{
-					Generic: &api.GenericTemplate{
+		containerRequest := &testapi.ContainerRequest{
+			Container: &testapi.Template{
+				Container: &testapi.Template_Generic{
+					Generic: &testapi.GenericTemplate{
 						BinaryName: "example container",
 						BinaryArgs: []string{
 							"server", "-dutEndpoint", "", "-log", "/tmp/example",
@@ -610,7 +609,7 @@ func TestHandlersWithinDynamicDeps(t *testing.T) {
 					},
 				},
 			},
-			DynamicDeps: []*api.DynamicDep{
+			DynamicDeps: []*testapi.DynamicDep{
 				{
 					Key:   "generic.binaryArgs.2",
 					Value: "FMT=${endpoint.address}:${endpoint.port}",

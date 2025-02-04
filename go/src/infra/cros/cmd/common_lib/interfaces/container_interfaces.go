@@ -10,7 +10,6 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
-// Container type
 type ContainerType string
 
 // ContainerInterface defines the contract a container will have to satisfy.

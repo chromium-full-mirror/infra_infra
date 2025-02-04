@@ -20,7 +20,7 @@ import (
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
 
-// Container state types
+// ContainerState types
 type ContainerState string
 
 const (
@@ -80,7 +80,7 @@ func (cont *AbstractContainer) GetContainerType() interfaces.ContainerType {
 
 func (cont *AbstractContainer) GetLogsLocation() (string, error) {
 	if cont.TempDirLoc == "" {
-		return "", fmt.Errorf("Temp dir is not created yet for %s container!", cont.GetContainerType())
+		return "", fmt.Errorf("temp dir is not created yet for %s container", cont.GetContainerType())
 	}
 
 	return cont.TempDirLoc, nil
@@ -90,16 +90,16 @@ func (cont *AbstractContainer) GetLogsLocation() (string, error) {
 func (cont *AbstractContainer) InitializeBase(ctx context.Context) error {
 	if cont.state != ContainerStateNotInitialized && cont.state != ContainerStateStopped {
 		return fmt.Errorf(
-			"Expected state %s or %s during initializing, found state %s instead!",
+			"expected state %s or %s during initializing, found state %s instead",
 			ContainerStateNotInitialized,
 			ContainerStateStopped,
 			cont.state)
 	}
 	if cont.namePrefix == "" {
-		return fmt.Errorf("No name prefix provided for container")
+		return fmt.Errorf("no name prefix provided for container")
 	}
 	if cont.containerImage == "" {
-		return fmt.Errorf("No container image provided for cros-test container")
+		return fmt.Errorf("no container image provided for cros-test container")
 	}
 
 	id := uuid.New().String()
@@ -107,7 +107,7 @@ func (cont *AbstractContainer) InitializeBase(ctx context.Context) error {
 
 	tempDirLoc, err := common.CreateTempDir(ctx, cont.namePrefix)
 	if err != nil {
-		return errors.Annotate(err, "Failed to create temp dir for %s", cont.namePrefix).Err()
+		return errors.Annotate(err, "failed to create temp dir for %s", cont.namePrefix).Err()
 	}
 
 	cont.TempDirLoc = tempDirLoc
@@ -120,12 +120,12 @@ func (cont *AbstractContainer) InitializeBase(ctx context.Context) error {
 func (cont *AbstractContainer) GetContainer(ctx context.Context) (*api.GetContainerResponse, error) {
 	if cont.state != ContainerStateStarted {
 		return nil, fmt.Errorf(
-			"Expected state %s during getting container, found state %s instead!",
+			"expected state %s during getting container, found state %s instead",
 			ContainerStateStarted,
 			cont.state)
 	}
 	if cont.Name == "" {
-		return nil, fmt.Errorf("Container name not found while trying to get the container!")
+		return nil, fmt.Errorf("container name not found while trying to get the container")
 	}
 
 	var err error
@@ -140,17 +140,16 @@ func (cont *AbstractContainer) GetContainer(ctx context.Context) (*api.GetContai
 func (cont *AbstractContainer) StopContainer(ctx context.Context) error {
 	if cont.state != ContainerStateStarted {
 		return fmt.Errorf(
-			"Expected state %s during stopping container, found state %s instead!",
+			"expected state %s during stopping container, found state %s instead",
 			ContainerStateStarted,
 			cont.state)
 	}
 
 	if cont.Name == "" {
-		return fmt.Errorf("Container name not found while trying to get the container!")
+		return fmt.Errorf("container name not found while trying to get the container")
 	}
 
-	var err error
-	err = cont.ctr.StopContainer(ctx, cont.Name)
+	err := cont.ctr.StopContainer(ctx, cont.Name)
 	if err != nil {
 		return errors.Annotate(err, "error getting container %s", cont.Name).Err()
 	}

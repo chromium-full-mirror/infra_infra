@@ -60,7 +60,7 @@ func (ex *CacheServerExecutor) cacheServerStartCommandExecution(
 		return errors.Annotate(err, "Start cache server cmd err: ").Err()
 	}
 
-	cmd.CacheServerAddress, err = common.GetIpEndpoint(ex.ServerAddress)
+	cmd.CacheServerAddress, err = common.GetIPEndpoint(ex.ServerAddress)
 
 	return err
 }
@@ -97,7 +97,7 @@ func (ex *CacheServerExecutor) vmCacheServerStartCommandExecution(
 
 	csTemplate := &testapi.CacheServerTemplate{
 		ApplicationDefaultCredentials: &testapi.CacheServerTemplate_ServiceAccountKeyfile{
-			ServiceAccountKeyfile: common.VmLabDockerKeyFileLocation,
+			ServiceAccountKeyfile: common.VMLabDockerKeyFileLocation,
 		}}
 	template := &api.Template{
 		Container: &api.Template_CacheServer{
@@ -112,14 +112,14 @@ func (ex *CacheServerExecutor) vmCacheServerStartCommandExecution(
 	}
 
 	// Process dut server address.
-	cacheServerAddress, err := common.GetIpEndpoint(serverAddress)
+	cacheServerAddress, err := common.GetIPEndpoint(serverAddress)
 	if err != nil {
 		return errors.Annotate(err, "error while creating ip endpoint from server address: ").Err()
 	}
 
 	// Cacheserver need to be called from the DUT, therefore we need the host IP
 	if cacheServerAddress.Address == "localhost" {
-		hostIp, err := common.GetHostIp()
+		hostIp, err := common.GetHostIP()
 		if err != nil {
 			return errors.Annotate(err, "error while getting host ip address: ").Err()
 		}

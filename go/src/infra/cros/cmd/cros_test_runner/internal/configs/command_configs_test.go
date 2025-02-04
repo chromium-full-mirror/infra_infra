@@ -11,9 +11,9 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/cmd/common_lib/common_commands"
-	"infra/cros/cmd/common_lib/common_configs"
-	"infra/cros/cmd/common_lib/common_executors"
+	"infra/cros/cmd/common_lib/commoncommands"
+	"infra/cros/cmd/common_lib/commonconfigs"
+	"infra/cros/cmd/common_lib/commonexecutors"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/internal/commands"
 	"infra/cros/cmd/cros_test_runner/internal/executors"
@@ -24,7 +24,7 @@ func TestGetCommand_UnsupportedCmdType(t *testing.T) {
 	ftt.Run("Unsupported command type", t, func(t *ftt.Test) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := common_configs.NewContainerConfig(ctr, nil, false)
+		contConfig := commonconfigs.NewContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		cmd, err := cmdConfig.GetCommand(commands.UnSupportedCmdType, executors.NoExecutorType)
@@ -39,7 +39,7 @@ func TestGetCommand_SupportedCmdType(t *testing.T) {
 	ftt.Run("Supported command type", t, func(t *ftt.Test) {
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := common_configs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
+		contConfig := commonconfigs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 
@@ -63,15 +63,15 @@ func TestGetCommand_SupportedCmdType(t *testing.T) {
 		assert.Loosely(t, cmd, should.NotBeNil)
 		assert.Loosely(t, err, should.BeNil)
 
-		cmd, err = cmdConfig.GetCommand(common_commands.CtrServiceStartAsyncCmdType, common_executors.CtrExecutorType)
+		cmd, err = cmdConfig.GetCommand(commoncommands.CtrServiceStartAsyncCmdType, commonexecutors.CtrExecutorType)
 		assert.Loosely(t, cmd, should.NotBeNil)
 		assert.Loosely(t, err, should.BeNil)
 
-		cmd, err = cmdConfig.GetCommand(common_commands.CtrServiceStopCmdType, common_executors.CtrExecutorType)
+		cmd, err = cmdConfig.GetCommand(commoncommands.CtrServiceStopCmdType, commonexecutors.CtrExecutorType)
 		assert.Loosely(t, cmd, should.NotBeNil)
 		assert.Loosely(t, err, should.BeNil)
 
-		cmd, err = cmdConfig.GetCommand(common_commands.GcloudAuthCmdType, common_executors.CtrExecutorType)
+		cmd, err = cmdConfig.GetCommand(commoncommands.GcloudAuthCmdType, commonexecutors.CtrExecutorType)
 		assert.Loosely(t, cmd, should.NotBeNil)
 		assert.Loosely(t, err, should.BeNil)
 

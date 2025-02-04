@@ -202,7 +202,7 @@ func (w *WorkUnitNode) FetchAttemptLayer() ([][]*WorkUnitNode, error) {
 // inserts it into the local Work Unit tree.
 func NewWorkUnitNode(ctx context.Context, parentWUId, invocationID string, nodeType WULayer, parent *WorkUnitNode, env common.Environment) (*WorkUnitNode, error) {
 	// TODO: Pass this in rather than create a new one each time
-	service, err := NewAndroidBuildService(ctx, SERVICEACCOUNT, env)
+	service, err := NewAndroidBuildService(ctx, ServiceAccount, env)
 	if err != nil {
 		return nil, err
 	}

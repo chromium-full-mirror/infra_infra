@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 
 	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/common_configs"
+	"infra/cros/cmd/common_lib/commonconfigs"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 	"infra/cros/cmd/cros_test_runner/data"
 )
@@ -28,7 +28,7 @@ func TestGenerateConfig_UnSupportedConfig(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := common_configs.NewContainerConfig(ctr, nil, false)
+		contConfig := commonconfigs.NewContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
@@ -44,7 +44,7 @@ func TestGenerateConfig_SupportedConfig(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := common_configs.NewContainerConfig(ctr, nil, false)
+		contConfig := commonconfigs.NewContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
@@ -60,7 +60,7 @@ func TestExecute_WithoutGeneratedConfig(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := common_configs.NewContainerConfig(ctr, nil, false)
+		contConfig := commonconfigs.NewContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
@@ -76,7 +76,7 @@ func TestExecute_UnsuccesfulHwTestsExecution(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := common_configs.NewContainerConfig(ctr, nil, false)
+		contConfig := commonconfigs.NewContainerConfig(ctr, nil, false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{}
@@ -98,7 +98,7 @@ func TestExecute_SuccesfulHwTestsExecution(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := common_configs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
+		contConfig := commonconfigs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 		sk := &data.HwTestStateKeeper{
@@ -124,7 +124,7 @@ func TestIsAndroidProvisionRequired(t *testing.T) {
 		ctx := context.Background()
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
-		contConfig := common_configs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
+		contConfig := commonconfigs.NewContainerConfig(ctr, getMockContainerImagesInfo(), false)
 		execConfig := NewExecutorConfig(ctr, contConfig)
 		cmdConfig := NewCommandConfig(execConfig)
 
@@ -174,16 +174,16 @@ func getAndroidCompanionDuts() []*skylab_test_runner.CFTTestRequest_Device {
 	return companionDuts
 }
 
-func getMockedHwTestConfig() *common_configs.Configs {
-	mainConfigs := []*common_configs.CommandExecutorPairedConfig{
+func getMockedHwTestConfig() *commonconfigs.Configs {
+	mainConfigs := []*commonconfigs.CommandExecutorPairedConfig{
 		InputValidation_NoExecutor,
 		ParseEnvInfo_NoExecutor,
 	}
 
 	// This should be skipped
-	cleanupConfigs := []*common_configs.CommandExecutorPairedConfig{
+	cleanupConfigs := []*commonconfigs.CommandExecutorPairedConfig{
 		ParseEnvInfo_NoExecutor,
 	}
 
-	return &common_configs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
+	return &commonconfigs.Configs{MainConfigs: mainConfigs, CleanupConfigs: cleanupConfigs}
 }

@@ -142,7 +142,7 @@ func (cmd *ProvisionInstallCmd) updateHwTestStateKeeper(
 	sk *data.HwTestStateKeeper) error {
 
 	if cmd.ProvisionResp != nil {
-		primaryDeviceId := common.NewPrimaryDeviceIdentifier().Id
+		primaryDeviceId := common.NewPrimaryDeviceIdentifier().ID
 		responses := sk.ProvisionResponses[primaryDeviceId]
 		if responses == nil {
 			responses = []*testapi.InstallResponse{}

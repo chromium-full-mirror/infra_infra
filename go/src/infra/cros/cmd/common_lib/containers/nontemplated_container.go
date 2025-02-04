@@ -17,7 +17,7 @@ import (
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
 
-// TemplatedContainer represents the cft non-templated container.
+// NonTemplatedContainer represents the cft non-templated container.
 type NonTemplatedContainer struct {
 	AbstractContainer
 
@@ -86,10 +86,10 @@ func (cont *NonTemplatedContainer) Initialize(
 // StartContainer starts the container.
 func (cont *NonTemplatedContainer) StartContainer(ctx context.Context) (*api.StartContainerResponse, error) {
 	if cont.StartContainerReq == nil {
-		return nil, fmt.Errorf("StartContainerRequest is nil!")
+		return nil, fmt.Errorf("startContainerRequest is nil")
 	}
 	if cont.ctr == nil {
-		return nil, fmt.Errorf("CTR client is nil!")
+		return nil, fmt.Errorf("ctr client is nil")
 	}
 	var err error
 	cont.StartContainerResp, err = cont.ctr.StartContainer(ctx, cont.StartContainerReq)

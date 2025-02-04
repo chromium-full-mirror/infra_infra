@@ -1,6 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 package crostoolrunner
 
 import (
@@ -50,7 +51,7 @@ type CrosToolRunner struct {
 // StartCTRServer starts the server and exports service metadata to
 // already created temp dir.
 func (ctr *CrosToolRunner) StartCTRServer(ctx context.Context) (err error) {
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Start cros-tool-runner server"))
+	step, ctx := build.StartStep(ctx, "CrosToolRunner: Start cros-tool-runner server")
 	defer func() { step.End(err) }()
 
 	// Initialize if not already initialized.
@@ -83,7 +84,7 @@ func (ctr *CrosToolRunner) StartCTRServer(ctx context.Context) (err error) {
 func (ctr *CrosToolRunner) StartCTRServerAsync(ctx context.Context) (err error) {
 	// Do not start a server if an existing server is running.
 	if ctr.wg != nil {
-		return fmt.Errorf("Stop existing server connection before starting a new one!")
+		return fmt.Errorf("stop existing server connection before starting a new one")
 	}
 
 	ctr.wg = &sync.WaitGroup{}
@@ -104,10 +105,10 @@ func (ctr *CrosToolRunner) StartCTRServerAsync(ctx context.Context) (err error) 
 // gets ctr server address from it.
 func (ctr *CrosToolRunner) GetServerAddressFromServiceMetadata(ctx context.Context) (_ string, err error) {
 	if ctr.CtrTempDirLoc == "" {
-		return "", fmt.Errorf("Cannot retrieve ctr server address with empty temp dir.")
+		return "", fmt.Errorf("cannot retrieve ctr server address with empty temp dir")
 	}
 
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Retrieve service metadata"))
+	step, ctx := build.StartStep(ctx, "CrosToolRunner: Retrieve service metadata")
 	defer func() { step.End(err) }()
 
 	metaFilePath := path.Join(ctr.CtrTempDirLoc, common.CftServiceMetadataFileName)
@@ -125,11 +126,11 @@ func (ctr *CrosToolRunner) GetServerAddressFromServiceMetadata(ctx context.Conte
 func (ctr *CrosToolRunner) ConnectToCTRServer(
 	ctx context.Context,
 	serverAddress string) (_ testapi.CrosToolRunnerContainerServiceClient, err error) {
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Connect to cros-tool-runner server"))
+	step, ctx := build.StartStep(ctx, "CrosToolRunner: Connect to cros-tool-runner server")
 	defer func() { step.End(err) }()
 
 	if serverAddress == "" {
-		return nil, fmt.Errorf("Ctr service connection is not possible without server address.")
+		return nil, fmt.Errorf("ctr service connection is not possible without server address")
 	}
 
 	if ctr.CtrClient != nil {
@@ -140,7 +141,7 @@ func (ctr *CrosToolRunner) ConnectToCTRServer(
 	// Connect with service
 	conn, err := common.ConnectWithService(ctx, serverAddress)
 	if err != nil {
-		return nil, errors.Annotate(err, "Error during connecting to ctr server: ").Err()
+		return nil, errors.Annotate(err, "error during connecting to ctr server: ").Err()
 	}
 
 	// Successful connection confirms that the server is running.
@@ -150,7 +151,7 @@ func (ctr *CrosToolRunner) ConnectToCTRServer(
 	// Construct CTR client
 	ctrClient := testapi.NewCrosToolRunnerContainerServiceClient(conn)
 	if ctrClient == nil {
-		return nil, fmt.Errorf("CrosToolRunnerContainerServiceClient is nil")
+		return nil, fmt.Errorf("crosToolRunnerContainerServiceClient is nil")
 	}
 
 	ctr.CtrClient = ctrClient
@@ -160,7 +161,7 @@ func (ctr *CrosToolRunner) ConnectToCTRServer(
 // StopCTRServer stops currently running CTR server.
 func (ctr *CrosToolRunner) StopCTRServer(ctx context.Context) error {
 	var err error
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Stop cros-tool-runner server"))
+	step, ctx := build.StartStep(ctx, "CrosToolRunner: Stop cros-tool-runner server")
 	defer func() { step.End(err) }()
 
 	if !ctr.isServerRunning {
@@ -169,7 +170,7 @@ func (ctr *CrosToolRunner) StopCTRServer(ctx context.Context) error {
 	}
 
 	if ctr.CtrClient == nil {
-		return fmt.Errorf("Cannot stop CTR server when there is no established client.")
+		return fmt.Errorf("cannot stop CTR server when there is no established client")
 	}
 
 	// Stop CTR server
@@ -201,14 +202,14 @@ func (ctr *CrosToolRunner) StartContainer(
 	ctx context.Context,
 	startContainerReq *testapi.StartContainerRequest) (_ *testapi.StartContainerResponse, err error) {
 	if startContainerReq == nil {
-		return nil, fmt.Errorf("start container request cannot be nil for start container command.")
+		return nil, fmt.Errorf("start container request cannot be nil for start container command")
 	}
 
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Start container %s", startContainerReq.Name))
 	defer func() { step.End(err) }()
 
 	if ctr.CtrClient == nil {
-		return nil, fmt.Errorf("Ctr client not found. Please start the server if not done already.")
+		return nil, fmt.Errorf("ctr client not found. Please start the server if not done already")
 	}
 
 	common.LogExecutionDetails(ctx, step, startContainerReq.StartCommand)
@@ -225,20 +226,20 @@ func (ctr *CrosToolRunner) StartContainer(
 	return resp, nil
 }
 
-// StartContainer starts a templated container using ctr client.
+// StartTemplatedContainer starts a templated container using ctr client.
 func (ctr *CrosToolRunner) StartTemplatedContainer(
 	ctx context.Context,
 	startContainerReq *testapi.StartTemplatedContainerRequest) (_ *testapi.StartContainerResponse, err error) {
 
 	if startContainerReq == nil {
-		return nil, fmt.Errorf("start templated container request cannot be nil for start templated container command.")
+		return nil, fmt.Errorf("start templated container request cannot be nil for start templated container command")
 	}
 
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Start templated container %s", startContainerReq.Name))
 	defer func() { step.End(err) }()
 
 	if ctr.CtrClient == nil {
-		return nil, fmt.Errorf("Ctr client not found. Please start the server if not done already.")
+		return nil, fmt.Errorf("ctr client not found. Please start the server if not done already")
 	}
 
 	// Start the container
@@ -257,7 +258,7 @@ func (ctr *CrosToolRunner) StartTemplatedContainer(
 // StopContainer stops the container with provided name.
 func (ctr *CrosToolRunner) StopContainer(ctx context.Context, containerName string) (err error) {
 	if containerName == "" {
-		return fmt.Errorf("Cannot stop container with empty container name.")
+		return fmt.Errorf("cannot stop container with empty container name")
 	}
 
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("Docker: Stop container %s", containerName))
@@ -280,17 +281,17 @@ func (ctr *CrosToolRunner) CreateNetwork(
 	ctx context.Context,
 	networkName string) (_ *testapi.CreateNetworkResponse, err error) {
 	if networkName == "" {
-		return nil, fmt.Errorf("Cannot create network with empty network name.")
+		return nil, fmt.Errorf("cannot create network with empty network name")
 	}
 	if networkName == "host" {
-		return nil, fmt.Errorf("Cannot overwrite default host network.")
+		return nil, fmt.Errorf("cannot overwrite default host network")
 	}
 
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("Docker: Create network %s", networkName))
 	defer func() { step.End(err) }()
 
 	if ctr.CtrClient == nil {
-		return nil, fmt.Errorf("Ctr client not found. Please start the server if not done already.")
+		return nil, fmt.Errorf("ctr client not found. Please start the server if not done already")
 	}
 
 	createNetworkReq := &testapi.CreateNetworkRequest{Name: networkName}
@@ -311,10 +312,10 @@ func (ctr *CrosToolRunner) GetNetwork(
 	ctx context.Context,
 	networkName string) (_ *testapi.GetNetworkResponse, err error) {
 	if networkName == "" {
-		return nil, fmt.Errorf("Cannot get network with empty network name.")
+		return nil, fmt.Errorf("cannot get network with empty network name")
 	}
 	if networkName == "host" {
-		return nil, fmt.Errorf("Cannot fetch default host network. Known to exist.")
+		return nil, fmt.Errorf("cannot fetch default host network. Known to exist")
 	}
 
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("Docker: Get network %s", networkName))
@@ -326,7 +327,7 @@ func (ctr *CrosToolRunner) GetNetwork(
 	}()
 
 	if ctr.CtrClient == nil {
-		return nil, fmt.Errorf("Ctr client not found. Please start the server if not done already.")
+		return nil, fmt.Errorf("ctr client not found. Please start the server if not done already")
 	}
 
 	getNetworkReq := &testapi.GetNetworkRequest{Name: networkName}
@@ -348,14 +349,14 @@ func (ctr *CrosToolRunner) GetContainer(
 	containerName string) (_ *testapi.GetContainerResponse, err error) {
 
 	if containerName == "" {
-		return nil, fmt.Errorf("Cannot execute get container with empty container name.")
+		return nil, fmt.Errorf("cannot execute get container with empty container name")
 	}
 
 	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Get container %s", containerName))
 	defer func() { step.End(err) }()
 
 	if ctr.CtrClient == nil {
-		return nil, fmt.Errorf("Ctr client not found. Please start the server if not done already.")
+		return nil, fmt.Errorf("ctr client not found. Please start the server if not done already")
 	}
 
 	// Get container info
@@ -403,7 +404,7 @@ func (ctr *CrosToolRunner) GcloudAuth(
 	defer func() { step.End(err) }()
 
 	if ctr.CtrClient == nil {
-		return nil, fmt.Errorf("Ctr client not found. Please start the server if not done already.")
+		return nil, fmt.Errorf("ctr client not found. Please start the server if not done already")
 	}
 
 	extension := testapi.LoginRegistryExtensions{}

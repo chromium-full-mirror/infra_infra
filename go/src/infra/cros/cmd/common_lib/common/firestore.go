@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package firestore implements an interface for all firestore API actions.
+// Package common implements an interface for all firestore API actions.
 package common
 
 import (

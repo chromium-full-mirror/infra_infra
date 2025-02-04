@@ -35,7 +35,7 @@ var execLock sync.Mutex
 // a single file from/to GCS.
 const actionTimeout = 60 * time.Second
 
-// Storage metadata for remote file
+// GSObject is a storage metadata for remote file
 type GSObject struct {
 	Bucket string
 	Object string
@@ -92,7 +92,7 @@ func DownloadFile(ctx context.Context, client *storage.Client, gsURL, destLocalP
 	if errors.Is(err, ErrBucketNotExist) {
 		return ErrBucketNotExist
 	}
-	if err == ErrObjectNotExist {
+	if errors.Is(err, ErrObjectNotExist) {
 		return ErrObjectNotExist
 	}
 	if err != nil {
@@ -254,6 +254,6 @@ func GetMajorBuildFromGCSPath(gcsPath string) string {
 	return strings.Join(Major[:2], "-")
 }
 
-func IsAndroidUrl(gsURL string) bool {
+func IsAndroidURL(gsURL string) bool {
 	return strings.HasPrefix(gsURL, "android-build")
 }

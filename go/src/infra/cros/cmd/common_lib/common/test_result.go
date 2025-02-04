@@ -16,11 +16,9 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	configpb "go.chromium.org/chromiumos/config/go"
-	"go.chromium.org/chromiumos/config/go/test/api"
-	apipb "go.chromium.org/chromiumos/config/go/test/api"
+	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	artifactpb "go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	labpb "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
@@ -42,11 +40,11 @@ func GetMockedTestResultProto() *artifactpb.TestResult {
 					Board:           "hatch",
 				},
 				DutInfo: &artifactpb.DutInfo{
-					Dut: &labpb.Dut{
-						DutType: &labpb.Dut_Chromeos{
-							Chromeos: &labpb.Dut_ChromeOS{
+					Dut: &labapi.Dut{
+						DutType: &labapi.Dut_Chromeos{
+							Chromeos: &labapi.Dut_ChromeOS{
 								Name: "chromeos15-row4-rack5-host1",
-								DutModel: &labpb.DutModel{
+								DutModel: &labapi.DutModel{
 									ModelName: "nipperkin",
 								},
 							},
@@ -58,16 +56,16 @@ func GetMockedTestResultProto() *artifactpb.TestResult {
 		TestRuns: []*artifactpb.TestRun{
 			{
 				TestCaseInfo: &artifactpb.TestCaseInfo{
-					TestCaseMetadata: &apipb.TestCaseMetadata{
-						TestCase: &apipb.TestCase{
-							Id: &apipb.TestCase_Id{
+					TestCaseMetadata: &testapi.TestCaseMetadata{
+						TestCase: &testapi.TestCase{
+							Id: &testapi.TestCase_Id{
 								Value: "invocations/build-8803850119519478545/tests/rlz_CheckPing/results/567764de-00001",
 							},
 							Name: "rlz_CheckPing",
 						},
 					},
-					TestCaseResult: &apipb.TestCaseResult{
-						Verdict:   &apipb.TestCaseResult_Pass_{},
+					TestCaseResult: &testapi.TestCaseResult{
+						Verdict:   &testapi.TestCaseResult_Pass_{},
 						StartTime: timestamppb.New(parseTime("2022-09-07T18:53:33.983328614Z")),
 						Duration:  &duration.Duration{Seconds: 60},
 					},
@@ -81,16 +79,16 @@ func GetMockedTestResultProto() *artifactpb.TestResult {
 			},
 			{
 				TestCaseInfo: &artifactpb.TestCaseInfo{
-					TestCaseMetadata: &apipb.TestCaseMetadata{
-						TestCase: &apipb.TestCase{
-							Id: &apipb.TestCase_Id{
+					TestCaseMetadata: &testapi.TestCaseMetadata{
+						TestCase: &testapi.TestCase{
+							Id: &testapi.TestCase_Id{
 								Value: "invocations/build-8803850119519478545/tests/power_Resume/results/567764de-00002",
 							},
 							Name: "power_Resume",
 						},
 					},
-					TestCaseResult: &apipb.TestCaseResult{
-						Verdict:   &apipb.TestCaseResult_Fail_{},
+					TestCaseResult: &testapi.TestCaseResult{
+						Verdict:   &testapi.TestCaseResult_Fail_{},
 						Reason:    "Test failed",
 						StartTime: timestamppb.New(parseTime("2022-09-07T18:53:34.983328614Z")),
 						Duration:  &duration.Duration{Seconds: 120, Nanos: 100000000},
@@ -115,11 +113,11 @@ func parseTime(s string) time.Time {
 }
 
 // GetValueFromRequestKeyvals gets value from provided keyvals based on key.
-func GetValueFromRequestKeyvals(ctx context.Context, cftReq *skylab_test_runner.CFTTestRequest, ctrrReq *api.CrosTestRunnerDynamicRequest, key string) string {
+func GetValueFromRequestKeyvals(ctx context.Context, cftReq *skylab_test_runner.CFTTestRequest, ctrrReq *testapi.CrosTestRunnerDynamicRequest, key string) string {
 	if cftReq == nil && ctrrReq == nil {
 		return ""
 	}
-	keyvals := map[string]string{}
+	var keyvals map[string]string
 	if ctrrReq != nil {
 		keyvals = ctrrReq.GetParams().GetKeyvals()
 	} else {
@@ -172,10 +170,10 @@ func GetGcsClickableLink(gsURL string) string {
 }
 
 // IsAnyTestFailure returns if there is any failed tests in test results
-func IsAnyTestFailure(testResults []*apipb.TestCaseResult) bool {
+func IsAnyTestFailure(testResults []*testapi.TestCaseResult) bool {
 	for _, testResult := range testResults {
 		switch testResult.Verdict.(type) {
-		case *apipb.TestCaseResult_Fail_, *apipb.TestCaseResult_Abort_, *apipb.TestCaseResult_Crash_:
+		case *testapi.TestCaseResult_Fail_, *testapi.TestCaseResult_Abort_, *testapi.TestCaseResult_Crash_:
 			return true
 		default:
 			continue

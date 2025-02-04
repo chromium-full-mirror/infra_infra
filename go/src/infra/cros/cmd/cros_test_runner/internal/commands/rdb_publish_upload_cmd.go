@@ -111,7 +111,7 @@ func (cmd *RdbPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 
 	cmd.PostProcessResponses = &testapipb.RunActivitiesResponse{}
 	sk.Injectables.LoadInjectables()
-	if err = common.Inject(cmd.PostProcessResponses, "", sk.Injectables, common.NewTaskIdentifier(common.PostProcess).GetRpcResponse("runActivities")); err != nil {
+	if err = common.Inject(cmd.PostProcessResponses, "", sk.Injectables, common.NewTaskIdentifier(common.PostProcess).GetRPCResponse("runActivities")); err != nil {
 		logging.Infof(ctx, "Failed to inject into PostProcessResponses, %s", err)
 	}
 

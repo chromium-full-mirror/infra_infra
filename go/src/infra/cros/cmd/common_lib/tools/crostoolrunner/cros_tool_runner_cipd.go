@@ -1,6 +1,8 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+// Package crostoolrunner includes all CTR logic.
 package crostoolrunner
 
 import (
@@ -29,7 +31,7 @@ type CtrCipdInfo struct {
 func (ctrCipd *CtrCipdInfo) Validate(ctx context.Context) error {
 	if ctrCipd.Version == "" {
 		logging.Infof(ctx, "cros-tool-runner cipd version is missing")
-		return fmt.Errorf("cros-tool-runner cipd version is required!")
+		return fmt.Errorf("cros-tool-runner cipd version is required")
 	}
 
 	return nil
@@ -42,7 +44,7 @@ func (ctrCipd *CtrCipdInfo) Initialize(ctx context.Context) error {
 		var err error
 		ctrCipd.CtrTempDirLoc, err = common.CreateTempDir(ctx, "ctr")
 		if err != nil {
-			return errors.Annotate(err, "Error while creating temp dir for ctr: ").Err()
+			return errors.Annotate(err, "error while creating temp dir for ctr: ").Err()
 		}
 	}
 	if ctrCipd.IsInitialized {
@@ -51,15 +53,15 @@ func (ctrCipd *CtrCipdInfo) Initialize(ctx context.Context) error {
 
 	// Validation
 	if err := ctrCipd.Validate(ctx); err != nil {
-		return errors.Annotate(err, "Ctr validation error: ").Err()
+		return errors.Annotate(err, "ctr validation error: ").Err()
 	}
 
 	// Ensure CTR
 	if err := ctrCipd.ensure(ctx); err != nil {
-		return errors.Annotate(err, "Ctr ensure error: ").Err()
+		return errors.Annotate(err, "ctr ensure error: ").Err()
 	}
 
-	logging.Infof(ctx, fmt.Sprintf("CTR initialization succeeded."))
+	logging.Infof(ctx, "ctr initialization succeeded.")
 	ctrCipd.IsInitialized = true
 	return nil
 }
@@ -67,7 +69,7 @@ func (ctrCipd *CtrCipdInfo) Initialize(ctx context.Context) error {
 // ensure ensures the ctr cipd binary is locally available.
 func (ctrCipd *CtrCipdInfo) ensure(ctx context.Context) error {
 	if ctrCipd.CtrCipdPackage == "" {
-		return fmt.Errorf("Cannot ensure ctr with empty package.")
+		return fmt.Errorf("cannot ensure ctr with empty package")
 	}
 
 	path, err := os.Executable()
@@ -92,7 +94,7 @@ func (ctrCipd *CtrCipdInfo) ensure(ctx context.Context) error {
 		ctrCipd.Version,
 		"")
 	if err != nil {
-		return errors.Annotate(err, "CIPD ensure package error: ").Err()
+		return errors.Annotate(err, "cipd ensure package error: ").Err()
 	}
 
 	ctrCipd.CtrPath = filepath.Join(cipdRoot, "cros-tool-runner")

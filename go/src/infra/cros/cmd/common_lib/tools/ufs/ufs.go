@@ -53,7 +53,7 @@ func NewClient(ctx context.Context) (ufsAPI.FleetClient, error) {
 	}
 	ufsClient := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       httpClient,
-		Host:    common.UfsServiceUrl,
+		Host:    common.UfsServiceURL,
 		Options: prpcOptions,
 	})
 	return ufsClient, nil

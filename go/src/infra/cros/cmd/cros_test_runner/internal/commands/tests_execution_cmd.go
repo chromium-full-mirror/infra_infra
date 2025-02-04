@@ -125,8 +125,8 @@ func (cmd *TestsExecutionCmd) updateHwTestStateKeeper(
 		}
 		sk.TestResultForRdb = rdbTestResult
 		taskIdentifier := common.NewTaskIdentifier(common.CrosTest)
-		if err := sk.Injectables.Set(taskIdentifier.GetRpcResponse("rdbTestResult"), sk.TestResultForRdb); err != nil {
-			logging.Warningf(ctx, "Warning: failed to set: %s into the InjectableStorage, %s", taskIdentifier.GetRpcResponse("rdbTestResult"), err)
+		if err := sk.Injectables.Set(taskIdentifier.GetRPCResponse("rdbTestResult"), sk.TestResultForRdb); err != nil {
+			logging.Warningf(ctx, "Warning: failed to set: %s into the InjectableStorage, %s", taskIdentifier.GetRPCResponse("rdbTestResult"), err)
 		}
 	}
 	if cmd.TkoPublishSrcDir != "" {

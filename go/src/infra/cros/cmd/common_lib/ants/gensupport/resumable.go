@@ -125,7 +125,7 @@ func (rx *ResumableUpload) reportProgress(old, updated int64) {
 func (rx *ResumableUpload) transferChunk(ctx context.Context) (*http.Response, error) {
 	chunk, off, size, err := rx.Media.Chunk()
 
-	done := err == io.EOF
+	done := errors.Is(err, io.EOF)
 	if !done && err != nil {
 		return nil, err
 	}

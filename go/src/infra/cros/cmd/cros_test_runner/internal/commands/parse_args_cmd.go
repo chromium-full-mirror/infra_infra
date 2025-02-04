@@ -93,19 +93,19 @@ func (cmd *ParseArgsCmd) Execute(ctx context.Context) error {
 		cmd.ContainerKeysRequestedForUpdate = strings.Split(cmd.Args.ContainerKeysRequestedForUpdate, ",")
 	}
 	if cmd.Args.DutAddress != "" {
-		cmd.DutAddress, err = common.GetIpEndpoint(cmd.Args.DutAddress)
+		cmd.DutAddress, err = common.GetIPEndpoint(cmd.Args.DutAddress)
 		if err != nil {
 			return errors.Annotate(err, "error while parsing DutAddress: ").Err()
 		}
 	}
 	if cmd.Args.DutCacheAddress != "" {
-		cmd.DutCacheAddress, err = common.GetIpEndpoint(cmd.Args.DutCacheAddress)
+		cmd.DutCacheAddress, err = common.GetIPEndpoint(cmd.Args.DutCacheAddress)
 		if err != nil {
 			return errors.Annotate(err, "error while parsing DutCacheAddress: ").Err()
 		}
 	}
 	if cmd.Args.CacheAddress != "" {
-		cmd.CacheAddress, err = common.GetIpEndpoint(cmd.Args.CacheAddress)
+		cmd.CacheAddress, err = common.GetIPEndpoint(cmd.Args.CacheAddress)
 		if err != nil {
 			return errors.Annotate(err, "error while parsing CacheAddress: ").Err()
 		}

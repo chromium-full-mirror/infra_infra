@@ -21,7 +21,7 @@ import (
 // AdbBase implements the prepper for adb-base container.
 func AdbBase(ctx context.Context, dir string) error {
 	downloadOptions := []option.ClientOption{}
-	credentialFile := common.VmLabDockerKeyFileLocation
+	credentialFile := common.VMLabDockerKeyFileLocation
 	if _, err := os.Stat(credentialFile); err == nil {
 		downloadOptions = append(downloadOptions, option.WithCredentialsFile(credentialFile))
 	}

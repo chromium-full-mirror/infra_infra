@@ -20,7 +20,7 @@ type UpdateItems struct {
 	EncodedTestJobMsg      string
 	EncodedTestJobEventMsg string
 	// Test job event encapsulates test job msg
-	TestJobEventMsgJson *common.TestJobEventMessage
+	TestJobEventMsgJSON *common.TestJobEventMessage
 }
 
 type SummaryMap map[string]*UpdateItems

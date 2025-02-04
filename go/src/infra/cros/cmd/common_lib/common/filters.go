@@ -286,8 +286,8 @@ func CreateTTCPContainerRequest(requestedFilter *api.CTPFilter) *api.ContainerRe
 	}
 }
 
-// ListToJson creates json bytes from provided list.
-func ListToJson(list *list.List) []byte {
+// ListToJSON creates json bytes from provided list.
+func ListToJSON(list *list.List) []byte {
 	retBytes := make([]byte, 0)
 	for e := list.Front(); e != nil; e = e.Next() {
 		bytes, _ := json.MarshalIndent(e, "", "\t")
@@ -309,10 +309,7 @@ func isExperimentEnabled(exp string, experiments []string) bool {
 
 // isSuiteSchedulerConfig checks is a given request is coming from Suite scheduler config
 func isSuiteSchedulerConfig(suiteReq *api.SuiteRequest) bool {
-	if suiteReq.GetAnalyticsName() != "" {
-		return true
-	}
-	return false
+	return suiteReq.GetAnalyticsName() != ""
 }
 
 // ProcessContainerPath processes a provided path and determines whether it needs to

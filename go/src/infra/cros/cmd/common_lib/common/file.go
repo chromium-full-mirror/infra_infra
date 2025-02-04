@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"io"
 	"io/fs"
-	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
@@ -29,7 +28,6 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	"go.chromium.org/chromiumos/config/go/build/api"
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -90,17 +88,17 @@ func CreateImagePath(i *buildapi.ContainerImageInfo) (string, error) {
 }
 
 // GetContainerImageFromMap retrieves the container image from provided map.
-func GetContainerImageFromMap(key string, imageMap map[string]*api.ContainerImageInfo) (string, error) {
+func GetContainerImageFromMap(key string, imageMap map[string]*buildapi.ContainerImageInfo) (string, error) {
 	if key == "" {
-		return "", fmt.Errorf("Provided key is empty!")
+		return "", fmt.Errorf("provided key is empty")
 	}
 	if len(imageMap) == 0 {
-		return "", fmt.Errorf("Provided map is empty!")
+		return "", fmt.Errorf("provided map is empty")
 	}
 
 	containerImageInfo, ok := imageMap[key]
 	if !ok {
-		return "", fmt.Errorf("Could not find container info for key: %s", key)
+		return "", fmt.Errorf("could not find container info for key: %s", key)
 	}
 	imagePath, err := CreateImagePath(containerImageInfo)
 	if err != nil {
@@ -122,7 +120,7 @@ func CreateRegistryName(i *buildapi.ContainerImageInfo) (string, error) {
 	return fmt.Sprintf("%s/%s", r.GetHostname(), r.GetProject()), nil
 }
 
-// AddContentsToLog adds contents of the file of fileName to log
+// AddFileContentsToLog adds contents of the file of fileName to log
 func AddFileContentsToLog(
 	ctx context.Context,
 	fileName string,
@@ -135,7 +133,7 @@ func AddFileContentsToLog(
 		logging.Infof(ctx, "%s finding file '%s' at '%s' failed:%s", msgToAdd, fileName, rootDir, err)
 		return err
 	}
-	fileContents, err := ioutil.ReadFile(filePath)
+	fileContents, err := os.ReadFile(filePath)
 	if err != nil {
 		logging.Infof(ctx, "%s reading file '%s' at '%s' failed:%s", msgToAdd, fileName, filePath, err)
 		return err
@@ -152,7 +150,7 @@ func AddFileContentsToLog(
 // FindFile finds file path in rootDir of fileName
 func FindFile(ctx context.Context, fileName string, rootDir string) (string, error) {
 	filePath := ""
-	filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
+	err := filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -161,12 +159,15 @@ func FindFile(ctx context.Context, fileName string, rootDir string) (string, err
 		}
 		return nil
 	})
+	if err != nil {
+		return "", err
+	}
 
 	if filePath != "" {
 		return filePath, nil
 	}
 
-	return "", errors.Reason(fmt.Sprintf("file '%s' not found!", fileName)).Err()
+	return "", errors.Reason("%s", fmt.Sprintf("file '%s' not found!", fileName)).Err()
 }
 
 // StreamLogAsync starts an async reading of log file.
@@ -225,7 +226,7 @@ func WriteFromFile(
 				isTaskDone = true
 			}
 		} else {
-			writer.Write(line)
+			_, _ = writer.Write(line)
 		}
 	}
 
@@ -235,7 +236,7 @@ func WriteFromFile(
 		if err != nil {
 			break
 		}
-		writer.Write(line)
+		_, _ = writer.Write(line)
 	}
 	wg.Done()
 }
@@ -247,28 +248,28 @@ func CheckIfFileExists(filePath string) error {
 		return nil
 		// File does not exist
 	} else if errors.Is(err, os.ErrNotExist) {
-		return errors.Annotate(err, "Failed to find file at provided path %q : ", filePath).Err()
+		return errors.Annotate(err, "failed to find file at provided path %q : ", filePath).Err()
 		// Unexpected error
 	} else {
-		return errors.Annotate(err, "Unexpected error while finding file at provided path %q : ", filePath).Err()
+		return errors.Annotate(err, "unexpected error while finding file at provided path %q : ", filePath).Err()
 	}
 }
 
 // WriteToExistingFile writes provided contents to existing file.
 func WriteToExistingFile(ctx context.Context, filePath string, contents string) error {
 	if err := CheckIfFileExists(filePath); err != nil {
-		return errors.Annotate(err, "Could not find file at: %s", filePath).Err()
+		return errors.Annotate(err, "could not find file at: %s", filePath).Err()
 	}
 
 	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
-		return errors.Annotate(err, "Error while opening file at: %s", filePath).Err()
+		return errors.Annotate(err, "error while opening file at: %s", filePath).Err()
 	}
 	defer file.Close()
 
 	_, err = file.Write([]byte(contents))
 	if err != nil {
-		return errors.Annotate(err, "Error while writing to file at: %s", filePath).Err()
+		return errors.Annotate(err, "error while writing to file at: %s", filePath).Err()
 	}
 	return nil
 }
@@ -279,12 +280,12 @@ func WriteToExistingFile(ctx context.Context, filePath string, contents string) 
 // file contents will be written to writer simultaneously.
 func GetFileContentsInMap(ctx context.Context, filePath string, contentSeparator string, writer io.Writer) (map[string]string, error) {
 	if err := CheckIfFileExists(filePath); err != nil {
-		return nil, errors.Annotate(err, "Could not find file at: %s", filePath).Err()
+		return nil, errors.Annotate(err, "could not find file at: %s", filePath).Err()
 	}
 
 	file, err := os.Open(filePath)
 	if err != nil {
-		return nil, errors.Annotate(err, "Error while opening file at: %s", filePath).Err()
+		return nil, errors.Annotate(err, "error while opening file at: %s", filePath).Err()
 	}
 	defer file.Close()
 
@@ -292,17 +293,17 @@ func GetFileContentsInMap(ctx context.Context, filePath string, contentSeparator
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
 		if writer != nil {
-			writer.Write([]byte(fmt.Sprintln(scanner.Text())))
+			_, _ = writer.Write([]byte(fmt.Sprintln(scanner.Text())))
 		}
 		lineContents := strings.Split(scanner.Text(), contentSeparator)
 		if len(lineContents) != 2 {
-			return nil, fmt.Errorf("Line contents %q could not be separated by provided separator %q.", scanner.Text(), contentSeparator)
+			return nil, fmt.Errorf("line contents %q could not be separated by provided separator %q", scanner.Text(), contentSeparator)
 		}
 		fileContentsMap[lineContents[0]] = lineContents[1]
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, errors.Annotate(err, "Error while scanning file contents at %q: ", filePath).Err()
+		return nil, errors.Annotate(err, "error while scanning file contents at %q: ", filePath).Err()
 	}
 
 	return fileContentsMap, nil
@@ -312,7 +313,7 @@ func GetFileContentsInMap(ctx context.Context, filePath string, contentSeparator
 // metadata if found.
 func GetCftServiceMetadataFromFile(ctx context.Context, metadataFilePath string, fileLog io.Writer) (map[string]string, error) {
 	if metadataFilePath == "" {
-		return nil, fmt.Errorf("Cannot get service metadata from empty file path.")
+		return nil, fmt.Errorf("cannot get service metadata from empty file path")
 	}
 
 	var err error
@@ -332,12 +333,12 @@ func GetCftServiceMetadataFromFile(ctx context.Context, metadataFilePath string,
 
 	logging.Infof(ctx, "filefound: %v, remainingretrycount: %v, timeout: %v", fileFound, retryCount, timeout)
 	if !fileFound {
-		return nil, errors.Annotate(err, "Error while retrieving service metadata: ").Err()
+		return nil, errors.Annotate(err, "error while retrieving service metadata: ").Err()
 	}
 
 	fileContentsMap, err := GetFileContentsInMap(ctx, metadataFilePath, CftServiceMetadataLineContentSeparator, fileLog)
 	if err != nil {
-		return nil, errors.Annotate(err, "Error while retrieving service metadata: ").Err()
+		return nil, errors.Annotate(err, "error while retrieving service metadata: ").Err()
 	}
 
 	return fileContentsMap, nil
@@ -347,7 +348,7 @@ func GetCftServiceMetadataFromFile(ctx context.Context, metadataFilePath string,
 // server address for localhost.
 func GetCftLocalServerAddress(ctx context.Context, metadataFilePath string, fileLog io.Writer) (string, error) {
 	if metadataFilePath == "" {
-		return "", fmt.Errorf("Cannot get server address from empty file path.")
+		return "", fmt.Errorf("cannot get server address from empty file path")
 	}
 
 	serviceMatadata, err := GetCftServiceMetadataFromFile(ctx, metadataFilePath, fileLog)
@@ -356,7 +357,7 @@ func GetCftLocalServerAddress(ctx context.Context, metadataFilePath string, file
 	}
 	port, ok := serviceMatadata[CftServiceMetadataServicePortKey]
 	if !ok || port == "" {
-		return "", fmt.Errorf("Service port was not found in service metadata.")
+		return "", fmt.Errorf("service port was not found in service metadata")
 	}
 
 	serverAddress := fmt.Sprintf("localhost:%s", port)
@@ -434,7 +435,9 @@ func FetchContainerMetadata(ctx context.Context, containerGcsPath string) (*buil
 	tempRootDir := os.Getenv("TEMPDIR")
 
 	// Just here to prevent race conditions of shards fighting over a file.
-	rand.Seed(time.Now().UnixNano())
+	r := rand.NewSource(time.Now().UnixNano())
+	randSource := rand.New(r)
+	randSource.Seed(time.Now().UnixNano())
 	tempRootDir = path.Join(tempRootDir, strconv.Itoa(rand.Int()))
 
 	localFilePath, err := DownloadGcsFileToLocal(ctx, containerGcsPath, tempRootDir)
@@ -443,7 +446,7 @@ func FetchContainerMetadata(ctx context.Context, containerGcsPath string) (*buil
 		return nil, err
 	}
 
-	containerMetadata := &api.ContainerMetadata{}
+	containerMetadata := &buildapi.ContainerMetadata{}
 	err = ReadProtoJSONFile(ctx, localFilePath, containerMetadata)
 	if err != nil {
 		logging.Infof(ctx, "error while reading proto json file: %s", err)
