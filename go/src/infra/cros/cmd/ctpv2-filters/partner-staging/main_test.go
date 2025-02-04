@@ -9,16 +9,19 @@ import (
 	"log"
 	"reflect"
 	"strings"
+	"sync"
 	"testing"
 
 	gax "github.com/googleapis/gax-go/v2"
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+
 	"infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
 )
 
 type MockMoblabClient struct {
+	mu                            sync.Mutex
 	StageBuildCalls               []StageBuildCall
 	CheckBuildStageStatusCalls    []CheckBuildStageStatusCall
 	StageBuildResponse            *moblab.StageBuildOperation
@@ -41,6 +44,8 @@ type CheckBuildStageStatusCall struct {
 }
 
 func (m *MockMoblabClient) StageBuild(ctx context.Context, req *moblabpb.StageBuildRequest, opts ...gax.CallOption) (*moblab.StageBuildOperation, error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.StageBuildCalls = append(m.StageBuildCalls, StageBuildCall{Ctx: ctx, Req: req, Opts: opts})
 	if err, exists := m.BuildFailures[req.Name]; exists {
 		return nil, err
@@ -49,6 +54,8 @@ func (m *MockMoblabClient) StageBuild(ctx context.Context, req *moblabpb.StageBu
 }
 
 func (m *MockMoblabClient) CheckBuildStageStatus(ctx context.Context, req *moblabpb.CheckBuildStageStatusRequest, opts ...gax.CallOption) (*moblabpb.CheckBuildStageStatusResponse, error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
 	m.CheckBuildStageStatusCalls = append(m.CheckBuildStageStatusCalls, CheckBuildStageStatusCall{Ctx: ctx, Req: req, Opts: opts})
 	return m.CheckBuildStageStatusResponse, m.CheckBuildStageStatusError
 }
