@@ -20,14 +20,13 @@ urllib.request.install_opener(
         urllib.request.HTTPSHandler(
             context=ssl.create_default_context(cafile=certifi.where()))))
 
-MAJOR_VERSION = '7'
+MAJOR_VERSION = '8'
 
 _EXTENSION = {
     'windows': '.msi',
 }
 
 _PLATFORMS = {
-    'windows-386': 'x86',
     'windows-amd64': 'x64',
 }
 
