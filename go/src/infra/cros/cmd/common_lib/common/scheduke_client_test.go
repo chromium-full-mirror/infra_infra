@@ -19,31 +19,31 @@ var testSchedukeParamsData = []struct {
 		taskStateIDs: []int64{4, 9, 2, 6, 0},
 		users:        []string{"a", "b", "c"},
 		deviceNames:  []string{"d", "f", "g"},
-		wantParam:    "ids=4,9,2,6,0&users=a,b,c&device_names=d,f,g",
+		wantParam:    "ids=4,9,2,6,0&device_names=d,f,g&user-info=a,b,c",
 	},
 	{
 		taskStateIDs: []int64{},
 		users:        []string{"a", "b", "e"},
 		deviceNames:  []string{"d", "f", "g"},
-		wantParam:    "users=a,b,e&device_names=d,f,g",
+		wantParam:    "device_names=d,f,g&user-info=a,b,e",
 	},
 	{
 		taskStateIDs: []int64{4, 9, 2, 6, 0},
 		users:        []string{},
 		deviceNames:  []string{"e", "f", "g"},
-		wantParam:    "ids=4,9,2,6,0&device_names=e,f,g",
+		wantParam:    "ids=4,9,2,6,0&device_names=e,f,g&user-info=",
 	},
 	{
 		taskStateIDs: []int64{4, 9, 2, 6, 0},
 		users:        []string{"a", "b", "c"},
 		deviceNames:  nil,
-		wantParam:    "ids=4,9,2,6,0&users=a,b,c",
+		wantParam:    "ids=4,9,2,6,0&user-info=a,b,c",
 	},
 	{
 		taskStateIDs: []int64{4, 9, 2, 6, 0},
 		users:        nil,
 		deviceNames:  nil,
-		wantParam:    "ids=4,9,2,6,0",
+		wantParam:    "ids=4,9,2,6,0&user-info=",
 	},
 	{
 		taskStateIDs: nil,
@@ -55,13 +55,13 @@ var testSchedukeParamsData = []struct {
 		taskStateIDs: nil,
 		users:        nil,
 		deviceNames:  []string{"d", "f", "g"},
-		wantParam:    "device_names=d,f,g",
+		wantParam:    "device_names=d,f,g&user-info=",
 	},
 	{
 		taskStateIDs: nil,
 		users:        nil,
 		deviceNames:  nil,
-		wantParam:    "",
+		wantParam:    "user-info=",
 	},
 }
 

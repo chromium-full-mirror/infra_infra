@@ -489,11 +489,13 @@ func schedukeParams(taskStateIDs []int64, users, deviceNames []string) string {
 		}
 		params = append(params, fmt.Sprintf("ids=%s", strings.Join(stringIDs, ",")))
 	}
-	if len(users) > 0 {
-		params = append(params, fmt.Sprintf("users=%s", strings.Join(users, ",")))
-	}
 	if len(deviceNames) > 0 {
 		params = append(params, fmt.Sprintf("device_names=%s", strings.Join(deviceNames, ",")))
+	}
+	if len(taskStateIDs) == 0 && len(deviceNames) == 0 && len(users) > 0 {
+		params = append(params, fmt.Sprintf("users=%s", strings.Join(users, ",")))
+	} else {
+		params = append(params, fmt.Sprintf("user-info=%s", strings.Join(users, ",")))
 	}
 	return strings.Join(params, "&")
 }
