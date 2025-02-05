@@ -85,7 +85,7 @@ func (sc *swarmingClientImpl) listAliveBotsInPool(ctx context.Context, pool stri
 	for i := 0; i < maxSwarmingIterations; i++ {
 		resp, err := sc.botsClient.ListBots(ctx, getRequest(cursor))
 		if err != nil {
-			return nil, errors.Reason("failed to list alive and idle bots in pool %s", pool).InternalReason(err.Error()).Err()
+			return nil, errors.Annotate(err, "failed to list alive and idle bots in pool %s", pool).Err()
 		}
 		out = append(out, resp.GetItems()...)
 		cursor = resp.GetCursor()
