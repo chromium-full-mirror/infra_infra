@@ -287,13 +287,11 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 
 	// Created client to update UFS when required.
 	var ic ufsAPI.FleetClient
-	if !c.ignoreUFS {
-		ic = ufsAPI.NewFleetPRPCClient(&prpc.Client{
-			C:       hc,
-			Host:    e.UnifiedFleetService,
-			Options: site.DefaultPRPCOptions(c.envFlags),
-		})
-	}
+	ic = ufsAPI.NewFleetPRPCClient(&prpc.Client{
+		C:       hc,
+		Host:    e.UnifiedFleetService,
+		Options: site.DefaultPRPCOptions(c.envFlags),
+	})
 	for _, param := range dutParams {
 		if !c.ignoreUFS {
 			// Update the UFS database if enabled.
