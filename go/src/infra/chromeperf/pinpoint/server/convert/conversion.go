@@ -185,14 +185,12 @@ func JobToValues(job *proto.JobSpec, userEmail string) (url.Values, error) {
 		case *proto.TelemetryBenchmark_StoryTags:
 			v.Set("story_tags", strings.Join(s.StoryTags.StoryTags, ","))
 		default:
-			return nil, errors.Reason("Unsupported story_selection in TelemetryBenchmark").
-				InternalReason("story_selection is %v", s).Err()
+			return nil, errors.Reason("Unsupported story_selection in TelemetryBenchmark").Err()
 		}
 		if tb.ExtraArgs != nil {
 			e, err := json.Marshal(tb.ExtraArgs)
 			if err != nil {
-				return nil, errors.Reason("failed to marshal extra args").
-					InternalReason("extra args is %v", tb.ExtraArgs).Err()
+				return nil, errors.Reason("failed to marshal extra args").Err()
 			}
 			v.Set("extra_test_args", string(e))
 		}
@@ -202,8 +200,7 @@ func JobToValues(job *proto.JobSpec, userEmail string) (url.Values, error) {
 		v.Set("trace", gb.Test)
 		v.Set("chart", gb.Measurement)
 	default:
-		return nil, errors.Reason("unsupported arguments in JobSpec").
-			InternalReason("args type is %v", args).Err()
+		return nil, errors.Reason("unsupported arguments in JobSpec").Err()
 	}
 
 	return v, nil
