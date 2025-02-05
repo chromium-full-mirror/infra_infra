@@ -82,6 +82,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
 	github.com/op/go-logging v0.0.0-20160315200505-970db520ece7
+	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.1.0
 	github.com/opencontainers/runtime-spec v1.2.0
 	github.com/otiai10/copy v1.14.1
@@ -261,7 +262,6 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/morikuni/aec v1.0.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
-	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/otiai10/mint v1.6.3 // indirect
 	github.com/pborman/uuid v1.2.1 // indirect
 	github.com/pierrec/lz4/v4 v4.1.18 // indirect

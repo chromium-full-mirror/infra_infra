@@ -1,0 +1,63 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+
+syntax = "proto3";
+
+package cipd.manifest;
+
+option go_package = "infra/experimental/cipd_manifest_experiments;main";
+
+import "google/protobuf/timestamp.proto";
+
+message Digest {
+  int64 size = 1;
+  bytes sha256 = 2;
+}
+
+message Digests {
+  Digest overall_digest = 1;
+  repeated Digest digests = 2;
+}
+
+message WinAttributes {
+  bool system = 1;
+  bool hidden = 2;
+}
+
+message Attributes {
+  bool executable = 1;
+  bool writable = 2;
+  google.protobuf.Timestamp modtime = 3;
+  WinAttributes win_attrs = 4;
+}
+
+message File {
+  string path = 1;
+
+  Attributes attributes = 2;
+
+  oneof data {
+    string symlink = 3;
+    Digest chunk = 4;
+    Digests chunked = 5;
+    bytes inline_content = 6;
+  }
+}
+
+message Manifest {
+  int32 version = 1;
+
+  string package_name = 2;
+  repeated string tags = 3;
+
+  repeated File files = 4;
+}
+
+message HashGroups {
+  message Group {
+    repeated bytes hashes = 1;
+  }
+  repeated Group groups = 1;
+}
