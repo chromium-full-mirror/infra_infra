@@ -4658,7 +4658,9 @@ suite_info {
                   path: "${installPath}"
                 }
                 metadata {
-                  type_url: "type.googleapis.com/chromiumos.test.api.CrOSProvisionMetadata"
+                  [type.googleapis.com/chromiumos.test.api.CrOSProvisionMetadata] {
+                        update_firmware: false
+                  }
                 }
               }
               dynamic_deps {
@@ -4676,6 +4678,10 @@ suite_info {
               dynamic_deps {
                 key: "startupRequest.servoNexusAddr"
                 value: "servo-nexus_primary"
+              }
+              dynamic_deps {
+                key: "installRequest.metadata.updateFirmware"
+                value: "BOOL=false"
               }
               target: "primary"
               dynamic_identifier: "cros-provision_primary"

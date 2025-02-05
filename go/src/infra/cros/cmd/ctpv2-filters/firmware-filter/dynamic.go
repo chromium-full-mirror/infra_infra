@@ -11,12 +11,25 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+
+	"infra/cros/cmd/common_lib/common"
 )
 
 // GenerateDynamicInfo creates dynamic updates for provision
 // requests, and adds their relevant information to each
 // scheduling unit's dynamic lookup table.
 func GenerateDynamicInfo(req *api.InternalTestplan, specs *FirmwareSpecs, log *log.Logger) error {
+	// Fix cros-provision settings to avoid flashing the firmware twice
+	for _, du := range req.GetSuiteInfo().GetSuiteMetadata().GetDynamicUpdates() {
+		provision := du.GetUpdateAction().GetInsert().GetTask().GetProvision()
+		if provision.GetInstallRequest().GetMetadata().MessageIs((*api.CrOSProvisionMetadata)(nil)) {
+			provision.DynamicDeps = append(provision.DynamicDeps, &api.DynamicDep{
+				Key:   common.CrosProvisionMetadataUpdateFirmware,
+				Value: "BOOL=false",
+			})
+		}
+	}
+
 	// Create Dynamic Updates.
 	if err := generateProvisionRequests(req, specs, log); err != nil {
 		return err
@@ -54,6 +67,7 @@ func generateDynamicUpdateLookupTables(req *api.InternalTestplan, specs *Firmwar
 	}
 
 	// TODO (oldProto-azrahman): remove when schedulingOptions is fully rolled in.
+	//nolint:staticcheck
 	for _, targetReq := range suiteMetadata.GetTargetRequirements() {
 		for _, hwDef := range targetReq.GetHwRequirements().GetHwDefinition() {
 			dynamicHelper := NewDynamicFirmwareProvisionHelper(specs)

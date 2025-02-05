@@ -101,7 +101,7 @@ After you have uploaded to CIPD
 ```shell
 cd ~/infra/infra/go/src/infra
 go install infra/cros/cmd/container_uprev
-container_uprev cli -label $USER-test
+container_uprev cli -label $USER-test -target firmware-filter
 ```
 
 Be sure to note the digest printed by this command.
@@ -113,7 +113,7 @@ Be sure to note the digest printed by this command.
 ```
 eval `~/infra/infra/go/env.py` && \
 cd ~/infra/infra/go/src/infra && \
-export CGO_ENABLED=0 && \
+export CGO_ENABLED=0
 go fmt infra/cros/cmd/ctpv2-filters/firmware-filter && \
 golangci-lint run --fix cros/cmd/ctpv2-filters/firmware-filter
 ```
@@ -124,7 +124,7 @@ golangci-lint run --fix cros/cmd/ctpv2-filters/firmware-filter
 # If you fetched to somewhere other than ~/infra, change these paths.
 eval `~/infra/infra/go/env.py` && \
 cd ~/infra/infra/go/src/infra && \
-export CGO_ENABLED=0 && \
+export CGO_ENABLED=0
 go test infra/cros/cmd/ctpv2-filters/firmware-filter
 ```
 
