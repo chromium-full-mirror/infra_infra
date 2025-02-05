@@ -23,7 +23,7 @@ import (
 
 // ADBConnect connect DUT by ADB.
 // If device already connected then it will be skipped, if forceReconnect set as false.
-func ADBConnect(ctx context.Context, retryCount int, retryinterval time.Duration, forceReconnect bool, timeout time.Duration, dut *tlw.Dut) error {
+func ADBConnect(ctx context.Context, retryCount int, retryinterval time.Duration, forceReconnect bool, singleRunTimeout time.Duration, dut *tlw.Dut) error {
 	if dut == nil {
 		return errors.Reason("adb connect: dut is not provided").Err()
 	}
@@ -34,10 +34,10 @@ func ADBConnect(ctx context.Context, retryCount int, retryinterval time.Duration
 	adbPort := adbTool.Port(ctx)
 	deviceName := fmt.Sprintf("%s:%d", dut.Name, adbPort)
 
-	if isConnected(ctx, deviceName, client, timeout) {
+	if isConnected(ctx, deviceName, client, singleRunTimeout) {
 		if forceReconnect {
 			log.Infof(ctx, "Device is already listed so we disconnect it first")
-			if _, err := adb.ExecCommand(ctx, client, timeout, "disconnect", deviceName); err != nil {
+			if _, err := adb.ExecCommand(ctx, client, singleRunTimeout, "disconnect", deviceName); err != nil {
 				log.Debugf(ctx, "Fail to disconnect device: %s", err)
 			}
 		} else {
@@ -48,17 +48,17 @@ func ADBConnect(ctx context.Context, retryCount int, retryinterval time.Duration
 
 	// Only restart ADB server when run in a container for a single DUT,
 	// as it is not safe to restart it when other devices are connected.
-	restartServerIfNeed(ctx, client, timeout)
+	restartServerIfNeed(ctx, client, singleRunTimeout)
 
 	connect := func() error {
 		log.Infof(ctx, "Try to connect to %q by adb", dut.Name)
-		if _, err := adb.ExecCommand(ctx, client, timeout, "connect", deviceName); err != nil {
+		if _, err := adb.ExecCommand(ctx, client, singleRunTimeout, "connect", deviceName); err != nil {
 			return errors.Annotate(err, "fail to connect").Err()
 		}
-		if _, err := adb.ExecCommand(ctx, client, timeout, "root"); err != nil {
+		if _, err := adb.ExecCommand(ctx, client, singleRunTimeout, "root"); err != nil {
 			return errors.Annotate(err, "fail to root service, event when expected").Err()
 		}
-		if res, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
+		if res, err := adb.ExecCommand(ctx, client, singleRunTimeout, "devices"); err != nil {
 			return errors.Annotate(err, "fail to read adb devices, after connection").Err()
 		} else if out := string(res.GetStdout()); out != "" {
 			if !strings.Contains(out, deviceName) {

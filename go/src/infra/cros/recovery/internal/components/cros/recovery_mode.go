@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"infra/cros/recovery/internal/components"
+	"infra/cros/recovery/internal/components/cros/android"
 	"infra/cros/recovery/internal/components/cros/storage"
 	"infra/cros/recovery/internal/components/servo"
 	"infra/cros/recovery/internal/retry"
@@ -134,8 +135,21 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 		// Verify the boot only if pass the execution or restore states.
 		if rErr == nil && req.AfterRebootVerify {
 			log.Debugf("Boot in recovery mode: starting verification of the boot...")
+			accessCheck := func() error {
+				return retry.WithTimeout(ctx, req.BootInterval, req.AfterRebootTimeout, func() error {
+					if err := IsPingable(ctx, DefaultPingCount, dutPing); err != nil {
+						return err
+					}
+					if req.DUT.GetChromeos().GetIsAndroidBased() {
+						if err := android.ADBConnect(ctx, 3, time.Second, false, 3*time.Second, req.DUT); err != nil {
+							return err
+						}
+					}
+					return IsSSHable(ctx, dutRun, DefaultSSHTimeout)
+				}, "wait until accessible")
+			}
 			for {
-				if err := WaitUntilAccessible(ctx, req.AfterRebootTimeout, req.BootInterval, dutRun, dutPing); err != nil {
+				if err := accessCheck(); err != nil {
 					if req.AfterRebootAllowUseServoReset {
 						req.AfterRebootAllowUseServoReset = false
 						if err := servo.SetPowerState(ctx, servod, servo.PowerStateValueReset); err != nil {
@@ -143,10 +157,10 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 						}
 						continue
 					}
-					log.Debugf("Device is not SSH-able after reboot!")
+					log.Debugf("Device is not accessible after reboot!")
 					rErr = err
 				} else {
-					log.Debugf("Device is SSH-able!")
+					log.Debugf("Device is accessible!")
 				}
 				break
 			}
