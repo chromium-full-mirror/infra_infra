@@ -2546,6 +2546,7 @@ SPECS.update({
         Universal('selenium', '3.14.0'),
         Universal('selenium', '4.1.0', pyversions=['py3']),
         Universal('selenium', '4.10.0', pyversions=['py3']),
+        Universal('selenium', '4.28.1', pyversions=['py3']),
         Universal('semantic-version', '2.10.0'),
         Universal('service-identity', '24.1.0', pyversions=['py3']),
         Universal('setuptools', '34.3.2'),

@@ -10444,6 +10444,18 @@ wheel: <
 
 * *universal*
 
+### 4.28.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/selenium-py3"
+  version: "version:4.28.1"
+>
+```
+
+
+* *universal*
+
 ## **semantic-version**
 
 ### 2.10.0
