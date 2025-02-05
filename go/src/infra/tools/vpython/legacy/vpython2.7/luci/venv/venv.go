@@ -591,8 +591,7 @@ func (e *Env) installVirtualEnv(c context.Context, pkgDir string, env []string) 
 	// Create our VirtualEnv package staging sub-directory underneath of root.
 	bsDir := filepath.Join(e.Root, ".virtualenv")
 	if err := filesystem.MakeDirs(bsDir); err != nil {
-		return errors.Annotate(err, "failed to create VirtualEnv bootstrap directory").
-			InternalReason("path(%s)", bsDir).Err()
+		return errors.Annotate(err, "failed to create VirtualEnv bootstrap directory %q", bsDir).Err()
 	}
 
 	// Identify the virtualenv directory: will have "virtualenv-" prefix.
@@ -700,8 +699,7 @@ func (e *Env) getPEP425Tags(c context.Context, env []string) ([]*vpython.PEP425T
 	tags := make([]*vpython.PEP425Tag, len(tagEntries))
 	for i, te := range tagEntries {
 		if len(te) != 3 {
-			return nil, errors.Reason("invalid PEP425 tag entry: %v", te).
-				InternalReason("index(%d)", i).Err()
+			return nil, errors.Reason("invalid PEP425 tag entry: %v idx:%d", te, i).Err()
 		}
 
 		tags[i] = &vpython.PEP425Tag{
@@ -1005,8 +1003,7 @@ func writeFile(path string, data []byte, mode os.FileMode) error {
 	// requirement in order to make modifications to that directory.
 	parentDir := filepath.Dir(path)
 	if err := filesystem.MakePathUserWritable(parentDir, nil); err != nil {
-		return errors.Annotate(err, "failed to mark parent directory user-writable").
-			InternalReason("path(%q)", parentDir).Err()
+		return errors.Annotate(err, "failed to mark parent directory user-writable: %q", parentDir).Err()
 	}
 
 	// Ensure that the target path doesn't already exist. Use filesystem.RemoveAll
@@ -1015,7 +1012,7 @@ func writeFile(path string, data []byte, mode os.FileMode) error {
 		return err
 	}
 	if err := ioutil.WriteFile(path, data, mode); err != nil {
-		return errors.Annotate(err, "could not write file contents").InternalReason("path(%q)", path).Err()
+		return errors.Annotate(err, "could not write file contents: %q", path).Err()
 	}
 	return nil
 }

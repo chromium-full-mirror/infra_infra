@@ -90,8 +90,7 @@ func ScanDir(dir string) ([]Name, error) {
 	globPattern := filepath.Join(dir, "*.whl")
 	matches, err := filepath.Glob(globPattern)
 	if err != nil {
-		return nil, errors.Annotate(err, "failed to list wheel directory: %s", dir).
-			InternalReason("pattern(%s)", globPattern).Err()
+		return nil, errors.Annotate(err, "failed to list wheel directory: %s", dir).Err()
 	}
 
 	names := make([]Name, 0, len(matches))
@@ -109,8 +108,7 @@ func ScanDir(dir string) ([]Name, error) {
 			name := filepath.Base(match)
 			wheelName, err := ParseName(name)
 			if err != nil {
-				return nil, errors.Annotate(err, "failed to parse wheel from: %s", name).
-					InternalReason("dir(%s)", dir).Err()
+				return nil, errors.Annotate(err, "failed to parse wheel from: %q/%s", dir, name).Err()
 			}
 			names = append(names, wheelName)
 		}
