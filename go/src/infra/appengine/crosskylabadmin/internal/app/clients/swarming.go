@@ -24,6 +24,7 @@ import (
 
 	"go.chromium.org/luci/common/data/strpair"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
@@ -168,7 +169,8 @@ func (sc *swarmingClientImpl) ListAliveIdleBotsInPool(ctx context.Context, pool 
 	for i := 0; i < maxSwarmingIterations; i++ {
 		resp, err := sc.botsClient.ListBots(ctx, getRequest(cursor))
 		if err != nil {
-			return nil, errors.Reason("failed to list alive and idle bots in pool %s", pool).InternalReason(err.Error()).Err()
+			logging.Errorf(ctx, "botsClient.ListBots failed: %s", err)
+			return nil, errors.Reason("failed to list alive and idle bots in pool %s", pool).Err()
 		}
 		out = append(out, resp.GetItems()...)
 		cursor = resp.GetCursor()
@@ -202,7 +204,8 @@ func (sc *swarmingClientImpl) ListAliveBotsInPool(ctx context.Context, pool stri
 	for i := 0; i < maxSwarmingIterations; i++ {
 		resp, err := sc.botsClient.ListBots(ctx, getRequest(cursor))
 		if err != nil {
-			return nil, errors.Reason("failed to list alive and idle bots in pool %s", pool).InternalReason(err.Error()).Err()
+			logging.Errorf(ctx, "botsClient.ListBots failed: %s", err)
+			return nil, errors.Reason("failed to list alive and idle bots in pool %s", pool).Err()
 		}
 		out = append(out, resp.GetItems()...)
 		cursor = resp.GetCursor()
@@ -221,7 +224,8 @@ func (sc *swarmingClientImpl) CreateTask(ctx context.Context, name string, args 
 
 	dims, err := convertToDimensions(args)
 	if err != nil {
-		return "", errors.Reason("Failed to create dimentions").InternalReason(err.Error()).Err()
+		logging.Errorf(ctx, "convertToDimensions failed: %s", err)
+		return "", errors.Reason("Failed to create dimentions").Err()
 	}
 
 	req := &swarmingv2.NewTaskRequest{
@@ -250,7 +254,8 @@ func (sc *swarmingClientImpl) CreateTask(ctx context.Context, name string, args 
 	}
 	resp, err := sc.tasksClient.NewTask(ctx, req)
 	if err != nil {
-		return "", errors.Reason("Failed to create task").InternalReason(err.Error()).Err()
+		logging.Errorf(ctx, "tasksClient.NewTask failed: ", err)
+		return "", errors.Reason("Failed to create task").Err()
 	}
 	return resp.TaskId, nil
 }
@@ -321,7 +326,8 @@ func (sc *swarmingClientImpl) ListRecentTasks(ctx context.Context, tags []string
 
 	resp, err := sc.tasksClient.ListTasks(ctx, req)
 	if err != nil {
-		return nil, errors.Reason("failed to list tasks with tags %s", strings.Join(tags, " ")).InternalReason(err.Error()).Err()
+		logging.Errorf(ctx, "tasksClient.ListTasks failed: %s", err)
+		return nil, errors.Reason("failed to list tasks with tags %s", strings.Join(tags, " ")).Err()
 	}
 
 	return resp.GetItems(), nil
