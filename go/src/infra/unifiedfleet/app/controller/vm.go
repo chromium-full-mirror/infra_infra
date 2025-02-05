@@ -71,7 +71,7 @@ func CreateVM(ctx context.Context, vm *ufspb.VM, nwOpt *ufsAPI.NetworkOption) (*
 		}
 
 		// Create corresponding device labels
-		deviceLabels := getBrowserVMLabels(vm)
+		deviceLabels := GetBrowserVMLabels(vm)
 		if _, err := inventory.BatchUpdateDeviceLabels(ctx, []*ufspb.DeviceLabels{deviceLabels}); err != nil {
 			return errors.Annotate(err, "unable to batch update device labels").Err()
 		}
@@ -144,7 +144,7 @@ func UpdateVM(ctx context.Context, vm *ufspb.VM, mask *field_mask.FieldMask) (*u
 		if err != nil {
 			logging.Infof(ctx, "UpdateVM - could not find existing device labels. Continuing with update")
 		}
-		deviceLabels := getBrowserVMLabels(vm)
+		deviceLabels := GetBrowserVMLabels(vm)
 		if _, err := inventory.BatchUpdateDeviceLabels(ctx, []*ufspb.DeviceLabels{deviceLabels}); err != nil {
 			return errors.Annotate(err, "unable to batch update device labels").Err()
 		}

@@ -12,6 +12,7 @@ import (
 
 	ufspb "infra/unifiedfleet/api/v1/models"
 	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"infra/unifiedfleet/app/controller"
 	"infra/unifiedfleet/app/model/inventory"
 	"infra/unifiedfleet/app/model/registration"
 	"infra/unifiedfleet/app/model/state"
@@ -182,4 +183,87 @@ func indexDutStates(ctx context.Context) error {
 		return nil
 	}
 	return indexTable(ctx, "dutStates", f)
+}
+
+// backfillDeviceLabelsMachineLSEs reads the entire machineLSE table in all namespaces
+// and updates the device labels table accordingly
+func backfillDeviceLabelsMachineLSEs(ctx context.Context) error {
+	f := func(ctx context.Context, ns string, token *string) error {
+		var err error
+		var lses []*ufspb.MachineLSE
+		lses, *token, err = inventory.ListMachineLSEs(ctx, pageSize, *token, nil, false)
+		if err != nil {
+			return errors.Annotate(err, "backfillDeviceLabelsMachineLSEs[%s] -- Failed to list", ns).Err()
+		}
+		logging.Infof(ctx, "backfillDeviceLabelsMachineLSEs -- Backfilling %v MachineLSEs in %s", len(lses), ns)
+		deviceLabelsList := make([]*ufspb.DeviceLabels, len(lses))
+		for i, lse := range lses {
+			deviceLabelsList[i], err = controller.GetMachineLSELabels(ctx, lse)
+			if err != nil {
+				logging.Errorf(ctx, "backfillDeviceLabelsMachineLSEs[%s] -- Error generating device labels for %s", lse.GetName())
+				continue
+			}
+		}
+		// Update the DeviceLabels back to datastore
+		_, err = inventory.BatchUpdateDeviceLabels(ctx, deviceLabelsList)
+		if err != nil {
+			return errors.Annotate(err, "backfillDeviceLabelsMachineLSEs[%s] -- Failed to update", ns).Err()
+		}
+		return nil
+	}
+	return indexTable(ctx, "backfillDeviceLabelsMachineLSEs", f)
+}
+
+// backfillDeviceLabelsVMs reads the entire VM table in all namespaces
+// and updates the device labels table accordingly
+func backfillDeviceLabelsVMs(ctx context.Context) error {
+	f := func(ctx context.Context, ns string, token *string) error {
+		var err error
+		var vms []*ufspb.VM
+		vms, *token, err = inventory.ListVMs(ctx, pageSize, pageSize, *token, nil, false, nil)
+		if err != nil {
+			return errors.Annotate(err, "backfillDeviceLabelsVMs[%s] -- Failed to list", ns).Err()
+		}
+		logging.Infof(ctx, "backfillDeviceLabelsVMs -- Backfilling %v VMs in %s", len(vms), ns)
+		deviceLabelsList := make([]*ufspb.DeviceLabels, len(vms))
+		for i, vm := range vms {
+			deviceLabelsList[i] = controller.GetBrowserVMLabels(vm)
+		}
+		// Update the DeviceLabels back to datastore
+		_, err = inventory.BatchUpdateDeviceLabels(ctx, deviceLabelsList)
+		if err != nil {
+			return errors.Annotate(err, "backfillDeviceLabelsVMs[%s] -- Failed to update", ns).Err()
+		}
+		return nil
+	}
+	return indexTable(ctx, "backfillDeviceLabelsVMs", f)
+}
+
+// backfillDeviceLabelsSchedulingUnits reads the entire scheduling units table in all namespaces
+// and updates the device labels table accordingly
+func backfillDeviceLabelsSchedulingUnits(ctx context.Context) error {
+	f := func(ctx context.Context, ns string, token *string) error {
+		var err error
+		var sus []*ufspb.SchedulingUnit
+		sus, *token, err = inventory.ListSchedulingUnits(ctx, pageSize, *token, nil, false)
+		if err != nil {
+			return errors.Annotate(err, "backfillDeviceLabelsSchedulingUnits[%s] -- Failed to list", ns).Err()
+		}
+		logging.Infof(ctx, "backfillDeviceLabelsSchedulingUnits -- Backfilling %v SchedulingUnits in %s", len(sus), ns)
+		deviceLabelsList := make([]*ufspb.DeviceLabels, len(sus))
+		for i, su := range sus {
+			deviceLabelsList[i], err = controller.GetSchedulingUnitLabels(ctx, su, nil)
+			if err != nil {
+				logging.Errorf(ctx, "backfillDeviceLabelsSchedulingUnits[%s] -- Error generating device labels for %s", su.GetName())
+				continue
+			}
+		}
+		// Update the DeviceLabels back to datastore
+		_, err = inventory.BatchUpdateDeviceLabels(ctx, deviceLabelsList)
+		if err != nil {
+			return errors.Annotate(err, "backfillDeviceLabelsSchedulingUnits[%s] -- Failed to update", ns).Err()
+		}
+		return nil
+	}
+	return indexTable(ctx, "backfillDeviceLabelsSchedulingUnits", f)
 }

@@ -373,7 +373,7 @@ func UpdateMachineLSE(ctx context.Context, machinelse *ufspb.MachineLSE, mask *f
 			if err != nil {
 				logging.Infof(ctx, "Could not find existing device labels. Continuing with update")
 			}
-			deviceLabels, err := getMachineLSELabels(ctx, machinelse)
+			deviceLabels, err := GetMachineLSELabels(ctx, machinelse)
 			if err != nil {
 				return errors.Annotate(err, "Error generating device labels").Err()
 			}

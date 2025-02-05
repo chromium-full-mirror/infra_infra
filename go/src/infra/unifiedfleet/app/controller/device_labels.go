@@ -240,7 +240,7 @@ func validateDeleteDeviceLabels(ctx context.Context, deviceLabels *ufspb.DeviceL
 	return nil
 }
 
-func getMachineLSELabels(ctx context.Context, lse *ufspb.MachineLSE) (*ufspb.DeviceLabels, error) {
+func GetMachineLSELabels(ctx context.Context, lse *ufspb.MachineLSE) (*ufspb.DeviceLabels, error) {
 	// Get data based on device type
 	if lse.GetChromeBrowserMachineLse() != nil {
 		return getBrowserHostLabels(lse), nil
@@ -275,7 +275,7 @@ func getChromeOSDeviceLabelsWithLSEAndMachine(ctx context.Context, lse *ufspb.Ma
 	return getChromeOSDeviceLabels(ctx, deviceData), nil
 }
 
-func getBrowserVMLabels(vm *ufspb.VM) *ufspb.DeviceLabels {
+func GetBrowserVMLabels(vm *ufspb.VM) *ufspb.DeviceLabels {
 	name := util.AddPrefix(util.VMCollection, vm.GetName())
 	state := dutstate.ConvertFromUFSState(vm.GetResourceState()).String()
 	zone := vm.GetZone()
@@ -302,7 +302,7 @@ func getBrowserLabelsResponse(name, state, zone string) *ufspb.DeviceLabels {
 	}
 }
 
-func getSchedulingUnitLabels(ctx context.Context, su *ufspb.SchedulingUnit, lses []*ufspb.MachineLSE) (*ufspb.DeviceLabels, error) {
+func GetSchedulingUnitLabels(ctx context.Context, su *ufspb.SchedulingUnit, lses []*ufspb.MachineLSE) (*ufspb.DeviceLabels, error) {
 	dims, err := getSchedulingUnitSwarmingDimensions(ctx, su, lses)
 	if err != nil {
 		return nil, err

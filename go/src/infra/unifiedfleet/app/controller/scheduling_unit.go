@@ -32,7 +32,7 @@ func CreateSchedulingUnit(ctx context.Context, su *ufspb.SchedulingUnit) (*ufspb
 			return err
 		}
 		// Create corresponding device labels
-		deviceLabels, err := getSchedulingUnitLabels(ctx, su, nil)
+		deviceLabels, err := GetSchedulingUnitLabels(ctx, su, nil)
 		if err != nil {
 			return errors.Annotate(err, "Error generating device labels").Err()
 		}
@@ -87,7 +87,7 @@ func UpdateSchedulingUnit(ctx context.Context, su *ufspb.SchedulingUnit, mask *f
 		if err != nil {
 			logging.Infof(ctx, "Could not find existing device labels. Continuing with update")
 		}
-		deviceLabels, err := getSchedulingUnitLabels(ctx, su, nil)
+		deviceLabels, err := GetSchedulingUnitLabels(ctx, su, nil)
 		if err != nil {
 			return errors.Annotate(err, "Error generating device labels").Err()
 		}
@@ -369,7 +369,7 @@ func updateSchedulingUnitDeviceLabels(ctx context.Context, hc *HistoryClient, ls
 			logging.Infof(ctx, "updateSchedulingUnitDeviceLabels - Could not find existing device labels. Continuing with update")
 		}
 	}
-	newDeviceLabels, err = getSchedulingUnitLabels(ctx, su, []*ufspb.MachineLSE{lse})
+	newDeviceLabels, err = GetSchedulingUnitLabels(ctx, su, []*ufspb.MachineLSE{lse})
 	if err != nil {
 		return errors.Annotate(err, "updateSchedulingUnitDeviceLabels - Error generating device labels").Err()
 	}

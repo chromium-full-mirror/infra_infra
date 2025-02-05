@@ -173,6 +173,45 @@ var Jobs = []*cron.CronTab{
 		TrigType: cron.EVERY,
 		Job:      indexDutStates,
 	},
+	{
+		// This job is not meant to be run by the cron. This will
+		// be triggered by shivas at whatever time oncall deems
+		// appropriate. There is a potential for this to block
+		// other jobs as it updates ~500 rows every time. Only run
+		// during low-traffic non-critical times. The long wait time
+		// ensures that this will not be run under normal circumstances
+		// (unless we manage to not update/reboot UFS for 200 years)
+		Name:     "ufs.backfill.devicelabels_machinelse",
+		Time:     200 * 365 * 24 * time.Hour,
+		TrigType: cron.EVERY,
+		Job:      backfillDeviceLabelsMachineLSEs,
+	},
+	{
+		// This job is not meant to be run by the cron. This will
+		// be triggered by shivas at whatever time oncall deems
+		// appropriate. There is a potential for this to block
+		// other jobs as it updates ~500 rows every time. Only run
+		// during low-traffic non-critical times. The long wait time
+		// ensures that this will not be run under normal circumstances
+		// (unless we manage to not update/reboot UFS for 200 years)
+		Name:     "ufs.backfill.devicelabels_vm",
+		Time:     200 * 365 * 24 * time.Hour,
+		TrigType: cron.EVERY,
+		Job:      backfillDeviceLabelsVMs,
+	},
+	{
+		// This job is not meant to be run by the cron. This will
+		// be triggered by shivas at whatever time oncall deems
+		// appropriate. There is a potential for this to block
+		// other jobs as it updates ~500 rows every time. Only run
+		// during low-traffic non-critical times. The long wait time
+		// ensures that this will not be run under normal circumstances
+		// (unless we manage to not update/reboot UFS for 200 years)
+		Name:     "ufs.backfill.devicelabels_schedulingunit",
+		Time:     200 * 365 * 24 * time.Hour,
+		TrigType: cron.EVERY,
+		Job:      backfillDeviceLabelsSchedulingUnits,
+	},
 	// TODO(b/378926955): Enable dumper job automation when prod data ready
 	// {
 	// 	// Sync Nlyte device information

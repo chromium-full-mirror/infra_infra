@@ -268,18 +268,18 @@ func TestGetMachineLSELabels(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	ctx = external.WithTestingContext(ctx)
-	ftt.Run("getMachineLSELabels", t, func(t *ftt.Test) {
-		t.Run("getMachineLSELabels - no/other lse", func(t *ftt.Test) {
+	ftt.Run("GetMachineLSELabels", t, func(t *ftt.Test) {
+		t.Run("GetMachineLSELabels - no/other lse", func(t *ftt.Test) {
 			lse1 := &ufspb.MachineLSE{
 				Name:     "machinelse-1",
 				Machines: []string{"machine-1"},
 				Lse:      nil,
 			}
-			resp, err := getMachineLSELabels(ctx, lse1)
+			resp, err := GetMachineLSELabels(ctx, lse1)
 			assert.Loosely(t, resp, should.BeNil)
 			assert.Loosely(t, err, should.BeNil)
 		})
-		t.Run("getMachineLSELabels - browser lse", func(t *ftt.Test) {
+		t.Run("GetMachineLSELabels - browser lse", func(t *ftt.Test) {
 			lse1 := &ufspb.MachineLSE{
 				Name:     "machinelse-2",
 				Machines: []string{"machine-2"},
@@ -292,7 +292,7 @@ func TestGetMachineLSELabels(t *testing.T) {
 			lseResp, err := inventory.CreateMachineLSE(ctx, lse1)
 			assert.Loosely(t, err, should.BeNil)
 
-			resp, err := getMachineLSELabels(ctx, lseResp)
+			resp, err := GetMachineLSELabels(ctx, lseResp)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp.GetName(), should.Equal(util.AddPrefix(util.MachineLSECollection, lse1.GetName())))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_BROWSER_DEVICE))
@@ -309,7 +309,7 @@ func TestGetMachineLSELabels(t *testing.T) {
 			assert.Loosely(t, labels["dut_state"].GetLabelValues(), should.NotBeEmpty)
 			assert.Loosely(t, labels["dut_state"].GetLabelValues()[0], should.Equal(expectedState))
 		})
-		t.Run("getMachineLSELabels - attached device lse", func(t *ftt.Test) {
+		t.Run("GetMachineLSELabels - attached device lse", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name:         "machine-3",
 				SerialNumber: "machine-3-serial",
@@ -331,14 +331,14 @@ func TestGetMachineLSELabels(t *testing.T) {
 			lseResp, err := inventory.CreateMachineLSE(ctx, lse1)
 			assert.Loosely(t, err, should.BeNil)
 
-			resp, err := getMachineLSELabels(ctx, lseResp)
+			resp, err := GetMachineLSELabels(ctx, lseResp)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp.GetName(), should.Equal(util.AddPrefix(util.MachineLSECollection, lse1.GetName())))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_ATTACHED_DEVICE))
 			labels := resp.GetLabels()
 			assert.Loosely(t, labels, should.NotBeEmpty)
 		})
-		t.Run("getMachineLSELabels - chromeos lse", func(t *ftt.Test) {
+		t.Run("GetMachineLSELabels - chromeos lse", func(t *ftt.Test) {
 			machine1 := &ufspb.Machine{
 				Name:         "machine-4",
 				SerialNumber: "machine-4-serial",
@@ -374,7 +374,7 @@ func TestGetMachineLSELabels(t *testing.T) {
 			lseResp, err := inventory.CreateMachineLSE(ctx, lse1)
 			assert.Loosely(t, err, should.BeNil)
 
-			resp, err := getMachineLSELabels(ctx, lseResp)
+			resp, err := GetMachineLSELabels(ctx, lseResp)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp.GetName(), should.Equal(util.AddPrefix(util.MachineLSECollection, lse1.GetName())))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_CHROMEOS_DEVICE))
