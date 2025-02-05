@@ -1552,7 +1552,7 @@ Returns:
 
 This recipe builds and packages third party software, such as Git.
 
-&mdash; **def [RunSteps](/recipes/recipes/3pp.py#139)(api, package_locations, to_build, platform, force_build, package_prefix, source_cache_prefix, use_pkgbuild, use_source_lock, update_source_only, update_platforms, change_gerrit_host, change_tag, change_trigger_commit):**
+&mdash; **def [RunSteps](/recipes/recipes/3pp.py#141)(api, package_locations, to_build, platform, force_build, package_prefix, source_cache_prefix, use_pkgbuild, use_source_lock, update_source_only, update_platforms, change_gerrit_host, change_tag, change_trigger_commit):**
 ### *recipes* / [build\_from\_tarball](/recipes/recipes/build_from_tarball.py)
 
 [DEPS](/recipes/recipes/build_from_tarball.py#9): [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/step][recipe_engine/recipe_modules/step]

@@ -90,7 +90,9 @@ PROPERTIES = {
             kind=bool,
             default=False,
             help=(
-                'Uses pkgbuild for building the packages given in to_build.')),
+                'Uses pkgbuild for building the packages given in to_build. '
+                'This can also be toggled on with the git footer: '
+                '`3pp-Migration: use_pkgbuild`')),
     'use_source_lock':
         Property(
             kind=bool,
@@ -178,6 +180,11 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
 
     api.support_3pp.set_package_prefix(package_prefix)
     api.support_3pp.set_source_cache_prefix(source_cache_prefix)
+
+    if not use_pkgbuild and api.tryserver.gerrit_change:
+      # Check the CL footers, if any
+      if 'use_pkgbuild' in api.tryserver.get_footer('3pp-Migration'):
+        use_pkgbuild = True
 
     if use_pkgbuild:
       spec_pools = []
@@ -313,6 +320,18 @@ def GenTests(api):
              'build packages (pkgbuild)',
              api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS))) +
          api.buildbucket.ci_build(experiments=['security.snoopy']))
+
+  yield api.test(
+      'pkgbuild-via-commit-queue',
+      defaults(),
+      api.buildbucket.try_build('infra'),
+      api.tryserver.get_footers({
+        '3pp-Migration': ['extra', 'use_pkgbuild'],
+      }),
+      api.step_data(
+          'build packages (pkgbuild)',
+          api.step.sub_build(build_pb2.Build(status=common_pb2.SUCCESS))),
+  )
 
   yield (api.test('pkgbuild-tryjob') + defaults() +
          api.buildbucket.try_build('infra') +

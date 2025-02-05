@@ -70,7 +70,7 @@
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@[@@@",
       "@@@STEP_LOG_LINE@json.output@  {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"branch\": \"refs/branch-heads/foo\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"branch\": \"main\",@@@",
       "@@@STEP_LOG_LINE@json.output@    \"owner\": {@@@",
       "@@@STEP_LOG_LINE@json.output@      \"name\": \"John Doe\"@@@",
       "@@@STEP_LOG_LINE@json.output@    },@@@",
@@ -207,13 +207,18 @@
     "name": "parse description",
     "stdin": "Change commit message",
     "~followup_annotations": [
-      "@@@STEP_LOG_LINE@json.output@{}@@@",
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"3pp-Migration\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"extra\",@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"use_pkgbuild\"@@@",
+      "@@@STEP_LOG_LINE@json.output@  ]@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
       "@@@STEP_LOG_END@json.output@@@"
     ]
   },
   {
     "cmd": [],
-    "name": "load packages from desired repos"
+    "name": "checkout repos containing package specs"
   },
   {
     "cmd": [
@@ -240,7 +245,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "load packages from desired repos.git setup",
+    "name": "checkout repos containing package specs.git setup",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -271,7 +276,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "load packages from desired repos.git fetch",
+    "name": "checkout repos containing package specs.git fetch",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -300,7 +305,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "load packages from desired repos.git checkout",
+    "name": "checkout repos containing package specs.git checkout",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -328,7 +333,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "load packages from desired repos.read revision",
+    "name": "checkout repos containing package specs.read revision",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_TEXT@<br/>checked out 'deadbeef'<br/>@@@"
@@ -359,43 +364,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "load packages from desired repos.git clean",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "git",
-      "-C",
-      "[CACHE]/builder/0f38554a22313466508b9c8b803b851e8834a1e7/support_3pp",
-      "ls-files",
-      "**/3pp.pb"
-    ],
-    "env": {
-      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
-    },
-    "luci_context": {
-      "realm": {
-        "name": "infra:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "load packages from desired repos.find package specs",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_END@glob_from_git@@@"
-    ]
-  },
-  {
-    "cmd": [],
-    "name": "load packages from desired repos.load package specs",
+    "name": "checkout repos containing package specs.git clean",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -407,7 +376,9 @@
       "core.quotePath=false",
       "diff",
       "--name-only",
-      "HEAD~"
+      "HEAD~",
+      "--",
+      "go/src/infra/tools/pkgbuild"
     ],
     "cwd": "[CACHE]/builder/0f38554a22313466508b9c8b803b851e8834a1e7",
     "env": {
@@ -426,7 +397,7 @@
         "hostname": "rdbhost"
       }
     },
-    "name": "load packages from desired repos.git diff to find changed files",
+    "name": "checkout repos containing package specs.git diff to find changed files",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@"
     ]
@@ -498,15 +469,99 @@
     ]
   },
   {
-    "cmd": [],
-    "name": "compute affected packages",
+    "cmd": [
+      "cipd",
+      "ensure",
+      "-root",
+      "[CLEANUP]/pkgbuild",
+      "-ensure-file",
+      "infra/tools/luci/pkgbuild/linux-amd64 latest",
+      "-max-threads",
+      "0",
+      "-json-output",
+      "/path/to/tmp/json"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1"
+    },
+    "infra_step": true,
+    "luci_context": {
+      "realm": {
+        "name": "infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "ensure_installed",
     "~followup_annotations": [
-      "@@@STEP_TEXT@all packages@@@"
+      "@@@STEP_LOG_LINE@json.output@{@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
+      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@      {@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-latest----------\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/tools/luci/pkgbuild/linux-amd64\"@@@",
+      "@@@STEP_LOG_LINE@json.output@      }@@@",
+      "@@@STEP_LOG_LINE@json.output@    ]@@@",
+      "@@@STEP_LOG_LINE@json.output@  }@@@",
+      "@@@STEP_LOG_LINE@json.output@}@@@",
+      "@@@STEP_LOG_END@json.output@@@"
     ]
   },
   {
-    "cmd": [],
-    "name": "compute build plan"
+    "cmd": [
+      "[CLEANUP]/pkgbuild/edge",
+      "--output",
+      "[CLEANUP]/tmp_tmp_2/sub_build.pb",
+      "--",
+      "-logging-level",
+      "info",
+      "-cipd-package-prefix",
+      "hello_world",
+      "-storage-dir",
+      "[CACHE]/pkgbuild",
+      "-target-platform",
+      "linux-amd64",
+      "-update=True",
+      "-build=True",
+      "-upload=False",
+      "-update-source-lock=False",
+      "-spec-pool",
+      "[CACHE]/builder/0f38554a22313466508b9c8b803b851e8834a1e7/support_3pp"
+    ],
+    "env": {
+      "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",
+      "MAC_CHROMIUM_TMPDIR": "[CLEANUP]/tmp_tmp_3",
+      "PKGBUILD_ENABLE_LUCIEXE": "1",
+      "TEMP": "[CLEANUP]/tmp_tmp_3",
+      "TEMPDIR": "[CLEANUP]/tmp_tmp_3",
+      "TMP": "[CLEANUP]/tmp_tmp_3",
+      "TMPDIR": "[CLEANUP]/tmp_tmp_3"
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "build packages (pkgbuild)",
+    "stdin": "\b\ufffd\ufffd\u066e\ufffd|\u0012\u0015\n\u0005infra\u0012\u0003try\u001a\u0007builder\"\rproject:infra2\u0006\b\ufffd\u00af\ufffd\u0005:\u0006\b\ufffd\u00af\ufffd\u0005`\u0002z1\u001a/\n chromium-review.googlesource.com\u0012\u0005infra\u0018\ufffd\ufffd\u0007 \u0007\ufffd\u0001-\u0012\u0002 \u001e*'\u0012%invocations/build:8945511751514863184\ufffd\u0001\u0018\n\u000fcq_experimental\u0012\u0005false",
+    "~followup_annotations": [
+      "@@@STEP_LOG_LINE@step.sub_build@{@@@",
+      "@@@STEP_LOG_LINE@step.sub_build@  \"status\": \"SUCCESS\"@@@",
+      "@@@STEP_LOG_LINE@step.sub_build@}@@@",
+      "@@@STEP_LOG_END@step.sub_build@@@"
+    ]
   },
   {
     "name": "$result"
