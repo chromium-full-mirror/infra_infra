@@ -222,7 +222,8 @@ func TestSystemProbe(t *testing.T) {
 			setPATH(selfDir, otherDir, nonexistDir)
 
 			_, err := probe.Locate(c, "", env)
-			assert.Loosely(t, err, should.ErrLike("could not find target in system"))
+			assert.Loosely(t, err, should.ErrLike("could not find target"))
+			assert.Loosely(t, err, should.ErrLike("in PATH"))
 			assert.Loosely(t, wrapperChecks, should.BeZero)
 		})
 

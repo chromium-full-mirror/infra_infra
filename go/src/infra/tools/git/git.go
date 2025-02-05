@@ -197,8 +197,7 @@ func (gc *GitCommand) removeCloneDirBetweenRetries(cloneDir string) betweenRetry
 		if st, err := os.Stat(cloneDir); err == nil && st.IsDir() {
 			logging.Infof(c, "Cleaning up `clone` target directory for retry: %s", cloneDir)
 			if err := filesystem.RemoveAll(cloneDir); err != nil {
-				return errors.Annotate(err, "failed to remove 'clone' directory in between retries").
-					InternalReason("cloneDir(%s)", cloneDir).Err()
+				return errors.Annotate(err, "failed to remove 'clone' directory in between retries: %q", cloneDir).Err()
 			}
 		}
 		return nil

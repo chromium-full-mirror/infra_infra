@@ -161,8 +161,7 @@ func (p *SystemProbe) Locate(c context.Context, cached string, env environ.Env) 
 		}
 	}
 
-	return "", errors.Reason("could not find target in system").
-		InternalReason("target(%s)/PATH(%s)", p.Target, origPATH).Err()
+	return "", errors.Reason("could not find target(%q) in PATH(%q)", p.Target, origPATH).Err()
 }
 
 // checkDir checks "checkDir" for our Target executable. It ignores
