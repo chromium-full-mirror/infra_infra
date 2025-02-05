@@ -276,17 +276,17 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName, parentAction
 	conditionName, err := r.runActionConditions(ctx, actionName, actionLevel+1)
 	if err != nil {
 		log.Infof(ctx, "Action %q: skipping, one of conditions %q failed.", actionName, conditionName)
+		log.Debugf(ctx, "Action %q: condition %q fail with %s", actionName, conditionName, err)
 		if step != nil {
 			stepLog := step.Log("Skipped")
-			if _, err := io.WriteString(stepLog, fmt.Sprintf("The condition %q failed!", conditionName)); err != nil {
+			if _, err := io.WriteString(stepLog, fmt.Sprintf("The condition %q is not met!", conditionName)); err != nil {
 				log.Debugf(ctx, "Fail to write reason why action skipped: %v.", err)
 			}
 		}
-		log.Debugf(ctx, "Action %q: conditions fail with %s", actionName, err)
 		if metric != nil {
 			metric.Status = metrics.ActionStatusSkip
 		}
-		stepSummaryMarkdown = fmt.Sprintf("Skipped: due condition %q", conditionName)
+		stepSummaryMarkdown = fmt.Sprintf("Condition %q is not met", conditionName)
 		// Return nil error so we can continue execution of next actions...
 		return metric, actionSkip, nil
 	}
