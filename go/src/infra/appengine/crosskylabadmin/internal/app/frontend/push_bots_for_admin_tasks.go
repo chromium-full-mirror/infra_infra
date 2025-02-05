@@ -98,22 +98,25 @@ func (p *adminTaskBotPusher) getDUTsWithRecentLabstationReboots(ctx context.Cont
 }
 
 // repairRecentDuts repairs DUTs whose labstations have rebooted in the given time range.
-func (p *adminTaskBotPusher) repairDUTsWithRecentLabstationReboots(ctx context.Context, startTime time.Time, stopTime time.Time) (map[string]bool, error) {
+func (p *adminTaskBotPusher) repairDUTsWithRecentLabstationReboots(ctx context.Context, startTime time.Time, stopTime time.Time, skipHostMap map[string]bool) error {
 	cfg := config.Get(ctx)
 	duts, err := p.getDUTsWithRecentLabstationReboots(ctx, startTime, stopTime)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	out := map[string]bool{}
+	var filteredDuts []string
 	for _, dut := range duts {
-		out[dut] = true
+		if skipHostMap[dut] {
+			continue
+		}
+		filteredDuts = append(filteredDuts, dut)
 	}
 	// TODO(gregorynisbet): Do we want to consider other states here besides repair failed?
-	err = clients.PushRepairDUTs(ctx, duts, "repair_failed", cfg.Swarming.BotPool)
+	err = clients.PushRepairDUTs(ctx, filteredDuts, "repair_failed", cfg.Swarming.BotPool)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return out, nil
+	return nil
 }
 
 // pushRepairDUTsForGivenPool pushes repair jobs for duts in a given pool.
@@ -122,19 +125,18 @@ func (p *adminTaskBotPusher) repairDUTsWithRecentLabstationReboots(ctx context.C
 // dutState     -- the DUT state (e.g. "ready", "needs-repair")
 // dims         -- a list of additional dimensions to map
 // holdouts     -- a list of bot names to exclude (NOT dut names). Holdouts is read-only, so this parameter may be nil.
-func (p *adminTaskBotPusher) pushRepairDUTsForGivenPool(ctx context.Context, swarmingPool string, dutState string, dims strpair.Map, holdouts map[string]bool) error {
+func (p *adminTaskBotPusher) pushRepairDUTsForGivenPool(ctx context.Context, swarmingPool string, dutState string, dims strpair.Map, skipHostMap map[string]bool) error {
 	if p.swarmingClient == nil {
 		return errors.New("swarmingClient cannot be nil in pushRepairDUTsForGivenPool")
 	}
 	var bots []*swarmingv2.BotInfo
 	rawBots, err := p.swarmingClient.ListAliveIdleBotsInPool(ctx, swarmingPool, dims)
 
-	cfg := config.Get(ctx)
-	botsNotSkipped := FilterBotBySkipHosts(cfg.GetParis().GetDutRepair().GetSkipHosts(), rawBots)
-	for _, bot := range botsNotSkipped {
-		if !holdouts[bot.BotId] {
-			bots = append(bots, bot)
+	for _, bot := range rawBots {
+		if skipHostMap[bot.BotId] {
+			continue
 		}
+		bots = append(bots, bot)
 	}
 	if err != nil {
 		return errors.Annotate(err, "failed to list alive idle bots with dut_state %q", dutState).Err()
@@ -169,14 +171,29 @@ func (p *adminTaskBotPusher) pushBotsForAdminTasksImpl(ctx context.Context, req 
 	dims := make(strpair.Map)
 	dims[clients.DutStateDimensionKey] = []string{dutState}
 
-	var holdouts map[string]bool
+	// Get skipped bots from the config
+	var skipHostList []string
+	switch req.TargetDutState {
+	case fleet.DutState_NeedsRepair:
+		skipHostList = cfg.GetParis().GetDutRepair().GetSkipHosts()
+	case fleet.DutState_NeedsManualRepair:
+		skipHostList = cfg.GetParis().GetDutRepairOnNeedsManualRepair().GetSkipHosts()
+	case fleet.DutState_RepairFailed:
+		skipHostList = cfg.GetParis().GetDutRepairOnRepairFailed().GetSkipHosts()
+	}
+
+	skipHostMap := make(map[string]bool, len(skipHostList))
+	for _, value := range skipHostList {
+		skipHostMap[value] = true
+	}
+
 	// When we sweep all the devices for "needs_repair" devices, then we additionally need to check for
 	// "repair_failed" devices associated with labstations that have recently rebooted.
 	// When a labstation reboots, this is basically a fresh opportunity for the DUT to be recovered.
 	if dutState == "needs_repair" {
 		var err error
 		// The cron job that runs smart scheduling runs every 2 minutes.
-		holdouts, err = p.repairDUTsWithRecentLabstationReboots(ctx, now.Add(-2*time.Minute), now.Add(1*time.Minute))
+		err = p.repairDUTsWithRecentLabstationReboots(ctx, now.Add(-2*time.Minute), now.Add(1*time.Minute), skipHostMap)
 		if err != nil {
 			return nil, err
 		}
@@ -184,7 +201,7 @@ func (p *adminTaskBotPusher) pushBotsForAdminTasksImpl(ctx context.Context, req 
 
 	// Loop through all the Swarming Pool configs and push duts for repair.
 	for _, pool := range cfg.GetSwarming().GetPoolCfgs() {
-		if err := p.pushRepairDUTsForGivenPool(ctx, pool.GetPoolName(), dutState, dims, holdouts); err != nil {
+		if err := p.pushRepairDUTsForGivenPool(ctx, pool.GetPoolName(), dutState, dims, skipHostMap); err != nil {
 			e := errors.Annotate(err, "Failed to push repair duts in pool %q", pool.GetPoolName()).Err()
 			logging.Infof(ctx, "Fail to pushed repair duts with dut_state %q in pool %q: %s", dutState, pool.GetPoolName(), e)
 			merr = append(merr, e)
