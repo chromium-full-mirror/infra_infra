@@ -280,11 +280,6 @@ func crosProvisionActionsFromUSBDriveInRecoveryModeExec(ctx context.Context, inf
 	crosInstall := am.AsBool(ctx, "run_cros_install", false)
 	var installCMD string
 	if androidInstall || crosInstall {
-		recoveryVerion, err := version.ByDut(ctx, dut)
-		if err != nil {
-			return errors.Annotate(err, "cros provision actions in recovery mode").Err()
-		}
-		log.Debugf(ctx, "Received vresoin: %v", recoveryVerion)
 		var cachingIPAddr string
 		if addr, err := cft.CacheServiceAddressFromScope(ctx); err != nil {
 			return errors.Annotate(err, "cros provision actions in recovery mode").Err()
@@ -293,12 +288,22 @@ func crosProvisionActionsFromUSBDriveInRecoveryModeExec(ctx context.Context, inf
 		} else {
 			return errors.Reason("cros provision actions in recovery mode: cache address not found").Err()
 		}
+		versionType := version.CrOSType
 		if androidInstall {
-			osVersion := recoveryVerion.GetOsVersion()
+			versionType = version.AndroidOSType
+		}
+		log.Debugf(ctx, "Searching version type: %s", versionType)
+		recoveryVersion, err := version.ByResource(ctx, versionType, dut, dut.Name)
+		if err != nil {
+			return errors.Annotate(err, "cros provision actions in recovery mode").Err()
+		}
+		log.Debugf(ctx, "Received version: %v", recoveryVersion)
+		if androidInstall {
+			osVersion := recoveryVersion.GetOsVersion()
 			board := dut.GetBoard()
 			installCMD = fmt.Sprintf("al-install android-build/builds/%s/%s-trunk_staging-eng/attempts/latest/artifacts/android-desktop_image.bin.gz %s", osVersion, board, cachingIPAddr)
 		} else if crosInstall {
-			osImagePath := recoveryVerion.GetOsImagePath()
+			osImagePath := recoveryVersion.GetOsImagePath()
 			installCMD = fmt.Sprintf("cros-install chromeos-image-archive/%s %s", osImagePath, cachingIPAddr)
 		}
 	}
