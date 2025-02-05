@@ -33,10 +33,10 @@ import (
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/filesystem"
-	"go.chromium.org/luci/common/system/prober"
 
 	vpython "infra/tools/vpython/legacy/vpython2.7/luci"
 	vpythonAPI "infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"infra/tools/vpython/legacy/vpython2.7/luci/application/internal/prober"
 	"infra/tools/vpython/legacy/vpython2.7/luci/python"
 	"infra/tools/vpython/legacy/vpython2.7/luci/spec"
 	"infra/tools/vpython/legacy/vpython2.7/luci/venv"

@@ -25,8 +25,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/exitcode"
-	"go.chromium.org/luci/common/system/prober"
 
+	"infra/tools/vpython/legacy/vpython2.7/luci/application/internal/prober"
 	"infra/tools/vpython/legacy/vpython2.7/luci/python"
 )
 
