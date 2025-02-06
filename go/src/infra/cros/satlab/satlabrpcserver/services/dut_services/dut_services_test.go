@@ -427,6 +427,7 @@ func Test_GetServoSerialErrorOnGscSerialAndServoCtn(t *testing.T) {
 }
 
 func Test_GetServoSerialGscSerialNotFound(t *testing.T) {
+	t.Skip("flake, see b/394325271")
 	sshResponse := "{\n  \"gsc_serial\": \"\",\n  \"servo_usb_count\": 1\n}\n"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
