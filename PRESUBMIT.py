@@ -180,7 +180,6 @@ def GoCheckers(input_api, output_api):
             # from the directory you're trying to lint.
             cmd=[
                 'golangci-lint', 'run', '--timeout=5m',
-                '--disable=staticcheck', # b/394363508
                 '--allow-parallel-runners', *since, '.'
             ],
             kwargs={'cwd': absolute}))
