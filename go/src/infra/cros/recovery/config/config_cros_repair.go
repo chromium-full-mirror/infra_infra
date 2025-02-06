@@ -25,7 +25,8 @@ func mhRepairPlan() *Plan {
 			"Mark as Android based",
 			"Has repair-request for re-image USB-key",
 			"Has repair-request for reflash-firmware",
-			"Device is pingable",
+			"Android: Has repair-request for re-image by USB-key",
+			"MH:Device is pingable",
 			"ADB Connect DUT",
 			"Android is accessable",
 			"ADB set Android as always awake",
@@ -137,7 +138,7 @@ func crosRepairActions() map[string]*Action {
 				"Mark DUT as Android, based on ADB responses.",
 			},
 			Conditions: []string{
-				"Is not cloudbot",
+				"Execution not on CloudBot",
 				// Always reset first.
 				"Mark as Chrome based OS",
 				"DUT is not SSHable (simple)",
@@ -219,6 +220,7 @@ func crosRepairActions() map[string]*Action {
 				"Power cycle DUT by RPM and wait for ping",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
 				"Restore AC detection by EC console and wait for ping",
+				"Install Android OS by booting from servo USB-drive",
 				"Install OS in recovery mode by booting from servo USB-drive (no storage check)",
 				"Update FW from fw-image by servo and wait for boot",
 				"Update fingerpprint FW from USB drive",
@@ -227,6 +229,31 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in DEV mode by USB-drive",
 				"Reset power using servo if booted from USB",
 				"Battery cut-off by servo and wait for SSH",
+				"Check if request labstation reboot",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{
+				// Always upload so we can track recovery.
+				UploadPolicy: MetricsConfig_DEFAULT_UPLOAD_POLICY,
+			},
+		},
+		"MH:Device is pingable": {
+			Docs: []string{
+				"Verify that device is pingable.",
+				"Limited to 15 seconds.",
+				"Only for Mobile Harness box execution.",
+			},
+			Dependencies: []string{
+				"Execution on Mobile Harness box",
+			},
+			ExecName: "cros_ping",
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 15,
+			},
+			RecoveryActions: []string{
+				"Cold reset by servo and wait for ping",
+				"Reset servo_v4.1 ethernet and wait for ping",
+				"Install Android OS by booting from servo USB-drive",
 				"Check if request labstation reboot",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
@@ -363,6 +390,7 @@ func crosRepairActions() map[string]*Action {
 				"The request will be applied when plan restarted and reached action to address it.",
 			},
 			Conditions: []string{
+				"Execution not on Mobile Harness box",
 				"Is Android based",
 				"Is a Chromebook",
 				"Recovery version has OS image path",
@@ -554,6 +582,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				// Android actions.
 				"Provision Android OS",
+				"Install Android OS by booting from servo USB-drive",
 				"Force reimage to ChromeOS in DEV mode",
 				// Legacy actions.
 				"Quick provision OS",
@@ -573,6 +602,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			RecoveryActions: []string{
 				"Provision Android OS",
+				"Install Android OS by booting from servo USB-drive",
 			},
 		},
 		"Has repair-request for re-image USB-key": {
@@ -601,6 +631,18 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in recovery mode by booting from servo USB-drive (with FW update)",
 				"Install OS in recovery mode by booting from servo USB-drive (Flex with AMT)",
 				"Install OS in DEV mode, with force to DEV-mode",
+			},
+		},
+		"Android: Has repair-request for re-image by USB-key": {
+			Docs: []string{
+				"Check if REIMAGE_BY_USBKEY repair-request is present.",
+			},
+			ExecName: "dut_has_any_repair_requests",
+			ExecExtraArgs: []string{
+				"requests:REIMAGE_BY_USBKEY",
+			},
+			RecoveryActions: []string{
+				"Install Android OS by booting from servo USB-drive",
 			},
 		},
 		"Has repair-request for reflash-firmware": {
@@ -2027,6 +2069,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Switch to secure-mode and reboot",
 				"Provision Android OS",
+				"Install Android OS by booting from servo USB-drive",
 				"Quick provision OS",
 			},
 		},
@@ -2042,6 +2085,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Switch to secure-mode and reboot",
 				"Provision Android OS",
+				"Install Android OS by booting from servo USB-drive",
 				"Quick provision OS",
 			},
 		},
@@ -2467,6 +2511,17 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:    "servo_download_image_to_usb",
 			ExecTimeout: &durationpb.Duration{Seconds: 3000},
+			RunControl:  RunControl_ALWAYS_RUN,
+		},
+		"Call servod to download provision image to USB-key": {
+			Docs: []string{
+				"This action calls servod to download provision image custom kernel to servo USB-key.",
+			},
+			ExecName: "servo_download_provision_image_to_usb",
+			ExecExtraArgs: []string{
+				"os_image_path:v4",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 600},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"Is servo USB key detected": {

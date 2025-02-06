@@ -6863,11 +6863,148 @@ plans:
                     - requests:REFLASH_FW
                   docs:
                     - Remove REFLASH_FW repair-requests.
-        - name: Device is pingable (ALWAYS_RUN) (time:'15s')
+        - name: 'Android: Has repair-request for re-image by USB-key'
+          exec_name: dut_has_any_repair_requests
+          exec_args:
+            - requests:REIMAGE_BY_USBKEY
+          docs:
+            - Check if REIMAGE_BY_USBKEY repair-request is present.
+          recoveries:
+            - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
+              exec_name: sample_pass
+              docs:
+                - Use provision image on USB-key to boot and get SSH access.
+                - Run specific install command to install Android OS.
+                - The logic is copy from foil-provision
+              conditions:
+                - name: Execution on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_mh_box
+                  docs:
+                    - Check that the process is running on Mobile Harness box.
+                - name: Is a Chromebook (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Is servod running (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Verify that servo host specified in setup and servod is running.
+                  dependencies:
+                    - name: Setup has servo info
+                      exec_name: dut_servo_host_present
+                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                      exec_name: servod_echo
+                      exec_args:
+                        - ssh_check:false
+                      conditions:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                  exec_name: cros_is_previous_android_based_or_os_type
+                  docs:
+                    - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                - name: Is servo USB key detected
+                  exec_name: servo_usbkey_is_detected
+                  exec_args:
+                    - file_check:true
+                  docs:
+                    - The action used as codiion.
+                    - The action verify that USB-key is detected and readable.
+                  dependencies:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+              dependencies:
+                - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                  exec_name: cros_set_as_android_based
+                  docs:
+                    - Mark DUT as Android based.
+                - name: Set CacheService address
+                  exec_name: cache_service_address_detection
+                  exec_args:
+                    - cache_address:10.128.176.210:8082
+                  docs:
+                    - MH box does not have labservice, so we hard-code caceh addrress.
+                    - Remove when prototype developing finished
+                - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                  exec_name: servo_download_provision_image_to_usb
+                  exec_args:
+                    - os_image_path:v4
+                  docs:
+                    - This action calls servod to download provision image custom kernel to servo USB-key.
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                  exec_name: cros_provision_actions_from_recovery_mode
+                  exec_args:
+                    - run_android_install:true
+                    - run_cros_install:false
+                    - boot_timeout:150
+                    - boot_interval:10
+                    - boot_retry:1
+                    - ignore_reboot_failure:true
+                    - after_reboot_check:true
+                    - after_reboot_timeout:150
+                    - after_reboot_allow_use_servo_reset:true
+                  docs:
+                    - 'This action installs the test image on DUT utilizing '
+                    - 'the features of servo. DUT will be booted in recovery '
+                    - 'mode. In some cases RO FW is not allowed to boot in '
+                    - 'recovery mode with active PD, so we will change it to '
+                    - sink-mode if required.
+                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Try to wait device to be sshable after the device being rebooted.
+                    - Waiting time 150 seconds.
+                - name: ADB reconnect (ALWAYS_RUN)
+                  exec_name: ctr_adb_connect
+                  exec_args:
+                    - retry_count:3
+                    - retry_interval:3
+                    - timeout:5
+                  docs:
+                    - Connect to DUT by ADB if not connected.
+                    - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: ADB set Android as always awake (ALWAYS_RUN)
+                  exec_name: ctr_make_awake_always
+                  docs:
+                    - Set Android to be awake always.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
+                  docs:
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
+        - name: MH:Device is pingable (ALWAYS_RUN) (time:'15s')
           exec_name: cros_ping
           docs:
-            - Verify that device is reachable by ping.
+            - Verify that device is pingable.
             - Limited to 15 seconds.
+            - Only for Mobile Harness box execution.
+          dependencies:
+            - name: Execution on Mobile Harness box (RUN_ONCE)
+              exec_name: env_is_mh_box
+              docs:
+                - Check that the process is running on Mobile Harness box.
           recoveries:
             - name: Cold reset by servo and wait for ping (ALWAYS_RUN)
               exec_name: sample_pass
@@ -6911,108 +7048,6 @@ plans:
                           conditions:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ping
-                  docs:
-                    - Wait DUT to be pingable after some action on it.
-                    - Waiting time 150 seconds.
-            - name: Pulse GSC_RST_L with servo and wait for ping (ALWAYS_RUN)
-              exec_name: sample_pass
-              docs:
-                - This repair action call `gsc_reset:on sleep:1 gsc_reset:off` by servo.
-                - The action works with servo_micro/c2d2 if gsc_reset present.
-              conditions:
-                - name: Is servod running (ALWAYS_RUN)
-                  exec_name: sample_pass
-                  docs:
-                    - Verify that servo host specified in setup and servod is running.
-                  dependencies:
-                    - name: Setup has servo info
-                      exec_name: dut_servo_host_present
-                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                      exec_name: servod_echo
-                      exec_args:
-                        - ssh_check:false
-                      conditions:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                - name: servo_has_debug_header
-                  exec_name: servo_has_debug_header
-                - name: Servo is not C2D2
-                  exec_name: is_servo_c2d2
-                  exec_args:
-                    - reverse:true
-                  docs:
-                    - Checks if the servo has C2D2. This configuration doesn't support gsc_reset. b/319465194
-                - name: Has gsc_reset control
-                  exec_name: servod_has
-                  exec_args:
-                    - command:gsc_reset
-                  docs:
-                    - Read and print gsc_reset control value to logs.
-              dependencies:
-                - name: Assert GSC_RST_L by servo (ALWAYS_RUN)
-                  exec_name: servo_set
-                  exec_args:
-                    - command:gsc_reset
-                    - string_value:on
-                    - timeout:10
-                  docs:
-                    - Assert GSC_RST_L by servo and do not wait.
-                  dependencies:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                    - name: Has gsc_reset control
-                      exec_name: servod_has
-                      exec_args:
-                        - command:gsc_reset
-                      docs:
-                        - Read and print gsc_reset control value to logs.
-                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
-                  exec_name: sample_sleep
-                  exec_args:
-                    - sleep:1
-                - name: Deassert GSC_RST_L by servo (ALWAYS_RUN)
-                  exec_name: servo_set
-                  exec_args:
-                    - command:gsc_reset
-                    - string_value:off
-                    - timeout:10
-                  docs:
-                    - Release GSC from reset.
-                  dependencies:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                    - name: Has gsc_reset control
-                      exec_name: servod_has
-                      exec_args:
-                        - command:gsc_reset
-                      docs:
-                        - Read and print gsc_reset control value to logs.
                 - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                   exec_name: cros_ping
                   docs:
@@ -7066,64 +7101,17 @@ plans:
                   docs:
                     - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
-            - name: Power cycle DUT by RPM and wait for ping (ALWAYS_RUN)
+            - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
-                - Perform RPM cycle and wait to device to boot back.
+                - Use provision image on USB-key to boot and get SSH access.
+                - Run specific install command to install Android OS.
+                - The logic is copy from foil-provision
               conditions:
-                - name: RPM config present
-                  exec_name: device_has_rpm_info
-                  exec_args:
-                    - device_type:dut
+                - name: Execution on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_mh_box
                   docs:
-                    - Verifies that the RPM configuration provides some data for the hostname and outlet.
-                    - This action does not verify the correctness of the data.
-              dependencies:
-                - name: rpm_power_cycle
-                  exec_name: rpm_power_cycle
-                - name: Set servo PD to src (Allow to fail) (ALWAYS_RUN)
-                  exec_name: servo_set
-                  exec_args:
-                    - command:servo_pd_role
-                    - string_value:src
-                  docs:
-                    - Set servo PD to src to power the DUT.
-                    - If servo is type-c it can switch PD to snk.
-                - name: Try cold reset DUT by servo (Allow to fail) (ALWAYS_RUN)
-                  exec_name: servo_power_state_reset
-                  exec_args:
-                    - timeout:30
-                    - wait_timeout:1
-                    - more_logs:true
-                  docs:
-                    - Try to cold-reset DUT by servo and do not wait.
-                    - The action may fail if the servo is missing or unresponsive.
-                  dependencies:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ping
-                  docs:
-                    - Wait DUT to be pingable after some action on it.
-                    - Waiting time 150 seconds.
-            - name: Trigger kernel panic to reset the whole board and try ssh to DUT
-              exec_name: sample_pass
-              docs:
-                - This repair action repairs a Chrome device by sending a system request to the kernel.
-                - 'TODO: (blocked by: b/221083688) Collect logs from a successfully repaired DUT.'
-              conditions:
+                    - Check that the process is running on Mobile Harness box.
                 - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -7145,187 +7133,10 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-              dependencies:
-                - name: Trigger kernel panic by servod
-                  exec_name: servo_trigger_kernel_panic
-                  exec_args:
-                    - count:3
-                    - retry_interval:2
+                - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                  exec_name: cros_is_previous_android_based_or_os_type
                   docs:
-                    - This repair action repairs a Chrome device by sending a system request to the kernel.
-                  conditions:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                  dependencies:
-                    - name: Setup has servo info
-                      exec_name: dut_servo_host_present
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Try to wait device to be sshable after the device being rebooted.
-                    - Waiting time 150 seconds.
-            - name: Restore AC detection by EC console and wait for ping
-              exec_name: sample_pass
-              docs:
-                - Try to recover AC detection through servod's ec control.
-                - This action wraps the recovery action and waits for the device to come back online.
-              conditions:
-                - name: Is a Chromebook (RUN_ONCE)
-                  exec_name: dut_check_board
-                  exec_args:
-                    - string_values:aurora,reven
-                    - invert_result:true
-                  docs:
-                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                - name: Is servod running (ALWAYS_RUN)
-                  exec_name: sample_pass
-                  docs:
-                    - Verify that servo host specified in setup and servod is running.
-                  dependencies:
-                    - name: Setup has servo info
-                      exec_name: dut_servo_host_present
-                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                      exec_name: servod_echo
-                      exec_args:
-                        - ssh_check:false
-                      conditions:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                - name: DUT has CrOS EC
-                  exec_name: servo_check_servod_control
-                  exec_args:
-                    - command:supports_cros_ec_communication
-                    - expected_string_value:yes
-                  docs:
-                    - Verify if DUT has ChromeOS firmware for EC
-                  dependencies:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                - name: cros_is_battery_expected
-                  exec_name: cros_is_battery_expected
-              dependencies:
-                - name: Servo recover AC power (time:'10m0s')
-                  exec_name: servo_recover_ac_power
-                  exec_args:
-                    - wait_timeout:120
-                  docs:
-                    - Try to recover AC detection through servod's ec control.
-                    - The DUT may take time to become pingable again,
-                    - so we use a wrapper action to wait.
-                  conditions:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                    - name: Is a Chromebook (RUN_ONCE)
-                      exec_name: dut_check_board
-                      exec_args:
-                        - string_values:aurora,reven
-                        - invert_result:true
-                      docs:
-                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                  dependencies:
-                    - name: DUT has CrOS EC
-                      exec_name: servo_check_servod_control
-                      exec_args:
-                        - command:supports_cros_ec_communication
-                        - expected_string_value:yes
-                      docs:
-                        - Verify if DUT has ChromeOS firmware for EC
-                      dependencies:
-                        - name: Is servod running (ALWAYS_RUN)
-                          exec_name: sample_pass
-                          docs:
-                            - Verify that servo host specified in setup and servod is running.
-                          dependencies:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                              exec_name: servod_echo
-                              exec_args:
-                                - ssh_check:false
-                              conditions:
-                                - name: Setup has servo info
-                                  exec_name: dut_servo_host_present
-                    - name: cros_is_battery_expected
-                      exec_name: cros_is_battery_expected
-                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ping
-                  docs:
-                    - Wait DUT to be pingable after some action on it.
-                    - Waiting time 150 seconds.
-            - name: Install OS in recovery mode by booting from servo USB-drive (no storage check) (ALWAYS_RUN)
-              exec_name: sample_pass
-              docs:
-                - This action installs the test image on DUT utilizing the features of servo.
-                - DUT will be booted in recovery mode.
-              conditions:
-                - name: Is Chrome based (ALWAYS_RUN)
-                  exec_name: cros_is_chrome_based
-                - name: Recovery version has OS image path
-                  exec_name: has_stable_version_cros_image
-                  docs:
-                    - Verify that recovery version has OS image path.
-                  dependencies:
-                    - name: Has a stable-version service (RUN_ONCE)
-                      exec_name: has_stable_version_service_path
-                      docs:
-                        - Verify if we have access to the service provided access to the stable version
-                - name: Is servod running (ALWAYS_RUN)
-                  exec_name: sample_pass
-                  docs:
-                    - Verify that servo host specified in setup and servod is running.
-                  dependencies:
-                    - name: Setup has servo info
-                      exec_name: dut_servo_host_present
-                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                      exec_name: servod_echo
-                      exec_args:
-                        - ssh_check:false
-                      conditions:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                - name: Is a Chromebook (RUN_ONCE)
-                  exec_name: dut_check_board
-                  exec_args:
-                    - string_values:aurora,reven
-                    - invert_result:true
-                  docs:
-                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                    - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
                 - name: Is servo USB key detected
                   exec_name: servo_usbkey_is_detected
                   exec_args:
@@ -7349,151 +7160,32 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
               dependencies:
-                - name: Servo USB-Key needs to be reflashed
-                  exec_name: sample_pass
+                - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                  exec_name: cros_set_as_android_based
                   docs:
-                    - Check if it is time to download image to servo usbkey.
-                    - If so, then download the stable image to usbkey.
-                  conditions:
-                    - name: It is time to update USB-drive image
-                      exec_name: cros_is_time_to_force_download_image_to_usbkey
-                      exec_args:
-                        - task_name:recovery
-                        - repair_failed_count:1
-                        - repair_failed_interval:10
-                      docs:
-                        - Check if it is time to force download image to usbkey
-                        - from the number of failed recoveries since last successful PARIS repair task.
-                  dependencies:
-                    - name: Download stable image to USB-key (Allow to fail) (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Download lab stable image on servo USB-key
-                        - Download the image can take longer if labstation download parallel a few images.
-                        - This step is allowed to complete successfully even if some
-                        - ' errors happen during download because the image can already'
-                        - ' be present on the USB-drive.'
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Is servo USB key detected
-                          exec_name: servo_usbkey_is_detected
-                          exec_args:
-                            - file_check:true
-                          docs:
-                            - The action used as codiion.
-                            - The action verify that USB-key is detected and readable.
-                          dependencies:
-                            - name: Is servod running (ALWAYS_RUN)
-                              exec_name: sample_pass
-                              docs:
-                                - Verify that servo host specified in setup and servod is running.
-                              dependencies:
-                                - name: Setup has servo info
-                                  exec_name: dut_servo_host_present
-                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                                  exec_name: servod_echo
-                                  exec_args:
-                                    - ssh_check:false
-                                  conditions:
-                                    - name: Setup has servo info
-                                      exec_name: dut_servo_host_present
-                        - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
-                          exec_name: servo_download_image_to_usb
-                          docs:
-                            - This action calls servod to download stable version OS image to servo USB-key.
-                        - name: Remove UPDATE_USBKEY_IMAGE repair-request (ALWAYS_RUN)
-                          exec_name: dut_remove_repair_requests
-                          exec_args:
-                            - requests:UPDATE_USBKEY_IMAGE
-                          docs:
-                            - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) (RUN_ONCE)
-                  exec_name: sample_pass
-                  docs:
-                    - This action will download model specific stable version OS image to servo usbkey.
-                    - The action will be skipped if the required image is already loaded.
-                  conditions:
-                    - name: Setup has servo info
-                      exec_name: dut_servo_host_present
-                    - name: Has a stable-version service (RUN_ONCE)
-                      exec_name: has_stable_version_service_path
-                      docs:
-                        - Verify if we have access to the service provided access to the stable version
-                    - name: Stable version image is missing from servo usbkey
-                      exec_name: sample_fail
-                      docs:
-                        - This is a reverse action which fails when required image is already cached in servo usbkey.
-                        - The purpose is to serve as a condition of Download stable image to USB-key action, so that we don't do duplicate download.
-                        - If this action fails, it means the servo usbkey already have required stable_version OS image cached.
-                      conditions:
-                        - name: Servo usbkey has stable image
-                          exec_name: servo_usbkey_has_stable_image
-                          exec_args:
-                            - retry_count:3
-                            - retry_interval:1
-                            - usb_file_check:true
-                          docs:
-                            - Check if the usbkey has the stable_version OS image.
-                            - 'TODO: Collect data on the usual number of retries and tweak the default'
-                  dependencies:
-                    - name: servo_servod_echo_host
-                      exec_name: servo_servod_echo_host
-                    - name: Is servo USB key detected
-                      exec_name: servo_usbkey_is_detected
-                      exec_args:
-                        - file_check:true
-                      docs:
-                        - The action used as codiion.
-                        - The action verify that USB-key is detected and readable.
-                      dependencies:
-                        - name: Is servod running (ALWAYS_RUN)
-                          exec_name: sample_pass
-                          docs:
-                            - Verify that servo host specified in setup and servod is running.
-                          dependencies:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                              exec_name: servod_echo
-                              exec_args:
-                                - ssh_check:false
-                              conditions:
-                                - name: Setup has servo info
-                                  exec_name: dut_servo_host_present
-                    - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
-                      exec_name: servo_download_image_to_usb
-                      docs:
-                        - This action calls servod to download stable version OS image to servo USB-key.
-                    - name: Remove UPDATE_USBKEY_IMAGE repair-request (ALWAYS_RUN)
-                      exec_name: dut_remove_repair_requests
-                      exec_args:
-                        - requests:UPDATE_USBKEY_IMAGE
-                      docs:
-                        - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
-                  exec_name: cros_set_as_chrome_based
-                  docs:
-                    - Mark DUT as Chrome based.
-                - name: Boot DUT in recovery and install from USB-drive (no storage check) (ALWAYS_RUN) (time:'2h13m20s')
-                  exec_name: cros_install_in_recovery_mode
+                    - Mark DUT as Android based.
+                - name: Set CacheService address
+                  exec_name: cache_service_address_detection
                   exec_args:
-                    - run_custom_commands:false
-                    - set_dev_default_boot:true
-                    - run_tpm_reset:true
-                    - run_os_install:true
-                    - boot_timeout:480
+                    - cache_address:10.128.176.210:8082
+                  docs:
+                    - MH box does not have labservice, so we hard-code caceh addrress.
+                    - Remove when prototype developing finished
+                - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                  exec_name: servo_download_provision_image_to_usb
+                  exec_args:
+                    - os_image_path:v4
+                  docs:
+                    - This action calls servod to download provision image custom kernel to servo USB-key.
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                  exec_name: cros_provision_actions_from_recovery_mode
+                  exec_args:
+                    - run_android_install:true
+                    - run_cros_install:false
+                    - boot_timeout:150
                     - boot_interval:10
-                    - boot_retry:2
-                    - halt_timeout:120
-                    - install_timeout:1200
-                    - tpm_reset_timeout:60
-                    - post_install_boot_time:15
+                    - boot_retry:1
                     - ignore_reboot_failure:true
-                    - run_storage_checks:false
-                    - badblocks_mode:not
-                    - rw_badblocks_timeout:5400
-                    - ro_badblocks_timeout:3600
                     - after_reboot_check:true
                     - after_reboot_timeout:150
                     - after_reboot_allow_use_servo_reset:true
@@ -7508,1054 +7200,62 @@ plans:
                   docs:
                     - Try to wait device to be sshable after the device being rebooted.
                     - Waiting time 150 seconds.
+                - name: ADB reconnect (ALWAYS_RUN)
+                  exec_name: ctr_adb_connect
+                  exec_args:
+                    - retry_count:3
+                    - retry_interval:3
+                    - timeout:5
+                  docs:
+                    - Connect to DUT by ADB if not connected.
+                    - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: ADB set Android as always awake (ALWAYS_RUN)
+                  exec_name: ctr_make_awake_always
+                  docs:
+                    - Set Android to be awake always.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
                   exec_args:
                     - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
                     - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
-            - name: Update FW from fw-image by servo and wait for boot
+            - name: Check if request labstation reboot
+              exec_name: sample_fail
+              docs:
+                - Check if there's a need to reboot the connected labstation.
+                - Request labstation reboot may bring DUT back but it happens
+                - in an asynchronous task so we make this action always fail
+                - to avoid an unnecessary retry of critical actions that triggered
+                - this action, e.g. 'Device is pingable' will get retried.
+              conditions:
+                - name: Check if servo is not connected by hub
+                  exec_name: servo_not_connected_by_hub
+                  docs:
+                    - Check if the servo is not connected by hub.
+              dependencies:
+                - name: Create request to reboot labstation (RUN_ONCE)
+                  exec_name: labstation_create_reboot_request
+                  docs:
+                    - Try to create reboot flag file request in the connected labstation.
+        - name: ADB Connect DUT (ALWAYS_RUN)
+          exec_name: ctr_adb_connect
+          exec_args:
+            - retry_count:3
+            - retry_interval:3
+            - timeout:5
+          docs:
+            - Exec ADB connect to the DUT by ethernet.
+          recoveries:
+            - name: Cold reset by servo and wait for ping (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
-                - 'This action will repair the firmware on the DUT, and '
-                - 'then reboot and wait for the DUT to again become '
-                - 'available. This action exists to wrap these component '
-                - actions into a single repair action.
-              conditions:
-                - name: Is Chrome based (ALWAYS_RUN)
-                  exec_name: cros_is_chrome_based
-                - name: Is a Chromebook (RUN_ONCE)
-                  exec_name: dut_check_board
-                  exec_args:
-                    - string_values:aurora,reven
-                    - invert_result:true
-                  docs:
-                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                - name: Recovery version has firmware image path
-                  exec_name: has_stable_version_fw_image
-                  docs:
-                    - Verify that recovery version has firmware image path.
-                  dependencies:
-                    - name: Has a stable-version service (RUN_ONCE)
-                      exec_name: has_stable_version_service_path
-                      docs:
-                        - Verify if we have access to the service provided access to the stable version
-                - name: Is servod running (ALWAYS_RUN)
-                  exec_name: sample_pass
-                  docs:
-                    - Verify that servo host specified in setup and servod is running.
-                  dependencies:
-                    - name: Setup has servo info
-                      exec_name: dut_servo_host_present
-                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                      exec_name: servod_echo
-                      exec_args:
-                        - ssh_check:false
-                      conditions:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-              dependencies:
-                - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) (time:'1h50m0s')
-                  exec_name: cros_update_fw_with_fw_image_by_servo
-                  exec_args:
-                    - update_ec_attempt_count:5
-                    - download_timeout:600
-                    - use_cache_extractor:true
-                    - use_fw_targets_from_inventory:true
-                  docs:
-                    - Download fw-image specified in stable version and flash EC to the DUT by servo
-                    - Set timeout for 110 minutes for now as = 10m(download)+4*20m(find/extract file)+20m(ec-update with retry).
-                    - We will retry up to 5 times since there is flakiness on flash EC.
-                  conditions:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                  dependencies:
-                    - name: Recovery version has firmware image path
-                      exec_name: has_stable_version_fw_image
-                      docs:
-                        - Verify that recovery version has firmware image path.
-                      dependencies:
-                        - name: Has a stable-version service (RUN_ONCE)
-                          exec_name: has_stable_version_service_path
-                          docs:
-                            - Verify if we have access to the service provided access to the stable version
-                - name: Sleep 60 seconds (Allow to fail) (ALWAYS_RUN) (time:'1m10s')
-                  exec_name: sample_sleep
-                  exec_args:
-                    - sleep:60
-                - name: Disable software write protection via servo (Allow to fail) (ALWAYS_RUN) (time:'1m0s')
-                  exec_name: cros_disable_software_write_protection_by_servo
-                  docs:
-                    - Disable software write protection(for flash firmware) via servo.
-                  dependencies:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
-                  exec_name: cros_update_fw_with_fw_image_by_servo
-                  exec_args:
-                    - update_ap_attempt_count:3
-                    - download_timeout:600
-                    - gbb_flags:0x80000018
-                    - use_cache_extractor:true
-                    - use_fw_targets_from_inventory:true
-                  docs:
-                    - Download fw-image specified in stable version and flash AP to the DUT by servo
-                    - Set timeout for 90 minutes for now as = 10m(download)+2*20m(find/extract file)+40m(ap-update with retry).
-                    - We will retry up to 3 times since there may be flakiness on flash AP via servo.
-                  conditions:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                  dependencies:
-                    - name: Recovery version has firmware image path
-                      exec_name: has_stable_version_fw_image
-                      docs:
-                        - Verify that recovery version has firmware image path.
-                      dependencies:
-                        - name: Has a stable-version service (RUN_ONCE)
-                          exec_name: has_stable_version_service_path
-                          docs:
-                            - Verify if we have access to the service provided access to the stable version
-                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ping
-                  docs:
-                    - Wait DUT to be pingable after some action on it.
-                    - Waiting time 150 seconds.
-                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
-                  exec_name: dut_remove_repair_requests
-                  exec_args:
-                    - requests:REFLASH_FW
-                  docs:
-                    - Remove REFLASH_FW repair-requests.
-            - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
-              exec_name: cros_install_in_recovery_mode
-              exec_args:
-                - run_custom_commands:true
-                - custom_command_allowed_to_fail:true
-                - custom_command_timeout:60
-                - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
-                - set_dev_default_boot:true
-                - run_tpm_reset:false
-                - run_os_install:false
-                - boot_timeout:480
-                - boot_interval:10
-                - boot_retry:1
-                - halt_timeout:120
-                - badblocks_mode:not
-                - ignore_reboot_failure:true
-                - after_reboot_check:true
-                - after_reboot_timeout:150
-                - after_reboot_allow_use_servo_reset:true
-              docs:
-                - The goal to force update fingerprint fw when devices booted from USB-stick
-              conditions:
-                - name: Is Chrome based (ALWAYS_RUN)
-                  exec_name: cros_is_chrome_based
-                - name: Is a Chromebook (RUN_ONCE)
-                  exec_name: dut_check_board
-                  exec_args:
-                    - string_values:aurora,reven
-                    - invert_result:true
-                  docs:
-                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                - name: Is servod running (ALWAYS_RUN)
-                  exec_name: sample_pass
-                  docs:
-                    - Verify that servo host specified in setup and servod is running.
-                  dependencies:
-                    - name: Setup has servo info
-                      exec_name: dut_servo_host_present
-                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                      exec_name: servod_echo
-                      exec_args:
-                        - ssh_check:false
-                      conditions:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                - name: Is servo USB key detected
-                  exec_name: servo_usbkey_is_detected
-                  exec_args:
-                    - file_check:true
-                  docs:
-                    - The action used as codiion.
-                    - The action verify that USB-key is detected and readable.
-                  dependencies:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-              dependencies:
-                - name: Set fw_wp_state to force_off
-                  exec_name: servo_set
-                  exec_args:
-                    - command:fw_wp_state
-                    - string_value:force_off
-                  docs:
-                    - Force disable wp of FW by servo.
-                  dependencies:
-                    - name: Setup has servo info
-                      exec_name: dut_servo_host_present
-            - name: Install OS in recovery mode by booting from servo USB-drive (ALWAYS_RUN)
-              exec_name: sample_pass
-              docs:
-                - This action installs the test image on DUT utilizing the features of servo.
-                - DUT will be booted in recovery mode.
-              conditions:
-                - name: Is Chrome based (ALWAYS_RUN)
-                  exec_name: cros_is_chrome_based
-                - name: Is a Chromebook (RUN_ONCE)
-                  exec_name: dut_check_board
-                  exec_args:
-                    - string_values:aurora,reven
-                    - invert_result:true
-                  docs:
-                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                - name: Recovery version has OS image path
-                  exec_name: has_stable_version_cros_image
-                  docs:
-                    - Verify that recovery version has OS image path.
-                  dependencies:
-                    - name: Has a stable-version service (RUN_ONCE)
-                      exec_name: has_stable_version_service_path
-                      docs:
-                        - Verify if we have access to the service provided access to the stable version
-                - name: Is servod running (ALWAYS_RUN)
-                  exec_name: sample_pass
-                  docs:
-                    - Verify that servo host specified in setup and servod is running.
-                  dependencies:
-                    - name: Setup has servo info
-                      exec_name: dut_servo_host_present
-                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                      exec_name: servod_echo
-                      exec_args:
-                        - ssh_check:false
-                      conditions:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                - name: Is servo USB key detected
-                  exec_name: servo_usbkey_is_detected
-                  exec_args:
-                    - file_check:true
-                  docs:
-                    - The action used as codiion.
-                    - The action verify that USB-key is detected and readable.
-                  dependencies:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-              dependencies:
-                - name: Servo USB-Key needs to be reflashed
-                  exec_name: sample_pass
-                  docs:
-                    - Check if it is time to download image to servo usbkey.
-                    - If so, then download the stable image to usbkey.
-                  conditions:
-                    - name: It is time to update USB-drive image
-                      exec_name: cros_is_time_to_force_download_image_to_usbkey
-                      exec_args:
-                        - task_name:recovery
-                        - repair_failed_count:1
-                        - repair_failed_interval:10
-                      docs:
-                        - Check if it is time to force download image to usbkey
-                        - from the number of failed recoveries since last successful PARIS repair task.
-                  dependencies:
-                    - name: Download stable image to USB-key (Allow to fail) (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Download lab stable image on servo USB-key
-                        - Download the image can take longer if labstation download parallel a few images.
-                        - This step is allowed to complete successfully even if some
-                        - ' errors happen during download because the image can already'
-                        - ' be present on the USB-drive.'
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Is servo USB key detected
-                          exec_name: servo_usbkey_is_detected
-                          exec_args:
-                            - file_check:true
-                          docs:
-                            - The action used as codiion.
-                            - The action verify that USB-key is detected and readable.
-                          dependencies:
-                            - name: Is servod running (ALWAYS_RUN)
-                              exec_name: sample_pass
-                              docs:
-                                - Verify that servo host specified in setup and servod is running.
-                              dependencies:
-                                - name: Setup has servo info
-                                  exec_name: dut_servo_host_present
-                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                                  exec_name: servod_echo
-                                  exec_args:
-                                    - ssh_check:false
-                                  conditions:
-                                    - name: Setup has servo info
-                                      exec_name: dut_servo_host_present
-                        - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
-                          exec_name: servo_download_image_to_usb
-                          docs:
-                            - This action calls servod to download stable version OS image to servo USB-key.
-                        - name: Remove UPDATE_USBKEY_IMAGE repair-request (ALWAYS_RUN)
-                          exec_name: dut_remove_repair_requests
-                          exec_args:
-                            - requests:UPDATE_USBKEY_IMAGE
-                          docs:
-                            - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) (RUN_ONCE)
-                  exec_name: sample_pass
-                  docs:
-                    - This action will download model specific stable version OS image to servo usbkey.
-                    - The action will be skipped if the required image is already loaded.
-                  conditions:
-                    - name: Setup has servo info
-                      exec_name: dut_servo_host_present
-                    - name: Has a stable-version service (RUN_ONCE)
-                      exec_name: has_stable_version_service_path
-                      docs:
-                        - Verify if we have access to the service provided access to the stable version
-                    - name: Stable version image is missing from servo usbkey
-                      exec_name: sample_fail
-                      docs:
-                        - This is a reverse action which fails when required image is already cached in servo usbkey.
-                        - The purpose is to serve as a condition of Download stable image to USB-key action, so that we don't do duplicate download.
-                        - If this action fails, it means the servo usbkey already have required stable_version OS image cached.
-                      conditions:
-                        - name: Servo usbkey has stable image
-                          exec_name: servo_usbkey_has_stable_image
-                          exec_args:
-                            - retry_count:3
-                            - retry_interval:1
-                            - usb_file_check:true
-                          docs:
-                            - Check if the usbkey has the stable_version OS image.
-                            - 'TODO: Collect data on the usual number of retries and tweak the default'
-                  dependencies:
-                    - name: servo_servod_echo_host
-                      exec_name: servo_servod_echo_host
-                    - name: Is servo USB key detected
-                      exec_name: servo_usbkey_is_detected
-                      exec_args:
-                        - file_check:true
-                      docs:
-                        - The action used as codiion.
-                        - The action verify that USB-key is detected and readable.
-                      dependencies:
-                        - name: Is servod running (ALWAYS_RUN)
-                          exec_name: sample_pass
-                          docs:
-                            - Verify that servo host specified in setup and servod is running.
-                          dependencies:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                              exec_name: servod_echo
-                              exec_args:
-                                - ssh_check:false
-                              conditions:
-                                - name: Setup has servo info
-                                  exec_name: dut_servo_host_present
-                    - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
-                      exec_name: servo_download_image_to_usb
-                      docs:
-                        - This action calls servod to download stable version OS image to servo USB-key.
-                    - name: Remove UPDATE_USBKEY_IMAGE repair-request (ALWAYS_RUN)
-                      exec_name: dut_remove_repair_requests
-                      exec_args:
-                        - requests:UPDATE_USBKEY_IMAGE
-                      docs:
-                        - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
-                  exec_name: cros_set_as_chrome_based
-                  docs:
-                    - Mark DUT as Chrome based.
-                - name: Boot DUT in recovery and install from USB-drive (ALWAYS_RUN) (time:'2h13m20s')
-                  exec_name: cros_install_in_recovery_mode
-                  exec_args:
-                    - run_custom_commands:false
-                    - set_dev_default_boot:true
-                    - run_tpm_reset:true
-                    - run_os_install:true
-                    - boot_timeout:480
-                    - boot_interval:10
-                    - boot_retry:2
-                    - halt_timeout:120
-                    - install_timeout:1200
-                    - tpm_reset_timeout:60
-                    - post_install_boot_time:15
-                    - ignore_reboot_failure:true
-                    - badblocks_mode:auto
-                    - rw_badblocks_timeout:5400
-                    - ro_badblocks_timeout:3600
-                    - after_reboot_check:true
-                    - after_reboot_timeout:150
-                    - after_reboot_allow_use_servo_reset:true
-                  docs:
-                    - 'This action installs the test image on DUT utilizing '
-                    - 'the features of servo. DUT will be booted in recovery '
-                    - 'mode. In some cases RO FW is not allowed to boot in '
-                    - 'recovery mode with active PD, so we will change it to '
-                    - sink-mode if required.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Try to wait device to be sshable after the device being rebooted.
-                    - Waiting time 150 seconds.
-                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
-                  exec_name: dut_remove_repair_requests
-                  exec_args:
-                    - requests:PROVISION,REIMAGE_BY_USBKEY
-                  docs:
-                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
-            - name: Install OS in recovery mode by booting from servo USB-drive (Flex with AMT) (ALWAYS_RUN)
-              exec_name: sample_pass
-              docs:
-                - The action design only for Flex devices.
-                - This action installs the test image on DUT utilizing the features of servo.
-                - Uses Intel AMT (vPro) to power off and power on the DUT.
-                - When DUT sees USB-key it will always try to boot from it.
-              conditions:
-                - name: Is Chrome based (ALWAYS_RUN)
-                  exec_name: cros_is_chrome_based
-                - name: Is Flex device (RUN_ONCE)
-                  exec_name: dut_check_board
-                  exec_args:
-                    - string_values:aurora,reven
-                    - invert_result:false
-                  docs:
-                    - Check that DUT is a Flex board
-                - name: Is servod running (ALWAYS_RUN)
-                  exec_name: sample_pass
-                  docs:
-                    - Verify that servo host specified in setup and servod is running.
-                  dependencies:
-                    - name: Setup has servo info
-                      exec_name: dut_servo_host_present
-                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                      exec_name: servod_echo
-                      exec_args:
-                        - ssh_check:false
-                      conditions:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                - name: Is servo USB key detected
-                  exec_name: servo_usbkey_is_detected
-                  exec_args:
-                    - file_check:true
-                  docs:
-                    - The action used as codiion.
-                    - The action verify that USB-key is detected and readable.
-                  dependencies:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                - name: Device has Intel AMT
-                  exec_name: sample_pass
-                  docs:
-                    - DUT is a Flex device with the AMT manager peripheral.
-                  dependencies:
-                    - name: Is Flex device (RUN_ONCE)
-                      exec_name: dut_check_board
-                      exec_args:
-                        - string_values:aurora,reven
-                        - invert_result:false
-                      docs:
-                        - Check that DUT is a Flex board
-                    - name: Are AMT details known (ALWAYS_RUN)
-                      exec_name: cros_flex_amt_known
-                      docs:
-                        - Check if the DUT has the AMT manager peripheral.
-                        - Does not verify the health of AMT itself.
-                      conditions:
-                        - name: Is Flex device (RUN_ONCE)
-                          exec_name: dut_check_board
-                          exec_args:
-                            - string_values:aurora,reven
-                            - invert_result:false
-                          docs:
-                            - Check that DUT is a Flex board
-              dependencies:
-                - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
-                  exec_name: cros_set_as_chrome_based
-                  docs:
-                    - Mark DUT as Chrome based.
-                - name: Servo USB-Key needs to be reflashed
-                  exec_name: sample_pass
-                  docs:
-                    - Check if it is time to download image to servo usbkey.
-                    - If so, then download the stable image to usbkey.
-                  conditions:
-                    - name: It is time to update USB-drive image
-                      exec_name: cros_is_time_to_force_download_image_to_usbkey
-                      exec_args:
-                        - task_name:recovery
-                        - repair_failed_count:1
-                        - repair_failed_interval:10
-                      docs:
-                        - Check if it is time to force download image to usbkey
-                        - from the number of failed recoveries since last successful PARIS repair task.
-                  dependencies:
-                    - name: Download stable image to USB-key (Allow to fail) (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Download lab stable image on servo USB-key
-                        - Download the image can take longer if labstation download parallel a few images.
-                        - This step is allowed to complete successfully even if some
-                        - ' errors happen during download because the image can already'
-                        - ' be present on the USB-drive.'
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Is servo USB key detected
-                          exec_name: servo_usbkey_is_detected
-                          exec_args:
-                            - file_check:true
-                          docs:
-                            - The action used as codiion.
-                            - The action verify that USB-key is detected and readable.
-                          dependencies:
-                            - name: Is servod running (ALWAYS_RUN)
-                              exec_name: sample_pass
-                              docs:
-                                - Verify that servo host specified in setup and servod is running.
-                              dependencies:
-                                - name: Setup has servo info
-                                  exec_name: dut_servo_host_present
-                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                                  exec_name: servod_echo
-                                  exec_args:
-                                    - ssh_check:false
-                                  conditions:
-                                    - name: Setup has servo info
-                                      exec_name: dut_servo_host_present
-                        - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
-                          exec_name: servo_download_image_to_usb
-                          docs:
-                            - This action calls servod to download stable version OS image to servo USB-key.
-                        - name: Remove UPDATE_USBKEY_IMAGE repair-request (ALWAYS_RUN)
-                          exec_name: dut_remove_repair_requests
-                          exec_args:
-                            - requests:UPDATE_USBKEY_IMAGE
-                          docs:
-                            - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                - name: Download stable version OS image to servo usbkey if necessary (allow fail) (Allow to fail) (RUN_ONCE)
-                  exec_name: sample_pass
-                  docs:
-                    - This action will download model specific stable version OS image to servo usbkey.
-                    - The action will be skipped if the required image is already loaded.
-                  conditions:
-                    - name: Setup has servo info
-                      exec_name: dut_servo_host_present
-                    - name: Has a stable-version service (RUN_ONCE)
-                      exec_name: has_stable_version_service_path
-                      docs:
-                        - Verify if we have access to the service provided access to the stable version
-                    - name: Stable version image is missing from servo usbkey
-                      exec_name: sample_fail
-                      docs:
-                        - This is a reverse action which fails when required image is already cached in servo usbkey.
-                        - The purpose is to serve as a condition of Download stable image to USB-key action, so that we don't do duplicate download.
-                        - If this action fails, it means the servo usbkey already have required stable_version OS image cached.
-                      conditions:
-                        - name: Servo usbkey has stable image
-                          exec_name: servo_usbkey_has_stable_image
-                          exec_args:
-                            - retry_count:3
-                            - retry_interval:1
-                            - usb_file_check:true
-                          docs:
-                            - Check if the usbkey has the stable_version OS image.
-                            - 'TODO: Collect data on the usual number of retries and tweak the default'
-                  dependencies:
-                    - name: servo_servod_echo_host
-                      exec_name: servo_servod_echo_host
-                    - name: Is servo USB key detected
-                      exec_name: servo_usbkey_is_detected
-                      exec_args:
-                        - file_check:true
-                      docs:
-                        - The action used as codiion.
-                        - The action verify that USB-key is detected and readable.
-                      dependencies:
-                        - name: Is servod running (ALWAYS_RUN)
-                          exec_name: sample_pass
-                          docs:
-                            - Verify that servo host specified in setup and servod is running.
-                          dependencies:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                              exec_name: servod_echo
-                              exec_args:
-                                - ssh_check:false
-                              conditions:
-                                - name: Setup has servo info
-                                  exec_name: dut_servo_host_present
-                    - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
-                      exec_name: servo_download_image_to_usb
-                      docs:
-                        - This action calls servod to download stable version OS image to servo USB-key.
-                    - name: Remove UPDATE_USBKEY_IMAGE repair-request (ALWAYS_RUN)
-                      exec_name: dut_remove_repair_requests
-                      exec_args:
-                        - requests:UPDATE_USBKEY_IMAGE
-                      docs:
-                        - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                - name: Direct USB-drive to DUT (ALWAYS_RUN) (time:'20s')
-                  exec_name: servo_set
-                  exec_args:
-                    - command:image_usbkey_direction
-                    - string_value:dut_sees_usbkey
-                  docs:
-                    - Switch servo's USB-drive to point to DUT.
-                  dependencies:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                  exec_name: cros_flex_set_amt_power_state
-                  exec_args:
-                    - state:off
-                  docs:
-                    - Ensure the DUT is powered-off using Intel AMT.
-                  conditions:
-                    - name: Device has Intel AMT
-                      exec_name: sample_pass
-                      docs:
-                        - DUT is a Flex device with the AMT manager peripheral.
-                      dependencies:
-                        - name: Is Flex device (RUN_ONCE)
-                          exec_name: dut_check_board
-                          exec_args:
-                            - string_values:aurora,reven
-                            - invert_result:false
-                          docs:
-                            - Check that DUT is a Flex board
-                        - name: Are AMT details known (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_known
-                          docs:
-                            - Check if the DUT has the AMT manager peripheral.
-                            - Does not verify the health of AMT itself.
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
-                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
-                  exec_name: sample_sleep
-                  exec_args:
-                    - sleep:10
-                - name: Power-on the DUT using AMT (ALWAYS_RUN)
-                  exec_name: cros_flex_set_amt_power_state
-                  exec_args:
-                    - state:on
-                  docs:
-                    - Ensure the DUT is powered-on using Intel AMT.
-                  conditions:
-                    - name: Device has Intel AMT
-                      exec_name: sample_pass
-                      docs:
-                        - DUT is a Flex device with the AMT manager peripheral.
-                      dependencies:
-                        - name: Is Flex device (RUN_ONCE)
-                          exec_name: dut_check_board
-                          exec_args:
-                            - string_values:aurora,reven
-                            - invert_result:false
-                          docs:
-                            - Check that DUT is a Flex board
-                        - name: Are AMT details known (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_known
-                          docs:
-                            - Check if the DUT has the AMT manager peripheral.
-                            - Does not verify the health of AMT itself.
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
-                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
-                  exec_name: sample_sleep
-                  exec_args:
-                    - sleep:10
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Try to wait device to be sshable after the device being rebooted.
-                    - Waiting time 150 seconds.
-                - name: Print active devices (Allow to fail) (ALWAYS_RUN)
-                  exec_name: cros_run_command
-                  exec_args:
-                    - host:dut
-                    - command:lsblk
-                    - background:false
-                  docs:
-                    - Print active devices visible for DUT.
-                - name: Is Flex booted from USB-drive (ALWAYS_RUN)
-                  exec_name: cros_run_command
-                  exec_args:
-                    - host:dut
-                    - command:is_running_from_installer |grep yes
-                    - background:false
-                  docs:
-                    - Check if device booted from USB in installer mode.
-                  conditions:
-                    - name: Is Flex device (RUN_ONCE)
-                      exec_name: dut_check_board
-                      exec_args:
-                        - string_values:aurora,reven
-                        - invert_result:false
-                      docs:
-                        - Check that DUT is a Flex board
-                - name: Run chromeos-install for Flex (ALWAYS_RUN) (time:'10m0s')
-                  exec_name: cros_run_command
-                  exec_args:
-                    - host:dut
-                    - command:chromeos-install --dst $(lsblk --bytes --output NAME  --paths -I 259 -n -d) --yes
-                    - background:false
-                  docs:
-                    - Run chromeos-install for Flex DUTs with detecting destination.
-                    - Flex device does not detect destination as part of chromeos-install script.
-                  dependencies:
-                    - name: Is Flex device (RUN_ONCE)
-                      exec_name: dut_check_board
-                      exec_args:
-                        - string_values:aurora,reven
-                        - invert_result:false
-                      docs:
-                        - Check that DUT is a Flex board
-                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
-                  exec_name: sample_sleep
-                  exec_args:
-                    - sleep:10
-                - name: Power-off the DUT using AMT (ALWAYS_RUN)
-                  exec_name: cros_flex_set_amt_power_state
-                  exec_args:
-                    - state:off
-                  docs:
-                    - Ensure the DUT is powered-off using Intel AMT.
-                  conditions:
-                    - name: Device has Intel AMT
-                      exec_name: sample_pass
-                      docs:
-                        - DUT is a Flex device with the AMT manager peripheral.
-                      dependencies:
-                        - name: Is Flex device (RUN_ONCE)
-                          exec_name: dut_check_board
-                          exec_args:
-                            - string_values:aurora,reven
-                            - invert_result:false
-                          docs:
-                            - Check that DUT is a Flex board
-                        - name: Are AMT details known (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_known
-                          docs:
-                            - Check if the DUT has the AMT manager peripheral.
-                            - Does not verify the health of AMT itself.
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
-                - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
-                  exec_name: servo_set
-                  exec_args:
-                    - command:image_usbkey_direction
-                    - string_value:servo_sees_usbkey
-                  docs:
-                    - Switch servo's USB-drive to point to servo-host.
-                  dependencies:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                - name: Power-on the DUT using AMT (ALWAYS_RUN)
-                  exec_name: cros_flex_set_amt_power_state
-                  exec_args:
-                    - state:on
-                  docs:
-                    - Ensure the DUT is powered-on using Intel AMT.
-                  conditions:
-                    - name: Device has Intel AMT
-                      exec_name: sample_pass
-                      docs:
-                        - DUT is a Flex device with the AMT manager peripheral.
-                      dependencies:
-                        - name: Is Flex device (RUN_ONCE)
-                          exec_name: dut_check_board
-                          exec_args:
-                            - string_values:aurora,reven
-                            - invert_result:false
-                          docs:
-                            - Check that DUT is a Flex board
-                        - name: Are AMT details known (ALWAYS_RUN)
-                          exec_name: cros_flex_amt_known
-                          docs:
-                            - Check if the DUT has the AMT manager peripheral.
-                            - Does not verify the health of AMT itself.
-                          conditions:
-                            - name: Is Flex device (RUN_ONCE)
-                              exec_name: dut_check_board
-                              exec_args:
-                                - string_values:aurora,reven
-                                - invert_result:false
-                              docs:
-                                - Check that DUT is a Flex board
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Try to wait device to be sshable after the device being rebooted.
-                    - Waiting time 150 seconds.
-                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
-                  exec_name: dut_remove_repair_requests
-                  exec_args:
-                    - requests:PROVISION,REIMAGE_BY_USBKEY
-                  docs:
-                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
-            - name: Install OS in DEV mode by USB-drive (ALWAYS_RUN)
-              exec_name: sample_pass
-              docs:
-                - This action installs the test image on DUT after booking the DUT in dev mode.
-              conditions:
-                - name: Is Chrome based (ALWAYS_RUN)
-                  exec_name: cros_is_chrome_based
-                - name: Is a Chromebook (RUN_ONCE)
-                  exec_name: dut_check_board
-                  exec_args:
-                    - string_values:aurora,reven
-                    - invert_result:true
-                  docs:
-                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                - name: Recovery version has OS image path
-                  exec_name: has_stable_version_cros_image
-                  docs:
-                    - Verify that recovery version has OS image path.
-                  dependencies:
-                    - name: Has a stable-version service (RUN_ONCE)
-                      exec_name: has_stable_version_service_path
-                      docs:
-                        - Verify if we have access to the service provided access to the stable version
-                - name: Is servod running (ALWAYS_RUN)
-                  exec_name: sample_pass
-                  docs:
-                    - Verify that servo host specified in setup and servod is running.
-                  dependencies:
-                    - name: Setup has servo info
-                      exec_name: dut_servo_host_present
-                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                      exec_name: servod_echo
-                      exec_args:
-                        - ssh_check:false
-                      conditions:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                - name: Is servo USB key detected
-                  exec_name: servo_usbkey_is_detected
-                  exec_args:
-                    - file_check:true
-                  docs:
-                    - The action used as codiion.
-                    - The action verify that USB-key is detected and readable.
-                  dependencies:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-              dependencies:
-                - name: Boot DUT from USB in DEV mode (ALWAYS_RUN) (time:'10m50s')
-                  exec_name: cros_dev_mode_boot_from_servo_usb_drive
-                  exec_args:
-                    - boot_retry:2
-                    - boot_timeout:600
-                    - retry_interval:1
-                    - verify_usbkey_boot:true
-                  docs:
-                    - Restart and try to boot from USB-drive
-                    - First boot in dev mode can take time so set boot time to 10 minutes.
-                  dependencies:
-                    - name: Setup has servo info
-                      exec_name: dut_servo_host_present
-                - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
-                  exec_name: cros_set_as_chrome_based
-                  docs:
-                    - Mark DUT as Chrome based.
-                - name: Run install after boot from USB-drive (ALWAYS_RUN) (time:'20m0s')
-                  exec_name: cros_run_chromeos_install_command_after_boot_usbdrive
-                  docs:
-                    - Perform install process when device booted from USB-drive.
-                - name: Cold reset DUT by servo and wait to boot (ALWAYS_RUN)
-                  exec_name: sample_pass
-                  docs:
-                    - Cold reset device by servo and wait for DUT to become ping-able.
-                  conditions:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                  dependencies:
-                    - name: Cold reset DUT by servo (ALWAYS_RUN)
-                      exec_name: servo_power_state_reset
-                      exec_args:
-                        - timeout:30
-                        - more_logs:true
-                      docs:
-                        - Cold reset device by servo and do not wait.
-                      dependencies:
-                        - name: Is servod running (ALWAYS_RUN)
-                          exec_name: sample_pass
-                          docs:
-                            - Verify that servo host specified in setup and servod is running.
-                          dependencies:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                              exec_name: servod_echo
-                              exec_args:
-                                - ssh_check:false
-                              conditions:
-                                - name: Setup has servo info
-                                  exec_name: dut_servo_host_present
-                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ping
-                      docs:
-                        - Wait DUT to be pingable after some action on it.
-                        - Waiting time 150 seconds.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Try to wait device to be sshable after the device being rebooted.
-                    - Waiting time 150 seconds.
-                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
-                  exec_name: dut_remove_repair_requests
-                  exec_args:
-                    - requests:PROVISION,REIMAGE_BY_USBKEY
-                  docs:
-                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
-            - name: Reset power using servo if booted from USB
-              exec_name: sample_pass
-              docs:
-                - 'This action will reboot the DUT using servo if device '
-                - 'is not booted after off/on performed as part of '
-                - re-imaging the device from USB device.
+                - This repair action will use servod command to reset power_state on the DUT.
               conditions:
                 - name: Is servod running (ALWAYS_RUN)
                   exec_name: sample_pass
@@ -8599,12 +7299,17 @@ plans:
                   docs:
                     - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
-            - name: Battery cut-off by servo and wait for SSH (ALWAYS_RUN)
+            - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
-                - This repair action will use EC console to cut battery power and then try to restore power which force to reset the board.
-                - Logic establishe from b/277637455.
+                - Use provision image on USB-key to boot and get SSH access.
+                - Run specific install command to install Android OS.
+                - The logic is copy from foil-provision
               conditions:
+                - name: Execution on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_mh_box
+                  docs:
+                    - Check that the process is running on Mobile Harness box.
                 - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -8626,73 +7331,98 @@ plans:
                       conditions:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                - name: is_servo_type_ccd
-                  exec_name: is_servo_type_ccd
-                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
-                  exec_name: servo_power_state_match
-                  exec_args:
-                    - power_states:G3,S5
+                - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                  exec_name: cros_is_previous_android_based_or_os_type
                   docs:
-                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                    - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                - name: Is servo USB key detected
+                  exec_name: servo_usbkey_is_detected
+                  exec_args:
+                    - file_check:true
+                  docs:
+                    - The action used as codiion.
+                    - The action verify that USB-key is detected and readable.
+                  dependencies:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
               dependencies:
-                - name: Battery cut-off by servo EC console (ALWAYS_RUN)
-                  exec_name: servo_set_ec_uart_cmd
-                  exec_args:
-                    - wait_timeout:1
-                    - value:cutoff
+                - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                  exec_name: cros_set_as_android_based
                   docs:
-                    - Try to cut-off battery by servo EC console.
-                    - It will force to look only to PD on the servo.
-                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
-                  exec_name: sample_sleep
+                    - Mark DUT as Android based.
+                - name: Set CacheService address
+                  exec_name: cache_service_address_detection
                   exec_args:
-                    - sleep:10
-                - name: Try fake disconnect (ALWAYS_RUN)
-                  exec_name: servo_fake_disconnect_dut
-                  exec_args:
-                    - delay_in_ms:100
-                    - timeout_in_ms:2000
+                    - cache_address:10.128.176.210:8082
                   docs:
-                    - Run servo fake disconnect type-c connector from the DUT side.
-                    - The action mimic unplug-plug connection to the DUT.
-                  conditions:
-                    - name: is_servo_type_ccd
-                      exec_name: is_servo_type_ccd
-                - name: Sleep 60 seconds (Allow to fail) (ALWAYS_RUN) (time:'1m10s')
-                  exec_name: sample_sleep
+                    - MH box does not have labservice, so we hard-code caceh addrress.
+                    - Remove when prototype developing finished
+                - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                  exec_name: servo_download_provision_image_to_usb
                   exec_args:
-                    - sleep:60
+                    - os_image_path:v4
+                  docs:
+                    - This action calls servod to download provision image custom kernel to servo USB-key.
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                  exec_name: cros_provision_actions_from_recovery_mode
+                  exec_args:
+                    - run_android_install:true
+                    - run_cros_install:false
+                    - boot_timeout:150
+                    - boot_interval:10
+                    - boot_retry:1
+                    - ignore_reboot_failure:true
+                    - after_reboot_check:true
+                    - after_reboot_timeout:150
+                    - after_reboot_allow_use_servo_reset:true
+                  docs:
+                    - 'This action installs the test image on DUT utilizing '
+                    - 'the features of servo. DUT will be booted in recovery '
+                    - 'mode. In some cases RO FW is not allowed to boot in '
+                    - 'recovery mode with active PD, so we will change it to '
+                    - sink-mode if required.
                 - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                   exec_name: cros_ssh
                   docs:
                     - Try to wait device to be sshable after the device being rebooted.
                     - Waiting time 150 seconds.
-            - name: Check if request labstation reboot
-              exec_name: sample_fail
-              docs:
-                - Check if there's a need to reboot the connected labstation.
-                - Request labstation reboot may bring DUT back but it happens
-                - in an asynchronous task so we make this action always fail
-                - to avoid an unnecessary retry of critical actions that triggered
-                - this action, e.g. 'Device is pingable' will get retried.
-              conditions:
-                - name: Check if servo is not connected by hub
-                  exec_name: servo_not_connected_by_hub
+                - name: ADB reconnect (ALWAYS_RUN)
+                  exec_name: ctr_adb_connect
+                  exec_args:
+                    - retry_count:3
+                    - retry_interval:3
+                    - timeout:5
                   docs:
-                    - Check if the servo is not connected by hub.
-              dependencies:
-                - name: Create request to reboot labstation (RUN_ONCE)
-                  exec_name: labstation_create_reboot_request
+                    - Connect to DUT by ADB if not connected.
+                    - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: ADB set Android as always awake (ALWAYS_RUN)
+                  exec_name: ctr_make_awake_always
                   docs:
-                    - Try to create reboot flag file request in the connected labstation.
-        - name: ADB Connect DUT (ALWAYS_RUN)
-          exec_name: ctr_adb_connect
-          exec_args:
-            - retry_count:3
-            - retry_interval:3
-            - timeout:5
-          docs:
-            - Exec ADB connect to the DUT by ethernet.
+                    - Set Android to be awake always.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
+                  docs:
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
         - name: Android is accessable (ALWAYS_RUN) (time:'15s')
           exec_name: cros_ssh
           docs:
@@ -8701,7 +7431,7 @@ plans:
             - name: Is Android based (ALWAYS_RUN)
               exec_name: cros_is_android_based
           recoveries:
-            - name: Reboot by ADB (Allow to fail)
+            - name: Reboot by ADB (Allow to fail) (ALWAYS_RUN)
               exec_name: ctr_adb_command
               exec_args:
                 - command:reboot
@@ -8757,11 +7487,15 @@ plans:
                   docs:
                     - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
-            - name: Provision Android OS (time:'1h0m0s')
+            - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
               exec_name: ctr_foil_provision_install
               docs:
                 - The install performs real install Android on the DUT.
               conditions:
+                - name: Execution not on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_not_mh_box
+                  docs:
+                    - Check that the process is not running on Mobile Harness box.
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
                   docs:
@@ -8776,7 +7510,7 @@ plans:
                   docs:
                     - Pull and run foil-provision container
                   conditions:
-                    - name: Is not cloudbot (RUN_ONCE)
+                    - name: Execution not on CloudBot (RUN_ONCE)
                       exec_name: env_is_not_cloudbot
                       docs:
                         - Check that the process is not running on cloudbot.
@@ -8789,6 +7523,130 @@ plans:
                   exec_name: ctr_foil_provision_setup_service
                   docs:
                     - The setup method needs to be called once before performing install.
+            - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
+              exec_name: sample_pass
+              docs:
+                - Use provision image on USB-key to boot and get SSH access.
+                - Run specific install command to install Android OS.
+                - The logic is copy from foil-provision
+              conditions:
+                - name: Execution on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_mh_box
+                  docs:
+                    - Check that the process is running on Mobile Harness box.
+                - name: Is a Chromebook (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Is servod running (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Verify that servo host specified in setup and servod is running.
+                  dependencies:
+                    - name: Setup has servo info
+                      exec_name: dut_servo_host_present
+                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                      exec_name: servod_echo
+                      exec_args:
+                        - ssh_check:false
+                      conditions:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                  exec_name: cros_is_previous_android_based_or_os_type
+                  docs:
+                    - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                - name: Is servo USB key detected
+                  exec_name: servo_usbkey_is_detected
+                  exec_args:
+                    - file_check:true
+                  docs:
+                    - The action used as codiion.
+                    - The action verify that USB-key is detected and readable.
+                  dependencies:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+              dependencies:
+                - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                  exec_name: cros_set_as_android_based
+                  docs:
+                    - Mark DUT as Android based.
+                - name: Set CacheService address
+                  exec_name: cache_service_address_detection
+                  exec_args:
+                    - cache_address:10.128.176.210:8082
+                  docs:
+                    - MH box does not have labservice, so we hard-code caceh addrress.
+                    - Remove when prototype developing finished
+                - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                  exec_name: servo_download_provision_image_to_usb
+                  exec_args:
+                    - os_image_path:v4
+                  docs:
+                    - This action calls servod to download provision image custom kernel to servo USB-key.
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                  exec_name: cros_provision_actions_from_recovery_mode
+                  exec_args:
+                    - run_android_install:true
+                    - run_cros_install:false
+                    - boot_timeout:150
+                    - boot_interval:10
+                    - boot_retry:1
+                    - ignore_reboot_failure:true
+                    - after_reboot_check:true
+                    - after_reboot_timeout:150
+                    - after_reboot_allow_use_servo_reset:true
+                  docs:
+                    - 'This action installs the test image on DUT utilizing '
+                    - 'the features of servo. DUT will be booted in recovery '
+                    - 'mode. In some cases RO FW is not allowed to boot in '
+                    - 'recovery mode with active PD, so we will change it to '
+                    - sink-mode if required.
+                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Try to wait device to be sshable after the device being rebooted.
+                    - Waiting time 150 seconds.
+                - name: ADB reconnect (ALWAYS_RUN)
+                  exec_name: ctr_adb_connect
+                  exec_args:
+                    - retry_count:3
+                    - retry_interval:3
+                    - timeout:5
+                  docs:
+                    - Connect to DUT by ADB if not connected.
+                    - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: ADB set Android as always awake (ALWAYS_RUN)
+                  exec_name: ctr_make_awake_always
+                  docs:
+                    - Set Android to be awake always.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
+                  docs:
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
             - name: Reset servo_v4.1 ethernet and wait for ping (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -8896,6 +7754,10 @@ plans:
                 - 'Place repair-request: reflash firmware of the DUT and re-image by USB-drive.'
                 - The request will be applied when plan restarted and reached action to address it.
               conditions:
+                - name: Execution not on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_not_mh_box
+                  docs:
+                    - Check that the process is not running on Mobile Harness box.
                 - name: Is Android based (ALWAYS_RUN)
                   exec_name: cros_is_android_based
                 - name: Is a Chromebook (RUN_ONCE)
@@ -9441,7 +8303,7 @@ plans:
                     - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
                     - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
-        - name: ADB set Android as always awake
+        - name: ADB set Android as always awake (ALWAYS_RUN)
           exec_name: ctr_make_awake_always
           docs:
             - Set Android to be awake always.
@@ -9449,7 +8311,7 @@ plans:
             - name: Is Android based (ALWAYS_RUN)
               exec_name: cros_is_android_based
           recoveries:
-            - name: Reboot by ADB (Allow to fail)
+            - name: Reboot by ADB (Allow to fail) (ALWAYS_RUN)
               exec_name: ctr_adb_command
               exec_args:
                 - command:reboot
@@ -9505,11 +8367,15 @@ plans:
                   docs:
                     - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
-            - name: Provision Android OS (time:'1h0m0s')
+            - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
               exec_name: ctr_foil_provision_install
               docs:
                 - The install performs real install Android on the DUT.
               conditions:
+                - name: Execution not on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_not_mh_box
+                  docs:
+                    - Check that the process is not running on Mobile Harness box.
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
                   docs:
@@ -9524,7 +8390,7 @@ plans:
                   docs:
                     - Pull and run foil-provision container
                   conditions:
-                    - name: Is not cloudbot (RUN_ONCE)
+                    - name: Execution not on CloudBot (RUN_ONCE)
                       exec_name: env_is_not_cloudbot
                       docs:
                         - Check that the process is not running on cloudbot.
@@ -9537,6 +8403,130 @@ plans:
                   exec_name: ctr_foil_provision_setup_service
                   docs:
                     - The setup method needs to be called once before performing install.
+            - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
+              exec_name: sample_pass
+              docs:
+                - Use provision image on USB-key to boot and get SSH access.
+                - Run specific install command to install Android OS.
+                - The logic is copy from foil-provision
+              conditions:
+                - name: Execution on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_mh_box
+                  docs:
+                    - Check that the process is running on Mobile Harness box.
+                - name: Is a Chromebook (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Is servod running (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Verify that servo host specified in setup and servod is running.
+                  dependencies:
+                    - name: Setup has servo info
+                      exec_name: dut_servo_host_present
+                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                      exec_name: servod_echo
+                      exec_args:
+                        - ssh_check:false
+                      conditions:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                  exec_name: cros_is_previous_android_based_or_os_type
+                  docs:
+                    - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                - name: Is servo USB key detected
+                  exec_name: servo_usbkey_is_detected
+                  exec_args:
+                    - file_check:true
+                  docs:
+                    - The action used as codiion.
+                    - The action verify that USB-key is detected and readable.
+                  dependencies:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+              dependencies:
+                - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                  exec_name: cros_set_as_android_based
+                  docs:
+                    - Mark DUT as Android based.
+                - name: Set CacheService address
+                  exec_name: cache_service_address_detection
+                  exec_args:
+                    - cache_address:10.128.176.210:8082
+                  docs:
+                    - MH box does not have labservice, so we hard-code caceh addrress.
+                    - Remove when prototype developing finished
+                - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                  exec_name: servo_download_provision_image_to_usb
+                  exec_args:
+                    - os_image_path:v4
+                  docs:
+                    - This action calls servod to download provision image custom kernel to servo USB-key.
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                  exec_name: cros_provision_actions_from_recovery_mode
+                  exec_args:
+                    - run_android_install:true
+                    - run_cros_install:false
+                    - boot_timeout:150
+                    - boot_interval:10
+                    - boot_retry:1
+                    - ignore_reboot_failure:true
+                    - after_reboot_check:true
+                    - after_reboot_timeout:150
+                    - after_reboot_allow_use_servo_reset:true
+                  docs:
+                    - 'This action installs the test image on DUT utilizing '
+                    - 'the features of servo. DUT will be booted in recovery '
+                    - 'mode. In some cases RO FW is not allowed to boot in '
+                    - 'recovery mode with active PD, so we will change it to '
+                    - sink-mode if required.
+                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Try to wait device to be sshable after the device being rebooted.
+                    - Waiting time 150 seconds.
+                - name: ADB reconnect (ALWAYS_RUN)
+                  exec_name: ctr_adb_connect
+                  exec_args:
+                    - retry_count:3
+                    - retry_interval:3
+                    - timeout:5
+                  docs:
+                    - Connect to DUT by ADB if not connected.
+                    - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: ADB set Android as always awake (ALWAYS_RUN)
+                  exec_name: ctr_make_awake_always
+                  docs:
+                    - Set Android to be awake always.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
+                  docs:
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
             - name: Reset servo_v4.1 ethernet and wait for ping (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -9644,6 +8634,10 @@ plans:
                 - 'Place repair-request: reflash firmware of the DUT and re-image by USB-drive.'
                 - The request will be applied when plan restarted and reached action to address it.
               conditions:
+                - name: Execution not on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_not_mh_box
+                  docs:
+                    - Check that the process is not running on Mobile Harness box.
                 - name: Is Android based (ALWAYS_RUN)
                   exec_name: cros_is_android_based
                 - name: Is a Chromebook (RUN_ONCE)
@@ -10212,11 +9206,15 @@ plans:
           docs:
             - Check if PROVISION repair-request is present.
           recoveries:
-            - name: Provision Android OS (time:'1h0m0s')
+            - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
               exec_name: ctr_foil_provision_install
               docs:
                 - The install performs real install Android on the DUT.
               conditions:
+                - name: Execution not on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_not_mh_box
+                  docs:
+                    - Check that the process is not running on Mobile Harness box.
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
                   docs:
@@ -10231,7 +9229,7 @@ plans:
                   docs:
                     - Pull and run foil-provision container
                   conditions:
-                    - name: Is not cloudbot (RUN_ONCE)
+                    - name: Execution not on CloudBot (RUN_ONCE)
                       exec_name: env_is_not_cloudbot
                       docs:
                         - Check that the process is not running on cloudbot.
@@ -10244,6 +9242,130 @@ plans:
                   exec_name: ctr_foil_provision_setup_service
                   docs:
                     - The setup method needs to be called once before performing install.
+            - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
+              exec_name: sample_pass
+              docs:
+                - Use provision image on USB-key to boot and get SSH access.
+                - Run specific install command to install Android OS.
+                - The logic is copy from foil-provision
+              conditions:
+                - name: Execution on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_mh_box
+                  docs:
+                    - Check that the process is running on Mobile Harness box.
+                - name: Is a Chromebook (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Is servod running (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Verify that servo host specified in setup and servod is running.
+                  dependencies:
+                    - name: Setup has servo info
+                      exec_name: dut_servo_host_present
+                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                      exec_name: servod_echo
+                      exec_args:
+                        - ssh_check:false
+                      conditions:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                  exec_name: cros_is_previous_android_based_or_os_type
+                  docs:
+                    - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                - name: Is servo USB key detected
+                  exec_name: servo_usbkey_is_detected
+                  exec_args:
+                    - file_check:true
+                  docs:
+                    - The action used as codiion.
+                    - The action verify that USB-key is detected and readable.
+                  dependencies:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+              dependencies:
+                - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                  exec_name: cros_set_as_android_based
+                  docs:
+                    - Mark DUT as Android based.
+                - name: Set CacheService address
+                  exec_name: cache_service_address_detection
+                  exec_args:
+                    - cache_address:10.128.176.210:8082
+                  docs:
+                    - MH box does not have labservice, so we hard-code caceh addrress.
+                    - Remove when prototype developing finished
+                - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                  exec_name: servo_download_provision_image_to_usb
+                  exec_args:
+                    - os_image_path:v4
+                  docs:
+                    - This action calls servod to download provision image custom kernel to servo USB-key.
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                  exec_name: cros_provision_actions_from_recovery_mode
+                  exec_args:
+                    - run_android_install:true
+                    - run_cros_install:false
+                    - boot_timeout:150
+                    - boot_interval:10
+                    - boot_retry:1
+                    - ignore_reboot_failure:true
+                    - after_reboot_check:true
+                    - after_reboot_timeout:150
+                    - after_reboot_allow_use_servo_reset:true
+                  docs:
+                    - 'This action installs the test image on DUT utilizing '
+                    - 'the features of servo. DUT will be booted in recovery '
+                    - 'mode. In some cases RO FW is not allowed to boot in '
+                    - 'recovery mode with active PD, so we will change it to '
+                    - sink-mode if required.
+                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Try to wait device to be sshable after the device being rebooted.
+                    - Waiting time 150 seconds.
+                - name: ADB reconnect (ALWAYS_RUN)
+                  exec_name: ctr_adb_connect
+                  exec_args:
+                    - retry_count:3
+                    - retry_interval:3
+                    - timeout:5
+                  docs:
+                    - Connect to DUT by ADB if not connected.
+                    - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: ADB set Android as always awake (ALWAYS_RUN)
+                  exec_name: ctr_make_awake_always
+                  docs:
+                    - Set Android to be awake always.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
+                  docs:
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
         - name: Reset provisioned info (ALWAYS_RUN)
           exec_name: cros_reset_provision_info
           docs:
@@ -10380,11 +9502,15 @@ plans:
                   conditions:
                     - name: Is Android based (ALWAYS_RUN)
                       exec_name: cros_is_android_based
-            - name: Provision Android OS (time:'1h0m0s')
+            - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
               exec_name: ctr_foil_provision_install
               docs:
                 - The install performs real install Android on the DUT.
               conditions:
+                - name: Execution not on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_not_mh_box
+                  docs:
+                    - Check that the process is not running on Mobile Harness box.
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
                   docs:
@@ -10399,7 +9525,7 @@ plans:
                   docs:
                     - Pull and run foil-provision container
                   conditions:
-                    - name: Is not cloudbot (RUN_ONCE)
+                    - name: Execution not on CloudBot (RUN_ONCE)
                       exec_name: env_is_not_cloudbot
                       docs:
                         - Check that the process is not running on cloudbot.
@@ -10412,6 +9538,130 @@ plans:
                   exec_name: ctr_foil_provision_setup_service
                   docs:
                     - The setup method needs to be called once before performing install.
+            - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
+              exec_name: sample_pass
+              docs:
+                - Use provision image on USB-key to boot and get SSH access.
+                - Run specific install command to install Android OS.
+                - The logic is copy from foil-provision
+              conditions:
+                - name: Execution on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_mh_box
+                  docs:
+                    - Check that the process is running on Mobile Harness box.
+                - name: Is a Chromebook (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Is servod running (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Verify that servo host specified in setup and servod is running.
+                  dependencies:
+                    - name: Setup has servo info
+                      exec_name: dut_servo_host_present
+                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                      exec_name: servod_echo
+                      exec_args:
+                        - ssh_check:false
+                      conditions:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                  exec_name: cros_is_previous_android_based_or_os_type
+                  docs:
+                    - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                - name: Is servo USB key detected
+                  exec_name: servo_usbkey_is_detected
+                  exec_args:
+                    - file_check:true
+                  docs:
+                    - The action used as codiion.
+                    - The action verify that USB-key is detected and readable.
+                  dependencies:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+              dependencies:
+                - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                  exec_name: cros_set_as_android_based
+                  docs:
+                    - Mark DUT as Android based.
+                - name: Set CacheService address
+                  exec_name: cache_service_address_detection
+                  exec_args:
+                    - cache_address:10.128.176.210:8082
+                  docs:
+                    - MH box does not have labservice, so we hard-code caceh addrress.
+                    - Remove when prototype developing finished
+                - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                  exec_name: servo_download_provision_image_to_usb
+                  exec_args:
+                    - os_image_path:v4
+                  docs:
+                    - This action calls servod to download provision image custom kernel to servo USB-key.
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                  exec_name: cros_provision_actions_from_recovery_mode
+                  exec_args:
+                    - run_android_install:true
+                    - run_cros_install:false
+                    - boot_timeout:150
+                    - boot_interval:10
+                    - boot_retry:1
+                    - ignore_reboot_failure:true
+                    - after_reboot_check:true
+                    - after_reboot_timeout:150
+                    - after_reboot_allow_use_servo_reset:true
+                  docs:
+                    - 'This action installs the test image on DUT utilizing '
+                    - 'the features of servo. DUT will be booted in recovery '
+                    - 'mode. In some cases RO FW is not allowed to boot in '
+                    - 'recovery mode with active PD, so we will change it to '
+                    - sink-mode if required.
+                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Try to wait device to be sshable after the device being rebooted.
+                    - Waiting time 150 seconds.
+                - name: ADB reconnect (ALWAYS_RUN)
+                  exec_name: ctr_adb_connect
+                  exec_args:
+                    - retry_count:3
+                    - retry_interval:3
+                    - timeout:5
+                  docs:
+                    - Connect to DUT by ADB if not connected.
+                    - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: ADB set Android as always awake (ALWAYS_RUN)
+                  exec_name: ctr_make_awake_always
+                  docs:
+                    - Set Android to be awake always.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
+                  docs:
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
             - name: Quick provision OS
               exec_name: sample_pass
               docs:
@@ -10587,11 +9837,15 @@ plans:
                   conditions:
                     - name: Is Android based (ALWAYS_RUN)
                       exec_name: cros_is_android_based
-            - name: Provision Android OS (time:'1h0m0s')
+            - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
               exec_name: ctr_foil_provision_install
               docs:
                 - The install performs real install Android on the DUT.
               conditions:
+                - name: Execution not on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_not_mh_box
+                  docs:
+                    - Check that the process is not running on Mobile Harness box.
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
                   docs:
@@ -10606,7 +9860,7 @@ plans:
                   docs:
                     - Pull and run foil-provision container
                   conditions:
-                    - name: Is not cloudbot (RUN_ONCE)
+                    - name: Execution not on CloudBot (RUN_ONCE)
                       exec_name: env_is_not_cloudbot
                       docs:
                         - Check that the process is not running on cloudbot.
@@ -10619,6 +9873,130 @@ plans:
                   exec_name: ctr_foil_provision_setup_service
                   docs:
                     - The setup method needs to be called once before performing install.
+            - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
+              exec_name: sample_pass
+              docs:
+                - Use provision image on USB-key to boot and get SSH access.
+                - Run specific install command to install Android OS.
+                - The logic is copy from foil-provision
+              conditions:
+                - name: Execution on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_mh_box
+                  docs:
+                    - Check that the process is running on Mobile Harness box.
+                - name: Is a Chromebook (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Is servod running (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Verify that servo host specified in setup and servod is running.
+                  dependencies:
+                    - name: Setup has servo info
+                      exec_name: dut_servo_host_present
+                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                      exec_name: servod_echo
+                      exec_args:
+                        - ssh_check:false
+                      conditions:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                  exec_name: cros_is_previous_android_based_or_os_type
+                  docs:
+                    - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                - name: Is servo USB key detected
+                  exec_name: servo_usbkey_is_detected
+                  exec_args:
+                    - file_check:true
+                  docs:
+                    - The action used as codiion.
+                    - The action verify that USB-key is detected and readable.
+                  dependencies:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+              dependencies:
+                - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                  exec_name: cros_set_as_android_based
+                  docs:
+                    - Mark DUT as Android based.
+                - name: Set CacheService address
+                  exec_name: cache_service_address_detection
+                  exec_args:
+                    - cache_address:10.128.176.210:8082
+                  docs:
+                    - MH box does not have labservice, so we hard-code caceh addrress.
+                    - Remove when prototype developing finished
+                - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                  exec_name: servo_download_provision_image_to_usb
+                  exec_args:
+                    - os_image_path:v4
+                  docs:
+                    - This action calls servod to download provision image custom kernel to servo USB-key.
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                  exec_name: cros_provision_actions_from_recovery_mode
+                  exec_args:
+                    - run_android_install:true
+                    - run_cros_install:false
+                    - boot_timeout:150
+                    - boot_interval:10
+                    - boot_retry:1
+                    - ignore_reboot_failure:true
+                    - after_reboot_check:true
+                    - after_reboot_timeout:150
+                    - after_reboot_allow_use_servo_reset:true
+                  docs:
+                    - 'This action installs the test image on DUT utilizing '
+                    - 'the features of servo. DUT will be booted in recovery '
+                    - 'mode. In some cases RO FW is not allowed to boot in '
+                    - 'recovery mode with active PD, so we will change it to '
+                    - sink-mode if required.
+                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Try to wait device to be sshable after the device being rebooted.
+                    - Waiting time 150 seconds.
+                - name: ADB reconnect (ALWAYS_RUN)
+                  exec_name: ctr_adb_connect
+                  exec_args:
+                    - retry_count:3
+                    - retry_interval:3
+                    - timeout:5
+                  docs:
+                    - Connect to DUT by ADB if not connected.
+                    - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: ADB set Android as always awake (ALWAYS_RUN)
+                  exec_name: ctr_make_awake_always
+                  docs:
+                    - Set Android to be awake always.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
+                  docs:
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
             - name: Quick provision OS
               exec_name: sample_pass
               docs:

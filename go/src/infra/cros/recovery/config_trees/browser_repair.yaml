@@ -12,7 +12,7 @@ plans:
           docs:
             - Pull and run adb-base container
           conditions:
-            - name: Is not cloudbot (RUN_ONCE)
+            - name: Execution not on CloudBot (RUN_ONCE)
               exec_name: env_is_not_cloudbot
               docs:
                 - Check that the process is not running on cloudbot.
@@ -26,7 +26,7 @@ plans:
           docs:
             - Pull and run servo-nexus container
           conditions:
-            - name: Is not cloudbot (RUN_ONCE)
+            - name: Execution not on CloudBot (RUN_ONCE)
               exec_name: env_is_not_cloudbot
               docs:
                 - Check that the process is not running on cloudbot.
@@ -8563,6 +8563,130 @@ plans:
                   docs:
                     - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
+            - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
+              exec_name: sample_pass
+              docs:
+                - Use provision image on USB-key to boot and get SSH access.
+                - Run specific install command to install Android OS.
+                - The logic is copy from foil-provision
+              conditions:
+                - name: Execution on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_mh_box
+                  docs:
+                    - Check that the process is running on Mobile Harness box.
+                - name: Is a Chromebook (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Is servod running (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Verify that servo host specified in setup and servod is running.
+                  dependencies:
+                    - name: Setup has servo info
+                      exec_name: dut_servo_host_present
+                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                      exec_name: servod_echo
+                      exec_args:
+                        - ssh_check:false
+                      conditions:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                  exec_name: cros_is_previous_android_based_or_os_type
+                  docs:
+                    - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                - name: Is servo USB key detected
+                  exec_name: servo_usbkey_is_detected
+                  exec_args:
+                    - file_check:true
+                  docs:
+                    - The action used as codiion.
+                    - The action verify that USB-key is detected and readable.
+                  dependencies:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+              dependencies:
+                - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                  exec_name: cros_set_as_android_based
+                  docs:
+                    - Mark DUT as Android based.
+                - name: Set CacheService address
+                  exec_name: cache_service_address_detection
+                  exec_args:
+                    - cache_address:10.128.176.210:8082
+                  docs:
+                    - MH box does not have labservice, so we hard-code caceh addrress.
+                    - Remove when prototype developing finished
+                - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                  exec_name: servo_download_provision_image_to_usb
+                  exec_args:
+                    - os_image_path:v4
+                  docs:
+                    - This action calls servod to download provision image custom kernel to servo USB-key.
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                  exec_name: cros_provision_actions_from_recovery_mode
+                  exec_args:
+                    - run_android_install:true
+                    - run_cros_install:false
+                    - boot_timeout:150
+                    - boot_interval:10
+                    - boot_retry:1
+                    - ignore_reboot_failure:true
+                    - after_reboot_check:true
+                    - after_reboot_timeout:150
+                    - after_reboot_allow_use_servo_reset:true
+                  docs:
+                    - 'This action installs the test image on DUT utilizing '
+                    - 'the features of servo. DUT will be booted in recovery '
+                    - 'mode. In some cases RO FW is not allowed to boot in '
+                    - 'recovery mode with active PD, so we will change it to '
+                    - sink-mode if required.
+                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Try to wait device to be sshable after the device being rebooted.
+                    - Waiting time 150 seconds.
+                - name: ADB reconnect (ALWAYS_RUN)
+                  exec_name: ctr_adb_connect
+                  exec_args:
+                    - retry_count:3
+                    - retry_interval:3
+                    - timeout:5
+                  docs:
+                    - Connect to DUT by ADB if not connected.
+                    - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: ADB set Android as always awake (ALWAYS_RUN)
+                  exec_name: ctr_make_awake_always
+                  docs:
+                    - Set Android to be awake always.
+                  conditions:
+                    - name: Is Android based (ALWAYS_RUN)
+                      exec_name: cros_is_android_based
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
+                  docs:
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
             - name: Install OS in recovery mode by booting from servo USB-drive (no storage check) (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -9965,7 +10089,7 @@ plans:
           docs:
             - Mark DUT as Android, based on ADB responses.
           conditions:
-            - name: Is not cloudbot (RUN_ONCE)
+            - name: Execution not on CloudBot (RUN_ONCE)
               exec_name: env_is_not_cloudbot
               docs:
                 - Check that the process is not running on cloudbot.
@@ -26105,11 +26229,15 @@ plans:
               docs:
                 - Check if PROVISION repair-request is present.
               recoveries:
-                - name: Provision Android OS (time:'1h0m0s')
+                - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
+                    - name: Execution not on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                     - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
@@ -26124,7 +26252,7 @@ plans:
                       docs:
                         - Pull and run foil-provision container
                       conditions:
-                        - name: Is not cloudbot (RUN_ONCE)
+                        - name: Execution not on CloudBot (RUN_ONCE)
                           exec_name: env_is_not_cloudbot
                           docs:
                             - Check that the process is not running on cloudbot.
@@ -26137,6 +26265,130 @@ plans:
                       exec_name: ctr_foil_provision_setup_service
                       docs:
                         - The setup method needs to be called once before performing install.
+                - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Use provision image on USB-key to boot and get SSH access.
+                    - Run specific install command to install Android OS.
+                    - The logic is copy from foil-provision
+                  conditions:
+                    - name: Execution on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_mh_box
+                      docs:
+                        - Check that the process is running on Mobile Harness box.
+                    - name: Is a Chromebook (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:aurora,reven
+                        - invert_result:true
+                      docs:
+                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                    - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                      exec_name: cros_is_previous_android_based_or_os_type
+                      docs:
+                        - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                    - name: Is servo USB key detected
+                      exec_name: servo_usbkey_is_detected
+                      exec_args:
+                        - file_check:true
+                      docs:
+                        - The action used as codiion.
+                        - The action verify that USB-key is detected and readable.
+                      dependencies:
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                  dependencies:
+                    - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_set_as_android_based
+                      docs:
+                        - Mark DUT as Android based.
+                    - name: Set CacheService address
+                      exec_name: cache_service_address_detection
+                      exec_args:
+                        - cache_address:10.128.176.210:8082
+                      docs:
+                        - MH box does not have labservice, so we hard-code caceh addrress.
+                        - Remove when prototype developing finished
+                    - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                      exec_name: servo_download_provision_image_to_usb
+                      exec_args:
+                        - os_image_path:v4
+                      docs:
+                        - This action calls servod to download provision image custom kernel to servo USB-key.
+                    - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                      exec_name: cros_provision_actions_from_recovery_mode
+                      exec_args:
+                        - run_android_install:true
+                        - run_cros_install:false
+                        - boot_timeout:150
+                        - boot_interval:10
+                        - boot_retry:1
+                        - ignore_reboot_failure:true
+                        - after_reboot_check:true
+                        - after_reboot_timeout:150
+                        - after_reboot_allow_use_servo_reset:true
+                      docs:
+                        - 'This action installs the test image on DUT utilizing '
+                        - 'the features of servo. DUT will be booted in recovery '
+                        - 'mode. In some cases RO FW is not allowed to boot in '
+                        - 'recovery mode with active PD, so we will change it to '
+                        - sink-mode if required.
+                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Try to wait device to be sshable after the device being rebooted.
+                        - Waiting time 150 seconds.
+                    - name: ADB reconnect (ALWAYS_RUN)
+                      exec_name: ctr_adb_connect
+                      exec_args:
+                        - retry_count:3
+                        - retry_interval:3
+                        - timeout:5
+                      docs:
+                        - Connect to DUT by ADB if not connected.
+                        - Only executed if DUT is Android based.
+                      conditions:
+                        - name: Is Android based (ALWAYS_RUN)
+                          exec_name: cros_is_android_based
+                    - name: ADB set Android as always awake (ALWAYS_RUN)
+                      exec_name: ctr_make_awake_always
+                      docs:
+                        - Set Android to be awake always.
+                      conditions:
+                        - name: Is Android based (ALWAYS_RUN)
+                          exec_name: cros_is_android_based
+                    - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:PROVISION,REIMAGE_BY_USBKEY
+                      docs:
+                        - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
                 - name: Force reimage to ChromeOS in DEV mode (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -26144,6 +26396,10 @@ plans:
                     - 'Place repair-request: reflash firmware of the DUT and re-image by USB-drive.'
                     - The request will be applied when plan restarted and reached action to address it.
                   conditions:
+                    - name: Execution not on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                     - name: Is Android based (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                     - name: Is a Chromebook (RUN_ONCE)
@@ -84120,11 +84376,15 @@ plans:
                           conditions:
                             - name: Is Android based (ALWAYS_RUN)
                               exec_name: cros_is_android_based
-                    - name: Provision Android OS (time:'1h0m0s')
+                    - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
                       exec_name: ctr_foil_provision_install
                       docs:
                         - The install performs real install Android on the DUT.
                       conditions:
+                        - name: Execution not on Mobile Harness box (RUN_ONCE)
+                          exec_name: env_is_not_mh_box
+                          docs:
+                            - Check that the process is not running on Mobile Harness box.
                         - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                           exec_name: cros_is_previous_android_based_or_os_type
                           docs:
@@ -84139,7 +84399,7 @@ plans:
                           docs:
                             - Pull and run foil-provision container
                           conditions:
-                            - name: Is not cloudbot (RUN_ONCE)
+                            - name: Execution not on CloudBot (RUN_ONCE)
                               exec_name: env_is_not_cloudbot
                               docs:
                                 - Check that the process is not running on cloudbot.
@@ -84152,6 +84412,130 @@ plans:
                           exec_name: ctr_foil_provision_setup_service
                           docs:
                             - The setup method needs to be called once before performing install.
+                    - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Use provision image on USB-key to boot and get SSH access.
+                        - Run specific install command to install Android OS.
+                        - The logic is copy from foil-provision
+                      conditions:
+                        - name: Execution on Mobile Harness box (RUN_ONCE)
+                          exec_name: env_is_mh_box
+                          docs:
+                            - Check that the process is running on Mobile Harness box.
+                        - name: Is a Chromebook (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:true
+                          docs:
+                            - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                        - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                          exec_name: cros_is_previous_android_based_or_os_type
+                          docs:
+                            - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                        - name: Is servo USB key detected
+                          exec_name: servo_usbkey_is_detected
+                          exec_args:
+                            - file_check:true
+                          docs:
+                            - The action used as codiion.
+                            - The action verify that USB-key is detected and readable.
+                          dependencies:
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                      dependencies:
+                        - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                          exec_name: cros_set_as_android_based
+                          docs:
+                            - Mark DUT as Android based.
+                        - name: Set CacheService address
+                          exec_name: cache_service_address_detection
+                          exec_args:
+                            - cache_address:10.128.176.210:8082
+                          docs:
+                            - MH box does not have labservice, so we hard-code caceh addrress.
+                            - Remove when prototype developing finished
+                        - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                          exec_name: servo_download_provision_image_to_usb
+                          exec_args:
+                            - os_image_path:v4
+                          docs:
+                            - This action calls servod to download provision image custom kernel to servo USB-key.
+                        - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                          exec_name: cros_provision_actions_from_recovery_mode
+                          exec_args:
+                            - run_android_install:true
+                            - run_cros_install:false
+                            - boot_timeout:150
+                            - boot_interval:10
+                            - boot_retry:1
+                            - ignore_reboot_failure:true
+                            - after_reboot_check:true
+                            - after_reboot_timeout:150
+                            - after_reboot_allow_use_servo_reset:true
+                          docs:
+                            - 'This action installs the test image on DUT utilizing '
+                            - 'the features of servo. DUT will be booted in recovery '
+                            - 'mode. In some cases RO FW is not allowed to boot in '
+                            - 'recovery mode with active PD, so we will change it to '
+                            - sink-mode if required.
+                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ssh
+                          docs:
+                            - Try to wait device to be sshable after the device being rebooted.
+                            - Waiting time 150 seconds.
+                        - name: ADB reconnect (ALWAYS_RUN)
+                          exec_name: ctr_adb_connect
+                          exec_args:
+                            - retry_count:3
+                            - retry_interval:3
+                            - timeout:5
+                          docs:
+                            - Connect to DUT by ADB if not connected.
+                            - Only executed if DUT is Android based.
+                          conditions:
+                            - name: Is Android based (ALWAYS_RUN)
+                              exec_name: cros_is_android_based
+                        - name: ADB set Android as always awake (ALWAYS_RUN)
+                          exec_name: ctr_make_awake_always
+                          docs:
+                            - Set Android to be awake always.
+                          conditions:
+                            - name: Is Android based (ALWAYS_RUN)
+                              exec_name: cros_is_android_based
+                        - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:PROVISION,REIMAGE_BY_USBKEY
+                          docs:
+                            - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
                     - name: Quick provision OS
                       exec_name: sample_pass
                       docs:
@@ -84327,11 +84711,15 @@ plans:
                           conditions:
                             - name: Is Android based (ALWAYS_RUN)
                               exec_name: cros_is_android_based
-                    - name: Provision Android OS (time:'1h0m0s')
+                    - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
                       exec_name: ctr_foil_provision_install
                       docs:
                         - The install performs real install Android on the DUT.
                       conditions:
+                        - name: Execution not on Mobile Harness box (RUN_ONCE)
+                          exec_name: env_is_not_mh_box
+                          docs:
+                            - Check that the process is not running on Mobile Harness box.
                         - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                           exec_name: cros_is_previous_android_based_or_os_type
                           docs:
@@ -84346,7 +84734,7 @@ plans:
                           docs:
                             - Pull and run foil-provision container
                           conditions:
-                            - name: Is not cloudbot (RUN_ONCE)
+                            - name: Execution not on CloudBot (RUN_ONCE)
                               exec_name: env_is_not_cloudbot
                               docs:
                                 - Check that the process is not running on cloudbot.
@@ -84359,6 +84747,130 @@ plans:
                           exec_name: ctr_foil_provision_setup_service
                           docs:
                             - The setup method needs to be called once before performing install.
+                    - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Use provision image on USB-key to boot and get SSH access.
+                        - Run specific install command to install Android OS.
+                        - The logic is copy from foil-provision
+                      conditions:
+                        - name: Execution on Mobile Harness box (RUN_ONCE)
+                          exec_name: env_is_mh_box
+                          docs:
+                            - Check that the process is running on Mobile Harness box.
+                        - name: Is a Chromebook (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:true
+                          docs:
+                            - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                        - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                          exec_name: cros_is_previous_android_based_or_os_type
+                          docs:
+                            - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                        - name: Is servo USB key detected
+                          exec_name: servo_usbkey_is_detected
+                          exec_args:
+                            - file_check:true
+                          docs:
+                            - The action used as codiion.
+                            - The action verify that USB-key is detected and readable.
+                          dependencies:
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                      dependencies:
+                        - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                          exec_name: cros_set_as_android_based
+                          docs:
+                            - Mark DUT as Android based.
+                        - name: Set CacheService address
+                          exec_name: cache_service_address_detection
+                          exec_args:
+                            - cache_address:10.128.176.210:8082
+                          docs:
+                            - MH box does not have labservice, so we hard-code caceh addrress.
+                            - Remove when prototype developing finished
+                        - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                          exec_name: servo_download_provision_image_to_usb
+                          exec_args:
+                            - os_image_path:v4
+                          docs:
+                            - This action calls servod to download provision image custom kernel to servo USB-key.
+                        - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                          exec_name: cros_provision_actions_from_recovery_mode
+                          exec_args:
+                            - run_android_install:true
+                            - run_cros_install:false
+                            - boot_timeout:150
+                            - boot_interval:10
+                            - boot_retry:1
+                            - ignore_reboot_failure:true
+                            - after_reboot_check:true
+                            - after_reboot_timeout:150
+                            - after_reboot_allow_use_servo_reset:true
+                          docs:
+                            - 'This action installs the test image on DUT utilizing '
+                            - 'the features of servo. DUT will be booted in recovery '
+                            - 'mode. In some cases RO FW is not allowed to boot in '
+                            - 'recovery mode with active PD, so we will change it to '
+                            - sink-mode if required.
+                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ssh
+                          docs:
+                            - Try to wait device to be sshable after the device being rebooted.
+                            - Waiting time 150 seconds.
+                        - name: ADB reconnect (ALWAYS_RUN)
+                          exec_name: ctr_adb_connect
+                          exec_args:
+                            - retry_count:3
+                            - retry_interval:3
+                            - timeout:5
+                          docs:
+                            - Connect to DUT by ADB if not connected.
+                            - Only executed if DUT is Android based.
+                          conditions:
+                            - name: Is Android based (ALWAYS_RUN)
+                              exec_name: cros_is_android_based
+                        - name: ADB set Android as always awake (ALWAYS_RUN)
+                          exec_name: ctr_make_awake_always
+                          docs:
+                            - Set Android to be awake always.
+                          conditions:
+                            - name: Is Android based (ALWAYS_RUN)
+                              exec_name: cros_is_android_based
+                        - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:PROVISION,REIMAGE_BY_USBKEY
+                          docs:
+                            - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
                     - name: Quick provision OS
                       exec_name: sample_pass
                       docs:
@@ -95310,7 +95822,7 @@ plans:
                 - name: Is Android based (ALWAYS_RUN)
                   exec_name: cros_is_android_based
               recoveries:
-                - name: Reboot by ADB (Allow to fail)
+                - name: Reboot by ADB (Allow to fail) (ALWAYS_RUN)
                   exec_name: ctr_adb_command
                   exec_args:
                     - command:reboot
@@ -95366,11 +95878,15 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
-                - name: Provision Android OS (time:'1h0m0s')
+                - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
+                    - name: Execution not on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                     - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
@@ -95385,7 +95901,7 @@ plans:
                       docs:
                         - Pull and run foil-provision container
                       conditions:
-                        - name: Is not cloudbot (RUN_ONCE)
+                        - name: Execution not on CloudBot (RUN_ONCE)
                           exec_name: env_is_not_cloudbot
                           docs:
                             - Check that the process is not running on cloudbot.
@@ -95398,6 +95914,130 @@ plans:
                       exec_name: ctr_foil_provision_setup_service
                       docs:
                         - The setup method needs to be called once before performing install.
+                - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Use provision image on USB-key to boot and get SSH access.
+                    - Run specific install command to install Android OS.
+                    - The logic is copy from foil-provision
+                  conditions:
+                    - name: Execution on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_mh_box
+                      docs:
+                        - Check that the process is running on Mobile Harness box.
+                    - name: Is a Chromebook (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:aurora,reven
+                        - invert_result:true
+                      docs:
+                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                    - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                      exec_name: cros_is_previous_android_based_or_os_type
+                      docs:
+                        - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                    - name: Is servo USB key detected
+                      exec_name: servo_usbkey_is_detected
+                      exec_args:
+                        - file_check:true
+                      docs:
+                        - The action used as codiion.
+                        - The action verify that USB-key is detected and readable.
+                      dependencies:
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                  dependencies:
+                    - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_set_as_android_based
+                      docs:
+                        - Mark DUT as Android based.
+                    - name: Set CacheService address
+                      exec_name: cache_service_address_detection
+                      exec_args:
+                        - cache_address:10.128.176.210:8082
+                      docs:
+                        - MH box does not have labservice, so we hard-code caceh addrress.
+                        - Remove when prototype developing finished
+                    - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                      exec_name: servo_download_provision_image_to_usb
+                      exec_args:
+                        - os_image_path:v4
+                      docs:
+                        - This action calls servod to download provision image custom kernel to servo USB-key.
+                    - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                      exec_name: cros_provision_actions_from_recovery_mode
+                      exec_args:
+                        - run_android_install:true
+                        - run_cros_install:false
+                        - boot_timeout:150
+                        - boot_interval:10
+                        - boot_retry:1
+                        - ignore_reboot_failure:true
+                        - after_reboot_check:true
+                        - after_reboot_timeout:150
+                        - after_reboot_allow_use_servo_reset:true
+                      docs:
+                        - 'This action installs the test image on DUT utilizing '
+                        - 'the features of servo. DUT will be booted in recovery '
+                        - 'mode. In some cases RO FW is not allowed to boot in '
+                        - 'recovery mode with active PD, so we will change it to '
+                        - sink-mode if required.
+                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Try to wait device to be sshable after the device being rebooted.
+                        - Waiting time 150 seconds.
+                    - name: ADB reconnect (ALWAYS_RUN)
+                      exec_name: ctr_adb_connect
+                      exec_args:
+                        - retry_count:3
+                        - retry_interval:3
+                        - timeout:5
+                      docs:
+                        - Connect to DUT by ADB if not connected.
+                        - Only executed if DUT is Android based.
+                      conditions:
+                        - name: Is Android based (ALWAYS_RUN)
+                          exec_name: cros_is_android_based
+                    - name: ADB set Android as always awake (ALWAYS_RUN)
+                      exec_name: ctr_make_awake_always
+                      docs:
+                        - Set Android to be awake always.
+                      conditions:
+                        - name: Is Android based (ALWAYS_RUN)
+                          exec_name: cros_is_android_based
+                    - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:PROVISION,REIMAGE_BY_USBKEY
+                      docs:
+                        - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
                 - name: Reset servo_v4.1 ethernet and wait for ping (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -95505,6 +96145,10 @@ plans:
                     - 'Place repair-request: reflash firmware of the DUT and re-image by USB-drive.'
                     - The request will be applied when plan restarted and reached action to address it.
                   conditions:
+                    - name: Execution not on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                     - name: Is Android based (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                     - name: Is a Chromebook (RUN_ONCE)
@@ -96050,7 +96694,7 @@ plans:
                         - requests:PROVISION,REIMAGE_BY_USBKEY
                       docs:
                         - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
-            - name: ADB set Android as always awake
+            - name: ADB set Android as always awake (ALWAYS_RUN)
               exec_name: ctr_make_awake_always
               docs:
                 - Set Android to be awake always.
@@ -96058,7 +96702,7 @@ plans:
                 - name: Is Android based (ALWAYS_RUN)
                   exec_name: cros_is_android_based
               recoveries:
-                - name: Reboot by ADB (Allow to fail)
+                - name: Reboot by ADB (Allow to fail) (ALWAYS_RUN)
                   exec_name: ctr_adb_command
                   exec_args:
                     - command:reboot
@@ -96114,11 +96758,15 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
-                - name: Provision Android OS (time:'1h0m0s')
+                - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
+                    - name: Execution not on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                     - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
@@ -96133,7 +96781,7 @@ plans:
                       docs:
                         - Pull and run foil-provision container
                       conditions:
-                        - name: Is not cloudbot (RUN_ONCE)
+                        - name: Execution not on CloudBot (RUN_ONCE)
                           exec_name: env_is_not_cloudbot
                           docs:
                             - Check that the process is not running on cloudbot.
@@ -96146,6 +96794,130 @@ plans:
                       exec_name: ctr_foil_provision_setup_service
                       docs:
                         - The setup method needs to be called once before performing install.
+                - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Use provision image on USB-key to boot and get SSH access.
+                    - Run specific install command to install Android OS.
+                    - The logic is copy from foil-provision
+                  conditions:
+                    - name: Execution on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_mh_box
+                      docs:
+                        - Check that the process is running on Mobile Harness box.
+                    - name: Is a Chromebook (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:aurora,reven
+                        - invert_result:true
+                      docs:
+                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                    - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                      exec_name: cros_is_previous_android_based_or_os_type
+                      docs:
+                        - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                    - name: Is servo USB key detected
+                      exec_name: servo_usbkey_is_detected
+                      exec_args:
+                        - file_check:true
+                      docs:
+                        - The action used as codiion.
+                        - The action verify that USB-key is detected and readable.
+                      dependencies:
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                  dependencies:
+                    - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_set_as_android_based
+                      docs:
+                        - Mark DUT as Android based.
+                    - name: Set CacheService address
+                      exec_name: cache_service_address_detection
+                      exec_args:
+                        - cache_address:10.128.176.210:8082
+                      docs:
+                        - MH box does not have labservice, so we hard-code caceh addrress.
+                        - Remove when prototype developing finished
+                    - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                      exec_name: servo_download_provision_image_to_usb
+                      exec_args:
+                        - os_image_path:v4
+                      docs:
+                        - This action calls servod to download provision image custom kernel to servo USB-key.
+                    - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                      exec_name: cros_provision_actions_from_recovery_mode
+                      exec_args:
+                        - run_android_install:true
+                        - run_cros_install:false
+                        - boot_timeout:150
+                        - boot_interval:10
+                        - boot_retry:1
+                        - ignore_reboot_failure:true
+                        - after_reboot_check:true
+                        - after_reboot_timeout:150
+                        - after_reboot_allow_use_servo_reset:true
+                      docs:
+                        - 'This action installs the test image on DUT utilizing '
+                        - 'the features of servo. DUT will be booted in recovery '
+                        - 'mode. In some cases RO FW is not allowed to boot in '
+                        - 'recovery mode with active PD, so we will change it to '
+                        - sink-mode if required.
+                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Try to wait device to be sshable after the device being rebooted.
+                        - Waiting time 150 seconds.
+                    - name: ADB reconnect (ALWAYS_RUN)
+                      exec_name: ctr_adb_connect
+                      exec_args:
+                        - retry_count:3
+                        - retry_interval:3
+                        - timeout:5
+                      docs:
+                        - Connect to DUT by ADB if not connected.
+                        - Only executed if DUT is Android based.
+                      conditions:
+                        - name: Is Android based (ALWAYS_RUN)
+                          exec_name: cros_is_android_based
+                    - name: ADB set Android as always awake (ALWAYS_RUN)
+                      exec_name: ctr_make_awake_always
+                      docs:
+                        - Set Android to be awake always.
+                      conditions:
+                        - name: Is Android based (ALWAYS_RUN)
+                          exec_name: cros_is_android_based
+                    - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:PROVISION,REIMAGE_BY_USBKEY
+                      docs:
+                        - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
                 - name: Reset servo_v4.1 ethernet and wait for ping (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -96253,6 +97025,10 @@ plans:
                     - 'Place repair-request: reflash firmware of the DUT and re-image by USB-drive.'
                     - The request will be applied when plan restarted and reached action to address it.
                   conditions:
+                    - name: Execution not on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                     - name: Is Android based (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                     - name: Is a Chromebook (RUN_ONCE)
@@ -96821,11 +97597,15 @@ plans:
               docs:
                 - Check if PROVISION repair-request is present.
               recoveries:
-                - name: Provision Android OS (time:'1h0m0s')
+                - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
+                    - name: Execution not on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                     - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
@@ -96840,7 +97620,7 @@ plans:
                       docs:
                         - Pull and run foil-provision container
                       conditions:
-                        - name: Is not cloudbot (RUN_ONCE)
+                        - name: Execution not on CloudBot (RUN_ONCE)
                           exec_name: env_is_not_cloudbot
                           docs:
                             - Check that the process is not running on cloudbot.
@@ -96853,6 +97633,130 @@ plans:
                       exec_name: ctr_foil_provision_setup_service
                       docs:
                         - The setup method needs to be called once before performing install.
+                - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Use provision image on USB-key to boot and get SSH access.
+                    - Run specific install command to install Android OS.
+                    - The logic is copy from foil-provision
+                  conditions:
+                    - name: Execution on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_mh_box
+                      docs:
+                        - Check that the process is running on Mobile Harness box.
+                    - name: Is a Chromebook (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:aurora,reven
+                        - invert_result:true
+                      docs:
+                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                    - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                      exec_name: cros_is_previous_android_based_or_os_type
+                      docs:
+                        - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                    - name: Is servo USB key detected
+                      exec_name: servo_usbkey_is_detected
+                      exec_args:
+                        - file_check:true
+                      docs:
+                        - The action used as codiion.
+                        - The action verify that USB-key is detected and readable.
+                      dependencies:
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                  dependencies:
+                    - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_set_as_android_based
+                      docs:
+                        - Mark DUT as Android based.
+                    - name: Set CacheService address
+                      exec_name: cache_service_address_detection
+                      exec_args:
+                        - cache_address:10.128.176.210:8082
+                      docs:
+                        - MH box does not have labservice, so we hard-code caceh addrress.
+                        - Remove when prototype developing finished
+                    - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                      exec_name: servo_download_provision_image_to_usb
+                      exec_args:
+                        - os_image_path:v4
+                      docs:
+                        - This action calls servod to download provision image custom kernel to servo USB-key.
+                    - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                      exec_name: cros_provision_actions_from_recovery_mode
+                      exec_args:
+                        - run_android_install:true
+                        - run_cros_install:false
+                        - boot_timeout:150
+                        - boot_interval:10
+                        - boot_retry:1
+                        - ignore_reboot_failure:true
+                        - after_reboot_check:true
+                        - after_reboot_timeout:150
+                        - after_reboot_allow_use_servo_reset:true
+                      docs:
+                        - 'This action installs the test image on DUT utilizing '
+                        - 'the features of servo. DUT will be booted in recovery '
+                        - 'mode. In some cases RO FW is not allowed to boot in '
+                        - 'recovery mode with active PD, so we will change it to '
+                        - sink-mode if required.
+                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Try to wait device to be sshable after the device being rebooted.
+                        - Waiting time 150 seconds.
+                    - name: ADB reconnect (ALWAYS_RUN)
+                      exec_name: ctr_adb_connect
+                      exec_args:
+                        - retry_count:3
+                        - retry_interval:3
+                        - timeout:5
+                      docs:
+                        - Connect to DUT by ADB if not connected.
+                        - Only executed if DUT is Android based.
+                      conditions:
+                        - name: Is Android based (ALWAYS_RUN)
+                          exec_name: cros_is_android_based
+                    - name: ADB set Android as always awake (ALWAYS_RUN)
+                      exec_name: ctr_make_awake_always
+                      docs:
+                        - Set Android to be awake always.
+                      conditions:
+                        - name: Is Android based (ALWAYS_RUN)
+                          exec_name: cros_is_android_based
+                    - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:PROVISION,REIMAGE_BY_USBKEY
+                      docs:
+                        - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
                 - name: Force reimage to ChromeOS in DEV mode (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -96860,6 +97764,10 @@ plans:
                     - 'Place repair-request: reflash firmware of the DUT and re-image by USB-drive.'
                     - The request will be applied when plan restarted and reached action to address it.
                   conditions:
+                    - name: Execution not on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                     - name: Is Android based (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                     - name: Is a Chromebook (RUN_ONCE)
@@ -98587,11 +99495,15 @@ plans:
                       conditions:
                         - name: Is Android based (ALWAYS_RUN)
                           exec_name: cros_is_android_based
-                - name: Provision Android OS (time:'1h0m0s')
+                - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
+                    - name: Execution not on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                     - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
@@ -98606,7 +99518,7 @@ plans:
                       docs:
                         - Pull and run foil-provision container
                       conditions:
-                        - name: Is not cloudbot (RUN_ONCE)
+                        - name: Execution not on CloudBot (RUN_ONCE)
                           exec_name: env_is_not_cloudbot
                           docs:
                             - Check that the process is not running on cloudbot.
@@ -98619,6 +99531,130 @@ plans:
                       exec_name: ctr_foil_provision_setup_service
                       docs:
                         - The setup method needs to be called once before performing install.
+                - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Use provision image on USB-key to boot and get SSH access.
+                    - Run specific install command to install Android OS.
+                    - The logic is copy from foil-provision
+                  conditions:
+                    - name: Execution on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_mh_box
+                      docs:
+                        - Check that the process is running on Mobile Harness box.
+                    - name: Is a Chromebook (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:aurora,reven
+                        - invert_result:true
+                      docs:
+                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                    - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                      exec_name: cros_is_previous_android_based_or_os_type
+                      docs:
+                        - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                    - name: Is servo USB key detected
+                      exec_name: servo_usbkey_is_detected
+                      exec_args:
+                        - file_check:true
+                      docs:
+                        - The action used as codiion.
+                        - The action verify that USB-key is detected and readable.
+                      dependencies:
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                  dependencies:
+                    - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_set_as_android_based
+                      docs:
+                        - Mark DUT as Android based.
+                    - name: Set CacheService address
+                      exec_name: cache_service_address_detection
+                      exec_args:
+                        - cache_address:10.128.176.210:8082
+                      docs:
+                        - MH box does not have labservice, so we hard-code caceh addrress.
+                        - Remove when prototype developing finished
+                    - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                      exec_name: servo_download_provision_image_to_usb
+                      exec_args:
+                        - os_image_path:v4
+                      docs:
+                        - This action calls servod to download provision image custom kernel to servo USB-key.
+                    - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                      exec_name: cros_provision_actions_from_recovery_mode
+                      exec_args:
+                        - run_android_install:true
+                        - run_cros_install:false
+                        - boot_timeout:150
+                        - boot_interval:10
+                        - boot_retry:1
+                        - ignore_reboot_failure:true
+                        - after_reboot_check:true
+                        - after_reboot_timeout:150
+                        - after_reboot_allow_use_servo_reset:true
+                      docs:
+                        - 'This action installs the test image on DUT utilizing '
+                        - 'the features of servo. DUT will be booted in recovery '
+                        - 'mode. In some cases RO FW is not allowed to boot in '
+                        - 'recovery mode with active PD, so we will change it to '
+                        - sink-mode if required.
+                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Try to wait device to be sshable after the device being rebooted.
+                        - Waiting time 150 seconds.
+                    - name: ADB reconnect (ALWAYS_RUN)
+                      exec_name: ctr_adb_connect
+                      exec_args:
+                        - retry_count:3
+                        - retry_interval:3
+                        - timeout:5
+                      docs:
+                        - Connect to DUT by ADB if not connected.
+                        - Only executed if DUT is Android based.
+                      conditions:
+                        - name: Is Android based (ALWAYS_RUN)
+                          exec_name: cros_is_android_based
+                    - name: ADB set Android as always awake (ALWAYS_RUN)
+                      exec_name: ctr_make_awake_always
+                      docs:
+                        - Set Android to be awake always.
+                      conditions:
+                        - name: Is Android based (ALWAYS_RUN)
+                          exec_name: cros_is_android_based
+                    - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:PROVISION,REIMAGE_BY_USBKEY
+                      docs:
+                        - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
                 - name: Quick provision OS
                   exec_name: sample_pass
                   docs:
@@ -98794,11 +99830,15 @@ plans:
                       conditions:
                         - name: Is Android based (ALWAYS_RUN)
                           exec_name: cros_is_android_based
-                - name: Provision Android OS (time:'1h0m0s')
+                - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
                   exec_name: ctr_foil_provision_install
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
+                    - name: Execution not on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                     - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                       exec_name: cros_is_previous_android_based_or_os_type
                       docs:
@@ -98813,7 +99853,7 @@ plans:
                       docs:
                         - Pull and run foil-provision container
                       conditions:
-                        - name: Is not cloudbot (RUN_ONCE)
+                        - name: Execution not on CloudBot (RUN_ONCE)
                           exec_name: env_is_not_cloudbot
                           docs:
                             - Check that the process is not running on cloudbot.
@@ -98826,6 +99866,130 @@ plans:
                       exec_name: ctr_foil_provision_setup_service
                       docs:
                         - The setup method needs to be called once before performing install.
+                - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Use provision image on USB-key to boot and get SSH access.
+                    - Run specific install command to install Android OS.
+                    - The logic is copy from foil-provision
+                  conditions:
+                    - name: Execution on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_mh_box
+                      docs:
+                        - Check that the process is running on Mobile Harness box.
+                    - name: Is a Chromebook (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:aurora,reven
+                        - invert_result:true
+                      docs:
+                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                    - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                      exec_name: cros_is_previous_android_based_or_os_type
+                      docs:
+                        - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                    - name: Is servo USB key detected
+                      exec_name: servo_usbkey_is_detected
+                      exec_args:
+                        - file_check:true
+                      docs:
+                        - The action used as codiion.
+                        - The action verify that USB-key is detected and readable.
+                      dependencies:
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                  dependencies:
+                    - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_set_as_android_based
+                      docs:
+                        - Mark DUT as Android based.
+                    - name: Set CacheService address
+                      exec_name: cache_service_address_detection
+                      exec_args:
+                        - cache_address:10.128.176.210:8082
+                      docs:
+                        - MH box does not have labservice, so we hard-code caceh addrress.
+                        - Remove when prototype developing finished
+                    - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                      exec_name: servo_download_provision_image_to_usb
+                      exec_args:
+                        - os_image_path:v4
+                      docs:
+                        - This action calls servod to download provision image custom kernel to servo USB-key.
+                    - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                      exec_name: cros_provision_actions_from_recovery_mode
+                      exec_args:
+                        - run_android_install:true
+                        - run_cros_install:false
+                        - boot_timeout:150
+                        - boot_interval:10
+                        - boot_retry:1
+                        - ignore_reboot_failure:true
+                        - after_reboot_check:true
+                        - after_reboot_timeout:150
+                        - after_reboot_allow_use_servo_reset:true
+                      docs:
+                        - 'This action installs the test image on DUT utilizing '
+                        - 'the features of servo. DUT will be booted in recovery '
+                        - 'mode. In some cases RO FW is not allowed to boot in '
+                        - 'recovery mode with active PD, so we will change it to '
+                        - sink-mode if required.
+                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Try to wait device to be sshable after the device being rebooted.
+                        - Waiting time 150 seconds.
+                    - name: ADB reconnect (ALWAYS_RUN)
+                      exec_name: ctr_adb_connect
+                      exec_args:
+                        - retry_count:3
+                        - retry_interval:3
+                        - timeout:5
+                      docs:
+                        - Connect to DUT by ADB if not connected.
+                        - Only executed if DUT is Android based.
+                      conditions:
+                        - name: Is Android based (ALWAYS_RUN)
+                          exec_name: cros_is_android_based
+                    - name: ADB set Android as always awake (ALWAYS_RUN)
+                      exec_name: ctr_make_awake_always
+                      docs:
+                        - Set Android to be awake always.
+                      conditions:
+                        - name: Is Android based (ALWAYS_RUN)
+                          exec_name: cros_is_android_based
+                    - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:PROVISION,REIMAGE_BY_USBKEY
+                      docs:
+                        - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
                 - name: Quick provision OS
                   exec_name: sample_pass
                   docs:

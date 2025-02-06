@@ -44,6 +44,7 @@ func androidActions(actions map[string]*Action) {
 				"Reboot by ADB",
 				"Cold reset by servo and wait for ping",
 				"Provision Android OS",
+				"Install Android OS by booting from servo USB-drive",
 				"Reset servo_v4.1 ethernet and wait for ping",
 				"Power cycle DUT by RPM and wait for ping",
 				"Force reimage to ChromeOS in DEV mode",
@@ -57,11 +58,13 @@ func androidActions(actions map[string]*Action) {
 			Conditions: []string{
 				"Is Android based",
 			},
-			ExecName: "ctr_make_awake_always",
+			ExecName:   "ctr_make_awake_always",
+			RunControl: RunControl_ALWAYS_RUN,
 			RecoveryActions: []string{
 				"Reboot by ADB",
 				"Cold reset by servo and wait for ping",
 				"Provision Android OS",
+				"Install Android OS by booting from servo USB-drive",
 				"Reset servo_v4.1 ethernet and wait for ping",
 				"Power cycle DUT by RPM and wait for ping",
 				"Force reimage to ChromeOS in DEV mode",
@@ -82,6 +85,10 @@ func androidActions(actions map[string]*Action) {
 				"retry_count:3",
 				"retry_interval:3",
 				"timeout:5",
+			},
+			RecoveryActions: []string{
+				"Cold reset by servo and wait for ping",
+				"Install Android OS by booting from servo USB-drive",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
@@ -112,6 +119,7 @@ func androidActions(actions map[string]*Action) {
 			ExecExtraArgs: []string{
 				"command:reboot",
 			},
+			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
 		"Is Android based on previous DUT OS": {
@@ -138,6 +146,7 @@ func androidActions(actions map[string]*Action) {
 				"The install performs real install Android on the DUT.",
 			},
 			Conditions: []string{
+				"Execution not on Mobile Harness box",
 				"Is Android based by ADB or provision-info",
 			},
 			Dependencies: []string{
@@ -151,6 +160,66 @@ func androidActions(actions map[string]*Action) {
 				// Set 1 hour just in case.
 				Seconds: 3600,
 			},
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Install Android OS by booting from servo USB-drive": {
+			Docs: []string{
+				"Use provision image on USB-key to boot and get SSH access.",
+				"Run specific install command to install Android OS.",
+				"The logic is copy from foil-provision",
+			},
+			Conditions: []string{
+				"Execution on Mobile Harness box",
+				"Is a Chromebook",
+				"Is servod running",
+				"Is Android based by ADB or provision-info",
+				"Is servo USB key detected",
+			},
+			Dependencies: []string{
+				"Mark as Android based",
+				"Set CacheService address",
+				"Call servod to download provision image to USB-key",
+				"Boot on USB-key and install AndroidOS",
+				"Wait to be SSHable (normal boot)",
+				"ADB reconnect",
+				"ADB set Android as always awake",
+				"Remove REIMAGE_BY_USBKEY repair-request",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Set CacheService address": {
+			Docs: []string{
+				"MH box does not have labservice, so we hard-code caceh addrress.",
+				"Remove when prototype developing finished",
+			},
+			ExecName: "cache_service_address_detection",
+			ExecExtraArgs: []string{
+				"cache_address:10.128.176.210:8082",
+			},
+		},
+		"Boot on USB-key and install AndroidOS": {
+			Docs: []string{
+				"This action installs the test image on DUT utilizing ",
+				"the features of servo. DUT will be booted in recovery ",
+				"mode. In some cases RO FW is not allowed to boot in ",
+				"recovery mode with active PD, so we will change it to ",
+				"sink-mode if required.",
+			},
+			ExecName: "cros_provision_actions_from_recovery_mode",
+			ExecExtraArgs: []string{
+				"run_android_install:true",
+				"run_cros_install:false",
+				"boot_timeout:150",
+				"boot_interval:10",
+				"boot_retry:1",
+				"ignore_reboot_failure:true",
+				"after_reboot_check:true",
+				"after_reboot_timeout:150",
+				"after_reboot_allow_use_servo_reset:true",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 8000},
+			RunControl:  RunControl_ALWAYS_RUN,
 		},
 	}
 	for k, v := range am {

@@ -25,7 +25,7 @@ func addCrosCftContainers(actions map[string]*Action) {
 				"Pull and run adb-base container",
 			},
 			Conditions: []string{
-				"Is not cloudbot",
+				"Execution not on CloudBot",
 				"CrosToolRunner is up",
 			},
 			ExecName:    "ctr_start_adb_container",
@@ -43,7 +43,7 @@ func addCrosCftContainers(actions map[string]*Action) {
 				"Pull and run servo-nexus container",
 			},
 			Conditions: []string{
-				"Is not cloudbot",
+				"Execution not on CloudBot",
 				"Testbed has Servo",
 				"CrosToolRunner is up",
 			},
@@ -62,7 +62,7 @@ func addCrosCftContainers(actions map[string]*Action) {
 				"Pull and run foil-provision container",
 			},
 			Conditions: []string{
-				"Is not cloudbot",
+				"Execution not on CloudBot",
 				"CrosToolRunner is up",
 			},
 			ExecName: "ctr_start_foil_provision_container",

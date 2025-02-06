@@ -12,7 +12,7 @@ plans:
           docs:
             - Pull and run adb-base container
           conditions:
-            - name: Is not cloudbot (RUN_ONCE)
+            - name: Execution not on CloudBot (RUN_ONCE)
               exec_name: env_is_not_cloudbot
               docs:
                 - Check that the process is not running on cloudbot.
@@ -26,7 +26,7 @@ plans:
           docs:
             - Pull and run servo-nexus container
           conditions:
-            - name: Is not cloudbot (RUN_ONCE)
+            - name: Execution not on CloudBot (RUN_ONCE)
               exec_name: env_is_not_cloudbot
               docs:
                 - Check that the process is not running on cloudbot.
@@ -49,7 +49,7 @@ plans:
           docs:
             - Mark DUT as Android, based on ADB responses.
           conditions:
-            - name: Is not cloudbot (RUN_ONCE)
+            - name: Execution not on CloudBot (RUN_ONCE)
               exec_name: env_is_not_cloudbot
               docs:
                 - Check that the process is not running on cloudbot.

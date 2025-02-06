@@ -476,18 +476,16 @@ func runDUTPlans(ctx context.Context, dut *tlw.Dut, c *config.Configuration, arg
 
 // runSinglePlan run single plan for all resources associated with plan.
 func runSinglePlan(ctx context.Context, planName string, plan *config.Plan, execArgs *execs.RunArgs, metricSaver metrics.MetricSaver) error {
-	log.Infof(ctx, "------====================-----")
-	log.Infof(ctx, "Run plan %q: starting...", planName)
-	log.Infof(ctx, "------====================-----")
 	resources := collectResourcesForPlan(planName, execArgs.DUT)
 	if len(resources) == 0 {
 		log.Infof(ctx, "Run plan %q: no resources found.", planName)
 		return nil
 	}
+	log.Infof(ctx, "------====================-----")
+	log.Infof(ctx, "Run plan %q: starting...", planName)
+	log.Infof(ctx, "------====================-----")
 	for _, resource := range resources {
-		if len(resources) > 1 {
-			log.Infof(ctx, "Prepare plan %q for %q.", planName, resource)
-		}
+		log.Infof(ctx, "Prepare plan %q for %q.", planName, resource)
 		if err := runDUTPlanPerResource(ctx, resource, planName, plan, execArgs, metricSaver); err != nil {
 			log.Infof(ctx, "Run %q plan for %q: finished with error: %s.", planName, resource, err)
 			if plan.GetAllowFail() {
