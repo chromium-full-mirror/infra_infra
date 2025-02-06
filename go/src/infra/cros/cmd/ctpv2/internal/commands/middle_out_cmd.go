@@ -255,6 +255,7 @@ type hwInfo struct {
 	labDevices         int64
 	shardHarness       string
 	dimsExcludingReady []string
+	publishKeys        []*api.PublishKey
 }
 
 // Kv structs are useful for gobased sorting.
@@ -409,6 +410,7 @@ func createTrRequests(distro map[uint64][][]string, solverData *middleOutData) (
 
 			// TODO; when HwRequirements is fully deprecated, remove `Req`.
 
+			solverData.flatHWUUIDMap[k].req.PublishKeys = solverData.flatHWUUIDMap[k].publishKeys
 			trReq := &data.TrRequest{
 				Req:    solverData.flatHWUUIDMap[k].oldReq,
 				NewReq: solverData.flatHWUUIDMap[k].req,
@@ -1136,6 +1138,7 @@ func flattenList(ctx context.Context, allHw []*api.SchedulingUnitOptions) map[ui
 				req:           flattened,
 				hwValue:       hashForSchedulingUnit(innerHW),
 				matchingValue: hashForSchedulingUnit(innerHW),
+				publishKeys:   hw.GetPublishKeys(),
 			}
 
 			flatHW[flattenedHash] = newHwInfo

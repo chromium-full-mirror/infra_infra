@@ -83,6 +83,7 @@ type DynamicTrv2Builder struct {
 	IsALRun          bool
 	BotDims          []*buildbucketpb.StringPair
 	BuildExperiments []string
+	PublishKeys      []*api.PublishKey
 }
 
 // BuildRequest constructs the trv2 dynamic CrosTestRunnerDynamicRequest.

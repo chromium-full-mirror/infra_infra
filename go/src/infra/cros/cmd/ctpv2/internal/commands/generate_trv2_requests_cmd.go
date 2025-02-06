@@ -291,12 +291,14 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateReq(ctx context.Context, trReq *data
 	var TrReqhwDef *api.SwarmingDefinition
 	TrReqhwDef = nil
 
+	var publishKeys []*api.PublishKey
 	var schedUnit *api.SchedulingUnit
 	schedUnit = nil
 	if trReq.NewReq != nil && len(trReq.NewReq.GetSchedulingUnits()) != 0 {
 		// '0'ed index because we should always have one hw here. It supports multiple
 		// MO should reduce it down to 1 always. The len check is done at MO step.
 		schedUnit = trReq.NewReq.GetSchedulingUnits()[0]
+		publishKeys = trReq.NewReq.GetPublishKeys()
 	} else {
 		// '0'ed index because we should always have one hw here. It supports multiple
 		// MO should reduce it down to 1 always. The len check is done at MO step.
@@ -340,6 +342,7 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateReq(ctx context.Context, trReq *data
 		envVersion:           cmd.EnvVersion,
 		firestoreDBName:      cmd.FirestoreDBName,
 		is3DRun:              cmd.InternalTestPlan.GetSuiteInfo().GetSuiteRequest().GetDddSuite(),
+		publishKeys:          publishKeys,
 	}
 
 	req, err := GenerateTrv2Req(ctx, false, helper, common.IsLedRun(cmd.BuildState.Build().GetBuilder()))

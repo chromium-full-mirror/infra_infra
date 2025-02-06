@@ -778,6 +778,7 @@ func DefaultDynamicRdbPublishTaskWrapper(gsPath string, isDeploymentDirty, is3DR
 			),
 			PostProcessResponses:      &api.RunActivitiesResponse{},
 			FirmwareProvisionResponse: &api.FirmwareProvisionResponse{},
+			PublishKeys:               builder.PublishKeys,
 		})
 		return []*api.CrosTestRunnerDynamicRequest_Task{
 			{

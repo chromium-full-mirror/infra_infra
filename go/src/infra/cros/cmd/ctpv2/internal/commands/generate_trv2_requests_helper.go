@@ -77,6 +77,7 @@ type TrV2ReqHelper struct {
 	// is prod or something else.
 	envVersion      string
 	firestoreDBName string
+	publishKeys     []*testapi.PublishKey
 
 	// Other fields often used several times throughout.
 	suiteName        string
@@ -747,6 +748,7 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*te
 		IsALRun:          trHelper.isAlRun,
 		BotDims:          botDims,
 		BuildExperiments: trHelper.build.Build().GetInput().GetExperiments(),
+		PublishKeys:      trHelper.publishKeys,
 	}
 
 	dynamicRequest, err := builder.BuildRequest(ctx, trHelper.isAlRun)
