@@ -12,6 +12,7 @@ import (
 	"io"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -399,7 +400,17 @@ func waitOnBuilds(ctx context.Context, spec *buildSpec, stepName string, buildID
 			}
 		}
 	}
-	step.SetSummaryMarkdown(summary.String())
+	within4KB := func(s string) string {
+		if len(s) <= 4000 {
+			return s
+		}
+		const suffix = "… (concatenated summary trimmed at 4 KB; see individual builds for more details)"
+		var i int
+		for ; !utf8.RuneStart(s[4000-len(suffix)-i]); i++ { // Walk back to nearest UTF-8 rune start.
+		}
+		return s[:4000-len(suffix)-i] + suffix
+	}
+	step.SetSummaryMarkdown(within4KB(summary.String()))
 
 	// Report an error for regular test failure or infra failure.
 	if len(failures) == 0 {
