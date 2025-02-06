@@ -254,6 +254,7 @@ func crosRepairActions() map[string]*Action {
 				"Cold reset by servo and wait for ping",
 				"Reset servo_v4.1 ethernet and wait for ping",
 				"Install Android OS by booting from servo USB-drive",
+				"Update FW and install Android OS from servo USB-drive",
 				"Check if request labstation reboot",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
@@ -603,6 +604,7 @@ func crosRepairActions() map[string]*Action {
 			RecoveryActions: []string{
 				"Provision Android OS",
 				"Install Android OS by booting from servo USB-drive",
+				"Update FW and install Android OS from servo USB-drive",
 			},
 		},
 		"Has repair-request for re-image USB-key": {

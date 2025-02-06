@@ -162,6 +162,41 @@ func androidActions(actions map[string]*Action) {
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
+		"Update FW and install Android OS from servo USB-drive": {
+			Docs: []string{
+				"Use provision image on USB-key to boot and get SSH access.",
+				"Run specific install command to install Android OS.",
+				"The logic is copy from foil-provision",
+			},
+			Conditions: []string{
+				"Execution on Mobile Harness box",
+				"Is a Chromebook",
+				"Is servod running",
+				"Is Android based by ADB or provision-info",
+				"Is servo USB key detected",
+				"Recovery version has firmware image path",
+			},
+			Dependencies: []string{
+				"Mark as Android based",
+				"Set CacheService address",
+				"Call servod to download provision image to USB-key",
+				// Update FW.
+				"Flash EC (FW) by servo (allowed failed)",
+				"Sleep 10 seconds",
+				"Disable software write protection via servo",
+				"Flash AP (FW) with GBB enable dev mode and boot from usb by servo",
+				"Sleep 10 seconds",
+				// Reimage the DUT
+				"Boot on USB-key and install AndroidOS",
+				"Wait to be SSHable (normal boot)",
+				"ADB reconnect",
+				"ADB set Android as always awake",
+				"Remove REIMAGE_BY_USBKEY repair-request",
+				"Remove REFLASH_FW repair-request",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
 		"Install Android OS by booting from servo USB-drive": {
 			Docs: []string{
 				"Use provision image on USB-key to boot and get SSH access.",
