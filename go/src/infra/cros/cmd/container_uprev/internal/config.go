@@ -289,6 +289,16 @@ func GetConfigs() []*UprevConfig {
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/autovm_test_shifter_filter/${platform}"),
 			},
 		},
+		{
+			Name: "pretest-container-filter",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/ctpv2-filters/pretest-container-filter/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
+		},
 		// {
 		// 	Name: "tradefed",
 		// 	CIPDPackages: []*CIPDPackage{
