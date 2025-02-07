@@ -60,6 +60,57 @@ func (s *DecoratedInventory) UpdateDutsStatus(ctx context.Context, req *UpdateDu
 	return
 }
 
+func (s *DecoratedInventory) GetHwidData(ctx context.Context, req *GetHwidDataRequest) (rsp *HwidData, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "GetHwidData", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.GetHwidData(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "GetHwidData", rsp, err)
+	}
+	return
+}
+
+func (s *DecoratedInventory) GetManufacturingConfig(ctx context.Context, req *GetManufacturingConfigRequest) (rsp *manufacturing.Config, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "GetManufacturingConfig", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.GetManufacturingConfig(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "GetManufacturingConfig", rsp, err)
+	}
+	return
+}
+
+func (s *DecoratedInventory) GetDeviceConfig(ctx context.Context, req *GetDeviceConfigRequest) (rsp *device.Config, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "GetDeviceConfig", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.GetDeviceConfig(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "GetDeviceConfig", rsp, err)
+	}
+	return
+}
+
 func (s *DecoratedInventory) DeviceConfigsExists(ctx context.Context, req *DeviceConfigsExistsRequest) (rsp *DeviceConfigsExistsResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context
@@ -73,6 +124,40 @@ func (s *DecoratedInventory) DeviceConfigsExists(ctx context.Context, req *Devic
 	}
 	if s.Postlude != nil {
 		err = s.Postlude(ctx, "DeviceConfigsExists", rsp, err)
+	}
+	return
+}
+
+func (s *DecoratedInventory) ListDeviceConfigs(ctx context.Context, req *ListDeviceConfigsRequest) (rsp *ListDeviceConfigsResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "ListDeviceConfigs", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.ListDeviceConfigs(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "ListDeviceConfigs", rsp, err)
+	}
+	return
+}
+
+func (s *DecoratedInventory) ListCrosDevicesLabConfig(ctx context.Context, req *ListCrosDevicesLabConfigRequest) (rsp *ListCrosDevicesLabConfigResponse, err error) {
+	if s.Prelude != nil {
+		var newCtx context.Context
+		newCtx, err = s.Prelude(ctx, "ListCrosDevicesLabConfig", req)
+		if err == nil {
+			ctx = newCtx
+		}
+	}
+	if err == nil {
+		rsp, err = s.Service.ListCrosDevicesLabConfig(ctx, req)
+	}
+	if s.Postlude != nil {
+		err = s.Postlude(ctx, "ListCrosDevicesLabConfig", rsp, err)
 	}
 	return
 }
@@ -128,23 +213,6 @@ func (s *DecoratedInventory) UpdateDeviceManualRepairRecord(ctx context.Context,
 	return
 }
 
-func (s *DecoratedInventory) ListCrosDevicesLabConfig(ctx context.Context, req *ListCrosDevicesLabConfigRequest) (rsp *ListCrosDevicesLabConfigResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "ListCrosDevicesLabConfig", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.ListCrosDevicesLabConfig(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "ListCrosDevicesLabConfig", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedInventory) ListManualRepairRecords(ctx context.Context, req *ListManualRepairRecordsRequest) (rsp *ListManualRepairRecordsResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context
@@ -158,57 +226,6 @@ func (s *DecoratedInventory) ListManualRepairRecords(ctx context.Context, req *L
 	}
 	if s.Postlude != nil {
 		err = s.Postlude(ctx, "ListManualRepairRecords", rsp, err)
-	}
-	return
-}
-
-func (s *DecoratedInventory) GetManufacturingConfig(ctx context.Context, req *GetManufacturingConfigRequest) (rsp *manufacturing.Config, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "GetManufacturingConfig", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.GetManufacturingConfig(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "GetManufacturingConfig", rsp, err)
-	}
-	return
-}
-
-func (s *DecoratedInventory) GetDeviceConfig(ctx context.Context, req *GetDeviceConfigRequest) (rsp *device.Config, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "GetDeviceConfig", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.GetDeviceConfig(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "GetDeviceConfig", rsp, err)
-	}
-	return
-}
-
-func (s *DecoratedInventory) GetHwidData(ctx context.Context, req *GetHwidDataRequest) (rsp *HwidData, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "GetHwidData", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.GetHwidData(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "GetHwidData", rsp, err)
 	}
 	return
 }
@@ -243,23 +260,6 @@ func (s *DecoratedInventory) BatchCreateManualRepairRecords(ctx context.Context,
 	}
 	if s.Postlude != nil {
 		err = s.Postlude(ctx, "BatchCreateManualRepairRecords", rsp, err)
-	}
-	return
-}
-
-func (s *DecoratedInventory) ListDeviceConfigs(ctx context.Context, req *ListDeviceConfigsRequest) (rsp *ListDeviceConfigsResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "ListDeviceConfigs", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.ListDeviceConfigs(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "ListDeviceConfigs", rsp, err)
 	}
 	return
 }
