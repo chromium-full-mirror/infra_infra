@@ -6,12 +6,12 @@ package connector
 import (
 	"context"
 	"log"
-	"sync"
 	"time"
 
 	"golang.org/x/crypto/ssh"
 
 	"infra/cros/satlab/satlabrpcserver/utils"
+	"infra/cros/satlab/satlabrpcserver/utils/constants"
 )
 
 type SSHConnector struct {
@@ -31,13 +31,19 @@ func New(retry int, retryDelay time.Duration) *SSHConnector {
 }
 
 func (s *SSHConnector) Connect(ctx context.Context, addr string, config *ssh.ClientConfig) (*ssh.Client, error) {
+	// use the timeout from constant value because we don't want to wait forever.
+	timeout := constants.SSHConnectionTimeout
+	// Check if the timeout was set and use it.
+	if config.Timeout.Abs().Microseconds() > 0 {
+		timeout = config.Timeout
+	}
+	ctxWithTimeout, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
 	clientCh := make(chan *ssh.Client, 1)
 	done := make(chan struct{}, 1)
-	var wg sync.WaitGroup
 	for i := 0; i < s.retry+1; i++ {
-		wg.Add(1)
 		go func() {
-			defer wg.Done()
 			client, err := ssh.Dial("tcp", addr, config)
 			if err != nil {
 				log.Printf("Can't create a ssh client %v", err)
@@ -90,12 +96,16 @@ func (s *SSHConnector) Connect(ctx context.Context, addr string, config *ssh.Cli
 
 	// Do the final check. If we can't get the client back, or reach
 	// the context deadline. It should reach the max retry.
-	select {
-	case cl := <-clientCh:
-		return cl, nil
-	case <-ctx.Done():
-		return nil, ctx.Err()
-	default:
-		return nil, utils.ReachMaxRetry
+	for {
+		time.Sleep(time.Second)
+		select {
+		case cl := <-clientCh:
+			return cl, nil
+		case <-ctx.Done():
+			return nil, ctx.Err()
+		case <-ctxWithTimeout.Done():
+			return nil, utils.ReachMaxRetry
+		}
+
 	}
 }
