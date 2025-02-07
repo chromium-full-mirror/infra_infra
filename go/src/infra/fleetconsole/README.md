@@ -9,7 +9,7 @@ unified UI for managing machines in the fleet.
 
 From the root directory for this repo.
 
-### Setup local db
+### With a local db
 
 First start the db using docker docker:
 ```sh
@@ -34,11 +34,31 @@ You can now apply the migrations:
 alembic upgrade head
 ```
 
-### Run the web server
-
+You can now run the web server:
 ```sh
 go build ./cmd/fleetconsoleserver
 ./fleetconsoleserver
+```
+
+### Connecting to the dev db
+
+Make sure you are logged in with gcloud, other wise run:
+```bash
+gcloud auth login
+```
+
+Create a ssh tunnel inside the db's vpc:
+```bash
+gcloud compute ssh --zone "us-central1-c" "alloydb-bastion" \
+       --project "fleet-console-dev" \
+       --tunnel-through-iap \
+       --ssh-flag="-L 5432:10.89.112.2:5432"
+```
+
+You can now run the web server specifying the correct db connection string:
+```bash
+go build ./cmd/fleetconsoleserver/main.go
+./fleetconsoleserver -db-uri-secret=sm://db-uri -cloud-project=fleet-console-dev
 ```
 
 ### Run the web client
