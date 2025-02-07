@@ -145,7 +145,7 @@ func (cmd *GenerateTrv2RequestsCmd) extractDepsFromFilterStateKeeper(
 		logging.Warningf(ctx, "cmd %q missing optional dependency: AlStateInfo", cmd.GetCommandType())
 	}
 
-	cmd.DynamicExperiment = slices.Contains(sk.BuildState.Build().GetInput().GetExperiments(), "chromeos.cros_infra_config.dynamic_trv2")
+	cmd.DynamicExperiment = slices.Contains(sk.BuildState.Build().GetInput().GetExperiments(), common.DynamicExperiment)
 	cmd.CredentialsFile = sk.DockerKeyFile
 	cmd.RequestKey = sk.RequestKey
 	cmd.DynamicRun = sk.CtpReq.RunDynamic || cmd.DynamicExperiment

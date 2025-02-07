@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -165,10 +166,11 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 	if sk.IsPartnerRun && sk.IsAlRun {
 		fireStoreDB = common.PartnerTestPlatformFireStore
 	}
+	dynamicExperiment := slices.Contains(sk.BuildState.Build().GetInput().GetExperiments(), common.DynamicExperiment)
 	cmd.FirestoreDBName = fireStoreDB
 	cmd.CredentialsFile = sk.DockerKeyFile
 	cmd.EnvVersion = sk.CTPversion
-	cmd.DynamicRun = sk.CtpReq.RunDynamic
+	cmd.DynamicRun = sk.CtpReq.RunDynamic || dynamicExperiment
 	cmd.BuildsMap = sk.BuildsMap
 	cmd.BuildState = sk.BuildState
 	cmd.Config = sk.Config

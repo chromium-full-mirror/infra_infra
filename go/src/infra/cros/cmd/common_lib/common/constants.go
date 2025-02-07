@@ -85,6 +85,9 @@ const (
 	// GROUP: Read
 	// OTHER: Read
 	FilePermission = 0644
+
+	// Experiments
+	DynamicExperiment = "chromeos.cros_infra_config.dynamic_trv2"
 )
 
 // AL related constants
