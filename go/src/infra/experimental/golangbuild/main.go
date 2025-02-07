@@ -158,6 +158,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"unicode/utf8"
 
 	"go.chromium.org/luci/luciexe/build"
 
@@ -257,7 +258,17 @@ func main() {
 				fmt.Fprintf(&sb, "* [%s](%s)\n", link.name, link.url)
 			}
 		}
-		st.SetSummaryMarkdown(sb.String())
+		within4KB := func(s string) string {
+			if len(s) <= 4000 {
+				return s
+			}
+			const suffix = "…\\<TRUNCATED\\>\n\n(Build summary truncated to fit within 4 KB; see Steps & Logs if more details are needed.)"
+			var i int
+			for ; !utf8.RuneStart(s[4000-len(suffix)-i]); i++ { // Walk back to nearest UTF-8 rune start.
+			}
+			return s[:4000-len(suffix)-i] + suffix
+		}
+		st.SetSummaryMarkdown(within4KB(sb.String()))
 
 		return runErr
 	})
