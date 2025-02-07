@@ -4,4 +4,4 @@
 
 package main
 
-//go:generate cproto
+//go:generate cproto ./proto
