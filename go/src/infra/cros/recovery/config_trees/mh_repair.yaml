@@ -6650,6 +6650,12 @@ plans:
             - Set the WifiRouter state to WORKING
     - name: cros
       criticalactions:
+        - name: 'Set state: needs_repair'
+          exec_name: dut_set_state
+          exec_args:
+            - state:needs_repair
+          docs:
+            - The action set devices with state means that DUT requires repair.
         - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
           exec_name: cros_set_as_android_based
           docs:

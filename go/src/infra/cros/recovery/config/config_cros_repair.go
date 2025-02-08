@@ -22,6 +22,7 @@ func crosRepairPlan() *Plan {
 func mhRepairPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
+			"Set state: needs_repair",
 			"Mark as Android based",
 			"Has repair-request for re-image USB-key",
 			"Has repair-request for reflash-firmware",

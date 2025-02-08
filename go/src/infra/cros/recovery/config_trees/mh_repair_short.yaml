@@ -2244,6 +2244,7 @@ plans:
         - name: Set WifiRouter state to WORKING ('wifi_router_set_state') (RUN_ONCE)
     - name: cros
       criticalactions:
+        - name: 'Set state: needs_repair (''dut_set_state'')'
         - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
         - name: Has repair-request for re-image USB-key ('dut_has_any_repair_requests')
           recoveries:
