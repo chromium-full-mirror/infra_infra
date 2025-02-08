@@ -197,5 +197,5 @@ func goDistTestTime(testName string, race bool) (time.Duration, error) {
 		dt = time.Since(start)
 		break
 	}
-	return dt, testRunError
+	return dt, testRunErr
 }
