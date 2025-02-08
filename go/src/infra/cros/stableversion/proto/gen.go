@@ -4,5 +4,5 @@
 
 package stableversion
 
-//go:generate protoc --go_out=./ omaha_status.proto
-//go:generate protoc --go_out=./ build_metadata.proto
+//go:generate protoc --go_out=./ ./omaha_status.proto
+//go:generate protoc --go_out=./ ./build_metadata.proto

@@ -16,7 +16,7 @@ import (
 
 	"infra/cmd/stable_version2/internal/utils"
 	svlib "infra/cros/stableversion"
-	svdata "infra/cros/stableversion/proto"
+	svdata "infra/cros/stableversion/proto/stableversion"
 )
 
 // ParseOmahaStatus the omaha stable version strings.

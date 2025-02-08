@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package chrome.chromeos_infra.cros.stableversion;
 
-option go_package = "stableversion";
+option go_package = "./stableversion";
 
 // NEXT TAG: 2
 message OmahaDatas {
