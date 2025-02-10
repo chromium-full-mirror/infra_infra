@@ -663,6 +663,8 @@
       "external_hash:hash",
       "-tag",
       "version:2@1.5.0-rc1",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -992,6 +994,8 @@
       "3pp_ecosystem_hash:c2719ea17aebff53d40f52891cdc3c4758212d89987565de4a740d6c46f8deb2",
       "-tag",
       "version:2@1.5.0-rc1.chromium.1",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -1577,6 +1581,8 @@
       "3pp_ecosystem_hash:c2719ea17aebff53d40f52891cdc3c4758212d89987565de4a740d6c46f8deb2",
       "-tag",
       "version:2@1.5.0-rc1.chromium.2",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],

@@ -644,6 +644,8 @@
       "external_hash:hash",
       "-tag",
       "version:2@1.5.0-rc1",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -1433,6 +1435,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/git/go.repo/tool/linux-amd64/40-chars-fake-of-the-package-instance_id",
       "-tag",
       "version:2@1.5.0-rc1",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -1774,6 +1778,8 @@
       "3pp_ecosystem_hash:c2719ea17aebff53d40f52891cdc3c4758212d89987565de4a740d6c46f8deb2",
       "-tag",
       "version:2@1.5.0-rc1",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -2409,6 +2415,8 @@
       "external_hash:hash",
       "-tag",
       "version:2@v1.4.1",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -2752,6 +2760,8 @@
       "3pp_ecosystem_hash:c2719ea17aebff53d40f52891cdc3c4758212d89987565de4a740d6c46f8deb2",
       "-tag",
       "version:2@v1.4.1",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],

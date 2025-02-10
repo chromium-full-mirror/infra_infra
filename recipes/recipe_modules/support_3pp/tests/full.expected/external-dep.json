@@ -566,6 +566,8 @@
       "[CACHE]/3pp_cipd/3pp/sources/script/tools/external_dep/linux-arm64/40-chars-fake-of-the-package-instance_id",
       "-tag",
       "version:2@2.0.0",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
@@ -883,6 +885,8 @@
       "3pp_ecosystem_hash:5428f29eb8e0873b4b5fd4ad30843f6b867b8ca49f9f22caaab8222bc4ef8841",
       "-tag",
       "version:2@2.0.0",
+      "-metadata",
+      "build_id:0",
       "-json-output",
       "/path/to/tmp/json"
     ],
