@@ -374,8 +374,24 @@ func (c *Client) RepairManifestRepositories(branches []ProjectBranch, dryRun, fo
 			Ref:    git.NormalizeRef(manifestBranchNames[manifestProject.Name]),
 		}
 
-		if err := git.PushRef(manifestCheckout, "HEAD", remoteRef, git.DryRunIf(dryRun), git.ForceIf(force), git.PushOption("push-justification=b/329668450")); err != nil {
-			return errors.Annotate(err, "could not push branches to remote").Err()
+		projectURL, err := c.ProjectFetchURL(projectPath)
+		if err != nil {
+			return errors.Annotate(err, "failed to get project url").Err()
+		}
+
+		forcePushJustification := "push-justification=b/329668450"
+		c.LogOut(
+			"Pushing repo '%s':\n"+
+				"Host: %s\n"+
+				"Local ref: %s\n"+
+				"Remote ref: %s\n"+
+				"Dry Run: %t\n"+
+				"Force: %t\n"+
+				"Force Push Justification: %s",
+			manifestCheckout, projectURL, "HEAD", remoteRef, dryRun, force, forcePushJustification,
+		)
+		if err := git.PushRef(manifestCheckout, "HEAD", remoteRef, git.DryRunIf(dryRun), git.ForceIf(force), git.PushOption(forcePushJustification)); err != nil {
+			return errors.Annotate(err, "could not push branch: %s/%s", remoteRef.Remote, remoteRef.Ref).Err()
 		}
 	}
 	return nil
