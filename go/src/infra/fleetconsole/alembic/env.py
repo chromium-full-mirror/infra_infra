@@ -2,10 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from configparser import Error
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+
+from google.cloud import secretmanager
 
 from alembic import context
 
@@ -17,6 +20,27 @@ config = context.config
 # This line sets up loggers basically.
 if config.config_file_name is not None:
   fileConfig(config.config_file_name)
+
+
+# Allow user to overwrite the port number from the command line, e.g.
+# ALEMBIC_ENV=foo alembic -x port=<port> upgrade head
+env = context.get_x_argument(as_dictionary=True).get("env")
+if env is None:
+  env = "local"
+
+if env not in ("local", "dev", "prod"):
+  raise Error('env must be either "local", "dev" or "prod" not ' + env)
+if env == 'local':
+  config.set_main_option(
+      "sqlalchemy.url",
+      "postgresql://postgres:password@localhost:5432/fleet_console_db")
+else:
+  secrets_client = secretmanager.SecretManagerServiceClient()
+  secret_name = f"projects/fleet-console-{env}/secrets/db-uri/versions/latest"
+  res = secrets_client.access_secret_version(name=secret_name)
+  db_uri = res.payload.data.decode("UTF-8")
+  config.set_main_option("sqlalchemy.url", db_uri)
+
 
 # add your model's MetaData object here
 # for 'autogenerate' support

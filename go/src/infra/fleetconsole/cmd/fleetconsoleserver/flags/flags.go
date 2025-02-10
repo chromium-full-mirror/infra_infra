@@ -9,7 +9,7 @@ import (
 	"flag"
 )
 
-const pgConnectionString = `postgres://postgres:password@localhost:5432/fleet_console_db`
+const pgConnectionString = `postgresql://postgres:password@localhost:5432/fleet_console_db`
 
 var DeviceManagerAddr = flag.String("dm-addr", "", "Device Manager address to use. Uses production address by default")
 var UseLocalDeviceManager = flag.Bool("use-local-dm", false, "Uses insecure connection to device manager. Default address is localhost:8800. Can be overwritten by dm-addr flag.")
