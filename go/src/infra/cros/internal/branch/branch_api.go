@@ -130,8 +130,8 @@ func (c *Client) CreateRemoteBranchesAPI(authedClient *http.Client, branches []G
 				readOnlyCount := atomic.AddInt64(&readOnlyCount, 1)
 				// If the error is widespread we ought to fail.
 				if float64(readOnlyCount)/float64(len(branches)) > 0.05 {
-					err := errors.New(">5%% branches have failed with READ_ONLY error, failing.")
-					c.LogErr(err.Error())
+					err := errors.New(">5%% branches have failed with READ_ONLY error.")
+					c.LogErr("failed due to widespread issue: %s", err.Error())
 					return err
 				}
 				c.LogErr("Warning: Branch for %v failed with '%s' error. Continuing with best-effort branch creation.",

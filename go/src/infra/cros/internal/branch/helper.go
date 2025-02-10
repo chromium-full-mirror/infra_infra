@@ -355,7 +355,7 @@ func (c *Client) RepairManifestRepositories(branches []ProjectBranch, dryRun, fo
 		if _, err := os.Stat("./format.py"); err == nil {
 			files, err := filepath.Glob("*.xml")
 			if err != nil {
-				return fmt.Errorf(err.Error())
+				return errors.Annotate(err, "failed to glob *.xml files").Err()
 			}
 			ctx := context.Background()
 			cmd := append([]string{"-i"}, files...)
