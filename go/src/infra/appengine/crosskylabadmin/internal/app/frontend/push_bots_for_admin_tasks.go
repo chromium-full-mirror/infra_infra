@@ -13,7 +13,6 @@ import (
 	"go.chromium.org/luci/common/data/strpair"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
 	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
 	"infra/appengine/crosskylabadmin/internal/app/clients"
@@ -104,13 +103,17 @@ func (p *adminTaskBotPusher) repairDUTsWithRecentLabstationReboots(ctx context.C
 	if err != nil {
 		return err
 	}
+	logging.Infof(ctx, "repairDUTsWithRecentLabstationReboots - number of duts before filtering skipped hosts: %s", len(duts))
+
 	var filteredDuts []string
 	for _, dut := range duts {
 		if skipHostMap[dut] {
+			logging.Infof(ctx, "skipped dut: %s", dut)
 			continue
 		}
 		filteredDuts = append(filteredDuts, dut)
 	}
+	logging.Infof(ctx, "repairDUTsWithRecentLabstationReboots - number of duts after filtering skipped hosts: %s", len(filteredDuts))
 	// TODO(gregorynisbet): Do we want to consider other states here besides repair failed?
 	err = clients.PushRepairDUTs(ctx, filteredDuts, "repair_failed", cfg.Swarming.BotPool)
 	if err != nil {
@@ -129,26 +132,27 @@ func (p *adminTaskBotPusher) pushRepairDUTsForGivenPool(ctx context.Context, swa
 	if p.swarmingClient == nil {
 		return errors.New("swarmingClient cannot be nil in pushRepairDUTsForGivenPool")
 	}
-	var bots []*swarmingv2.BotInfo
 	rawBots, err := p.swarmingClient.ListAliveIdleBotsInPool(ctx, swarmingPool, dims)
 
-	for _, bot := range rawBots {
-		if skipHostMap[bot.BotId] {
-			continue
-		}
-		bots = append(bots, bot)
-	}
 	if err != nil {
 		return errors.Annotate(err, "failed to list alive idle bots with dut_state %q", dutState).Err()
-	} else {
-		logging.Infof(ctx, "successfully get %d alive idle cros bots with dut_state %q in pool %q.", len(bots), dutState, swarmingPool)
-		//Parse BOT id to schedule tasks for readability.
-		repairBOTs := identifyBotsForRepair(ctx, bots)
-		err = clients.PushRepairDUTs(ctx, repairBOTs, dutState, swarmingPool)
-		if err != nil {
-			logging.Infof(ctx, "Push repair bots in pool %q: %v", swarmingPool, err)
-			return errors.Annotate(err, "Failed to push repair duts in pool %q", swarmingPool).Err()
+	}
+	logging.Infof(ctx, "successfully get %d alive idle cros bots with dut_state %q in pool %q.", len(rawBots), dutState, swarmingPool)
+	//Parse BOT id to schedule tasks for readability.
+	repairBOTs := identifyBotsForRepair(ctx, rawBots)
+	var filteredRepairBOTs []string
+	for _, dut := range repairBOTs {
+		if skipHostMap[dut] {
+			logging.Infof(ctx, "skipped dut: %s", dut)
+			continue
 		}
+		filteredRepairBOTs = append(filteredRepairBOTs, dut)
+	}
+	logging.Infof(ctx, "pushRepairDUTsForGivenPool - number of alive bots after filtering skipped hosts: %s", len(filteredRepairBOTs))
+	err = clients.PushRepairDUTs(ctx, filteredRepairBOTs, dutState, swarmingPool)
+	if err != nil {
+		logging.Infof(ctx, "Push repair bots in pool %q: %v", swarmingPool, err)
+		return errors.Annotate(err, "Failed to push repair duts in pool %q", swarmingPool).Err()
 	}
 	return nil
 }
@@ -181,6 +185,7 @@ func (p *adminTaskBotPusher) pushBotsForAdminTasksImpl(ctx context.Context, req 
 	case fleet.DutState_RepairFailed:
 		skipHostList = cfg.GetParis().GetDutRepairOnRepairFailed().GetSkipHosts()
 	}
+	logging.Infof(ctx, "pushBotsForAdminTasksImpl - number of skip hosts: %s", len(skipHostList))
 
 	skipHostMap := make(map[string]bool, len(skipHostList))
 	for _, value := range skipHostList {

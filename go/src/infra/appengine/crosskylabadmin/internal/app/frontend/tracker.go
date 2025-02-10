@@ -139,6 +139,7 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 		dutStates[fleet.DutState_NeedsManualRepair] = false
 		skipHostList = cfg.GetParis().GetAuditRpm().GetSkipHosts()
 	}
+	logging.Infof(ctx, "PushBotsForAdminAuditTasks - number of skip hosts: %s", len(skipHostList))
 
 	if len(actions) == 0 {
 		logging.Infof(ctx, "No action specified", err)
@@ -165,6 +166,7 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 
 		// Remove bots that are skipped through config
 		botsNotSkipped := FilterBotBySkipHosts(skipHostList, bots)
+		logging.Infof(ctx, "PushBotsForAdminAuditTasks - number of remaining bots after filtering out skipped hosts: %s", len(botsNotSkipped))
 
 		if len(botsNotSkipped) == 0 {
 			logging.Infof(ctx, "No bots for audit")
@@ -172,6 +174,7 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 		}
 
 		botIDs := identifyBotsForAudit(ctx, botsNotSkipped, dutStates, req.Task)
+		logging.Infof(ctx, "number of bots ids pushed for audit task %s: %s", taskname, len(botIDs))
 
 		err = clients.PushAuditDUTs(ctx, botIDs, actions, taskname, swarmingPool)
 		if err != nil {
@@ -225,6 +228,7 @@ func (tsi *TrackerServerImpl) PushRepairJobsForLabstations(ctx context.Context, 
 
 	// Remove bots that are skipped through config
 	botsNotSkipped := FilterBotBySkipHosts(cfg.GetParis().GetLabstationRepair().GetSkipHosts(), bots)
+	logging.Infof(ctx, "PushRepairJobsForLabstations - number of remaining bots after filtering out skipped hosts: %s", len(botsNotSkipped))
 
 	if len(botsNotSkipped) == 0 {
 		logging.Infof(ctx, "No bots for repair labstations")
@@ -233,6 +237,7 @@ func (tsi *TrackerServerImpl) PushRepairJobsForLabstations(ctx context.Context, 
 
 	// Parse BOT id to schedule tasks for readability.
 	botIDs := identifyLabstationsForRepair(ctx, botsNotSkipped)
+	logging.Infof(ctx, "number of labstations pushed for repair: %s", len(botIDs))
 
 	err = clients.PushRepairLabstations(ctx, botIDs, swarmingPool)
 	if err != nil {
@@ -310,6 +315,7 @@ func identifyBotsForRepair(ctx context.Context, bots []*swarmingv2.BotInfo) (rep
 			repairBOTs = append(repairBOTs, id)
 		}
 	}
+	logging.Infof(ctx, "identifyBotsForRepair - number of repairBOTs: %s", len(repairBOTs))
 	return repairBOTs
 }
 
