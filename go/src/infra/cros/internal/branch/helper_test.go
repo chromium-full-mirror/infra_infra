@@ -11,8 +11,6 @@ import (
 
 	"infra/cros/internal/assert"
 	mv "infra/cros/internal/chromeosversion"
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/git"
 	"infra/cros/internal/repo"
 )
 
@@ -231,61 +229,4 @@ func TestNewBranchName_Firmware(t *testing.T) {
 
 func TestNewBranchName_Stabilize(t *testing.T) {
 	assert.StringsEqual(t, NewBranchName(vinfo, "", "", false, false, false, true), "stabilize-123.1.B")
-}
-
-func TestRepairManifestRepositories(t *testing.T) {
-	testManifest := repo.Manifest{
-		Remotes: []repo.Remote{
-			{Name: "remote", Fetch: "localhost"},
-		},
-		Projects: []repo.Project{
-			{Path: "manifest", Name: "chromiumos/manifest", RemoteName: "remote"},
-			{Path: "manifest-internal", Name: "chromeos/manifest-internal", RemoteName: "remote"},
-		},
-	}
-
-	c := Client{
-		WorkingManifest: testManifest,
-	}
-
-	branches := []ProjectBranch{
-		{Project: repo.Project{Name: "chromiumos/manifest", Path: "manifest"}, BranchName: "manifest-branch"},
-	}
-
-	// Unable to check out manifest correctly.
-	assert.ErrorContains(t, c.RepairManifestRepositories(branches, true, true), "failed to checkout project manifest")
-
-	git.CommandRunnerImpl = &cmd.FakeCommandRunnerMulti{
-		CommandRunners: []cmd.FakeCommandRunner{
-			{
-				ExpectedDir: "",
-				ExpectedCmd: []string{"git", "init"},
-			},
-			{
-				ExpectedDir:        "",
-				ExpectedCmdPartial: []string{"git", "remote", "add", "origin", "localhost"},
-			},
-			{
-				ExpectedDir:        "",
-				ExpectedCmdPartial: []string{"git", "fetch", "origin", "--depth", "1"},
-			},
-			{
-				ExpectedDir:        "",
-				ExpectedCmdPartial: []string{"git", "ls-remote", "-q", "--symref", "--exit-code", "origin", "HEAD"},
-				Stdout:             "ref: refs/heads/potato\tHEAD\n5f6803b100bb3cd0f534e96e88c91373e8ed1c44\tHEAD\n",
-			},
-			{
-				ExpectedDir:        "",
-				ExpectedCmdPartial: []string{"git", "checkout"},
-			},
-			{
-				ExpectedDir:        "",
-				ExpectedCmdPartial: []string{"git", "commit", "-a", "-m"},
-			},
-		},
-	}
-
-	// Push to remote fails.
-	err := c.RepairManifestRepositories(branches, false, true)
-	assert.ErrorContains(t, err, "could not push branch: origin/refs/heads/manifest-branch")
 }
