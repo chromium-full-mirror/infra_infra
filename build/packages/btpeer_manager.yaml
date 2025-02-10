@@ -1,0 +1,10 @@
+package: chromiumos/infra/btpeer_manager/${platform}
+description: A CLI application that allow managing btpeers
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cros/cmd/btpeer_manager
+root: ../../go/bin
+data:
+  - file: btpeer_manager${exe_suffix}
+  - version_file: .versions/btpeer_manager${exe_suffix}.cipd_version
