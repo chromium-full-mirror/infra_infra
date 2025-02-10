@@ -81,14 +81,20 @@ func (cmd *GcsPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 		}
 	}
 
+	resultGCS := ""
+	apfeGCS := ""
+	if sk.CommonConfig != nil {
+		resultGCS = common.SanitizeGCSPrefix(sk.CommonConfig.GetXtsArchiveConfig().GetResultsGcsPrefix())
+		apfeGCS = common.SanitizeGCSPrefix(sk.CommonConfig.GetXtsArchiveConfig().GetApfeGcsPrefix())
+	}
+
 	botDims, _ := protoutil.BotDimensions(build)
 	cmd.IsALRun = sk.IsAlRun
 	cmd.Product = common.GetProductName(sk.PrimaryDutModel, botDims, buildName)
 	cmd.Build = buildName
 	cmd.ParentSwarmingTaskID = parentTaskID
-	// TODO: b/379711782 - Get the GCS paths from common config
-	cmd.XTSResultsGCSPrefix = "gs://chromeos-cts-staging"
-	cmd.XTSAPFEGCSPrefix = "gs://chromeos-cts-staging"
+	cmd.XTSResultsGCSPrefix = resultGCS
+	cmd.XTSAPFEGCSPrefix = apfeGCS
 	cmd.EnableXTSArchiver = slices.Contains(sk.BuildState.Build().GetInput().GetExperiments(), common.EnableXTSArchiverExperiment)
 
 	return nil

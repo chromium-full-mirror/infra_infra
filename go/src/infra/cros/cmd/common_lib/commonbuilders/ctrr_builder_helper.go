@@ -826,6 +826,11 @@ func DefaultDynamicRdbPublishTaskWrapper(gsPath string, isDeploymentDirty, is3DR
 
 // DefaultDynamicGcsPublishTask creates the default gsc publish task.
 func DefaultDynamicGcsPublishTask(builder *DynamicTrv2Builder) []*api.CrosTestRunnerDynamicRequest_Task {
+	parentJobID := ""
+	if builder.Keyvals != nil {
+		parentJobID = builder.Keyvals["parent_job_id"]
+	}
+
 	product := common.GetProductName(builder.PrimaryDut, builder.BotDims, builder.BuildString)
 	gcsPublishMetadata, _ := anypb.New(&api.PublishGcsMetadata{
 		GcsPath: &_go.StoragePath{
@@ -835,7 +840,7 @@ func DefaultDynamicGcsPublishTask(builder *DynamicTrv2Builder) []*api.CrosTestRu
 			AlRun:                builder.IsALRun,
 			Product:              product,
 			Build:                builder.BuildString,
-			ParentSwarmingTaskId: builder.Keyvals["parent_job_id"],
+			ParentSwarmingTaskId: parentJobID,
 		},
 		EnableXtsArchiver: slices.Contains(builder.BuildExperiments, common.EnableXTSArchiverExperiment),
 	})

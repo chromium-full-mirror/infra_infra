@@ -411,3 +411,9 @@ func GetProductName(dutModel *labapi.DutModel, botDims []*buildbucketpb.StringPa
 
 	return fmt.Sprintf("%s.%s%s", board, model, variant)
 }
+
+// SanitizeGCSPrefix sanitizes the GCS path prefix to ensure it does not contain
+// trailing "/".
+func SanitizeGCSPrefix(prefix string) string {
+	return strings.TrimSuffix(prefix, "/")
+}

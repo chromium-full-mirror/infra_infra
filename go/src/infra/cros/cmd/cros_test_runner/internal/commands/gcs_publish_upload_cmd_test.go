@@ -10,8 +10,8 @@ import (
 	"testing"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
-	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
@@ -91,19 +91,23 @@ func TestGcsPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 	ftt.Run("GcsPublishStartCmd extract deps", t, func(t *ftt.Test) {
 		ctx := context.Background()
 		wantGcsURL := "gs://gcs/url"
+		apfeBucket := "gs://apfe-bucket/"
+		resultsBucket := "gs://results-bucket/"
 		board := "brya"
 		model := "gimble"
 		wantParentTaskID := "123456789"
 		wantBuild := "brya-release/R131-16063.0.0"
 		wantALRun := true
 		wantEnableXTSArchiver := true
+		wantAPFEBucket := "gs://apfe-bucket"
+		wantResultsBucket := "gs://results-bucket"
 
 		buildPb := &bbpb.Build{
-			Tags: []*buildbucketpb.StringPair{
+			Tags: []*bbpb.StringPair{
 				{Key: "build", Value: wantBuild},
 				{Key: "parent_task_id", Value: wantParentTaskID},
 			},
-			Input: &buildbucketpb.Build_Input{
+			Input: &bbpb.Build_Input{
 				Experiments: []string{common.EnableXTSArchiverExperiment},
 			},
 		}
@@ -117,6 +121,12 @@ func TestGcsPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 			PrimaryDutModel: &labapi.DutModel{
 				BuildTarget: board,
 				ModelName:   model,
+			},
+			CommonConfig: &skylab_test_runner.CommonConfig{
+				XtsArchiveConfig: &skylab_test_runner.XtsArchiveConfig{
+					ResultsGcsPrefix: resultsBucket,
+					ApfeGcsPrefix:    apfeBucket,
+				},
 			},
 		}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
@@ -139,5 +149,7 @@ func TestGcsPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		assert.Loosely(t, cmd.Build, should.Equal(wantBuild))
 		assert.Loosely(t, cmd.ParentSwarmingTaskID, should.Equal(wantParentTaskID))
 		assert.Loosely(t, cmd.EnableXTSArchiver, should.Equal(wantEnableXTSArchiver))
+		assert.Loosely(t, cmd.XTSResultsGCSPrefix, should.Equal(wantResultsBucket))
+		assert.Loosely(t, cmd.XTSAPFEGCSPrefix, should.Equal(wantAPFEBucket))
 	})
 }

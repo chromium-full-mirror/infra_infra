@@ -417,9 +417,14 @@ func executeHwTestsV2(
 	}
 
 	// xTS Archiver request
-	// TODO: b/379711782 - Get the GCS paths from common config
-	common.LogWarningIfErr(ctx, sk.Injectables.Set(common.XTSArchiverResultsGCS, "gs://chromeos-cts-staging"))
-	common.LogWarningIfErr(ctx, sk.Injectables.Set(common.XTSArchiverAPFEGCS, "gs://chromeos-cts-staging"))
+	if commonConfig != nil && commonConfig.GetXtsArchiveConfig() != nil {
+		if resultsGCS := commonConfig.GetXtsArchiveConfig().GetResultsGcsPrefix(); resultsGCS != "" {
+			common.LogWarningIfErr(ctx, sk.Injectables.Set(common.XTSArchiverResultsGCS, common.SanitizeGCSPrefix(resultsGCS)))
+		}
+		if apfeGCS := commonConfig.GetXtsArchiveConfig().GetApfeGcsPrefix(); apfeGCS != "" {
+			common.LogWarningIfErr(ctx, sk.Injectables.Set(common.XTSArchiverAPFEGCS, common.SanitizeGCSPrefix(apfeGCS)))
+		}
+	}
 
 	populateRequestQueues(sk, req)
 

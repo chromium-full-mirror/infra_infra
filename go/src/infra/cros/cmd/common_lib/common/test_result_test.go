@@ -162,3 +162,38 @@ func TestGetProductName(t *testing.T) {
 		}
 	})
 }
+
+func TestSanitizeGCSPrefix(t *testing.T) {
+	t.Parallel()
+
+	ftt.Run("Test SanitizeGCSPrefix", t, func(t *ftt.Test) {
+		testCases := []struct {
+			name       string
+			prefix     string
+			wantPrefix string
+		}{
+			{
+				name:       "with trailing '/' removes the char",
+				prefix:     "gs://test-results-bucket/",
+				wantPrefix: "gs://test-results-bucket",
+			},
+			{
+				name:       "without trailing '/' returns unchanged",
+				prefix:     "gs://test-results-bucket",
+				wantPrefix: "gs://test-results-bucket",
+			},
+			{
+				name:       "with two trailing '/' removes one char",
+				prefix:     "gs://test-results-bucket//",
+				wantPrefix: "gs://test-results-bucket/",
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *ftt.Test) {
+				got := SanitizeGCSPrefix(tc.prefix)
+				assert.Loosely(t, got, should.Equal(tc.wantPrefix))
+			})
+		}
+	})
+}
