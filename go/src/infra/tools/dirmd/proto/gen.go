@@ -4,4 +4,4 @@
 
 package dirmdpb
 
-//go:generate cproto -proto-path ../../../..
+//go:generate-b395127903-disabled cproto -proto-path ../../../..

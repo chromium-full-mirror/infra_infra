@@ -1,3 +1,3 @@
 package main
 
-//go:generate cproto
+//go:generate-b395127903-disabled cproto

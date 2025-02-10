@@ -32,4 +32,4 @@
 //	source $HOME/.bashrc
 package satlabrpcserver
 
-//go:generate sh generate.sh
+//go:generate-b395127903-disabled sh generate.sh

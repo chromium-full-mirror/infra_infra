@@ -1,4 +1,4 @@
-// Copyright 2022 The LUCI Authors.
+// Copyright 2025 The LUCI Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ package assets
 
 import (
 	"go/build"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"testing"
 )
@@ -40,7 +40,7 @@ func TestAssets(t *testing.T) {
 	for name := range Assets() {
 		GetAsset(name) // for code coverage
 		path := filepath.Join(pkg.Dir, filepath.FromSlash(name))
-		blob, err := ioutil.ReadFile(path)
+		blob, err := os.ReadFile(path)
 		if err != nil {
 			t.Errorf("can't read file with assets %q (%s) - %s", name, path, err)
 			fail = true

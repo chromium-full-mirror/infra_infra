@@ -4,4 +4,4 @@
 
 package recipe_engine
 
-//go:generate cproto
+//go:generate-b395127903-disabled cproto
