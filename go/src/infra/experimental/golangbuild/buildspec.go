@@ -11,6 +11,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -229,6 +230,11 @@ func setupEnv(ctx context.Context, inputs *golangbuildpb.Inputs, builderName, go
 	if inputs.LongTest {
 		env.Set("GO_TEST_SHORT", "0") // Tell 'dist test' to operate in longtest mode. See go.dev/issue/12508.
 	}
+	dropFromPathBySuffix(env,
+		// Stay with system Python3 (if any) and don't use the LUCI-provided Python3. See go.dev/issue/71563.
+		filepath.Join("cipd_bin_packages", "cpython3"),
+		filepath.Join("cipd_bin_packages", "cpython3", "bin"),
+	)
 	// Use our tools before the system tools. Notably, use raw Git rather than the Chromium wrapper.
 	env.Set("PATH", fmt.Sprintf("%v%c%v", filepath.Join(toolsRoot(ctx), "bin"), os.PathListSeparator, env.Get("PATH")))
 
@@ -267,6 +273,21 @@ func setupEnv(ctx context.Context, inputs *golangbuildpb.Inputs, builderName, go
 	}
 
 	return env.SetInCtx(ctx)
+}
+
+// dropFromPathBySuffix updates the PATH list in env, dropping paths that match
+// any of the provided suffixes. It is used to drop certain LUCI-provided paths.
+func dropFromPathBySuffix(env environ.Env, dropSuffixes ...string) {
+	pathList := filepath.SplitList(env.Get("PATH"))
+	pathList = slices.DeleteFunc(pathList, func(path string) bool {
+		for _, s := range dropSuffixes {
+			if strings.HasSuffix(path, s) {
+				return true
+			}
+		}
+		return false
+	})
+	env.Set("PATH", strings.Join(pathList, string(filepath.ListSeparator)))
 }
 
 // setupModuleEnv applies module-specific environment variables.
