@@ -11,6 +11,7 @@ option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
 // Defines configurations – user defined or default – for a group of bots.
 // The configurations are used to create a dashboard for SLOs.
 message MaintenanceConfig {
+  string swarming_instance = 7;
   // The name of the maintenance configuration. should be unique/succinct
   string name = 1;
   // Emails of owners of these bots. Optional.
@@ -24,7 +25,7 @@ message MaintenanceConfig {
 
   // Defines the slo requirements for this maintenance configuration
   message ServiceLevel {
-    string desciption = 1;
+    string description = 1;
     bool is_slo = 2;
     uint32 min_availability = 3;
   }
