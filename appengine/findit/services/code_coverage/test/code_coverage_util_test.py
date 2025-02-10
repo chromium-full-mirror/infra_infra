@@ -215,8 +215,8 @@ class CodeCoverageUtilTest(WaterfallTestCase):
                                                mock_get_file_content_async):
     revisions = {'revisions': {'1234': {'_number': 1}, '5678': {'_number': 2}}}
     patchset_dest_files = {'/COMMIT_MSG': {'status': 'A'}, 'base/test.cc': {}}
-    file_content_src = '1\n2\n3\n'
-    file_content_dest = '0 added\n1\n2\n3 changed\n'
+    file_content_src = b'1\n2\n3\n'
+    file_content_dest = b'0 added\n1\n2\n3 changed\n'
     mock_http_client.side_effect = [
         (200, ')]}\'' + json.dumps(revisions), None),
         (200, ')]}\'' + json.dumps(patchset_dest_files), None),
@@ -259,8 +259,8 @@ class CodeCoverageUtilTest(WaterfallTestCase):
       self, mock_http_client, mock_get_file_content_async):
     revisions = {'revisions': {'1234': {'_number': 1}, '5678': {'_number': 2}}}
     patchset_dest_files = {'/COMMIT_MSG': {'status': 'A'}, 'base/test.cc': {}}
-    file_content_src = '1\n2\n3\n'
-    file_content_dest = '0 added\n1\n2\n3 changed\n'
+    file_content_src = b'1\n2\n3\n'
+    file_content_dest = b'0 added\n1\n2\n3 changed\n'
     mock_http_client.side_effect = [
         (200, ')]}\'' + json.dumps(revisions), None),
         (200, ')]}\'' + json.dumps(patchset_dest_files), None),
@@ -426,8 +426,8 @@ class CodeCoverageUtilTest(WaterfallTestCase):
                                                   mock_get_file_content_async):
     revisions = {'revisions': {'1234': {'_number': 1}, '5678': {'_number': 2}}}
     patchset_dest_files = {'/COMMIT_MSG': {'status': 'A'}, 'base/test1.cc': {}}
-    file_content_src = '1\n2\n3\n'
-    file_content_dest = '0 added\n1\n2\n3 changed\n'
+    file_content_src = b'1\n2\n3\n'
+    file_content_dest = b'0 added\n1\n2\n3 changed\n'
     mock_http_client.side_effect = [
         (200, ')]}\'' + json.dumps(revisions), None),
         (200, ')]}\'' + json.dumps(patchset_dest_files), None),

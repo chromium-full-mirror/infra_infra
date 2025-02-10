@@ -402,7 +402,8 @@ def RebasePresubmitCoverageDataBetweenPatchsets(
   coverage_data_dest = []
   for file_data_src in coverage_data:
     content_src, content_dest = [
-        fut.get_result() for fut in files_content[file_data_src['path'][2:]]
+        fut.get_result().decode()
+        for fut in files_content[file_data_src['path'][2:]]
     ]
     diff_lines = list(
         difflib.unified_diff(content_src.splitlines(),
