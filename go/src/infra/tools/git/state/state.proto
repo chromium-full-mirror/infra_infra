@@ -4,6 +4,8 @@
 
 syntax = "proto3";
 
+option go_package = "infra/tools/git/state;state";
+
 package state;
 
 // State is the persistent wrapper state. It is exported by a Git wrapper
