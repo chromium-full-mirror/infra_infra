@@ -4,4 +4,4 @@
 
 package apibq
 
-//go:generate-b395127903-disabled cproto
+//go:generate cproto -proto-path=../../../../

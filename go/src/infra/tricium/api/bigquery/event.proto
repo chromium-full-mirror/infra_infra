@@ -6,6 +6,8 @@ syntax = "proto3";
 
 package apibq;
 
+option go_package = "infra/tricium/api/bigquery;apibq";
+
 import "infra/tricium/api/v1/data.proto";
 import "google/protobuf/timestamp.proto";
 
