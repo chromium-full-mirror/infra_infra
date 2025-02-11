@@ -4,4 +4,4 @@
 
 package chromeos
 
-//go:generate-b395127903-disabled cproto -proto-path ../../../../..
+//go:generate cproto -proto-path ../../../../../go.chromium.org/chromiumos/config/proto
