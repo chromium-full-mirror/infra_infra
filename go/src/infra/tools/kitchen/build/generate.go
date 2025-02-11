@@ -4,4 +4,4 @@
 
 package build
 
-//go:generate-b395127903-disabled cproto
+//go:generate cproto

@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package recipe_engine;
 
+option go_package = "infra/tools/kitchen/third_party/recipe_engine;recipe_engine";
+
 // The result of a recipe execution.
 message Result {
   oneof oneof_result {
