@@ -10,6 +10,7 @@ have, we can grab the download URL from the same endpoint.
 """
 
 import argparse
+import dataclasses
 import json
 import os
 import re
@@ -26,12 +27,41 @@ import requests
 # party tool for checking/installing the newest NVIDIA driver.
 SERIES_ID = 112  # GeForce 16 series.
 PRODUCT_ID = 895  # GeForce GTX 1660.
-OS_ID = 57  # Windows 10 64-bit.
 LANGUAGE_CODE = 1033  # en-US.
-IS_WHQL = 1  # Only look for WHQL-certified drivers.
-IS_DCH = 1  # Only look for DCH drivers, which are the newer Windows standard.
 SORT_ORDER = 0  # Most recent driver first.
 NUMBER_OF_RESULTS = 1
+
+
+@dataclasses.dataclass
+class PlatformSpecificSettings:
+  os_id: int
+  is_whql: int
+  is_dch: int
+  file_extension: str
+
+
+def GetPlatformSpecificSettings() -> PlatformSpecificSettings:
+  _3pp_platform = os.environ['_3PP_PLATFORM']
+  if _3pp_platform == 'windows-amd64':
+    return PlatformSpecificSettings(
+        # Windows 10 64-bit.
+        os_id=57,
+        # Only look for WHQL-certified drivers.
+        is_whql=1,
+        # Only look for DCH drivers, which are the newer Windows standard.
+        is_dch=1,
+        file_extension='.exe')
+  elif _3pp_platform == 'linux-amd64':
+    return PlatformSpecificSettings(
+        # Linux 64-bit.
+        os_id=12,
+        # WHQL is only relevant for Windows.
+        is_whql=0,
+        # DCH is only relevant for Windows.
+        is_dch=0,
+        file_extension='.run')
+  else:
+    raise RuntimeError(f'Unsupported target platform {_3pp_platform}')
 
 # When called with the correct GET parameters, this should return JSON
 # information for the most recent relevant driver. Sample JSON with irrelevant
@@ -86,15 +116,20 @@ DRIVER_CHECK_BASE_URL = (
     'https://gfwsl.geforce.com/'
     'services_toolkit/services/com/nvidia/services/AjaxDriverService.php'
     '?func=DriverManualLookup')
-DRIVER_CHECK_URL = (f'{DRIVER_CHECK_BASE_URL}'
-                    f'&psid={SERIES_ID}'
-                    f'&pfid={PRODUCT_ID}'
-                    f'&osID={OS_ID}'
-                    f'&languageCode={LANGUAGE_CODE}'
-                    f'&isWHQL={IS_WHQL}'
-                    f'&dch={IS_DCH}'
-                    f'&sort1={SORT_ORDER}'
-                    f'&numberOfResults={NUMBER_OF_RESULTS}')
+
+
+def GetDriverCheckUrl() -> str:
+  platform_settings = GetPlatformSpecificSettings()
+  return (f'{DRIVER_CHECK_BASE_URL}'
+          f'&psid={SERIES_ID}'
+          f'&pfid={PRODUCT_ID}'
+          f'&osID={platform_settings.os_id}'
+          f'&languageCode={LANGUAGE_CODE}'
+          f'&isWHQL={platform_settings.is_whql}'
+          f'&dch={platform_settings.is_dch}'
+          f'&sort1={SORT_ORDER}'
+          f'&numberOfResults={NUMBER_OF_RESULTS}')
+
 
 # NVIDIA driver versions are always in the format 123.45
 DRIVER_VERSION_REGEX = re.compile(r'^\d{3}\.\d{2}$')
@@ -137,7 +172,7 @@ def _get_most_recent_driver_download_info() -> dict:
     A dict representing the value of they downloadInfo entry for the most recent
     driver.
   """
-  driver_json = _get_json_from_url(DRIVER_CHECK_URL)
+  driver_json = _get_json_from_url(GetDriverCheckUrl())
   if SUCCESS_KEY not in driver_json or int(driver_json[SUCCESS_KEY]) != 1:
     raise RuntimeError('Did not detect successful driver query. Raw JSON: %s' %
                        json.dumps(driver_json, indent=2))
@@ -167,6 +202,7 @@ def cmd_get_url() -> None:
   requested_driver_version = os.environ.get('_3PP_VERSION')
   if not requested_driver_version:
     raise RuntimeError('get_url command requires _3PP_VERSION to be set')
+  platform_settings = GetPlatformSpecificSettings()
   download_info = _get_most_recent_driver_download_info()
   actual_version = download_info.get(VERSION_KEY)
   if requested_driver_version != actual_version:
@@ -178,7 +214,7 @@ def cmd_get_url() -> None:
     raise MalformedJsonError(DOWNLOAD_URL_KEY, download_info)
   download_manifest = {
       'url': [download_url],
-      'ext': '.exe',
+      'ext': platform_settings.file_extension,
   }
   print(json.dumps(download_manifest))
 

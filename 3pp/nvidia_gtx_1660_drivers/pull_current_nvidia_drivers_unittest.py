@@ -11,6 +11,74 @@ from unittest import mock
 import pull_current_nvidia_drivers as pcnd
 
 
+class GetPlatformSpecificSettingsUnittest(unittest.TestCase):
+
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'windows-amd64'}, clear=True)
+  def testWindows(self):
+    platform_settings = pcnd.GetPlatformSpecificSettings()
+    self.assertEqual(platform_settings.os_id, 57)
+    self.assertEqual(platform_settings.is_whql, 1)
+    self.assertEqual(platform_settings.is_dch, 1)
+    self.assertEqual(platform_settings.file_extension, '.exe')
+
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'linux-amd64'}, clear=True)
+  def testLinux(self):
+    platform_settings = pcnd.GetPlatformSpecificSettings()
+    self.assertEqual(platform_settings.os_id, 12)
+    self.assertEqual(platform_settings.is_whql, 0)
+    self.assertEqual(platform_settings.is_dch, 0)
+    self.assertEqual(platform_settings.file_extension, '.run')
+
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'mac-amd64'}, clear=True)
+  def testUnsupported(self):
+    with self.assertRaisesRegex(RuntimeError,
+                                'Unsupported target platform mac-amd64'):
+      _ = pcnd.GetPlatformSpecificSettings()
+
+
+class GetDriverCheckUrlUnittest(unittest.TestCase):
+
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'windows-amd64'}, clear=True)
+  def testWindows(self):
+    driver_check_url = pcnd.GetDriverCheckUrl()
+    expected_url = (
+        'https://gfwsl.geforce.com/'
+        'services_toolkit/services/com/nvidia/services/AjaxDriverService.php'
+        '?func=DriverManualLookup'
+        '&psid=112'
+        '&pfid=895'
+        '&osID=57'
+        '&languageCode=1033'
+        '&isWHQL=1'
+        '&dch=1'
+        '&sort1=0'
+        '&numberOfResults=1')
+    self.assertEqual(driver_check_url, expected_url)
+
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'linux-amd64'}, clear=True)
+  def testLinux(self):
+    driver_check_url = pcnd.GetDriverCheckUrl()
+    expected_url = (
+        'https://gfwsl.geforce.com/'
+        'services_toolkit/services/com/nvidia/services/AjaxDriverService.php'
+        '?func=DriverManualLookup'
+        '&psid=112'
+        '&pfid=895'
+        '&osID=12'
+        '&languageCode=1033'
+        '&isWHQL=0'
+        '&dch=0'
+        '&sort1=0'
+        '&numberOfResults=1')
+    self.assertEqual(driver_check_url, expected_url)
+
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'mac-amd64'}, clear=True)
+  def testUnsupported(self):
+    with self.assertRaisesRegex(RuntimeError,
+                                'Unsupported target platform mac-amd64'):
+      _ = pcnd.GetDriverCheckUrl()
+
+
 class RequestsMockingUnittest(unittest.TestCase):
 
   def setUp(self):
@@ -41,7 +109,8 @@ class GetJsonFromUrlUnittest(RequestsMockingUnittest):
 
 class GetMostRecentDriverDownloadInfoUnittest(RequestsMockingUnittest):
 
-  def test_success(self):
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'windows-amd64'}, clear=True)
+  def test_success_windows(self):
     """Tests the happy path/success case when getting the download info."""
     response = {
         'Success': '1',
@@ -55,6 +124,22 @@ class GetMostRecentDriverDownloadInfoUnittest(RequestsMockingUnittest):
     self.assertEqual(pcnd._get_most_recent_driver_download_info(),
                      {'foo': 'bar'})
 
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'linux-amd64'}, clear=True)
+  def test_success_linux(self):
+    """Tests the happy path/success case when getting the download info."""
+    response = {
+        'Success': '1',
+        'IDS': [{
+            'downloadInfo': {
+                'foo': 'bar',
+            },
+        },],
+    }
+    self._setJson(response)
+    self.assertEqual(pcnd._get_most_recent_driver_download_info(),
+                     {'foo': 'bar'})
+
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'windows-amd64'}, clear=True)
   def test_no_success_field(self):
     """Tests behavior when no success field is present."""
     response = {
@@ -69,6 +154,7 @@ class GetMostRecentDriverDownloadInfoUnittest(RequestsMockingUnittest):
         RuntimeError, 'Did not detect successful driver query\\. Raw JSON: .*'):
       pcnd._get_most_recent_driver_download_info()
 
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'windows-amd64'}, clear=True)
   def test_no_success(self):
     """Tests behavior when a non-successful query is reported."""
     response = {
@@ -84,6 +170,7 @@ class GetMostRecentDriverDownloadInfoUnittest(RequestsMockingUnittest):
         RuntimeError, 'Did not detect successful driver query\\. Raw JSON: .*'):
       pcnd._get_most_recent_driver_download_info()
 
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'windows-amd64'}, clear=True)
   def test_no_ids_field(self):
     """Tests behavior when no IDS field is present."""
     response = {
@@ -95,6 +182,7 @@ class GetMostRecentDriverDownloadInfoUnittest(RequestsMockingUnittest):
         'Malformed JSON response without IDS field\\. Raw JSON: .*'):
       pcnd._get_most_recent_driver_download_info()
 
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'windows-amd64'}, clear=True)
   def test_no_ids_data(self):
     """Tests behavior when an IDS field is present but empty."""
     response = {
@@ -106,6 +194,7 @@ class GetMostRecentDriverDownloadInfoUnittest(RequestsMockingUnittest):
                                 'Expected 1 set of driver information, got 0'):
       pcnd._get_most_recent_driver_download_info()
 
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'windows-amd64'}, clear=True)
   def test_too_much_ids_data(self):
     """Tests behavior when the IDS field has too many elements."""
     response = {
@@ -129,6 +218,7 @@ class GetMostRecentDriverDownloadInfoUnittest(RequestsMockingUnittest):
                                 'Expected 1 set of driver information, got 2'):
       pcnd._get_most_recent_driver_download_info()
 
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'windows-amd64'}, clear=True)
   def test_no_download_info_field(self):
     """Tests behavior when no downloadInfo field is present."""
     response = {
@@ -148,7 +238,8 @@ class GetMostRecentDriverDownloadInfoUnittest(RequestsMockingUnittest):
 
 class CmdGetLatestVersionUnittest(RequestsMockingUnittest):
 
-  def test_success(self):
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'windows-amd64'}, clear=True)
+  def test_success_windows(self):
     """Tests the happy path/success case when getting the latest version."""
     response = {
         'Success':
@@ -163,6 +254,23 @@ class CmdGetLatestVersionUnittest(RequestsMockingUnittest):
     self._setJson(response)
     pcnd.cmd_get_latest_version()
 
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'linux-amd64'}, clear=True)
+  def test_success_linux(self):
+    """Tests the happy path/success case when getting the latest version."""
+    response = {
+        'Success':
+            '1',
+        'IDS': [{
+            'downloadInfo': {
+                'DownloadURL': 'foo.com/download',
+                'Version': '123.45',
+            },
+        },],
+    }
+    self._setJson(response)
+    pcnd.cmd_get_latest_version()
+
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'windows-amd64'}, clear=True)
   def test_missing_version_field(self):
     """Tests behavior when the Version field is not present."""
     response = {
@@ -179,6 +287,7 @@ class CmdGetLatestVersionUnittest(RequestsMockingUnittest):
         'Malformed JSON response without Version field\\. Raw JSON: .*'):
       pcnd.cmd_get_latest_version()
 
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'windows-amd64'}, clear=True)
   def test_invalid_version_format(self):
     """Tests behavior when invalid driver version formats are found."""
     bad_versions = (
@@ -220,8 +329,13 @@ class CmdGetLatestVersionUnittest(RequestsMockingUnittest):
 
 class CmdGetUrlUnittest(RequestsMockingUnittest):
 
-  @mock.patch.dict(os.environ, {'_3PP_VERSION': '123.45'}, clear=True)
-  def test_success(self):
+  @mock.patch.dict(
+      os.environ, {
+          '_3PP_PLATFORM': 'windows-amd64',
+          '_3PP_VERSION': '123.45'
+      },
+      clear=True)
+  def test_success_windows(self):
     """Tests the happy path/success case when getting the download URL."""
     response = {
         'Success':
@@ -236,7 +350,28 @@ class CmdGetUrlUnittest(RequestsMockingUnittest):
     self._setJson(response)
     pcnd.cmd_get_url()
 
-  @mock.patch.dict(os.environ, {}, clear=True)
+  @mock.patch.dict(
+      os.environ, {
+          '_3PP_PLATFORM': 'linux-amd64',
+          '_3PP_VERSION': '123.45'
+      },
+      clear=True)
+  def test_success_linux(self):
+    """Tests the happy path/success case when getting the download URL."""
+    response = {
+        'Success':
+            '1',
+        'IDS': [{
+            'downloadInfo': {
+                'DownloadURL': 'foo.com/download',
+                'Version': '123.45',
+            },
+        },],
+    }
+    self._setJson(response)
+    pcnd.cmd_get_url()
+
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'windows-amd64'}, clear=True)
   def test_no_3pp_version(self):
     """Tests behavior when no _3PP_VERSION is set."""
     response = {
@@ -254,7 +389,12 @@ class CmdGetUrlUnittest(RequestsMockingUnittest):
         RuntimeError, 'get_url command requires _3PP_VERSION to be set'):
       pcnd.cmd_get_url()
 
-  @mock.patch.dict(os.environ, {'_3PP_VERSION': '123.45'}, clear=True)
+  @mock.patch.dict(
+      os.environ, {
+          '_3PP_PLATFORM': 'windows-amd64',
+          '_3PP_VERSION': '123.45'
+      },
+      clear=True)
   def test_no_version_field(self):
     """Tests behavior when no Version field is present."""
     response = {
@@ -271,7 +411,12 @@ class CmdGetUrlUnittest(RequestsMockingUnittest):
         'Requested driver version 123.45 did not match available version None'):
       pcnd.cmd_get_url()
 
-  @mock.patch.dict(os.environ, {'_3PP_VERSION': '123.45'}, clear=True)
+  @mock.patch.dict(
+      os.environ, {
+          '_3PP_PLATFORM': 'windows-amd64',
+          '_3PP_VERSION': '123.45'
+      },
+      clear=True)
   def test_mismatched_version(self):
     """Tests behavior when the available version != requested version"""
     response = {
@@ -291,9 +436,14 @@ class CmdGetUrlUnittest(RequestsMockingUnittest):
         '234.56'):
       pcnd.cmd_get_url()
 
-  @mock.patch.dict(os.environ, {'_3PP_VERSION': '123.45'}, clear=True)
+  @mock.patch.dict(
+      os.environ, {
+          '_3PP_PLATFORM': 'windows-amd64',
+          '_3PP_VERSION': '123.45'
+      },
+      clear=True)
   def test_no_download_url_field(self):
-    """Tests behavior when no DownloadURL field is present."""
+    """Tests behavior when no DownloadURL field is present on Windows."""
     response = {
         'Success': '1',
         'IDS': [{
