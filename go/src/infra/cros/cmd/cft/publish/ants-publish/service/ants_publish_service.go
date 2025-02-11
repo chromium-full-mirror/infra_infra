@@ -13,6 +13,7 @@ import (
 	"mime"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"sync"
@@ -37,6 +38,10 @@ const (
 	defaultChunkSize  = 1000
 	internalAccountID = 1
 	abiKey            = "abi"
+)
+
+var (
+	moduleNameRe = regexp.MustCompile(`tradefed.[a-z]ts.(.*)`)
 )
 
 type AntsPublishService struct {
@@ -255,6 +260,22 @@ func (aps *AntsPublishService) updateParentWorkUnitProperties() error {
 	return err
 }
 
+// removeModulePrefix removes the additional prefix we add in CTP runner.
+func (aps *AntsPublishService) removeModulePrefix(moduleName string) string {
+	matches := moduleNameRe.FindAllStringSubmatch(moduleName, -1)
+	// Return the same name if there is no known prefix to remove
+	if len(matches) != 1 {
+		return moduleName
+	}
+
+	// Return the same name if we dont have a match
+	if len(matches[0]) != 2 {
+		return moduleName
+	}
+	// Return the matched part after the prefix
+	return matches[0][1]
+}
+
 // UploadToAnts uploads test results to Ants.
 func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	log.Printf("Uploading to AnTS: %+v", aps.results)
@@ -291,7 +312,8 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 		log.Printf("looking at result: %+v", result)
 
 		// Add a module workunit
-		mwu, err := aps.insertModuleWorkUnit(result.GetParentTest(), "TF_MODULE", aps.metadata.GetParentWorkUnitId())
+		moduleName := aps.removeModulePrefix(result.GetParentTest())
+		mwu, err := aps.insertModuleWorkUnit(moduleName, "TF_MODULE", aps.metadata.GetParentWorkUnitId())
 		if err != nil {
 			return err
 		}

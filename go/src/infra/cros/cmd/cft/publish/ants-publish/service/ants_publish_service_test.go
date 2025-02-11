@@ -68,6 +68,39 @@ func TestAntsStatus(t *testing.T) {
 	}
 }
 
+func TestRemoveModulePrefix(t *testing.T) {
+	testCases := []struct {
+		name       string
+		moduleName string
+		wantName   string
+	}{
+		{
+			name:       "cts",
+			moduleName: "tradefed.cts.abc.def",
+			wantName:   "abc.def",
+		},
+		{
+			name:       "dts",
+			moduleName: "tradefed.dts.abc.def",
+			wantName:   "abc.def",
+		},
+		{
+			name:       "noPrefix",
+			moduleName: "abc.def",
+			wantName:   "abc.def",
+		},
+	}
+	aps := &AntsPublishService{}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := aps.removeModulePrefix(tc.moduleName)
+			if got != tc.wantName {
+				t.Errorf("Unexpected diff: want(%s) got(%s)", tc.wantName, got)
+			}
+		})
+	}
+}
+
 func TestValidateAntsPublishRequest(t *testing.T) {
 	defaultResult := &api.TestCaseResult{TestCaseId: &api.TestCase_Id{Value: "test"}}
 	testCases := []struct {
