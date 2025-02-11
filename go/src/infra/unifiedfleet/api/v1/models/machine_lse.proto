@@ -32,7 +32,7 @@ import "infra/unifiedfleet/api/v1/models/ownership.proto";
 // It refers to the entity in the lab which has Machine(s) associated
 // with it. It also has other components associated with it.
 //
-// Next tag: 26
+// Next tag: 28
 message MachineLSE {
     option (google.api.resource) = {
         type: "unified-fleet-system.appspot.com/MachineLSE"
@@ -145,6 +145,11 @@ message MachineLSE {
 
     // The secret for wifi tests.
     Secret wifi_secret = 26;
+
+    // This specifies the maintenance config that this host belongs to.
+    // Please note that same device can have different hostname and then has different maintenance requirements.
+    // So this maintenance config is attached to a host, instead of a machine.
+    string maintenance_config_name = 27;
 }
 
 // ChromeBrowserMachineLSE refers to the entity
