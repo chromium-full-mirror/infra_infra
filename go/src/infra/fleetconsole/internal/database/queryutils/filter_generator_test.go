@@ -26,89 +26,89 @@ func TestWhereClause(t *testing.T) {
 		).Build()
 
 		t.Run("Empty filter", func(t *ftt.Test) {
-			result, pars, err := table.WhereClause("")
+			q, err := NewQueryBuilder(table).WithWhereClause("")
 			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, pars.GetValues(), should.HaveLength(0))
-			assert.Loosely(t, result, should.Equal("(TRUE)"))
+			assert.Loosely(t, q.parameters.values, should.HaveLength(0))
+			assert.Loosely(t, q.whereClause, should.Equal(""))
 		})
 		t.Run("Simple filter", func(t *ftt.Test) {
 			t.Run("has operator", func(t *ftt.Test) {
-				result, pars, err := table.WhereClause("dut_name:chromeos")
+				q, err := NewQueryBuilder(table).WithWhereClause("dut_name:chromeos")
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, pars.GetValues(), should.Match([]any{
+				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"%chromeos%",
 				}))
-				assert.Loosely(t, result, should.Equal("(dut_name LIKE $1)"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_name LIKE $1)\n"))
 			})
 			t.Run("equals operator", func(t *ftt.Test) {
-				result, pars, err := table.WhereClause("dut_state = available")
+				q, err := NewQueryBuilder(table).WithWhereClause("dut_state = available")
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, pars.GetValues(), should.Match([]any{
+				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"available",
 				}))
-				assert.Loosely(t, result, should.Equal("(dut_state = $1)"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_state = $1)\n"))
 			})
 			t.Run("not equals operator", func(t *ftt.Test) {
-				result, pars, err := table.WhereClause("dut_state != available")
+				q, err := NewQueryBuilder(table).WithWhereClause("dut_state != available")
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, pars.GetValues(), should.Match([]any{
+				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"available",
 				}))
-				assert.Loosely(t, result, should.Equal("(dut_state <> $1)"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_state <> $1)\n"))
 			})
 			t.Run("composite to LIKE", func(t *ftt.Test) {
-				result, pars, err := table.WhereClause("dut_state:(something)")
+				q, err := NewQueryBuilder(table).WithWhereClause("dut_state:(something)")
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, pars.GetValues(), should.Match([]any{
+				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"%something%",
 				}))
-				assert.Loosely(t, result, should.Equal("(dut_state LIKE $1)"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_state LIKE $1)\n"))
 			})
 			t.Run("composite to equals", func(t *ftt.Test) {
-				result, pars, err := table.WhereClause("dut_state=(something)")
+				q, err := NewQueryBuilder(table).WithWhereClause("dut_state=(something)")
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, pars.GetValues(), should.Match([]any{
+				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"something",
 				}))
-				assert.Loosely(t, result, should.Equal("(dut_state = $1)"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_state = $1)\n"))
 			})
 			t.Run("unsupported field LHS", func(t *ftt.Test) {
-				_, _, err := table.WhereClause("dut_state.something=available")
+				_, err := NewQueryBuilder(table).WithWhereClause("dut_state.something=available")
 				assert.Loosely(t, err, should.ErrLike("fields are only supported for json columns"))
 			})
 			t.Run("unsupported field RHS", func(t *ftt.Test) {
-				_, _, err := table.WhereClause("dut_name=chromeos.host4")
+				_, err := NewQueryBuilder(table).WithWhereClause("dut_name=chromeos.host4")
 				assert.Loosely(t, err, should.ErrLike("fields not implemented yet"))
 			})
 			t.Run("not existing column", func(t *ftt.Test) {
-				_, _, err := table.WhereClause("suspicious_column=suspicious_value")
+				_, err := NewQueryBuilder(table).WithWhereClause("suspicious_column=suspicious_value")
 				assert.Loosely(t, err, should.ErrLike("column `suspicious_column` doesn't exist"))
 			})
 			t.Run("json array has filter", func(t *ftt.Test) {
-				result, pars, err := table.WhereClause("labels.labels-os_type=OS_TYPE_CROS")
+				q, err := NewQueryBuilder(table).WithWhereClause("labels.labels-os_type=OS_TYPE_CROS")
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, pars.GetValues(), should.Match([]any{
+				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"labels", "labels-os_type", "values", "OS_TYPE_CROS",
 				}))
-				assert.Loosely(t, result, should.Equal("(labels -> $1 -> $2 -> $3 ? $4)"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (labels -> $1 -> $2 -> $3 ? $4)\n"))
 			})
 
 			t.Run("complex filter", func(t *ftt.Test) {
-				result, pars, err := table.WhereClause("labels.label-os_type = (OS_TYPE_CROS AND OS_TYPE_LABSTATION) dut_state = (DEVICE_STATE_LEASED AND DEVICE_STATE_AVAILABLE)")
+				q, err := NewQueryBuilder(table).WithWhereClause("labels.label-os_type = (OS_TYPE_CROS AND OS_TYPE_LABSTATION) dut_state = (DEVICE_STATE_LEASED AND DEVICE_STATE_AVAILABLE)")
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, pars.GetValues(), should.Match([]any{
+				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"labels", "label-os_type", "values", "OS_TYPE_CROS", "labels", "label-os_type", "values", "OS_TYPE_LABSTATION", "DEVICE_STATE_LEASED", "DEVICE_STATE_AVAILABLE",
 				}))
-				assert.Loosely(t, result, should.Equal("(((labels -> $1 -> $2 -> $3 ? $4) AND (labels -> $5 -> $6 -> $7 ? $8)) AND ((dut_state = $9) AND (dut_state = $10)))"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (((labels -> $1 -> $2 -> $3 ? $4) AND (labels -> $5 -> $6 -> $7 ? $8)) AND ((dut_state = $9) AND (dut_state = $10)))\n"))
 			})
 
 			t.Run("filter with AND and OR", func(t *ftt.Test) {
-				result, pars, err := table.WhereClause("dut_state = (a AND b OR c)")
+				q, err := NewQueryBuilder(table).WithWhereClause("dut_state = (a AND b OR c)")
 				assert.Loosely(t, err, should.BeNil)
-				assert.Loosely(t, pars.GetValues(), should.Match([]any{
+				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"a", "b", "c",
 				}))
-				assert.Loosely(t, result, should.Equal("((dut_state = $1) AND ((dut_state = $2) OR (dut_state = $3)))"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE ((dut_state = $1) AND ((dut_state = $2) OR (dut_state = $3)))\n"))
 			})
 		})
 	})

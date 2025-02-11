@@ -12,23 +12,6 @@ import (
 	"go.chromium.org/luci/common/errors"
 )
 
-// QueryParameters represents a collection of query parameters.
-type QueryParameters struct {
-	values        []any
-	nextValueName int
-}
-
-func (q *QueryParameters) GetValues() []any {
-	return q.values
-}
-
-// whereClause constructs Standard SQL WHERE clause parts from
-// column definitions and a parsed AIP-160 filter.
-type whereClause struct {
-	table      *Table
-	parameters *QueryParameters
-}
-
 // compositeArgInfo is the info used when the `arg` has composite expression.
 // Currently it is limited to simple expressions like (value1 AND value2 OR ...)
 type compositeArgInfo struct {
@@ -37,29 +20,26 @@ type compositeArgInfo struct {
 	fields     []string
 }
 
-// WhereClause creates a Standard SQL WHERE clause fragment for the given filter (doesn't include `WHERE` keyword).
+// WithWhereClause adds Standard SQL WHERE clause to the query based on the filter (including "WHERE").
 // All field names are replaced with the safe database column names from the specified table.
 // All user input strings are passed via query parameters, so the returned query is SQL injection safe.
-func (t *Table) WhereClause(filter string) (string, *QueryParameters, error) {
+func (q *QueryBuilder) WithWhereClause(filter string) (*QueryBuilder, error) {
 	ast, err := aip160.ParseFilter(filter)
 	if err != nil {
-		return "", &QueryParameters{}, err
+		return q, err
 	}
 
 	if ast.Expression == nil {
-		return "(TRUE)", &QueryParameters{}, nil
-	}
-
-	q := &whereClause{
-		table:      t,
-		parameters: &QueryParameters{nextValueName: 1},
+		return q, nil
 	}
 
 	clause, err := q.expressionQuery(ast.Expression, nil)
 	if err != nil {
-		return "", &QueryParameters{}, err
+		return q, err
 	}
-	return clause, q.parameters, nil
+
+	q.whereClause = fmt.Sprintf("WHERE %s\n", clause)
+	return q, nil
 }
 
 // expressionQuery returns the SQL expression equivalent to the given
@@ -68,12 +48,12 @@ func (t *Table) WhereClause(filter string) (string, *QueryParameters, error) {
 // sequence.
 //
 // The returned string is an injection-safe SQL expression.
-func (w *whereClause) expressionQuery(expression *aip160.Expression, argInfo *compositeArgInfo) (string, error) {
+func (q *QueryBuilder) expressionQuery(expression *aip160.Expression, argInfo *compositeArgInfo) (string, error) {
 	factors := []string{}
-	// As we use exact match semantics, both Sequences is equivalent to AND.
+	// As we use exact match semantics, both Sequence and Factor are equivalent to AND.
 	for _, sequence := range expression.Sequences {
 		for _, factor := range sequence.Factors {
-			f, err := w.factorQuery(factor, argInfo)
+			f, err := q.factorQuery(factor, argInfo)
 			if err != nil {
 				return "", err
 			}
@@ -90,10 +70,10 @@ func (w *whereClause) expressionQuery(expression *aip160.Expression, argInfo *co
 // factor. A factor is a disjunction (OR) of terms or a simple term.
 //
 // The returned string is an injection-safe SQL expression.
-func (w *whereClause) factorQuery(factor *aip160.Factor, argInfo *compositeArgInfo) (string, error) {
+func (q *QueryBuilder) factorQuery(factor *aip160.Factor, argInfo *compositeArgInfo) (string, error) {
 	terms := []string{}
 	for _, term := range factor.Terms {
-		tq, err := w.termQuery(term, argInfo)
+		tq, err := q.termQuery(term, argInfo)
 		if err != nil {
 			return "", err
 		}
@@ -109,8 +89,8 @@ func (w *whereClause) factorQuery(factor *aip160.Factor, argInfo *compositeArgIn
 // term.
 //
 // The returned string is an injection-safe SQL expression.
-func (w *whereClause) termQuery(term *aip160.Term, argInfo *compositeArgInfo) (string, error) {
-	simpleQuery, err := w.simpleQuery(term.Simple, argInfo)
+func (q *QueryBuilder) termQuery(term *aip160.Term, argInfo *compositeArgInfo) (string, error) {
+	simpleQuery, err := q.simpleQuery(term.Simple, argInfo)
 	if err != nil {
 		return "", err
 	}
@@ -123,19 +103,19 @@ func (w *whereClause) termQuery(term *aip160.Term, argInfo *compositeArgInfo) (s
 // simpleQuery returns the SQL expression equivalent to the given simple
 // filter.
 // The returned string is an injection-safe SQL expression.
-func (w *whereClause) simpleQuery(simple *aip160.Simple, argInfo *compositeArgInfo) (string, error) {
+func (q *QueryBuilder) simpleQuery(simple *aip160.Simple, argInfo *compositeArgInfo) (string, error) {
 	// This is the case when there was an composite `arg`
 	if argInfo != nil {
 		if simple.Composite != nil {
 			return "", fmt.Errorf("`composite` clause is not supported in composite `arg`")
 		}
-		return w.compositeArgRestrictionQuery(simple.Restriction, argInfo)
+		return q.compositeArgRestrictionQuery(simple.Restriction, argInfo)
 	}
 
 	if simple.Restriction != nil {
-		return w.restrictionQuery(simple.Restriction, argInfo)
+		return q.restrictionQuery(simple.Restriction, argInfo)
 	} else if simple.Composite != nil {
-		return w.expressionQuery(simple.Composite, nil)
+		return q.expressionQuery(simple.Composite, nil)
 	} else {
 		return "", fmt.Errorf("invalid 'simple' clause in query filter")
 	}
@@ -144,7 +124,7 @@ func (w *whereClause) simpleQuery(simple *aip160.Simple, argInfo *compositeArgIn
 // restrictionQuery returns the SQL expression equivalent to the given
 // restriction.
 // The returned string is an injection-safe SQL expression.
-func (w *whereClause) restrictionQuery(restriction *aip160.Restriction, argInfo *compositeArgInfo) (string, error) {
+func (q *QueryBuilder) restrictionQuery(restriction *aip160.Restriction, argInfo *compositeArgInfo) (string, error) {
 	if restriction.Comparable.Member == nil {
 		return "", fmt.Errorf("invalid comparable")
 	}
@@ -159,7 +139,7 @@ func (w *whereClause) restrictionQuery(restriction *aip160.Restriction, argInfo 
 		return "", fmt.Errorf("global properties are not supported. Got: %s", restriction.Comparable.Member.Value)
 	}
 
-	column, ok := w.table.columnByExternalName[restriction.Comparable.Member.Value]
+	column, ok := q.table.columnByExternalName[restriction.Comparable.Member.Value]
 	if !ok {
 		return "", fmt.Errorf("column `%s` doesn't exist", restriction.Comparable.Member.Value)
 	}
@@ -167,7 +147,7 @@ func (w *whereClause) restrictionQuery(restriction *aip160.Restriction, argInfo 
 	// Process composite arg.
 	// Currently it is limited to simple expressions like (value1 AND value2 OR ...)
 	if restriction.Arg.Composite != nil && argInfo == nil {
-		return w.expressionQuery(restriction.Arg.Composite, &compositeArgInfo{
+		return q.expressionQuery(restriction.Arg.Composite, &compositeArgInfo{
 			comparator: restriction.Comparator,
 			column:     column,
 			fields:     restriction.Comparable.Member.Fields,
@@ -185,7 +165,7 @@ func (w *whereClause) restrictionQuery(restriction *aip160.Restriction, argInfo 
 		// as labels have multiple values and we basically check the existence of the specified value in the array.
 		// Currently leaving it as `=` to comply with the frontend.
 		if restriction.Comparator == "=" {
-			value, err := w.jsonArrayHasArgValue(restriction.Arg, column, restriction.Comparable.Member.Fields)
+			value, err := q.jsonArrayHasArgValue(restriction.Arg, column, restriction.Comparable.Member.Fields)
 			if err != nil {
 				return "", errors.Annotate(err, "argument for field %s", column.externalName).Err()
 			}
@@ -196,19 +176,19 @@ func (w *whereClause) restrictionQuery(restriction *aip160.Restriction, argInfo 
 	}
 
 	if restriction.Comparator == "=" {
-		arg, err := w.argValue(restriction.Arg)
+		arg, err := q.argValue(restriction.Arg)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", column.externalName).Err()
 		}
 		return fmt.Sprintf("(%s = %s)", column.name, arg), nil
 	} else if restriction.Comparator == "!=" {
-		arg, err := w.argValue(restriction.Arg)
+		arg, err := q.argValue(restriction.Arg)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", column.externalName).Err()
 		}
 		return fmt.Sprintf("(%s <> %s)", column.name, arg), nil
 	} else if restriction.Comparator == ":" {
-		arg, err := w.likeArgValue(restriction.Arg, column)
+		arg, err := q.likeArgValue(restriction.Arg, column)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", column.externalName).Err()
 		}
@@ -221,7 +201,7 @@ func (w *whereClause) restrictionQuery(restriction *aip160.Restriction, argInfo 
 // restrictionQuery returns the SQL expression equivalent to the given
 // restriction.
 // The returned string is an injection-safe SQL expression.
-func (w *whereClause) compositeArgRestrictionQuery(restriction *aip160.Restriction, argInfo *compositeArgInfo) (string, error) {
+func (q *QueryBuilder) compositeArgRestrictionQuery(restriction *aip160.Restriction, argInfo *compositeArgInfo) (string, error) {
 	if restriction.Comparable.Member == nil {
 		return "", fmt.Errorf("invalid comparable")
 	}
@@ -240,7 +220,7 @@ func (w *whereClause) compositeArgRestrictionQuery(restriction *aip160.Restricti
 
 	if argInfo.column.columnType == ColumnTypeJSONB {
 		if argInfo.comparator == "=" {
-			value, err := w.jsonArrayHasComparableValue(restriction.Comparable, argInfo.column, argInfo.fields)
+			value, err := q.jsonArrayHasComparableValue(restriction.Comparable, argInfo.column, argInfo.fields)
 			if err != nil {
 				return "", errors.Annotate(err, "argument for field %s", argInfo.column.externalName).Err()
 			}
@@ -251,19 +231,19 @@ func (w *whereClause) compositeArgRestrictionQuery(restriction *aip160.Restricti
 	}
 
 	if argInfo.comparator == "=" {
-		arg, err := w.comparableValue(restriction.Comparable)
+		arg, err := q.comparableValue(restriction.Comparable)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", argInfo.column.externalName).Err()
 		}
 		return fmt.Sprintf("(%s = %s)", argInfo.column.name, arg), nil
 	} else if argInfo.comparator == "!=" {
-		arg, err := w.comparableValue(restriction.Comparable)
+		arg, err := q.comparableValue(restriction.Comparable)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", argInfo.column.externalName).Err()
 		}
 		return fmt.Sprintf("(%s <> %s)", argInfo.column.name, arg), nil
 	} else if argInfo.comparator == ":" {
-		arg, err := w.likeComparableValue(restriction.Comparable)
+		arg, err := q.likeComparableValue(restriction.Comparable)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", argInfo.column.externalName).Err()
 		}
@@ -276,20 +256,20 @@ func (w *whereClause) compositeArgRestrictionQuery(restriction *aip160.Restricti
 // argValue returns a SQL expression representing the value of the specified
 // arg.
 // The returned string is an injection-safe SQL expression.
-func (w *whereClause) argValue(arg *aip160.Arg) (string, error) {
+func (q *QueryBuilder) argValue(arg *aip160.Arg) (string, error) {
 	if arg.Composite != nil {
 		return "", fmt.Errorf("composite expressions in arguments are not implemented yet")
 	}
 	if arg.Comparable == nil {
 		return "", fmt.Errorf("missing comparable in argument")
 	}
-	return w.comparableValue(arg.Comparable)
+	return q.comparableValue(arg.Comparable)
 }
 
 // argValue returns a SQL expression representing the value of the specified
 // comparable.
 // The returned string is an injection-safe SQL expression.
-func (w *whereClause) comparableValue(comparable *aip160.Comparable) (string, error) {
+func (q *QueryBuilder) comparableValue(comparable *aip160.Comparable) (string, error) {
 	if comparable.Member == nil {
 		return "", fmt.Errorf("invalid comparable")
 	}
@@ -297,14 +277,14 @@ func (w *whereClause) comparableValue(comparable *aip160.Comparable) (string, er
 		return "", fmt.Errorf("fields not implemented yet")
 	}
 
-	return w.bind(comparable.Member.Value), nil
+	return q.bind(comparable.Member.Value), nil
 }
 
 // likeArgValue returns a SQL expression that, when passed to the
 // right hand side of a LIKE operator, performs substring matching against
 // the value of the argument.
 // The returned string is an injection-safe SQL expression.
-func (w *whereClause) likeArgValue(arg *aip160.Arg, column *Column) (string, error) {
+func (q *QueryBuilder) likeArgValue(arg *aip160.Arg, column *Column) (string, error) {
 	if arg.Composite != nil {
 		return "", fmt.Errorf("composite expressions are not allowed as RHS to has (:) operator")
 	}
@@ -315,14 +295,14 @@ func (w *whereClause) likeArgValue(arg *aip160.Arg, column *Column) (string, err
 		return "", fmt.Errorf("cannot use has (:) operator on a non-string field")
 	}
 
-	return w.likeComparableValue(arg.Comparable)
+	return q.likeComparableValue(arg.Comparable)
 }
 
 // likeComparableValue returns a SQL expression that, when passed to the
 // right hand side of a LIKE operator, performs substring matching against
 // the value of the comparable.
 // The returned string is an injection-safe SQL expression.
-func (w *whereClause) likeComparableValue(comparable *aip160.Comparable) (string, error) {
+func (q *QueryBuilder) likeComparableValue(comparable *aip160.Comparable) (string, error) {
 	if comparable.Member == nil {
 		return "", fmt.Errorf("invalid comparable")
 	}
@@ -330,7 +310,7 @@ func (w *whereClause) likeComparableValue(comparable *aip160.Comparable) (string
 		return "", fmt.Errorf("fields are not allowed on the RHS of has (:) operator")
 	}
 	// Bind unsanitised user input to a parameter to protect against SQL injection.
-	return w.bind("%" + quoteLike(comparable.Member.Value) + "%"), nil
+	return q.bind("%" + quoteLike(comparable.Member.Value) + "%"), nil
 }
 
 // Turns a literal string into an escaped like expression.
@@ -344,7 +324,7 @@ func quoteLike(value string) string {
 }
 
 // Checks whether value exist in the array specified in the json path
-func (w *whereClause) jsonArrayHasArgValue(arg *aip160.Arg, column *Column, fields []string) (string, error) {
+func (q *QueryBuilder) jsonArrayHasArgValue(arg *aip160.Arg, column *Column, fields []string) (string, error) {
 	if arg.Composite != nil {
 		return "", fmt.Errorf("composite expressions are not allowed as RHS to has (:) operator")
 	}
@@ -352,10 +332,10 @@ func (w *whereClause) jsonArrayHasArgValue(arg *aip160.Arg, column *Column, fiel
 		return "", fmt.Errorf("missing comparable in the argument")
 	}
 
-	return w.jsonArrayHasComparableValue(arg.Comparable, column, fields)
+	return q.jsonArrayHasComparableValue(arg.Comparable, column, fields)
 }
 
-func (w *whereClause) jsonArrayHasComparableValue(comparable *aip160.Comparable, column *Column, fields []string) (string, error) {
+func (q *QueryBuilder) jsonArrayHasComparableValue(comparable *aip160.Comparable, column *Column, fields []string) (string, error) {
 	if comparable.Member == nil {
 		return "", fmt.Errorf("invalid comparable")
 	}
@@ -366,19 +346,9 @@ func (w *whereClause) jsonArrayHasComparableValue(comparable *aip160.Comparable,
 	fullPath := column.jsonFullPath(fields...)
 	params := make([]string, len(fullPath))
 	for i, field := range fullPath {
-		params[i] = w.bind(field)
+		params[i] = q.bind(field)
 	}
 
-	value := w.bind(comparable.Member.Value)
+	value := q.bind(comparable.Member.Value)
 	return fmt.Sprintf("%s ? %s", strings.Join(params, " -> "), value), nil
-}
-
-// bind binds a new query parameter with the given value, and returns
-// the name of the parameter.
-// The returned string is an injection-safe SQL expression.
-func (w *whereClause) bind(value string) string {
-	name := fmt.Sprintf("$%d", w.parameters.nextValueName)
-	w.parameters.nextValueName += 1
-	w.parameters.values = append(w.parameters.values, value)
-	return name
 }
