@@ -8,7 +8,7 @@ package vmlab.api;
 
 import "google/protobuf/duration.proto";
 import "infra/libs/vmlab/api/image.proto";
-import "go.chromium.org/chromiumos/config/proto/chromiumos/test/api/vm_leaser.proto";
+import "chromiumos/test/api/device_leasing.proto";
 
 option go_package = "infra/libs/vmlab/api";
 
