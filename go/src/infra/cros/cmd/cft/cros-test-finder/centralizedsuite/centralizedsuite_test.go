@@ -11,8 +11,9 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/protobuf/proto"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 var testSuiteSetList = &api.SuiteSetList{

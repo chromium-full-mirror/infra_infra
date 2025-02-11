@@ -6,8 +6,9 @@ package main
 
 import (
 	"context"
-	"infra/cros/cmd/cft/cros-test-finder/test_finder"
 	"os"
+
+	"infra/cros/cmd/cft/cros-test-finder/test_finder"
 )
 
 func main() {

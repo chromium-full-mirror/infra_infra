@@ -8,9 +8,10 @@ import (
 	"context"
 	"log"
 
+	"google.golang.org/grpc"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
-	"google.golang.org/grpc"
 )
 
 // TestFinderServiceServer implementation of dut_service.proto

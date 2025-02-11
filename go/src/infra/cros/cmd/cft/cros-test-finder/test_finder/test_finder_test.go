@@ -11,11 +11,12 @@ import (
 	"path/filepath"
 	"testing"
 
-	"infra/cros/cmd/cft/cros-test-finder/centralizedsuite"
-
 	"github.com/golang/protobuf/jsonpb"
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/protobuf/proto"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+
+	"infra/cros/cmd/cft/cros-test-finder/centralizedsuite"
 )
 
 func TestReadInput(t *testing.T) {

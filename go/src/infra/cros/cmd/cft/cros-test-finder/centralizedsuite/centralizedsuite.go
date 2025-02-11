@@ -8,8 +8,9 @@ import (
 	"fmt"
 	"os"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/protobuf/proto"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 const (

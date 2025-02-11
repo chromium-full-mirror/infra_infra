@@ -11,9 +11,8 @@ import (
 	"os"
 	"strings"
 
-	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
+	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 
 	"infra/cros/cmd/cft/cros-test-finder/test_finder"
 )

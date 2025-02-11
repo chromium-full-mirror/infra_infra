@@ -17,10 +17,9 @@ import (
 
 	"github.com/gliderlabs/ssh"
 	"github.com/google/go-cmp/cmp"
+	cssh "golang.org/x/crypto/ssh"
 
 	"go.chromium.org/luci/common/testing/localonly"
-
-	cssh "golang.org/x/crypto/ssh"
 
 	"infra/cros/satlab/common/enumeration"
 	"infra/cros/satlab/common/paths"

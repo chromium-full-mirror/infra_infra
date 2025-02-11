@@ -17,16 +17,16 @@ import (
 	"strings"
 	"time"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"golang.org/x/exp/maps"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"infra/cros/cmd/cft/cros-test-finder/centralizedsuite"
-
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/test/execution/errors"
 	"go.chromium.org/chromiumos/test/util/finder"
 	"go.chromium.org/chromiumos/test/util/metadata"
 	"go.chromium.org/chromiumos/test/util/portdiscovery"
+
+	"infra/cros/cmd/cft/cros-test-finder/centralizedsuite"
 )
 
 const (
