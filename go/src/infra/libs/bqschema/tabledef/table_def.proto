@@ -4,6 +4,8 @@
 
 syntax = "proto3";
 
+option go_package = "infra/libs/bqschema/tabledef;tabledef";
+
 package tabledef;
 
 message TableDef {
