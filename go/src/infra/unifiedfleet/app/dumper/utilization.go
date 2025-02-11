@@ -200,14 +200,18 @@ func getMachineForLse(lse *ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Ma
 // corresponding Machine
 func getBucketForDevice(lse *ufspb.MachineLSE, machine *ufspb.Machine, env string, ns string) *bucket {
 	b := &bucket{
-		board:            machine.GetChromeosMachine().GetBuildTarget(),
-		model:            machine.GetChromeosMachine().GetModel(),
-		pool:             "[None]",
-		environment:      env,
-		zone:             lse.GetZone(),
-		swarmingInstance: "[None]",
-		status:           dutstate.ConvertFromUFSState(lse.GetResourceState()).String(),
-		os:               "[None]",
+		board:                 machine.GetChromeosMachine().GetBuildTarget(),
+		model:                 machine.GetChromeosMachine().GetModel(),
+		pool:                  "[None]",
+		environment:           env,
+		zone:                  lse.GetZone(),
+		swarmingInstance:      "[None]",
+		status:                dutstate.ConvertFromUFSState(lse.GetResourceState()).String(),
+		os:                    "[None]",
+		maintenanceConfigName: "[None]",
+	}
+	if lse.GetMaintenanceConfigName() != "" {
+		b.maintenanceConfigName = lse.GetMaintenanceConfigName()
 	}
 	switch ns {
 	case util.OSNamespace:
@@ -348,14 +352,15 @@ func schedulingUnitStatusFromLses(lses []*ufspb.MachineLSE) string {
 // dimensions are removed, the related metric is not automatically reset. The
 // metric will get reset eventually.
 type bucket struct {
-	board            string
-	model            string
-	pool             string
-	environment      string
-	zone             string
-	swarmingInstance string
-	status           string
-	os               string
+	board                 string
+	model                 string
+	pool                  string
+	environment           string
+	zone                  string
+	swarmingInstance      string
+	status                string
+	os                    string
+	maintenanceConfigName string
 }
 
 func (b *bucket) String() string {
