@@ -191,6 +191,17 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 				return errors.Annotate(err, "retry boot").Err()
 			}
 		}
+		// If c2d2, then set cold_reset_select:gsc_ec_reset
+		sType, err := servo.WrappedServoType(ctx, servod, req.DUT.GetChromeos().GetServo())
+		if err != nil {
+			log.Infof("Check for C2D2: could not determine the servo type.")
+			return errors.Annotate(err, "check for C2D2").Err()
+		}
+		if sType.IsC2D2() {
+			if err := servod.Set(ctx, "cold_reset_select", "gsc_ec_reset"); err != nil {
+				return errors.Annotate(err, "set cold_reset_select").Err()
+			}
+		}
 		// Sleep a few seconds to allowed apply all previous states before boot in recovery mode.
 		time.Sleep(1 * time.Second)
 		log.Infof("Boot in Recovery Mode: Started try to boot in recovery mode by power_state:rec.")
