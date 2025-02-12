@@ -12,7 +12,7 @@ syntax = "proto3";
 
 package bugtemplate;
 
-option go_package = "main";
+option go_package = "./infra/tools/bugtemplate;main";
 
 // A monorail issue template.
 message Template {
