@@ -47,6 +47,12 @@ Deploy to analysis.chromium.org (production):
 
 Please use [pantheon] to make the new version default.
 
+NOTE: Deployment to staging/prod requires some extra commands to pull in
+dependencies which were natively available in past, but now are not, due to many
+changes in infra repo. This is a tech debt, which hasn't been resolved, and
+probably will not be resolved any time sooner. The complete set of instructions
+to deploy can be found at go/deploy-findit
+
 # Code Structure
 * Findit
   * [handlers/](handlers/) contains logic to handle incoming http requests
