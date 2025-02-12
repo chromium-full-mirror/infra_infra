@@ -7,6 +7,8 @@ RUN apt-get update && \
     apt-get install -y isc-dhcp-server rsync
 
 ADD dhcpd.conf.keys /etc/dhcp/ddns-keys/dhcpd.conf.keys
+# Legacy key configuration location.
+ADD dhcpd.conf.keys /etc/dhcp/dhcpd.conf.keys
 
 RUN mkdir -p /tools/admin/etc
 RUN chmod -R 777 /tools
