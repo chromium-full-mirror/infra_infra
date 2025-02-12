@@ -559,7 +559,7 @@ SPECS.update({
                 ],
                 local=[],
             ),
-            default=False, # source for c code unavailable
+            default=False,  # source for c code unavailable
         ),
         SourceOrPrebuilt(
             'gevent',
@@ -610,7 +610,7 @@ SPECS.update({
             ),
             packaged=[],
             pyversions=['py3'],
-            default=False, # incompatible with newer Cython
+            default=False,  # incompatible with newer Cython
         ),
         SourceOrPrebuilt(
             'gevent',
@@ -807,6 +807,23 @@ SPECS.update({
         SourceOrPrebuilt(
             'grpcio', '1.57.0', pyversions=['py3'], env_cb=_GrpcEnv),
         SourceOrPrebuilt(
+            'grpcio',
+            '1.59.3',
+            skip_plat=[
+                'linux-armv6-py3.8',
+                'linux-arm64-py3.8',
+                'mac-arm64-py3.8',
+                'mac-x64-py3.8',
+            ],
+            pyversions=['py3'],
+            env_cb=_GrpcEnv),
+        SourceOrPrebuilt(
+            'grpcio',
+            '1.69.0',
+            skip_plat=['mac-arm64-py3.8', 'mac-x64-py3.8'],
+            pyversions=['py3'],
+            env_cb=_GrpcEnv),
+        SourceOrPrebuilt(
             'grpcio-tools',
             '1.32.0',
             skip_plat=[
@@ -826,10 +843,28 @@ SPECS.update({
             default=False),
         SourceOrPrebuilt(
             'grpcio-tools',
+            '1.57.0',
+            skip_plat=[
+                'linux-armv6-py3.8',
+                'linux-arm64-py3.8',
+            ],
+            pyversions=['py3']),
+        SourceOrPrebuilt(
+            'grpcio-tools',
             '1.59.3',
             skip_plat=[
                 'linux-armv6-py3.8',
                 'linux-arm64-py3.8',
+            ],
+            pyversions=['py3']),
+        SourceOrPrebuilt(
+            'grpcio-tools',
+            '1.69.0',
+            skip_plat=[
+                'linux-armv6-py3.8',
+                'linux-arm64-py3.8',
+                'mac-arm64-py3.8',
+                'mac-x64-py3.8',
             ],
             pyversions=['py3']),
         SourceOrPrebuilt(
