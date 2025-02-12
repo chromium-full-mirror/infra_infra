@@ -1,4 +1,4 @@
-# Copyright 2021 The LUCI Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Test chrome-golo repo DHCP configs using dhcpd binaries via docker."""
@@ -103,9 +103,11 @@ def _GetHostOsVersions(api, shivas_path, zone_host_map, zone):
     for entry in step_result_data:
       host = entry['name']
       # chromeBrowserMachineLse key only exists for hosts but not vms.
-      os = entry.get('chromeBrowserMachineLse', entry)['osVersion']['value']
+      os_str = entry.get('chromeBrowserMachineLse', entry)['osVersion']['value']
       try:
-        version = float(os.split('Linux Ubuntu ')[-1])  # 18.04, 20.04 etc.
+        numeric_version_str = os_str.split()[1]
+        major_minor_str = '.'.join(numeric_version_str.split('.')[:2])
+        version = float(major_minor_str)  # 18.04, 20.04 etc.
       except ValueError:
         # Set a default value if something goes wrong.
         version = _IMAGE_VERSIONS[-1]
@@ -198,7 +200,7 @@ def GenTests(api):
     return api.json.output([{
         'name': _TEST_HOST,
         'osVersion': {
-            'value': 'Linux Ubuntu %s' % os_version,
+            'value': 'Ubuntu %s LTS' % os_version,
         }
     }])
 
@@ -275,9 +277,9 @@ def GenTests(api):
       api.buildbucket.try_build(),
       changed_files(),
       api.override_step_data(
-          'get ufs host data', stdout=test_ufs_output('Linux Ubuntu 100.04')),
+          'get ufs host data', stdout=test_ufs_output('100.04.5')),
       api.override_step_data(
-          'get ufs vm data', stdout=test_ufs_output('Linux Ubuntu 100.04')),
+          'get ufs vm data', stdout=test_ufs_output('100.04.5')),
       api.post_process(post_process.StatusSuccess),
       api.post_process(post_process.DropExpectation),
   )
