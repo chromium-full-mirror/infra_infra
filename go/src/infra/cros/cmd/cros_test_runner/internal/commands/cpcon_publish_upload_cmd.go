@@ -22,9 +22,12 @@ type CpconPublishUploadCmd struct {
 	*interfaces.SingleCmdByExecutor
 
 	// Deps
-	CpconPublishSrcDir string
-	CpconJobName       string
-	GcsURL             string
+	CpconPublishSrcDir   string
+	CpconJobName         string
+	GcsURL               string
+	Build                string
+	Suite                string
+	ParentSwarmingTaskID string
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -73,6 +76,31 @@ func (cmd *CpconPublishUploadCmd) extractDepsFromHwTestStateKeeper(
 	}
 	cmd.GcsURL = sk.GcsURL
 
+	// Fetch build, suite, and parent task id from buildbucket tags.
+	buildName := ""
+	labelImage := ""
+	suiteName := ""
+	parentTaskID := ""
+	build := sk.BuildState.Build()
+	if build != nil {
+		for _, tag := range build.GetTags() {
+			if tag.GetKey() == "build" {
+				buildName = tag.GetValue()
+			} else if tag.GetKey() == "label-image" {
+				labelImage = tag.GetValue()
+			} else if tag.GetKey() == "label-suite" {
+				suiteName = tag.GetValue()
+			} else if tag.GetKey() == "parent_task_id" {
+				parentTaskID = tag.GetValue()
+			}
+		}
+	}
+	cmd.Build = buildName
+	if cmd.Build == "" {
+		cmd.Build = labelImage
+	}
+	cmd.Suite = suiteName
+	cmd.ParentSwarmingTaskID = parentTaskID
 	return nil
 }
 

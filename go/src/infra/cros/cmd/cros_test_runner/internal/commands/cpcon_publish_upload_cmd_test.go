@@ -9,9 +9,11 @@ import (
 	"fmt"
 	"testing"
 
+	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
+	"go.chromium.org/luci/luciexe/build"
 
 	"infra/cros/cmd/common_lib/containers"
 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
@@ -92,9 +94,21 @@ func TestCpconPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 
 		ctx := context.Background()
 		wantGcsURL := "gs://this-is-a-gcs-path/results"
+		wantBuild := "brya-release/R131-16063.0.0"
+		wantSuite := "cts"
+		buildPb := &bbpb.Build{
+			Tags: []*bbpb.StringPair{
+				{Key: "build", Value: wantBuild},
+				{Key: "parent_task_id", Value: wantSwarmingTaskId},
+				{Key: "label-suite", Value: wantSuite},
+			},
+		}
+		buildState, ctx, err := build.Start(ctx, buildPb)
+		defer func() { buildState.End(err) }()
 		sk := &data.HwTestStateKeeper{
 			GcsURL:             wantGcsURL,
 			CpconPublishSrcDir: "this/is/a/fake/path",
+			BuildState:         buildState,
 		}
 		ctrCipd := crostoolrunner.CtrCipdInfo{Version: "prod"}
 		ctr := &crostoolrunner.CrosToolRunner{CtrCipdInfo: ctrCipd}
@@ -109,10 +123,13 @@ func TestCpconPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 		cmd := commands.NewCpconPublishUploadCmd(exec)
 
 		// Extract deps first
-		err := cmd.ExtractDependencies(ctx, sk)
+		err = cmd.ExtractDependencies(ctx, sk)
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, cmd.CpconJobName, should.Equal(fmt.Sprintf("swarming-%s", wantSwarmingTaskId)))
 		assert.Loosely(t, cmd.GcsURL, should.Equal(wantGcsURL))
+		assert.Loosely(t, cmd.Build, should.Equal(wantBuild))
+		assert.Loosely(t, cmd.Suite, should.Equal(wantSuite))
+		assert.Loosely(t, cmd.ParentSwarmingTaskID, should.Equal(wantSwarmingTaskId))
 	})
 
 }

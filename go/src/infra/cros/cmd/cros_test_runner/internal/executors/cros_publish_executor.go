@@ -382,8 +382,7 @@ func (ex *CrosPublishExecutor) cpconPublishUploadCommandExecution(
 		HostType: _go.StoragePath_LOCAL,
 		Path:     common.CpconPublishTestArtifactsDir,
 	}
-	// reuse gcs metadata attributes of testapi
-	cpconMetadata, err := anypb.New(&testapi.PublishGcsMetadata{
+	cpconMetadata, err := anypb.New(&testapi.PublishCpconMetadata{
 		GcsPath: &_go.StoragePath{
 			HostType: _go.StoragePath_GS,
 			Path:     cmd.GcsURL,
@@ -392,6 +391,9 @@ func (ex *CrosPublishExecutor) cpconPublishUploadCommandExecution(
 			HostType: _go.StoragePath_LOCAL,
 			Path:     "/keys/skylab-drone.json",
 		},
+		Build:                cmd.Build,
+		Suite:                cmd.Suite,
+		ParentSwarmingTaskId: cmd.ParentSwarmingTaskID,
 	},
 	)
 	if err != nil {
