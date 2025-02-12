@@ -31,5 +31,3 @@
 //	echo 'export PATH=$PATH:$GOPATH/bin' >> $HOME/.bashrc
 //	source $HOME/.bashrc
 package satlabrpcserver
-
-//go:generate-b395127903-disabled sh generate.sh
