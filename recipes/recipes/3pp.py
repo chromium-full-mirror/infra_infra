@@ -183,7 +183,7 @@ def RunSteps(api, package_locations, to_build, platform, force_build,
 
     if not use_pkgbuild and api.tryserver.gerrit_change:
       # Check the CL footers, if any
-      if 'use_pkgbuild' in api.tryserver.get_footer('3pp-Migration'):
+      if 'use_pkgbuild' in api.tryserver.get_footer('3Pp-Migration'):
         use_pkgbuild = True
 
     if use_pkgbuild:
@@ -326,7 +326,7 @@ def GenTests(api):
       defaults(),
       api.buildbucket.try_build('infra'),
       api.tryserver.get_footers({
-        '3pp-Migration': ['extra', 'use_pkgbuild'],
+        '3Pp-Migration': ['extra', 'use_pkgbuild'],
       }),
       api.step_data(
           'build packages (pkgbuild)',

@@ -208,7 +208,7 @@
     "stdin": "Change commit message",
     "~followup_annotations": [
       "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"3pp-Migration\": [@@@",
+      "@@@STEP_LOG_LINE@json.output@  \"3Pp-Migration\": [@@@",
       "@@@STEP_LOG_LINE@json.output@    \"extra\",@@@",
       "@@@STEP_LOG_LINE@json.output@    \"use_pkgbuild\"@@@",
       "@@@STEP_LOG_LINE@json.output@  ]@@@",
