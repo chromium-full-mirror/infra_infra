@@ -250,10 +250,11 @@ func androidActions(actions map[string]*Action) {
 				"boot_retry:1",
 				"ignore_reboot_failure:true",
 				"after_reboot_check:true",
-				"after_reboot_timeout:150",
+				// Increase from 150 to 240 see b/389769971#comment3
+				"after_reboot_timeout:240",
 				"after_reboot_allow_use_servo_reset:true",
 			},
-			ExecTimeout: &durationpb.Duration{Seconds: 8000},
+			ExecTimeout: &durationpb.Duration{Seconds: 10000},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
 	}

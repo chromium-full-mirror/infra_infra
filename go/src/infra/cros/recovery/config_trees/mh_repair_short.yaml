@@ -2338,7 +2338,7 @@ plans:
                 - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
                 - name: Set CacheService address ('cache_service_address_detection')
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
-                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
@@ -2411,7 +2411,7 @@ plans:
                 - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
                 - name: Set CacheService address ('cache_service_address_detection')
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
-                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
@@ -2480,7 +2480,7 @@ plans:
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
-                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
@@ -2538,7 +2538,7 @@ plans:
                 - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
                 - name: Set CacheService address ('cache_service_address_detection')
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
-                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
@@ -2606,7 +2606,7 @@ plans:
                 - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
                 - name: Set CacheService address ('cache_service_address_detection')
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
-                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
@@ -2877,7 +2877,7 @@ plans:
                 - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
                 - name: Set CacheService address ('cache_service_address_detection')
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
-                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
@@ -3129,7 +3129,7 @@ plans:
                 - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
                 - name: Set CacheService address ('cache_service_address_detection')
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
-                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
@@ -3198,7 +3198,7 @@ plans:
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                 - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
-                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
@@ -3274,7 +3274,7 @@ plans:
                 - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
                 - name: Set CacheService address ('cache_service_address_detection')
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
-                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:
@@ -3360,7 +3360,7 @@ plans:
                 - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
                 - name: Set CacheService address ('cache_service_address_detection')
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
-                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                   conditions:

@@ -6952,7 +6952,7 @@ plans:
                     - os_image_path:v4
                   docs:
                     - This action calls servod to download provision image custom kernel to servo USB-key.
-                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
                   exec_name: cros_provision_actions_from_recovery_mode
                   exec_args:
                     - run_android_install:true
@@ -6962,7 +6962,7 @@ plans:
                     - boot_retry:1
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
-                    - after_reboot_timeout:150
+                    - after_reboot_timeout:240
                     - after_reboot_allow_use_servo_reset:true
                   docs:
                     - 'This action installs the test image on DUT utilizing '
@@ -7183,7 +7183,7 @@ plans:
                     - os_image_path:v4
                   docs:
                     - This action calls servod to download provision image custom kernel to servo USB-key.
-                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
                   exec_name: cros_provision_actions_from_recovery_mode
                   exec_args:
                     - run_android_install:true
@@ -7193,7 +7193,7 @@ plans:
                     - boot_retry:1
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
-                    - after_reboot_timeout:150
+                    - after_reboot_timeout:240
                     - after_reboot_allow_use_servo_reset:true
                   docs:
                     - 'This action installs the test image on DUT utilizing '
@@ -7416,7 +7416,7 @@ plans:
                   exec_name: sample_sleep
                   exec_args:
                     - sleep:10
-                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
                   exec_name: cros_provision_actions_from_recovery_mode
                   exec_args:
                     - run_android_install:true
@@ -7426,7 +7426,7 @@ plans:
                     - boot_retry:1
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
-                    - after_reboot_timeout:150
+                    - after_reboot_timeout:240
                     - after_reboot_allow_use_servo_reset:true
                   docs:
                     - 'This action installs the test image on DUT utilizing '
@@ -7620,7 +7620,7 @@ plans:
                     - os_image_path:v4
                   docs:
                     - This action calls servod to download provision image custom kernel to servo USB-key.
-                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
                   exec_name: cros_provision_actions_from_recovery_mode
                   exec_args:
                     - run_android_install:true
@@ -7630,7 +7630,7 @@ plans:
                     - boot_retry:1
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
-                    - after_reboot_timeout:150
+                    - after_reboot_timeout:240
                     - after_reboot_allow_use_servo_reset:true
                   docs:
                     - 'This action installs the test image on DUT utilizing '
@@ -7844,7 +7844,7 @@ plans:
                     - os_image_path:v4
                   docs:
                     - This action calls servod to download provision image custom kernel to servo USB-key.
-                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
                   exec_name: cros_provision_actions_from_recovery_mode
                   exec_args:
                     - run_android_install:true
@@ -7854,7 +7854,7 @@ plans:
                     - boot_retry:1
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
-                    - after_reboot_timeout:150
+                    - after_reboot_timeout:240
                     - after_reboot_allow_use_servo_reset:true
                   docs:
                     - 'This action installs the test image on DUT utilizing '
@@ -8724,7 +8724,7 @@ plans:
                     - os_image_path:v4
                   docs:
                     - This action calls servod to download provision image custom kernel to servo USB-key.
-                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
                   exec_name: cros_provision_actions_from_recovery_mode
                   exec_args:
                     - run_android_install:true
@@ -8734,7 +8734,7 @@ plans:
                     - boot_retry:1
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
-                    - after_reboot_timeout:150
+                    - after_reboot_timeout:240
                     - after_reboot_allow_use_servo_reset:true
                   docs:
                     - 'This action installs the test image on DUT utilizing '
@@ -9563,7 +9563,7 @@ plans:
                     - os_image_path:v4
                   docs:
                     - This action calls servod to download provision image custom kernel to servo USB-key.
-                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
                   exec_name: cros_provision_actions_from_recovery_mode
                   exec_args:
                     - run_android_install:true
@@ -9573,7 +9573,7 @@ plans:
                     - boot_retry:1
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
-                    - after_reboot_timeout:150
+                    - after_reboot_timeout:240
                     - after_reboot_allow_use_servo_reset:true
                   docs:
                     - 'This action installs the test image on DUT utilizing '
@@ -9796,7 +9796,7 @@ plans:
                   exec_name: sample_sleep
                   exec_args:
                     - sleep:10
-                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
                   exec_name: cros_provision_actions_from_recovery_mode
                   exec_args:
                     - run_android_install:true
@@ -9806,7 +9806,7 @@ plans:
                     - boot_retry:1
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
-                    - after_reboot_timeout:150
+                    - after_reboot_timeout:240
                     - after_reboot_allow_use_servo_reset:true
                   docs:
                     - 'This action installs the test image on DUT utilizing '
@@ -10098,7 +10098,7 @@ plans:
                     - os_image_path:v4
                   docs:
                     - This action calls servod to download provision image custom kernel to servo USB-key.
-                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
                   exec_name: cros_provision_actions_from_recovery_mode
                   exec_args:
                     - run_android_install:true
@@ -10108,7 +10108,7 @@ plans:
                     - boot_retry:1
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
-                    - after_reboot_timeout:150
+                    - after_reboot_timeout:240
                     - after_reboot_allow_use_servo_reset:true
                   docs:
                     - 'This action installs the test image on DUT utilizing '
@@ -10433,7 +10433,7 @@ plans:
                     - os_image_path:v4
                   docs:
                     - This action calls servod to download provision image custom kernel to servo USB-key.
-                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h13m20s')
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
                   exec_name: cros_provision_actions_from_recovery_mode
                   exec_args:
                     - run_android_install:true
@@ -10443,7 +10443,7 @@ plans:
                     - boot_retry:1
                     - ignore_reboot_failure:true
                     - after_reboot_check:true
-                    - after_reboot_timeout:150
+                    - after_reboot_timeout:240
                     - after_reboot_allow_use_servo_reset:true
                   docs:
                     - 'This action installs the test image on DUT utilizing '
