@@ -7,6 +7,7 @@ package templates
 import (
 	"fmt"
 	"os"
+	"slices"
 	"strings"
 
 	"google.golang.org/grpc/codes"
@@ -50,6 +51,13 @@ func (p *genericProcessor) Process(request *api.StartTemplatedContainerRequest) 
 				envs = append(envs, env)
 			}
 		}
+	}
+	// Required for Satlab's Docker TLS daemon.
+	// DOCKER_CERT_PATH is available only on DRONE thus in cannot be included
+	// in StartTemplatedContainerRequest.
+	if slices.Contains(envs, "DOCKER_CERT_PATH") {
+		path := os.Getenv("DOCKER_CERT_PATH")
+		volumes = append(volumes, fmt.Sprintf("%s:%s", path, path))
 	}
 	additionalOptions := &api.StartContainerRequest_Options{
 		Network: request.Network,

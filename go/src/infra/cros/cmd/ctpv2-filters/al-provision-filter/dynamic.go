@@ -56,6 +56,11 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 	containers := []*api.ContainerRequest{}
 	servodContainer := servodContainerBuilder.Build()
 	servodContainer.Network = "adb-network"
+	// Required for Satlab's Docker TLS daemon.
+	tlsVars := []string{"DOCKER_CERT_PATH", "DOCKER_HOST", "DOCKER_TLS_VERIFY"}
+	envvars := servodContainer.GetContainer().GetGeneric().Env
+	servodContainer.GetContainer().GetGeneric().Env = append(envvars, tlsVars...)
+
 	containers = append(containers, servodContainer)
 	container := provisionContainerBuilder.Build()
 	container.Network = "adb-network"

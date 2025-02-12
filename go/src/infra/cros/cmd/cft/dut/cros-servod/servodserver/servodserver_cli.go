@@ -34,6 +34,13 @@ const (
 )
 
 func (s *ServodService) getDockerClient() (*dc.Client, error) {
+	// For TLS create Docker Client from env variables.
+	if path := os.Getenv("DOCKER_CERT_PATH"); path != "" {
+		// Use the tcp connection, host IP is defined by DOCKER_HOST env variable.
+		return dc.NewClientWithOpts(dc.FromEnv, dc.WithAPIVersionNegotiation())
+	}
+	// TODO(klimkowicz): remove this legacy Docker Client fallback when
+	// Satlab with TLS dockerd is fully rolled out.
 	timeout := time.Duration(1 * time.Second)
 	transport := &http.Transport{
 		DialContext: (&net.Dialer{
