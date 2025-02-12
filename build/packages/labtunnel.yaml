@@ -1,0 +1,10 @@
+package: chromiumos/infra/labtunnel/${platform}
+description: Utility provides a CLI for commonly performed tunneling related commands necessary for accessing and testing with lab devices
+platforms:
+  - linux-amd64
+go_packages:
+  - infra/cmd/labtunnel
+root: ../../go/bin
+data:
+  - file: labtunnel${exe_suffix}
+  - version_file: .versions/labtunnel${exe_suffix}.cipd_version
