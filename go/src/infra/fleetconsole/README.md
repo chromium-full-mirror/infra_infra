@@ -44,10 +44,10 @@ gcloud compute ssh alloydb-bastion \
     -- -o Hostname=nic0.alloydb-bastion.us-central1-c.c.fleet-console-dev.internal.gcpnode.com
 ```
 
-You can now run the web server specifying the correct db connection string:
+You can now run the web server specifying `-use-dev-db`
 ```bash
 go build ./cmd/fleetconsoleserver/main.go
-./fleetconsoleserver -db-uri-secret=sm://db-uri -cloud-project=fleet-console-dev
+./fleetconsoleserver -use-dev-db
 ```
 
 ### Run the web client

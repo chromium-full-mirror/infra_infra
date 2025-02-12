@@ -8,8 +8,6 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from google.cloud import secretmanager
-
 from alembic import context
 
 # this is the Alembic Config object, which provides
@@ -35,10 +33,9 @@ if env == 'local':
       "sqlalchemy.url",
       "postgresql://postgres:password@localhost:5432/fleet_console_db")
 else:
-  secrets_client = secretmanager.SecretManagerServiceClient()
-  secret_name = f"projects/fleet-console-{env}/secrets/db-uri/versions/latest"
-  res = secrets_client.access_secret_version(name=secret_name)
-  db_uri = res.payload.data.decode("UTF-8")
+  # Expecting there to be an ssh tunnel to the db.
+  # See README.md on how to do that
+  db_uri = "postgresql://postgres:reorg@localhost:5432/console_db"
   config.set_main_option("sqlalchemy.url", db_uri)
 
 

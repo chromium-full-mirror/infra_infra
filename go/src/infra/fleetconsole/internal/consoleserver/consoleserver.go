@@ -58,14 +58,23 @@ func SetCloudProject(consoleFrontend *FleetConsoleFrontend, cloudProject string)
 
 // MustSetDBConnection sets the db connection and panics if it can't retrieve the secret or connect to the database.
 func MustSetDBConnection(ctx context.Context, consoleFrontend *FleetConsoleFrontend) {
-	secret, err := secrets.StoredSecret(ctx, *flags.DBSecret)
-	if err != nil {
-		panic(err)
+	var dbURI string
+	if *flags.UseDevDB {
+		// Expecting there to be an ssh tunnel to the db.
+		// See README.md on how to do that
+		dbURI = "user=postgres password=reorg database=console_db host=localhost port=5432"
+	} else {
+		secret, err := secrets.StoredSecret(ctx, *flags.DBSecret)
+		if err != nil {
+			panic(err)
+		}
+		dbURI = string(secret.Active)
 	}
-	dbURI := string(secret.Active)
 	if dbURI == "" {
 		panic("database secret cannot be empty")
 	}
+
+	var err error
 	consoleFrontend.dbConnection, err = database.Connect(dbURI)
 	if err != nil {
 		panic(err)
