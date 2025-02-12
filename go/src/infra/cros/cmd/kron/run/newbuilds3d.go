@@ -174,10 +174,9 @@ func (c *CrOSNewBuild3dCommand) FetchBuilds() error {
 }
 
 // buildCTPRequestsFor3dConfigs creates list of ctp requests for each config per branch.
-func buildCTPRequestsFor3dConfigs(buildPackagesMap map[int64]*BuildPackage3d, all3dConfigs configparser.ConfigList, newBuild3dMap map[*suschpb.SchedulerConfig]map[configparser.BuildTarget]bool) (map[suschpb.Branch][]*ctpEvent, error) {
-	// ctpMapByConfig := make(map[*suschpb.SchedulerConfig][]ctpEventsPerBranch)
+func buildCTPRequestsFor3dConfigs(buildPackagesMap map[int64]*BuildPackage3d, all3dConfigs configparser.ConfigList, newBuild3dMap map[*suschpb.SchedulerConfig]map[configparser.BuildTarget]bool) (map[suschpb.Branch]map[*suschpb.SchedulerConfig][]*ctpEvent, error) {
+	eventsPerBranchPerConfig := map[suschpb.Branch]map[*suschpb.SchedulerConfig][]*ctpEvent{}
 
-	eventsPerBranch := map[suschpb.Branch][]*ctpEvent{}
 	// processing each config
 	for _, config := range all3dConfigs {
 		buildTargetsMap := newBuild3dMap[config]
@@ -209,23 +208,27 @@ func buildCTPRequestsFor3dConfigs(buildPackagesMap map[int64]*BuildPackage3d, al
 					allCtpEvents = append(allCtpEvents, ctpRequests...)
 				}
 
-				if _, ok := eventsPerBranch[buildPackage3d.Branch]; !ok {
-					eventsPerBranch[buildPackage3d.Branch] = []*ctpEvent{}
+				if _, ok := eventsPerBranchPerConfig[buildPackage3d.Branch]; !ok {
+					eventsPerBranchPerConfig[buildPackage3d.Branch] = map[*suschpb.SchedulerConfig][]*ctpEvent{
+						config: {},
+					}
 				}
-				eventsPerBranch[buildPackage3d.Branch] = append(eventsPerBranch[buildPackage3d.Branch], allCtpEvents...)
+				eventsPerBranchPerConfig[buildPackage3d.Branch][config] = append(eventsPerBranchPerConfig[buildPackage3d.Branch][config], allCtpEvents...)
 
 			}
 		}
 	}
 	// logging map
 	common.Stdout.Printf("Preparing requests for ...\n")
-	for branch, events := range eventsPerBranch {
-		for _, event := range events {
-			common.Stdout.Printf("Config:%s for branch:%s using build %s\n", event.config.Name, branch.String(), event.event.BuildUuid)
+	for branch, configMap := range eventsPerBranchPerConfig {
+		for _, events := range configMap {
+			for _, event := range events {
+				common.Stdout.Printf("Config:%s for branch:%s using build %s\n", event.config.Name, branch.String(), event.event.BuildUuid)
+			}
 		}
 	}
 
-	return eventsPerBranch, nil
+	return eventsPerBranchPerConfig, nil
 }
 
 // FetchTriggeredConfigs returns a map where the keys are release orchestrator bbid values
@@ -241,45 +244,49 @@ func (c *CrOSNewBuild3dCommand) FetchTriggeredConfigs() error {
 //
 // NOTE: Requests in these batches will all share the same SuiteScheduler
 // Config.
-func batchCTPRequests3d(eventsPerBranch map[suschpb.Branch][]*ctpEvent, isProd, dryRun bool) ([]*ctpEventBatch, error) {
+func batchCTPRequests3d(eventsPerBranchPerConfig map[suschpb.Branch]map[*suschpb.SchedulerConfig][]*ctpEvent, isProd, dryRun bool) ([]*ctpEventBatch, error) {
 	eventBatches := []*ctpEventBatch{}
 
 	// Create batches for each config per branch
-	for _, events := range eventsPerBranch {
-		branchBatches, err := batchCTPRequests(events, isProd, dryRun)
-		if err != nil {
-			return nil, err
-		}
+	for _, configMap := range eventsPerBranchPerConfig {
+		for _, events := range configMap {
+			branchBatches, err := batchCTPRequests(events, isProd, dryRun, doNotLimitBatches)
+			if err != nil {
+				return nil, err
+			}
 
-		eventBatches = append(eventBatches, branchBatches...)
+			eventBatches = append(eventBatches, branchBatches...)
+		}
 	}
 
-	return eventBatches, nil
+	return []*ctpEventBatch{eventBatches[0]}, nil
 }
 
 // ScheduleRequests generates CTP Requests, batches them into BuildBucket
 // requests, and Schedules them via the BuildBucket API.
 func (c *CrOSNewBuild3dCommand) ScheduleRequests() error {
 	// Build CTP Requests for all 3d configs.
-	eventsPerBranch, err := buildCTPRequestsFor3dConfigs(c.buildPackagesMap, c.all3dConfigs, c.suiteSchedulerConfigs.FetchNewBuild3dMap())
+	eventsPerBranchPerConfig, err := buildCTPRequestsFor3dConfigs(c.buildPackagesMap, c.all3dConfigs, c.suiteSchedulerConfigs.FetchNewBuild3dMap())
 	if err != nil {
 		return err
 	}
 
 	// check if map is empty
-	if len(eventsPerBranch) == 0 {
+	if len(eventsPerBranchPerConfig) == 0 {
 		common.Stdout.Println("No CTP requests to schedule")
 		return nil
 	}
 
 	if !c.isProd {
-		for branch, events := range eventsPerBranch {
-			eventsPerBranch[branch] = onlyStagingRequests(events)
+		for branch, configMap := range eventsPerBranchPerConfig {
+			for config, events := range configMap {
+				eventsPerBranchPerConfig[branch][config] = onlyStagingRequests(events)
+			}
 		}
 	}
 
 	// Create batches request for scheduling. Each batch represents one config per branch
-	batches, err := batchCTPRequests3d(eventsPerBranch, c.isProd, c.dryRun)
+	batches, err := batchCTPRequests3d(eventsPerBranchPerConfig, c.isProd, c.dryRun)
 	if err != nil {
 		return err
 	}

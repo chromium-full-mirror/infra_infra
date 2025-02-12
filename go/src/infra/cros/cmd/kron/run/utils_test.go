@@ -1060,13 +1060,1048 @@ func TestBatchCTPRequest(t *testing.T) {
 		},
 	}
 
-	batches, err := batchCTPRequests(ctpRequests, true, true)
+	batches, err := batchCTPRequests(ctpRequests, true, true, limitBatches)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
 	expectedBatchSize := 6
+
+	if len(batches) != expectedBatchSize {
+		t.Errorf("expected %d batches got %d", expectedBatchSize, len(batches))
+	}
+}
+
+func TestBatchCTPRequestNoLimitMultipleBuilderIDs(t *testing.T) {
+	SetUp()
+	config1 := &suschpb.SchedulerConfig{
+		Name: "config1",
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{
+			BuilderId: &suschpb.SchedulerConfig_RunOptions_BuilderID{
+				Project: "abc",
+				Bucket:  "abc",
+				Builder: "abc",
+			},
+		},
+	}
+
+	config2 := &suschpb.SchedulerConfig{
+		Name: "config2",
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{
+			BuilderId: &suschpb.SchedulerConfig_RunOptions_BuilderID{
+				Project: "def",
+				Bucket:  "def",
+				Builder: "def",
+			},
+		},
+	}
+
+	config3 := &suschpb.SchedulerConfig{
+		Name: "config3",
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{
+			BuilderId: &suschpb.SchedulerConfig_RunOptions_BuilderID{
+				Project: "ghi",
+				Bucket:  "ghi",
+				Builder: "ghi",
+			},
+		},
+	}
+	config4 := &suschpb.SchedulerConfig{
+		Name:       "config4",
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{},
+	}
+	config5 := &suschpb.SchedulerConfig{
+		Name:       "config5",
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{},
+	}
+
+	req := &test_platform.Request{
+		Params: &test_platform.Request_Params{
+			SoftwareDependencies: []*test_platform.Request_Params_SoftwareDependency{
+				{
+					Dep: &test_platform.Request_Params_SoftwareDependency_ChromeosBuild{
+						ChromeosBuild: "abc",
+					},
+				},
+			},
+		},
+	}
+
+	ctpRequests := []*ctpEvent{
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config5,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config5,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config5,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config5,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config5,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config5,
+		},
+	}
+
+	batches, err := batchCTPRequests(ctpRequests, true, true, doNotLimitBatches)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	// 4 builderIDs with no limits means one batch per builderID
+	expectedBatchSize := 4
+
+	if len(batches) != expectedBatchSize {
+		t.Errorf("expected %d batches got %d", expectedBatchSize, len(batches))
+	}
+}
+func TestBatchCTPRequestNoLimitOneBuilder(t *testing.T) {
+	SetUp()
+	config1 := &suschpb.SchedulerConfig{
+		Name:       "config1",
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{},
+	}
+
+	config2 := &suschpb.SchedulerConfig{
+		Name:       "config2",
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{},
+	}
+
+	config3 := &suschpb.SchedulerConfig{
+		Name:       "config3",
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{},
+	}
+	config4 := &suschpb.SchedulerConfig{
+		Name:       "config4",
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{},
+	}
+	config5 := &suschpb.SchedulerConfig{
+		Name:       "config5",
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{},
+	}
+
+	req := &test_platform.Request{
+		Params: &test_platform.Request_Params{
+			SoftwareDependencies: []*test_platform.Request_Params_SoftwareDependency{
+				{
+					Dep: &test_platform.Request_Params_SoftwareDependency_ChromeosBuild{
+						ChromeosBuild: "abc",
+					},
+				},
+			},
+		},
+	}
+
+	ctpRequests := []*ctpEvent{
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config1,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config2,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config4,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config3,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config5,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config5,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config5,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config5,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config5,
+		},
+		{
+			event:      &kronpb.Event{},
+			ctpRequest: req,
+			config:     config5,
+		},
+	}
+
+	batches, err := batchCTPRequests(ctpRequests, true, true, doNotLimitBatches)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	// 1 builderIDs with no limits means one batch per builderID
+	expectedBatchSize := 1
 
 	if len(batches) != expectedBatchSize {
 		t.Errorf("expected %d batches got %d", expectedBatchSize, len(batches))

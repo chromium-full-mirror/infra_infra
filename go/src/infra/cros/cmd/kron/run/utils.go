@@ -43,6 +43,11 @@ type ctpEventBatch struct {
 	bbRequest *buildbucketpb.ScheduleBuildRequest
 }
 
+const (
+	limitBatches      = true
+	doNotLimitBatches = false
+)
+
 // fetchTriggeredDailyEvents returns all DAILY configs which are triggered at
 // the current run's operating time. Logging is also wrapped within this function.
 func fetchTriggeredDailyEvents(currTime common.KronTime, ingestedConfigs *configparser.SuiteSchedulerConfigs, configs *configparser.ConfigList) error {
@@ -265,7 +270,7 @@ func buildCTPRequests(buildToConfigsMap map[*kronpb.Build][]*suschpb.SchedulerCo
 // generateBuilderTags generates a list of BuildBucket String pairs which will
 // be used for a builders tags. These tags contain metadata about the CTP
 // request which can be used in PLX analysis later on.
-func generateBuilderTags(configs []*suschpb.SchedulerConfig, requests []*ctpEvent, skipTag bool) ([]*buildbucketpb.StringPair, error) {
+func generateBuilderTags(configs []*suschpb.SchedulerConfig, requests []*ctpEvent) ([]*buildbucketpb.StringPair, error) {
 	tags := []*buildbucketpb.StringPair{
 		{
 			Key:   "kron-run",
@@ -308,6 +313,12 @@ func generateBuilderTags(configs []*suschpb.SchedulerConfig, requests []*ctpEven
 		})
 	}
 
+	// if we have too many requests then we hit the 256 tag limit quite easily.
+	// 80 requests is around when this limit will be hit. Skip the below tags.
+	if len(requests) > 80 {
+		return tags, nil
+	}
+
 	// Add all image, buildUuid, and eventUuid fields per test request.
 	for _, request := range requests {
 		image := ""
@@ -325,18 +336,16 @@ func generateBuilderTags(configs []*suschpb.SchedulerConfig, requests []*ctpEven
 		if image == "" {
 			return nil, fmt.Errorf("no ChromeOS build found")
 		}
-		if !skipTag {
-			tags = append(tags,
-				&buildbucketpb.StringPair{
-					Key:   "build-id",
-					Value: request.event.BuildUuid,
-				})
-			tags = append(tags,
-				&buildbucketpb.StringPair{
-					Key:   "event-id",
-					Value: request.event.EventUuid,
-				})
-		}
+		tags = append(tags,
+			&buildbucketpb.StringPair{
+				Key:   "build-id",
+				Value: request.event.BuildUuid,
+			})
+		tags = append(tags,
+			&buildbucketpb.StringPair{
+				Key:   "event-id",
+				Value: request.event.EventUuid,
+			})
 		tags = append(tags,
 			&buildbucketpb.StringPair{
 				Key:   "label-image",
@@ -391,7 +400,7 @@ func generateGenericBBProperties(requests []*ctpEvent) (*structpb.Struct, error)
 }
 
 // mergeRequests merge all CTP requests into one CTP recipe input properties object.
-func mergeRequests(requests []*ctpEvent, configs []*suschpb.SchedulerConfig, isProd, dryRun bool, skipTag bool, builder builderInfo) (*ctpEventBatch, error) {
+func mergeRequests(requests []*ctpEvent, configs []*suschpb.SchedulerConfig, isProd, dryRun bool, builder builderInfo) (*ctpEventBatch, error) {
 	properties, err := generateGenericBBProperties(requests)
 	if err != nil {
 		return nil, err
@@ -400,7 +409,7 @@ func mergeRequests(requests []*ctpEvent, configs []*suschpb.SchedulerConfig, isP
 	// Based on the isProd flag choose the corresponding builder identification.
 	builderID := buildbucket.GenerateBuilderID(builder.project, builder.bucket, builder.builder, isProd)
 
-	tags, err := generateBuilderTags(configs, requests, skipTag)
+	tags, err := generateBuilderTags(configs, requests)
 	if err != nil {
 		return nil, err
 	}
@@ -427,7 +436,7 @@ type builderInfo struct {
 
 // batchCTPRequests groups configs/events into common.MultirequestSize sized
 // batches.
-func batchCTPRequests(ctpEvents []*ctpEvent, isProd, dryRun bool) ([]*ctpEventBatch, error) {
+func batchCTPRequests(ctpEvents []*ctpEvent, isProd, dryRun, limitBatches bool) ([]*ctpEventBatch, error) {
 	eventsByBuilderID := map[builderInfo][]*ctpEvent{}
 
 	// Group the requests by custom builder input. This is going to give us
@@ -467,8 +476,8 @@ func batchCTPRequests(ctpEvents []*ctpEvent, isProd, dryRun bool) ([]*ctpEventBa
 		currentBuilderID = builderID
 		for _, event := range events {
 			// Merge requests when we hit the max batch limit
-			if len(currentBatch) == common.MultirequestSize {
-				batch, err := mergeRequests(currentBatch, currentConfigs, isProd, dryRun, false, currentBuilderID)
+			if limitBatches && len(currentBatch) == common.MultirequestSize {
+				batch, err := mergeRequests(currentBatch, currentConfigs, isProd, dryRun, currentBuilderID)
 				if err != nil {
 					return nil, err
 				}
@@ -495,7 +504,7 @@ func batchCTPRequests(ctpEvents []*ctpEvent, isProd, dryRun bool) ([]*ctpEventBa
 		// If a partial batch was left after iterating through all the events, merge
 		// the last requests and add it to the batch list.
 		if len(currentBatch) != 0 {
-			batch, err := mergeRequests(currentBatch, currentConfigs, isProd, dryRun, false, currentBuilderID)
+			batch, err := mergeRequests(currentBatch, currentConfigs, isProd, dryRun, currentBuilderID)
 			if err != nil {
 				return nil, err
 			}
@@ -513,7 +522,7 @@ func batchCTPRequests(ctpEvents []*ctpEvent, isProd, dryRun bool) ([]*ctpEventBa
 	// If a partial batch was left after iterating through all the events, merge
 	// the last requests and add it to the batch list.
 	if len(currentBatch) != 0 {
-		batch, err := mergeRequests(currentBatch, currentConfigs, isProd, dryRun, false, currentBuilderID)
+		batch, err := mergeRequests(currentBatch, currentConfigs, isProd, dryRun, currentBuilderID)
 		if err != nil {
 			return nil, err
 		}
@@ -762,7 +771,7 @@ func formatAndBatchCTPRequests(isProd, dryRun bool, ctpRequests []*ctpEvent) ([]
 		return nil, nil
 	}
 
-	return batchCTPRequests(ctpRequests, isProd, dryRun)
+	return batchCTPRequests(ctpRequests, isProd, dryRun, limitBatches)
 }
 
 // scheduleRequests generates CTP Requests, batches them into BuildBucket
