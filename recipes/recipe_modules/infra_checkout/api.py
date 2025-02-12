@@ -10,6 +10,8 @@ import textwrap
 
 from recipe_engine import recipe_api
 
+from PB.go.chromium.org.luci.common.proto.findings import findings as findings_pb
+
 class InfraCheckoutApi(recipe_api.RecipeApi):
   """Stateless API for using public infra gclient checkout."""
 
@@ -353,6 +355,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
             stdout=self.m.json.output())
         issues.extend(result.stdout.get('Issues') or ())
 
+    findings = []
     for issue in issues:
       pos = issue['Pos']
       line = pos['Line']
@@ -364,18 +367,20 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
                                self.m.path.dirname(pos['Filename']))
       else:
         text = f'Linter: {fromLinter}\n\n{text}'
-      self.m.tricium.add_comment(
-          'golangci-lint',
-          text,
-          self.m.path.relpath(go_module_root / pos['Filename'],
-                              co.patch_root_path),
-          start_line=line,
-          end_line=line,
-          # Gerrit (and Tricium, as a pass-through proxy) requires robot
-          # comments to have valid start/end position.
-          # TODO(crbug/1239584): provide accurate start/end position.
-          start_char=0,
-          end_char=0,
+      f = findings_pb.Finding(
+          category='golangci-lint',
+          location=findings_pb.Location(
+              file_path=self.m.path.relpath(go_module_root / pos['Filename'],
+                                            co.patch_root_path),
+              range=findings_pb.Location.Range(
+                  start_line=line,
+                  end_line=line,
+              ),
+          ),
+          message=text,
+          severity_level=findings_pb.Finding.SEVERITY_LEVEL_WARNING,
       )
+      self.m.findings.populate_source_from_current_build(f.location)
+      findings.append(f)
 
-    self.m.tricium.write_comments()
+    self.m.findings.upload_findings(findings)

@@ -506,14 +506,14 @@ Args:
       docker host. Read more https://docs.docker.com/network/host/.
 ### *recipe_modules* / [infra\_checkout](/recipes/recipe_modules/infra_checkout)
 
-[DEPS](/recipes/recipe_modules/infra_checkout/__init__.py#7): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/gerrit][depot_tools/recipe_modules/gerrit], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/presubmit][depot_tools/recipe_modules/presubmit], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step], [recipe\_engine/tricium][recipe_engine/recipe_modules/tricium]
+[DEPS](/recipes/recipe_modules/infra_checkout/__init__.py#7): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [depot\_tools/gerrit][depot_tools/recipe_modules/gerrit], [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/presubmit][depot_tools/recipe_modules/presubmit], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/findings][recipe_engine/recipe_modules/findings], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/raw\_io][recipe_engine/recipe_modules/raw_io], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
-#### **class [InfraCheckoutApi](/recipes/recipe_modules/infra_checkout/api.py#13)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
+#### **class [InfraCheckoutApi](/recipes/recipe_modules/infra_checkout/api.py#15)([RecipeApi][recipe_engine/wkt/RecipeApi]):**
 
 Stateless API for using public infra gclient checkout.
 
-&mdash; **def [apply\_golangci\_lint](/recipes/recipe_modules/infra_checkout/api.py#242)(self, co, go_module_root=None):**
+&mdash; **def [apply\_golangci\_lint](/recipes/recipe_modules/infra_checkout/api.py#244)(self, co, go_module_root=None):**
 
 Apply golangci-lint to existing diffs and emit lint warnings via tricium.
 
@@ -521,7 +521,7 @@ Apply golangci-lint to existing diffs and emit lint warnings via tricium.
 should be under `patch_root_path`. If None, `patch_root_path` itself will be
 used.
 
-&mdash; **def [checkout](/recipes/recipe_modules/infra_checkout/api.py#16)(self, gclient_config_name, patch_root=None, path=None, internal=False, go_version_variant=None, \*\*kwargs):**
+&mdash; **def [checkout](/recipes/recipe_modules/infra_checkout/api.py#18)(self, gclient_config_name, patch_root=None, path=None, internal=False, go_version_variant=None, \*\*kwargs):**
 
 Fetches infra gclient checkout into a given path OR named_cache.
 
@@ -545,7 +545,7 @@ Arguments:
 Returns:
   a Checkout object with commands for common actions on infra checkout.
 
-&mdash; **def [get\_footer\_infra\_deps\_overrides](/recipes/recipe_modules/infra_checkout/api.py#215)(self, gerrit_change, step_test_data=None):**
+&mdash; **def [get\_footer\_infra\_deps\_overrides](/recipes/recipe_modules/infra_checkout/api.py#217)(self, gerrit_change, step_test_data=None):**
 
 Returns revision overrides for infra repos parsed from the gerrit footer.
 

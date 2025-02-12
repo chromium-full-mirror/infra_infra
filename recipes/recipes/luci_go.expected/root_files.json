@@ -570,13 +570,6 @@
   },
   {
     "cmd": [],
-    "name": "write results",
-    "~followup_annotations": [
-      "@@@SET_BUILD_PROPERTY@tricium@\"{\\n\\\"comments\\\": [\\n{\\n\\\"category\\\": \\\"golangci-lint\\\",\\n\\\"endLine\\\": 250,\\n\\\"message\\\": \\\"Linter: deadcode\\\\n\\\\n`foo` is unused\\\",\\n\\\"path\\\": \\\"client/cmd/isolate/lib/batch_archive.go\\\",\\n\\\"startLine\\\": 250\\n},\\n{\\n\\\"category\\\": \\\"golangci-lint\\\",\\n\\\"endLine\\\": 20,\\n\\\"message\\\": \\\"\\\\nImport order is not sorted.\\\\nRun `golangci-lint run --fix auth_service/impl/model` to fix this.\\\",\\n\\\"path\\\": \\\"auth_service/impl/model/init.go\\\",\\n\\\"startLine\\\": 20\\n}\\n]\\n}\"@@@"
-    ]
-  },
-  {
-    "cmd": [],
     "name": "upload 2 findings to ResultDB",
     "~followup_annotations": [
       "@@@STEP_TEXT@artifact_id: findings-00000000-0000-0000-0000-000000001337@@@",
