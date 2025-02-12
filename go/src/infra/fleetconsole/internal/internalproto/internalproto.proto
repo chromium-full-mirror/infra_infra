@@ -10,6 +10,7 @@ option go_package = "infra/fleetconsole/internal/internalproto;internalproto";
 
 // The message represents ListDevices pagination token.
 message ListDevicesPaginationToken {
-  string token = 1;
+  string device_id = 1;
+  string params_hash = 2;
 }
 
