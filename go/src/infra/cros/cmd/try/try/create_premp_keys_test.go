@@ -48,6 +48,7 @@ type createPreMPKeysTestConfig struct {
 	buildTarget string
 	dryrun      bool
 	production  bool
+	addLoem     bool
 }
 
 func doCreatePreMPKeysTest(t *testing.T, tc *createPreMPKeysTestConfig) {
@@ -92,6 +93,7 @@ func doCreatePreMPKeysTest(t *testing.T, tc *createPreMPKeysTestConfig) {
 		propsFile:   propsFile,
 		buildTarget: tc.buildTarget,
 		bug:         4201337,
+		addLoem:     tc.addLoem,
 	}
 	ret := r.Run(nil, nil, nil)
 	assert.IntsEqual(t, ret, Success)
@@ -118,6 +120,12 @@ func doCreatePreMPKeysTest(t *testing.T, tc *createPreMPKeysTestConfig) {
 		int(bugId),
 		4201337,
 	)
+
+	assert.BoolsEqual(
+		t,
+		createPreMPKeysRequest.AddLoem,
+		tc.addLoem,
+	)
 }
 
 func TestCreatePreMPKeys_dryrun(t *testing.T) {
@@ -140,5 +148,13 @@ func TestCreatePreMPKeys_staging_success(t *testing.T) {
 	t.Parallel()
 	doCreatePreMPKeysTest(t, &createPreMPKeysTestConfig{
 		buildTarget: "atlas",
+	})
+}
+
+func TestCreatePreMPKeys_addloem(t *testing.T) {
+	t.Parallel()
+	doCreatePreMPKeysTest(t, &createPreMPKeysTestConfig{
+		buildTarget: "atlas",
+		addLoem:     true,
 	})
 }

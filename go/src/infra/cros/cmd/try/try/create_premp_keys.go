@@ -34,6 +34,7 @@ func GetCmdCreatePreMPKeys(authOpts auth.Options) *subcommands.Command {
 			c.addProductionFlag()
 			c.Flags.StringVar(&c.buildTarget, "build_target", "", "Build target to create keys for.")
 			c.Flags.IntVar(&c.bug, "bug", 0, "bug ID to associate with this key creation, e.g. 318522770.")
+			c.Flags.BoolVar(&c.addLoem, "add-loem", false, "whether to add loem to existing keyset.")
 			return c
 		},
 	}
@@ -45,6 +46,7 @@ type createPreMPKeysRun struct {
 	propsFile   *os.File
 	buildTarget string
 	bug         int
+	addLoem     bool
 }
 
 // Run provides the logic for a `try create_premp_keys` command run.
@@ -76,6 +78,7 @@ func (f *createPreMPKeysRun) Run(_ subcommands.Application, _ []string, _ subcom
 		BuildTarget: &pb.BuildTarget{
 			Name: f.buildTarget,
 		},
+		AddLoem: f.addLoem,
 	})
 	var request interface{}
 	if err := json.Unmarshal([]byte(createPreMPKeysRequest), &request); err != nil {
