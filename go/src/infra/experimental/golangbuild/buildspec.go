@@ -43,6 +43,7 @@ type buildSpec struct {
 	gopath             string
 	gocacheDir         string
 	goplscacheDir      string
+	xdgcacheDir        string
 	priority           int32
 	golangbuildVersion string
 
@@ -197,6 +198,7 @@ func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]str
 		gopath:             filepath.Join(cwd, "gopath"),
 		gocacheDir:         filepath.Join(cwd, "gocache"),
 		goplscacheDir:      filepath.Join(cwd, "goplscache"),
+		xdgcacheDir:        filepath.Join(cwd, "xdgcache"),
 		priority:           priority,
 		golangbuildVersion: build.GetExe().GetCipdVersion(),
 		inputs:             inputs,
@@ -209,10 +211,10 @@ func deriveBuildSpec(ctx context.Context, cwd string, experiments map[string]str
 }
 
 func (b *buildSpec) setEnv(ctx context.Context) context.Context {
-	return setupEnv(ctx, b.inputs, b.builderName, b.goroot, b.gopath, b.gocacheDir, b.goplscacheDir)
+	return setupEnv(ctx, b.inputs, b.builderName, b.goroot, b.gopath, b.gocacheDir, b.goplscacheDir, b.xdgcacheDir)
 }
 
-func setupEnv(ctx context.Context, inputs *golangbuildpb.Inputs, builderName, goroot, gopath, gocacheDir, goplscacheDir string) context.Context {
+func setupEnv(ctx context.Context, inputs *golangbuildpb.Inputs, builderName, goroot, gopath, gocacheDir, goplscacheDir, xdgcacheDir string) context.Context {
 	env := environ.FromCtx(ctx)
 	env.Load(inputs.Env)
 	env.Set("GOOS", inputs.Target.Goos)
@@ -230,6 +232,9 @@ func setupEnv(ctx context.Context, inputs *golangbuildpb.Inputs, builderName, go
 	if inputs.LongTest {
 		env.Set("GO_TEST_SHORT", "0") // Tell 'dist test' to operate in longtest mode. See go.dev/issue/12508.
 	}
+	// Temporary directory for various caches. N.B. TMP variants are
+	// handled in luciexe via luciexe.TempDirEnvVars.
+	env.Set("XDG_CACHE_HOME", xdgcacheDir)
 	dropFromPathBySuffix(env,
 		// Stay with system Python3 (if any) and don't use the LUCI-provided Python3. See go.dev/issue/71563.
 		filepath.Join("cipd_bin_packages", "cpython3"),

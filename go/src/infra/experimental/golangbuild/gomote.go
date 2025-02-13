@@ -73,7 +73,8 @@ func gomoteSetup(ctx context.Context, builderName string, args []string) error {
 	gopath := filepath.Join(cwd, "gopath")
 	gocacheDir := filepath.Join(cwd, "gocache")
 	goplscacheDir := filepath.Join(cwd, "goplscache")
-	ctx = setupEnv(ctx, inputs, builderName, goroot, gopath, gocacheDir, goplscacheDir)
+	xdgcacheDir := filepath.Join(cwd, "xdgcache")
+	ctx = setupEnv(ctx, inputs, builderName, goroot, gopath, gocacheDir, goplscacheDir, xdgcacheDir)
 
 	// Log the environment changes.
 	want := environ.FromCtx(ctx)
