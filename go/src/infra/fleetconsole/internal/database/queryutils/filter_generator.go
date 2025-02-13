@@ -38,7 +38,7 @@ func (q *QueryBuilder) WithWhereClause(filter string) (*QueryBuilder, error) {
 		return q, err
 	}
 
-	q.whereClause = fmt.Sprintf("WHERE %s\n", clause)
+	q.whereClause = fmt.Sprintf("WHERE %s", clause)
 	return q, nil
 }
 

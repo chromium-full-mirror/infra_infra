@@ -41,12 +41,15 @@ func (c *ColumnBuilder) Build() *Column {
 }
 
 type TableBuilder struct {
+	name    string
 	columns []*Column
 }
 
-// NewTable starts building a new table.
-func NewTable() *TableBuilder {
-	return &TableBuilder{}
+// NewTableBuilder starts building a new table.
+func NewTableBuilder(name string) *TableBuilder {
+	return &TableBuilder{
+		name: name,
+	}
 }
 
 // WithColumns specifies the columns in the table.
@@ -66,6 +69,7 @@ func (t *TableBuilder) Build() *Table {
 	}
 
 	return &Table{
+		name:                 t.name,
 		columns:              t.columns,
 		columnByExternalName: columnByExternalName,
 	}

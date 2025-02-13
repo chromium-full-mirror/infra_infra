@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Package utils is a set of utilities for the console server.
 package utils
 
 func Map[T any, G any](slice []T, f func(x T) G) []G {

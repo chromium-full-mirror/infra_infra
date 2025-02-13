@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/grpc/grpcutil"
 
 	"infra/fleetconsole/api/fleetconsolerpc"
-	"infra/fleetconsole/internal/database"
+	"infra/fleetconsole/internal/database/devicesdb"
 	"infra/fleetconsole/internal/devicemanagerclient"
 	"infra/fleetconsole/internal/utils"
 )
@@ -45,8 +45,8 @@ func (frontend *FleetConsoleFrontend) RepopulateCache(ctx context.Context, req *
 	return &fleetconsolerpc.RepopulateCacheResponse{}, nil
 }
 
-func getAllDevices(ctx context.Context, deviceManagerClient *devicemanagerclient.Client) ([]*database.DeviceDAO, error) {
-	var devices []*database.DeviceDAO
+func getAllDevices(ctx context.Context, deviceManagerClient *devicemanagerclient.Client) ([]*devicesdb.DeviceDAO, error) {
+	var devices []*devicesdb.DeviceDAO
 	nextPageToken := ""
 	for {
 		res, err := deviceManagerClient.Leaser.ListDevices(ctx, &api.ListDevicesRequest{
@@ -56,7 +56,7 @@ func getAllDevices(ctx context.Context, deviceManagerClient *devicemanagerclient
 			return nil, err
 		}
 
-		devices = append(devices, utils.Map[*api.Device, *database.DeviceDAO](res.Devices, database.FromDeviceMangerDevice)...)
+		devices = append(devices, utils.Map[*api.Device, *devicesdb.DeviceDAO](res.Devices, devicesdb.FromDeviceManagerDevice)...)
 
 		nextPageToken = res.GetNextPageToken()
 		if nextPageToken == "" {
@@ -67,7 +67,7 @@ func getAllDevices(ctx context.Context, deviceManagerClient *devicemanagerclient
 	return devices, nil
 }
 
-func saveDevices(ctx context.Context, dbConnection *sql.DB, devices []*database.DeviceDAO) {
+func saveDevices(ctx context.Context, dbConnection *sql.DB, devices []*devicesdb.DeviceDAO) {
 	q := `INSERT INTO "Devices" (
 			id,
 			dut_id,
@@ -88,7 +88,7 @@ func saveDevices(ctx context.Context, dbConnection *sql.DB, devices []*database.
 		`
 
 	for devicesChunk := range slices.Chunk(devices, maxQueryParametersCount/parametersPerDevice) {
-		args := utils.FlatMap(devicesChunk, func(d *database.DeviceDAO) []any { return d.DeviceAsDBArguments() })
+		args := utils.FlatMap(devicesChunk, func(d *devicesdb.DeviceDAO) []any { return d.DeviceAsDBArguments() })
 
 		_, err := dbConnection.ExecContext(ctx,
 			fmt.Sprintf(q, getValuesString(len(args), parametersPerDevice)),
@@ -118,7 +118,7 @@ func getValuesString(lenValues int, numberOfArgs int) string {
 	return strings.Join(values, ", ")
 }
 
-func deleteOtherDevices(ctx context.Context, dbConnection *sql.DB, devices []*database.DeviceDAO) error {
+func deleteOtherDevices(ctx context.Context, dbConnection *sql.DB, devices []*devicesdb.DeviceDAO) error {
 	if len(devices) > maxQueryParametersCount {
 		return fmt.Errorf("cannot perform delete with more than %d devices, got %d", maxQueryParametersCount, len(devices))
 	}

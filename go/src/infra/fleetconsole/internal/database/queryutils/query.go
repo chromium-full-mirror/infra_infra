@@ -4,7 +4,10 @@
 
 package queryutils
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 // QueryParameters represents a collection of query parameters.
 type QueryParameters struct {
@@ -17,9 +20,19 @@ type QueryBuilder struct {
 	table      *Table
 	parameters *QueryParameters
 
-	//Clauses
+	// Clauses
+	selectClause  string
+	fromClause    string
 	whereClause   string
 	orderByClause string
+
+	// Pagination
+	paginationClause string
+}
+
+type Query struct {
+	Statement  string
+	Parameters []any
 }
 
 func NewQueryBuilder(t *Table) *QueryBuilder {
@@ -29,10 +42,40 @@ func NewQueryBuilder(t *Table) *QueryBuilder {
 	}
 }
 
-func (q *QueryBuilder) Build() (string, []any) {
-	// TODO: construct the query
+// WithSelectAllClause adds a select clause to the query.
+func (q *QueryBuilder) WithSelectAllClause() *QueryBuilder {
+	// If no custom select clause provided, select all columns.
+	var result strings.Builder
+	result.WriteString("SELECT ")
+	for i, c := range q.table.columns {
+		if i > 0 {
+			result.WriteString(", ")
+		}
 
-	return "should have been a query", q.parameters.values
+		result.WriteString(c.name)
+	}
+
+	q.selectClause = result.String()
+	return q
+}
+
+// WithFromClause adds a from clause to the query.
+func (q *QueryBuilder) WithFromClause() *QueryBuilder {
+	q.fromClause = fmt.Sprintf("FROM \"%s\"", q.table.name)
+	return q
+}
+
+// WithOffsetPagination adds necessary clauses to get the specific page.
+func (q *QueryBuilder) WithOffsetPagination(offset int, pageSize int) *QueryBuilder {
+	q.paginationClause = fmt.Sprintf("LIMIT %d\nOFFSET %d", pageSize, offset)
+	return q
+}
+
+func (q *QueryBuilder) Build() *Query {
+	return &Query{
+		Statement:  fmt.Sprintf("%s\n%s\n%s\n%s\n%s;", q.selectClause, q.fromClause, q.whereClause, q.orderByClause, q.paginationClause),
+		Parameters: q.parameters.values,
+	}
 }
 
 // bind binds a new query parameter with the given value, and returns

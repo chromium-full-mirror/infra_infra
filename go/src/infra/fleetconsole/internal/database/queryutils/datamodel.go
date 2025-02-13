@@ -30,6 +30,8 @@ type Column struct {
 
 // Table represents the schema of a Database table.
 type Table struct {
+	name string
+
 	// The columns in the database table.
 	columns []*Column
 

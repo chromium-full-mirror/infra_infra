@@ -14,18 +14,31 @@ import (
 // WithOrderByClause adds Standard SQL Order by clause, to the query including
 // "ORDER BY" and trailing new line (if an order is specified).
 // If no order is specified, returns "".
+// uniqueFieldForDeterminism is a column which is unique and is always used to
+// order with to get deterministic results:
+// e.g. prevent getting different results for the same page.
 //
 // The returned order clause is safe against SQL injection; only
 // strings appearing from Table appear in the output.
-func (q *QueryBuilder) WithOrderByClause(order string) (*QueryBuilder, error) {
+func (q *QueryBuilder) WithOrderByClause(order, uniqueFieldForDeterminism string) (*QueryBuilder, error) {
 	orderby, err := aip132.ParseOrderBy(order)
 	if err != nil {
 		return q, err
 	}
 
+	if uniqueFieldForDeterminism != "" {
+		if !fieldExistsInOrdering(orderby, uniqueFieldForDeterminism) {
+			orderby = append(orderby, aip132.OrderBy{
+				FieldPath:  aip132.NewFieldPath(strings.Split(uniqueFieldForDeterminism, ".")...),
+				Descending: false,
+			})
+		}
+	}
+
 	if len(orderby) == 0 {
 		return q, nil
 	}
+
 	var result strings.Builder
 	result.WriteString("ORDER BY ")
 	for i, o := range orderby {
@@ -34,7 +47,7 @@ func (q *QueryBuilder) WithOrderByClause(order string) (*QueryBuilder, error) {
 		}
 
 		if o.FieldPath.String() == "" {
-			return q, fmt.Errorf("column name cannot be empty string")
+			return q, fmt.Errorf("column name cannot be an empty string")
 		}
 
 		segments := o.FieldPath.GetSegments()
@@ -69,8 +82,19 @@ func (q *QueryBuilder) WithOrderByClause(order string) (*QueryBuilder, error) {
 			result.WriteString(" DESC")
 		}
 	}
-	result.WriteString("\n")
 
 	q.orderByClause = result.String()
 	return q, nil
+}
+
+// fieldExistsInOrdering checks whether ordering
+// fields include the specified one as well.
+func fieldExistsInOrdering(orderby []aip132.OrderBy, field string) bool {
+	for _, o := range orderby {
+		if o.FieldPath.String() == field {
+			return true
+		}
+	}
+
+	return false
 }

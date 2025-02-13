@@ -14,7 +14,7 @@ import (
 
 func TestWhereClause(t *testing.T) {
 	ftt.Run("WhereClause", t, func(t *ftt.Test) {
-		table := NewTable().WithColumns(
+		table := NewTableBuilder("Devices").WithColumns(
 			NewColumn("dut_state").Build(),
 			NewColumn("dut_name").Build(),
 			NewColumn("labels").WithColumnType(ColumnTypeJSONB).WithJSONFullPath(func(fields ...string) []string {
@@ -38,7 +38,7 @@ func TestWhereClause(t *testing.T) {
 				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"%chromeos%",
 				}))
-				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_name LIKE $1)\n"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_name LIKE $1)"))
 			})
 			t.Run("equals operator", func(t *ftt.Test) {
 				q, err := NewQueryBuilder(table).WithWhereClause("dut_state = available")
@@ -46,7 +46,7 @@ func TestWhereClause(t *testing.T) {
 				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"available",
 				}))
-				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_state = $1)\n"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_state = $1)"))
 			})
 			t.Run("not equals operator", func(t *ftt.Test) {
 				q, err := NewQueryBuilder(table).WithWhereClause("dut_state != available")
@@ -54,7 +54,7 @@ func TestWhereClause(t *testing.T) {
 				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"available",
 				}))
-				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_state <> $1)\n"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_state <> $1)"))
 			})
 			t.Run("composite to LIKE", func(t *ftt.Test) {
 				q, err := NewQueryBuilder(table).WithWhereClause("dut_state:(something)")
@@ -62,7 +62,7 @@ func TestWhereClause(t *testing.T) {
 				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"%something%",
 				}))
-				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_state LIKE $1)\n"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_state LIKE $1)"))
 			})
 			t.Run("composite to equals", func(t *ftt.Test) {
 				q, err := NewQueryBuilder(table).WithWhereClause("dut_state=(something)")
@@ -70,7 +70,7 @@ func TestWhereClause(t *testing.T) {
 				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"something",
 				}))
-				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_state = $1)\n"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (dut_state = $1)"))
 			})
 			t.Run("unsupported field LHS", func(t *ftt.Test) {
 				_, err := NewQueryBuilder(table).WithWhereClause("dut_state.something=available")
@@ -90,7 +90,7 @@ func TestWhereClause(t *testing.T) {
 				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"labels", "labels-os_type", "values", "OS_TYPE_CROS",
 				}))
-				assert.Loosely(t, q.whereClause, should.Equal("WHERE (labels -> $1 -> $2 -> $3 ? $4)\n"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (labels -> $1 -> $2 -> $3 ? $4)"))
 			})
 
 			t.Run("complex filter", func(t *ftt.Test) {
@@ -99,7 +99,7 @@ func TestWhereClause(t *testing.T) {
 				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"labels", "label-os_type", "values", "OS_TYPE_CROS", "labels", "label-os_type", "values", "OS_TYPE_LABSTATION", "DEVICE_STATE_LEASED", "DEVICE_STATE_AVAILABLE",
 				}))
-				assert.Loosely(t, q.whereClause, should.Equal("WHERE (((labels -> $1 -> $2 -> $3 ? $4) AND (labels -> $5 -> $6 -> $7 ? $8)) AND ((dut_state = $9) AND (dut_state = $10)))\n"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE (((labels -> $1 -> $2 -> $3 ? $4) AND (labels -> $5 -> $6 -> $7 ? $8)) AND ((dut_state = $9) AND (dut_state = $10)))"))
 			})
 
 			t.Run("filter with AND and OR", func(t *ftt.Test) {
@@ -108,7 +108,7 @@ func TestWhereClause(t *testing.T) {
 				assert.Loosely(t, q.parameters.values, should.Match([]any{
 					"a", "b", "c",
 				}))
-				assert.Loosely(t, q.whereClause, should.Equal("WHERE ((dut_state = $1) AND ((dut_state = $2) OR (dut_state = $3)))\n"))
+				assert.Loosely(t, q.whereClause, should.Equal("WHERE ((dut_state = $1) AND ((dut_state = $2) OR (dut_state = $3)))"))
 			})
 		})
 	})
