@@ -7,6 +7,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"net"
@@ -85,6 +86,11 @@ func (ps *AntsPublishServer) Publish(ctx context.Context, req *api.PublishReques
 
 	aps, err := service.NewAntsPublishService(ctx, req)
 	if err != nil {
+		var invErr service.InvocationSealedError
+		if errors.Is(err, &invErr) {
+			log.Printf("Skipping publishing to Ants due to: %s", err)
+			return op, nil
+		}
 		log.Printf("failed to create new ants publish service: %s", err)
 		out.Status = api.PublishResponse_STATUS_INVALID_REQUEST
 		out.Message = fmt.Sprintf("failed to create new ants publish service: %s", err.Error())
