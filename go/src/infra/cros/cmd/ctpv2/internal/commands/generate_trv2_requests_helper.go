@@ -703,7 +703,7 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*te
 					TestCaseIds: trHelper.testCases,
 				},
 			},
-			ExecutionMetadata: trHelper.suiteInfo.GetSuiteMetadata().GetExecutionMetadata(),
+			ExecutionMetadata: getExecutionMetadata(trHelper),
 		},
 	}
 
@@ -792,7 +792,7 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 					TestCaseIds: trHelper.testCases,
 				},
 			},
-			ExecutionMetadata: trHelper.suiteInfo.GetSuiteMetadata().GetExecutionMetadata(),
+			ExecutionMetadata: getExecutionMetadata(trHelper),
 		},
 	}
 
@@ -1256,6 +1256,125 @@ func buildFirmwareConfig(firmwareRo, firmwareRw, imageBucket string) *gobuildapi
 		EcRoPayload:   ro,
 		MainRwPayload: rw,
 	}
+}
+
+func getExecutionMetadata(trHelper *TrV2ReqHelper) *testapi.ExecutionMetadata {
+	suiteExecMetadata := trHelper.suiteInfo.GetSuiteMetadata().GetExecutionMetadata()
+	// return un-modified metadata for non-AL runs
+	if !trHelper.isAlRun {
+		return suiteExecMetadata
+	}
+
+	branch, buildID, buildTarget, secondaryBuildID, secondaryBuildTarget := geBuildTargetsFromPrimaryDeviceInfo(trHelper)
+	// branch null means no value was found, so nothing to update
+	if branch == "" {
+		return suiteExecMetadata
+	}
+
+	if suiteExecMetadata == nil {
+		suiteExecMetadata = &testapi.ExecutionMetadata{Args: []*testapi.Arg{}}
+	}
+
+	branchFromATP := ""
+	buildIDFromATP := ""
+	buildTargetFromATP := ""
+
+	extraBranchFromATP := ""
+	extraBuildIDFromATP := ""
+	extraBuildTargetFromATP := ""
+
+	for _, arg := range suiteExecMetadata.GetArgs() {
+		if arg.GetFlag() == "branch" {
+			branchFromATP = arg.GetValue()
+		} else if arg.GetFlag() == "build_id" {
+			buildIDFromATP = arg.GetValue()
+		} else if arg.GetFlag() == "build_flavor" {
+			buildTargetFromATP = arg.GetValue()
+		} else if arg.GetFlag() == "extra_branch" {
+			extraBranchFromATP = arg.GetValue()
+		} else if arg.GetFlag() == "extra_build" {
+			extraBuildIDFromATP = arg.GetValue()
+		} else if arg.GetFlag() == "extra_build_flavor" {
+			extraBuildTargetFromATP = arg.GetValue()
+		}
+	}
+
+	// now only update with values found from primary device if the values are not already populated by ATP
+	// This should be the case for Kron, Crosfleet & ATP staging runs. ATP Prod runs should already have these values.
+	if branchFromATP == "" {
+		suiteExecMetadata.Args = append(suiteExecMetadata.Args, &testapi.Arg{Flag: "branch", Value: branch})
+	}
+	if buildIDFromATP == "" {
+		suiteExecMetadata.Args = append(suiteExecMetadata.Args, &testapi.Arg{Flag: "build_id", Value: buildID})
+	}
+	if buildTargetFromATP == "" {
+		suiteExecMetadata.Args = append(suiteExecMetadata.Args, &testapi.Arg{Flag: "build_flavor", Value: buildTarget})
+	}
+	if extraBranchFromATP == "" {
+		suiteExecMetadata.Args = append(suiteExecMetadata.Args, &testapi.Arg{Flag: "extra_branch", Value: branch})
+	}
+	if extraBuildIDFromATP == "" {
+		suiteExecMetadata.Args = append(suiteExecMetadata.Args, &testapi.Arg{Flag: "extra_build", Value: secondaryBuildID})
+	}
+	if extraBuildTargetFromATP == "" {
+		suiteExecMetadata.Args = append(suiteExecMetadata.Args, &testapi.Arg{Flag: "extra_build_flavor", Value: secondaryBuildTarget})
+	}
+
+	return suiteExecMetadata
+}
+
+func geBuildTargetsFromPrimaryDeviceInfo(trHelper *TrV2ReqHelper) (string, string, string, string, string) {
+	var branch, buildID, buildTarget, secondaryBuildID, secondaryBuildTarget string
+	var schedUnit *testapi.SchedulingUnit
+	// check scheudlingOptions first
+	if len(trHelper.suiteInfo.GetSuiteMetadata().GetSchedulingUnitOptions()) > 0 && len(trHelper.suiteInfo.GetSuiteMetadata().GetSchedulingUnitOptions()[0].GetSchedulingUnits()) > 0 {
+		schedUnit = trHelper.suiteInfo.GetSuiteMetadata().GetSchedulingUnitOptions()[0].GetSchedulingUnits()[0]
+	} else if len(trHelper.suiteInfo.GetSuiteMetadata().GetSchedulingUnits()) > 0 {
+		// TODO (oldProto-azrahman): remove when schedulingUnitOptions are adopted everywhere
+		schedUnit = trHelper.suiteInfo.GetSuiteMetadata().GetSchedulingUnits()[0]
+	}
+
+	// return null values if schedUnit is not found
+	if schedUnit == nil {
+		return "", "", "", "", ""
+	}
+
+	for _, pair := range schedUnit.GetPrimaryTarget().GetSwReq().GetKeyValues() {
+		if buildID != "" && buildTarget != "" {
+			break
+		}
+
+		if pair.GetKey() == "branch" {
+			branch = pair.GetValue()
+		} else if pair.GetKey() == "al_build_id" {
+			buildID = pair.GetValue()
+		} else if pair.GetKey() == "al_build_target" {
+			buildTarget = pair.GetValue()
+		}
+	}
+
+	// Defaulting to git_main-al-dev for the cases when branch info is not passed from plugins
+	// right now, plugins don't provide this value so this default value is necessary
+	// TODO (azrahman/navil): update this if default branch changes
+	if branch == "" {
+		branch = "git_main-al-dev"
+	}
+
+	if buildID != "" && buildTarget != "" {
+		// Secondary targets should be from same build ID
+		secondaryBuildID = buildID
+		// TODO (TSE): update this if more ARM boards are introduced
+		if strings.ToLower(trHelper.primaryTarget.board) == "corsola" {
+			secondaryBuildTarget = "test_suites_arm64-trunk_staging"
+		} else {
+			secondaryBuildTarget = "test_suites_x86_64-trunk_staging"
+		}
+	} else {
+		// if buildID and buildTarget are not present in schedUnit, then return all nulls
+		return "", "", "", "", ""
+	}
+
+	return branch, buildID, buildTarget, secondaryBuildID, secondaryBuildTarget
 }
 
 func suiteName(suiteInfo *testapi.SuiteInfo) string {
