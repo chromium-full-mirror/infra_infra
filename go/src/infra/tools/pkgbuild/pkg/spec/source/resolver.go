@@ -10,7 +10,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -87,20 +86,8 @@ func (r *resolver) resolveGitSource(ctx context.Context, dir string, git *spec.G
 }
 
 func (r *resolver) resolveScriptSource(ctx context.Context, plat, dir string, script *spec.ScriptSource) (*SourceInfo, error) {
-	scriptName := script.GetName()[0]
-	f, err := os.Open(filepath.Join(dir, scriptName))
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	s, err := io.ReadAll(f)
-	if err != nil {
-		return nil, err
-	}
-	sourceScript := string(s)
-
 	// Get version
-	cmd := r.command(ctx, scriptName, sourceScript, dir)
+	cmd := r.command(ctx, script.GetName()[0], "", dir)
 	cmd.Args = append(cmd.Args, script.GetName()[1:]...)
 	cmd.Args = append(cmd.Args, "latest")
 	cmd.Env = append(cmd.Env, fmt.Sprintf("_3PP_PLATFORM=%s", plat))
@@ -117,7 +104,7 @@ func (r *resolver) resolveScriptSource(ctx context.Context, plat, dir string, sc
 	}
 
 	// Get download urls
-	cmd = r.command(ctx, scriptName, sourceScript, dir)
+	cmd = r.command(ctx, script.GetName()[0], "", dir)
 	cmd.Args = append(cmd.Args, script.Name[1:]...)
 	cmd.Args = append(cmd.Args, "get_url")
 	cmd.Env = append(cmd.Env, fmt.Sprintf("_3PP_VERSION=%s", version))
@@ -157,14 +144,23 @@ func (r *resolver) command(ctx context.Context, name, script, cwd string) *exec.
 	var cmd *exec.Cmd
 	switch filepath.Ext(name) {
 	case ".py":
-		cmd = exec.Command(ctx, "vpython3", "-")
+		cmd = exec.Command(ctx, "vpython3")
+		if script != "" {
+			// script should only be used with embedded python scripts.
+			cmd.Args = append(cmd.Args, "-")
+			cmd.Stdin = strings.NewReader(script)
+		} else {
+			cmd.Args = append(cmd.Args, name)
+		}
 	case ".sh":
-		cmd = exec.Command(ctx, "bash", "-s", "-")
+		cmd = exec.Command(ctx, "bash", name)
+		if script != "" {
+			panic("invalid embedded script: " + name)
+		}
 	default:
 		panic("unknown script: " + name)
 	}
 	cmd.Dir = cwd
 	cmd.Env = os.Environ()
-	cmd.Stdin = strings.NewReader(script)
 	return cmd
 }
