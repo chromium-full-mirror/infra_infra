@@ -7,7 +7,10 @@ package finders
 
 import (
 	"context"
+	"fmt"
 	"log"
+
+	"cloud.google.com/go/storage"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	finder "go.chromium.org/chromiumos/test/util/finder"
@@ -22,10 +25,21 @@ type G3MoblyFinder struct {
 }
 
 func (ex *G3MoblyFinder) FindTestsAB() (*api.InternalTestplan, error) {
-	src := getSourceData()
+	src, err := getSourceData(context.Background(), "mobly_priv_artifacts/out")
+	if err != nil {
+		fmt.Printf("err %s", err)
+	}
+	// The source data will not have direct access to the actual proto bindings; thus is in a loose json format
+	// we will translate this into the strict proto format here.
 	metadata := translateSrcToMetadata(src)
-	matchingTests, _ := matchTests(metadata, ex.Testplan)
-	ctpTestCases := translateTC(matchingTests)
+
+	matchingTests, err := matchTests(metadata, ex.Testplan)
+	if err != nil {
+		fmt.Printf("err %s", err)
+	}
+
+	// Translate the TC metadata schema into CTP testplan schema.
+	ctpTestCases := common.TranslateTCMtoCTPTC(matchingTests)
 	ex.Testplan.TestCases = append(ex.Testplan.TestCases, ctpTestCases...)
 	return ex.Testplan, nil
 }
@@ -35,22 +49,37 @@ func NewG3MoblyFinder(ctx context.Context, req *api.InternalTestplan, log *log.L
 	return &G3MoblyFinder{AbstractFinder: absExec}
 }
 
-// TODO implement; currently just building up the logical flow + signatures.
-func getSourceData() []byte {
-	return nil
+func getSourceData(ctx context.Context, gcsBasePath string) ([][]byte, error) {
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("storage.NewClient: %w", err)
+	}
+	defer client.Close()
+
+	bucketName, pf, err := common.ExtractBucketAndPrefixFromPath(gcsBasePath)
+	if err != nil {
+		return nil, err
+	}
+
+	bucket := client.Bucket(bucketName)
+
+	// Currently G3Mobly content is fetched off the latest.
+	// TODO, we probably should expose a way to pass in a desired path to allow repeatability on tests here.
+	newestDir, err := common.FindNewestDirInGcsBucket(ctx, gcsBasePath, bucket, pf)
+	if err != nil {
+		return nil, err
+	}
+	data, err := common.PullAllFilesFromGcsDir(ctx, bucket, newestDir, ".json")
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
 }
 
 func matchTests(metadata []*api.TestCaseMetadata, req *api.InternalTestplan) ([]*api.TestCaseMetadata, error) {
-	testSuites := testSuiteFromTestplan(req)
+	testSuites, err := common.TestSuiteFromTestplan(req)
+	if err != nil {
+		return nil, err
+	}
 	return finder.MatchedTestsForSuites(metadata, testSuites)
-}
-
-// TODO implement; currently just building up the logical flow + signatures.
-func translateTC(matchingTests []*api.TestCaseMetadata) []*api.CTPTestCase {
-	return nil
-}
-
-// TODO implement; currently just building up the logical flow + signatures.
-func testSuiteFromTestplan(req *api.InternalTestplan) []*api.TestSuite {
-	return nil
 }

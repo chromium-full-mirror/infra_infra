@@ -20,12 +20,20 @@ type ExtraInfo struct {
 	ExecutableName string `json:"executable_name"`
 }
 
-func translateSrcToMetadata(src []byte) (metaData []*api.TestCaseMetadata) {
+func translateSrcToMetadata(src [][]byte) (metaData []*api.TestCaseMetadata) {
 	var testInfoList []TestInfo
-	err := json.Unmarshal(src, &testInfoList)
-	if err != nil {
-		return nil
+
+	for _, srcInfo := range src {
+		var testInfoListLocal []TestInfo
+
+		err := json.Unmarshal(srcInfo, &testInfoListLocal)
+
+		testInfoList = append(testInfoList, testInfoListLocal...)
+		if err != nil {
+			return nil
+		}
 	}
+
 	for _, testInfo := range testInfoList {
 		tc := createTestCaseFromTestInfo(testInfo)
 		metaData = append(metaData, tc)
