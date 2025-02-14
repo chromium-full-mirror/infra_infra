@@ -6,6 +6,7 @@ package frontend
 
 import (
 	"context"
+	"fmt"
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
@@ -39,29 +40,7 @@ func (fs *FleetServerImpl) GetState(ctx context.Context, req *ufsAPI.GetStateReq
 
 // UpdateDutState updates DUT state for a DUT.
 func (fs *FleetServerImpl) UpdateDutState(ctx context.Context, req *ufsAPI.UpdateDutStateRequest) (response *chromeosLab.DutState, err error) {
-	if err := req.Validate(); err != nil {
-		return nil, err
-	}
-	if err := controller.UpdateDutMeta(ctx, req.GetDutMeta()); err != nil {
-		logging.Errorf(ctx, "fail to update dut meta: %s", err.Error())
-		return nil, err
-	}
-
-	if err := controller.UpdateAssetMeta(ctx, req.GetDutMeta()); err != nil {
-		logging.Errorf(ctx, "fail to update asset meta: %s", err.Error())
-		return nil, err
-	}
-
-	if err := controller.UpdateLabMeta(ctx, req.GetLabMeta()); err != nil {
-		logging.Errorf(ctx, "fail to update lab meta: %s", err.Error())
-		return nil, err
-	}
-
-	res, err := controller.UpdateDutState(ctx, req.GetDutState())
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
+	return nil, fmt.Errorf("func UpdateDutState deprecated")
 }
 
 // UpdateDeviceRecoveryData update device configs for a DUT

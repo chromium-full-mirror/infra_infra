@@ -277,8 +277,7 @@ service Fleet {
   // ListDutStates gets all the DutStates
   rpc ListDutStates(ListDutStatesRequest) returns (ListDutStatesResponse);
 
-  // UpdateDutState updates the state config for a DUT
-  // If the dut state doesn't exist before, it will create the dut state record.
+  // UpdateDutState is deprecated
   rpc UpdateDutState(UpdateDutStateRequest) returns (models.chromeos.lab.DutState);
 
   // UpdateDeviceRecoveryData updates the device configs for a DUT
@@ -1811,15 +1810,11 @@ message UpdateStateRequest {
 }
 
 message UpdateDutStateRequest {
-  // The state record to update.
-  models.chromeos.lab.DutState dut_state = 1 [(google.api.field_behavior) = REQUIRED];
-
-  // The list of fields to be updated.
-  google.protobuf.FieldMask update_mask = 2;
-
-  // Used for updating back essential configs from repair/deploy task.
-  models.DutMeta dut_meta = 3;
-  models.LabMeta lab_meta = 4;
+  // Deprecated Fields
+  models.chromeos.lab.DutState dut_state = 1 [deprecated=true];
+  google.protobuf.FieldMask update_mask = 2 [deprecated=true];
+  models.DutMeta dut_meta = 3 [deprecated=true];
+  models.LabMeta lab_meta = 4 [deprecated=true];
 }
 
 // Next ID: 4
