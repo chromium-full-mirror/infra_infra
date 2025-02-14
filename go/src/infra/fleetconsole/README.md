@@ -150,7 +150,7 @@ Create a ssh tunnel inside the db's vpc: [more info](go/gce-beyondcorp-ssh#ssh-t
 gcloud compute ssh alloydb-bastion \
     --project fleet-console-prod \
     --zone us-central1-c \
-    --ssh-flag="-L 5432:10.89.112.2:5432"\
+    --ssh-flag="-L 5432:10.87.208.2:5432"\
     -- -o Hostname=nic0.alloydb-bastion.us-central1-c.c.fleet-console-prod.internal.gcpnode.com
 ```
 
