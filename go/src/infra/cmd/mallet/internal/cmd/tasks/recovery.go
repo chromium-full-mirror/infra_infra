@@ -43,6 +43,7 @@ var Recovery = &subcommands.Command{
 		c.Flags.BoolVar(&c.useCsa, "use-csa", true, "Use CSA Service or not.")
 		c.Flags.BoolVar(&c.disableCft, "disable-cft", false, "Disable CFT.")
 		c.Flags.BoolVar(&c.deployTask, "deploy", false, "Run deploy task. By default run recovery task.")
+		c.Flags.StringVar(&c.taskName, "task-name", "", `What type of task name to use.".`)
 		c.Flags.BoolVar(&c.updateUFS, "update-ufs", false, "Update result to UFS. By default no.")
 		c.Flags.BoolVar(&c.latest, "latest", false, "Use latest version of CIPD when scheduling. By default no.")
 		c.Flags.StringVar(&c.adminSession, "admin-session", "", "Admin session used to group created tasks. By default generated.")
@@ -62,6 +63,7 @@ type recoveryRun struct {
 	useCsa       bool
 	configFile   string
 	deployTask   bool
+	taskName     string
 	updateUFS    bool
 	latest       bool
 	adminSession string
@@ -123,6 +125,12 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 		task := string(buildbucket.Recovery)
 		if c.deployTask {
 			task = string(buildbucket.Deploy)
+		} else if c.taskName != "" {
+			tn, err := buildbucket.NormalizeTaskName(c.taskName)
+			if err != nil {
+				return errors.Annotate(err, "create recovery task").Err()
+			}
+			task = string(tn)
 		}
 
 		v := buildbucket.CIPDProd
