@@ -1535,36 +1535,48 @@ wheel: <
 
 ## **black-py3**
 
-### 19.10b0
+### 22.12.0
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/black-py3"
-  version: "version:19.10b0"
+  version: "version:22.12.0"
 >
 ```
 
 
 * *universal*
 
-### 22.3.0
+### 23.12.1
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/black-py3"
-  version: "version:22.3.0"
+  version: "version:23.12.1"
 >
 ```
 
 
 * *universal*
 
-### 23.1.0
+### 24.10.0
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/black-py3"
-  version: "version:23.1.0"
+  version: "version:24.10.0"
+>
+```
+
+
+* *universal*
+
+### 25.1.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/black-py3"
+  version: "version:25.1.0"
 >
 ```
 
