@@ -1845,6 +1845,10 @@ func updateRecoveryResourceState(ctx context.Context, hostname string, resourceS
 
 // UpdateRecoveryLabdata updates only labdata and resource state for a given ChromeOS DUT.
 func updateRecoveryLabData(ctx context.Context, hostname string, resourceState ufspb.State, labData *ufsAPI.ChromeOsRecoveryData_LabData) error {
+	if labData == nil {
+		logging.Warningf(ctx, "Empty lab data (%s)", hostname)
+		return nil
+	}
 	f := func(ctx context.Context) error {
 		lse, err := inventory.GetMachineLSE(ctx, hostname)
 		if err != nil {

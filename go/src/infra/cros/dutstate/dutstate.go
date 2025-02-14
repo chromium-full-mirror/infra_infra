@@ -193,3 +193,16 @@ var stateFromUFS = map[ufsProto.State]State{
 	ufsProto.State_STATE_DISABLED:             NeedsManualRepair,
 	ufsProto.State_STATE_DECOMMISSIONED:       NeedsReplacement,
 }
+
+var ValidDUTStateStrings = []string{
+	string(Ready),
+	string(NeedsReset),
+	string(NeedsRepair),
+	string(RepairFailed),
+	string(NeedsDeploy),
+	string(Deploying),
+	string(Reserved),
+	string(ManualRepair),
+	string(NeedsManualRepair),
+	string(NeedsReplacement),
+}
