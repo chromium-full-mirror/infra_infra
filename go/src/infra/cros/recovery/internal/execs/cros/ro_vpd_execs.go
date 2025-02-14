@@ -8,9 +8,9 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -37,11 +37,6 @@ const (
 	readROVPDValuesCmd = "vpd -i RO_VPD -g %s"
 	writeVPDValuesCmd  = "vpd -s %s=%s"
 )
-
-type DSMVPD struct {
-	Rdc  []int32 `json:"r0"`
-	Temp []int32 `json:"temp"`
-}
 
 // isROVPDDSMCalibRequiredExec confirms that this device is required to have sku_number in RO_VPD.
 func isROVPDDSMCalibRequiredExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -99,26 +94,33 @@ func verifyROVPDDSMCalibExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "Failed to parse sound card name").Err()
 	}
 
-	soundCardInitCmd := fmt.Sprintf("/usr/bin/sound_card_init fake_vpd --json --id %s --amp %s --conf %s", soundCardID, speakerAmp, soundCardInitConf)
+	soundCardInitCmd := fmt.Sprintf("/usr/bin/sound_card_init channels --id %s --amp %s --conf %s", soundCardID, speakerAmp, soundCardInitConf)
 
-	fakeDSMVPDJson, err := r(ctx, time.Minute, soundCardInitCmd)
+	channelCountString, err := r(ctx, time.Minute, soundCardInitCmd)
 	if err != nil {
-		return errors.Annotate(err, "cannot get fake DSM vpd").Err()
+		return errors.Annotate(err, "cannot get channel count").Err()
 	}
 
-	var fakeDSMVPD DSMVPD
-	if err = json.Unmarshal([]byte(fakeDSMVPDJson), &fakeDSMVPD); err != nil {
-		return errors.Annotate(err, "cannot parse fake DSM vpd json: %s", string(fakeDSMVPDJson)).Err()
+	channelCount, err := strconv.ParseInt(channelCountString, 10, 32)
+	if err != nil {
+		return errors.Annotate(err, "cannot convert channel count to int").Err()
 	}
 
-	for ch := 0; ch < len(fakeDSMVPD.Rdc); ch++ {
-		cmd := fmt.Sprintf("vpd -i RO_VPD -g dsm_calib_r0_%d", ch)
-		if _, err := r(ctx, time.Minute, cmd); err != nil {
-			return errors.Annotate(err, "%s", cmd).Err()
-		}
-		cmd = fmt.Sprintf("vpd -i RO_VPD -g dsm_calib_temp_%d", ch)
-		if _, err := r(ctx, time.Minute, cmd); err != nil {
-			return errors.Annotate(err, "%s", cmd).Err()
+	for ch := 0; ch < int(channelCount); ch++ {
+		if speakerAmp != "TAS2563" {
+			cmd := fmt.Sprintf("vpd -i RO_VPD -g dsm_calib_r0_%d", ch)
+			if _, err := r(ctx, time.Minute, cmd); err != nil {
+				return errors.Annotate(err, "%s", cmd).Err()
+			}
+			cmd = fmt.Sprintf("vpd -i RO_VPD -g dsm_calib_temp_%d", ch)
+			if _, err := r(ctx, time.Minute, cmd); err != nil {
+				return errors.Annotate(err, "%s", cmd).Err()
+			}
+		} else {
+			cmd := fmt.Sprintf("vpd -i RO_VPD -g dsm_calib_value_%d", ch)
+			if _, err := r(ctx, time.Minute, cmd); err != nil {
+				return errors.Annotate(err, "%s", cmd).Err()
+			}
 		}
 	}
 	return nil
@@ -146,30 +148,14 @@ func setFakeROVPDDSMCalibExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "Failed to parse sound card name").Err()
 	}
 
-	soundCardInitCmd := fmt.Sprintf("/usr/bin/sound_card_init fake_vpd --json --id %s --amp %s --conf %s", soundCardID, speakerAmp, soundCardInitConf)
+	soundCardInitCmd := fmt.Sprintf("/usr/bin/sound_card_init set_fake_vpd --id %s --amp %s --conf %s", soundCardID, speakerAmp, soundCardInitConf)
 
-	fakeDSMVPDJson, err := r(ctx, time.Minute, soundCardInitCmd)
+	_, err = r(ctx, time.Minute, soundCardInitCmd)
 	if err != nil {
-		return errors.Annotate(err, "cannot get fake DSM vpd").Err()
+		return errors.Annotate(err, "cannot set fake DSM vpd").Err()
 	}
 
-	var fakeDSMVPD DSMVPD
-	if err = json.Unmarshal([]byte(fakeDSMVPDJson), &fakeDSMVPD); err != nil {
-		return errors.Annotate(err, "cannot parse fake DSM vpd json: %s", string(fakeDSMVPDJson)).Err()
-	}
-
-	for ch := 0; ch < len(fakeDSMVPD.Rdc); ch++ {
-		cmd := fmt.Sprintf("vpd -s dsm_calib_r0_%d=%d", ch, fakeDSMVPD.Rdc[ch])
-		if _, err = r(ctx, time.Minute, cmd); err != nil {
-			return errors.Annotate(err, "cannot set fake dsm_calib_r0").Err()
-		}
-		cmd = fmt.Sprintf("vpd -s dsm_calib_temp_%d=%d", ch, fakeDSMVPD.Temp[ch])
-		if _, err := r(ctx, time.Minute, cmd); err != nil {
-			return errors.Annotate(err, "cannot set fake dsm_calib_temp").Err()
-		}
-	}
-
-	log.Infof(ctx, "set fake dsm_calib_r0 successfully")
+	log.Infof(ctx, "set fake DSM vpd successfully")
 	return nil
 }
 
