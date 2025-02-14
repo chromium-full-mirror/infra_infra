@@ -316,6 +316,74 @@
       "--",
       "npm",
       "run",
+      "lint"
+    ],
+    "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal/appengine/testhaus/frontend/ui",
+    "env": {
+      "npm_config_cache": "[CACHE]/npmcache/npm",
+      "npm_config_prefix": "[CACHE]/npmcache/pfx"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/npmcache/pfx/bin",
+        "[CACHE]/nodejs/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra/infra_internal:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "testhaus lint"
+  },
+  {
+    "cmd": [
+      "rdb",
+      "stream",
+      "--",
+      "npm",
+      "run",
+      "build"
+    ],
+    "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal/appengine/testhaus/frontend/ui",
+    "env": {
+      "npm_config_cache": "[CACHE]/npmcache/npm",
+      "npm_config_prefix": "[CACHE]/npmcache/pfx"
+    },
+    "env_prefixes": {
+      "PATH": [
+        "[CACHE]/npmcache/pfx/bin",
+        "[CACHE]/nodejs/bin"
+      ]
+    },
+    "luci_context": {
+      "realm": {
+        "name": "infra/infra_internal:try"
+      },
+      "resultdb": {
+        "current_invocation": {
+          "name": "invocations/build:8945511751514863184",
+          "update_token": "token"
+        },
+        "hostname": "rdbhost"
+      }
+    },
+    "name": "testhaus build"
+  },
+  {
+    "cmd": [
+      "rdb",
+      "stream",
+      "--",
+      "npm",
+      "run",
       "test"
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal/appengine/testhaus/frontend/ui",

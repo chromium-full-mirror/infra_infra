@@ -70,9 +70,10 @@ def RunInfraInternalFrontendTests(api, root_path):
   # `myapp` is the name that will show up in the step.
 
   testhaus = root_path.joinpath('go', 'src', 'infra_internal', 'appengine',
-                                'testhaus')
-  RunNpmInstall(api, testhaus / 'frontend' / 'ui', 'testhaus')
-  RunFrontendTests(api, testhaus / 'frontend' / 'ui', 'testhaus')
+                                'testhaus', 'frontend', 'ui')
+  RunNpmInstall(api, testhaus, 'testhaus')
+  RunFrontendBuildAndLint(api, testhaus, 'testhaus')
+  RunFrontendTests(api, testhaus, 'testhaus')
 
   cwd = root_path.joinpath('go', 'src', 'infra_internal', 'appengine', 'spike',
                            'appengine', 'frontend', 'ui')
@@ -129,6 +130,13 @@ def RunFrontendTests(api, cwd, app_name):
     # Prefixing the step name with `test` to make it easier to identify from
     # other npm install runs.
     api.step(('%s test' % app_name), api.resultdb.wrap(['npm', 'run', 'test']))
+
+
+def RunFrontendBuildAndLint(api, cwd, app_name):
+  with api.context(cwd=cwd):
+    api.step(('%s lint' % app_name), api.resultdb.wrap(['npm', 'run', 'lint']))
+    api.step(('%s build' % app_name), api.resultdb.wrap(['npm', 'run',
+                                                         'build']))
 
 def GenTests(api):
   yield (
