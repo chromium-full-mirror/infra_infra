@@ -25,6 +25,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	FleetConsole_Ping_FullMethodName                = "/fleetconsole.FleetConsole/Ping"
+	FleetConsole_PingBigQuery_FullMethodName        = "/fleetconsole.FleetConsole/PingBigQuery"
 	FleetConsole_PingDeviceManager_FullMethodName   = "/fleetconsole.FleetConsole/PingDeviceManager"
 	FleetConsole_PingUfs_FullMethodName             = "/fleetconsole.FleetConsole/PingUfs"
 	FleetConsole_ListDevices_FullMethodName         = "/fleetconsole.FleetConsole/ListDevices"
@@ -41,6 +42,8 @@ const (
 type FleetConsoleClient interface {
 	// Ping does not send or receive any information. It just checks that the service is there.
 	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error)
+	// PingBigQuery attempts to contact BigQuery service through Fleet Console. Useful for debugging.
+	PingBigQuery(ctx context.Context, in *PingBigQueryRequest, opts ...grpc.CallOption) (*PingBigQueryResponse, error)
 	// PingDeviceManager attempts to contact DeviceManager through Fleet Console. Useful for debugging.
 	PingDeviceManager(ctx context.Context, in *PingDeviceManagerRequest, opts ...grpc.CallOption) (*PingDeviceManagerResponse, error)
 	// PingUfs attempts to contact UFS through Fleet Console. Useful for debugging.
@@ -71,6 +74,16 @@ func (c *fleetConsoleClient) Ping(ctx context.Context, in *PingRequest, opts ...
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(PingResponse)
 	err := c.cc.Invoke(ctx, FleetConsole_Ping_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fleetConsoleClient) PingBigQuery(ctx context.Context, in *PingBigQueryRequest, opts ...grpc.CallOption) (*PingBigQueryResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PingBigQueryResponse)
+	err := c.cc.Invoke(ctx, FleetConsole_PingBigQuery_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -163,6 +176,8 @@ func (c *fleetConsoleClient) CleanExit(ctx context.Context, in *CleanExitRequest
 type FleetConsoleServer interface {
 	// Ping does not send or receive any information. It just checks that the service is there.
 	Ping(context.Context, *PingRequest) (*PingResponse, error)
+	// PingBigQuery attempts to contact BigQuery service through Fleet Console. Useful for debugging.
+	PingBigQuery(context.Context, *PingBigQueryRequest) (*PingBigQueryResponse, error)
 	// PingDeviceManager attempts to contact DeviceManager through Fleet Console. Useful for debugging.
 	PingDeviceManager(context.Context, *PingDeviceManagerRequest) (*PingDeviceManagerResponse, error)
 	// PingUfs attempts to contact UFS through Fleet Console. Useful for debugging.
@@ -191,6 +206,9 @@ type UnimplementedFleetConsoleServer struct{}
 
 func (UnimplementedFleetConsoleServer) Ping(context.Context, *PingRequest) (*PingResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
+}
+func (UnimplementedFleetConsoleServer) PingBigQuery(context.Context, *PingBigQueryRequest) (*PingBigQueryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PingBigQuery not implemented")
 }
 func (UnimplementedFleetConsoleServer) PingDeviceManager(context.Context, *PingDeviceManagerRequest) (*PingDeviceManagerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PingDeviceManager not implemented")
@@ -251,6 +269,24 @@ func _FleetConsole_Ping_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FleetConsoleServer).Ping(ctx, req.(*PingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FleetConsole_PingBigQuery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PingBigQueryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FleetConsoleServer).PingBigQuery(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FleetConsole_PingBigQuery_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FleetConsoleServer).PingBigQuery(ctx, req.(*PingBigQueryRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -409,6 +445,10 @@ var FleetConsole_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Ping",
 			Handler:    _FleetConsole_Ping_Handler,
+		},
+		{
+			MethodName: "PingBigQuery",
+			Handler:    _FleetConsole_PingBigQuery_Handler,
 		},
 		{
 			MethodName: "PingDeviceManager",

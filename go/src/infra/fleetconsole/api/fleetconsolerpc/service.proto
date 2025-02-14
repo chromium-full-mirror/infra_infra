@@ -14,6 +14,9 @@ service FleetConsole {
   // Ping does not send or receive any information. It just checks that the service is there.
   rpc Ping(PingRequest) returns (PingResponse);
 
+  // PingBigQuery attempts to contact BigQuery service through Fleet Console. Useful for debugging.
+  rpc PingBigQuery(PingBigQueryRequest) returns (PingBigQueryResponse);
+
   // PingDeviceManager attempts to contact DeviceManager through Fleet Console. Useful for debugging.
   rpc PingDeviceManager(PingDeviceManagerRequest) returns (PingDeviceManagerResponse);
 
@@ -45,6 +48,14 @@ message PingRequest {
 
 // PingResponse intentionally contains nothing.
 message PingResponse {
+}
+
+// PingBigQueryRequest intentionally contains nothing.
+message PingBigQueryRequest {
+}
+
+// PingBigQueryResponse intentionally contains nothing.
+message PingBigQueryResponse {
 }
 
 // PingDeviceManagerRequest intentionally contains nothing.

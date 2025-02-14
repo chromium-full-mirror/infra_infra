@@ -32,6 +32,7 @@ func Application(ctxFuncs ...func(context.Context) context.Context) *cli.Applica
 		Commands: []*subcommands.Command{
 			subcommands.CmdHelp,
 			commands.PingCommand,
+			commands.PingBigQueryCommand,
 			commands.PingDeviceManagerCommand,
 			commands.PingUFSCommand,
 			commands.ListDevicesCommand,
