@@ -4,11 +4,13 @@ plans:
         - name: 'Set state: needs_deploy (''dut_set_state'')'
         - name: Start ADB-base ('ctr_start_adb_container') (time:'2m0s')
           conditions:
-            - name: Execution not on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+            - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+            - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
             - name: CrosToolRunner is up ('ctr_is_up')
         - name: Start Servo-Nexus ('ctr_servo_nexus_start_container') (time:'4m0s')
           conditions:
-            - name: Execution not on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+            - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+            - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
             - name: Testbed has Servo ('dut_servo_host_present') (RUN_ONCE)
             - name: CrosToolRunner is up ('ctr_is_up')
     - name: servo_fw_update
@@ -6785,7 +6787,6 @@ plans:
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: Execution on Mobile Harness box ('env_is_mh_box') (RUN_ONCE)
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                   dependencies:
@@ -6804,7 +6805,9 @@ plans:
                             - name: Setup has servo info ('dut_servo_host_present')
               dependencies:
                 - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
-                - name: Set CacheService address ('cache_service_address_detection')
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                 - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                 - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
@@ -6815,6 +6818,77 @@ plans:
                   conditions:
                     - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+              conditions:
+                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      conditions:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                  dependencies:
+                    - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+              dependencies:
+                - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                  dependencies:
+                    - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
+                  dependencies:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                  conditions:
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                  dependencies:
+                    - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
+                - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
+                - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Install OS in recovery mode by booting from servo USB-drive (no storage check) ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -7224,7 +7298,7 @@ plans:
                 - name: Create request to reboot labstation ('labstation_create_reboot_request') (RUN_ONCE)
         - name: Mark DUT as Android if applicable ('cros_set_as_android_based')
           conditions:
-            - name: Execution not on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+            - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
             - name: Mark as Chrome based OS (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
             - name: DUT is not SSHable (simple) ('sample_fail') (ALWAYS_RUN)
               conditions:
@@ -12011,18 +12085,19 @@ plans:
               recoveries:
                 - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
                   conditions:
-                    - name: Execution not on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
                   dependencies:
                     - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Start Foil-provision ('ctr_start_foil_provision_container')
                       conditions:
-                        - name: Execution not on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                         - name: CrosToolRunner is up ('ctr_is_up')
                     - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: Execution on Mobile Harness box ('env_is_mh_box') (RUN_ONCE)
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -12041,7 +12116,9 @@ plans:
                                 - name: Setup has servo info ('dut_servo_host_present')
                   dependencies:
                     - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
-                    - name: Set CacheService address ('cache_service_address_detection')
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
@@ -12052,9 +12129,80 @@ plans:
                       conditions:
                         - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                  dependencies:
+                    - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                      conditions:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                      dependencies:
+                        - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                          dependencies:
+                            - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                    - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                      conditions:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                      dependencies:
+                        - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                          dependencies:
+                            - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                    - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
+                    - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
+                    - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: Execution not on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
@@ -29320,18 +29468,19 @@ plans:
                             - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                     - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
                       conditions:
-                        - name: Execution not on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                         - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
                       dependencies:
                         - name: Detect CacheService address ('cache_service_address_detection')
+                          conditions:
+                            - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                         - name: Start Foil-provision ('ctr_start_foil_provision_container')
                           conditions:
-                            - name: Execution not on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                            - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                             - name: CrosToolRunner is up ('ctr_is_up')
                         - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                     - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                       conditions:
-                        - name: Execution on Mobile Harness box ('env_is_mh_box') (RUN_ONCE)
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -29350,7 +29499,9 @@ plans:
                                     - name: Setup has servo info ('dut_servo_host_present')
                       dependencies:
                         - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
-                        - name: Set CacheService address ('cache_service_address_detection')
+                        - name: Detect CacheService address ('cache_service_address_detection')
+                          conditions:
+                            - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                         - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                         - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
@@ -29406,18 +29557,19 @@ plans:
                             - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                     - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
                       conditions:
-                        - name: Execution not on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                         - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
                       dependencies:
                         - name: Detect CacheService address ('cache_service_address_detection')
+                          conditions:
+                            - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                         - name: Start Foil-provision ('ctr_start_foil_provision_container')
                           conditions:
-                            - name: Execution not on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                            - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                             - name: CrosToolRunner is up ('ctr_is_up')
                         - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                     - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                       conditions:
-                        - name: Execution on Mobile Harness box ('env_is_mh_box') (RUN_ONCE)
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -29436,7 +29588,9 @@ plans:
                                     - name: Setup has servo info ('dut_servo_host_present')
                       dependencies:
                         - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
-                        - name: Set CacheService address ('cache_service_address_detection')
+                        - name: Detect CacheService address ('cache_service_address_detection')
+                          conditions:
+                            - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                         - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                         - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
@@ -32700,18 +32854,19 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
                   conditions:
-                    - name: Execution not on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
                   dependencies:
                     - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Start Foil-provision ('ctr_start_foil_provision_container')
                       conditions:
-                        - name: Execution not on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                         - name: CrosToolRunner is up ('ctr_is_up')
                     - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: Execution on Mobile Harness box ('env_is_mh_box') (RUN_ONCE)
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -32730,7 +32885,9 @@ plans:
                                 - name: Setup has servo info ('dut_servo_host_present')
                   dependencies:
                     - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
-                    - name: Set CacheService address ('cache_service_address_detection')
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
@@ -32777,7 +32934,7 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: Execution not on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
@@ -32971,18 +33128,19 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
                   conditions:
-                    - name: Execution not on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
                   dependencies:
                     - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Start Foil-provision ('ctr_start_foil_provision_container')
                       conditions:
-                        - name: Execution not on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                         - name: CrosToolRunner is up ('ctr_is_up')
                     - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: Execution on Mobile Harness box ('env_is_mh_box') (RUN_ONCE)
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -33001,7 +33159,9 @@ plans:
                                 - name: Setup has servo info ('dut_servo_host_present')
                   dependencies:
                     - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
-                    - name: Set CacheService address ('cache_service_address_detection')
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
@@ -33048,7 +33208,7 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: Execution not on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
@@ -33223,18 +33383,19 @@ plans:
               recoveries:
                 - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
                   conditions:
-                    - name: Execution not on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
                   dependencies:
                     - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Start Foil-provision ('ctr_start_foil_provision_container')
                       conditions:
-                        - name: Execution not on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                         - name: CrosToolRunner is up ('ctr_is_up')
                     - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: Execution on Mobile Harness box ('env_is_mh_box') (RUN_ONCE)
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -33253,7 +33414,9 @@ plans:
                                 - name: Setup has servo info ('dut_servo_host_present')
                   dependencies:
                     - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
-                    - name: Set CacheService address ('cache_service_address_detection')
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
@@ -33264,9 +33427,80 @@ plans:
                       conditions:
                         - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                    - name: Is servo USB key detected ('servo_usbkey_is_detected')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                      dependencies:
+                        - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                  dependencies:
+                    - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                      conditions:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                      dependencies:
+                        - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                          dependencies:
+                            - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                    - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                      conditions:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                      dependencies:
+                        - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                          dependencies:
+                            - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
+                    - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                    - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                    - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
+                    - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
+                    - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: Execution not on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
@@ -33778,18 +34012,19 @@ plans:
                         - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                 - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
                   conditions:
-                    - name: Execution not on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
                   dependencies:
                     - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Start Foil-provision ('ctr_start_foil_provision_container')
                       conditions:
-                        - name: Execution not on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                         - name: CrosToolRunner is up ('ctr_is_up')
                     - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: Execution on Mobile Harness box ('env_is_mh_box') (RUN_ONCE)
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -33808,7 +34043,9 @@ plans:
                                 - name: Setup has servo info ('dut_servo_host_present')
                   dependencies:
                     - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
-                    - name: Set CacheService address ('cache_service_address_detection')
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
@@ -33864,18 +34101,19 @@ plans:
                         - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
                 - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
                   conditions:
-                    - name: Execution not on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
                   dependencies:
                     - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Start Foil-provision ('ctr_start_foil_provision_container')
                       conditions:
-                        - name: Execution not on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                         - name: CrosToolRunner is up ('ctr_is_up')
                     - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: Execution on Mobile Harness box ('env_is_mh_box') (RUN_ONCE)
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -33894,7 +34132,9 @@ plans:
                                 - name: Setup has servo info ('dut_servo_host_present')
                   dependencies:
                     - name: Mark as Android based (Allow to fail) ('cros_set_as_android_based') (ALWAYS_RUN)
-                    - name: Set CacheService address ('cache_service_address_detection')
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')

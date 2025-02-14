@@ -22,12 +22,12 @@ func crosRepairPlan() *Plan {
 func mhRepairPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
-			"Set state: needs_repair",
 			"Mark as Android based",
+			"Set CacheService address",
 			"Has repair-request for re-image USB-key",
 			"Has repair-request for reflash-firmware",
 			"Android: Has repair-request for re-image by USB-key",
-			"MH:Device is pingable",
+			"Android:Device is pingable",
 			"ADB Connect DUT",
 			"Android is accessable",
 			"ADB set Android as always awake",
@@ -139,7 +139,7 @@ func crosRepairActions() map[string]*Action {
 				"Mark DUT as Android, based on ADB responses.",
 			},
 			Conditions: []string{
-				"Execution not on CloudBot",
+				"Do not run on CloudBot",
 				// Always reset first.
 				"Mark as Chrome based OS",
 				"DUT is not SSHable (simple)",
@@ -222,6 +222,7 @@ func crosRepairActions() map[string]*Action {
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
 				"Restore AC detection by EC console and wait for ping",
 				"Install Android OS by booting from servo USB-drive",
+				"Update FW and install Android OS from servo USB-drive",
 				"Install OS in recovery mode by booting from servo USB-drive (no storage check)",
 				"Update FW from fw-image by servo and wait for boot",
 				"Update fingerpprint FW from USB drive",
@@ -238,14 +239,11 @@ func crosRepairActions() map[string]*Action {
 				UploadPolicy: MetricsConfig_DEFAULT_UPLOAD_POLICY,
 			},
 		},
-		"MH:Device is pingable": {
+		"Android:Device is pingable": {
 			Docs: []string{
 				"Verify that device is pingable.",
 				"Limited to 15 seconds.",
 				"Only for Mobile Harness box execution.",
-			},
-			Dependencies: []string{
-				"Execution on Mobile Harness box",
 			},
 			ExecName: "cros_ping",
 			ExecTimeout: &durationpb.Duration{
@@ -392,7 +390,7 @@ func crosRepairActions() map[string]*Action {
 				"The request will be applied when plan restarted and reached action to address it.",
 			},
 			Conditions: []string{
-				"Execution not on Mobile Harness box",
+				"Do not run on Mobile Harness box",
 				"Is Android based",
 				"Is a Chromebook",
 				"Recovery version has OS image path",
@@ -585,6 +583,7 @@ func crosRepairActions() map[string]*Action {
 				// Android actions.
 				"Provision Android OS",
 				"Install Android OS by booting from servo USB-drive",
+				"Update FW and install Android OS from servo USB-drive",
 				"Force reimage to ChromeOS in DEV mode",
 				// Legacy actions.
 				"Quick provision OS",
@@ -646,6 +645,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			RecoveryActions: []string{
 				"Install Android OS by booting from servo USB-drive",
+				"Update FW and install Android OS from servo USB-drive",
 			},
 		},
 		"Has repair-request for reflash-firmware": {

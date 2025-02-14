@@ -25,7 +25,8 @@ func addCrosCftContainers(actions map[string]*Action) {
 				"Pull and run adb-base container",
 			},
 			Conditions: []string{
-				"Execution not on CloudBot",
+				"Do not run on Mobile Harness box",
+				"Do not run on CloudBot",
 				"CrosToolRunner is up",
 			},
 			ExecName:    "ctr_start_adb_container",
@@ -43,7 +44,8 @@ func addCrosCftContainers(actions map[string]*Action) {
 				"Pull and run servo-nexus container",
 			},
 			Conditions: []string{
-				"Execution not on CloudBot",
+				"Do not run on Mobile Harness box",
+				"Do not run on CloudBot",
 				"Testbed has Servo",
 				"CrosToolRunner is up",
 			},
@@ -62,7 +64,7 @@ func addCrosCftContainers(actions map[string]*Action) {
 				"Pull and run foil-provision container",
 			},
 			Conditions: []string{
-				"Execution not on CloudBot",
+				"Do not run on CloudBot",
 				"CrosToolRunner is up",
 			},
 			ExecName: "ctr_start_foil_provision_container",
@@ -77,6 +79,9 @@ func addCrosCftContainers(actions map[string]*Action) {
 		"Detect CacheService address": {
 			Docs: []string{
 				"Collect address of CacheService rom labService.",
+			},
+			Conditions: []string{
+				"Do not run on Mobile Harness box",
 			},
 			ExecName: "cache_service_address_detection",
 		},

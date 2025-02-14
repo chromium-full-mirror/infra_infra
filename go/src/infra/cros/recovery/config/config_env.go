@@ -15,7 +15,7 @@ func addEnvActions(actions map[string]*Action) {
 			ExecName:   "env_is_not_os_partner_namespace",
 			RunControl: RunControl_RUN_ONCE,
 		},
-		"Execution not on CloudBot": {
+		"Do not run on CloudBot": {
 			Docs: []string{
 				"Check that the process is not running on cloudbot.",
 			},
@@ -29,7 +29,7 @@ func addEnvActions(actions map[string]*Action) {
 			ExecName:   "env_is_mh_box",
 			RunControl: RunControl_RUN_ONCE,
 		},
-		"Execution not on Mobile Harness box": {
+		"Do not run on Mobile Harness box": {
 			Docs: []string{
 				"Check that the process is not running on Mobile Harness box.",
 			},

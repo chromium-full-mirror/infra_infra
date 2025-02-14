@@ -89,6 +89,7 @@ func androidActions(actions map[string]*Action) {
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for ping",
 				"Install Android OS by booting from servo USB-drive",
+				"Update FW and install Android OS from servo USB-drive",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
@@ -146,7 +147,7 @@ func androidActions(actions map[string]*Action) {
 				"The install performs real install Android on the DUT.",
 			},
 			Conditions: []string{
-				"Execution not on Mobile Harness box",
+				"Do not run on Mobile Harness box",
 				"Is Android based by ADB or provision-info",
 			},
 			Dependencies: []string{
@@ -169,7 +170,6 @@ func androidActions(actions map[string]*Action) {
 				"The logic is copy from foil-provision",
 			},
 			Conditions: []string{
-				"Execution on Mobile Harness box",
 				"Is a Chromebook",
 				"Is servod running",
 				"Is Android based by ADB or provision-info",
@@ -178,7 +178,7 @@ func androidActions(actions map[string]*Action) {
 			},
 			Dependencies: []string{
 				"Mark as Android based",
-				"Set CacheService address",
+				"Detect CacheService address",
 				"Call servod to download provision image to USB-key",
 				// Update FW.
 				"Flash EC (FW) by servo (allowed failed)",
@@ -204,7 +204,6 @@ func androidActions(actions map[string]*Action) {
 				"The logic is copy from foil-provision",
 			},
 			Conditions: []string{
-				"Execution on Mobile Harness box",
 				"Is a Chromebook",
 				"Is servod running",
 				"Is Android based by ADB or provision-info",
@@ -212,7 +211,7 @@ func androidActions(actions map[string]*Action) {
 			},
 			Dependencies: []string{
 				"Mark as Android based",
-				"Set CacheService address",
+				"Detect CacheService address",
 				"Call servod to download provision image to USB-key",
 				"Boot on USB-key and install AndroidOS",
 				"Wait to be SSHable (normal boot)",
@@ -227,6 +226,9 @@ func androidActions(actions map[string]*Action) {
 			Docs: []string{
 				"MH box does not have labservice, so we hard-code caceh addrress.",
 				"Remove when prototype developing finished",
+			},
+			Conditions: []string{
+				"Execution on Mobile Harness box",
 			},
 			ExecName: "cache_service_address_detection",
 			ExecExtraArgs: []string{

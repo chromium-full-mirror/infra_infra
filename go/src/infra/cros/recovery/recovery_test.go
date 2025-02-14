@@ -96,6 +96,7 @@ var dutPlansCases = []struct {
 		tlw.DUTSetupType_CROS,
 		buildbucket.MHRecovery,
 		[]string{
+			config.PlanCrOSBase,
 			config.PlanDolos,
 			config.PlanServo,
 			config.PlanBluetoothPeer,
