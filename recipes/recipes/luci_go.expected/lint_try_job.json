@@ -360,7 +360,7 @@
       "ensure-directory",
       "--mode",
       "0o777",
-      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/1e302676bf5a23db05555cfae43a2c357da7f6cac97e9b7bf2d4638f7f2e6297"
+      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/627254c92bedffba9859283e179a383c0a7079280385c368742b12bd89cfd6cd"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci",
     "env": {
@@ -401,9 +401,9 @@
       "cipd",
       "ensure",
       "-root",
-      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/1e302676bf5a23db05555cfae43a2c357da7f6cac97e9b7bf2d4638f7f2e6297",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/627254c92bedffba9859283e179a383c0a7079280385c368742b12bd89cfd6cd",
       "-ensure-file",
-      "infra/3pp/tools/golangci-lint/${platform} version:3@1.62.0",
+      "infra/3pp/tools/golangci-lint/${platform} version:3@1.64.5",
       "-max-threads",
       "0",
       "-json-output",
@@ -445,7 +445,7 @@
       "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
       "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
       "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:3@1.62.0\",@@@",
+      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:3@1.64.5\",@@@",
       "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/golangci-lint/resolved-platform\"@@@",
       "@@@STEP_LOG_LINE@json.output@      }@@@",
       "@@@STEP_LOG_LINE@json.output@    ]@@@",
@@ -509,7 +509,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/1e302676bf5a23db05555cfae43a2c357da7f6cac97e9b7bf2d4638f7f2e6297/golangci-lint",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/627254c92bedffba9859283e179a383c0a7079280385c368742b12bd89cfd6cd/golangci-lint",
       "run",
       "--out-format=json",
       "--issues-exit-code=0",
@@ -582,7 +582,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/1e302676bf5a23db05555cfae43a2c357da7f6cac97e9b7bf2d4638f7f2e6297/golangci-lint",
+      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/627254c92bedffba9859283e179a383c0a7079280385c368742b12bd89cfd6cd/golangci-lint",
       "run",
       "--out-format=json",
       "--issues-exit-code=0",
