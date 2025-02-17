@@ -217,12 +217,36 @@ func (c *CCDOpenRun) getSerialDevice(
 			if err != nil {
 				return "", errors.Annotate(err, "udevadm").Err()
 			}
-			reUdevadm := regexp.MustCompile(`usb\d+/(\d+-\d+)/`)
-			match := reUdevadm.FindStringSubmatch(strings.TrimRight(string(out), "\n\t"))
-			if match == nil {
+			USBPathRegex := regexp.MustCompile(`usb\d+`)
+			USBPath := strings.TrimRight(string(out), "\n\t")
+			USBMatch := USBPathRegex.FindString(USBPath)
+			if USBMatch == "" {
+				continue
+			}
+			parts := strings.Split(USBPath, USBMatch+"/")
+			if len(parts) < 2 {
+				continue
+			}
+			shortUSBPath := parts[1]
+			shortUSBPathDepth := strings.Count(shortUSBPath, "/")
+			var reUdevadm *regexp.Regexp
+			// Start from the Satlab's internal USB hub
+			const minDepth = 5
+			switch shortUSBPathDepth {
+			case minDepth:
+				reUdevadm = regexp.MustCompile(`usb\d+/(\d+-\d+)/`)
+			case minDepth + 1:
+				reUdevadm = regexp.MustCompile(`usb\d+/(\d+-\d+/\d+-\d+\.\d+)/`)
+			case minDepth + 2:
+				reUdevadm = regexp.MustCompile(`usb\d+/(\d+-\d+/\d+-\d+\.\d+/\d+-\d+\.\d+\.\d+)/`)
+			default:
+				continue
+			}
+			hubIDMatch := reUdevadm.FindStringSubmatch(USBPath)
+			if hubIDMatch == nil {
 				return "", errors.New("USB hub id does not match.")
 			}
-			usbHubID := match[1]
+			usbHubID := hubIDMatch[1]
 
 			if m[usbHubID] == nil {
 				m[usbHubID] = make(map[string]string)
