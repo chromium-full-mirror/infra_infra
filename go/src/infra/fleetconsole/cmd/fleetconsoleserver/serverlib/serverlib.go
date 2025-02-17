@@ -18,10 +18,12 @@ import (
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/rpcacl"
+	"go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/secrets"
 
+	"infra/fleetconsole/api/fleetconsolerpc"
 	"infra/fleetconsole/cmd/fleetconsoleserver/flags"
 	"infra/fleetconsole/internal/consoleserver"
 	"infra/fleetconsole/internal/devicemanagerclient"
@@ -41,6 +43,7 @@ func Modules() []module.Module {
 		gaeemulation.NewModuleFromFlags(),
 		// For the database info and password.
 		secrets.NewModuleFromFlags(),
+		cron.NewModuleFromFlags(),
 	}
 }
 
@@ -71,6 +74,16 @@ func ServerMain(srv *server.Server) error {
 	consoleserver.SetDeviceManagerClient(consoleFrontend, GetDeviceManagerClient)
 	consoleserver.SetUFSClient(consoleFrontend, GetUfsClient)
 	consoleserver.MustSetDBConnection(srv.Context, consoleFrontend)
+
+	cron.RegisterHandler("ping-db", func(ctx context.Context) error {
+		_, err := consoleFrontend.PingDB(ctx, &fleetconsolerpc.PingDBRequest{})
+		return err
+	})
+	cron.RegisterHandler("repopulate-cache", func(ctx context.Context) error {
+		_, err := consoleFrontend.RepopulateCache(ctx, &fleetconsolerpc.RepopulateCacheRequest{})
+		return err
+	})
+
 	logging.Infof(srv.Context, "End initialization of console server.")
 	return nil
 }
