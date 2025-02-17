@@ -14,12 +14,12 @@ import (
 
 // DeviceDAO represents a device as saved in AlloyDB
 type DeviceDAO struct {
-	Id           string //nolint:stylecheck
-	DutId        string //nolint:stylecheck
-	Address      *DeviceAddressDAO
-	Type         string
-	State        string
-	HardwareReqs *HardwareRequirementsDAO
+	Id         string //nolint:stylecheck
+	DutId      string //nolint:stylecheck
+	Address    *DeviceAddressDAO
+	Type       string
+	State      string
+	DeviceSpec *DeviceSpecDAO
 }
 
 type DeviceAddressDAO struct {
@@ -27,20 +27,20 @@ type DeviceAddressDAO struct {
 	Port int32
 }
 
-type HardwareRequirementsDAO struct {
-	SchedulableLabels map[string]*HardwareRequirements_LabelValues `json:"labels,omitempty"`
+type DeviceSpecDAO struct {
+	Labels map[string]*LabelValuesDAO
 }
 
-type HardwareRequirements_LabelValues struct { //nolint:stylecheck
+type LabelValuesDAO struct {
 	Values []string
 }
 
 func FromDeviceManagerDevice(device *api.Device) *DeviceDAO {
-	hardwareReqs := &HardwareRequirementsDAO{
-		SchedulableLabels: map[string]*HardwareRequirements_LabelValues{},
+	deviceSpec := &DeviceSpecDAO{
+		Labels: map[string]*LabelValuesDAO{},
 	}
 	for k, v := range device.HardwareReqs.SchedulableLabels {
-		hardwareReqs.SchedulableLabels[k] = &HardwareRequirements_LabelValues{
+		deviceSpec.Labels[k] = &LabelValuesDAO{
 			Values: v.Values,
 		}
 	}
@@ -52,15 +52,15 @@ func FromDeviceManagerDevice(device *api.Device) *DeviceDAO {
 			Host: device.Address.Host,
 			Port: device.Address.Port,
 		},
-		Type:         device.Type.String(),
-		State:        device.State.String(),
-		HardwareReqs: hardwareReqs,
+		Type:       device.Type.String(),
+		State:      device.State.String(),
+		DeviceSpec: deviceSpec,
 	}
 }
 
 func ToListDevicesDevice(device *DeviceDAO) *fleetconsolerpc.Device {
 	labels := make(map[string]*fleetconsolerpc.LabelValues)
-	for k, v := range device.HardwareReqs.SchedulableLabels {
+	for k, v := range device.DeviceSpec.Labels {
 		labels[k] = &fleetconsolerpc.LabelValues{
 			Values: v.Values,
 		}
@@ -95,7 +95,7 @@ func (device *DeviceDAO) DeviceAsDBArguments() []any {
 		port,
 		device.Type,
 		device.State,
-		device.HardwareReqs.SchedulableLabels,
+		device.DeviceSpec.Labels,
 	}
 
 }

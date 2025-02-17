@@ -68,7 +68,10 @@ func List(ctx context.Context, dbConn *sql.DB, filter, orderby string, offset, p
 			Host: host,
 			Port: int32(port),
 		}
-		err = json.Unmarshal(labelsJSON, &device.HardwareReqs)
+		device.DeviceSpec = &DeviceSpecDAO{
+			Labels: make(map[string]*LabelValuesDAO),
+		}
+		err = json.Unmarshal(labelsJSON, &device.DeviceSpec.Labels)
 		if err != nil {
 			return nil, hasMoreData, fmt.Errorf("ListDevices: %w", err)
 		}
