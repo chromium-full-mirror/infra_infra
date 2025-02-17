@@ -286,7 +286,9 @@ func getBrowserHostLabels(lse *ufspb.MachineLSE) *ufspb.DeviceLabels {
 	name := util.AddPrefix(util.MachineLSECollection, lse.GetName())
 	state := dutstate.ConvertFromUFSState(lse.GetResourceState()).String()
 	zone := lse.GetZone()
-	return getBrowserLabelsResponse(name, state, zone)
+	labels := getBrowserLabelsResponse(name, state, zone)
+	labels.Realm = lse.Realm
+	return labels
 }
 
 func getBrowserLabelsResponse(name, state, zone string) *ufspb.DeviceLabels {
@@ -299,6 +301,7 @@ func getBrowserLabelsResponse(name, state, zone string) *ufspb.DeviceLabels {
 			"dut_state": {LabelValues: []string{state}},
 			"ufs_zone":  {LabelValues: []string{zone}},
 		},
+		Realm: util.ToUFSRealm(zone),
 	}
 }
 
@@ -310,6 +313,11 @@ func GetSchedulingUnitLabels(ctx context.Context, su *ufspb.SchedulingUnit, lses
 	deviceLabels := convertSwarmingDimensionsToDeviceLabels(dims)
 	deviceLabels.Name = util.AddPrefix(util.SchedulingUnitCollection, su.GetName())
 	deviceLabels.ResourceType = ufspb.ResourceType_RESOURCE_TYPE_SCHEDULING_UNIT
+
+	if len(lses) > 0 {
+		deviceLabels.Realm = lses[0].GetRealm()
+	}
+
 	return deviceLabels, nil
 }
 
@@ -356,6 +364,7 @@ func getChromeOSDeviceLabels(ctx context.Context, deviceData *ufspb.ChromeOSDevi
 	deviceLabels := convertSwarmingDimensionsToDeviceLabels(dims)
 	deviceLabels.Name = util.AddPrefix(util.MachineLSECollection, deviceData.GetLabConfig().GetName())
 	deviceLabels.ResourceType = ufspb.ResourceType_RESOURCE_TYPE_CHROMEOS_DEVICE
+	deviceLabels.Realm = deviceData.GetMachine().GetRealm()
 	return deviceLabels
 }
 
@@ -381,6 +390,7 @@ func getAttachedDeviceLabels(ctx context.Context, deviceData *ufsAPI.AttachedDev
 	deviceLabels := convertSwarmingDimensionsToDeviceLabels(dims)
 	deviceLabels.Name = util.AddPrefix(util.MachineLSECollection, deviceData.GetLabConfig().GetName())
 	deviceLabels.ResourceType = ufspb.ResourceType_RESOURCE_TYPE_ATTACHED_DEVICE
+	deviceLabels.Realm = deviceData.GetMachine().GetRealm()
 	return deviceLabels
 }
 

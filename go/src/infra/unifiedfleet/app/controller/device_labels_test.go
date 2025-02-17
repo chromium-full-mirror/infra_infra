@@ -287,6 +287,7 @@ func TestGetMachineLSELabels(t *testing.T) {
 					ChromeBrowserMachineLse: &ufspb.ChromeBrowserMachineLSE{},
 				},
 				ResourceState: ufspb.State_STATE_SERVING,
+				Realm:         util.BrowserLabAdminRealm,
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesCreate, util.BrowserLabAdminRealm)
 			lseResp, err := inventory.CreateMachineLSE(ctx, lse1)
@@ -296,6 +297,7 @@ func TestGetMachineLSELabels(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp.GetName(), should.Equal(util.AddPrefix(util.MachineLSECollection, lse1.GetName())))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_BROWSER_DEVICE))
+			assert.Loosely(t, resp.GetRealm(), should.Equal(util.BrowserLabAdminRealm))
 			labels := resp.GetLabels()
 			assert.Loosely(t, labels, should.HaveLength(3))
 			assert.Loosely(t, labels["ufs_zone"], should.NotBeNil)
@@ -317,7 +319,7 @@ func TestGetMachineLSELabels(t *testing.T) {
 					Zone: ufspb.Zone_ZONE_BROWSER_GOOGLER_DESK,
 				},
 			}
-			_, err := registration.CreateMachine(ctx, machine1)
+			machineResp, err := registration.CreateMachine(ctx, machine1)
 			assert.Loosely(t, err, should.BeNil)
 
 			lse1 := &ufspb.MachineLSE{
@@ -326,6 +328,7 @@ func TestGetMachineLSELabels(t *testing.T) {
 				Lse: &ufspb.MachineLSE_AttachedDeviceLse{
 					AttachedDeviceLse: &ufspb.AttachedDeviceLSE{},
 				},
+				Realm: "made up realm",
 			}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesCreate, util.BrowserLabAdminRealm)
 			lseResp, err := inventory.CreateMachineLSE(ctx, lse1)
@@ -335,6 +338,7 @@ func TestGetMachineLSELabels(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp.GetName(), should.Equal(util.AddPrefix(util.MachineLSECollection, lse1.GetName())))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_ATTACHED_DEVICE))
+			assert.Loosely(t, resp.GetRealm(), should.Equal(machineResp.GetRealm()))
 			labels := resp.GetLabels()
 			assert.Loosely(t, labels, should.NotBeEmpty)
 		})
@@ -346,7 +350,7 @@ func TestGetMachineLSELabels(t *testing.T) {
 					Zone: ufspb.Zone_ZONE_CROS_GOOGLER_DESK,
 				},
 			}
-			_, err := registration.CreateMachine(ctx, machine1)
+			machineResp, err := registration.CreateMachine(ctx, machine1)
 			assert.Loosely(t, err, should.BeNil)
 
 			lse1 := &ufspb.MachineLSE{
@@ -378,6 +382,8 @@ func TestGetMachineLSELabels(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, resp.GetName(), should.Equal(util.AddPrefix(util.MachineLSECollection, lse1.GetName())))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_CHROMEOS_DEVICE))
+			assert.Loosely(t, resp.GetRealm(), should.Equal(machineResp.GetRealm()))
+
 			labels := resp.GetLabels()
 			assert.Loosely(t, labels, should.NotBeEmpty)
 		})
