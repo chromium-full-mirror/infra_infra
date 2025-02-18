@@ -284,10 +284,11 @@ func executeFiltersInLuciBuild(
 		// TODO (azrahman:atp): infer this from the new test job field; create a deep copy for current state
 		inputTestJobMsg, err := common.DecodeTestJobMsg(ctx, req.GetEncodedAtpTestJobMsg())
 		if err != nil {
-			inputTestJobMsg = &common.TestJobMessage{Id: buildIDStr, Runner: "CTP", TestJobState: "QUEUED", StartTimestamp: buildState.Build().CreateTime.AsTime().Format(common.ATPSupportedTimeFormat)}
+			inputTestJobMsg = &common.TestJobMessage{Id: buildIDStr, Runner: "CTP", TestJobState: "QUEUED", StartTimestamp: buildState.Build().CreateTime.AsTime().Format(common.ATPSupportedTimeFormat), ResultLinks: []string{common.ShortBBUrl(buildState.Build().Id)}}
 		} else {
 			inputTestJobMsg.TestJobState = "QUEUED"
 			inputTestJobMsg.StartTimestamp = buildState.Build().CreateTime.AsTime().Format(common.ATPSupportedTimeFormat)
+			inputTestJobMsg.ResultLinks = []string{common.ShortBBUrl(buildState.Build().Id)}
 		}
 
 		testJobEventState := &common.TestJobEventMessage{TestJobId: buildIDStr, TestJob: inputTestJobMsg, State: "QUEUED", Type: "STATE_CHANGED"}

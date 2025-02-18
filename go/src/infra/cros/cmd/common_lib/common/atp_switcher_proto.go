@@ -173,11 +173,11 @@ func (s *TestConfigMessage) MarshalJSON() ([]byte, error) {
 // TestJobEvent message. TestJobEvent is a TestJob event. Every time the status
 // of a TestJob changes, the test runner should report a TestJobEvent back.
 type TestJobEventMessage struct {
-	DeviceLostDetected int64    `json:"deviceLostDetected,omitempty"`
+	DeviceLostDetected int64    `json:"deviceLostDetected,omitempty,string"`
 	EventTimestamp     string   `json:"eventTimestamp,omitempty"`
-	FailedTestCount    int64    `json:"failedTestCount"`
-	FailedTestRunCount int64    `json:"failedTestRunCount"`
-	ResultLinks        []string `json:"resultLinks,omitempty"`
+	FailedTestCount    int64    `json:"failedTestCount,omitempty,string"`
+	FailedTestRunCount int64    `json:"failedTestRunCount,omitempty,string"`
+	ResultLinks        []string `json:"resultLinks,omitempty"` // Deprecated/Unused
 	// Possible values:
 	//   "CANCELED"
 	//   "COMPLETED"
@@ -204,11 +204,11 @@ type TestJobEventMessage struct {
 	// context has gerrit_cl and test_result_id. stateReason: a state reason of a
 	// test job when error/cancel happen. extra_builds: a list of extra builds.
 	// plugin_data: a list of KeyValuesMessage for plugin data. utilization: a list
-	// of ResourceUsage
+	// of ResourceUsage resultLinks: a list of result links
 	TestJob         *TestJobMessage `json:"testJob,omitempty"`
 	TestJobId       string          `json:"testJobId,omitempty"`
-	TotalRunTimeSec int64           `json:"totalRunTimeSec,omitempty"`
-	TotalTestCount  int64           `json:"totalTestCount"`
+	TotalRunTimeSec int64           `json:"totalRunTimeSec,omitempty,string"`
+	TotalTestCount  int64           `json:"totalTestCount,omitempty,string"`
 	// Possible values:
 	//   "STATE_CHANGED"
 	Type string `json:"type,omitempty"`
@@ -263,8 +263,9 @@ type TestJobMessage struct {
 	// JobInfo: Key values message.
 	JobInfo []*KeyValuesMessage `json:"jobInfo,omitempty"`
 	// PluginData: Key values message.
-	PluginData []*KeyValuesMessage `json:"plugin_data,omitempty"`
-	Priority   int64               `json:"priority,omitempty"`
+	PluginData  []*KeyValuesMessage `json:"plugin_data,omitempty"`
+	Priority    int64               `json:"priority,omitempty,string"`
+	ResultLinks []string            `json:"resultLinks,omitempty"`
 	// Possible values:
 	//   "ANDROIDX_FTL"
 	//   "ANDROIDX_PLAYGROUND"
@@ -277,6 +278,7 @@ type TestJobMessage struct {
 	//   "NO_OP"
 	//   "PIXEL_CAMERA_FLEXTAPE"
 	//   "PIXEL_CAMERA_PRESIL"
+	//   "SPELUNKY"
 	//   "SWARMING"
 	//   "TRADEFED"
 	//   "UNITY_INTEGRATION"

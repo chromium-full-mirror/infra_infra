@@ -64,6 +64,10 @@ func BBUrl(builderID *buildbucketpb.BuilderID, bbID int64) string {
 	return fmt.Sprintf("https://ci.chromium.org/p/%s/builders/%s/%s/b%d", builderID.Project, builderID.Bucket, builderID.Builder, bbID)
 }
 
+func ShortBBUrl(bbID int64) string {
+	return fmt.Sprintf("http://ci.chromium.org/b/%d/infra", bbID)
+}
+
 func IsLedRun(builderID *buildbucketpb.BuilderID) bool {
 	return strings.Contains(builderID.Bucket, "shadow")
 }

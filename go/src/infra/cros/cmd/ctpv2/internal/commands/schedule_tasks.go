@@ -222,8 +222,10 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 	totalFailedTestRunCount := 0
 
 	tasks := []*common.TestTaskMessage{}
+	testRunnerLinks := []string{}
 	// TODO (azrahman): handle rety logic when ctp level retries are enabled
 	for _, results := range cmd.TestResults {
+		testRunnerLinks = append(testRunnerLinks, results.BuildURL)
 		totalShards := cmd.findTotalShards(results.Key)
 		currTestCount, currFailedTestCount, currFailedTestRunCount := results.GetTestCounts()
 		totalTestCount = totalTestCount + currTestCount
@@ -274,6 +276,9 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 	}
 
 	// update test job event
+	if currTestJobEvent.TestJob.ResultLinks == nil {
+		currTestJobEvent.TestJob.ResultLinks = []string{}
+	}
 	currTestJobEvent.State = testJobEventState
 	currTestJobEvent.TotalTestCount = int64(totalTestCount)
 	currTestJobEvent.FailedTestCount = int64(totalFailedTestCount)
@@ -282,6 +287,7 @@ func (cmd *ScheduleTasksCmd) updateCurrentTestJobEvent() {
 	currTestJobEvent.TestJob.TestJobState = testJobEventState
 	currTestJobEvent.TestJob.Tasks = tasks
 	currTestJobEvent.TestJob.Id = strconv.FormatInt(cmd.BuildState.Build().Id, 10)
+	currTestJobEvent.TestJob.ResultLinks = append(currTestJobEvent.TestJob.ResultLinks, testRunnerLinks...)
 }
 
 func (cmd *ScheduleTasksCmd) findTotalShards(key string) int64 {
