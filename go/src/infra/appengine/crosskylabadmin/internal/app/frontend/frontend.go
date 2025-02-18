@@ -18,7 +18,6 @@ package frontend
 
 import (
 	"context"
-	"fmt"
 	"regexp"
 	"strconv"
 	"strings"
@@ -132,7 +131,7 @@ func versionInterceptor(ctx context.Context, req interface{}, info *grpc.UnarySe
 		}
 		if major < SupportedClientMajorVersionNumber {
 			return nil, status.Errorf(codes.FailedPrecondition,
-				fmt.Sprintf("Unsupported client version. Please update your client version to v%d.X.X or above.", SupportedClientMajorVersionNumber))
+				"Unsupported client version. Please update your client version to v%d.X.X or above.", SupportedClientMajorVersionNumber)
 		}
 	}
 

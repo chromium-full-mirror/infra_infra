@@ -77,7 +77,7 @@ func (p *adminTaskBotPusher) getDUTsForLabstations(ctx context.Context, labstati
 	}
 	for _, item := range resp.GetItems() {
 		for _, hostname := range item.GetDutName() {
-			duts = append(duts, fmt.Sprintf("crossk-%s", hostname))
+			duts = append(duts, hostname)
 		}
 	}
 	return duts, nil
@@ -97,25 +97,29 @@ func (p *adminTaskBotPusher) getDUTsWithRecentLabstationReboots(ctx context.Cont
 }
 
 // repairRecentDuts repairs DUTs whose labstations have rebooted in the given time range.
-func (p *adminTaskBotPusher) repairDUTsWithRecentLabstationReboots(ctx context.Context, startTime time.Time, stopTime time.Time, skipHostMap map[string]bool) error {
+func (p *adminTaskBotPusher) repairDUTsWithRecentLabstationReboots(ctx context.Context, startTime time.Time, stopTime time.Time) error {
 	cfg := config.Get(ctx)
 	duts, err := p.getDUTsWithRecentLabstationReboots(ctx, startTime, stopTime)
 	if err != nil {
 		return err
 	}
 	logging.Infof(ctx, "repairDUTsWithRecentLabstationReboots - number of duts before filtering skipped hosts: %s", len(duts))
-
+	skipHostList := cfg.GetParis().GetDutRepairOnRepairFailed().GetSkipHosts()
+	skipHostMap := make(map[string]bool, len(skipHostList))
+	for _, host := range skipHostList {
+		skipHostMap[host] = true
+	}
 	var filteredDuts []string
 	for _, dut := range duts {
 		if skipHostMap[dut] {
-			logging.Infof(ctx, "skipped dut: %s", dut)
+			logging.Infof(ctx, "Skipped dut: %s", dut)
 			continue
 		}
 		filteredDuts = append(filteredDuts, dut)
 	}
 	logging.Infof(ctx, "repairDUTsWithRecentLabstationReboots - number of duts after filtering skipped hosts: %s", len(filteredDuts))
 	// TODO(gregorynisbet): Do we want to consider other states here besides repair failed?
-	err = clients.PushRepairDUTs(ctx, filteredDuts, "repair_failed", cfg.Swarming.BotPool)
+	err = clients.PushRepairDUTs(ctx, duts, "repair_failed", cfg.Swarming.BotPool)
 	if err != nil {
 		return err
 	}
@@ -139,17 +143,9 @@ func (p *adminTaskBotPusher) pushRepairDUTsForGivenPool(ctx context.Context, swa
 	}
 	logging.Infof(ctx, "successfully get %d alive idle cros bots with dut_state %q in pool %q.", len(rawBots), dutState, swarmingPool)
 	//Parse BOT id to schedule tasks for readability.
-	repairBOTs := identifyBotsForRepair(ctx, rawBots)
-	var filteredRepairBOTs []string
-	for _, dut := range repairBOTs {
-		if skipHostMap[dut] {
-			logging.Infof(ctx, "skipped dut: %s", dut)
-			continue
-		}
-		filteredRepairBOTs = append(filteredRepairBOTs, dut)
-	}
-	logging.Infof(ctx, "pushRepairDUTsForGivenPool - number of alive bots after filtering skipped hosts: %s", len(filteredRepairBOTs))
-	err = clients.PushRepairDUTs(ctx, filteredRepairBOTs, dutState, swarmingPool)
+	repairBOTs := identifyBotsForRepair(ctx, rawBots, skipHostMap)
+	logging.Infof(ctx, "pushRepairDUTsForGivenPool - number of repairBOTs after filtering skipped hosts: %s", len(repairBOTs))
+	err = clients.PushRepairDUTs(ctx, repairBOTs, dutState, swarmingPool)
 	if err != nil {
 		logging.Infof(ctx, "Push repair bots in pool %q: %v", swarmingPool, err)
 		return errors.Annotate(err, "Failed to push repair duts in pool %q", swarmingPool).Err()
@@ -198,7 +194,7 @@ func (p *adminTaskBotPusher) pushBotsForAdminTasksImpl(ctx context.Context, req 
 	if dutState == "needs_repair" {
 		var err error
 		// The cron job that runs smart scheduling runs every 2 minutes.
-		err = p.repairDUTsWithRecentLabstationReboots(ctx, now.Add(-2*time.Minute), now.Add(1*time.Minute), skipHostMap)
+		err = p.repairDUTsWithRecentLabstationReboots(ctx, now.Add(-2*time.Minute), now.Add(1*time.Minute))
 		if err != nil {
 			return nil, err
 		}

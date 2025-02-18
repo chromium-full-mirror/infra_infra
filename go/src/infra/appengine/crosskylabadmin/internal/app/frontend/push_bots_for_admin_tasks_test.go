@@ -94,6 +94,10 @@ func TestPushBotsForAdminTasksWithUFSClient(t *testing.T) {
 					Key:   "dut_state",
 					Value: []string{"needs_repair"},
 				},
+				{
+					Key:   "label-os_type",
+					Value: []string{"OS_TYPE_MOBLAB"},
+				},
 			},
 		},
 		{
@@ -110,6 +114,10 @@ func TestPushBotsForAdminTasksWithUFSClient(t *testing.T) {
 				{
 					Key:   "dut_state",
 					Value: []string{"needs_repair"},
+				},
+				{
+					Key:   "label-os_type",
+					Value: []string{"OS_TYPE_MOBLAB"},
 				},
 			},
 		},
@@ -147,7 +155,7 @@ func TestGetDUTsForLabstations(t *testing.T) {
 	defer validate()
 	ctx := tf.C
 	// Make the UFS call successfully return exactly one fake DUT.
-	tf.MockUFS.EXPECT().GetDUTsForLabstation(gomock.Any(), gomock.Any()).Return(
+	tf.MockUFS.EXPECT().GetDUTsForLabstation(gomock.Any(), gomock.Any(), gomock.Any()).Return(
 		&ufsAPI.GetDUTsForLabstationResponse{
 			Items: []*ufsAPI.GetDUTsForLabstationResponse_LabstationMapping{
 				{
@@ -162,7 +170,7 @@ func TestGetDUTsForLabstations(t *testing.T) {
 	if err != nil {
 		t.Errorf("unexpected error: %s", err)
 	}
-	if diff := cmp.Diff([]string{"crossk-fake-dut-1"}, duts); diff != "" {
+	if diff := cmp.Diff([]string{"fake-dut-1"}, duts); diff != "" {
 		t.Errorf("unexpected diff (-want +got): %s", diff)
 	}
 }
@@ -234,6 +242,10 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 						Key:   "dut_state",
 						Value: []string{"needs_repair"},
 					},
+					{
+						Key:   "label-os_type",
+						Value: []string{"OS_TYPE_MOBLAB"},
+					},
 				},
 			},
 			{
@@ -250,6 +262,10 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 					{
 						Key:   "dut_state",
 						Value: []string{"needs_repair"},
+					},
+					{
+						Key:   "label-os_type",
+						Value: []string{"OS_TYPE_MOBLAB"},
 					},
 				},
 			},
@@ -270,6 +286,10 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 						Key:   "dut_state",
 						Value: []string{"needs_repair"},
 					},
+					{
+						Key:   "label-os_type",
+						Value: []string{"OS_TYPE_MOBLAB"},
+					},
 				},
 			},
 		}, nil)
@@ -288,6 +308,10 @@ func TestPushBotsForAdminTasksWithPoolCfg(t *testing.T) {
 					{
 						Key:   "dut_state",
 						Value: []string{"needs_repair"},
+					},
+					{
+						Key:   "label-os_type",
+						Value: []string{"OS_TYPE_MOBLAB"},
 					},
 				},
 			},
@@ -369,6 +393,10 @@ func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
 						Key:   "dut_state",
 						Value: []string{"needs_repair"},
 					},
+					{
+						Key:   "label-os_type",
+						Value: []string{"OS_TYPE_MOBLAB"},
+					},
 				},
 			},
 			{
@@ -385,6 +413,10 @@ func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
 					{
 						Key:   "dut_state",
 						Value: []string{"needs_repair"},
+					},
+					{
+						Key:   "label-os_type",
+						Value: []string{"OS_TYPE_MOBLAB"},
 					},
 				},
 			},
@@ -407,6 +439,10 @@ func TestPushBotsForAdminTasksWithPoolCfgSkipError(t *testing.T) {
 					{
 						Key:   "dut_state",
 						Value: []string{"needs_repair"},
+					},
+					{
+						Key:   "label-os_type",
+						Value: []string{"OS_TYPE_MOBLAB"},
 					},
 				},
 			},

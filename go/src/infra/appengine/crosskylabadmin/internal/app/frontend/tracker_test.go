@@ -88,7 +88,7 @@ func TestPushBotsForAdminTasks(t *testing.T) {
 		bot4 := BotForDUT("dut_4", "needs_manual_repair", "label-os_type:OS_TYPE_JETSTREAM;id:id4")
 		bot5 := BotForDUT("dut_5", "needs_replacement", "label-os_type:OS_TYPE_JETSTREAM;id:id5")
 		bot1LabStation := BotForDUT("dut_1l", "needs_repair", "label-os_type:OS_TYPE_LABSTATION;id:lab_id1")
-		bot1SchedulingUnit := BotForDUT("dut1su", "needs_repair", "id:su_id1")
+		bot1SchedulingUnit := BotForDUT("dut1su", "needs_repair", "label-os_type:OS_TYPE_CROS;id:su_id1")
 		appendPaths := func(paths map[string]*tq.Task) (arr []string) {
 			for _, v := range paths {
 				arr = append(arr, v.Path)
@@ -203,7 +203,7 @@ func TestPushBotsForAdminAuditTasks(t *testing.T) {
 		bot6.State = "{\"storage_state\":[\"NEED_REPLACEMENT\"],\"servo_usb_state\":[\"NEED_REPLACEMENT\"], \"rpm_state\": [\"UNKNOWN\"]}"
 		bot7 := BotForDUT("dut_7", "needs_replacement", "label-os_type:OS_TYPE_MOBLAB;id:id7")
 		bot2LabStation := BotForDUT("dut_2l", "ready", "label-os_type:OS_TYPE_LABSTATION;id:lab_id2")
-		bot1SchedulingUnit := BotForDUT("dut1su", "ready", "id:su_id1")
+		bot1SchedulingUnit := BotForDUT("dut1su", "ready", "label-os_type:OS_TYPE_MOBLAB;id:su_id1")
 		appendPaths := func(paths map[string]*tq.Task) (arr []string) {
 			for _, v := range paths {
 				arr = append(arr, v.Path)
@@ -313,81 +313,4 @@ func TestPushLabstationsForRepair(t *testing.T) {
 		}
 		assert.Loosely(t, repairPaths, should.BeEmpty)
 	})
-}
-
-func TestGetBotsNotSkipped(t *testing.T) {
-	tests := []struct {
-		name          string
-		skipHostList  []string
-		bots          []*swarmingv2.BotInfo
-		expectedCount int
-	}{
-		{
-			"Testing for labstation",
-			[]string{
-				"dut_1", "dut_2", "dut_3",
-			},
-			[]*swarmingv2.BotInfo{
-				{
-					BotId: "dut_1",
-				},
-				{
-					BotId: "dut_2",
-				},
-				{
-					BotId: "dut_4",
-				},
-			},
-			1,
-		},
-		{
-			"Testing for empty skip list",
-			[]string{},
-			[]*swarmingv2.BotInfo{
-				{
-					BotId: "dut_1",
-				},
-				{
-					BotId: "dut_2",
-				},
-				{
-					BotId: "dut_4",
-				},
-			},
-			3,
-		},
-		{
-			"Testing for empty bots list",
-			[]string{
-				"dut_1", "dut_2", "dut_3",
-			},
-			[]*swarmingv2.BotInfo{},
-			0,
-		},
-		{
-			"Testing for no correlation",
-			[]string{
-				"dut_7", "dut_5", "dut_3",
-			},
-			[]*swarmingv2.BotInfo{
-				{
-					BotId: "dut_1",
-				},
-				{
-					BotId: "dut_2",
-				},
-				{
-					BotId: "dut_4",
-				},
-			},
-			3,
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			botsNotSkipped := FilterBotBySkipHosts(test.skipHostList, test.bots)
-			assert.Loosely(t, len(botsNotSkipped), should.Equal(test.expectedCount))
-		})
-	}
 }

@@ -6,6 +6,7 @@ package frontend
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -145,6 +146,10 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 		logging.Infof(ctx, "No action specified", err)
 		return nil, errors.New("failed to push audit bots")
 	}
+	skipHostMap := make(map[string]bool, len(skipHostList))
+	for _, value := range skipHostList {
+		skipHostMap[value] = true
+	}
 
 	scheduleTasks := func(swarmingHost, swarmingPool string) error {
 		sc, err := tsi.newSwarmingClient(ctx, swarmingHost)
@@ -164,17 +169,13 @@ func (tsi *TrackerServerImpl) PushBotsForAdminAuditTasks(ctx context.Context, re
 		}
 		logging.Infof(ctx, "successfully get %d alive cros bots", len(bots))
 
-		// Remove bots that are skipped through config
-		botsNotSkipped := FilterBotBySkipHosts(skipHostList, bots)
-		logging.Infof(ctx, "PushBotsForAdminAuditTasks - number of remaining bots after filtering out skipped hosts: %s", len(botsNotSkipped))
-
-		if len(botsNotSkipped) == 0 {
-			logging.Infof(ctx, "No bots for audit")
-			return errors.Reason("failed to push audit bots").Err()
-		}
-
-		botIDs := identifyBotsForAudit(ctx, botsNotSkipped, dutStates, req.Task)
+		botIDs := identifyBotsForAudit(ctx, bots, dutStates, req.Task, skipHostMap)
 		logging.Infof(ctx, "number of bots ids pushed for audit task %s: %s", taskname, len(botIDs))
+
+		if len(botIDs) == 0 {
+			logging.Infof(ctx, "No bots for audit")
+			return nil
+		}
 
 		err = clients.PushAuditDUTs(ctx, botIDs, actions, taskname, swarmingPool)
 		if err != nil {
@@ -226,18 +227,20 @@ func (tsi *TrackerServerImpl) PushRepairJobsForLabstations(ctx context.Context, 
 	}
 	logging.Infof(ctx, "successfully get %d alive idle labstation bots.", len(bots))
 
-	// Remove bots that are skipped through config
-	botsNotSkipped := FilterBotBySkipHosts(cfg.GetParis().GetLabstationRepair().GetSkipHosts(), bots)
-	logging.Infof(ctx, "PushRepairJobsForLabstations - number of remaining bots after filtering out skipped hosts: %s", len(botsNotSkipped))
-
-	if len(botsNotSkipped) == 0 {
-		logging.Infof(ctx, "No bots for repair labstations")
-		return nil, errors.Reason("failed to push repair labstations").Err()
+	// Create map of bots that are skipped through config
+	skipHostList := cfg.GetParis().GetLabstationRepair().GetSkipHosts()
+	skipHostMap := make(map[string]bool, len(skipHostList))
+	for _, value := range skipHostList {
+		skipHostMap[value] = true
 	}
-
 	// Parse BOT id to schedule tasks for readability.
-	botIDs := identifyLabstationsForRepair(ctx, botsNotSkipped)
+	botIDs := identifyLabstationsForRepair(ctx, bots, skipHostMap)
 	logging.Infof(ctx, "number of labstations pushed for repair: %s", len(botIDs))
+
+	if len(botIDs) == 0 {
+		logging.Infof(ctx, "No bots for repair labstations")
+		return &fleet.PushRepairJobsForLabstationsResponse{}, nil
+	}
 
 	err = clients.PushRepairLabstations(ctx, botIDs, swarmingPool)
 	if err != nil {
@@ -284,69 +287,46 @@ var dutStatesForRepairTask = map[fleet.DutState]bool{
 }
 
 // identifyBotsForRepair identifies duts that need run admin repair.
-func identifyBotsForRepair(ctx context.Context, bots []*swarmingv2.BotInfo) (repairBOTs []string) {
+func identifyBotsForRepair(ctx context.Context, bots []*swarmingv2.BotInfo, skipHostMap map[string]bool) (repairBOTs []string) {
 	repairBOTs = make([]string, 0, len(bots))
 	for _, b := range bots {
-		dims := util.DimensionsMapV2(b.Dimensions)
-		os, err := util.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
-		// Some bot may not have os dimension(e.g. scheduling unit), so we ignore the error here.
-		if err == nil && os == "OS_TYPE_LABSTATION" {
-			continue
-		}
-		id, err := util.ExtractSingleValuedDimension(dims, clients.BotIDDimensionKey)
+		dims := util.DimensionsMap(b.Dimensions)
+		err := isDutOS(ctx, b.BotId, dims)
 		if err != nil {
-			logging.Warningf(ctx, "failed to obtain BOT id for bot %q", b.BotId)
+			logging.Warningf(ctx, "failed to obtain os type for bot %q", b.BotId)
 			continue
 		}
-		if strings.HasPrefix(id, "cloudbots-") {
-			// Dut name should be used for CloudBots since its swarming BotID does not contain dut name.
-			logging.Infof(ctx, "cloudbots: %q - getting dut name", id)
-			id, err = util.ExtractSingleValuedDimension(dims, clients.DutNameDimensionKey)
-			if err != nil {
-				logging.Errorf(ctx, "failed to obtain BOT id for cloudbot %q", b.BotId)
-				continue
-			}
-			logging.Infof(ctx, "cloudbots: succesfully got dut name - %q", id)
+		dut := ExtractDutToPush(ctx, b, dims, skipHostMap)
+		if dut == "" {
+			logging.Infof(ctx, "BOT: %q is skipped", dut)
+			continue
 		}
-
 		s := clients.GetStateDimensionV2(b.GetDimensions())
 		if dutStatesForRepairTask[s] {
-			logging.Infof(ctx, "BOT: %s - Needs repair", id)
-			repairBOTs = append(repairBOTs, id)
+			logging.Infof(ctx, "BOT: %s - Needs repair", dut)
+			repairBOTs = append(repairBOTs, dut)
 		}
 	}
-	logging.Infof(ctx, "identifyBotsForRepair - number of repairBOTs: %s", len(repairBOTs))
 	return repairBOTs
 }
 
 // identifyBotsForAudit identifies duts to run admin audit.
-func identifyBotsForAudit(ctx context.Context, bots []*swarmingv2.BotInfo, dutStateMap map[fleet.DutState]bool, auditTask fleet.AuditTask) []string {
+func identifyBotsForAudit(ctx context.Context, bots []*swarmingv2.BotInfo, dutStateMap map[fleet.DutState]bool, auditTask fleet.AuditTask, skipHostMap map[string]bool) []string {
 	logging.Infof(ctx, "Filtering bots for task: %s", auditTask)
 	botIDs := make([]string, 0, len(bots))
 	for _, b := range bots {
 		dims := util.DimensionsMap(b.Dimensions)
-		os, err := util.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
-		// Some bot may not have os dimension(e.g. scheduling unit), so we ignore the error here.
-		if err == nil && os == "OS_TYPE_LABSTATION" {
-			continue
-		}
-
-		id, err := util.ExtractSingleValuedDimension(dims, clients.BotIDDimensionKey)
+		err := isDutOS(ctx, b.BotId, dims)
+		logging.Infof(ctx, "%q", err)
 		if err != nil {
-			logging.Warningf(ctx, "failed to obtain BOT id for bot %q", b.BotId)
+			logging.Warningf(ctx, "failed to obtain os type for bot %q", b.BotId)
 			continue
 		}
-		if strings.HasPrefix(id, "cloudbots-") {
-			// Dut name should be used for CloudBots since its swarming BotID does not contain dut name.
-			logging.Infof(ctx, "cloudbots: %q - getting dut name", id)
-			id, err = util.ExtractSingleValuedDimension(dims, clients.DutNameDimensionKey)
-			if err != nil {
-				logging.Errorf(ctx, "failed to obtain BOT id for cloudbot %q", b.BotId)
-				continue
-			}
-			logging.Infof(ctx, "cloudbots: succesfully got dut name - %q", id)
+		dut := ExtractDutToPush(ctx, b, dims, skipHostMap)
+		if dut == "" {
+			logging.Infof(ctx, "BOT: %q is skipped", dut)
+			continue
 		}
-
 		switch auditTask {
 		case fleet.AuditTask_DUTStorage:
 			state := util.ExtractBotState(b).StorageState
@@ -365,7 +345,7 @@ func identifyBotsForAudit(ctx context.Context, bots []*swarmingv2.BotInfo, dutSt
 
 		s := clients.GetStateDimension(b.Dimensions)
 		if v, ok := dutStateMap[s]; ok && v {
-			botIDs = append(botIDs, id)
+			botIDs = append(botIDs, dut)
 		} else {
 			logging.Infof(ctx, "Skipping BOT with id: %q", b.BotId)
 		}
@@ -374,32 +354,20 @@ func identifyBotsForAudit(ctx context.Context, bots []*swarmingv2.BotInfo, dutSt
 }
 
 // identifyLabstationsForRepair identifies labstations that need repair.
-func identifyLabstationsForRepair(ctx context.Context, bots []*swarmingv2.BotInfo) []string {
+func identifyLabstationsForRepair(ctx context.Context, bots []*swarmingv2.BotInfo, skipHostMap map[string]bool) []string {
 	botIDs := make([]string, 0, len(bots))
 	for _, b := range bots {
 		dims := util.DimensionsMapV2(b.GetDimensions())
-		os, err := util.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
+		err := IsLabstationOS(ctx, b.BotId, dims)
 		if err != nil {
-			logging.Warningf(ctx, "failed to obtain os type for bot %q", b.BotId)
-			continue
-		} else if os != "OS_TYPE_LABSTATION" {
+			logging.Warningf(ctx, "failed to obtain os type for bot %q. err: ", b.BotId, err)
 			continue
 		}
 
-		id, err := util.ExtractSingleValuedDimension(dims, clients.BotIDDimensionKey)
-		if err != nil {
-			logging.Warningf(ctx, "failed to obtain BOT id for bot %q", b.BotId)
+		dut := ExtractDutToPush(ctx, b, dims, skipHostMap)
+		if dut == "" {
+			logging.Infof(ctx, "BOT: %q is skipped", dut)
 			continue
-		}
-		if strings.HasPrefix(id, "cloudbots-") {
-			// Dut name should be used for CloudBots since its swarming BotID does not contain dut name.
-			logging.Infof(ctx, "cloudbots: %q - getting dut name", id)
-			id, err = util.ExtractSingleValuedDimension(dims, clients.DutNameDimensionKey)
-			if err != nil {
-				logging.Errorf(ctx, "failed to obtain BOT id for cloudbot %q", b.BotId)
-				continue
-			}
-			logging.Infof(ctx, "cloudbots: succesfully got dut name - %q", id)
 		}
 
 		state, err := util.ExtractSingleValuedDimension(dims, clients.DutStateDimensionKey)
@@ -412,7 +380,7 @@ func identifyLabstationsForRepair(ctx context.Context, bots []*swarmingv2.BotInf
 			continue
 		}
 
-		botIDs = append(botIDs, id)
+		botIDs = append(botIDs, dut)
 	}
 	return botIDs
 }
@@ -432,22 +400,60 @@ func simple3TimesRetry() retry.Factory {
 	}
 }
 
-// FilterBotBySkipHosts removes bots that are skipped through config
-func FilterBotBySkipHosts(skipHostList []string, bots []*swarmingv2.BotInfo) []*swarmingv2.BotInfo {
-	if len(skipHostList) == 0 || len(bots) == 0 {
-		return bots
+func IsLabstationOS(ctx context.Context, botID string, dims strpair.Map) (err error) {
+	logging.Infof(ctx, "Get os type for botID = %s.", botID)
+	os, err := util.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
+	if err != nil {
+		return errors.Annotate(err, "failed to extract Dut OS").Err()
 	}
-
-	var availableBots []*swarmingv2.BotInfo
-	botsToSkipMap := make(map[string]bool)
-	for _, value := range skipHostList {
-		botsToSkipMap[value] = true
+	// Some bot may not have os dimension(e.g. scheduling unit), so we ignore the error here.
+	if os != "OS_TYPE_LABSTATION" {
+		return errors.Annotate(err, "This bot may not have an os dimensionos = %q", os).Err()
 	}
+	return nil
+}
 
-	for _, bot := range bots {
-		if _, skip := botsToSkipMap[bot.BotId]; !skip {
-			availableBots = append(availableBots, bot)
+// isDutOS checks the os type of a particular bot and returns an error if the bot
+// doesn't have an os dimension or something goes wrong trying to retrieve it.
+func isDutOS(ctx context.Context, botID string, dims strpair.Map) (err error) {
+	logging.Infof(ctx, "Get os type for botID = %s.", botID)
+	os, err := util.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
+	if err != nil {
+		return errors.Annotate(err, "failed to extract Dut OS").Err()
+	}
+	// Some bot may not have os dimension(e.g. scheduling unit), so we ignore the error here.
+	if os == "" || os == "OS_TYPE_LABSTATION" {
+		return fmt.Errorf("this bot may not have an os dimensionos = %q", os)
+	}
+	return nil
+}
+
+// ExtractDutToPush returns the dut name to push for repair or audit
+func ExtractDutToPush(ctx context.Context, b *swarmingv2.BotInfo, dims strpair.Map, skipHostMap map[string]bool) (dut string) {
+	logging.Infof(ctx, "Extract dut to push for audit or repair. botID = %s.", b.BotId)
+	dut, err := util.ExtractSingleValuedDimension(dims, clients.BotIDDimensionKey)
+	if err != nil {
+		logging.Warningf(ctx, "failed to obtain BOT id for bot %q", b.BotId)
+		return ""
+	}
+	if strings.HasPrefix(dut, "cloudbots-") {
+		// Dut name should be used for CloudBots since its swarming BotID does not contain dut name.
+		logging.Infof(ctx, "cloudbots: %q - getting dut name", dut)
+		dut, err = util.ExtractSingleValuedDimension(dims, clients.DutNameDimensionKey)
+		if err != nil {
+			logging.Errorf(ctx, "failed to obtain BOT id for cloudbot %q", b.BotId)
+			return ""
 		}
+		logging.Infof(ctx, "cloudbots: succesfully got dut name - %q", dut)
 	}
-	return availableBots
+	if strings.HasPrefix(dut, "crossk-") {
+		logging.Infof(ctx, "swarming BotID: %q - getting dut name", dut)
+		dut, err = util.ExtractSingleValuedDimension(dims, clients.DutNameDimensionKey)
+		if err != nil {
+			logging.Errorf(ctx, "failed to obtain BOT id for swarming bot - %q", b.BotId)
+			return ""
+		}
+		logging.Infof(ctx, "swarming BotID: succesfully got dut name - %q", dut)
+	}
+	return dut
 }
