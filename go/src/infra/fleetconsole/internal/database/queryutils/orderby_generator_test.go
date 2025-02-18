@@ -42,10 +42,10 @@ func TestOrderByClause(t *testing.T) {
 			assert.Loosely(t, q.orderByClause, should.Equal("ORDER BY dut_state DESC, dut_name"))
 		})
 		t.Run("order by based on specific label from labels", func(t *ftt.Test) {
-			q, err := NewQueryBuilder(table).WithOrderByClause("labels.dut_state desc", "")
+			q, err := NewQueryBuilder(table).WithOrderByClause("labels.`dut-state` desc", "")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, q.parameters.values, should.Match([]any{
-				"labels", "dut_state", "values",
+				"labels", "dut-state", "values",
 			}))
 			assert.Loosely(t, q.orderByClause, should.Equal("ORDER BY labels -> $1 -> $2 -> $3 DESC"))
 		})

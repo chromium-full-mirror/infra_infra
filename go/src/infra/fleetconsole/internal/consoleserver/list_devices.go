@@ -73,7 +73,7 @@ func pageTokenToOffset(req *fleetconsolerpc.ListDevicesRequest) (int, error) {
 	// Only compare request hashes when a `offset` is provided.
 	offset := tokenProto.GetOffset()
 	if offset != 0 && tokenProto.GetParamsHash() != hashListDevicesRequest(req) {
-		return 0, utils.InvalidTokenError(errors.New("request message fields do not match page deviceID"))
+		return 0, utils.InvalidTokenError(errors.New("request message fields do not match fields for the current page"))
 	}
 
 	return int(offset), nil
