@@ -19,7 +19,7 @@ var DevicesTable = queryutils.NewTableBuilder("Devices").WithColumns(
 		queryutils.ColumnTypeJSONB).WithJSONFullPath(func(fields ...string) []string {
 		pathComponents := []string{}
 		pathComponents = append(pathComponents, fields...)
-		pathComponents = append(pathComponents, "values")
+		pathComponents = append(pathComponents, "Values")
 		return pathComponents
 	}).Build(),
 ).Build()
