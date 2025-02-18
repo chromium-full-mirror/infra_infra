@@ -126,9 +126,6 @@ def run_tests(package_root):
 
   prev_env = os.environ.copy()
   if _use_resultdb():
-    # Silence goconvey reporter to avoid interference with result_adapter.
-    # https://github.com/smartystreets/goconvey/blob/0fc5ef5371303f55e76d89a57286fb7076777e5b/convey/init.go#L37
-    os.environ['GOCONVEY_REPORTER'] = 'silent'
     command = [_get_adapter_path(), 'go', '--'] + command
   try:
     # First run all tests with CGO disabled.
