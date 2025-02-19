@@ -48,19 +48,20 @@ func Modules() []module.Module {
 }
 
 var ACLMap rpcacl.Map = map[string]string{
-	"/fleetconsole.FleetConsole/CleanExit":           "fleet-console-access",
-	"/fleetconsole.FleetConsole/CountDevices":        "fleet-console-access",
-	"/fleetconsole.FleetConsole/GetDeviceDimensions": "fleet-console-access",
-	"/fleetconsole.FleetConsole/ListDevices":         "fleet-console-access",
-	"/fleetconsole.FleetConsole/Ping":                "fleet-console-access",
-	"/fleetconsole.FleetConsole/PingDB":              "fleet-console-access",
-	"/fleetconsole.FleetConsole/PingBigQuery":        "fleet-console-access",
-	"/fleetconsole.FleetConsole/PingDeviceManager":   "fleet-console-access",
-	"/fleetconsole.FleetConsole/PingUfs":             "fleet-console-access",
-	"/fleetconsole.FleetConsole/RepopulateCache":     "fleet-console-access",
-	"/discovery.Discovery/Describe":                  rpcacl.All,
-	"/grpc.health.v1.Health/Watch":                   rpcacl.All,
-	"/grpc.health.v1.Health/Check":                   rpcacl.All,
+	"/fleetconsole.FleetConsole/CleanExit":            "fleet-console-access",
+	"/fleetconsole.FleetConsole/CountDevices":         "fleet-console-access",
+	"/fleetconsole.FleetConsole/GetDeviceDimensions":  "fleet-console-access",
+	"/fleetconsole.FleetConsole/ListDevices":          "fleet-console-access",
+	"/fleetconsole.FleetConsole/ListResourceRequests": "fleet-console-access",
+	"/fleetconsole.FleetConsole/Ping":                 "fleet-console-access",
+	"/fleetconsole.FleetConsole/PingDB":               "fleet-console-access",
+	"/fleetconsole.FleetConsole/PingBigQuery":         "fleet-console-access",
+	"/fleetconsole.FleetConsole/PingDeviceManager":    "fleet-console-access",
+	"/fleetconsole.FleetConsole/PingUfs":              "fleet-console-access",
+	"/fleetconsole.FleetConsole/RepopulateCache":      "fleet-console-access",
+	"/discovery.Discovery/Describe":                   rpcacl.All,
+	"/grpc.health.v1.Health/Watch":                    rpcacl.All,
+	"/grpc.health.v1.Health/Check":                    rpcacl.All,
 }
 
 func ServerMain(srv *server.Server) error {
