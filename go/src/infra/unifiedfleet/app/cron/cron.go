@@ -17,6 +17,8 @@ import (
 	"go.chromium.org/luci/common/data/rand/mathrand"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/runtime/paniccatcher"
+	"go.chromium.org/luci/common/tsmon/field"
+	"go.chromium.org/luci/common/tsmon/metric"
 )
 
 type DurationType int
@@ -37,6 +39,15 @@ type CronTab struct {
 	Job      func(ctx context.Context) error // Target routine to trigger
 	preempt  chan int                        // Int channel to preempt timer and trigger the job
 }
+
+var (
+	cronTabTriggerCounter = metric.NewCounter(
+		"chromeos/ufs/dumper/cron",
+		"cron job counter",
+		nil,
+		field.String("name"),
+	)
+)
 
 // estimateTriggerTime checks to see if start + interval > start + quanta. If that happens, (ex: Hourly mode
 // triggered with 65 minutes of interval) it throws a warning and returns trigger for next available trigger
@@ -203,6 +214,8 @@ func Run(ctx context.Context, cronTab *CronTab) {
 
 		if err := call(ctx); err != nil {
 			logging.Errorf(ctx, "Iteration failed: %s", err)
+		} else {
+			cronTabTriggerCounter.Add(ctx, 1, cronTab.Name)
 		}
 		count++
 	}
