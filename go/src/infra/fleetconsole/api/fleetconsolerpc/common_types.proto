@@ -1,0 +1,15 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package fleetconsole;
+
+option go_package = "infra/fleetconsole/api/fleetconsolerpc;fleetconsolerpc";
+
+message DateOnly {
+  int32 year = 1;
+  int32 month = 2;
+  int32 day = 3;
+}

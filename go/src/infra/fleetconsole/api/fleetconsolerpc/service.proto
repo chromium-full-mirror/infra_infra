@@ -9,6 +9,7 @@ package fleetconsole;
 option go_package = "infra/fleetconsole/api/fleetconsolerpc;fleetconsolerpc";
 
 import "google/protobuf/empty.proto";
+import "infra/fleetconsole/api/fleetconsolerpc/common_types.proto";
 
 service FleetConsole {
   // Ping does not send or receive any information. It just checks that the service is there.
@@ -40,6 +41,11 @@ service FleetConsole {
 
   // CleanExit just exits the current process.
   rpc CleanExit(CleanExitRequest) returns (CleanExitResponse) {};
+
+  // ************** RESOURCE REQUEST INSIGHTS *********************
+
+  // ListResourceRequests returns Resource Requests provided by BigQuery
+  rpc ListResourceRequests(ListResourceRequestsRequest) returns (ListResourceRequestsResponse) {};
 }
 
 // PingRequest intentionally contains nothing.
@@ -189,3 +195,56 @@ message PingDBResponse {}
 message CleanExitRequest {}
 
 message CleanExitResponse {}
+
+// ************** RESOURCE REQUEST INSIGHTS *********************
+
+message ListResourceRequestsRequest {
+  // The maximum number of Resource Requests to return. The service may return fewer than
+  // this value. If unspecified, at most 50 Resource Requests will be returned.
+  int32 page_size = 1;
+
+  // A page token, received from a previous `ListResourceRequests` call. Provide this to
+  // retrieve the subsequent page. Returns first page if omitted.
+  //
+  // When paginating, all other parameters provided to `ListResourceRequests` must match
+  // the call that provided the page token.
+  string page_token = 2;
+
+  string order_by = 3;
+
+  // See: AIP-160 (https://google.aip.dev/160) for the syntax
+  string filter = 4;
+}
+
+message ListResourceRequestsResponse {
+  // List of Resource Requests to be returned.
+  repeated ResourceRequest resource_requests = 1;
+
+  // A token, which can be sent as `page_token` to retrieve the next page. If
+  // this field is omitted, there are no subsequent pages.
+  string next_page_token = 2;
+}
+
+message ResourceRequest {
+  // The resource name of the resource request.
+  // Format: resourceRequests/{rr_id}
+  string name = 1;
+
+  // The ID of the resource request.
+  string rr_id = 2;
+
+  // The details of the resource request.
+  string resource_details = 3;
+
+  // The procurement end date of the resource request.
+  DateOnly procurement_end_date = 4;
+
+  // The build end date of the resource request.
+  DateOnly build_end_date = 5;
+
+  // The QA end date of the resource request.
+  DateOnly qa_end_date = 6;
+
+  // The config end date of the resource request.
+  DateOnly config_end_date = 7;
+}

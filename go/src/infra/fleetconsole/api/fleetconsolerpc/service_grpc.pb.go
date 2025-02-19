@@ -24,16 +24,17 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	FleetConsole_Ping_FullMethodName                = "/fleetconsole.FleetConsole/Ping"
-	FleetConsole_PingBigQuery_FullMethodName        = "/fleetconsole.FleetConsole/PingBigQuery"
-	FleetConsole_PingDeviceManager_FullMethodName   = "/fleetconsole.FleetConsole/PingDeviceManager"
-	FleetConsole_PingUfs_FullMethodName             = "/fleetconsole.FleetConsole/PingUfs"
-	FleetConsole_ListDevices_FullMethodName         = "/fleetconsole.FleetConsole/ListDevices"
-	FleetConsole_GetDeviceDimensions_FullMethodName = "/fleetconsole.FleetConsole/GetDeviceDimensions"
-	FleetConsole_CountDevices_FullMethodName        = "/fleetconsole.FleetConsole/CountDevices"
-	FleetConsole_RepopulateCache_FullMethodName     = "/fleetconsole.FleetConsole/RepopulateCache"
-	FleetConsole_PingDB_FullMethodName              = "/fleetconsole.FleetConsole/PingDB"
-	FleetConsole_CleanExit_FullMethodName           = "/fleetconsole.FleetConsole/CleanExit"
+	FleetConsole_Ping_FullMethodName                 = "/fleetconsole.FleetConsole/Ping"
+	FleetConsole_PingBigQuery_FullMethodName         = "/fleetconsole.FleetConsole/PingBigQuery"
+	FleetConsole_PingDeviceManager_FullMethodName    = "/fleetconsole.FleetConsole/PingDeviceManager"
+	FleetConsole_PingUfs_FullMethodName              = "/fleetconsole.FleetConsole/PingUfs"
+	FleetConsole_ListDevices_FullMethodName          = "/fleetconsole.FleetConsole/ListDevices"
+	FleetConsole_GetDeviceDimensions_FullMethodName  = "/fleetconsole.FleetConsole/GetDeviceDimensions"
+	FleetConsole_CountDevices_FullMethodName         = "/fleetconsole.FleetConsole/CountDevices"
+	FleetConsole_RepopulateCache_FullMethodName      = "/fleetconsole.FleetConsole/RepopulateCache"
+	FleetConsole_PingDB_FullMethodName               = "/fleetconsole.FleetConsole/PingDB"
+	FleetConsole_CleanExit_FullMethodName            = "/fleetconsole.FleetConsole/CleanExit"
+	FleetConsole_ListResourceRequests_FullMethodName = "/fleetconsole.FleetConsole/ListResourceRequests"
 )
 
 // FleetConsoleClient is the client API for FleetConsole service.
@@ -60,6 +61,8 @@ type FleetConsoleClient interface {
 	PingDB(ctx context.Context, in *PingDBRequest, opts ...grpc.CallOption) (*PingDBResponse, error)
 	// CleanExit just exits the current process.
 	CleanExit(ctx context.Context, in *CleanExitRequest, opts ...grpc.CallOption) (*CleanExitResponse, error)
+	// ListResourceRequests returns Resource Requests provided by BigQuery
+	ListResourceRequests(ctx context.Context, in *ListResourceRequestsRequest, opts ...grpc.CallOption) (*ListResourceRequestsResponse, error)
 }
 
 type fleetConsoleClient struct {
@@ -170,6 +173,16 @@ func (c *fleetConsoleClient) CleanExit(ctx context.Context, in *CleanExitRequest
 	return out, nil
 }
 
+func (c *fleetConsoleClient) ListResourceRequests(ctx context.Context, in *ListResourceRequestsRequest, opts ...grpc.CallOption) (*ListResourceRequestsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListResourceRequestsResponse)
+	err := c.cc.Invoke(ctx, FleetConsole_ListResourceRequests_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FleetConsoleServer is the server API for FleetConsole service.
 // All implementations must embed UnimplementedFleetConsoleServer
 // for forward compatibility.
@@ -194,6 +207,8 @@ type FleetConsoleServer interface {
 	PingDB(context.Context, *PingDBRequest) (*PingDBResponse, error)
 	// CleanExit just exits the current process.
 	CleanExit(context.Context, *CleanExitRequest) (*CleanExitResponse, error)
+	// ListResourceRequests returns Resource Requests provided by BigQuery
+	ListResourceRequests(context.Context, *ListResourceRequestsRequest) (*ListResourceRequestsResponse, error)
 	mustEmbedUnimplementedFleetConsoleServer()
 }
 
@@ -233,6 +248,9 @@ func (UnimplementedFleetConsoleServer) PingDB(context.Context, *PingDBRequest) (
 }
 func (UnimplementedFleetConsoleServer) CleanExit(context.Context, *CleanExitRequest) (*CleanExitResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CleanExit not implemented")
+}
+func (UnimplementedFleetConsoleServer) ListResourceRequests(context.Context, *ListResourceRequestsRequest) (*ListResourceRequestsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListResourceRequests not implemented")
 }
 func (UnimplementedFleetConsoleServer) mustEmbedUnimplementedFleetConsoleServer() {}
 func (UnimplementedFleetConsoleServer) testEmbeddedByValue()                      {}
@@ -435,6 +453,24 @@ func _FleetConsole_CleanExit_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FleetConsole_ListResourceRequests_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListResourceRequestsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FleetConsoleServer).ListResourceRequests(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FleetConsole_ListResourceRequests_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FleetConsoleServer).ListResourceRequests(ctx, req.(*ListResourceRequestsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FleetConsole_ServiceDesc is the grpc.ServiceDesc for FleetConsole service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -481,6 +517,10 @@ var FleetConsole_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "CleanExit",
 			Handler:    _FleetConsole_CleanExit_Handler,
+		},
+		{
+			MethodName: "ListResourceRequests",
+			Handler:    _FleetConsole_ListResourceRequests_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
