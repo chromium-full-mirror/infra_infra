@@ -8,7 +8,7 @@ package serverlib
 import (
 	"context"
 	"net/http"
-	"slices"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -88,30 +88,31 @@ func ServerMain(srv *server.Server) error {
 	return nil
 }
 
+var allowedOrigins = []*regexp.Regexp{
+	// Currently we are safe to allow localhost, especially as we are not storing auth state in a cookie.
+	// In future, it would be preferable to only allow localhost for dev environment and not on prod environment.
+	regexp.MustCompile(`^http://localhost$`),
+	regexp.MustCompile(`^http://localhost:8080$`),
+	regexp.MustCompile(`^https://ci[.]chromium[.]org$`),
+	regexp.MustCompile(`^https://(staging[.])?luci[.]app$`),
+	regexp.MustCompile(`^https://([A-Za-z0-9-_]+-dot-)?luci-milo(-dev)?[.]appspot[.]com$`),
+}
+
+func controlPRPCAccess(ctx context.Context, origin string) prpc.AccessControlDecision {
+	for _, re := range allowedOrigins {
+		if re.MatchString(origin) {
+			return prpc.AllowOriginAll(ctx, origin)
+		}
+	}
+	return prpc.AccessControlDecision{
+		AllowCrossOriginRequests: false,
+		AllowCredentials:         false,
+	}
+}
+
 func ConfigureCORS(ctx context.Context, srv *server.Server) {
 	srv.ConfigurePRPC(func(prpcSrv *prpc.Server) {
-		prpcSrv.AccessControl = func(ctx context.Context, origin string) prpc.AccessControlDecision {
-			// currently we are safe to allow localhost, especially as we are not storing auth state in a cookie
-			// in future it would be preferable to only allow localhost for dev environment and not on prod environment
-			allowedDomains := []string{"localhost:", "luci-milo-dev.appspot.com", "luci-milo.appspot.com", "ci.chromium.org"}
-			allowedSuffixes := []string{"luci-milo-dev.appspot.com"}
-
-			matches := slices.ContainsFunc(allowedDomains, func(address string) bool {
-				return strings.HasPrefix(origin, "https://"+address) || strings.HasPrefix(origin, "http://"+address)
-			})
-
-			matchesSuffix := slices.ContainsFunc(allowedSuffixes, func(address string) bool {
-				return strings.HasSuffix(origin, address)
-			})
-
-			if matches || matchesSuffix {
-				return prpc.AllowOriginAll(ctx, origin)
-			}
-			return prpc.AccessControlDecision{
-				AllowCrossOriginRequests: false,
-				AllowCredentials:         false,
-			}
-		}
+		prpcSrv.AccessControl = controlPRPCAccess
 	})
 }
 
