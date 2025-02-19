@@ -139,8 +139,8 @@ func bulkReleaseDevices(ctx context.Context, tx *sql.Tx, updatedDevices []model.
 		return nil
 	}
 
-	var (
-		createQuery = `
+	// Create temporary table.
+	createQuery := `
 			CREATE TEMPORARY TABLE temp_devices (
 				id VARCHAR PRIMARY KEY,
 				device_state VARCHAR,
@@ -148,27 +148,6 @@ func bulkReleaseDevices(ctx context.Context, tx *sql.Tx, updatedDevices []model.
 				schedulable_labels JSONB,
 				last_updated_time TIMESTAMP WITHOUT TIME ZONE
 			) ON COMMIT DROP;`
-		insertStmt = `
-			INSERT INTO temp_devices (
-				id,
-				device_state,
-				is_active,
-				schedulable_labels,
-				last_updated_time
-			) VALUES %s;`
-		updateQuery = `
-			UPDATE "Devices" d
-			SET
-				device_state = td.device_state,
-				is_active = td.is_active,
-				schedulable_labels = td.schedulable_labels,
-				last_updated_time = td.last_updated_time
-			FROM temp_devices td
-			WHERE d.id = td.id AND
-				d.last_updated_time < td.last_updated_time;`
-	)
-
-	// Create temporary table.
 	_, err := tx.ExecContext(ctx, createQuery)
 	if err != nil {
 		logging.Errorf(ctx, "error creating temp table: %w", err)
@@ -193,6 +172,14 @@ func bulkReleaseDevices(ctx context.Context, tx *sql.Tx, updatedDevices []model.
 		)
 	}
 
+	insertStmt := `
+			INSERT INTO temp_devices (
+				id,
+				device_state,
+				is_active,
+				schedulable_labels,
+				last_updated_time
+			) VALUES %s;`
 	stmt := fmt.Sprintf(insertStmt, strings.Join(valueStrings, ","))
 	logging.Debugf(ctx, "Insert statement: %s", stmt)
 	res, err := tx.ExecContext(ctx, stmt, valueArgs...)
@@ -208,9 +195,28 @@ func bulkReleaseDevices(ctx context.Context, tx *sql.Tx, updatedDevices []model.
 	logging.Debugf(ctx, "Inserted %d rows in temp Devices table", n)
 
 	// Perform the bulk update and mark Devices as available.
-	res, err = tx.ExecContext(ctx, updateQuery)
+	// We want to update both device state and scheduable labels, but there might
+	// be other writers, e.g. UFS importer, to update the scheduable labels, so we
+	// split the operation into two: 1) Update scheduable labels and other files
+	// if they are not updated by other writers; 2) force update device state as
+	// the current expiration job is suppose to be the only writer.
+	// The only problem is that there's chance we rewind the last_updated_time
+	// to the transaction start time (which may be earlier than other writers'
+	// updating time).
+
+	// Update other fields if they are not updated by other writers.
+	updateOtherFields := `
+			UPDATE "Devices" d
+			SET
+				is_active = td.is_active,
+				schedulable_labels = td.schedulable_labels,
+			FROM temp_devices td
+			WHERE d.id = td.id AND
+				d.last_updated_time < td.last_updated_time;`
+
+	res, err = tx.ExecContext(ctx, updateOtherFields)
 	if err != nil {
-		logging.Errorf(ctx, "error updating Devices table: %w", err)
+		logging.Errorf(ctx, "error updating other fields in Devices table when expire devices: %w", err)
 		return err
 	}
 
@@ -218,6 +224,27 @@ func bulkReleaseDevices(ctx context.Context, tx *sql.Tx, updatedDevices []model.
 	if err != nil {
 		logging.Errorf(ctx, err.Error())
 	}
-	logging.Debugf(ctx, "Batch updated %d rows in Devices table", n)
+	logging.Debugf(ctx, "Batch updated %d rows for other fields in Devices table to expire devices", n)
+
+	updateState := `
+			UPDATE "Devices" d
+			SET
+				device_state = td.device_state,
+				last_updated_time = td.last_updated_time
+			FROM temp_devices td
+			WHERE d.id = td.id;`
+
+	res, err = tx.ExecContext(ctx, updateState)
+	if err != nil {
+		logging.Errorf(ctx, "error updating device_state in Devices table to expire devices: %w", err)
+		return err
+	}
+
+	n, err = res.RowsAffected()
+	if err != nil {
+		logging.Errorf(ctx, err.Error())
+	}
+	logging.Debugf(ctx, "Batch updated %d rows for device_state in Devices table to expire devices", n)
+
 	return nil
 }
