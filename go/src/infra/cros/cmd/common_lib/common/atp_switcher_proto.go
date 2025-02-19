@@ -173,10 +173,10 @@ func (s *TestConfigMessage) MarshalJSON() ([]byte, error) {
 // TestJobEvent message. TestJobEvent is a TestJob event. Every time the status
 // of a TestJob changes, the test runner should report a TestJobEvent back.
 type TestJobEventMessage struct {
-	DeviceLostDetected int64    `json:"deviceLostDetected,omitempty,string"`
+	DeviceLostDetected int64    `json:"deviceLostDetected,omitempty"`
 	EventTimestamp     string   `json:"eventTimestamp,omitempty"`
-	FailedTestCount    int64    `json:"failedTestCount,omitempty,string"`
-	FailedTestRunCount int64    `json:"failedTestRunCount,omitempty,string"`
+	FailedTestCount    int64    `json:"failedTestCount"`
+	FailedTestRunCount int64    `json:"failedTestRunCount"`
 	ResultLinks        []string `json:"resultLinks,omitempty"` // Deprecated/Unused
 	// Possible values:
 	//   "CANCELED"
@@ -207,8 +207,8 @@ type TestJobEventMessage struct {
 	// of ResourceUsage resultLinks: a list of result links
 	TestJob         *TestJobMessage `json:"testJob,omitempty"`
 	TestJobId       string          `json:"testJobId,omitempty"`
-	TotalRunTimeSec int64           `json:"totalRunTimeSec,omitempty,string"`
-	TotalTestCount  int64           `json:"totalTestCount,omitempty,string"`
+	TotalRunTimeSec int64           `json:"totalRunTimeSec,omitempty"`
+	TotalTestCount  int64           `json:"totalTestCount"`
 	// Possible values:
 	//   "STATE_CHANGED"
 	Type string `json:"type,omitempty"`
@@ -264,7 +264,7 @@ type TestJobMessage struct {
 	JobInfo []*KeyValuesMessage `json:"jobInfo,omitempty"`
 	// PluginData: Key values message.
 	PluginData  []*KeyValuesMessage `json:"plugin_data,omitempty"`
-	Priority    int64               `json:"priority,omitempty,string"`
+	Priority    int64               `json:"priority,omitempty"`
 	ResultLinks []string            `json:"resultLinks,omitempty"`
 	// Possible values:
 	//   "ANDROIDX_FTL"
