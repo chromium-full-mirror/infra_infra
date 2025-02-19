@@ -137,6 +137,8 @@ DEFAULT_MODULE_MAP = {
     # All infra packages should use go.mod in infra.git.
     'infra/':
         os.path.join(ROOT, 'go', 'src', 'infra'),
+    'go.chromium.org/infra/':
+        os.path.join(ROOT, 'go', 'src', 'infra'),
     # Use infra's go.mod when building goldctl.
     'go.skia.org/infra/gold-client/cmd/goldctl':
         os.path.join(ROOT, 'go', 'src', 'infra')
