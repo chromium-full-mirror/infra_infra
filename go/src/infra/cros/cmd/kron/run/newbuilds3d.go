@@ -259,7 +259,7 @@ func batchCTPRequests3d(eventsPerBranchPerConfig map[suschpb.Branch]map[*suschpb
 		}
 	}
 
-	return []*ctpEventBatch{eventBatches[0]}, nil
+	return eventBatches, nil
 }
 
 // ScheduleRequests generates CTP Requests, batches them into BuildBucket
