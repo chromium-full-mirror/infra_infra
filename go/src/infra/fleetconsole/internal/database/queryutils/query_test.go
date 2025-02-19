@@ -14,9 +14,10 @@ import (
 
 func TestQueryBuilder(t *testing.T) {
 	ftt.Run("QueryBuilder", t, func(t *ftt.Test) {
+		dutStateColumn := NewColumn("dut_state").Build()
 		table := NewTableBuilder("Devices").WithColumns(
 			NewColumn("id").Build(),
-			NewColumn("dut_state").Build(),
+			dutStateColumn,
 			NewColumn("dut_name").Build(),
 			NewColumn("labels").WithColumnType(ColumnTypeJSONB).WithJSONFullPath(func(fields ...string) []string {
 				pathComponents := []string{"labels"}
@@ -37,6 +38,12 @@ func TestQueryBuilder(t *testing.T) {
 				"available",
 			}))
 			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels\nFROM \"Devices\"\nWHERE (dut_state = $1)\nORDER BY id DESC\nLIMIT 10\nOFFSET 20;"))
+		})
+
+		t.Run("query for a specific column's distinct values", func(t *ftt.Test) {
+			q := NewQueryBuilder(table).WithSelectClause(true, dutStateColumn).WithFromClause().Build()
+			assert.Loosely(t, q.Parameters, should.BeEmpty)
+			assert.Loosely(t, q.Statement, should.Equal("SELECT DISTINCT dut_state\nFROM \"Devices\"\n\n\n;"))
 		})
 	})
 }

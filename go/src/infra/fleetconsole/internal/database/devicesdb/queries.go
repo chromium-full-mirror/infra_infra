@@ -29,3 +29,7 @@ func buildListDevicesQuery(offset int, pageSize int, filter string, orderby stri
 
 	return q.Build(), nil
 }
+
+func buildGetColumnQuery(distinct bool, column *queryutils.Column) *queryutils.Query {
+	return queryutils.NewQueryBuilder(DevicesTable).WithSelectClause(distinct, column).WithFromClause().Build()
+}

@@ -12,20 +12,20 @@ type ColumnBuilder struct {
 func NewColumn(name string) *ColumnBuilder {
 	return &ColumnBuilder{Column{
 		name:         name,
-		externalName: name,
-		columnType:   ColumnTypeString,
+		ExternalName: name,
+		Type:         ColumnTypeString,
 		jsonFullPath: func(fields ...string) []string {
 			return fields
 		}}}
 }
 
 func (c *ColumnBuilder) WithExternalName(externalName string) *ColumnBuilder {
-	c.column.externalName = externalName
+	c.column.ExternalName = externalName
 	return c
 }
 
 func (c *ColumnBuilder) WithColumnType(columnType ColumnType) *ColumnBuilder {
-	c.column.columnType = columnType
+	c.column.Type = columnType
 	return c
 }
 
@@ -62,15 +62,15 @@ func (t *TableBuilder) WithColumns(columns ...*Column) *TableBuilder {
 func (t *TableBuilder) Build() *Table {
 	columnByExternalName := make(map[string]*Column)
 	for _, c := range t.columns {
-		if _, ok := columnByExternalName[c.externalName]; ok {
-			panic("multiple columns with the same field path: " + c.externalName)
+		if _, ok := columnByExternalName[c.ExternalName]; ok {
+			panic("multiple columns with the same field path: " + c.ExternalName)
 		}
-		columnByExternalName[c.externalName] = c
+		columnByExternalName[c.ExternalName] = c
 	}
 
 	return &Table{
 		name:                 t.name,
-		columns:              t.columns,
+		Columns:              t.columns,
 		columnByExternalName: columnByExternalName,
 	}
 }

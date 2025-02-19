@@ -62,8 +62,8 @@ func (q *QueryBuilder) WithOrderByClause(order, uniqueFieldForDeterminism string
 		}
 
 		if len(fields) > 0 {
-			if column.columnType != ColumnTypeJSONB {
-				return q, fmt.Errorf("subfields are only supported for json columns. Try removing the '.' from after your column named %q", column.externalName)
+			if column.Type != ColumnTypeJSONB {
+				return q, fmt.Errorf("subfields are only supported for json columns. Try removing the '.' from after your column named %q", column.ExternalName)
 			}
 
 			fullPath := column.jsonFullPath(fields...)

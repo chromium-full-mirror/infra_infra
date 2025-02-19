@@ -157,8 +157,8 @@ func (q *QueryBuilder) restrictionQuery(restriction *aip160.Restriction, argInfo
 	}
 
 	if len(restriction.Comparable.Member.Fields) > 0 {
-		if column.columnType != ColumnTypeJSONB {
-			return "", fmt.Errorf("fields are only supported for json columns. Try removing the '.' from after your column named %q", column.externalName)
+		if column.Type != ColumnTypeJSONB {
+			return "", fmt.Errorf("fields are only supported for json columns. Try removing the '.' from after your column named %q", column.ExternalName)
 		}
 
 		// This is the case for labels. I think it should be has (:) rather than equality (=) as for them
@@ -167,7 +167,7 @@ func (q *QueryBuilder) restrictionQuery(restriction *aip160.Restriction, argInfo
 		if restriction.Comparator == "=" {
 			value, err := q.jsonArrayHasArgValue(restriction.Arg, column, restriction.Comparable.Member.Fields)
 			if err != nil {
-				return "", errors.Annotate(err, "argument for field %s", column.externalName).Err()
+				return "", errors.Annotate(err, "argument for field %s", column.ExternalName).Err()
 			}
 			return fmt.Sprintf("(%s -> %s)", column.name, value), nil
 		}
@@ -178,19 +178,19 @@ func (q *QueryBuilder) restrictionQuery(restriction *aip160.Restriction, argInfo
 	if restriction.Comparator == "=" {
 		arg, err := q.argValue(restriction.Arg)
 		if err != nil {
-			return "", errors.Annotate(err, "argument for field %s", column.externalName).Err()
+			return "", errors.Annotate(err, "argument for field %s", column.ExternalName).Err()
 		}
 		return fmt.Sprintf("(%s = %s)", column.name, arg), nil
 	} else if restriction.Comparator == "!=" {
 		arg, err := q.argValue(restriction.Arg)
 		if err != nil {
-			return "", errors.Annotate(err, "argument for field %s", column.externalName).Err()
+			return "", errors.Annotate(err, "argument for field %s", column.ExternalName).Err()
 		}
 		return fmt.Sprintf("(%s <> %s)", column.name, arg), nil
 	} else if restriction.Comparator == ":" {
 		arg, err := q.likeArgValue(restriction.Arg, column)
 		if err != nil {
-			return "", errors.Annotate(err, "argument for field %s", column.externalName).Err()
+			return "", errors.Annotate(err, "argument for field %s", column.ExternalName).Err()
 		}
 		return fmt.Sprintf("(%s LIKE %s)", column.name, arg), nil
 	} else {
@@ -218,11 +218,11 @@ func (q *QueryBuilder) compositeArgRestrictionQuery(restriction *aip160.Restrict
 		return "", fmt.Errorf("arg is not supported in the composite args")
 	}
 
-	if argInfo.column.columnType == ColumnTypeJSONB {
+	if argInfo.column.Type == ColumnTypeJSONB {
 		if argInfo.comparator == "=" {
 			value, err := q.jsonArrayHasComparableValue(restriction.Comparable, argInfo.column, argInfo.fields)
 			if err != nil {
-				return "", errors.Annotate(err, "argument for field %s", argInfo.column.externalName).Err()
+				return "", errors.Annotate(err, "argument for field %s", argInfo.column.ExternalName).Err()
 			}
 			return fmt.Sprintf("(%s -> %s)", argInfo.column.name, value), nil
 		}
@@ -233,19 +233,19 @@ func (q *QueryBuilder) compositeArgRestrictionQuery(restriction *aip160.Restrict
 	if argInfo.comparator == "=" {
 		arg, err := q.comparableValue(restriction.Comparable)
 		if err != nil {
-			return "", errors.Annotate(err, "argument for field %s", argInfo.column.externalName).Err()
+			return "", errors.Annotate(err, "argument for field %s", argInfo.column.ExternalName).Err()
 		}
 		return fmt.Sprintf("(%s = %s)", argInfo.column.name, arg), nil
 	} else if argInfo.comparator == "!=" {
 		arg, err := q.comparableValue(restriction.Comparable)
 		if err != nil {
-			return "", errors.Annotate(err, "argument for field %s", argInfo.column.externalName).Err()
+			return "", errors.Annotate(err, "argument for field %s", argInfo.column.ExternalName).Err()
 		}
 		return fmt.Sprintf("(%s <> %s)", argInfo.column.name, arg), nil
 	} else if argInfo.comparator == ":" {
 		arg, err := q.likeComparableValue(restriction.Comparable)
 		if err != nil {
-			return "", errors.Annotate(err, "argument for field %s", argInfo.column.externalName).Err()
+			return "", errors.Annotate(err, "argument for field %s", argInfo.column.ExternalName).Err()
 		}
 		return fmt.Sprintf("(%s LIKE %s)", argInfo.column.name, arg), nil
 	} else {
@@ -291,7 +291,7 @@ func (q *QueryBuilder) likeArgValue(arg *aip160.Arg, column *Column) (string, er
 	if arg.Comparable == nil {
 		return "", fmt.Errorf("missing comparable in the argument")
 	}
-	if column.columnType != ColumnTypeString {
+	if column.Type != ColumnTypeString {
 		return "", fmt.Errorf("cannot use has (:) operator on a non-string field")
 	}
 

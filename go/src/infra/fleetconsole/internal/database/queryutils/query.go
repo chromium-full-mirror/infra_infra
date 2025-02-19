@@ -42,16 +42,22 @@ func NewQueryBuilder(t *Table) *QueryBuilder {
 	}
 }
 
-// WithSelectAllClause adds a select clause to the query.
+// WithSelectAllClause adds a select clause with all the columns to the query.
 func (q *QueryBuilder) WithSelectAllClause() *QueryBuilder {
-	// If no custom select clause provided, select all columns.
+	return q.WithSelectClause(false, q.table.Columns...)
+}
+
+// WithSelectClause adds a select clause with the specified columns to the query.
+func (q *QueryBuilder) WithSelectClause(distinct bool, columns ...*Column) *QueryBuilder {
 	var result strings.Builder
 	result.WriteString("SELECT ")
-	for i, c := range q.table.columns {
+	if distinct {
+		result.WriteString("DISTINCT ")
+	}
+	for i, c := range columns {
 		if i > 0 {
 			result.WriteString(", ")
 		}
-
 		result.WriteString(c.name)
 	}
 

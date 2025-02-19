@@ -8,18 +8,30 @@ import (
 	"infra/fleetconsole/internal/database/queryutils"
 )
 
-var DevicesTable = queryutils.NewTableBuilder("Devices").WithColumns(
-	queryutils.NewColumn("id").Build(),
-	queryutils.NewColumn("dut_id").Build(),
-	queryutils.NewColumn("host").Build(),
-	queryutils.NewColumn("port").Build(),
-	queryutils.NewColumn("type").Build(),
-	queryutils.NewColumn("state").Build(),
-	queryutils.NewColumn("labels").WithColumnType(
+var (
+	// Columns
+	IdColumn     = queryutils.NewColumn("id").Build()     //nolint:stylecheck
+	DutIdColumn  = queryutils.NewColumn("dut_id").Build() //nolint:stylecheck
+	HostColumn   = queryutils.NewColumn("host").Build()
+	PortColumn   = queryutils.NewColumn("port").Build()
+	TypeColumn   = queryutils.NewColumn("type").Build()
+	StateColumn  = queryutils.NewColumn("state").Build()
+	LabelsColumn = queryutils.NewColumn("labels").WithColumnType(
 		queryutils.ColumnTypeJSONB).WithJSONFullPath(func(fields ...string) []string {
 		pathComponents := []string{}
 		pathComponents = append(pathComponents, fields...)
 		pathComponents = append(pathComponents, "Values")
 		return pathComponents
-	}).Build(),
-).Build()
+	}).Build()
+
+	// Table
+	DevicesTable = queryutils.NewTableBuilder("Devices").WithColumns(
+		IdColumn,
+		DutIdColumn,
+		HostColumn,
+		PortColumn,
+		TypeColumn,
+		StateColumn,
+		LabelsColumn,
+	).Build()
+)

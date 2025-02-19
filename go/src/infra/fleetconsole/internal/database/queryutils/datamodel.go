@@ -18,10 +18,10 @@ type Column struct {
 	name string
 
 	// Externally visible name. Defaults to name if not specified.
-	externalName string
+	ExternalName string
 
 	// Defaults to ColumnTypeString.
-	columnType ColumnType
+	Type ColumnType
 
 	// Used only if columnType is ColumnTypeJSONB. Returns actual path to the value.
 	// Defaults to [<key1>, <key2>, ..., <keyn>]
@@ -33,7 +33,7 @@ type Table struct {
 	name string
 
 	// The columns in the database table.
-	columns []*Column
+	Columns []*Column
 
 	// A mapping from externally-visible name to the column
 	columnByExternalName map[string]*Column
