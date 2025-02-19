@@ -38,6 +38,9 @@ type AlStatusUpdateCmd struct {
 	// CTPRequest
 	CtpRequest *testapi.CTPRequest
 
+	// Android API service
+	service *androidapi.Service
+
 	ExecutionError error
 }
 
@@ -59,6 +62,11 @@ func (cmd *AlStatusUpdateCmd) ExtractDependencies(
 
 	if err != nil {
 		return errors.Annotate(err, "error during extracting dependencies for command %s: ", cmd.GetCommandType()).Err()
+	}
+
+	cmd.service, err = androidapi.NewAndroidBuildService(ctx, androidapi.ServiceAccount, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
+	if err != nil {
+		return err
 	}
 
 	return nil
@@ -276,13 +284,8 @@ func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, _ *build.S
 		return nil
 	}
 
-	service, err := androidapi.NewAndroidBuildService(ctx, androidapi.ServiceAccount, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
-	if err != nil {
-		return err
-	}
-	cmd.AlStateInfo.ATP = service
-
-	inv, err := service.InvocationService.Insert(&androidbuildinternal.Invocation{
+	cmd.AlStateInfo.ATP = cmd.service
+	inv, err := cmd.service.InvocationService.Insert(&androidbuildinternal.Invocation{
 		PrimaryBuild: &androidbuildinternal.BuildDescriptor{
 			BuildId:     buildID,
 			BuildTarget: buildTarget},
@@ -366,7 +369,7 @@ func (cmd *AlStatusUpdateCmd) metadataArgExists(flag, value string) bool {
 	return false
 }
 
-func (cmd *AlStatusUpdateCmd) updateInvocationProperties(ctx context.Context, service *androidapi.Service) error {
+func (cmd *AlStatusUpdateCmd) updateInvocationProperties(ctx context.Context) error {
 	var props []*androidbuildinternal.Property
 
 	if cmd.metadataArgExists(common.InvocationDataFlag, common.CbIngestionValue) {
@@ -405,7 +408,7 @@ func (cmd *AlStatusUpdateCmd) updateInvocationProperties(ctx context.Context, se
 		return nil
 	}
 
-	inv, err := service.InvocationService.Get(ctx, invocationID)
+	inv, err := cmd.service.InvocationService.Get(ctx, invocationID)
 	if err != nil {
 		return err
 	}
@@ -415,7 +418,7 @@ func (cmd *AlStatusUpdateCmd) updateInvocationProperties(ctx context.Context, se
 	}
 
 	inv.Properties = append(inv.Properties, props...)
-	_, err = service.InvocationService.Update(invocationID, inv)
+	_, err = cmd.service.InvocationService.Update(invocationID, inv)
 	if err != nil {
 		return err
 	}
@@ -459,12 +462,7 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 	}
 
 	if cmd.AlStateInfo.DoneTesting {
-		service, err := androidapi.NewAndroidBuildService(ctx, androidapi.ServiceAccount, common.GetCTPEnvironment(cmd.BuildState.Build().GetBuilder()))
-		if err != nil {
-			return err
-		}
-
-		err = cmd.updateInvocationProperties(ctx, service)
+		err = cmd.updateInvocationProperties(ctx)
 		if err != nil {
 			logging.Errorf(ctx, "error while updating Invocation: %w", err)
 
@@ -475,7 +473,7 @@ func (cmd *AlStatusUpdateCmd) Execute(ctx context.Context) error {
 		}
 
 		// This closes WU tree and seals the invocation
-		err = cmd.AlStateInfo.CloseWUTree(ctx, service, "", "")
+		err = cmd.AlStateInfo.CloseWUTree(ctx, cmd.service, "", "")
 		if err != nil {
 			logging.Errorf(ctx, "error while closing WU tree: %w", err)
 

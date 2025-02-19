@@ -72,6 +72,7 @@ func TestUpdateInvocationProperties(t *testing.T) {
 						},
 					},
 				},
+				service: s,
 			}
 
 			if tc.cbIngest {
@@ -87,7 +88,7 @@ func TestUpdateInvocationProperties(t *testing.T) {
 					mockInvService.EXPECT().Update("I123", inv).Return(inv, nil)
 				}
 			}
-			err := cmd.updateInvocationProperties(ctx, s)
+			err := cmd.updateInvocationProperties(ctx)
 			if !tc.sealInv && err != nil {
 				t.Errorf("Unexpected error: %q", err)
 			}
