@@ -17,7 +17,7 @@ func GenerateTestMetadata() []*api.TestCaseMetadata {
 	tags := []*api.TestCase_Tag{}
 
 	tags = append(tags, &api.TestCase_Tag{
-		Value: "moblydemo",
+		Value: "suite:billy_demo",
 	})
 	tcm = append(tcm, &api.TestCaseMetadata{
 		TestCase: &api.TestCase{
@@ -40,7 +40,7 @@ func GenerateSuiteInfo() *api.SuiteInfo {
 					Name: "wifi_endtoend",
 					Spec: &api.TestSuite_TestCaseTagCriteria_{
 						TestCaseTagCriteria: &api.TestSuite_TestCaseTagCriteria{
-							Tags: []string{"moblydemo"},
+							Tags: []string{"suite:billy_demo"},
 						},
 					},
 				},

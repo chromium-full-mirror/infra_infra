@@ -20,8 +20,19 @@ import (
 // 	fmt.Println(err)
 
 // 	metadata := translateSrcToMetadata(te)
-// 	fmt.Println(metadata)
+// 	// fmt.Println(metadata)
+
+// 	internalTestPlan := &api.InternalTestplan{
+// 		SuiteInfo: common.GenerateSuiteInfo(),
+// 	}
+// 	tests, err := matchTests(metadata, internalTestPlan)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// 	fmt.Println(tests)
+
 // 	t.Fatalf("intentionalFail")
+
 // 	return
 // }
 

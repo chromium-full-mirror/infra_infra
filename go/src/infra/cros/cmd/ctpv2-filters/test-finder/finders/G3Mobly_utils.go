@@ -25,9 +25,7 @@ func translateSrcToMetadata(src [][]byte) (metaData []*api.TestCaseMetadata) {
 
 	for _, srcInfo := range src {
 		var testInfoListLocal []TestInfo
-
 		err := json.Unmarshal(srcInfo, &testInfoListLocal)
-
 		testInfoList = append(testInfoList, testInfoListLocal...)
 		if err != nil {
 			return nil

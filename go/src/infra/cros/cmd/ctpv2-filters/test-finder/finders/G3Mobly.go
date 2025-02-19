@@ -24,7 +24,7 @@ type G3MoblyFinder struct {
 	*common.AbstractFinder
 }
 
-func (ex *G3MoblyFinder) FindTestsAB() (*api.InternalTestplan, error) {
+func matchTestsforG3Mobly(testSuites []*api.TestSuite) ([]*api.TestCaseMetadata, error) {
 	src, err := getSourceData(context.Background(), "mobly_priv_artifacts/out")
 	if err != nil {
 		fmt.Printf("err %s", err)
@@ -33,7 +33,23 @@ func (ex *G3MoblyFinder) FindTestsAB() (*api.InternalTestplan, error) {
 	// we will translate this into the strict proto format here.
 	metadata := translateSrcToMetadata(src)
 
-	matchingTests, err := matchTests(metadata, ex.Testplan)
+	return finder.MatchedTestsForSuites(metadata, testSuites)
+}
+
+func matchTests(metadata []*api.TestCaseMetadata, req *api.InternalTestplan) ([]*api.TestCaseMetadata, error) {
+	testSuites, err := common.TestSuiteFromTestplan(req)
+	if err != nil {
+		return nil, err
+	}
+	return finder.MatchedTestsForSuites(metadata, testSuites)
+}
+
+func (ex *G3MoblyFinder) FindTestsAB() (*api.InternalTestplan, error) {
+	suites, err := TPtoSuite(ex.Testplan)
+	if err != nil {
+		return nil, err
+	}
+	matchingTests, err := matchTestsforG3Mobly(suites)
 	if err != nil {
 		fmt.Printf("err %s", err)
 	}
@@ -41,7 +57,22 @@ func (ex *G3MoblyFinder) FindTestsAB() (*api.InternalTestplan, error) {
 	// Translate the TC metadata schema into CTP testplan schema.
 	ctpTestCases := common.TranslateTCMtoCTPTC(matchingTests)
 	ex.Testplan.TestCases = append(ex.Testplan.TestCases, ctpTestCases...)
+	addMoblyFlagToSuiteArgs(ex.Testplan)
 	return ex.Testplan, nil
+}
+
+// append the magical `moblySuite` key on the suiteArgs to be processed by cros-test.
+func addMoblyFlagToSuiteArgs(tp *api.InternalTestplan) {
+	existingMD := tp.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata()
+	if existingMD == nil || len(existingMD.Args) == 0 {
+		existingMD = &api.ExecutionMetadata{Args: []*api.Arg{}}
+
+		existingMD.Args = append(existingMD.Args, &api.Arg{
+			Flag:  "moblySuite",
+			Value: "true",
+		})
+	}
+	tp.SuiteInfo.SuiteMetadata.ExecutionMetadata = existingMD
 }
 
 func NewG3MoblyFinder(ctx context.Context, req *api.InternalTestplan, log *log.Logger) *G3MoblyFinder {
@@ -76,10 +107,10 @@ func getSourceData(ctx context.Context, gcsBasePath string) ([][]byte, error) {
 	return data, nil
 }
 
-func matchTests(metadata []*api.TestCaseMetadata, req *api.InternalTestplan) ([]*api.TestCaseMetadata, error) {
+func TPtoSuite(req *api.InternalTestplan) ([]*api.TestSuite, error) {
 	testSuites, err := common.TestSuiteFromTestplan(req)
 	if err != nil {
 		return nil, err
 	}
-	return finder.MatchedTestsForSuites(metadata, testSuites)
+	return testSuites, nil
 }
