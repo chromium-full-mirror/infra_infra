@@ -240,7 +240,15 @@ func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInv
 	if testInvocation != nil {
 		tags = AppendTags(tags, "is_cft_run", strconv.FormatBool(testInvocation.IsCftRun))
 		tags = AppendTags(tags, "is_trv2_run", strconv.FormatBool(testInvocation.IsTrv2Run))
-		tags = AppendTags(tags, "is_3d_run", strconv.FormatBool(testInvocation.Is_3DRun))
+
+		is3DRun := strconv.FormatBool(testInvocation.Is_3DRun)
+		tags = AppendTags(tags, "is_3d_run", is3DRun)
+		if is3DRun == "true" {
+			eqcInfo := testInvocation.GetEqcInfo()
+			if eqcInfo != nil {
+				tags = AppendTags(tags, "eqc_hash", eqcInfo.GetEqcHash())
+			}
+		}
 
 		dutTopology := testInvocation.GetDutTopology()
 		if dutTopology != nil {

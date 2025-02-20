@@ -135,7 +135,10 @@
         },
         "is_cft_run": true,
         "is_trv2_run": true,
-        "is_3d_run": true
+        "is_3d_run": true,
+        "eqc_info": {
+            "eqc_hash": "11716238995695631838"
+        }
     },
     "test_runs":[
         {

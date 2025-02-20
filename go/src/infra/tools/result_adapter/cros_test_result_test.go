@@ -501,6 +501,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("suite", "arc-cts-vm"),
 						pbutil.StringPair("drone", "skylab-drone-deployment-prod-6dc79d4f9-czjlj"),
 						pbutil.StringPair("drone_server", "chromeos4-row4-rack1-drone8"),
+						pbutil.StringPair("eqc_hash", "11716238995695631838"),
 						pbutil.StringPair("gpu_family", "mali-g57"),
 						pbutil.StringPair("gpu_id", "mediatek:mali-g57"),
 						pbutil.StringPair("gpu_open_gles_version", "3.2"),
