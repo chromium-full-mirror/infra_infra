@@ -6,24 +6,62 @@ package consoleserver
 
 import (
 	"context"
+	"time"
+
+	"cloud.google.com/go/bigquery"
+	"cloud.google.com/go/civil"
+
+	"go.chromium.org/luci/common/logging"
 
 	"infra/fleetconsole/api/fleetconsolerpc"
+	"infra/fleetconsole/internal/bigqueryclient"
 	"infra/fleetconsole/internal/utils"
 )
 
 // ListResourceRequests lists resource requests.
 func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, req *fleetconsolerpc.ListResourceRequestsRequest) (*fleetconsolerpc.ListResourceRequestsResponse, error) {
+	logging.Infof(ctx, "ListResourceRequests called")
+
+	bqClient, err := bigqueryclient.NewBQClient(ctx, "fleet-console-dev")
+
+	if err != nil {
+		logging.Infof(ctx, "Error instantiating a new BigQuery client")
+		return nil, err
+	}
+
+	q := bqClient.Query("select * from fleet_console_bq.resource_requests")
+
+	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(5*time.Second))
+	defer cancel()
+	it, err := q.Read(ctx)
+	if err != nil {
+		logging.Errorf(ctx, "fetching resource requests from big query failed: %s", err)
+		return nil, err
+	}
+
+	resourceRequests := []*fleetconsolerpc.ResourceRequest{}
+
+	for {
+		var row map[string]bigquery.Value
+		err := it.Next(&row)
+		if err == nil {
+			rrID := row["rr_id"].(string)
+
+			resourceRequests = append(resourceRequests, &fleetconsolerpc.ResourceRequest{
+				RrId:               rrID,
+				Name:               "resourceRequests/" + rrID,
+				ResourceDetails:    row["resource_details"].(string),
+				ProcurementEndDate: utils.FromCivilDate(row["procurement_end_date"].(civil.Date)),
+				BuildEndDate:       utils.FromCivilDate(row["build_end_date"].(civil.Date)),
+				QaEndDate:          utils.FromCivilDate(row["qa_end_date"].(civil.Date)),
+				ConfigEndDate:      utils.FromCivilDate(row["config_end_date"].(civil.Date)),
+			})
+		} else {
+			break
+		}
+	}
+
 	return &fleetconsolerpc.ListResourceRequestsResponse{
-		ResourceRequests: []*fleetconsolerpc.ResourceRequest{
-			{
-				RrId:               "RR-123",
-				Name:               "resourceRequests/RR-123",
-				ResourceDetails:    "MacBook Pro 8GB",
-				ProcurementEndDate: utils.NewDateOnly(2025, 4, 12),
-				BuildEndDate:       utils.NewDateOnly(2025, 4, 24),
-				QaEndDate:          utils.NewDateOnly(2025, 5, 2),
-				ConfigEndDate:      utils.NewDateOnly(2025, 5, 16),
-			},
-		},
+		ResourceRequests: resourceRequests,
 	}, nil
 }

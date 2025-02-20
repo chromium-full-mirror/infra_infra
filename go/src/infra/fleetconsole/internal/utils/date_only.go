@@ -4,12 +4,24 @@
 
 package utils
 
-import "infra/fleetconsole/api/fleetconsolerpc"
+import (
+	"cloud.google.com/go/civil"
+
+	"infra/fleetconsole/api/fleetconsolerpc"
+)
 
 func NewDateOnly(year int32, month int32, day int32) *fleetconsolerpc.DateOnly {
 	return &fleetconsolerpc.DateOnly{
 		Year:  year,
 		Month: month,
 		Day:   day,
+	}
+}
+
+func FromCivilDate(civilDate civil.Date) *fleetconsolerpc.DateOnly {
+	return &fleetconsolerpc.DateOnly{
+		Year:  int32(civilDate.Year),
+		Month: int32(civilDate.Month),
+		Day:   int32(civilDate.Day),
 	}
 }
