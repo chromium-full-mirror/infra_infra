@@ -1391,7 +1391,7 @@ func UpdateRecoveryData(ctx context.Context, req *ufsAPI.UpdateDeviceRecoveryDat
 func validateUpdateRecoveryData(ctx context.Context, hostname string) error {
 	lse, err := inventory.GetMachineLSE(ctx, hostname)
 	if err != nil {
-		return fmt.Errorf("failed to fetch MachineLSE: %s", err)
+		return fmt.Errorf("failed to fetch MachineLSE: %w", err)
 	}
 
 	if err := util.CheckPermission(ctx, util.ConfigurationsUpdate, lse.GetRealm()); err != nil {
@@ -1455,7 +1455,7 @@ func checkDutIdAndHostnameAreAssociated(ctx context.Context, dutId string, hostn
 func validateUpdateTestData(ctx context.Context, hostname string) error {
 	lse, err := inventory.GetMachineLSE(ctx, hostname)
 	if err != nil {
-		return fmt.Errorf("failed to fetch MachineLSE: %s", err)
+		return fmt.Errorf("failed to fetch MachineLSE: %w", err)
 	}
 
 	if err := util.CheckPermission(ctx, util.ConfigurationsUpdate, lse.GetRealm()); err != nil {

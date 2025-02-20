@@ -33,7 +33,7 @@ func NewClient(ctx context.Context, o ...Option) (FleetClient, error) {
 	a := auth.NewAuthenticator(ctx, auth.SilentLogin, c.authOption)
 	hc, err := a.Client()
 	if err != nil {
-		return nil, fmt.Errorf("new UFS client: could not establish HTTP client: %s", err)
+		return nil, fmt.Errorf("new UFS client: could not establish HTTP client: %w", err)
 	}
 	return NewFleetPRPCClient(&prpc.Client{
 		C:    hc,

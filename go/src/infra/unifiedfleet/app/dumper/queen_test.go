@@ -34,7 +34,7 @@ func addMachineLSE(ctx context.Context, name string) (*ufspb.MachineLSE, error) 
 		Name: fmt.Sprintf("machinelse-%s", name),
 	})
 	if err != nil {
-		return nil, fmt.Errorf("Error creating machineLSE: %s", err)
+		return nil, fmt.Errorf("Error creating machineLSE: %w", err)
 	}
 
 	return m, nil
