@@ -61,7 +61,7 @@ func newDeadlineContext(parent context.Context, deadline time.Time) *deadlineCon
 // the supplied deadline, and a cancellation function that accepts custom errors.
 func WithDeadline(parent context.Context, deadline time.Time, err error) (context.Context, func(error)) {
 	c := newDeadlineContext(parent, deadline)
-	timer := time.NewTimer(deadline.Sub(time.Now()))
+	timer := time.NewTimer(time.Until(deadline))
 	go func() {
 		select {
 		case <-c.Done():

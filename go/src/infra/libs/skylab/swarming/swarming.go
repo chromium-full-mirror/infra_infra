@@ -239,9 +239,7 @@ func (c *Client) GetBots(ctx context.Context, dims []*swarming_api.SwarmingRpcsS
 			return nil, err
 		}
 		call = call.Cursor(tl.Cursor)
-		for _, item := range tl.Items {
-			out = append(out, item)
-		}
+		out = append(out, tl.Items...)
 		if tl.Cursor == "" {
 			return out, nil
 		}

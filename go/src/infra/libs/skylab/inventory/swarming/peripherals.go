@@ -383,9 +383,7 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 	}
 
 	p.ServoComponent = make([]string, len(d["label-servo_component"]))
-	for i, v := range d["label-servo_component"] {
-		p.ServoComponent[i] = v
-	}
+	copy(p.ServoComponent, d["label-servo_component"])
 	delete(d, "label-servo_component")
 
 	if servoUSBState, ok := getLastStringValue(d, "label-servo_usb_state"); ok {
@@ -480,15 +478,11 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 	delete(d, "label-sim_features")
 
 	p.WifiRouterModels = make([]string, len(d["label-wifi_router_models"]))
-	for i, v := range d["label-wifi_router_models"] {
-		p.WifiRouterModels[i] = v
-	}
+	copy(p.WifiRouterModels, d["label-wifi_router_models"])
 	delete(d, "label-wifi_router_models")
 
 	p.PasitComponents = make([]string, len(d["label-pasit_components"]))
-	for i, v := range d["label-pasit_components"] {
-		p.PasitComponents[i] = v
-	}
+	copy(p.PasitComponents, d["label-pasit_components"])
 	delete(d, "label-pasit_components")
 
 	if audioBeamforming, ok := getLastStringValue(d, "label-audio_beamforming"); ok {

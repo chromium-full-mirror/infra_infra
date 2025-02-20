@@ -35,7 +35,7 @@ func NewTunnel(localAddr string, remoteAddr string, c *ssh.Client) (*Tunnel, err
 	// Listen on remote server port.
 	listener, err := c.Listen("tcp", remoteAddr)
 	if err != nil {
-		return nil, fmt.Errorf("Error listening on %s: %s", remoteAddr, err)
+		return nil, fmt.Errorf("error listening on %s: %w", remoteAddr, err)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	t := &Tunnel{

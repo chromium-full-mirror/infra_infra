@@ -124,7 +124,7 @@ func (c *cloudsdkImageApi) GetImage(buildPath string, wait bool) (*api.GceImage,
 
 	client, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("NewImagesRESTClient: %v", err)
+		return nil, fmt.Errorf("NewImagesRESTClient: %w", err)
 	}
 	defer client.Close()
 
@@ -153,7 +153,7 @@ func (c *cloudsdkImageApi) ListImages(filter string) ([]*api.GceImage, error) {
 
 	client, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("NewImagesRESTClient: %v", err)
+		return nil, fmt.Errorf("NewImagesRESTClient: %w", err)
 	}
 	defer client.Close()
 
@@ -171,12 +171,12 @@ func (c *cloudsdkImageApi) DeleteImage(imageName string, wait bool) error {
 
 	client, err := compute.NewImagesRESTClient(ctx)
 	if err != nil {
-		return fmt.Errorf("NewImagesRESTClient: %v", err)
+		return fmt.Errorf("NewImagesRESTClient: %w", err)
 	}
 	defer client.Close()
 
 	if err := c.deleteImage(client, imageName, wait); err != nil {
-		return fmt.Errorf("Failed to delete image %s: %v", imageName, err)
+		return fmt.Errorf("failed to delete image %s: %w", imageName, err)
 	}
 	return nil
 }
