@@ -209,7 +209,7 @@ func bulkReleaseDevices(ctx context.Context, tx *sql.Tx, updatedDevices []model.
 			UPDATE "Devices" d
 			SET
 				is_active = td.is_active,
-				schedulable_labels = td.schedulable_labels,
+				schedulable_labels = td.schedulable_labels
 			FROM temp_devices td
 			WHERE d.id = td.id AND
 				d.last_updated_time < td.last_updated_time;`
