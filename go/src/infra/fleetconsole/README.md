@@ -70,7 +70,14 @@ go build ./cmd/consoleadmin
 You can do a liveness check for the local Fleet Console backend like so:
 
 ```sh
-./consoleadmin ping
+./consoleadmin ping -local
+{}
+```
+
+And you can check the connection to the database like so:
+
+```sh
+./consoleadmin ping-db -local
 {}
 ```
 
@@ -82,8 +89,7 @@ To see more commands available in the CLI run:
 
 ## How to run tests
 
-TODO: Add instructions on how to run tests
-
+Run go test ./...
 
 ## Run migrations
 
