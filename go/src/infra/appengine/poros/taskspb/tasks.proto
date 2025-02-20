@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package infra.appengine.poros.taskspb;
 
-option go_package = "infra/appengine/poros/taskspb";
+option go_package = "go.chromium.org/infra/appengine/poros/taskspb";
 
 message AssetAdditionOrDeletionTask {
   string asset_instance_id = 1;

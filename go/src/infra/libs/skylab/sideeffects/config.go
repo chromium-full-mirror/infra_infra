@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/side_effects"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/libs/skylab/cloudkms"
+	"go.chromium.org/infra/libs/skylab/cloudkms"
 )
 
 // ValidateConfig checks the presence of all required fields in

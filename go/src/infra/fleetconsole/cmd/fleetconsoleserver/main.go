@@ -8,7 +8,7 @@ package main
 import (
 	"go.chromium.org/luci/server"
 
-	"infra/fleetconsole/cmd/fleetconsoleserver/serverlib"
+	"go.chromium.org/infra/fleetconsole/cmd/fleetconsoleserver/serverlib"
 )
 
 func main() {

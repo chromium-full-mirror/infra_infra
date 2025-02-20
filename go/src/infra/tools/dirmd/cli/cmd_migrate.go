@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/sync/parallel"
 
-	"infra/tools/dirmd"
+	"go.chromium.org/infra/tools/dirmd"
 )
 
 func cmdMigrate() *subcommands.Command {

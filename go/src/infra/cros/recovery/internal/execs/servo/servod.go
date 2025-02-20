@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/internal/components"
 )
 
 // servodGetString retrieves from servod the value of servod command

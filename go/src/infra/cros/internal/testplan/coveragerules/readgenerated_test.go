@@ -14,10 +14,10 @@ import (
 
 	testpb "go.chromium.org/chromiumos/config/go/test/api"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/git"
-	"infra/cros/internal/testplan/coveragerules"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/testplan/coveragerules"
 )
 
 func TestReadGenerated(t *testing.T) {

@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/rts/filegraph"
+	"go.chromium.org/infra/rts/filegraph"
 )
 
 func TestGraph(t *testing.T) {

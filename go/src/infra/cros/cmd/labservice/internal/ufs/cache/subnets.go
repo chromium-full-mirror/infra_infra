@@ -16,8 +16,8 @@ import (
 
 	"google.golang.org/grpc/metadata"
 
-	ufsmodels "infra/unifiedfleet/api/v1/models"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	ufsmodels "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 const refreshInterval = time.Hour

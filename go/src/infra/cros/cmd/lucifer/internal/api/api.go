@@ -10,7 +10,7 @@
 package api
 
 import (
-	"infra/cros/cmd/lucifer/internal/logdog"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/logdog"
 )
 
 // Client provides the interface that Lucifer uses to talk to the

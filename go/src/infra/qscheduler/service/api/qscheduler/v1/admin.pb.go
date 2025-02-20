@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/qscheduler/service/api/qscheduler/v1/admin.proto
+// source: go.chromium.org/infra/qscheduler/service/api/qscheduler/v1/admin.proto
 
 package qscheduler
 
@@ -14,6 +14,8 @@ import (
 	prpc "go.chromium.org/luci/grpc/prpc"
 
 	context "context"
+
+	protos "go.chromium.org/infra/qscheduler/qslib/protos"
 
 	grpc "google.golang.org/grpc"
 
@@ -26,8 +28,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
-
-	protos "infra/qscheduler/qslib/protos"
 
 	reflect "reflect"
 
@@ -50,7 +50,7 @@ type CreateSchedulerPoolRequest struct {
 	// Deprecated, calls will fail if this is specified. Instead, create a pool
 	// and then modify its config with later calls.
 	//
-	// Deprecated: Marked as deprecated in infra/qscheduler/service/api/qscheduler/v1/admin.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/qscheduler/service/api/qscheduler/v1/admin.proto.
 	Config        *protos.SchedulerConfig `protobuf:"bytes,2,opt,name=config,proto3" json:"config,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -58,7 +58,7 @@ type CreateSchedulerPoolRequest struct {
 
 func (x *CreateSchedulerPoolRequest) Reset() {
 	*x = CreateSchedulerPoolRequest{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -70,7 +70,7 @@ func (x *CreateSchedulerPoolRequest) String() string {
 func (*CreateSchedulerPoolRequest) ProtoMessage() {}
 
 func (x *CreateSchedulerPoolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -83,7 +83,7 @@ func (x *CreateSchedulerPoolRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateSchedulerPoolRequest.ProtoReflect.Descriptor instead.
 func (*CreateSchedulerPoolRequest) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *CreateSchedulerPoolRequest) GetPoolId() string {
@@ -93,7 +93,7 @@ func (x *CreateSchedulerPoolRequest) GetPoolId() string {
 	return ""
 }
 
-// Deprecated: Marked as deprecated in infra/qscheduler/service/api/qscheduler/v1/admin.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/qscheduler/service/api/qscheduler/v1/admin.proto.
 func (x *CreateSchedulerPoolRequest) GetConfig() *protos.SchedulerConfig {
 	if x != nil {
 		return x.Config
@@ -109,7 +109,7 @@ type CreateSchedulerPoolResponse struct {
 
 func (x *CreateSchedulerPoolResponse) Reset() {
 	*x = CreateSchedulerPoolResponse{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -121,7 +121,7 @@ func (x *CreateSchedulerPoolResponse) String() string {
 func (*CreateSchedulerPoolResponse) ProtoMessage() {}
 
 func (x *CreateSchedulerPoolResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -134,7 +134,7 @@ func (x *CreateSchedulerPoolResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateSchedulerPoolResponse.ProtoReflect.Descriptor instead.
 func (*CreateSchedulerPoolResponse) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{1}
 }
 
 type CreateAccountRequest struct {
@@ -151,7 +151,7 @@ type CreateAccountRequest struct {
 
 func (x *CreateAccountRequest) Reset() {
 	*x = CreateAccountRequest{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -163,7 +163,7 @@ func (x *CreateAccountRequest) String() string {
 func (*CreateAccountRequest) ProtoMessage() {}
 
 func (x *CreateAccountRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -176,7 +176,7 @@ func (x *CreateAccountRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAccountRequest.ProtoReflect.Descriptor instead.
 func (*CreateAccountRequest) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *CreateAccountRequest) GetPoolId() string {
@@ -208,7 +208,7 @@ type CreateAccountResponse struct {
 
 func (x *CreateAccountResponse) Reset() {
 	*x = CreateAccountResponse{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -220,7 +220,7 @@ func (x *CreateAccountResponse) String() string {
 func (*CreateAccountResponse) ProtoMessage() {}
 
 func (x *CreateAccountResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -233,7 +233,7 @@ func (x *CreateAccountResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAccountResponse.ProtoReflect.Descriptor instead.
 func (*CreateAccountResponse) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{3}
 }
 
 type WipeRequest struct {
@@ -246,7 +246,7 @@ type WipeRequest struct {
 
 func (x *WipeRequest) Reset() {
 	*x = WipeRequest{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -258,7 +258,7 @@ func (x *WipeRequest) String() string {
 func (*WipeRequest) ProtoMessage() {}
 
 func (x *WipeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -271,7 +271,7 @@ func (x *WipeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WipeRequest.ProtoReflect.Descriptor instead.
 func (*WipeRequest) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *WipeRequest) GetPoolId() string {
@@ -289,7 +289,7 @@ type WipeResponse struct {
 
 func (x *WipeResponse) Reset() {
 	*x = WipeResponse{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -301,7 +301,7 @@ func (x *WipeResponse) String() string {
 func (*WipeResponse) ProtoMessage() {}
 
 func (x *WipeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -314,7 +314,7 @@ func (x *WipeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WipeResponse.ProtoReflect.Descriptor instead.
 func (*WipeResponse) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{5}
 }
 
 type ModAccountRequest struct {
@@ -335,7 +335,7 @@ type ModAccountRequest struct {
 
 func (x *ModAccountRequest) Reset() {
 	*x = ModAccountRequest{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -347,7 +347,7 @@ func (x *ModAccountRequest) String() string {
 func (*ModAccountRequest) ProtoMessage() {}
 
 func (x *ModAccountRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -360,7 +360,7 @@ func (x *ModAccountRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ModAccountRequest.ProtoReflect.Descriptor instead.
 func (*ModAccountRequest) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ModAccountRequest) GetPoolId() string {
@@ -434,7 +434,7 @@ type ModAccountResponse struct {
 
 func (x *ModAccountResponse) Reset() {
 	*x = ModAccountResponse{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -446,7 +446,7 @@ func (x *ModAccountResponse) String() string {
 func (*ModAccountResponse) ProtoMessage() {}
 
 func (x *ModAccountResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -459,7 +459,7 @@ func (x *ModAccountResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ModAccountResponse.ProtoReflect.Descriptor instead.
 func (*ModAccountResponse) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{7}
 }
 
 type ModSchedulerPoolRequest struct {
@@ -473,7 +473,7 @@ type ModSchedulerPoolRequest struct {
 
 func (x *ModSchedulerPoolRequest) Reset() {
 	*x = ModSchedulerPoolRequest{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -485,7 +485,7 @@ func (x *ModSchedulerPoolRequest) String() string {
 func (*ModSchedulerPoolRequest) ProtoMessage() {}
 
 func (x *ModSchedulerPoolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -498,7 +498,7 @@ func (x *ModSchedulerPoolRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ModSchedulerPoolRequest.ProtoReflect.Descriptor instead.
 func (*ModSchedulerPoolRequest) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ModSchedulerPoolRequest) GetPoolId() string {
@@ -530,7 +530,7 @@ type ModSchedulerPoolResponse struct {
 
 func (x *ModSchedulerPoolResponse) Reset() {
 	*x = ModSchedulerPoolResponse{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -542,7 +542,7 @@ func (x *ModSchedulerPoolResponse) String() string {
 func (*ModSchedulerPoolResponse) ProtoMessage() {}
 
 func (x *ModSchedulerPoolResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -555,7 +555,7 @@ func (x *ModSchedulerPoolResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ModSchedulerPoolResponse.ProtoReflect.Descriptor instead.
 func (*ModSchedulerPoolResponse) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{9}
 }
 
 type DeleteAccountRequest struct {
@@ -568,7 +568,7 @@ type DeleteAccountRequest struct {
 
 func (x *DeleteAccountRequest) Reset() {
 	*x = DeleteAccountRequest{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -580,7 +580,7 @@ func (x *DeleteAccountRequest) String() string {
 func (*DeleteAccountRequest) ProtoMessage() {}
 
 func (x *DeleteAccountRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -593,7 +593,7 @@ func (x *DeleteAccountRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAccountRequest.ProtoReflect.Descriptor instead.
 func (*DeleteAccountRequest) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DeleteAccountRequest) GetPoolId() string {
@@ -618,7 +618,7 @@ type DeleteAccountResponse struct {
 
 func (x *DeleteAccountResponse) Reset() {
 	*x = DeleteAccountResponse{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -630,7 +630,7 @@ func (x *DeleteAccountResponse) String() string {
 func (*DeleteAccountResponse) ProtoMessage() {}
 
 func (x *DeleteAccountResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -643,7 +643,7 @@ func (x *DeleteAccountResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAccountResponse.ProtoReflect.Descriptor instead.
 func (*DeleteAccountResponse) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{11}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{11}
 }
 
 type DeleteSchedulerPoolRequest struct {
@@ -655,7 +655,7 @@ type DeleteSchedulerPoolRequest struct {
 
 func (x *DeleteSchedulerPoolRequest) Reset() {
 	*x = DeleteSchedulerPoolRequest{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -667,7 +667,7 @@ func (x *DeleteSchedulerPoolRequest) String() string {
 func (*DeleteSchedulerPoolRequest) ProtoMessage() {}
 
 func (x *DeleteSchedulerPoolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -680,7 +680,7 @@ func (x *DeleteSchedulerPoolRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSchedulerPoolRequest.ProtoReflect.Descriptor instead.
 func (*DeleteSchedulerPoolRequest) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{12}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DeleteSchedulerPoolRequest) GetPoolId() string {
@@ -698,7 +698,7 @@ type DeleteSchedulerPoolResponse struct {
 
 func (x *DeleteSchedulerPoolResponse) Reset() {
 	*x = DeleteSchedulerPoolResponse{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -710,7 +710,7 @@ func (x *DeleteSchedulerPoolResponse) String() string {
 func (*DeleteSchedulerPoolResponse) ProtoMessage() {}
 
 func (x *DeleteSchedulerPoolResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -723,7 +723,7 @@ func (x *DeleteSchedulerPoolResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSchedulerPoolResponse.ProtoReflect.Descriptor instead.
 func (*DeleteSchedulerPoolResponse) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{13}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{13}
 }
 
 type ListAccountsRequest struct {
@@ -736,7 +736,7 @@ type ListAccountsRequest struct {
 
 func (x *ListAccountsRequest) Reset() {
 	*x = ListAccountsRequest{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -748,7 +748,7 @@ func (x *ListAccountsRequest) String() string {
 func (*ListAccountsRequest) ProtoMessage() {}
 
 func (x *ListAccountsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -761,7 +761,7 @@ func (x *ListAccountsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAccountsRequest.ProtoReflect.Descriptor instead.
 func (*ListAccountsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{14}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ListAccountsRequest) GetPoolId() string {
@@ -780,7 +780,7 @@ type ListAccountsResponse struct {
 
 func (x *ListAccountsResponse) Reset() {
 	*x = ListAccountsResponse{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -792,7 +792,7 @@ func (x *ListAccountsResponse) String() string {
 func (*ListAccountsResponse) ProtoMessage() {}
 
 func (x *ListAccountsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -805,7 +805,7 @@ func (x *ListAccountsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAccountsResponse.ProtoReflect.Descriptor instead.
 func (*ListAccountsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{15}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ListAccountsResponse) GetAccounts() map[string]*protos.AccountConfig {
@@ -824,7 +824,7 @@ type InspectPoolRequest struct {
 
 func (x *InspectPoolRequest) Reset() {
 	*x = InspectPoolRequest{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -836,7 +836,7 @@ func (x *InspectPoolRequest) String() string {
 func (*InspectPoolRequest) ProtoMessage() {}
 
 func (x *InspectPoolRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -849,7 +849,7 @@ func (x *InspectPoolRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InspectPoolRequest.ProtoReflect.Descriptor instead.
 func (*InspectPoolRequest) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{16}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *InspectPoolRequest) GetPoolId() string {
@@ -887,7 +887,7 @@ type InspectPoolResponse struct {
 
 func (x *InspectPoolResponse) Reset() {
 	*x = InspectPoolResponse{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -899,7 +899,7 @@ func (x *InspectPoolResponse) String() string {
 func (*InspectPoolResponse) ProtoMessage() {}
 
 func (x *InspectPoolResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -912,7 +912,7 @@ func (x *InspectPoolResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InspectPoolResponse.ProtoReflect.Descriptor instead.
 func (*InspectPoolResponse) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{17}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *InspectPoolResponse) GetNumWaitingTasks() int32 {
@@ -998,7 +998,7 @@ type InspectPoolResponse_RunningTask struct {
 
 func (x *InspectPoolResponse_RunningTask) Reset() {
 	*x = InspectPoolResponse_RunningTask{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[21]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1010,7 +1010,7 @@ func (x *InspectPoolResponse_RunningTask) String() string {
 func (*InspectPoolResponse_RunningTask) ProtoMessage() {}
 
 func (x *InspectPoolResponse_RunningTask) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[21]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1023,7 +1023,7 @@ func (x *InspectPoolResponse_RunningTask) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InspectPoolResponse_RunningTask.ProtoReflect.Descriptor instead.
 func (*InspectPoolResponse_RunningTask) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{17, 1}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{17, 1}
 }
 
 func (x *InspectPoolResponse_RunningTask) GetId() string {
@@ -1076,7 +1076,7 @@ type InspectPoolResponse_WaitingTask struct {
 
 func (x *InspectPoolResponse_WaitingTask) Reset() {
 	*x = InspectPoolResponse_WaitingTask{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[22]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1088,7 +1088,7 @@ func (x *InspectPoolResponse_WaitingTask) String() string {
 func (*InspectPoolResponse_WaitingTask) ProtoMessage() {}
 
 func (x *InspectPoolResponse_WaitingTask) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[22]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1101,7 +1101,7 @@ func (x *InspectPoolResponse_WaitingTask) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InspectPoolResponse_WaitingTask.ProtoReflect.Descriptor instead.
 func (*InspectPoolResponse_WaitingTask) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{17, 2}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{17, 2}
 }
 
 func (x *InspectPoolResponse_WaitingTask) GetId() string {
@@ -1140,7 +1140,7 @@ type InspectPoolResponse_IdleBot struct {
 
 func (x *InspectPoolResponse_IdleBot) Reset() {
 	*x = InspectPoolResponse_IdleBot{}
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[23]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1152,7 +1152,7 @@ func (x *InspectPoolResponse_IdleBot) String() string {
 func (*InspectPoolResponse_IdleBot) ProtoMessage() {}
 
 func (x *InspectPoolResponse_IdleBot) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[23]
+	mi := &file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1165,7 +1165,7 @@ func (x *InspectPoolResponse_IdleBot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InspectPoolResponse_IdleBot.ProtoReflect.Descriptor instead.
 func (*InspectPoolResponse_IdleBot) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{17, 3}
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP(), []int{17, 3}
 }
 
 func (x *InspectPoolResponse_IdleBot) GetId() string {
@@ -1189,19 +1189,22 @@ func (x *InspectPoolResponse_IdleBot) GetAgeSeconds() int32 {
 	return 0
 }
 
-var File_infra_qscheduler_service_api_qscheduler_v1_admin_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto protoreflect.FileDescriptor
 
-var file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDesc = string([]byte{
-	0x0a, 0x36, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c,
+var file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDesc = string([]byte{
+	0x0a, 0x46, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c,
 	0x65, 0x72, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x71,
 	0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x72, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x64, 0x6d,
 	0x69, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0a, 0x71, 0x73, 0x63, 0x68, 0x65, 0x64,
 	0x75, 0x6c, 0x65, 0x72, 0x1a, 0x1e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x77, 0x72, 0x61, 0x70, 0x70, 0x65, 0x72, 0x73, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2a, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63, 0x68,
+	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3a, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75,
+	0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63, 0x68,
 	0x65, 0x64, 0x75, 0x6c, 0x65, 0x72, 0x2f, 0x71, 0x73, 0x6c, 0x69, 0x62, 0x2f, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x1a, 0x29, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c,
+	0x1a, 0x39, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c,
 	0x65, 0x72, 0x2f, 0x71, 0x73, 0x6c, 0x69, 0x62, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2f,
 	0x73, 0x74, 0x61, 0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x6a, 0x0a, 0x1a, 0x43,
 	0x72, 0x65, 0x61, 0x74, 0x65, 0x53, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x72, 0x50, 0x6f,
@@ -1431,7 +1434,8 @@ var file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDesc = string
 	0x49, 0x6e, 0x73, 0x70, 0x65, 0x63, 0x74, 0x50, 0x6f, 0x6f, 0x6c, 0x52, 0x65, 0x71, 0x75, 0x65,
 	0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x71, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x72, 0x2e,
 	0x49, 0x6e, 0x73, 0x70, 0x65, 0x63, 0x74, 0x50, 0x6f, 0x6f, 0x6c, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x42, 0x37, 0x5a, 0x35, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63,
+	0x6e, 0x73, 0x65, 0x42, 0x47, 0x5a, 0x45, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69,
+	0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63,
 	0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x72, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x71, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x72, 0x2f, 0x76,
 	0x31, 0x3b, 0x71, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x72, 0x62, 0x06, 0x70, 0x72,
@@ -1439,19 +1443,19 @@ var file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDesc = string
 })
 
 var (
-	file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescOnce sync.Once
-	file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescData []byte
+	file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescData []byte
 )
 
-func file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP() []byte {
-	file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescOnce.Do(func() {
-		file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDesc), len(file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDesc)))
+func file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDesc), len(file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDesc)))
 	})
-	return file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescData
+	return file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDescData
 }
 
-var file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
-var file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_goTypes = []any{
+var file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
+var file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_goTypes = []any{
 	(*CreateSchedulerPoolRequest)(nil),      // 0: qscheduler.CreateSchedulerPoolRequest
 	(*CreateSchedulerPoolResponse)(nil),     // 1: qscheduler.CreateSchedulerPoolResponse
 	(*CreateAccountRequest)(nil),            // 2: qscheduler.CreateAccountRequest
@@ -1485,7 +1489,7 @@ var file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_goTypes = []any{
 	(*wrapperspb.StringValue)(nil),          // 30: google.protobuf.StringValue
 	(*protos.SchedulerState_Balance)(nil),   // 31: protos.SchedulerState.Balance
 }
-var file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_depIdxs = []int32{
 	25, // 0: qscheduler.CreateSchedulerPoolRequest.config:type_name -> protos.SchedulerConfig
 	26, // 1: qscheduler.CreateAccountRequest.config:type_name -> protos.AccountConfig
 	27, // 2: qscheduler.ModAccountRequest.max_charge_seconds:type_name -> google.protobuf.FloatValue
@@ -1529,28 +1533,28 @@ var file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_depIdxs = []int3
 	0,  // [0:18] is the sub-list for field type_name
 }
 
-func init() { file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_init() }
-func file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_init() {
-	if File_infra_qscheduler_service_api_qscheduler_v1_admin_proto != nil {
+func init() { file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_init() }
+func file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_init() {
+	if File_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDesc), len(file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDesc), len(file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   25,
 			NumExtensions: 0,
 			NumServices:   2,
 		},
-		GoTypes:           file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_goTypes,
-		DependencyIndexes: file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_depIdxs,
-		MessageInfos:      file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_msgTypes,
 	}.Build()
-	File_infra_qscheduler_service_api_qscheduler_v1_admin_proto = out.File
-	file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_goTypes = nil
-	file_infra_qscheduler_service_api_qscheduler_v1_admin_proto_depIdxs = nil
+	File_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto = out.File
+	file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_goTypes = nil
+	file_go_chromium_org_infra_qscheduler_service_api_qscheduler_v1_admin_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1942,7 +1946,7 @@ var _QSchedulerAdmin_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/qscheduler/service/api/qscheduler/v1/admin.proto",
+	Metadata: "go.chromium.org/infra/qscheduler/service/api/qscheduler/v1/admin.proto",
 }
 
 // QSchedulerViewClient is the client API for QSchedulerView service.
@@ -2081,5 +2085,5 @@ var _QSchedulerView_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/qscheduler/service/api/qscheduler/v1/admin.proto",
+	Metadata: "go.chromium.org/infra/qscheduler/service/api/qscheduler/v1/admin.proto",
 }

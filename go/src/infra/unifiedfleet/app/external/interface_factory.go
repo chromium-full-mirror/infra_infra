@@ -16,11 +16,11 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/server/auth"
 
-	"infra/cros/hwid"
-	"infra/libs/git"
-	"infra/libs/sheet"
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/hwid"
+	"go.chromium.org/infra/libs/git"
+	"go.chromium.org/infra/libs/sheet"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 const (

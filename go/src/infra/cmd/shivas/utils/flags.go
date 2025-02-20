@@ -8,7 +8,7 @@ import (
 	"flag"
 	"strings"
 
-	"infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
 )
 
 // CSVStringFlag is a flag.Getter implementation representing a []string.

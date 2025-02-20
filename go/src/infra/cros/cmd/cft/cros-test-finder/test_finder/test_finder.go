@@ -26,7 +26,7 @@ import (
 	"go.chromium.org/chromiumos/test/util/metadata"
 	"go.chromium.org/chromiumos/test/util/portdiscovery"
 
-	"infra/cros/cmd/cft/cros-test-finder/centralizedsuite"
+	"go.chromium.org/infra/cros/cmd/cft/cros-test-finder/centralizedsuite"
 )
 
 const (

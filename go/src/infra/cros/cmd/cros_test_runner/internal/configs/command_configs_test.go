@@ -11,12 +11,12 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/cmd/common_lib/commoncommands"
-	"infra/cros/cmd/common_lib/commonconfigs"
-	"infra/cros/cmd/common_lib/commonexecutors"
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/cmd/cros_test_runner/internal/executors"
+	"go.chromium.org/infra/cros/cmd/common_lib/commoncommands"
+	"go.chromium.org/infra/cros/cmd/common_lib/commonconfigs"
+	"go.chromium.org/infra/cros/cmd/common_lib/commonexecutors"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/internal/commands"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/internal/executors"
 )
 
 func TestGetCommand_UnsupportedCmdType(t *testing.T) {

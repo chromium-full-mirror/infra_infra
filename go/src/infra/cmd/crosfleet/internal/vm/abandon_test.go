@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	"infra/vm_leaser/client"
+	"go.chromium.org/infra/vm_leaser/client"
 )
 
 func TestAbandonVMsWithName(t *testing.T) {

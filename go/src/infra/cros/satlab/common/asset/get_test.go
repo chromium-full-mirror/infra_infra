@@ -15,8 +15,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"infra/cros/satlab/common/utils/executor"
-	ufsModels "infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
+	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 func TestGetDUTShouldWork(t *testing.T) {

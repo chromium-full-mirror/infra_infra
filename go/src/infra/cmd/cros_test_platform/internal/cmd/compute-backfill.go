@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/cros_test_platform/internal/backfill"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/backfill"
 )
 
 // ComputeBackfill subcommand: Create the backfill request for the current run.

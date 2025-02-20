@@ -18,8 +18,8 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	"infra/libs/skylab/inventory/autotest/labels"
-	s "infra/libs/skylab/inventory/swarming"
+	"go.chromium.org/infra/libs/skylab/inventory/autotest/labels"
+	s "go.chromium.org/infra/libs/skylab/inventory/swarming"
 )
 
 func FindNewestDirInGcsBucket(ctx context.Context, gcsBasePath string, bucket *storage.BucketHandle, pf string) (string, error) {

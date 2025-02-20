@@ -12,7 +12,7 @@ import (
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	kartepb "infra/cros/karte/api"
+	kartepb "go.chromium.org/infra/cros/karte/api"
 )
 
 // TestConvertActionEntitySmokeTest tests that an action entity can be converted to an action.

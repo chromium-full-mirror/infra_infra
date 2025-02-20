@@ -14,11 +14,11 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
-	"infra/fleetconsole/internal/site"
-	"infra/fleetconsole/internal/ufsclient"
-	"infra/unifiedfleet/api/ufsclients"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/internal/site"
+	"go.chromium.org/infra/fleetconsole/internal/ufsclient"
+	"go.chromium.org/infra/unifiedfleet/api/ufsclients"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // PingUFSCommand pings ufs, via the Console UI server by default.

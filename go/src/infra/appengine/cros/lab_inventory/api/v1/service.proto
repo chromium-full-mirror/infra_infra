@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package inventory;
 
-option go_package = "infra/appengine/cros/lab_inventory/api/v1;api";
+option go_package = "go.chromium.org/infra/appengine/cros/lab_inventory/api/v1;api";
 
 import "go.chromium.org/chromiumos/infra/proto/src/lab/device.proto";
 import "go.chromium.org/chromiumos/infra/proto/src/lab/dut_state.proto";
@@ -14,7 +14,7 @@ import "go.chromium.org/chromiumos/infra/proto/src/device/config.proto";
 import "go.chromium.org/chromiumos/infra/proto/src/manufacturing/config.proto";
 import "device/config_id.proto";
 import "lab/servo.proto";
-import "infra/cros/lab_inventory/protos/repair_record.proto";
+import "go.chromium.org/infra/cros/lab_inventory/protos/repair_record.proto";
 import "google/protobuf/timestamp.proto";
 
 // The RPCs below to get/add/update/delete devices support batch operation, and

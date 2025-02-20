@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package schema;
 
-option go_package = "infra/appengine/depot_tools_metrics/schema;schema";
+option go_package = "go.chromium.org/infra/appengine/depot_tools_metrics/schema;schema";
 
 import "go.chromium.org/luci/buildbucket/proto/builder_common.proto";
 

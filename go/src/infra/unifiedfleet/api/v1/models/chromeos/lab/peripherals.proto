@@ -6,13 +6,13 @@ syntax = "proto3";
 
 package unifiedfleet.api.v1.models.chromeos.lab;
 
-option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
+option go_package = "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
 
-import "infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto";
-import "infra/unifiedfleet/api/v1/models/chromeos/lab/dolos.proto";
-import "infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
-import "infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
-import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/dolos.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_router.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/pasit_host.proto";
 

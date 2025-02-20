@@ -3,7 +3,7 @@ description: cros-fw-provision is the CFT container handling cros fw provisionin
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/cft/provision/cros-fw-provision
+  - go.chromium.org/infra/cros/cmd/cft/provision/cros-fw-provision
 root: ../../go/bin
 data:
   - file: cros-fw-provision${exe_suffix}

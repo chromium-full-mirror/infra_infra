@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package fleetconsole;
 
-option go_package = "infra/fleetconsole/api/fleetconsolerpc;fleetconsolerpc";
+option go_package = "go.chromium.org/infra/fleetconsole/api/fleetconsolerpc;fleetconsolerpc";
 
 message DateOnly {
   int32 year = 1;

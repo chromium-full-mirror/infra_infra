@@ -18,7 +18,7 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/cmd/cros-tool-runner/internal/docker"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/docker"
 )
 
 // RunningLib represents a running docker container.

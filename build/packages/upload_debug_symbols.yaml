@@ -3,7 +3,7 @@ description: Builder for recipes debug symbols builder
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/upload_debug_symbols
+  - go.chromium.org/infra/cros/cmd/upload_debug_symbols
 root: ../../go/bin
 data:
   - file: upload_debug_symbols${exe_suffix}

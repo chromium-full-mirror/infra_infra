@@ -11,11 +11,11 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	"infra/unifiedfleet/app/controller"
-	"infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/unifiedfleet/app/controller"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // UpdateState updates the state for a resource.

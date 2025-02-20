@@ -32,7 +32,7 @@ import (
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/filesystem"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
 // Interpreter represents a system Python interpreter. It exposes the ability

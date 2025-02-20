@@ -8,9 +8,9 @@ import (
 	"context"
 	"io"
 
-	"infra/cmd/cloudbuildhelper/cloudbuild"
-	"infra/cmd/cloudbuildhelper/registry"
-	"infra/cmd/cloudbuildhelper/storage"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/cloudbuild"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/registry"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/storage"
 )
 
 // Collection of interfaces that mimic external APIs we use to simplify tests.

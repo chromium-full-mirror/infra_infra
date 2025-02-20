@@ -14,7 +14,7 @@
 syntax = "proto3";
 package protos;
 
-option go_package = "infra/qscheduler/qslib/protos";
+option go_package = "go.chromium.org/infra/qscheduler/qslib/protos";
 
 import "google/protobuf/duration.proto";
 

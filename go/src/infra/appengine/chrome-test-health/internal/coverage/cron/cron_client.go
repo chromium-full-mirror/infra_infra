@@ -14,9 +14,9 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/appengine/chrome-test-health/datastorage"
-	"infra/appengine/chrome-test-health/internal/coverage"
-	"infra/appengine/chrome-test-health/internal/coverage/entities"
+	"go.chromium.org/infra/appengine/chrome-test-health/datastorage"
+	"go.chromium.org/infra/appengine/chrome-test-health/internal/coverage"
+	"go.chromium.org/infra/appengine/chrome-test-health/internal/coverage/entities"
 )
 
 const (

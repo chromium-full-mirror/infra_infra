@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/servo/errors"
-	"infra/cros/servo/testing"
+	"go.chromium.org/infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/testing"
 )
 
 // These are the GSC Servo controls which can be get/set with a string value.

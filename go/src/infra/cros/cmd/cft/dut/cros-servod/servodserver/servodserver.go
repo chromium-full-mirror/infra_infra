@@ -24,10 +24,10 @@ import (
 	"go.chromium.org/chromiumos/lro"
 	common_util "go.chromium.org/chromiumos/test/util/common"
 
-	"infra/cros/cmd/cft/dut/cros-servod/commandexecutor"
-	"infra/cros/cmd/cft/dut/cros-servod/model"
-	"infra/cros/cmd/cft/dut/cros-servod/servod"
-	"infra/cros/cmd/cft/dut/cros-servod/ssh"
+	"go.chromium.org/infra/cros/cmd/cft/dut/cros-servod/commandexecutor"
+	"go.chromium.org/infra/cros/cmd/cft/dut/cros-servod/model"
+	"go.chromium.org/infra/cros/cmd/cft/dut/cros-servod/servod"
+	"go.chromium.org/infra/cros/cmd/cft/dut/cros-servod/ssh"
 )
 
 const (

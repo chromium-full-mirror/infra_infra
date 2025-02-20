@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/tools/cloudtail/internal"
+	"go.chromium.org/infra/tools/cloudtail/internal"
 )
 
 // See corresponding fields of TailerOptions.

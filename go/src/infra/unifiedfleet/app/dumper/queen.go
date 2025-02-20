@@ -15,11 +15,11 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 
-	dronequeenapi "infra/appengine/drone-queen/api"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/model/inventory"
-	"infra/unifiedfleet/app/util"
+	dronequeenapi "go.chromium.org/infra/appengine/drone-queen/api"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 type DroneQueenClientGenerator func(context.Context) (dronequeenapi.InventoryProviderClient, error)

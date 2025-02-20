@@ -19,7 +19,7 @@ import (
 	"os"
 	"os/signal"
 
-	"infra/chromeperf/pinpoint/server"
+	"go.chromium.org/infra/chromeperf/pinpoint/server"
 )
 
 func main() {

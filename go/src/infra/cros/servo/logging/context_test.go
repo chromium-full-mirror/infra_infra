@@ -11,8 +11,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/cros/servo/logging"
-	"infra/cros/servo/logging/loggingtest"
+	"go.chromium.org/infra/cros/servo/logging"
+	"go.chromium.org/infra/cros/servo/logging/loggingtest"
 )
 
 func TestLogging(t *testing.T) {

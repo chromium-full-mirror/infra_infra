@@ -18,7 +18,7 @@ import (
 	log "go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	"infra/tools/kitchen/build"
+	"go.chromium.org/infra/tools/kitchen/build"
 )
 
 var logConfig = log.Config{

@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/internal/components"
 )
 
 // mockResult is a runner that always returns the same value to test result parsing.

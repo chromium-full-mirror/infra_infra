@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/common/api/gerrit"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/cros/cmd/kron/common"
-	kronSubCommands "infra/cros/cmd/kron/subcommands"
+	"go.chromium.org/infra/cros/cmd/kron/common"
+	kronSubCommands "go.chromium.org/infra/cros/cmd/kron/subcommands"
 )
 
 func getApplication(authOpts auth.Options) *subcommands.DefaultApplication {

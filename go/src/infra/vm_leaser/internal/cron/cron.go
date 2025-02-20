@@ -20,8 +20,8 @@ import (
 	"go.chromium.org/luci/common/runtime/paniccatcher"
 	"go.chromium.org/luci/server"
 
-	"infra/vm_leaser/internal/constants"
-	"infra/vm_leaser/internal/controller"
+	"go.chromium.org/infra/vm_leaser/internal/constants"
+	"go.chromium.org/infra/vm_leaser/internal/controller"
 )
 
 // Options are server options for the cron server

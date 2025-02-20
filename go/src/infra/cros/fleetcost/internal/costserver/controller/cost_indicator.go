@@ -12,9 +12,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	fleetcostpb "infra/cros/fleetcost/api/models"
-	"infra/cros/fleetcost/internal/costserver/entities"
-	"infra/cros/fleetcost/internal/utils"
+	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/entities"
+	"go.chromium.org/infra/cros/fleetcost/internal/utils"
 )
 
 func normalizeToHourlyCost(ent *entities.CostIndicatorEntity, forgiveMissingEntries bool) (float64, error) {

@@ -19,10 +19,10 @@ import (
 	buildpb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	kronpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
 
-	"infra/cros/cmd/kron/cloudsql"
-	"infra/cros/cmd/kron/common"
-	"infra/cros/cmd/kron/metrics"
-	"infra/cros/cmd/kron/pubsub"
+	"go.chromium.org/infra/cros/cmd/kron/cloudsql"
+	"go.chromium.org/infra/cros/cmd/kron/common"
+	"go.chromium.org/infra/cros/cmd/kron/metrics"
+	"go.chromium.org/infra/cros/cmd/kron/pubsub"
 )
 
 // extractMilestoneAndVersion returns the milestone and platform version from

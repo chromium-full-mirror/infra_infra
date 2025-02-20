@@ -4,7 +4,7 @@ description: Filtering service responsible for running various filters
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/ctpv2
+  - go.chromium.org/infra/cros/cmd/ctpv2
 root: ../../go/bin
 data:
   - file: ctpv2${exe_suffix}

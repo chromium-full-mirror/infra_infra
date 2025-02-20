@@ -17,15 +17,15 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	"infra/cros/satlab/common/services"
-	"infra/cros/satlab/common/services/build_service"
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
-	"infra/cros/satlab/satlabrpcserver/services/bucket_services"
-	"infra/cros/satlab/satlabrpcserver/services/dut_services"
-	"infra/cros/satlab/satlabrpcserver/services/rpc_services"
-	"infra/cros/satlab/satlabrpcserver/utils"
-	m "infra/cros/satlab/satlabrpcserver/utils/monitor"
+	"go.chromium.org/infra/cros/satlab/common/services"
+	"go.chromium.org/infra/cros/satlab/common/services/build_service"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/platform/cpu_temperature"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/services/bucket_services"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/services/dut_services"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/services/rpc_services"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/utils"
+	m "go.chromium.org/infra/cros/satlab/satlabrpcserver/utils/monitor"
 )
 
 const (

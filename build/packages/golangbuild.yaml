@@ -39,7 +39,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/experimental/golangbuild
+  - go.chromium.org/infra/experimental/golangbuild
 root: ../../go/bin
 data:
   - file: golangbuild${exe_suffix}

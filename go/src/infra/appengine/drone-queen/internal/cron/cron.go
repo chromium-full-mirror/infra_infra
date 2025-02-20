@@ -18,9 +18,9 @@ import (
 
 	"go.chromium.org/luci/server/cron"
 
-	"infra/appengine/drone-queen/internal/config"
-	"infra/appengine/drone-queen/internal/middleware"
-	"infra/appengine/drone-queen/internal/queries"
+	"go.chromium.org/infra/appengine/drone-queen/internal/config"
+	"go.chromium.org/infra/appengine/drone-queen/internal/middleware"
+	"go.chromium.org/infra/appengine/drone-queen/internal/queries"
 )
 
 // InstallHandlers installs global handlers for cron jobs that are part of this app.

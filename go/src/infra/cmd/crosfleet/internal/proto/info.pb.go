@@ -6,15 +6,15 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/cmd/crosfleet/internal/proto/info.proto
+// source: go.chromium.org/infra/cmd/crosfleet/internal/proto/info.proto
 
 package crosfleetpb
 
 import (
+	models "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	proto "go.chromium.org/luci/buildbucket/proto"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	models "infra/unifiedfleet/api/v1/models"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -43,7 +43,7 @@ type DUTInfo struct {
 
 func (x *DUTInfo) Reset() {
 	*x = DUTInfo{}
-	mi := &file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -55,7 +55,7 @@ func (x *DUTInfo) String() string {
 func (*DUTInfo) ProtoMessage() {}
 
 func (x *DUTInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -68,7 +68,7 @@ func (x *DUTInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DUTInfo.ProtoReflect.Descriptor instead.
 func (*DUTInfo) Descriptor() ([]byte, []int) {
-	return file_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *DUTInfo) GetHostname() string {
@@ -101,7 +101,7 @@ type DUTInfoList struct {
 
 func (x *DUTInfoList) Reset() {
 	*x = DUTInfoList{}
-	mi := &file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -113,7 +113,7 @@ func (x *DUTInfoList) String() string {
 func (*DUTInfoList) ProtoMessage() {}
 
 func (x *DUTInfoList) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -126,7 +126,7 @@ func (x *DUTInfoList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DUTInfoList.ProtoReflect.Descriptor instead.
 func (*DUTInfoList) Descriptor() ([]byte, []int) {
-	return file_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *DUTInfoList) GetDUTs() []*DUTInfo {
@@ -148,7 +148,7 @@ type LeaseInfo struct {
 
 func (x *LeaseInfo) Reset() {
 	*x = LeaseInfo{}
-	mi := &file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -160,7 +160,7 @@ func (x *LeaseInfo) String() string {
 func (*LeaseInfo) ProtoMessage() {}
 
 func (x *LeaseInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -173,7 +173,7 @@ func (x *LeaseInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeaseInfo.ProtoReflect.Descriptor instead.
 func (*LeaseInfo) Descriptor() ([]byte, []int) {
-	return file_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *LeaseInfo) GetBuild() *proto.Build {
@@ -199,7 +199,7 @@ type LeaseInfoList struct {
 
 func (x *LeaseInfoList) Reset() {
 	*x = LeaseInfoList{}
-	mi := &file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -211,7 +211,7 @@ func (x *LeaseInfoList) String() string {
 func (*LeaseInfoList) ProtoMessage() {}
 
 func (x *LeaseInfoList) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -224,7 +224,7 @@ func (x *LeaseInfoList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LeaseInfoList.ProtoReflect.Descriptor instead.
 func (*LeaseInfoList) Descriptor() ([]byte, []int) {
-	return file_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *LeaseInfoList) GetLeases() []*LeaseInfo {
@@ -243,7 +243,7 @@ type BuildIdList struct {
 
 func (x *BuildIdList) Reset() {
 	*x = BuildIdList{}
-	mi := &file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -255,7 +255,7 @@ func (x *BuildIdList) String() string {
 func (*BuildIdList) ProtoMessage() {}
 
 func (x *BuildIdList) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -268,7 +268,7 @@ func (x *BuildIdList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildIdList.ProtoReflect.Descriptor instead.
 func (*BuildIdList) Descriptor() ([]byte, []int) {
-	return file_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *BuildIdList) GetIds() []int64 {
@@ -287,7 +287,7 @@ type BuildLaunchList struct {
 
 func (x *BuildLaunchList) Reset() {
 	*x = BuildLaunchList{}
-	mi := &file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -299,7 +299,7 @@ func (x *BuildLaunchList) String() string {
 func (*BuildLaunchList) ProtoMessage() {}
 
 func (x *BuildLaunchList) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -312,7 +312,7 @@ func (x *BuildLaunchList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildLaunchList.ProtoReflect.Descriptor instead.
 func (*BuildLaunchList) Descriptor() ([]byte, []int) {
-	return file_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *BuildLaunchList) GetLaunches() []*BuildLaunch {
@@ -332,7 +332,7 @@ type BuildLaunch struct {
 
 func (x *BuildLaunch) Reset() {
 	*x = BuildLaunch{}
-	mi := &file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -344,7 +344,7 @@ func (x *BuildLaunch) String() string {
 func (*BuildLaunch) ProtoMessage() {}
 
 func (x *BuildLaunch) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -357,7 +357,7 @@ func (x *BuildLaunch) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildLaunch.ProtoReflect.Descriptor instead.
 func (*BuildLaunch) Descriptor() ([]byte, []int) {
-	return file_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *BuildLaunch) GetBuild() *proto.Build {
@@ -374,20 +374,23 @@ func (x *BuildLaunch) GetBuildError() string {
 	return ""
 }
 
-var File_infra_cmd_crosfleet_internal_proto_info_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto protoreflect.FileDescriptor
 
-var file_infra_cmd_crosfleet_internal_proto_info_proto_rawDesc = string([]byte{
-	0x0a, 0x2d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x6d, 0x64, 0x2f, 0x63, 0x72, 0x6f, 0x73,
+var file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDesc = string([]byte{
+	0x0a, 0x3d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x6d, 0x64, 0x2f, 0x63, 0x72, 0x6f, 0x73,
 	0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x69, 0x6e, 0x66, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12,
 	0x15, 0x63, 0x72, 0x6f, 0x73, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x63, 0x72, 0x6f, 0x73, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x70, 0x62, 0x1a, 0x32, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d,
 	0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x6c, 0x75, 0x63, 0x69, 0x2f, 0x62, 0x75, 0x69,
 	0x6c, 0x64, 0x62, 0x75, 0x63, 0x6b, 0x65, 0x74, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x62,
-	0x75, 0x69, 0x6c, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2e, 0x69, 0x6e, 0x66, 0x72,
+	0x75, 0x69, 0x6c, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3e, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61,
 	0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x6d, 0x61, 0x63,
-	0x68, 0x69, 0x6e, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x32, 0x69, 0x6e, 0x66, 0x72,
+	0x68, 0x69, 0x6e, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x42, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61,
 	0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x6d, 0x61, 0x63,
 	0x68, 0x69, 0x6e, 0x65, 0x5f, 0x6c, 0x73, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xa8,
@@ -430,26 +433,27 @@ var file_infra_cmd_crosfleet_internal_proto_info_proto_rawDesc = string([]byte{
 	0x6b, 0x65, 0x74, 0x2e, 0x76, 0x32, 0x2e, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x05, 0x42, 0x75,
 	0x69, 0x6c, 0x64, 0x12, 0x1e, 0x0a, 0x0a, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x45, 0x72, 0x72, 0x6f,
 	0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x45, 0x72,
-	0x72, 0x6f, 0x72, 0x42, 0x30, 0x5a, 0x2e, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x6d, 0x64,
+	0x72, 0x6f, 0x72, 0x42, 0x40, 0x5a, 0x3e, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69,
+	0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x6d, 0x64,
 	0x2f, 0x63, 0x72, 0x6f, 0x73, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72,
 	0x6e, 0x61, 0x6c, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x63, 0x72, 0x6f, 0x73, 0x66, 0x6c,
 	0x65, 0x65, 0x74, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_cmd_crosfleet_internal_proto_info_proto_rawDescOnce sync.Once
-	file_infra_cmd_crosfleet_internal_proto_info_proto_rawDescData []byte
+	file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDescData []byte
 )
 
-func file_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP() []byte {
-	file_infra_cmd_crosfleet_internal_proto_info_proto_rawDescOnce.Do(func() {
-		file_infra_cmd_crosfleet_internal_proto_info_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_cmd_crosfleet_internal_proto_info_proto_rawDesc), len(file_infra_cmd_crosfleet_internal_proto_info_proto_rawDesc)))
+func file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDesc), len(file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDesc)))
 	})
-	return file_infra_cmd_crosfleet_internal_proto_info_proto_rawDescData
+	return file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDescData
 }
 
-var file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
-var file_infra_cmd_crosfleet_internal_proto_info_proto_goTypes = []any{
+var file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_goTypes = []any{
 	(*DUTInfo)(nil),           // 0: crosfleet.crosfleetpb.DUTInfo
 	(*DUTInfoList)(nil),       // 1: crosfleet.crosfleetpb.DUTInfoList
 	(*LeaseInfo)(nil),         // 2: crosfleet.crosfleetpb.LeaseInfo
@@ -461,7 +465,7 @@ var file_infra_cmd_crosfleet_internal_proto_info_proto_goTypes = []any{
 	(*models.Machine)(nil),    // 8: unifiedfleet.api.v1.models.Machine
 	(*proto.Build)(nil),       // 9: buildbucket.v2.Build
 }
-var file_infra_cmd_crosfleet_internal_proto_info_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_depIdxs = []int32{
 	7, // 0: crosfleet.crosfleetpb.DUTInfo.LabSetup:type_name -> unifiedfleet.api.v1.models.MachineLSE
 	8, // 1: crosfleet.crosfleetpb.DUTInfo.Machine:type_name -> unifiedfleet.api.v1.models.Machine
 	0, // 2: crosfleet.crosfleetpb.DUTInfoList.DUTs:type_name -> crosfleet.crosfleetpb.DUTInfo
@@ -477,26 +481,26 @@ var file_infra_cmd_crosfleet_internal_proto_info_proto_depIdxs = []int32{
 	0, // [0:8] is the sub-list for field type_name
 }
 
-func init() { file_infra_cmd_crosfleet_internal_proto_info_proto_init() }
-func file_infra_cmd_crosfleet_internal_proto_info_proto_init() {
-	if File_infra_cmd_crosfleet_internal_proto_info_proto != nil {
+func init() { file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_init() }
+func file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_init() {
+	if File_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_cmd_crosfleet_internal_proto_info_proto_rawDesc), len(file_infra_cmd_crosfleet_internal_proto_info_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDesc), len(file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_cmd_crosfleet_internal_proto_info_proto_goTypes,
-		DependencyIndexes: file_infra_cmd_crosfleet_internal_proto_info_proto_depIdxs,
-		MessageInfos:      file_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_msgTypes,
 	}.Build()
-	File_infra_cmd_crosfleet_internal_proto_info_proto = out.File
-	file_infra_cmd_crosfleet_internal_proto_info_proto_goTypes = nil
-	file_infra_cmd_crosfleet_internal_proto_info_proto_depIdxs = nil
+	File_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto = out.File
+	file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_goTypes = nil
+	file_go_chromium_org_infra_cmd_crosfleet_internal_proto_info_proto_depIdxs = nil
 }

@@ -12,10 +12,10 @@ import (
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/ctr"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/scopes"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/ctr"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/scopes"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // AddressToScope puts service address of cft container to context scope.

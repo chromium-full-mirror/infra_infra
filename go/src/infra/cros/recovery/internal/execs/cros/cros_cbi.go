@@ -10,9 +10,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components/cros/cbi"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros/cbi"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // restoreCBIContentsFromUFS restores CBI contents on the DUT by writing the CBI contents stored

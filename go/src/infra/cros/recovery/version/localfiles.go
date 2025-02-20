@@ -14,8 +14,8 @@ import (
 	lab_platform "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/models"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/models"
 )
 
 func readLocalVersion(ctx context.Context, board, model string) (Data, error) {

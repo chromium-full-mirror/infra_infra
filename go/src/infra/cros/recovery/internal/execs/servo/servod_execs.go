@@ -11,12 +11,12 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components/cros"
-	"infra/cros/recovery/internal/components/servo"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/internal/retry"
-	"infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros"
+	"go.chromium.org/infra/cros/recovery/internal/components/servo"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/retry"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
 )
 
 // TODO(otabek@): Extract all commands to constants.

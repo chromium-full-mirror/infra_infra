@@ -12,8 +12,8 @@ import (
 	lflag "go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/cmd/paris/internal/site"
-	rem "infra/libs/skylab/inventory/removalreason"
+	"go.chromium.org/infra/cros/cmd/paris/internal/site"
+	rem "go.chromium.org/infra/libs/skylab/inventory/removalreason"
 )
 
 // DefaultTaskPriority is the default priority for a swarming task.

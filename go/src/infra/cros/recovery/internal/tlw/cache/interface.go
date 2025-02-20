@@ -9,8 +9,8 @@ import (
 
 	"google.golang.org/grpc"
 
-	ufsModels "infra/unifiedfleet/api/v1/models"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 type UFSClient interface {

@@ -13,11 +13,11 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/logger"
-	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 const (

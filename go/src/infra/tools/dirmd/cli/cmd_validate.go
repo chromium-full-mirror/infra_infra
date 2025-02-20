@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/data/text"
 
-	"infra/tools/dirmd"
+	"go.chromium.org/infra/tools/dirmd"
 )
 
 func cmdValidate() *subcommands.Command {

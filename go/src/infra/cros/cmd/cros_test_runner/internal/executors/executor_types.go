@@ -5,7 +5,7 @@
 package executors
 
 import (
-	"infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 )
 
 // All supported executor types.

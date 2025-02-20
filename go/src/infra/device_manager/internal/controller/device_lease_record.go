@@ -21,11 +21,11 @@ import (
 	lucierr "go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/device_manager/internal/external"
-	"infra/device_manager/internal/model"
-	"infra/libs/fleet/device"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/device_manager/internal/external"
+	"go.chromium.org/infra/device_manager/internal/model"
+	"go.chromium.org/infra/libs/fleet/device"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // ExpirerOpts struct holds configuration options for the Expirer service

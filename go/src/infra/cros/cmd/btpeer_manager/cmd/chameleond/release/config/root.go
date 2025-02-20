@@ -7,7 +7,7 @@ package config
 import (
 	"github.com/spf13/cobra"
 
-	"infra/cros/cmd/btpeer_manager/dirs"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/dirs"
 )
 
 const defaultLocalConfigFilename = "btpeer_chameleond_config.json"

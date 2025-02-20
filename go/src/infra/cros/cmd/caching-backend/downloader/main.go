@@ -51,7 +51,7 @@ import (
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 
-	"infra/libs/otil"
+	"go.chromium.org/infra/libs/otil"
 )
 
 var (

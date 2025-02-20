@@ -20,7 +20,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	vmlabpb "infra/libs/vmlab/api"
+	vmlabpb "go.chromium.org/infra/libs/vmlab/api"
 )
 
 // mockVMLeaserClient mocks vmLeaserServiceClient for testing.

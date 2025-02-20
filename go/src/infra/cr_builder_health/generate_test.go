@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cr_builder_health/healthpb"
+	"go.chromium.org/infra/cr_builder_health/healthpb"
 )
 
 type bbClientMock struct {

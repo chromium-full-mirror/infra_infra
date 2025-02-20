@@ -9,7 +9,7 @@ import (
 
 	bisectionpb "go.chromium.org/luci/bisection/proto/v1"
 
-	"infra/monitoring/messages"
+	"go.chromium.org/infra/monitoring/messages"
 )
 
 // CrBug returns bug information.

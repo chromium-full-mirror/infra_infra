@@ -22,7 +22,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
+	trservice "go.chromium.org/infra/cmd/cros_test_platform/internal/execution/testrunner/service"
 )
 
 func TestLaunchForNonExistentBot(t *testing.T) {

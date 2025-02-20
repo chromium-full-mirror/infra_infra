@@ -5,8 +5,8 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/appengine/cr-rev/config"
-	"infra/appengine/cr-rev/models"
+	"go.chromium.org/infra/appengine/cr-rev/config"
+	"go.chromium.org/infra/appengine/cr-rev/models"
 )
 
 // FindBestCommit finds the best commit to redirect to based on configuration:

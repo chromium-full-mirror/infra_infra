@@ -29,8 +29,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/dev"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/dev"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // TODO(otabek): Add basic unittest for each method.

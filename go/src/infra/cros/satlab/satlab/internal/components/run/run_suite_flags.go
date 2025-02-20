@@ -9,7 +9,7 @@ import (
 
 	luciflag "go.chromium.org/luci/common/flag"
 
-	"infra/cros/satlab/satlab/internal/flagx"
+	"go.chromium.org/infra/cros/satlab/satlab/internal/flagx"
 )
 
 // runFlags holds the flags necessary for test execution

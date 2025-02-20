@@ -15,9 +15,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/router"
 
-	admin "infra/tricium/api/admin/v1"
-	"infra/tricium/appengine/common/config"
-	gc "infra/tricium/appengine/common/gerrit"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
+	"go.chromium.org/infra/tricium/appengine/common/config"
+	gc "go.chromium.org/infra/tricium/appengine/common/gerrit"
 )
 
 type gerritReporterServer struct{}

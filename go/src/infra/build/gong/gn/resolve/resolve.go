@@ -8,7 +8,7 @@ package resolve
 import (
 	"fmt"
 
-	"infra/build/gong/gn/parse"
+	"go.chromium.org/infra/build/gong/gn/parse"
 )
 
 // ExecuteNode executes a given node in the AST.

@@ -15,8 +15,8 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/build/api"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/docker"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/docker"
 )
 
 var containerImageInfo = &api.ContainerImageInfo{

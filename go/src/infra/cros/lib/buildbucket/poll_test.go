@@ -16,7 +16,7 @@ import (
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cros/lib/buildbucket"
+	"go.chromium.org/infra/cros/lib/buildbucket"
 )
 
 var (

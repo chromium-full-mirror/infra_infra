@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
 
-	"infra/libs/skylab/inventory"
+	"go.chromium.org/infra/libs/skylab/inventory"
 )
 
 func init() {

@@ -14,14 +14,14 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 
 	// TODO, move shared util to a standalone directory.
-	shivasUtil "infra/cmd/shivas/utils"
-	fleetcostModels "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/costserver/controller"
-	"infra/cros/fleetcost/internal/costserver/entities"
-	"infra/cros/fleetcost/internal/fleetcosterror"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	shivasUtil "go.chromium.org/infra/cmd/shivas/utils"
+	fleetcostModels "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/controller"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/entities"
+	"go.chromium.org/infra/cros/fleetcost/internal/fleetcosterror"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // GetCostResult gets cost result of a fleet resource(DUT, scheduling unit).

@@ -21,11 +21,11 @@ import (
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/skylab/internal/bb"
-	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
-	"infra/cmd/skylab/internal/site"
-	"infra/cmd/skylab/internal/userinput"
-	"infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cmd/skylab/internal/bb"
+	skycmdlib "go.chromium.org/infra/cmd/skylab/internal/cmd/cmdlib"
+	"go.chromium.org/infra/cmd/skylab/internal/site"
+	"go.chromium.org/infra/cmd/skylab/internal/userinput"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
 )
 
 // BackfillRequest subcommand: Backfill unsuccessful results for a previous

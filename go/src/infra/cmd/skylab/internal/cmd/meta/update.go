@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/skylab/internal/site"
+	"go.chromium.org/infra/cmd/skylab/internal/site"
 )
 
 // skylabLatest is a fragment of a cipd manifest that is used to install the latest version of the skylab

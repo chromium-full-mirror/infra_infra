@@ -14,14 +14,14 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
-	crosfleetcommon "infra/cmd/crosfleet/internal/common"
-	dutinfopb "infra/cmd/crosfleet/internal/proto"
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cmd/crosfleet/internal/ufs"
-	"infra/cros/cmd/common_lib/common"
-	"infra/libs/skylab/common/heuristics"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
-	ufsutil "infra/unifiedfleet/app/util"
+	crosfleetcommon "go.chromium.org/infra/cmd/crosfleet/internal/common"
+	dutinfopb "go.chromium.org/infra/cmd/crosfleet/internal/proto"
+	"go.chromium.org/infra/cmd/crosfleet/internal/site"
+	"go.chromium.org/infra/cmd/crosfleet/internal/ufs"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsutil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 const (

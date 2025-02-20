@@ -10,9 +10,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components/cros/usb"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros/usb"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // auditUSBFromDUTSideKeyExec initiates an audit of the servo USB key strictly from the DUT side.

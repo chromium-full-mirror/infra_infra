@@ -12,9 +12,9 @@ import (
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc"
 
-	"infra/appengine/drone-queen/api"
-	"infra/cmd/drone-agent/internal/agent/state"
-	"infra/cmd/drone-agent/internal/bot"
+	"go.chromium.org/infra/appengine/drone-queen/api"
+	"go.chromium.org/infra/cmd/drone-agent/internal/agent/state"
+	"go.chromium.org/infra/cmd/drone-agent/internal/bot"
 )
 
 // newPersistentBot returns a FakeBot that does not exit when

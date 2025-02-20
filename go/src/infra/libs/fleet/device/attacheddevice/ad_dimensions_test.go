@@ -10,11 +10,11 @@ import (
 	"reflect"
 	"testing"
 
-	"infra/cros/dutstate"
-	"infra/libs/skylab/inventory/swarming"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/libs/skylab/inventory/swarming"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 var devUFSState = lab.DutState{

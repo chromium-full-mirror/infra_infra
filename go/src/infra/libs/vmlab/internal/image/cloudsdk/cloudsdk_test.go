@@ -16,7 +16,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/libs/vmlab/api"
+	"go.chromium.org/infra/libs/vmlab/api"
 )
 
 type mockImageClient struct {

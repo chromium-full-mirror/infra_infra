@@ -20,9 +20,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/router"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/app/frontend"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend"
 )
 
 // InstallHandlers installs handlers for cron jobs that are part of this app.

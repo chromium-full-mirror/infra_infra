@@ -26,7 +26,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"google.golang.org/protobuf/proto"
 
-	kpb "infra/cmd/package_index/kythe/proto"
+	kpb "go.chromium.org/infra/cmd/package_index/kythe/proto"
 )
 
 // unitKey is used to identify a unique compilation unit for testing.

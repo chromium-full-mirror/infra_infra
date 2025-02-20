@@ -20,9 +20,9 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common/track"
-	"infra/tricium/appengine/common/triciumtest"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common/track"
+	"go.chromium.org/infra/tricium/appengine/common/triciumtest"
 )
 
 func TestProgress(t *testing.T) {

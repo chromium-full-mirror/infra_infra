@@ -19,13 +19,13 @@ import (
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/gs"
-	"infra/cros/internal/testplan"
-	"infra/cros/lib/buildbucket"
-	"infra/tools/dirmd"
-	dirmdpb "infra/tools/dirmd/proto"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/gs"
+	"go.chromium.org/infra/cros/internal/testplan"
+	"go.chromium.org/infra/cros/lib/buildbucket"
+	"go.chromium.org/infra/tools/dirmd"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
 )
 
 // findRepoRoot finds the absolute path to the root of the repo dir is in.

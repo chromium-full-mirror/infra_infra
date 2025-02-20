@@ -7,8 +7,8 @@ package controller
 import (
 	"fmt"
 
-	fleetcostpb "infra/cros/fleetcost/api/models"
-	"infra/cros/fleetcost/internal/costserver/entities"
+	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/entities"
 )
 
 // indicatorAttribute is the information that's necessary to look up a datastore record.

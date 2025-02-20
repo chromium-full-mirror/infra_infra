@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/tricium/api/admin/v1/tracker.proto
+// source: go.chromium.org/infra/tricium/api/admin/v1/tracker.proto
 
 package admin
 
@@ -14,12 +14,12 @@ import prpc "go.chromium.org/luci/grpc/prpc"
 
 import (
 	context "context"
+	v1 "go.chromium.org/infra/tricium/api/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	v1 "infra/tricium/api/v1"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -45,7 +45,7 @@ type WorkflowLaunchedRequest struct {
 
 func (x *WorkflowLaunchedRequest) Reset() {
 	*x = WorkflowLaunchedRequest{}
-	mi := &file_infra_tricium_api_admin_v1_tracker_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -57,7 +57,7 @@ func (x *WorkflowLaunchedRequest) String() string {
 func (*WorkflowLaunchedRequest) ProtoMessage() {}
 
 func (x *WorkflowLaunchedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_admin_v1_tracker_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -70,7 +70,7 @@ func (x *WorkflowLaunchedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkflowLaunchedRequest.ProtoReflect.Descriptor instead.
 func (*WorkflowLaunchedRequest) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_admin_v1_tracker_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *WorkflowLaunchedRequest) GetRunId() int64 {
@@ -88,7 +88,7 @@ type WorkflowLaunchedResponse struct {
 
 func (x *WorkflowLaunchedResponse) Reset() {
 	*x = WorkflowLaunchedResponse{}
-	mi := &file_infra_tricium_api_admin_v1_tracker_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -100,7 +100,7 @@ func (x *WorkflowLaunchedResponse) String() string {
 func (*WorkflowLaunchedResponse) ProtoMessage() {}
 
 func (x *WorkflowLaunchedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_admin_v1_tracker_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -113,7 +113,7 @@ func (x *WorkflowLaunchedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkflowLaunchedResponse.ProtoReflect.Descriptor instead.
 func (*WorkflowLaunchedResponse) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_admin_v1_tracker_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDescGZIP(), []int{1}
 }
 
 // WorkerLaunchedRequest specifies details needed to mark a worker as launched.
@@ -132,7 +132,7 @@ type WorkerLaunchedRequest struct {
 
 func (x *WorkerLaunchedRequest) Reset() {
 	*x = WorkerLaunchedRequest{}
-	mi := &file_infra_tricium_api_admin_v1_tracker_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -144,7 +144,7 @@ func (x *WorkerLaunchedRequest) String() string {
 func (*WorkerLaunchedRequest) ProtoMessage() {}
 
 func (x *WorkerLaunchedRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_admin_v1_tracker_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -157,7 +157,7 @@ func (x *WorkerLaunchedRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkerLaunchedRequest.ProtoReflect.Descriptor instead.
 func (*WorkerLaunchedRequest) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_admin_v1_tracker_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *WorkerLaunchedRequest) GetRunId() int64 {
@@ -189,7 +189,7 @@ type WorkerLaunchedResponse struct {
 
 func (x *WorkerLaunchedResponse) Reset() {
 	*x = WorkerLaunchedResponse{}
-	mi := &file_infra_tricium_api_admin_v1_tracker_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -201,7 +201,7 @@ func (x *WorkerLaunchedResponse) String() string {
 func (*WorkerLaunchedResponse) ProtoMessage() {}
 
 func (x *WorkerLaunchedResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_admin_v1_tracker_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -214,7 +214,7 @@ func (x *WorkerLaunchedResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkerLaunchedResponse.ProtoReflect.Descriptor instead.
 func (*WorkerLaunchedResponse) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_admin_v1_tracker_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDescGZIP(), []int{3}
 }
 
 // WorkerDoneRequest specifies details needed to mark a worker as done.
@@ -232,7 +232,7 @@ type WorkerDoneRequest struct {
 
 func (x *WorkerDoneRequest) Reset() {
 	*x = WorkerDoneRequest{}
-	mi := &file_infra_tricium_api_admin_v1_tracker_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -244,7 +244,7 @@ func (x *WorkerDoneRequest) String() string {
 func (*WorkerDoneRequest) ProtoMessage() {}
 
 func (x *WorkerDoneRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_admin_v1_tracker_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -257,7 +257,7 @@ func (x *WorkerDoneRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkerDoneRequest.ProtoReflect.Descriptor instead.
 func (*WorkerDoneRequest) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_admin_v1_tracker_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *WorkerDoneRequest) GetRunId() int64 {
@@ -303,7 +303,7 @@ type WorkerDoneResponse struct {
 
 func (x *WorkerDoneResponse) Reset() {
 	*x = WorkerDoneResponse{}
-	mi := &file_infra_tricium_api_admin_v1_tracker_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -315,7 +315,7 @@ func (x *WorkerDoneResponse) String() string {
 func (*WorkerDoneResponse) ProtoMessage() {}
 
 func (x *WorkerDoneResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_admin_v1_tracker_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -328,18 +328,21 @@ func (x *WorkerDoneResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WorkerDoneResponse.ProtoReflect.Descriptor instead.
 func (*WorkerDoneResponse) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_admin_v1_tracker_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDescGZIP(), []int{5}
 }
 
-var File_infra_tricium_api_admin_v1_tracker_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto protoreflect.FileDescriptor
 
-var file_infra_tricium_api_admin_v1_tracker_proto_rawDesc = string([]byte{
-	0x0a, 0x28, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
+var file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDesc = string([]byte{
+	0x0a, 0x38, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x72, 0x61,
 	0x63, 0x6b, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x05, 0x61, 0x64, 0x6d, 0x69,
-	0x6e, 0x1a, 0x1f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d,
+	0x6e, 0x1a, 0x2f, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f,
+	0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d,
 	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x1a, 0x22, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75,
+	0x74, 0x6f, 0x1a, 0x32, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e,
+	0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75,
 	0x6d, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x30, 0x0a, 0x17, 0x57, 0x6f, 0x72, 0x6b, 0x66, 0x6c,
 	0x6f, 0x77, 0x4c, 0x61, 0x75, 0x6e, 0x63, 0x68, 0x65, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
@@ -386,25 +389,26 @@ var file_infra_tricium_api_admin_v1_tracker_proto_rawDesc = string([]byte{
 	0x18, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x44, 0x6f,
 	0x6e, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x19, 0x2e, 0x61, 0x64, 0x6d, 0x69,
 	0x6e, 0x2e, 0x57, 0x6f, 0x72, 0x6b, 0x65, 0x72, 0x44, 0x6f, 0x6e, 0x65, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x42, 0x22, 0x5a, 0x20, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72,
+	0x6f, 0x6e, 0x73, 0x65, 0x42, 0x32, 0x5a, 0x30, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d,
+	0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72,
 	0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f,
 	0x76, 0x31, 0x3b, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_tricium_api_admin_v1_tracker_proto_rawDescOnce sync.Once
-	file_infra_tricium_api_admin_v1_tracker_proto_rawDescData []byte
+	file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDescData []byte
 )
 
-func file_infra_tricium_api_admin_v1_tracker_proto_rawDescGZIP() []byte {
-	file_infra_tricium_api_admin_v1_tracker_proto_rawDescOnce.Do(func() {
-		file_infra_tricium_api_admin_v1_tracker_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_tricium_api_admin_v1_tracker_proto_rawDesc), len(file_infra_tricium_api_admin_v1_tracker_proto_rawDesc)))
+func file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDesc), len(file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDesc)))
 	})
-	return file_infra_tricium_api_admin_v1_tracker_proto_rawDescData
+	return file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDescData
 }
 
-var file_infra_tricium_api_admin_v1_tracker_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
-var file_infra_tricium_api_admin_v1_tracker_proto_goTypes = []any{
+var file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_goTypes = []any{
 	(*WorkflowLaunchedRequest)(nil),  // 0: admin.WorkflowLaunchedRequest
 	(*WorkflowLaunchedResponse)(nil), // 1: admin.WorkflowLaunchedResponse
 	(*WorkerLaunchedRequest)(nil),    // 2: admin.WorkerLaunchedRequest
@@ -414,7 +418,7 @@ var file_infra_tricium_api_admin_v1_tracker_proto_goTypes = []any{
 	(v1.Data_Type)(0),                // 6: tricium.Data.Type
 	(v1.State)(0),                    // 7: tricium.State
 }
-var file_infra_tricium_api_admin_v1_tracker_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_depIdxs = []int32{
 	6, // 0: admin.WorkerDoneRequest.provides:type_name -> tricium.Data.Type
 	7, // 1: admin.WorkerDoneRequest.state:type_name -> tricium.State
 	0, // 2: admin.Tracker.WorkflowLaunched:input_type -> admin.WorkflowLaunchedRequest
@@ -430,28 +434,28 @@ var file_infra_tricium_api_admin_v1_tracker_proto_depIdxs = []int32{
 	0, // [0:2] is the sub-list for field type_name
 }
 
-func init() { file_infra_tricium_api_admin_v1_tracker_proto_init() }
-func file_infra_tricium_api_admin_v1_tracker_proto_init() {
-	if File_infra_tricium_api_admin_v1_tracker_proto != nil {
+func init() { file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_init() }
+func file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_init() {
+	if File_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_tricium_api_admin_v1_tracker_proto_rawDesc), len(file_infra_tricium_api_admin_v1_tracker_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDesc), len(file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_tricium_api_admin_v1_tracker_proto_goTypes,
-		DependencyIndexes: file_infra_tricium_api_admin_v1_tracker_proto_depIdxs,
-		MessageInfos:      file_infra_tricium_api_admin_v1_tracker_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_msgTypes,
 	}.Build()
-	File_infra_tricium_api_admin_v1_tracker_proto = out.File
-	file_infra_tricium_api_admin_v1_tracker_proto_goTypes = nil
-	file_infra_tricium_api_admin_v1_tracker_proto_depIdxs = nil
+	File_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto = out.File
+	file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_goTypes = nil
+	file_go_chromium_org_infra_tricium_api_admin_v1_tracker_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -643,5 +647,5 @@ var _Tracker_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/tricium/api/admin/v1/tracker.proto",
+	Metadata: "go.chromium.org/infra/tricium/api/admin/v1/tracker.proto",
 }

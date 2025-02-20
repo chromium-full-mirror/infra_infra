@@ -13,7 +13,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"infra/cros/satlab/common/paths"
+	"go.chromium.org/infra/cros/satlab/common/paths"
 )
 
 func TestValidateArgs(t *testing.T) {

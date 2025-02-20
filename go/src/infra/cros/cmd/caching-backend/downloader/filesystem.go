@@ -18,7 +18,7 @@ import (
 	"sync"
 	"time"
 
-	"infra/libs/otil"
+	"go.chromium.org/infra/libs/otil"
 )
 
 // mkfsHandler handles the series RPCs of mkfs-<fs_type>.

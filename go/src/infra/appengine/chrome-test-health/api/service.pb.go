@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/appengine/chrome-test-health/api/service.proto
+// source: go.chromium.org/infra/appengine/chrome-test-health/api/service.proto
 
 package api
 
@@ -82,11 +82,11 @@ func (x MetricType) String() string {
 }
 
 func (MetricType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_appengine_chrome_test_health_api_service_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_enumTypes[0].Descriptor()
 }
 
 func (MetricType) Type() protoreflect.EnumType {
-	return &file_infra_appengine_chrome_test_health_api_service_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_enumTypes[0]
 }
 
 func (x MetricType) Number() protoreflect.EnumNumber {
@@ -95,7 +95,7 @@ func (x MetricType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use MetricType.Descriptor instead.
 func (MetricType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{0}
 }
 
 // Sort types includes all metric types as well as the name (ie test name or
@@ -151,11 +151,11 @@ func (x SortType) String() string {
 }
 
 func (SortType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_appengine_chrome_test_health_api_service_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_enumTypes[1].Descriptor()
 }
 
 func (SortType) Type() protoreflect.EnumType {
-	return &file_infra_appengine_chrome_test_health_api_service_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_enumTypes[1]
 }
 
 func (x SortType) Number() protoreflect.EnumNumber {
@@ -164,7 +164,7 @@ func (x SortType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SortType.Descriptor instead.
 func (SortType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{1}
 }
 
 // Enumeration to specify the time period to fetch
@@ -204,11 +204,11 @@ func (x Period) String() string {
 }
 
 func (Period) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_appengine_chrome_test_health_api_service_proto_enumTypes[2].Descriptor()
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_enumTypes[2].Descriptor()
 }
 
 func (Period) Type() protoreflect.EnumType {
-	return &file_infra_appengine_chrome_test_health_api_service_proto_enumTypes[2]
+	return &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_enumTypes[2]
 }
 
 func (x Period) Number() protoreflect.EnumNumber {
@@ -217,7 +217,7 @@ func (x Period) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Period.Descriptor instead.
 func (Period) EnumDescriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{2}
 }
 
 type DirectoryNodeType int32
@@ -253,11 +253,11 @@ func (x DirectoryNodeType) String() string {
 }
 
 func (DirectoryNodeType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_appengine_chrome_test_health_api_service_proto_enumTypes[3].Descriptor()
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_enumTypes[3].Descriptor()
 }
 
 func (DirectoryNodeType) Type() protoreflect.EnumType {
-	return &file_infra_appengine_chrome_test_health_api_service_proto_enumTypes[3]
+	return &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_enumTypes[3]
 }
 
 func (x DirectoryNodeType) Number() protoreflect.EnumNumber {
@@ -266,7 +266,7 @@ func (x DirectoryNodeType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DirectoryNodeType.Descriptor instead.
 func (DirectoryNodeType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{3}
 }
 
 type UpdateMetricsTableRequest struct {
@@ -283,7 +283,7 @@ type UpdateMetricsTableRequest struct {
 
 func (x *UpdateMetricsTableRequest) Reset() {
 	*x = UpdateMetricsTableRequest{}
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -295,7 +295,7 @@ func (x *UpdateMetricsTableRequest) String() string {
 func (*UpdateMetricsTableRequest) ProtoMessage() {}
 
 func (x *UpdateMetricsTableRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -308,7 +308,7 @@ func (x *UpdateMetricsTableRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateMetricsTableRequest.ProtoReflect.Descriptor instead.
 func (*UpdateMetricsTableRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *UpdateMetricsTableRequest) GetFromDate() string {
@@ -333,7 +333,7 @@ type UpdateMetricsTableResponse struct {
 
 func (x *UpdateMetricsTableResponse) Reset() {
 	*x = UpdateMetricsTableResponse{}
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -345,7 +345,7 @@ func (x *UpdateMetricsTableResponse) String() string {
 func (*UpdateMetricsTableResponse) ProtoMessage() {}
 
 func (x *UpdateMetricsTableResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -358,7 +358,7 @@ func (x *UpdateMetricsTableResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateMetricsTableResponse.ProtoReflect.Descriptor instead.
 func (*UpdateMetricsTableResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{1}
 }
 
 type ListComponentsRequest struct {
@@ -369,7 +369,7 @@ type ListComponentsRequest struct {
 
 func (x *ListComponentsRequest) Reset() {
 	*x = ListComponentsRequest{}
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -381,7 +381,7 @@ func (x *ListComponentsRequest) String() string {
 func (*ListComponentsRequest) ProtoMessage() {}
 
 func (x *ListComponentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -394,7 +394,7 @@ func (x *ListComponentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListComponentsRequest.ProtoReflect.Descriptor instead.
 func (*ListComponentsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{2}
 }
 
 type ListComponentsResponse struct {
@@ -411,7 +411,7 @@ type ListComponentsResponse struct {
 
 func (x *ListComponentsResponse) Reset() {
 	*x = ListComponentsResponse{}
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -423,7 +423,7 @@ func (x *ListComponentsResponse) String() string {
 func (*ListComponentsResponse) ProtoMessage() {}
 
 func (x *ListComponentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -436,7 +436,7 @@ func (x *ListComponentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListComponentsResponse.ProtoReflect.Descriptor instead.
 func (*ListComponentsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ListComponentsResponse) GetComponents() []string {
@@ -468,7 +468,7 @@ type SortBy struct {
 
 func (x *SortBy) Reset() {
 	*x = SortBy{}
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -480,7 +480,7 @@ func (x *SortBy) String() string {
 func (*SortBy) ProtoMessage() {}
 
 func (x *SortBy) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -493,7 +493,7 @@ func (x *SortBy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SortBy.ProtoReflect.Descriptor instead.
 func (*SortBy) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *SortBy) GetMetric() SortType {
@@ -550,7 +550,7 @@ type FetchTestMetricsRequest struct {
 
 func (x *FetchTestMetricsRequest) Reset() {
 	*x = FetchTestMetricsRequest{}
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -562,7 +562,7 @@ func (x *FetchTestMetricsRequest) String() string {
 func (*FetchTestMetricsRequest) ProtoMessage() {}
 
 func (x *FetchTestMetricsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -575,7 +575,7 @@ func (x *FetchTestMetricsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchTestMetricsRequest.ProtoReflect.Descriptor instead.
 func (*FetchTestMetricsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *FetchTestMetricsRequest) GetComponents() []string {
@@ -654,7 +654,7 @@ type FetchTestMetricsResponse struct {
 
 func (x *FetchTestMetricsResponse) Reset() {
 	*x = FetchTestMetricsResponse{}
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -666,7 +666,7 @@ func (x *FetchTestMetricsResponse) String() string {
 func (*FetchTestMetricsResponse) ProtoMessage() {}
 
 func (x *FetchTestMetricsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -679,7 +679,7 @@ func (x *FetchTestMetricsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchTestMetricsResponse.ProtoReflect.Descriptor instead.
 func (*FetchTestMetricsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *FetchTestMetricsResponse) GetTests() []*TestDateMetricData {
@@ -715,7 +715,7 @@ type TestDateMetricData struct {
 
 func (x *TestDateMetricData) Reset() {
 	*x = TestDateMetricData{}
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -727,7 +727,7 @@ func (x *TestDateMetricData) String() string {
 func (*TestDateMetricData) ProtoMessage() {}
 
 func (x *TestDateMetricData) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -740,7 +740,7 @@ func (x *TestDateMetricData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestDateMetricData.ProtoReflect.Descriptor instead.
 func (*TestDateMetricData) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *TestDateMetricData) GetTestId() string {
@@ -795,7 +795,7 @@ type TestVariantData struct {
 
 func (x *TestVariantData) Reset() {
 	*x = TestVariantData{}
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -807,7 +807,7 @@ func (x *TestVariantData) String() string {
 func (*TestVariantData) ProtoMessage() {}
 
 func (x *TestVariantData) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -820,7 +820,7 @@ func (x *TestVariantData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestVariantData.ProtoReflect.Descriptor instead.
 func (*TestVariantData) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *TestVariantData) GetSuite() string {
@@ -861,7 +861,7 @@ type TestMetricsArray struct {
 
 func (x *TestMetricsArray) Reset() {
 	*x = TestMetricsArray{}
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -873,7 +873,7 @@ func (x *TestMetricsArray) String() string {
 func (*TestMetricsArray) ProtoMessage() {}
 
 func (x *TestMetricsArray) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -886,7 +886,7 @@ func (x *TestMetricsArray) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestMetricsArray.ProtoReflect.Descriptor instead.
 func (*TestMetricsArray) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *TestMetricsArray) GetData() []*TestMetricsData {
@@ -908,7 +908,7 @@ type TestMetricsData struct {
 
 func (x *TestMetricsData) Reset() {
 	*x = TestMetricsData{}
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -920,7 +920,7 @@ func (x *TestMetricsData) String() string {
 func (*TestMetricsData) ProtoMessage() {}
 
 func (x *TestMetricsData) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -933,7 +933,7 @@ func (x *TestMetricsData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestMetricsData.ProtoReflect.Descriptor instead.
 func (*TestMetricsData) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *TestMetricsData) GetMetricType() MetricType {
@@ -981,7 +981,7 @@ type FetchDirectoryMetricsRequest struct {
 
 func (x *FetchDirectoryMetricsRequest) Reset() {
 	*x = FetchDirectoryMetricsRequest{}
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -993,7 +993,7 @@ func (x *FetchDirectoryMetricsRequest) String() string {
 func (*FetchDirectoryMetricsRequest) ProtoMessage() {}
 
 func (x *FetchDirectoryMetricsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1006,7 +1006,7 @@ func (x *FetchDirectoryMetricsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchDirectoryMetricsRequest.ProtoReflect.Descriptor instead.
 func (*FetchDirectoryMetricsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{11}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *FetchDirectoryMetricsRequest) GetComponents() []string {
@@ -1069,7 +1069,7 @@ type FetchDirectoryMetricsResponse struct {
 
 func (x *FetchDirectoryMetricsResponse) Reset() {
 	*x = FetchDirectoryMetricsResponse{}
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1081,7 +1081,7 @@ func (x *FetchDirectoryMetricsResponse) String() string {
 func (*FetchDirectoryMetricsResponse) ProtoMessage() {}
 
 func (x *FetchDirectoryMetricsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1094,7 +1094,7 @@ func (x *FetchDirectoryMetricsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchDirectoryMetricsResponse.ProtoReflect.Descriptor instead.
 func (*FetchDirectoryMetricsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{12}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *FetchDirectoryMetricsResponse) GetNodes() []*DirectoryNode {
@@ -1121,7 +1121,7 @@ type DirectoryNode struct {
 
 func (x *DirectoryNode) Reset() {
 	*x = DirectoryNode{}
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1133,7 +1133,7 @@ func (x *DirectoryNode) String() string {
 func (*DirectoryNode) ProtoMessage() {}
 
 func (x *DirectoryNode) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_service_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1146,7 +1146,7 @@ func (x *DirectoryNode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DirectoryNode.ProtoReflect.Descriptor instead.
 func (*DirectoryNode) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{13}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *DirectoryNode) GetId() string {
@@ -1177,10 +1177,11 @@ func (x *DirectoryNode) GetMetrics() map[string]*TestMetricsArray {
 	return nil
 }
 
-var File_infra_appengine_chrome_test_health_api_service_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto protoreflect.FileDescriptor
 
-var file_infra_appengine_chrome_test_health_api_service_proto_rawDesc = string([]byte{
-	0x0a, 0x34, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
+var file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDesc = string([]byte{
+	0x0a, 0x44, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
 	0x65, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x2d, 0x74, 0x65, 0x73, 0x74, 0x2d, 0x68, 0x65,
 	0x61, 0x6c, 0x74, 0x68, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73,
@@ -1389,27 +1390,28 @@ var file_infra_appengine_chrome_test_health_api_service_proto_rawDesc = string([
 	0x1a, 0x2d, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
 	0x73, 0x2e, 0x46, 0x65, 0x74, 0x63, 0x68, 0x44, 0x69, 0x72, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x79,
 	0x4d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42,
-	0x28, 0x5a, 0x26, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69,
+	0x38, 0x5a, 0x36, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f,
+	0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69,
 	0x6e, 0x65, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x2d, 0x74, 0x65, 0x73, 0x74, 0x2d, 0x68,
 	0x65, 0x61, 0x6c, 0x74, 0x68, 0x2f, 0x61, 0x70, 0x69, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x33,
 })
 
 var (
-	file_infra_appengine_chrome_test_health_api_service_proto_rawDescOnce sync.Once
-	file_infra_appengine_chrome_test_health_api_service_proto_rawDescData []byte
+	file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescData []byte
 )
 
-func file_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP() []byte {
-	file_infra_appengine_chrome_test_health_api_service_proto_rawDescOnce.Do(func() {
-		file_infra_appengine_chrome_test_health_api_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_appengine_chrome_test_health_api_service_proto_rawDesc), len(file_infra_appengine_chrome_test_health_api_service_proto_rawDesc)))
+func file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDesc), len(file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDesc)))
 	})
-	return file_infra_appengine_chrome_test_health_api_service_proto_rawDescData
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDescData
 }
 
-var file_infra_appengine_chrome_test_health_api_service_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_infra_appengine_chrome_test_health_api_service_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
-var file_infra_appengine_chrome_test_health_api_service_proto_goTypes = []any{
+var file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_goTypes = []any{
 	(MetricType)(0),                       // 0: test_resources.MetricType
 	(SortType)(0),                         // 1: test_resources.SortType
 	(Period)(0),                           // 2: test_resources.Period
@@ -1432,7 +1434,7 @@ var file_infra_appengine_chrome_test_health_api_service_proto_goTypes = []any{
 	nil,                                   // 19: test_resources.TestVariantData.MetricsEntry
 	nil,                                   // 20: test_resources.DirectoryNode.MetricsEntry
 }
-var file_infra_appengine_chrome_test_health_api_service_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_depIdxs = []int32{
 	1,  // 0: test_resources.SortBy.metric:type_name -> test_resources.SortType
 	2,  // 1: test_resources.FetchTestMetricsRequest.period:type_name -> test_resources.Period
 	0,  // 2: test_resources.FetchTestMetricsRequest.metrics:type_name -> test_resources.MetricType
@@ -1467,29 +1469,29 @@ var file_infra_appengine_chrome_test_health_api_service_proto_depIdxs = []int32{
 	0,  // [0:19] is the sub-list for field type_name
 }
 
-func init() { file_infra_appengine_chrome_test_health_api_service_proto_init() }
-func file_infra_appengine_chrome_test_health_api_service_proto_init() {
-	if File_infra_appengine_chrome_test_health_api_service_proto != nil {
+func init() { file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_init() }
+func file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_init() {
+	if File_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_appengine_chrome_test_health_api_service_proto_rawDesc), len(file_infra_appengine_chrome_test_health_api_service_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDesc), len(file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_rawDesc)),
 			NumEnums:      4,
 			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_appengine_chrome_test_health_api_service_proto_goTypes,
-		DependencyIndexes: file_infra_appengine_chrome_test_health_api_service_proto_depIdxs,
-		EnumInfos:         file_infra_appengine_chrome_test_health_api_service_proto_enumTypes,
-		MessageInfos:      file_infra_appengine_chrome_test_health_api_service_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_msgTypes,
 	}.Build()
-	File_infra_appengine_chrome_test_health_api_service_proto = out.File
-	file_infra_appengine_chrome_test_health_api_service_proto_goTypes = nil
-	file_infra_appengine_chrome_test_health_api_service_proto_depIdxs = nil
+	File_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto = out.File
+	file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_goTypes = nil
+	file_go_chromium_org_infra_appengine_chrome_test_health_api_service_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1732,5 +1734,5 @@ var _Stats_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/appengine/chrome-test-health/api/service.proto",
+	Metadata: "go.chromium.org/infra/appengine/chrome-test-health/api/service.proto",
 }

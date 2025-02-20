@@ -16,8 +16,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	luciauth "go.chromium.org/luci/server/auth"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/libs/fleet/scheduling/api"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/libs/fleet/scheduling/api"
 )
 
 const schedukeTaskSwarmingTagKey = "scheduke-admin-task"

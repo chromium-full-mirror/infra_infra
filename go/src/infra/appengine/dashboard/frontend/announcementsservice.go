@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/auth/identity"
 	"go.chromium.org/luci/server/auth"
 
-	dashpb "infra/appengine/dashboard/api/dashboard"
-	"infra/appengine/dashboard/backend"
+	dashpb "go.chromium.org/infra/appengine/dashboard/api/dashboard"
+	"go.chromium.org/infra/appengine/dashboard/backend"
 )
 
 const announcementGroup = "chops-announcements-access"

@@ -7,7 +7,7 @@ package vmlab
 import (
 	"strings"
 
-	"infra/libs/skylab/request"
+	"go.chromium.org/infra/libs/skylab/request"
 )
 
 const (

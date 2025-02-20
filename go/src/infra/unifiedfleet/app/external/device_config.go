@@ -13,7 +13,7 @@ import (
 	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/unifiedfleet/app/model/configuration"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
 )
 
 // DeviceConfigClient handles read operations for DeviceConfigs

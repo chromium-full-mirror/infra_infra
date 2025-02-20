@@ -24,7 +24,7 @@ import (
 	"go.chromium.org/luci/common/sync/dispatcher/buffer"
 )
 
-// Original RAMBufferedBQInserter is at "infra/qscheduler/service/app/eventlog/ram.go".
+// Original RAMBufferedBQInserter is at "go.chromium.org/infra/qscheduler/service/app/eventlog/ram.go".
 
 // Inserter implements an interface to interact with Bigquery.
 // TODO: consider moving the interface to the consumer side.

@@ -14,12 +14,12 @@ import (
 	"go.chromium.org/luci/common/testing/typed"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	fleetcostpb "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/costserver"
-	"infra/cros/fleetcost/internal/costserver/entities"
-	"infra/cros/fleetcost/internal/costserver/testsupport"
-	"infra/cros/fleetcost/internal/utils"
+	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/entities"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/testsupport"
+	"go.chromium.org/infra/cros/fleetcost/internal/utils"
 )
 
 // TestCostIndicatorSimple tests putting a cost indicator into database and retrieving it.

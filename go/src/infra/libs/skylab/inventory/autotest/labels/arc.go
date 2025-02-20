@@ -4,7 +4,7 @@
 
 package labels
 
-import "infra/libs/skylab/inventory"
+import "go.chromium.org/infra/libs/skylab/inventory"
 
 func init() {
 	converters = append(converters, arcConverter)

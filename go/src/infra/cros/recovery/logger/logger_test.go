@@ -11,7 +11,7 @@ import (
 	"os"
 	"testing"
 
-	"infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/assert"
 )
 
 var want = `

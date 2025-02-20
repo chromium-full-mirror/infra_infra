@@ -9,7 +9,7 @@ import (
 
 	"cloud.google.com/go/bigquery"
 
-	"infra/libs/bqschema/tabledef"
+	"go.chromium.org/infra/libs/bqschema/tabledef"
 )
 
 // TestSchemaTable is a schema table used for testing.

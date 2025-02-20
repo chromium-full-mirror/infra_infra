@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/tools/dirmd/cli/updater"
+	"go.chromium.org/infra/tools/dirmd/cli/updater"
 )
 
 var bqTableRe = regexp.MustCompile(`^([^.]+)\.([^.]+)\.([^.]+)$`)

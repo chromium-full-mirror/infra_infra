@@ -21,10 +21,10 @@ import (
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-	"infra/tools/vpython/legacy/vpython2.7/luci/application"
-	"infra/tools/vpython/legacy/vpython2.7/luci/cipd"
-	"infra/tools/vpython/legacy/vpython2.7/luci/spec"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/application"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/cipd"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/spec"
 )
 
 const (
@@ -101,7 +101,7 @@ var defaultConfig = application.Config{
 		PythonVersion: "2.7",
 	},
 	VENVPackage: vpython.Spec_Package{
-		Name:    "infra/3pp/tools/virtualenv",
+		Name:    "go.chromium.org/infra/3pp/tools/virtualenv",
 		Version: "version:2@16.7.10.chromium.7",
 	},
 	InterpreterPaths:        setupBundledInterpreters(),

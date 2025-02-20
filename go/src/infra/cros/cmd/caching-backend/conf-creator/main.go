@@ -21,8 +21,8 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/grpc/prpc"
 
-	models "infra/unifiedfleet/api/v1/models"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	models "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 var (

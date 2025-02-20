@@ -23,8 +23,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/environ"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/python"
-	"infra/tools/vpython/legacy/vpython2.7/luci/venv"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/python"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/venv"
 )
 
 // Run sets up a Python VirtualEnv and executes the supplied Options.

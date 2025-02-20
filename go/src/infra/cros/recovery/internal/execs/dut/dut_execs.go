@@ -11,12 +11,12 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/dutstate"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/scopes"
-	"infra/cros/recovery/tlw"
-	ufsProto "infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/scopes"
+	"go.chromium.org/infra/cros/recovery/tlw"
+	ufsProto "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 // hasDutNameActionExec verifies that DUT provides name.

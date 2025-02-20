@@ -12,7 +12,7 @@ import (
 	gotesting "testing"
 	"time"
 
-	"infra/cros/cmd/cros-tool-runner/internal/common"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/common"
 )
 
 func TestPoll(t *gotesting.T) {

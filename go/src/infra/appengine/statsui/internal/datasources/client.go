@@ -16,7 +16,7 @@ import (
 
 	"go.chromium.org/luci/grpc/appstatus"
 
-	"infra/appengine/statsui/api"
+	"go.chromium.org/infra/appengine/statsui/api"
 )
 
 // Client is used to fetch metrics from a given data source.

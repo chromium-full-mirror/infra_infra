@@ -16,7 +16,7 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/internal/components"
 )
 
 // CBILocation stores the port and address needed to reference CBI contents in

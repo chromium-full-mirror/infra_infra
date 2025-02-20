@@ -26,9 +26,9 @@ import (
 	"go.chromium.org/luci/server/secrets"
 	_ "go.chromium.org/luci/server/tq/txn/datastore"
 
-	sompb "infra/appengine/sheriff-o-matic/proto/v1"
-	"infra/appengine/sheriff-o-matic/rpc"
-	"infra/appengine/sheriff-o-matic/som/handler"
+	sompb "go.chromium.org/infra/appengine/sheriff-o-matic/proto/v1"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/rpc"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/handler"
 )
 
 const (

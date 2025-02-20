@@ -22,8 +22,8 @@ import (
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/common/testing/testfs"
 
-	"infra/chromium/bootstrapper/clients/gitiles"
-	"infra/chromium/util"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gitiles"
+	"go.chromium.org/infra/chromium/util"
 )
 
 type PathObject struct {

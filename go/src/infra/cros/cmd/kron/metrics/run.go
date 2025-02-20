@@ -14,7 +14,7 @@ import (
 
 	kronpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
 
-	"infra/cros/cmd/kron/common"
+	"go.chromium.org/infra/cros/cmd/kron/common"
 )
 
 // Pseudo-immutable package variables.

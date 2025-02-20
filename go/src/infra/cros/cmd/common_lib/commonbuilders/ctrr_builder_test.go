@@ -18,8 +18,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/cmd/common_lib/common"
-	builders "infra/cros/cmd/common_lib/commonbuilders"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	builders "go.chromium.org/infra/cros/cmd/common_lib/commonbuilders"
 )
 
 func TestCrosTestRunnerRequestBuilder(t *testing.T) {

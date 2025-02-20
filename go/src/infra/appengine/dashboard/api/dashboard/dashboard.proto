@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package dashboard;
 
-option go_package = "infra/appengine/dashboard/api/dashboard";
+option go_package = "go.chromium.org/infra/appengine/dashboard/api/dashboard";
 
 import "google/protobuf/timestamp.proto";
 

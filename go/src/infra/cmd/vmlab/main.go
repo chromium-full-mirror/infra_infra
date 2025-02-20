@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	"infra/cmd/vmlab/internal/cmd"
+	"go.chromium.org/infra/cmd/vmlab/internal/cmd"
 )
 
 var application = &cli.Application{

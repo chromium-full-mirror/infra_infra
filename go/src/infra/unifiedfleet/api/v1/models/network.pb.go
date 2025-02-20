@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/unifiedfleet/api/v1/models/network.proto
+// source: go.chromium.org/infra/unifiedfleet/api/v1/models/network.proto
 
 package ufspb
 
@@ -52,7 +52,7 @@ type Nic struct {
 
 func (x *Nic) Reset() {
 	*x = Nic{}
-	mi := &file_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -64,7 +64,7 @@ func (x *Nic) String() string {
 func (*Nic) ProtoMessage() {}
 
 func (x *Nic) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -77,7 +77,7 @@ func (x *Nic) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Nic.ProtoReflect.Descriptor instead.
 func (*Nic) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_network_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Nic) GetName() string {
@@ -167,9 +167,9 @@ type Vlan struct {
 	// The format of the ip ranges are ipv4 string format, e.g. 192.168.1.23.
 	// User can update reserved_ips to remove some of the available ips in the free range.
 	//
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/network.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/network.proto.
 	FreeStartIpv4Str string `protobuf:"bytes,11,opt,name=free_start_ipv4Str,json=freeStartIpv4Str,proto3" json:"free_start_ipv4Str,omitempty"`
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/network.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/network.proto.
 	FreeEndIpv4Str string `protobuf:"bytes,12,opt,name=free_end_ipv4Str,json=freeEndIpv4Str,proto3" json:"free_end_ipv4Str,omitempty"`
 	// The start of the free IP range, in IPv4 or IPv6.
 	FreeStartIp string `protobuf:"bytes,17,opt,name=free_start_ip,json=freeStartIp,proto3" json:"free_start_ip,omitempty"`
@@ -195,7 +195,7 @@ type Vlan struct {
 
 func (x *Vlan) Reset() {
 	*x = Vlan{}
-	mi := &file_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -207,7 +207,7 @@ func (x *Vlan) String() string {
 func (*Vlan) ProtoMessage() {}
 
 func (x *Vlan) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -220,7 +220,7 @@ func (x *Vlan) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Vlan.ProtoReflect.Descriptor instead.
 func (*Vlan) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_network_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Vlan) GetName() string {
@@ -265,7 +265,7 @@ func (x *Vlan) GetReservedIps() []string {
 	return nil
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/network.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/network.proto.
 func (x *Vlan) GetFreeStartIpv4Str() string {
 	if x != nil {
 		return x.FreeStartIpv4Str
@@ -273,7 +273,7 @@ func (x *Vlan) GetFreeStartIpv4Str() string {
 	return ""
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/network.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/network.proto.
 func (x *Vlan) GetFreeEndIpv4Str() string {
 	if x != nil {
 		return x.FreeEndIpv4Str
@@ -357,7 +357,7 @@ type DHCPConfig struct {
 
 func (x *DHCPConfig) Reset() {
 	*x = DHCPConfig{}
-	mi := &file_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -369,7 +369,7 @@ func (x *DHCPConfig) String() string {
 func (*DHCPConfig) ProtoMessage() {}
 
 func (x *DHCPConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -382,7 +382,7 @@ func (x *DHCPConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DHCPConfig.ProtoReflect.Descriptor instead.
 func (*DHCPConfig) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_network_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *DHCPConfig) GetMacAddress() string {
@@ -430,7 +430,7 @@ type AllDHCPConfigs struct {
 
 func (x *AllDHCPConfigs) Reset() {
 	*x = AllDHCPConfigs{}
-	mi := &file_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -442,7 +442,7 @@ func (x *AllDHCPConfigs) String() string {
 func (*AllDHCPConfigs) ProtoMessage() {}
 
 func (x *AllDHCPConfigs) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -455,7 +455,7 @@ func (x *AllDHCPConfigs) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AllDHCPConfigs.ProtoReflect.Descriptor instead.
 func (*AllDHCPConfigs) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_network_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *AllDHCPConfigs) GetConfigs() []*DHCPConfig {
@@ -488,7 +488,7 @@ type IP struct {
 
 func (x *IP) Reset() {
 	*x = IP{}
-	mi := &file_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -500,7 +500,7 @@ func (x *IP) String() string {
 func (*IP) ProtoMessage() {}
 
 func (x *IP) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -513,7 +513,7 @@ func (x *IP) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IP.ProtoReflect.Descriptor instead.
 func (*IP) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_network_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *IP) GetId() string {
@@ -572,10 +572,11 @@ func (x *IP) GetReserve() bool {
 	return false
 }
 
-var File_infra_unifiedfleet_api_v1_models_network_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto protoreflect.FileDescriptor
 
-var file_infra_unifiedfleet_api_v1_models_network_proto_rawDesc = string([]byte{
-	0x0a, 0x2e, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDesc = string([]byte{
+	0x0a, 0x3e, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x12, 0x1a, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x61,
@@ -585,13 +586,16 @@ var file_infra_unifiedfleet_api_v1_models_network_proto_rawDesc = string([]byte{
 	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x5f,
 	0x62, 0x65, 0x68, 0x61, 0x76, 0x69, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x19,
 	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x73, 0x6f, 0x75,
-	0x72, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x32, 0x69, 0x6e, 0x66, 0x72, 0x61,
+	0x72, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x42, 0x67, 0x6f, 0x2e, 0x63, 0x68,
+	0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61,
 	0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70,
 	0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x70, 0x65, 0x72, 0x69,
-	0x70, 0x68, 0x65, 0x72, 0x61, 0x6c, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2c, 0x69,
+	0x70, 0x68, 0x65, 0x72, 0x61, 0x6c, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3c, 0x67,
+	0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69,
 	0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65,
 	0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f,
-	0x73, 0x74, 0x61, 0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2f, 0x69, 0x6e, 0x66,
+	0x73, 0x74, 0x61, 0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3f, 0x67, 0x6f, 0x2e,
+	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66,
 	0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x6c, 0x6f,
 	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xa6, 0x04, 0x0a,
@@ -707,26 +711,27 @@ var file_infra_unifiedfleet_api_v1_models_network_proto_rawDesc = string([]byte{
 	0x69, 0x70, 0x76, 0x36, 0x53, 0x74, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x6f, 0x63, 0x63, 0x75, 0x70,
 	0x69, 0x65, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x6f, 0x63, 0x63, 0x75, 0x70,
 	0x69, 0x65, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x18, 0x06,
-	0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x42, 0x28, 0x5a,
-	0x26, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x72, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x42, 0x38, 0x5a,
+	0x36, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67,
+	0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c,
 	0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c,
 	0x73, 0x3b, 0x75, 0x66, 0x73, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_unifiedfleet_api_v1_models_network_proto_rawDescOnce sync.Once
-	file_infra_unifiedfleet_api_v1_models_network_proto_rawDescData []byte
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDescData []byte
 )
 
-func file_infra_unifiedfleet_api_v1_models_network_proto_rawDescGZIP() []byte {
-	file_infra_unifiedfleet_api_v1_models_network_proto_rawDescOnce.Do(func() {
-		file_infra_unifiedfleet_api_v1_models_network_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_network_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_network_proto_rawDesc)))
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDesc)))
 	})
-	return file_infra_unifiedfleet_api_v1_models_network_proto_rawDescData
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_models_network_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
-var file_infra_unifiedfleet_api_v1_models_network_proto_goTypes = []any{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_goTypes = []any{
 	(*Nic)(nil),                   // 0: unifiedfleet.api.v1.models.Nic
 	(*Vlan)(nil),                  // 1: unifiedfleet.api.v1.models.Vlan
 	(*DHCPConfig)(nil),            // 2: unifiedfleet.api.v1.models.DHCPConfig
@@ -737,7 +742,7 @@ var file_infra_unifiedfleet_api_v1_models_network_proto_goTypes = []any{
 	(State)(0),                    // 7: unifiedfleet.api.v1.models.State
 	(Zone)(0),                     // 8: unifiedfleet.api.v1.models.Zone
 }
-var file_infra_unifiedfleet_api_v1_models_network_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_depIdxs = []int32{
 	5, // 0: unifiedfleet.api.v1.models.Nic.update_time:type_name -> google.protobuf.Timestamp
 	6, // 1: unifiedfleet.api.v1.models.Nic.switch_interface:type_name -> unifiedfleet.api.v1.models.SwitchInterface
 	7, // 2: unifiedfleet.api.v1.models.Nic.resource_state:type_name -> unifiedfleet.api.v1.models.State
@@ -753,29 +758,29 @@ var file_infra_unifiedfleet_api_v1_models_network_proto_depIdxs = []int32{
 	0, // [0:8] is the sub-list for field type_name
 }
 
-func init() { file_infra_unifiedfleet_api_v1_models_network_proto_init() }
-func file_infra_unifiedfleet_api_v1_models_network_proto_init() {
-	if File_infra_unifiedfleet_api_v1_models_network_proto != nil {
+func init() { file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_init() }
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_init() {
+	if File_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto != nil {
 		return
 	}
-	file_infra_unifiedfleet_api_v1_models_peripherals_proto_init()
-	file_infra_unifiedfleet_api_v1_models_state_proto_init()
-	file_infra_unifiedfleet_api_v1_models_location_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_peripherals_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_state_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_location_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_network_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_network_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_unifiedfleet_api_v1_models_network_proto_goTypes,
-		DependencyIndexes: file_infra_unifiedfleet_api_v1_models_network_proto_depIdxs,
-		MessageInfos:      file_infra_unifiedfleet_api_v1_models_network_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_msgTypes,
 	}.Build()
-	File_infra_unifiedfleet_api_v1_models_network_proto = out.File
-	file_infra_unifiedfleet_api_v1_models_network_proto_goTypes = nil
-	file_infra_unifiedfleet_api_v1_models_network_proto_depIdxs = nil
+	File_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto = out.File
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_goTypes = nil
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_depIdxs = nil
 }

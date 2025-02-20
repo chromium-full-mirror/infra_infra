@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	"infra/cros/cmd/suite_publisher/internal/suite"
+	"go.chromium.org/infra/cros/cmd/suite_publisher/internal/suite"
 )
 
 // ReadSuitesAndSuiteSets reads the proto files and returns a map of

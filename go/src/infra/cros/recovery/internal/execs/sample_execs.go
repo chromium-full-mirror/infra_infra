@@ -12,8 +12,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
 )
 
 // samplePassActionExec provides example to run action which always pass.

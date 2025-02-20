@@ -4,7 +4,7 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/types/known/structpb"
 
-	"infra/chromium/util"
+	"go.chromium.org/infra/chromium/util"
 )
 
 func jsonToStruct(json string) *structpb.Struct {

@@ -15,10 +15,10 @@ import (
 	"go.chromium.org/luci/common/cli"
 	prpc "go.chromium.org/luci/grpc/prpc"
 
-	"infra/cmdsupport/cmdlib"
-	fleetcostpb "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/site"
 )
 
 var GetCostIndicatorCommand *subcommands.Command = &subcommands.Command{

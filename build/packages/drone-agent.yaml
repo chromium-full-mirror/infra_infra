@@ -3,7 +3,7 @@ description: Skylab drone agent.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cmd/drone-agent
+  - go.chromium.org/infra/cmd/drone-agent
 root: ../../go/bin
 data:
   - file: drone-agent${exe_suffix}

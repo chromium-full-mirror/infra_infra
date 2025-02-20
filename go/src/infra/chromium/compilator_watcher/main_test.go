@@ -21,7 +21,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/luciexe/exe"
 
-	bb "infra/chromium/compilator_watcher/internal/bb"
+	bb "go.chromium.org/infra/chromium/compilator_watcher/internal/bb"
 )
 
 const fakeTagName = "fake_tag_name"

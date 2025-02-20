@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	common_utils "go.chromium.org/chromiumos/test/publish/cmd/common-utils"
 
-	"infra/cros/cmd/cft/publish/ants-publish/service"
+	"go.chromium.org/infra/cros/cmd/cft/publish/ants-publish/service"
 )
 
 // CLICommand executes the publish as a CLI

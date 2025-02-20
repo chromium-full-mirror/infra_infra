@@ -7,7 +7,7 @@ package shutil_test
 import (
 	"testing"
 
-	"infra/cros/servo/shutil"
+	"go.chromium.org/infra/cros/servo/shutil"
 )
 
 func TestEscape(t *testing.T) {

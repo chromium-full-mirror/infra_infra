@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/appengine/sheriff-o-matic/som/model"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/model"
 )
 
 func TestFlushAlerts(t *testing.T) {

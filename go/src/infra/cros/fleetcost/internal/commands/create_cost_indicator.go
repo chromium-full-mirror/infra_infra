@@ -18,11 +18,11 @@ import (
 	"go.chromium.org/luci/common/errors"
 	prpc "go.chromium.org/luci/grpc/prpc"
 
-	fleetcostpb "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/site"
-	"infra/cros/fleetcost/internal/utils"
-	"infra/cros/fleetcost/internal/validation"
+	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/site"
+	"go.chromium.org/infra/cros/fleetcost/internal/utils"
+	"go.chromium.org/infra/cros/fleetcost/internal/validation"
 )
 
 var CreateCostIndicatorCommand *subcommands.Command = &subcommands.Command{

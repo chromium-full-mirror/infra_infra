@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsutil "infra/unifiedfleet/app/util"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsutil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // prpcOptions is used for UFS PRPC clients.

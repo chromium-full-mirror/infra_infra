@@ -30,7 +30,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/cmd/phosphorus/internal/tls"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/tls"
 )
 
 // FetchCrashes subcommand: fetches crashes from a DUT, optionally uploading them.

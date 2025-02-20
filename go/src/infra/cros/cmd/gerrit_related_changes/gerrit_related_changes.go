@@ -21,8 +21,8 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/gerrit"
 )
 
 var (

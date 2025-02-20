@@ -14,8 +14,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	real "infra/chromium/bootstrapper/clients/cipd"
-	"infra/chromium/util"
+	real "go.chromium.org/infra/chromium/bootstrapper/clients/cipd"
+	"go.chromium.org/infra/chromium/util"
 )
 
 func collect(cipdRoot, subdir string) map[string]string {
@@ -151,8 +151,8 @@ func TestEnsure(t *testing.T) {
 					Instances: map[string]*PackageInstance{
 						"fake-instance-id": {
 							Contents: map[string]string{
-								"infra/config/recipes.cfg": "fake-recipes.cfg",
-								"recipes/foo.py":           "fake-recipe-foo",
+								"go.chromium.org/infra/config/recipes.cfg": "fake-recipes.cfg",
+								"recipes/foo.py": "fake-recipe-foo",
 							},
 						},
 					},
@@ -169,8 +169,8 @@ func TestEnsure(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			layout := collect(cipdRoot, "fake-subdir")
 			assert.Loosely(t, layout, should.Resemble(map[string]string{
-				"infra/config/recipes.cfg": "fake-recipes.cfg",
-				"recipes/foo.py":           "fake-recipe-foo",
+				"go.chromium.org/infra/config/recipes.cfg": "fake-recipes.cfg",
+				"recipes/foo.py": "fake-recipe-foo",
 			}))
 		})
 

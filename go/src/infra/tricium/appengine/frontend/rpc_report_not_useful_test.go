@@ -16,10 +16,10 @@ import (
 	ds "go.chromium.org/luci/gae/service/datastore"
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common"
-	"infra/tricium/appengine/common/track"
-	"infra/tricium/appengine/common/triciumtest"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common"
+	"go.chromium.org/infra/tricium/appengine/common/track"
+	"go.chromium.org/infra/tricium/appengine/common/triciumtest"
 )
 
 func TestReportNotUseful(t *testing.T) {

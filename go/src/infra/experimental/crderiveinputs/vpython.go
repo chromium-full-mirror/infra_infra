@@ -18,20 +18,20 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/vpython/api/vpython"
 
-	"infra/experimental/crderiveinputs/inputpb"
+	"go.chromium.org/infra/experimental/crderiveinputs/inputpb"
 )
 
 var pyVersionMap = map[string]ensure.PackageDef{
 	"2.7": {
-		PackageTemplate:   "infra/3pp/tools/cpython/${platform}",
+		PackageTemplate:   "go.chromium.org/infra/3pp/tools/cpython/${platform}",
 		UnresolvedVersion: "version:2@2.7.18.chromium.46",
 	},
 	"3.8": {
-		PackageTemplate:   "infra/3pp/tools/cpython3/${platform}",
+		PackageTemplate:   "go.chromium.org/infra/3pp/tools/cpython3/${platform}",
 		UnresolvedVersion: "version:2@3.8.10.chromium.30",
 	},
 	"3.11": {
-		PackageTemplate:   "infra/3pp/tools/cpython3/${platform}",
+		PackageTemplate:   "go.chromium.org/infra/3pp/tools/cpython3/${platform}",
 		UnresolvedVersion: "version:2@3.11.6.chromium.30",
 	},
 }

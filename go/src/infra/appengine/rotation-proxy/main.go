@@ -21,7 +21,7 @@ import (
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/router"
 
-	rpb "infra/appengine/rotation-proxy/proto"
+	rpb "go.chromium.org/infra/appengine/rotation-proxy/proto"
 )
 
 var (

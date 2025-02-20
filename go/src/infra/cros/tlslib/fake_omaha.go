@@ -22,7 +22,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 
-	"infra/cros/tlslib/internal/nebraska"
+	"go.chromium.org/infra/cros/tlslib/internal/nebraska"
 )
 
 // CreateFakeOmaha implements TLS CreateFakeOmaha API.

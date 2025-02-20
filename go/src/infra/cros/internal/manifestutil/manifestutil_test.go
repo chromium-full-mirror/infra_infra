@@ -9,8 +9,8 @@ package manifestutil
 import (
 	"testing"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/repo"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/repo"
 )
 
 func TestPinManifestFromManifest(t *testing.T) {

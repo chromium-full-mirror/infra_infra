@@ -13,7 +13,7 @@ import (
 
 	labPlatform "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 
-	"infra/cros/stableversion/validateconfig"
+	"go.chromium.org/infra/cros/stableversion/validateconfig"
 )
 
 var testWithModelData = []struct {

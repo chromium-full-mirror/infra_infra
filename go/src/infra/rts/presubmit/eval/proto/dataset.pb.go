@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/rts/presubmit/eval/proto/dataset.proto
+// source: go.chromium.org/infra/rts/presubmit/eval/proto/dataset.proto
 
 package evalpb
 
@@ -46,7 +46,7 @@ type Rejection struct {
 
 func (x *Rejection) Reset() {
 	*x = Rejection{}
-	mi := &file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -58,7 +58,7 @@ func (x *Rejection) String() string {
 func (*Rejection) ProtoMessage() {}
 
 func (x *Rejection) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -71,7 +71,7 @@ func (x *Rejection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Rejection.ProtoReflect.Descriptor instead.
 func (*Rejection) Descriptor() ([]byte, []int) {
-	return file_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Rejection) GetPatchsets() []*GerritPatchset {
@@ -114,7 +114,7 @@ type TestDurationRecord struct {
 
 func (x *TestDurationRecord) Reset() {
 	*x = TestDurationRecord{}
-	mi := &file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -126,7 +126,7 @@ func (x *TestDurationRecord) String() string {
 func (*TestDurationRecord) ProtoMessage() {}
 
 func (x *TestDurationRecord) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -139,7 +139,7 @@ func (x *TestDurationRecord) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestDurationRecord.ProtoReflect.Descriptor instead.
 func (*TestDurationRecord) Descriptor() ([]byte, []int) {
-	return file_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *TestDurationRecord) GetPatchsets() []*GerritPatchset {
@@ -176,7 +176,7 @@ type TestDuration struct {
 
 func (x *TestDuration) Reset() {
 	*x = TestDuration{}
-	mi := &file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -188,7 +188,7 @@ func (x *TestDuration) String() string {
 func (*TestDuration) ProtoMessage() {}
 
 func (x *TestDuration) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -201,7 +201,7 @@ func (x *TestDuration) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestDuration.ProtoReflect.Descriptor instead.
 func (*TestDuration) Descriptor() ([]byte, []int) {
-	return file_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *TestDuration) GetTestVariant() *TestVariant {
@@ -235,7 +235,7 @@ type GerritChange struct {
 
 func (x *GerritChange) Reset() {
 	*x = GerritChange{}
-	mi := &file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -247,7 +247,7 @@ func (x *GerritChange) String() string {
 func (*GerritChange) ProtoMessage() {}
 
 func (x *GerritChange) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -260,7 +260,7 @@ func (x *GerritChange) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GerritChange.ProtoReflect.Descriptor instead.
 func (*GerritChange) Descriptor() ([]byte, []int) {
-	return file_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GerritChange) GetHost() string {
@@ -299,7 +299,7 @@ type GerritPatchset struct {
 
 func (x *GerritPatchset) Reset() {
 	*x = GerritPatchset{}
-	mi := &file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -311,7 +311,7 @@ func (x *GerritPatchset) String() string {
 func (*GerritPatchset) ProtoMessage() {}
 
 func (x *GerritPatchset) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -324,7 +324,7 @@ func (x *GerritPatchset) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GerritPatchset.ProtoReflect.Descriptor instead.
 func (*GerritPatchset) Descriptor() ([]byte, []int) {
-	return file_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GerritPatchset) GetChange() *GerritChange {
@@ -363,7 +363,7 @@ type SourceFile struct {
 
 func (x *SourceFile) Reset() {
 	*x = SourceFile{}
-	mi := &file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -375,7 +375,7 @@ func (x *SourceFile) String() string {
 func (*SourceFile) ProtoMessage() {}
 
 func (x *SourceFile) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -388,7 +388,7 @@ func (x *SourceFile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceFile.ProtoReflect.Descriptor instead.
 func (*SourceFile) Descriptor() ([]byte, []int) {
-	return file_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *SourceFile) GetRepo() string {
@@ -428,7 +428,7 @@ type TestVariant struct {
 
 func (x *TestVariant) Reset() {
 	*x = TestVariant{}
-	mi := &file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -440,7 +440,7 @@ func (x *TestVariant) String() string {
 func (*TestVariant) ProtoMessage() {}
 
 func (x *TestVariant) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -453,7 +453,7 @@ func (x *TestVariant) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestVariant.ProtoReflect.Descriptor instead.
 func (*TestVariant) Descriptor() ([]byte, []int) {
-	return file_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *TestVariant) GetId() string {
@@ -477,10 +477,11 @@ func (x *TestVariant) GetFileName() string {
 	return ""
 }
 
-var File_infra_rts_presubmit_eval_proto_dataset_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto protoreflect.FileDescriptor
 
-var file_infra_rts_presubmit_eval_proto_dataset_proto_rawDesc = string([]byte{
-	0x0a, 0x2c, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x72, 0x74, 0x73, 0x2f, 0x70, 0x72, 0x65, 0x73,
+var file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDesc = string([]byte{
+	0x0a, 0x3c, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x72, 0x74, 0x73, 0x2f, 0x70, 0x72, 0x65, 0x73,
 	0x75, 0x62, 0x6d, 0x69, 0x74, 0x2f, 0x65, 0x76, 0x61, 0x6c, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x2f, 0x64, 0x61, 0x74, 0x61, 0x73, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x19,
 	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x2e, 0x72, 0x74, 0x73, 0x2e, 0x70, 0x72, 0x65, 0x73, 0x75,
@@ -553,26 +554,27 @@ var file_infra_rts_presubmit_eval_proto_dataset_proto_rawDesc = string([]byte{
 	0x69, 0x61, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x07, 0x76, 0x61, 0x72, 0x69,
 	0x61, 0x6e, 0x74, 0x12, 0x1b, 0x0a, 0x09, 0x66, 0x69, 0x6c, 0x65, 0x5f, 0x6e, 0x61, 0x6d, 0x65,
 	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x66, 0x69, 0x6c, 0x65, 0x4e, 0x61, 0x6d, 0x65,
-	0x42, 0x27, 0x5a, 0x25, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x72, 0x74, 0x73, 0x2f, 0x70, 0x72,
+	0x42, 0x37, 0x5a, 0x35, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e,
+	0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x72, 0x74, 0x73, 0x2f, 0x70, 0x72,
 	0x65, 0x73, 0x75, 0x62, 0x6d, 0x69, 0x74, 0x2f, 0x65, 0x76, 0x61, 0x6c, 0x2f, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x3b, 0x65, 0x76, 0x61, 0x6c, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x33,
 })
 
 var (
-	file_infra_rts_presubmit_eval_proto_dataset_proto_rawDescOnce sync.Once
-	file_infra_rts_presubmit_eval_proto_dataset_proto_rawDescData []byte
+	file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDescData []byte
 )
 
-func file_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP() []byte {
-	file_infra_rts_presubmit_eval_proto_dataset_proto_rawDescOnce.Do(func() {
-		file_infra_rts_presubmit_eval_proto_dataset_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_rts_presubmit_eval_proto_dataset_proto_rawDesc), len(file_infra_rts_presubmit_eval_proto_dataset_proto_rawDesc)))
+func file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDesc), len(file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDesc)))
 	})
-	return file_infra_rts_presubmit_eval_proto_dataset_proto_rawDescData
+	return file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDescData
 }
 
-var file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
-var file_infra_rts_presubmit_eval_proto_dataset_proto_goTypes = []any{
+var file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_goTypes = []any{
 	(*Rejection)(nil),             // 0: chrome.rts.presubmit.eval.Rejection
 	(*TestDurationRecord)(nil),    // 1: chrome.rts.presubmit.eval.TestDurationRecord
 	(*TestDuration)(nil),          // 2: chrome.rts.presubmit.eval.TestDuration
@@ -583,7 +585,7 @@ var file_infra_rts_presubmit_eval_proto_dataset_proto_goTypes = []any{
 	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
 	(*durationpb.Duration)(nil),   // 8: google.protobuf.Duration
 }
-var file_infra_rts_presubmit_eval_proto_dataset_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_depIdxs = []int32{
 	4,  // 0: chrome.rts.presubmit.eval.Rejection.patchsets:type_name -> chrome.rts.presubmit.eval.GerritPatchset
 	7,  // 1: chrome.rts.presubmit.eval.Rejection.timestamp:type_name -> google.protobuf.Timestamp
 	6,  // 2: chrome.rts.presubmit.eval.Rejection.failed_test_variants:type_name -> chrome.rts.presubmit.eval.TestVariant
@@ -601,26 +603,26 @@ var file_infra_rts_presubmit_eval_proto_dataset_proto_depIdxs = []int32{
 	0,  // [0:10] is the sub-list for field type_name
 }
 
-func init() { file_infra_rts_presubmit_eval_proto_dataset_proto_init() }
-func file_infra_rts_presubmit_eval_proto_dataset_proto_init() {
-	if File_infra_rts_presubmit_eval_proto_dataset_proto != nil {
+func init() { file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_init() }
+func file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_init() {
+	if File_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_rts_presubmit_eval_proto_dataset_proto_rawDesc), len(file_infra_rts_presubmit_eval_proto_dataset_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDesc), len(file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_rts_presubmit_eval_proto_dataset_proto_goTypes,
-		DependencyIndexes: file_infra_rts_presubmit_eval_proto_dataset_proto_depIdxs,
-		MessageInfos:      file_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_msgTypes,
 	}.Build()
-	File_infra_rts_presubmit_eval_proto_dataset_proto = out.File
-	file_infra_rts_presubmit_eval_proto_dataset_proto_goTypes = nil
-	file_infra_rts_presubmit_eval_proto_dataset_proto_depIdxs = nil
+	File_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto = out.File
+	file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_goTypes = nil
+	file_go_chromium_org_infra_rts_presubmit_eval_proto_dataset_proto_depIdxs = nil
 }

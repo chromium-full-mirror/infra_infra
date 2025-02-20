@@ -8,7 +8,7 @@ import (
 	"context"
 	"os"
 
-	"infra/cros/cmd/cft/cros-test-finder/test_finder"
+	"go.chromium.org/infra/cros/cmd/cft/cros-test-finder/test_finder"
 )
 
 func main() {

@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/libs/lro"
+	"go.chromium.org/infra/libs/lro"
 )
 
 const (

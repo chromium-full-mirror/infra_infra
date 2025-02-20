@@ -39,7 +39,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/tools/led
+  - go.chromium.org/infra/tools/led
 root: ../../go/bin
 data:
   - file: led${exe_suffix}

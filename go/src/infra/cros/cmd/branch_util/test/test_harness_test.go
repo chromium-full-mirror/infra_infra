@@ -12,11 +12,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"infra/cros/internal/assert"
-	mv "infra/cros/internal/chromeosversion"
-	"infra/cros/internal/git"
-	"infra/cros/internal/repo"
-	rh "infra/cros/internal/repoharness"
+	"go.chromium.org/infra/cros/internal/assert"
+	mv "go.chromium.org/infra/cros/internal/chromeosversion"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/repo"
+	rh "go.chromium.org/infra/cros/internal/repoharness"
 )
 
 var testManifest repo.Manifest = repo.Manifest{

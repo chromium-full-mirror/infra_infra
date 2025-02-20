@@ -19,9 +19,9 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/config"
-	ufsutil "infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	ufsutil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 func mockAsset(name, model, host string, assettype ufspb.AssetType, zone ufspb.Zone) *ufspb.Asset {

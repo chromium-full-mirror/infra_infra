@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/appengine/chrome-test-health/api/coverage_service.proto
+// source: go.chromium.org/infra/appengine/chrome-test-health/api/coverage_service.proto
 
 package api
 
@@ -59,7 +59,7 @@ type BuilderConfig struct {
 
 func (x *BuilderConfig) Reset() {
 	*x = BuilderConfig{}
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -71,7 +71,7 @@ func (x *BuilderConfig) String() string {
 func (*BuilderConfig) ProtoMessage() {}
 
 func (x *BuilderConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -84,7 +84,7 @@ func (x *BuilderConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuilderConfig.ProtoReflect.Descriptor instead.
 func (*BuilderConfig) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *BuilderConfig) GetPlatform() string {
@@ -136,7 +136,7 @@ type GetProjectDefaultConfigRequest struct {
 
 func (x *GetProjectDefaultConfigRequest) Reset() {
 	*x = GetProjectDefaultConfigRequest{}
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -148,7 +148,7 @@ func (x *GetProjectDefaultConfigRequest) String() string {
 func (*GetProjectDefaultConfigRequest) ProtoMessage() {}
 
 func (x *GetProjectDefaultConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -161,7 +161,7 @@ func (x *GetProjectDefaultConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProjectDefaultConfigRequest.ProtoReflect.Descriptor instead.
 func (*GetProjectDefaultConfigRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *GetProjectDefaultConfigRequest) GetLuciProject() string {
@@ -191,7 +191,7 @@ type GetProjectDefaultConfigResponse struct {
 
 func (x *GetProjectDefaultConfigResponse) Reset() {
 	*x = GetProjectDefaultConfigResponse{}
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -203,7 +203,7 @@ func (x *GetProjectDefaultConfigResponse) String() string {
 func (*GetProjectDefaultConfigResponse) ProtoMessage() {}
 
 func (x *GetProjectDefaultConfigResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -216,7 +216,7 @@ func (x *GetProjectDefaultConfigResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetProjectDefaultConfigResponse.ProtoReflect.Descriptor instead.
 func (*GetProjectDefaultConfigResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetProjectDefaultConfigResponse) GetGitilesHost() string {
@@ -283,7 +283,7 @@ type GetCoverageSummaryRequest struct {
 
 func (x *GetCoverageSummaryRequest) Reset() {
 	*x = GetCoverageSummaryRequest{}
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -295,7 +295,7 @@ func (x *GetCoverageSummaryRequest) String() string {
 func (*GetCoverageSummaryRequest) ProtoMessage() {}
 
 func (x *GetCoverageSummaryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -308,7 +308,7 @@ func (x *GetCoverageSummaryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCoverageSummaryRequest.ProtoReflect.Descriptor instead.
 func (*GetCoverageSummaryRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetCoverageSummaryRequest) GetGitilesHost() string {
@@ -391,7 +391,7 @@ type GetCoverageSummaryResponse struct {
 
 func (x *GetCoverageSummaryResponse) Reset() {
 	*x = GetCoverageSummaryResponse{}
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -403,7 +403,7 @@ func (x *GetCoverageSummaryResponse) String() string {
 func (*GetCoverageSummaryResponse) ProtoMessage() {}
 
 func (x *GetCoverageSummaryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -416,7 +416,7 @@ func (x *GetCoverageSummaryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCoverageSummaryResponse.ProtoReflect.Descriptor instead.
 func (*GetCoverageSummaryResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetCoverageSummaryResponse) GetSummary() []*structpb.Struct {
@@ -452,7 +452,7 @@ type GetAbsoluteCoverageDataOneYearRequest struct {
 
 func (x *GetAbsoluteCoverageDataOneYearRequest) Reset() {
 	*x = GetAbsoluteCoverageDataOneYearRequest{}
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -464,7 +464,7 @@ func (x *GetAbsoluteCoverageDataOneYearRequest) String() string {
 func (*GetAbsoluteCoverageDataOneYearRequest) ProtoMessage() {}
 
 func (x *GetAbsoluteCoverageDataOneYearRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -477,7 +477,7 @@ func (x *GetAbsoluteCoverageDataOneYearRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use GetAbsoluteCoverageDataOneYearRequest.ProtoReflect.Descriptor instead.
 func (*GetAbsoluteCoverageDataOneYearRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetAbsoluteCoverageDataOneYearRequest) GetPaths() []string {
@@ -530,7 +530,7 @@ type AbsoluteCoverage struct {
 
 func (x *AbsoluteCoverage) Reset() {
 	*x = AbsoluteCoverage{}
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -542,7 +542,7 @@ func (x *AbsoluteCoverage) String() string {
 func (*AbsoluteCoverage) ProtoMessage() {}
 
 func (x *AbsoluteCoverage) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -555,7 +555,7 @@ func (x *AbsoluteCoverage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AbsoluteCoverage.ProtoReflect.Descriptor instead.
 func (*AbsoluteCoverage) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *AbsoluteCoverage) GetDate() string {
@@ -591,7 +591,7 @@ type GetAbsoluteCoverageDataOneYearResponse struct {
 
 func (x *GetAbsoluteCoverageDataOneYearResponse) Reset() {
 	*x = GetAbsoluteCoverageDataOneYearResponse{}
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -603,7 +603,7 @@ func (x *GetAbsoluteCoverageDataOneYearResponse) String() string {
 func (*GetAbsoluteCoverageDataOneYearResponse) ProtoMessage() {}
 
 func (x *GetAbsoluteCoverageDataOneYearResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -616,7 +616,7 @@ func (x *GetAbsoluteCoverageDataOneYearResponse) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use GetAbsoluteCoverageDataOneYearResponse.ProtoReflect.Descriptor instead.
 func (*GetAbsoluteCoverageDataOneYearResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetAbsoluteCoverageDataOneYearResponse) GetReports() []*AbsoluteCoverage {
@@ -640,7 +640,7 @@ type GetIncrementalCoverageDataOneYearRequest struct {
 
 func (x *GetIncrementalCoverageDataOneYearRequest) Reset() {
 	*x = GetIncrementalCoverageDataOneYearRequest{}
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -652,7 +652,7 @@ func (x *GetIncrementalCoverageDataOneYearRequest) String() string {
 func (*GetIncrementalCoverageDataOneYearRequest) ProtoMessage() {}
 
 func (x *GetIncrementalCoverageDataOneYearRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -665,7 +665,7 @@ func (x *GetIncrementalCoverageDataOneYearRequest) ProtoReflect() protoreflect.M
 
 // Deprecated: Use GetIncrementalCoverageDataOneYearRequest.ProtoReflect.Descriptor instead.
 func (*GetIncrementalCoverageDataOneYearRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GetIncrementalCoverageDataOneYearRequest) GetPaths() []string {
@@ -709,7 +709,7 @@ type IncrementalCoverage struct {
 
 func (x *IncrementalCoverage) Reset() {
 	*x = IncrementalCoverage{}
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -721,7 +721,7 @@ func (x *IncrementalCoverage) String() string {
 func (*IncrementalCoverage) ProtoMessage() {}
 
 func (x *IncrementalCoverage) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -734,7 +734,7 @@ func (x *IncrementalCoverage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IncrementalCoverage.ProtoReflect.Descriptor instead.
 func (*IncrementalCoverage) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *IncrementalCoverage) GetDate() string {
@@ -770,7 +770,7 @@ type GetIncrementalCoverageDataOneYearResponse struct {
 
 func (x *GetIncrementalCoverageDataOneYearResponse) Reset() {
 	*x = GetIncrementalCoverageDataOneYearResponse{}
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -782,7 +782,7 @@ func (x *GetIncrementalCoverageDataOneYearResponse) String() string {
 func (*GetIncrementalCoverageDataOneYearResponse) ProtoMessage() {}
 
 func (x *GetIncrementalCoverageDataOneYearResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -795,7 +795,7 @@ func (x *GetIncrementalCoverageDataOneYearResponse) ProtoReflect() protoreflect.
 
 // Deprecated: Use GetIncrementalCoverageDataOneYearResponse.ProtoReflect.Descriptor instead.
 func (*GetIncrementalCoverageDataOneYearResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetIncrementalCoverageDataOneYearResponse) GetReports() []*IncrementalCoverage {
@@ -805,10 +805,11 @@ func (x *GetIncrementalCoverageDataOneYearResponse) GetReports() []*IncrementalC
 	return nil
 }
 
-var File_infra_appengine_chrome_test_health_api_coverage_service_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto protoreflect.FileDescriptor
 
-var file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDesc = string([]byte{
-	0x0a, 0x3d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
+var file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDesc = string([]byte{
+	0x0a, 0x4d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
 	0x65, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x2d, 0x74, 0x65, 0x73, 0x74, 0x2d, 0x68, 0x65,
 	0x61, 0x6c, 0x74, 0x68, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x63, 0x6f, 0x76, 0x65, 0x72, 0x61, 0x67,
 	0x65, 0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12,
@@ -953,26 +954,27 @@ var file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDesc =
 	0x1a, 0x39, 0x2e, 0x74, 0x65, 0x73, 0x74, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
 	0x73, 0x2e, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x63, 0x72, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x61, 0x6c,
 	0x43, 0x6f, 0x76, 0x65, 0x72, 0x61, 0x67, 0x65, 0x44, 0x61, 0x74, 0x61, 0x4f, 0x6e, 0x65, 0x59,
-	0x65, 0x61, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x28, 0x5a, 0x26, 0x69,
+	0x65, 0x61, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x38, 0x5a, 0x36, 0x67,
+	0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69,
 	0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x63,
 	0x68, 0x72, 0x6f, 0x6d, 0x65, 0x2d, 0x74, 0x65, 0x73, 0x74, 0x2d, 0x68, 0x65, 0x61, 0x6c, 0x74,
 	0x68, 0x2f, 0x61, 0x70, 0x69, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescOnce sync.Once
-	file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescData []byte
+	file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescData []byte
 )
 
-func file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP() []byte {
-	file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescOnce.Do(func() {
-		file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDesc), len(file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDesc)))
+func file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDesc), len(file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDesc)))
 	})
-	return file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescData
+	return file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDescData
 }
 
-var file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
-var file_infra_appengine_chrome_test_health_api_coverage_service_proto_goTypes = []any{
+var file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_goTypes = []any{
 	(*BuilderConfig)(nil),                             // 0: test_resources.BuilderConfig
 	(*GetProjectDefaultConfigRequest)(nil),            // 1: test_resources.GetProjectDefaultConfigRequest
 	(*GetProjectDefaultConfigResponse)(nil),           // 2: test_resources.GetProjectDefaultConfigResponse
@@ -986,7 +988,7 @@ var file_infra_appengine_chrome_test_health_api_coverage_service_proto_goTypes =
 	(*GetIncrementalCoverageDataOneYearResponse)(nil), // 10: test_resources.GetIncrementalCoverageDataOneYearResponse
 	(*structpb.Struct)(nil),                           // 11: google.protobuf.Struct
 }
-var file_infra_appengine_chrome_test_health_api_coverage_service_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_depIdxs = []int32{
 	0,  // 0: test_resources.GetProjectDefaultConfigResponse.builder_config:type_name -> test_resources.BuilderConfig
 	11, // 1: test_resources.GetCoverageSummaryResponse.summary:type_name -> google.protobuf.Struct
 	6,  // 2: test_resources.GetAbsoluteCoverageDataOneYearResponse.reports:type_name -> test_resources.AbsoluteCoverage
@@ -1006,28 +1008,30 @@ var file_infra_appengine_chrome_test_health_api_coverage_service_proto_depIdxs =
 	0,  // [0:4] is the sub-list for field type_name
 }
 
-func init() { file_infra_appengine_chrome_test_health_api_coverage_service_proto_init() }
-func file_infra_appengine_chrome_test_health_api_coverage_service_proto_init() {
-	if File_infra_appengine_chrome_test_health_api_coverage_service_proto != nil {
+func init() {
+	file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_init()
+}
+func file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_init() {
+	if File_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDesc), len(file_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDesc), len(file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_appengine_chrome_test_health_api_coverage_service_proto_goTypes,
-		DependencyIndexes: file_infra_appengine_chrome_test_health_api_coverage_service_proto_depIdxs,
-		MessageInfos:      file_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_msgTypes,
 	}.Build()
-	File_infra_appengine_chrome_test_health_api_coverage_service_proto = out.File
-	file_infra_appengine_chrome_test_health_api_coverage_service_proto_goTypes = nil
-	file_infra_appengine_chrome_test_health_api_coverage_service_proto_depIdxs = nil
+	File_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto = out.File
+	file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_goTypes = nil
+	file_go_chromium_org_infra_appengine_chrome_test_health_api_coverage_service_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1276,5 +1280,5 @@ var _Coverage_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/appengine/chrome-test-health/api/coverage_service.proto",
+	Metadata: "go.chromium.org/infra/appengine/chrome-test-health/api/coverage_service.proto",
 }

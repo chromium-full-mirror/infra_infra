@@ -26,12 +26,12 @@ import (
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/router"
 
-	"infra/appengine/sheriff-o-matic/som/analyzer"
-	"infra/appengine/sheriff-o-matic/som/analyzer/step"
-	"infra/appengine/sheriff-o-matic/som/client"
-	"infra/appengine/sheriff-o-matic/som/model"
-	"infra/appengine/sheriff-o-matic/som/model/gen"
-	"infra/monitoring/messages"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/analyzer"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/analyzer/step"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/client"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/model"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/model/gen"
+	"go.chromium.org/infra/monitoring/messages"
 )
 
 const (

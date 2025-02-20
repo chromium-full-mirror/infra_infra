@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/vm_leaser/internal/site"
+	"go.chromium.org/infra/vm_leaser/internal/site"
 )
 
 // Config stores options needed for the VM Leaser service.

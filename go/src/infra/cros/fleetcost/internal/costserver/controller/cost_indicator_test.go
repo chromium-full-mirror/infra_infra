@@ -13,12 +13,12 @@ import (
 
 	"go.chromium.org/luci/common/testing/typed"
 
-	models "infra/cros/fleetcost/api/models"
-	"infra/cros/fleetcost/internal/costserver"
-	"infra/cros/fleetcost/internal/costserver/controller"
-	"infra/cros/fleetcost/internal/costserver/entities"
-	"infra/cros/fleetcost/internal/costserver/testsupport"
-	"infra/cros/fleetcost/internal/utils"
+	models "go.chromium.org/infra/cros/fleetcost/api/models"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/controller"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/entities"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/testsupport"
+	"go.chromium.org/infra/cros/fleetcost/internal/utils"
 )
 
 // TestGetCostIndicatorValue is a simple smoke test that checks whether we can get a cost indicator.

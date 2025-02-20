@@ -23,9 +23,9 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/tools/pkgbuild/pkg/spec"
-	"infra/tools/pkgbuild/pkg/spec/source"
-	"infra/tools/pkgbuild/pkg/stdenv"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/spec"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/spec/source"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/stdenv"
 )
 
 func TestCreateParser(t *testing.T) {
@@ -702,7 +702,7 @@ func TestParseExternalDependencies(t *testing.T) {
 		p, err := newCreateParser("linux-arm64", []*spec.Spec_Create{
 			{
 				Build: &spec.Spec_Create_Build{
-					ExternalTool: []string{"infra/3pp/static_libs/zlib/${platform}@2@1.2.12.chromium.1"},
+					ExternalTool: []string{"go.chromium.org/infra/3pp/static_libs/zlib/${platform}@2@1.2.12.chromium.1"},
 				},
 			},
 		})
@@ -716,13 +716,13 @@ func TestParseExternalDependencies(t *testing.T) {
 				Name: "something" + "_dep",
 				Metadata: &core.Action_Metadata{
 					Luciexe: &core.Action_Metadata_LUCIExe{
-						StepName: "infra/3pp/static_libs/zlib/${platform}@2@1.2.12.chromium.1:linux-amd64 from cipd",
+						StepName: "go.chromium.org/infra/3pp/static_libs/zlib/${platform}@2@1.2.12.chromium.1:linux-amd64 from cipd",
 					},
 				},
 				Ensure: ensure.File{
 					PackagesBySubdir: map[string]ensure.PackageSlice{
 						"": {
-							{PackageTemplate: "infra/3pp/static_libs/zlib/${platform}", UnresolvedVersion: "version:2@1.2.12.chromium.1"},
+							{PackageTemplate: "go.chromium.org/infra/3pp/static_libs/zlib/${platform}", UnresolvedVersion: "version:2@1.2.12.chromium.1"},
 						},
 					},
 				},
@@ -734,7 +734,7 @@ func TestParseExternalDependencies(t *testing.T) {
 		p, err := newCreateParser("linux-arm64", []*spec.Spec_Create{
 			{
 				Build: &spec.Spec_Create_Build{
-					ExternalDep: []string{"infra/3pp/static_libs/zlib/${platform}@2@1.2.12.chromium.1"},
+					ExternalDep: []string{"go.chromium.org/infra/3pp/static_libs/zlib/${platform}@2@1.2.12.chromium.1"},
 				},
 			},
 		})
@@ -748,13 +748,13 @@ func TestParseExternalDependencies(t *testing.T) {
 				Name: "something" + "_dep",
 				Metadata: &core.Action_Metadata{
 					Luciexe: &core.Action_Metadata_LUCIExe{
-						StepName: "infra/3pp/static_libs/zlib/${platform}@2@1.2.12.chromium.1:linux-arm64 from cipd",
+						StepName: "go.chromium.org/infra/3pp/static_libs/zlib/${platform}@2@1.2.12.chromium.1:linux-arm64 from cipd",
 					},
 				},
 				Ensure: ensure.File{
 					PackagesBySubdir: map[string]ensure.PackageSlice{
 						"": {
-							{PackageTemplate: "infra/3pp/static_libs/zlib/${platform}", UnresolvedVersion: "version:2@1.2.12.chromium.1"},
+							{PackageTemplate: "go.chromium.org/infra/3pp/static_libs/zlib/${platform}", UnresolvedVersion: "version:2@1.2.12.chromium.1"},
 						},
 					},
 				},

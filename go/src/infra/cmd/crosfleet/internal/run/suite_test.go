@@ -14,10 +14,10 @@ import (
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cmd/crosfleet/internal/buildbucket"
-	crosbb "infra/cros/lib/buildbucket"
-	models "infra/unifiedfleet/api/v1/models"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cmd/crosfleet/internal/buildbucket"
+	crosbb "go.chromium.org/infra/cros/lib/buildbucket"
+	models "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 type fakeUFSClient struct{}

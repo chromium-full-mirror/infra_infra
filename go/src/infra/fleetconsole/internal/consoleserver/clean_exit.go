@@ -8,7 +8,7 @@ import (
 	"context"
 	"os"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 )
 
 // CleanExit exits the current process.

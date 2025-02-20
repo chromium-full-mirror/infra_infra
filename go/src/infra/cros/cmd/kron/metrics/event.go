@@ -14,7 +14,7 @@ import (
 	kronpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/kron"
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
-	"infra/cros/cmd/kron/common"
+	"go.chromium.org/infra/cros/cmd/kron/common"
 )
 
 // GenerateEventMessage builds a metric event.

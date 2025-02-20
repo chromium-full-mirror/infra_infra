@@ -14,8 +14,8 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"infra/cros/cmd/kron/common"
-	"infra/cros/cmd/kron/secretmanager"
+	"go.chromium.org/infra/cros/cmd/kron/common"
+	"go.chromium.org/infra/cros/cmd/kron/secretmanager"
 )
 
 type Client interface {

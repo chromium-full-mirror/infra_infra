@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/internal/testorchestrator"
+	"go.chromium.org/infra/cros/internal/testorchestrator"
 )
 
 var inProps = build.RegisterInputProperty[*tpv2.Request]("")

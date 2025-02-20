@@ -21,9 +21,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/test/execution/errors"
 
-	"infra/cros/cmd/cft/execution/cros-test/internal/common"
-	"infra/cros/cmd/cft/execution/cros-test/internal/device"
-	"infra/cros/cmd/cft/execution/cros-test/internal/tastrpc"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/common"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/device"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/tastrpc"
 )
 
 // TastDriver runs tast and report its results.

@@ -16,10 +16,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
-	ufsutil "infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsutil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // FleetClient mocks the UFS client

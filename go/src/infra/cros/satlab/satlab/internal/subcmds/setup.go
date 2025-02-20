@@ -9,8 +9,8 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmdsupport/cmdlib"
-	commonSetup "infra/cros/satlab/common/setup"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	commonSetup "go.chromium.org/infra/cros/satlab/common/setup"
 )
 
 var SetupCmd = &subcommands.Command{

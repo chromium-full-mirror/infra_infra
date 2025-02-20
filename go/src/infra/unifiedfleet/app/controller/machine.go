@@ -20,14 +20,14 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	apibq "infra/unifiedfleet/api/v1/models/bigquery"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	"infra/unifiedfleet/app/config"
-	ufsds "infra/unifiedfleet/app/model/datastore"
-	"infra/unifiedfleet/app/model/inventory"
-	"infra/unifiedfleet/app/model/registration"
-	"infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	apibq "go.chromium.org/infra/unifiedfleet/api/v1/models/bigquery"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
+	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	"go.chromium.org/infra/unifiedfleet/app/model/registration"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 const machinePubsubTopicID = "machine"

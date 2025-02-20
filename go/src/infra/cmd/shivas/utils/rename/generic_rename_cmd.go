@@ -15,10 +15,10 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/cmd/shivas/site"
-	"infra/cmd/shivas/utils"
-	"infra/cmdsupport/cmdlib"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 //TODO(anushruth): Refactor rename machine/nic/switch using this

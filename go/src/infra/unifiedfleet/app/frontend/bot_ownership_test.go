@@ -17,12 +17,12 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	api "infra/unifiedfleet/api/v1/rpc"
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/controller"
-	"infra/unifiedfleet/app/external"
-	"infra/unifiedfleet/app/model/registration"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	api "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/controller"
+	"go.chromium.org/infra/unifiedfleet/app/external"
+	"go.chromium.org/infra/unifiedfleet/app/model/registration"
 )
 
 var branchNumber uint32 = 0

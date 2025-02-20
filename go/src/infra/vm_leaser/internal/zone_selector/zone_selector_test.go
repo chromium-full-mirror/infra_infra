@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/vm_leaser/internal/constants"
+	"go.chromium.org/infra/vm_leaser/internal/constants"
 )
 
 func TestSelectZone(t *testing.T) {

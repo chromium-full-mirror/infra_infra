@@ -11,7 +11,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/cros/botsregulator/protos"
+	"go.chromium.org/infra/cros/botsregulator/protos"
 )
 
 func TestNewConfigSearchable(t *testing.T) {

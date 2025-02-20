@@ -14,16 +14,16 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/shivas/utils"
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/recovery/docker"
-	"infra/cros/satlab/common/satlabcommands"
-	"infra/cros/satlab/common/services/ufs"
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/executor"
-	ufspb "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsApi "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cros/recovery/docker"
+	"go.chromium.org/infra/cros/satlab/common/satlabcommands"
+	"go.chromium.org/infra/cros/satlab/common/services/ufs"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsApi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // StartServodCmd is the command that will start a servod container

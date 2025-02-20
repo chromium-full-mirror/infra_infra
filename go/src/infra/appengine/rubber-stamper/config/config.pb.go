@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/appengine/rubber-stamper/config/config.proto
+// source: go.chromium.org/infra/appengine/rubber-stamper/config/config.proto
 
 package config
 
@@ -41,7 +41,7 @@ type Config struct {
 
 func (x *Config) Reset() {
 	*x = Config{}
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -53,7 +53,7 @@ func (x *Config) String() string {
 func (*Config) ProtoMessage() {}
 
 func (x *Config) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -66,7 +66,7 @@ func (x *Config) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Config.ProtoReflect.Descriptor instead.
 func (*Config) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Config) GetHostConfigs() map[string]*HostConfig {
@@ -87,7 +87,7 @@ func (x *Config) GetDefaultTimeWindow() string {
 type HostConfig struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// A map stores config for repositories, where keys are names of repos (e.g.
-	// "chromium/src", "infra/infra") and values are corresponding configs.
+	// "chromium/src", "go.chromium.org/infra/infra") and values are corresponding configs.
 	RepoConfigs map[string]*RepoConfig `protobuf:"bytes,1,rep,name=repo_configs,json=repoConfigs,proto3" json:"repo_configs,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// The default valid time window for clean reverts. This time window is
 	// applied at a host-level and the time window configured in repo-level
@@ -108,7 +108,7 @@ type HostConfig struct {
 
 func (x *HostConfig) Reset() {
 	*x = HostConfig{}
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -120,7 +120,7 @@ func (x *HostConfig) String() string {
 func (*HostConfig) ProtoMessage() {}
 
 func (x *HostConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -133,7 +133,7 @@ func (x *HostConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HostConfig.ProtoReflect.Descriptor instead.
 func (*HostConfig) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *HostConfig) GetRepoConfigs() map[string]*RepoConfig {
@@ -178,7 +178,7 @@ type RepoConfig struct {
 
 func (x *RepoConfig) Reset() {
 	*x = RepoConfig{}
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -190,7 +190,7 @@ func (x *RepoConfig) String() string {
 func (*RepoConfig) ProtoMessage() {}
 
 func (x *RepoConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -203,7 +203,7 @@ func (x *RepoConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepoConfig.ProtoReflect.Descriptor instead.
 func (*RepoConfig) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *RepoConfig) GetBenignFilePattern() *BenignFilePattern {
@@ -247,7 +247,7 @@ type BenignFilePattern struct {
 
 func (x *BenignFilePattern) Reset() {
 	*x = BenignFilePattern{}
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -259,7 +259,7 @@ func (x *BenignFilePattern) String() string {
 func (*BenignFilePattern) ProtoMessage() {}
 
 func (x *BenignFilePattern) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -272,7 +272,7 @@ func (x *BenignFilePattern) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BenignFilePattern.ProtoReflect.Descriptor instead.
 func (*BenignFilePattern) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *BenignFilePattern) GetPaths() []string {
@@ -298,7 +298,7 @@ type CleanRevertPattern struct {
 
 func (x *CleanRevertPattern) Reset() {
 	*x = CleanRevertPattern{}
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -310,7 +310,7 @@ func (x *CleanRevertPattern) String() string {
 func (*CleanRevertPattern) ProtoMessage() {}
 
 func (x *CleanRevertPattern) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -323,7 +323,7 @@ func (x *CleanRevertPattern) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CleanRevertPattern.ProtoReflect.Descriptor instead.
 func (*CleanRevertPattern) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CleanRevertPattern) GetTimeWindow() string {
@@ -354,7 +354,7 @@ type CleanCherryPickPattern struct {
 
 func (x *CleanCherryPickPattern) Reset() {
 	*x = CleanCherryPickPattern{}
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -366,7 +366,7 @@ func (x *CleanCherryPickPattern) String() string {
 func (*CleanCherryPickPattern) ProtoMessage() {}
 
 func (x *CleanCherryPickPattern) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -379,7 +379,7 @@ func (x *CleanCherryPickPattern) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CleanCherryPickPattern.ProtoReflect.Descriptor instead.
 func (*CleanCherryPickPattern) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CleanCherryPickPattern) GetTimeWindow() string {
@@ -426,7 +426,7 @@ type HostConfig_RepoRegexpConfigPair struct {
 
 func (x *HostConfig_RepoRegexpConfigPair) Reset() {
 	*x = HostConfig_RepoRegexpConfigPair{}
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -438,7 +438,7 @@ func (x *HostConfig_RepoRegexpConfigPair) String() string {
 func (*HostConfig_RepoRegexpConfigPair) ProtoMessage() {}
 
 func (x *HostConfig_RepoRegexpConfigPair) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -451,7 +451,7 @@ func (x *HostConfig_RepoRegexpConfigPair) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HostConfig_RepoRegexpConfigPair.ProtoReflect.Descriptor instead.
 func (*HostConfig_RepoRegexpConfigPair) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{1, 1}
+	return file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{1, 1}
 }
 
 func (x *HostConfig_RepoRegexpConfigPair) GetKey() string {
@@ -487,7 +487,7 @@ type CleanCherryPickPattern_FileCheckBypassRule struct {
 
 func (x *CleanCherryPickPattern_FileCheckBypassRule) Reset() {
 	*x = CleanCherryPickPattern_FileCheckBypassRule{}
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -499,7 +499,7 @@ func (x *CleanCherryPickPattern_FileCheckBypassRule) String() string {
 func (*CleanCherryPickPattern_FileCheckBypassRule) ProtoMessage() {}
 
 func (x *CleanCherryPickPattern_FileCheckBypassRule) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rubber_stamper_config_config_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -512,7 +512,7 @@ func (x *CleanCherryPickPattern_FileCheckBypassRule) ProtoReflect() protoreflect
 
 // Deprecated: Use CleanCherryPickPattern_FileCheckBypassRule.ProtoReflect.Descriptor instead.
 func (*CleanCherryPickPattern_FileCheckBypassRule) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{5, 0}
+	return file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP(), []int{5, 0}
 }
 
 func (x *CleanCherryPickPattern_FileCheckBypassRule) GetIncludedPaths() []string {
@@ -536,10 +536,11 @@ func (x *CleanCherryPickPattern_FileCheckBypassRule) GetAllowedOwners() []string
 	return nil
 }
 
-var File_infra_appengine_rubber_stamper_config_config_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto protoreflect.FileDescriptor
 
-var file_infra_appengine_rubber_stamper_config_config_proto_rawDesc = string([]byte{
-	0x0a, 0x32, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
+var file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDesc = string([]byte{
+	0x0a, 0x42, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
 	0x65, 0x2f, 0x72, 0x75, 0x62, 0x62, 0x65, 0x72, 0x2d, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x65, 0x72,
 	0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x12, 0x15, 0x72, 0x75, 0x62, 0x62, 0x65, 0x72, 0x5f, 0x73, 0x74, 0x61,
@@ -643,26 +644,27 @@ var file_infra_appengine_rubber_stamper_config_config_proto_rawDesc = string([]b
 	0x52, 0x07, 0x68, 0x61, 0x73, 0x68, 0x74, 0x61, 0x67, 0x12, 0x25, 0x0a, 0x0e, 0x61, 0x6c, 0x6c,
 	0x6f, 0x77, 0x65, 0x64, 0x5f, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28,
 	0x09, 0x52, 0x0d, 0x61, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x73,
-	0x42, 0x27, 0x5a, 0x25, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67,
+	0x42, 0x37, 0x5a, 0x35, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e,
+	0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67,
 	0x69, 0x6e, 0x65, 0x2f, 0x72, 0x75, 0x62, 0x62, 0x65, 0x72, 0x2d, 0x73, 0x74, 0x61, 0x6d, 0x70,
 	0x65, 0x72, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x33,
 })
 
 var (
-	file_infra_appengine_rubber_stamper_config_config_proto_rawDescOnce sync.Once
-	file_infra_appengine_rubber_stamper_config_config_proto_rawDescData []byte
+	file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDescData []byte
 )
 
-func file_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP() []byte {
-	file_infra_appengine_rubber_stamper_config_config_proto_rawDescOnce.Do(func() {
-		file_infra_appengine_rubber_stamper_config_config_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_appengine_rubber_stamper_config_config_proto_rawDesc), len(file_infra_appengine_rubber_stamper_config_config_proto_rawDesc)))
+func file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDesc), len(file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDesc)))
 	})
-	return file_infra_appengine_rubber_stamper_config_config_proto_rawDescData
+	return file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDescData
 }
 
-var file_infra_appengine_rubber_stamper_config_config_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
-var file_infra_appengine_rubber_stamper_config_config_proto_goTypes = []any{
+var file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_goTypes = []any{
 	(*Config)(nil),                          // 0: rubber_stamper.config.Config
 	(*HostConfig)(nil),                      // 1: rubber_stamper.config.HostConfig
 	(*RepoConfig)(nil),                      // 2: rubber_stamper.config.RepoConfig
@@ -674,7 +676,7 @@ var file_infra_appengine_rubber_stamper_config_config_proto_goTypes = []any{
 	(*HostConfig_RepoRegexpConfigPair)(nil), // 8: rubber_stamper.config.HostConfig.RepoRegexpConfigPair
 	(*CleanCherryPickPattern_FileCheckBypassRule)(nil), // 9: rubber_stamper.config.CleanCherryPickPattern.FileCheckBypassRule
 }
-var file_infra_appengine_rubber_stamper_config_config_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_depIdxs = []int32{
 	6,  // 0: rubber_stamper.config.Config.host_configs:type_name -> rubber_stamper.config.Config.HostConfigsEntry
 	7,  // 1: rubber_stamper.config.HostConfig.repo_configs:type_name -> rubber_stamper.config.HostConfig.RepoConfigsEntry
 	8,  // 2: rubber_stamper.config.HostConfig.repo_regexp_configs:type_name -> rubber_stamper.config.HostConfig.RepoRegexpConfigPair
@@ -692,26 +694,26 @@ var file_infra_appengine_rubber_stamper_config_config_proto_depIdxs = []int32{
 	0,  // [0:10] is the sub-list for field type_name
 }
 
-func init() { file_infra_appengine_rubber_stamper_config_config_proto_init() }
-func file_infra_appengine_rubber_stamper_config_config_proto_init() {
-	if File_infra_appengine_rubber_stamper_config_config_proto != nil {
+func init() { file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_init() }
+func file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_init() {
+	if File_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_appengine_rubber_stamper_config_config_proto_rawDesc), len(file_infra_appengine_rubber_stamper_config_config_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDesc), len(file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   10,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_appengine_rubber_stamper_config_config_proto_goTypes,
-		DependencyIndexes: file_infra_appengine_rubber_stamper_config_config_proto_depIdxs,
-		MessageInfos:      file_infra_appengine_rubber_stamper_config_config_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_msgTypes,
 	}.Build()
-	File_infra_appengine_rubber_stamper_config_config_proto = out.File
-	file_infra_appengine_rubber_stamper_config_config_proto_goTypes = nil
-	file_infra_appengine_rubber_stamper_config_config_proto_depIdxs = nil
+	File_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto = out.File
+	file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_goTypes = nil
+	file_go_chromium_org_infra_appengine_rubber_stamper_config_config_proto_depIdxs = nil
 }

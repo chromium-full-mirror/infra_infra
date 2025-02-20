@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package golangbuildpb;
 
-option go_package = "infra/experimental/golangbuild/golangbuildpb";
+option go_package = "go.chromium.org/infra/experimental/golangbuild/golangbuildpb";
 
 import "go.chromium.org/luci/buildbucket/proto/common.proto";
 

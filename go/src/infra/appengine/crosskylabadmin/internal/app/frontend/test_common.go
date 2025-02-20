@@ -19,14 +19,14 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/internal/app/clients"
-	"infra/appengine/crosskylabadmin/internal/app/clients/mock"
-	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/tq"
-	"infra/appengine/crosskylabadmin/internal/ufs/mockufs"
-	"infra/cros/recovery/logger/metrics/mockmetrics"
-	"infra/libs/git"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/clients"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/clients/mock"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/tq"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/ufs/mockufs"
+	"go.chromium.org/infra/cros/recovery/logger/metrics/mockmetrics"
+	"go.chromium.org/infra/libs/git"
 )
 
 type testFixture struct {

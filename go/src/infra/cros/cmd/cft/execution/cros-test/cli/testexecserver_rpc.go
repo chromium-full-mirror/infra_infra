@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/chromiumos/lro"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/cft/execution/cros-test/internal/common"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/common"
 )
 
 // ExecutionServiceServer implementation of dut_service.proto

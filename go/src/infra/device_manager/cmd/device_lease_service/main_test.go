@@ -20,11 +20,11 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/server"
 
-	"infra/device_manager/internal/database"
-	"infra/device_manager/internal/external"
-	"infra/device_manager/internal/frontend"
-	"infra/device_manager/internal/jobs"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/device_manager/internal/database"
+	"go.chromium.org/infra/device_manager/internal/external"
+	"go.chromium.org/infra/device_manager/internal/frontend"
+	"go.chromium.org/infra/device_manager/internal/jobs"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 var e2e = flag.Bool("e2e", false, "Run the end to end tests, which may take much longer than unit tests")

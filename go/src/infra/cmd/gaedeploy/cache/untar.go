@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/gaedeploy/source"
+	"go.chromium.org/infra/cmd/gaedeploy/source"
 )
 
 // fetchAndUntar fetches the tarball into `tmpName` and then untars it into

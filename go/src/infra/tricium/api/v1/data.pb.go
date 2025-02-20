@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/tricium/api/v1/data.proto
+// source: go.chromium.org/infra/tricium/api/v1/data.proto
 
 package tricium
 
@@ -64,11 +64,11 @@ func (x Data_Type) String() string {
 }
 
 func (Data_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_tricium_api_v1_data_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_tricium_api_v1_data_proto_enumTypes[0].Descriptor()
 }
 
 func (Data_Type) Type() protoreflect.EnumType {
-	return &file_infra_tricium_api_v1_data_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_tricium_api_v1_data_proto_enumTypes[0]
 }
 
 func (x Data_Type) Number() protoreflect.EnumNumber {
@@ -77,7 +77,7 @@ func (x Data_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Data_Type.Descriptor instead.
 func (Data_Type) EnumDescriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 0}
 }
 
 // File change status.
@@ -126,11 +126,11 @@ func (x Data_Status) String() string {
 }
 
 func (Data_Status) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_tricium_api_v1_data_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_tricium_api_v1_data_proto_enumTypes[1].Descriptor()
 }
 
 func (Data_Status) Type() protoreflect.EnumType {
-	return &file_infra_tricium_api_v1_data_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_tricium_api_v1_data_proto_enumTypes[1]
 }
 
 func (x Data_Status) Number() protoreflect.EnumNumber {
@@ -139,7 +139,7 @@ func (x Data_Status) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Data_Status.Descriptor instead.
 func (Data_Status) EnumDescriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 1}
+	return file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 1}
 }
 
 // Tricium data types.
@@ -153,7 +153,7 @@ type Data struct {
 
 func (x *Data) Reset() {
 	*x = Data{}
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -165,7 +165,7 @@ func (x *Data) String() string {
 func (*Data) ProtoMessage() {}
 
 func (x *Data) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -178,7 +178,7 @@ func (x *Data) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Data.ProtoReflect.Descriptor instead.
 func (*Data) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0}
 }
 
 // Details for supported types, specifically whether a type is tied to
@@ -196,7 +196,7 @@ type Data_TypeDetails struct {
 
 func (x *Data_TypeDetails) Reset() {
 	*x = Data_TypeDetails{}
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -208,7 +208,7 @@ func (x *Data_TypeDetails) String() string {
 func (*Data_TypeDetails) ProtoMessage() {}
 
 func (x *Data_TypeDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -221,7 +221,7 @@ func (x *Data_TypeDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Data_TypeDetails.ProtoReflect.Descriptor instead.
 func (*Data_TypeDetails) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 0}
 }
 
 func (x *Data_TypeDetails) GetType() Data_Type {
@@ -264,7 +264,7 @@ type Data_GitFileDetails struct {
 
 func (x *Data_GitFileDetails) Reset() {
 	*x = Data_GitFileDetails{}
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -276,7 +276,7 @@ func (x *Data_GitFileDetails) String() string {
 func (*Data_GitFileDetails) ProtoMessage() {}
 
 func (x *Data_GitFileDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -289,7 +289,7 @@ func (x *Data_GitFileDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Data_GitFileDetails.ProtoReflect.Descriptor instead.
 func (*Data_GitFileDetails) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 1}
+	return file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 1}
 }
 
 func (x *Data_GitFileDetails) GetPlatforms() int64 {
@@ -341,7 +341,7 @@ type Data_Files struct {
 
 func (x *Data_Files) Reset() {
 	*x = Data_Files{}
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -353,7 +353,7 @@ func (x *Data_Files) String() string {
 func (*Data_Files) ProtoMessage() {}
 
 func (x *Data_Files) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -366,7 +366,7 @@ func (x *Data_Files) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Data_Files.ProtoReflect.Descriptor instead.
 func (*Data_Files) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 2}
+	return file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 2}
 }
 
 func (x *Data_Files) GetPlatforms() int64 {
@@ -407,7 +407,7 @@ type Data_File struct {
 
 func (x *Data_File) Reset() {
 	*x = Data_File{}
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -419,7 +419,7 @@ func (x *Data_File) String() string {
 func (*Data_File) ProtoMessage() {}
 
 func (x *Data_File) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -432,7 +432,7 @@ func (x *Data_File) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Data_File.ProtoReflect.Descriptor instead.
 func (*Data_File) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 3}
+	return file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 3}
 }
 
 func (x *Data_File) GetPath() string {
@@ -477,7 +477,7 @@ type Data_Results struct {
 
 func (x *Data_Results) Reset() {
 	*x = Data_Results{}
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -489,7 +489,7 @@ func (x *Data_Results) String() string {
 func (*Data_Results) ProtoMessage() {}
 
 func (x *Data_Results) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -502,7 +502,7 @@ func (x *Data_Results) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Data_Results.ProtoReflect.Descriptor instead.
 func (*Data_Results) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 4}
+	return file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 4}
 }
 
 func (x *Data_Results) GetPlatforms() int64 {
@@ -559,7 +559,7 @@ type Data_Comment struct {
 
 func (x *Data_Comment) Reset() {
 	*x = Data_Comment{}
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -571,7 +571,7 @@ func (x *Data_Comment) String() string {
 func (*Data_Comment) ProtoMessage() {}
 
 func (x *Data_Comment) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -584,7 +584,7 @@ func (x *Data_Comment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Data_Comment.ProtoReflect.Descriptor instead.
 func (*Data_Comment) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 5}
+	return file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 5}
 }
 
 func (x *Data_Comment) GetId() string {
@@ -673,7 +673,7 @@ type Data_Suggestion struct {
 
 func (x *Data_Suggestion) Reset() {
 	*x = Data_Suggestion{}
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -685,7 +685,7 @@ func (x *Data_Suggestion) String() string {
 func (*Data_Suggestion) ProtoMessage() {}
 
 func (x *Data_Suggestion) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -698,7 +698,7 @@ func (x *Data_Suggestion) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Data_Suggestion.ProtoReflect.Descriptor instead.
 func (*Data_Suggestion) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 6}
+	return file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 6}
 }
 
 func (x *Data_Suggestion) GetDescription() string {
@@ -737,7 +737,7 @@ type Data_Replacement struct {
 
 func (x *Data_Replacement) Reset() {
 	*x = Data_Replacement{}
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -749,7 +749,7 @@ func (x *Data_Replacement) String() string {
 func (*Data_Replacement) ProtoMessage() {}
 
 func (x *Data_Replacement) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_data_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -762,7 +762,7 @@ func (x *Data_Replacement) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Data_Replacement.ProtoReflect.Descriptor instead.
 func (*Data_Replacement) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 7}
+	return file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescGZIP(), []int{0, 7}
 }
 
 func (x *Data_Replacement) GetPath() string {
@@ -807,10 +807,11 @@ func (x *Data_Replacement) GetEndChar() int32 {
 	return 0
 }
 
-var File_infra_tricium_api_v1_data_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_tricium_api_v1_data_proto protoreflect.FileDescriptor
 
-var file_infra_tricium_api_v1_data_proto_rawDesc = string([]byte{
-	0x0a, 0x1f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
+var file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDesc = string([]byte{
+	0x0a, 0x2f, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x12, 0x07, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x22, 0xf8, 0x0a, 0x0a, 0x04, 0x44,
 	0x61, 0x74, 0x61, 0x1a, 0x67, 0x0a, 0x0b, 0x54, 0x79, 0x70, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69,
@@ -900,26 +901,27 @@ var file_infra_tricium_api_v1_data_proto_rawDesc = string([]byte{
 	0x12, 0x0b, 0x0a, 0x07, 0x44, 0x45, 0x4c, 0x45, 0x54, 0x45, 0x44, 0x10, 0x02, 0x12, 0x0b, 0x0a,
 	0x07, 0x52, 0x45, 0x4e, 0x41, 0x4d, 0x45, 0x44, 0x10, 0x03, 0x12, 0x0a, 0x0a, 0x06, 0x43, 0x4f,
 	0x50, 0x49, 0x45, 0x44, 0x10, 0x04, 0x12, 0x0d, 0x0a, 0x09, 0x52, 0x45, 0x57, 0x52, 0x49, 0x54,
-	0x54, 0x45, 0x4e, 0x10, 0x05, 0x42, 0x1e, 0x5a, 0x1c, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74,
+	0x54, 0x45, 0x4e, 0x10, 0x05, 0x42, 0x2e, 0x5a, 0x2c, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f,
+	0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74,
 	0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x3b, 0x74, 0x72,
 	0x69, 0x63, 0x69, 0x75, 0x6d, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_tricium_api_v1_data_proto_rawDescOnce sync.Once
-	file_infra_tricium_api_v1_data_proto_rawDescData []byte
+	file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescData []byte
 )
 
-func file_infra_tricium_api_v1_data_proto_rawDescGZIP() []byte {
-	file_infra_tricium_api_v1_data_proto_rawDescOnce.Do(func() {
-		file_infra_tricium_api_v1_data_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_tricium_api_v1_data_proto_rawDesc), len(file_infra_tricium_api_v1_data_proto_rawDesc)))
+func file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDesc), len(file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDesc)))
 	})
-	return file_infra_tricium_api_v1_data_proto_rawDescData
+	return file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDescData
 }
 
-var file_infra_tricium_api_v1_data_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_infra_tricium_api_v1_data_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
-var file_infra_tricium_api_v1_data_proto_goTypes = []any{
+var file_go_chromium_org_infra_tricium_api_v1_data_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_go_chromium_org_infra_tricium_api_v1_data_proto_goTypes = []any{
 	(Data_Type)(0),              // 0: tricium.Data.Type
 	(Data_Status)(0),            // 1: tricium.Data.Status
 	(*Data)(nil),                // 2: tricium.Data
@@ -932,7 +934,7 @@ var file_infra_tricium_api_v1_data_proto_goTypes = []any{
 	(*Data_Suggestion)(nil),     // 9: tricium.Data.Suggestion
 	(*Data_Replacement)(nil),    // 10: tricium.Data.Replacement
 }
-var file_infra_tricium_api_v1_data_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_tricium_api_v1_data_proto_depIdxs = []int32{
 	0,  // 0: tricium.Data.TypeDetails.type:type_name -> tricium.Data.Type
 	6,  // 1: tricium.Data.GitFileDetails.files:type_name -> tricium.Data.File
 	6,  // 2: tricium.Data.Files.files:type_name -> tricium.Data.File
@@ -947,27 +949,27 @@ var file_infra_tricium_api_v1_data_proto_depIdxs = []int32{
 	0,  // [0:7] is the sub-list for field type_name
 }
 
-func init() { file_infra_tricium_api_v1_data_proto_init() }
-func file_infra_tricium_api_v1_data_proto_init() {
-	if File_infra_tricium_api_v1_data_proto != nil {
+func init() { file_go_chromium_org_infra_tricium_api_v1_data_proto_init() }
+func file_go_chromium_org_infra_tricium_api_v1_data_proto_init() {
+	if File_go_chromium_org_infra_tricium_api_v1_data_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_tricium_api_v1_data_proto_rawDesc), len(file_infra_tricium_api_v1_data_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDesc), len(file_go_chromium_org_infra_tricium_api_v1_data_proto_rawDesc)),
 			NumEnums:      2,
 			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_tricium_api_v1_data_proto_goTypes,
-		DependencyIndexes: file_infra_tricium_api_v1_data_proto_depIdxs,
-		EnumInfos:         file_infra_tricium_api_v1_data_proto_enumTypes,
-		MessageInfos:      file_infra_tricium_api_v1_data_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_tricium_api_v1_data_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_tricium_api_v1_data_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_tricium_api_v1_data_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_tricium_api_v1_data_proto_msgTypes,
 	}.Build()
-	File_infra_tricium_api_v1_data_proto = out.File
-	file_infra_tricium_api_v1_data_proto_goTypes = nil
-	file_infra_tricium_api_v1_data_proto_depIdxs = nil
+	File_go_chromium_org_infra_tricium_api_v1_data_proto = out.File
+	file_go_chromium_org_infra_tricium_api_v1_data_proto_goTypes = nil
+	file_go_chromium_org_infra_tricium_api_v1_data_proto_depIdxs = nil
 }

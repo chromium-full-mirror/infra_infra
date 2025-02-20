@@ -14,9 +14,9 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/rts"
-	"infra/rts/presubmit/eval"
-	evalpb "infra/rts/presubmit/eval/proto"
+	"go.chromium.org/infra/rts"
+	"go.chromium.org/infra/rts/presubmit/eval"
+	evalpb "go.chromium.org/infra/rts/presubmit/eval/proto"
 )
 
 func TestEvalStrategy(t *testing.T) {

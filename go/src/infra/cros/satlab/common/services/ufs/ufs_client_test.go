@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 
-	ufsModels "infra/unifiedfleet/api/v1/models"
-	ufsApi "infra/unifiedfleet/api/v1/rpc"
+	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsApi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // TestValidUFSHostname ensures we return err when hostname given to UFS client is nil

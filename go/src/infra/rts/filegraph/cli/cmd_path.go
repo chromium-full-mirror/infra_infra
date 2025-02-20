@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/rts/filegraph"
-	"infra/rts/filegraph/git"
+	"go.chromium.org/infra/rts/filegraph"
+	"go.chromium.org/infra/rts/filegraph/git"
 )
 
 var cmdPath = &subcommands.Command{

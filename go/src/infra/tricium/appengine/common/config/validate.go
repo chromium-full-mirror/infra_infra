@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	tricium "infra/tricium/api/v1"
+	tricium "go.chromium.org/infra/tricium/api/v1"
 )
 
 // Validate validates the provided project config using the provided service

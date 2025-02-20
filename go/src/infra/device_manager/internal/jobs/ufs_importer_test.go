@@ -21,14 +21,14 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	"infra/device_manager/internal/database"
-	"infra/device_manager/internal/frontend"
-	"infra/device_manager/internal/model"
-	inventory "infra/libs/skylab/inventory"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufschromeoslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsutil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/device_manager/internal/database"
+	"go.chromium.org/infra/device_manager/internal/frontend"
+	"go.chromium.org/infra/device_manager/internal/model"
+	inventory "go.chromium.org/infra/libs/skylab/inventory"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufschromeoslab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsutil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 func Test_isDeviceNeedsUpdate(t *testing.T) {

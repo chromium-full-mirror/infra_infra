@@ -21,7 +21,7 @@ import (
 	ds "go.chromium.org/luci/gae/service/datastore"
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 
-	"infra/tricium/appengine/common"
+	"go.chromium.org/infra/tricium/appengine/common"
 )
 
 // Context generates a context with queues and clock for testing.

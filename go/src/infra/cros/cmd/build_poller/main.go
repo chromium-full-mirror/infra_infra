@@ -22,7 +22,7 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/cros/lib/buildbucket"
+	"go.chromium.org/infra/cros/lib/buildbucket"
 )
 
 var logCfg = gologger.LoggerConfig{

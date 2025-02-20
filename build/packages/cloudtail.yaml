@@ -39,7 +39,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/tools/cloudtail/cmd/cloudtail
+  - go.chromium.org/infra/tools/cloudtail/cmd/cloudtail
 root: ../../go/bin
 data:
   - file: cloudtail${exe_suffix}

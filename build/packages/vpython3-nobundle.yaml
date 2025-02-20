@@ -28,7 +28,7 @@ platforms:
   - openbsd-riscv64
   - solaris-amd64
 go_packages:
-  - infra/tools/vpython/cmd/vpython3
+  - go.chromium.org/infra/tools/vpython/cmd/vpython3
 root: ../../go/bin
 data:
   - file: vpython3${exe_suffix}

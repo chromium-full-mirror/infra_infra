@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"infra/cros/servo/shutil"
-	"infra/cros/servo/ssh"
+	"go.chromium.org/infra/cros/servo/shutil"
+	"go.chromium.org/infra/cros/servo/ssh"
 )
 
 // ConnectToServer establishes a connection to srv using key.

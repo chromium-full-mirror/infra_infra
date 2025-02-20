@@ -18,7 +18,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/chromeperf/cmd/pinpoint
+  - go.chromium.org/infra/chromeperf/cmd/pinpoint
 install_mode: copy
 root: ../../go/bin
 data:

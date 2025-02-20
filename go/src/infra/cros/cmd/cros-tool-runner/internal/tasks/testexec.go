@@ -20,8 +20,8 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/cros-tool-runner/internal/common"
-	"infra/cros/cmd/cros-tool-runner/internal/testexec"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/common"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/testexec"
 )
 
 const longDesc = `Run tests,

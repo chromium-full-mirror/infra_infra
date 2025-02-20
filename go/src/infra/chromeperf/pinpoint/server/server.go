@@ -37,9 +37,9 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
-	"infra/chromeperf/pinpoint"
-	"infra/chromeperf/pinpoint/proto"
-	"infra/chromeperf/pinpoint/server/convert"
+	"go.chromium.org/infra/chromeperf/pinpoint"
+	"go.chromium.org/infra/chromeperf/pinpoint/proto"
+	"go.chromium.org/infra/chromeperf/pinpoint/server/convert"
 )
 
 type pinpointServer struct {

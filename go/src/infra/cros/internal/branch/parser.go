@@ -10,9 +10,9 @@ import (
 	"strconv"
 	"strings"
 
-	cv "infra/cros/internal/chromeosversion"
-	"infra/cros/internal/git"
-	"infra/cros/internal/osutils"
+	cv "go.chromium.org/infra/cros/internal/chromeosversion"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/osutils"
 )
 
 const (

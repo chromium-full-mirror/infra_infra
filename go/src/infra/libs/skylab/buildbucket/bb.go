@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	schedulingapi "infra/libs/fleet/scheduling/api"
+	schedulingapi "go.chromium.org/infra/libs/fleet/scheduling/api"
 )
 
 // Set higher priority for admin task to compite with tests.

@@ -15,17 +15,17 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/retry"
 
-	bqlib "infra/cros/lab_inventory/bq"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	apibq "infra/unifiedfleet/api/v1/models/bigquery"
-	ufsdevice "infra/unifiedfleet/api/v1/models/chromeos/device"
-	"infra/unifiedfleet/app/controller"
-	"infra/unifiedfleet/app/model/caching"
-	"infra/unifiedfleet/app/model/configuration"
-	"infra/unifiedfleet/app/model/inventory"
-	"infra/unifiedfleet/app/model/registration"
-	"infra/unifiedfleet/app/model/state"
-	"infra/unifiedfleet/app/util"
+	bqlib "go.chromium.org/infra/cros/lab_inventory/bq"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	apibq "go.chromium.org/infra/unifiedfleet/api/v1/models/bigquery"
+	ufsdevice "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/device"
+	"go.chromium.org/infra/unifiedfleet/app/controller"
+	"go.chromium.org/infra/unifiedfleet/app/model/caching"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
+	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	"go.chromium.org/infra/unifiedfleet/app/model/registration"
+	"go.chromium.org/infra/unifiedfleet/app/model/state"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 type getAllFunc func(ctx context.Context) ([]proto.Message, error)

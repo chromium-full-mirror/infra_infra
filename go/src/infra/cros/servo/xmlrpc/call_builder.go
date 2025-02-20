@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"time"
 
-	"infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/errors"
 )
 
 // RPCInterface is an interface that provides a common way of making RPC calls.

@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	proto "infra/appengine/poros/api/proto"
+	proto "go.chromium.org/infra/appengine/poros/api/proto"
 )
 
 func mockCreateResourceRequest(name string, description string, Type string, operatingSystem string, imageProject string, imageFamily string) *proto.CreateResourceRequest {

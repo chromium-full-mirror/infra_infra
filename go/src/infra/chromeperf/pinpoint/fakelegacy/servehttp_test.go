@@ -29,11 +29,11 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/chromeperf/pinpoint"
-	"infra/chromeperf/pinpoint/assertions"
-	"infra/chromeperf/pinpoint/fakelegacy"
-	"infra/chromeperf/pinpoint/proto"
-	"infra/chromeperf/pinpoint/server"
+	"go.chromium.org/infra/chromeperf/pinpoint"
+	"go.chromium.org/infra/chromeperf/pinpoint/assertions"
+	"go.chromium.org/infra/chromeperf/pinpoint/fakelegacy"
+	"go.chromium.org/infra/chromeperf/pinpoint/proto"
+	"go.chromium.org/infra/chromeperf/pinpoint/server"
 )
 
 // Path to the directory which contains templates for API responses.

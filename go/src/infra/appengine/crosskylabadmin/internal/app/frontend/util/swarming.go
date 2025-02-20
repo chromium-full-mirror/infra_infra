@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/common/data/strpair"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
-	"infra/appengine/crosskylabadmin/internal/app/config"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config"
 )
 
 const (

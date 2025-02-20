@@ -23,13 +23,13 @@ import (
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	"infra/qscheduler/qslib/tutils"
-	admin "infra/tricium/api/admin/v1"
-	apibq "infra/tricium/api/bigquery"
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common"
-	"infra/tricium/appengine/common/gerrit"
-	"infra/tricium/appengine/common/track"
+	"go.chromium.org/infra/qscheduler/qslib/tutils"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
+	apibq "go.chromium.org/infra/tricium/api/bigquery"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common"
+	"go.chromium.org/infra/tricium/appengine/common/gerrit"
+	"go.chromium.org/infra/tricium/appengine/common/track"
 )
 
 // WorkerDone tracks the completion of a worker.

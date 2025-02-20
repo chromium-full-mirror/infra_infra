@@ -16,17 +16,17 @@ import (
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/grpc/prpc"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/cmd/shivas/cmdhelp"
-	"infra/cmd/shivas/internal/ufs/subcmds/host"
-	"infra/cmd/shivas/site"
-	"infra/cmd/shivas/utils"
-	"infra/cmdsupport/cmdlib"
-	"infra/libs/skylab/autotest/hostinfo"
-	"infra/libs/skylab/common/heuristics"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/cmd/shivas/cmdhelp"
+	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/host"
+	"go.chromium.org/infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/libs/skylab/autotest/hostinfo"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // GetDutCmd get host by given name.

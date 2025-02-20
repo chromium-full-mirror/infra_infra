@@ -17,7 +17,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"infra/cros/tlslib"
+	"go.chromium.org/infra/cros/tlslib"
 )
 
 var (

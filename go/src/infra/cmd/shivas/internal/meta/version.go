@@ -13,8 +13,8 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cmd/shivas/site"
-	"infra/libs/cipd"
+	"go.chromium.org/infra/cmd/shivas/site"
+	"go.chromium.org/infra/libs/cipd"
 )
 
 // Version subcommand: Version shivas.

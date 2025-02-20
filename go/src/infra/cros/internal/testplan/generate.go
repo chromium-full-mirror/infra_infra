@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/internal/testplan/starlark"
+	"go.chromium.org/infra/cros/internal/testplan/starlark"
 )
 
 // validateTemplateParameters validates that all the plans used as keys in

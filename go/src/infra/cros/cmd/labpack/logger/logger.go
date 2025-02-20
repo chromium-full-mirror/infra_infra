@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/logging/teelogger"
 
-	"infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/logger"
 )
 
 const (

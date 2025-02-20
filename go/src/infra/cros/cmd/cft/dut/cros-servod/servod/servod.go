@@ -17,8 +17,8 @@ import (
 	xmlrpc_value "go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/cft/dut/cros-servod/ssh"
-	"infra/cros/cmd/cft/dut/cros-servod/xmlrpc"
+	"go.chromium.org/infra/cros/cmd/cft/dut/cros-servod/ssh"
+	"go.chromium.org/infra/cros/cmd/cft/dut/cros-servod/xmlrpc"
 )
 
 const (

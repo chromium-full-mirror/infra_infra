@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/testing/ftt"
 
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // Test cases for TestStorageSMARTFieldValue

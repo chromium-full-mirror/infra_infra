@@ -6,11 +6,11 @@ syntax = "proto3";
 
 package apibq;
 
-option go_package = "infra/tricium/api/bigquery;apibq";
+option go_package = "go.chromium.org/infra/tricium/api/bigquery;apibq";
 
-import "infra/tricium/api/v1/data.proto";
-import "infra/tricium/api/v1/platform.proto";
-import "infra/tricium/api/v1/tricium.proto";
+import "go.chromium.org/infra/tricium/api/v1/data.proto";
+import "go.chromium.org/infra/tricium/api/v1/platform.proto";
+import "go.chromium.org/infra/tricium/api/v1/tricium.proto";
 import "google/protobuf/timestamp.proto";
 
 message AnalysisRun {

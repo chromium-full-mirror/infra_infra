@@ -14,8 +14,8 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/try/try"
-	"infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/cmd/try/try"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 // retryBuild retries a build using `cros try retry`. It returns the BBID of the

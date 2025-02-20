@@ -10,9 +10,9 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/cros/servo/logging"
-	"infra/cros/servo/logging/loggingtest"
-	"infra/cros/servo/testing"
+	"go.chromium.org/infra/cros/servo/logging"
+	"go.chromium.org/infra/cros/servo/logging/loggingtest"
+	"go.chromium.org/infra/cros/servo/testing"
 )
 
 func TestContextLogger(t *gotesting.T) {

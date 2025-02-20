@@ -8,8 +8,8 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"infra/tools/dirmd"
-	dirmdpb "infra/tools/dirmd/proto"
+	"go.chromium.org/infra/tools/dirmd"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
 )
 
 func toLegacyFormat(m *dirmd.Mapping) []byte {

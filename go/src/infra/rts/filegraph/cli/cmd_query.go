@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/text"
 
-	"infra/rts/filegraph"
+	"go.chromium.org/infra/rts/filegraph"
 )
 
 var cmdQuery = &subcommands.Command{

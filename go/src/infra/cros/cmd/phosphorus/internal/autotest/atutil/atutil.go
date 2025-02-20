@@ -30,11 +30,11 @@ import (
 	"go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/cmd/phosphorus/internal/autotest"
-	"infra/cros/cmd/phosphorus/internal/osutil"
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/docker"
-	"infra/cros/internal/osutils"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/autotest"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/osutil"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/docker"
+	"go.chromium.org/infra/cros/internal/osutils"
 )
 
 const (

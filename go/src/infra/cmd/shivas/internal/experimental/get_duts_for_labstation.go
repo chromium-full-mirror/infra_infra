@@ -13,12 +13,12 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/cmd/shivas/site"
-	"infra/cmd/shivas/utils"
-	"infra/cmdsupport/cmdlib"
-	"infra/libs/skylab/common/heuristics"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // GetDutsForLabstationCmd gets the DUTs associated with a labstation.

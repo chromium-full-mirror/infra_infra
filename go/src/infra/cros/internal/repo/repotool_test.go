@@ -12,8 +12,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/cmd"
 )
 
 func TestInit(t *testing.T) {

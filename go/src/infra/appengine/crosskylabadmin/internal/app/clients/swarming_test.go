@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/testing/typed"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
 )
 
 func TestGetStateDimension(t *testing.T) {

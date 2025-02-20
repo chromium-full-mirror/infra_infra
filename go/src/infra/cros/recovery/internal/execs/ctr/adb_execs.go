@@ -12,13 +12,13 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/ctr"
-	adbTool "infra/cros/recovery/internal/adb"
-	"infra/cros/recovery/internal/components/cft"
-	"infra/cros/recovery/internal/components/cft/adb"
-	"infra/cros/recovery/internal/components/cros/android"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/ctr"
+	adbTool "go.chromium.org/infra/cros/recovery/internal/adb"
+	"go.chromium.org/infra/cros/recovery/internal/components/cft"
+	"go.chromium.org/infra/cros/recovery/internal/components/cft/adb"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros/android"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 func startADBContainerExec(ctx context.Context, info *execs.ExecInfo) error {

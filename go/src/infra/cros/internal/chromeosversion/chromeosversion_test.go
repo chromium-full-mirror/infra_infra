@@ -10,9 +10,9 @@ import (
 	"reflect"
 	"testing"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/git"
 )
 
 func TestVersionsEqual(t *testing.T) {

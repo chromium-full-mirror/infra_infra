@@ -7,7 +7,7 @@ package androidapi
 import (
 	"context"
 
-	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	atp "go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 type WorkUnitState int

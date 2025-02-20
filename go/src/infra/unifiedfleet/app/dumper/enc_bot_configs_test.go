@@ -16,8 +16,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/external"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/external"
 )
 
 // encTestingContext creates a testing context which mocks the logging and

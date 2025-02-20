@@ -16,13 +16,13 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 
-	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/site"
-	shivasUtils "infra/cmd/shivas/utils"
-	"infra/libs/skylab/inventory"
-	models "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config"
+	"go.chromium.org/infra/appengine/crosskylabadmin/site"
+	shivasUtils "go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/libs/skylab/inventory"
+	models "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // NewHTTPClient creates a new client specifically configured to talk to UFS correctly when run from

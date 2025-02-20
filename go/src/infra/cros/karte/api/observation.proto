@@ -7,9 +7,9 @@ syntax = "proto3";
 package chromeos.karte;
 
 import "google/api/resource.proto";
-import "infra/cros/karte/api/storage_policy.proto";
+import "go.chromium.org/infra/cros/karte/api/storage_policy.proto";
 
-option go_package = "infra/cros/karte/api;kartepb";
+option go_package = "go.chromium.org/infra/cros/karte/api;kartepb";
 
 // An Observation describes a measurement during an action.
 //

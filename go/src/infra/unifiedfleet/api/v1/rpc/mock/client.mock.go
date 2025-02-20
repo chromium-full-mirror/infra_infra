@@ -11,12 +11,12 @@ package mockufs
 
 import (
 	context "context"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufspb0 "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufspb1 "infra/unifiedfleet/api/v1/rpc"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufspb0 "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufspb1 "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"

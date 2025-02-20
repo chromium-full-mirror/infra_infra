@@ -20,13 +20,13 @@ import (
 	"go.chromium.org/luci/server"
 	tsmonsrv "go.chromium.org/luci/server/tsmon"
 
-	"infra/cros/dutstate"
-	invV1 "infra/libs/skylab/inventory"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/model/inventory"
-	"infra/unifiedfleet/app/model/registration"
-	"infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/dutstate"
+	invV1 "go.chromium.org/infra/libs/skylab/inventory"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	"go.chromium.org/infra/unifiedfleet/app/model/registration"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // inventoryCounter collects number of DUTs per bucket and status.

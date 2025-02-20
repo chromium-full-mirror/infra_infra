@@ -19,10 +19,10 @@ import (
 	luciflag "go.chromium.org/luci/common/flag"
 	lgs "go.chromium.org/luci/common/gcloud/gs"
 
-	gitiles "infra/cros/internal/gerrit"
-	"infra/cros/internal/gs"
-	"infra/cros/internal/osutils"
-	"infra/cros/internal/shared"
+	gitiles "go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/gs"
+	"go.chromium.org/infra/cros/internal/osutils"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 const (

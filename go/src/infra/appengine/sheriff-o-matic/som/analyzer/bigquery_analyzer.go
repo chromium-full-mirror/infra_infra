@@ -28,10 +28,10 @@ import (
 	"go.chromium.org/luci/gae/service/memcache"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	"infra/appengine/sheriff-o-matic/som/analyzer/step"
-	"infra/appengine/sheriff-o-matic/som/client"
-	"infra/appengine/sheriff-o-matic/som/model"
-	"infra/monitoring/messages"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/analyzer/step"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/client"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/model"
+	"go.chromium.org/infra/monitoring/messages"
 )
 
 const bqMemcacheFormat = "bq-%s"

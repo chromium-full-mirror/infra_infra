@@ -13,7 +13,7 @@ import (
 	"strings"
 	"testing"
 
-	"infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/assert"
 )
 
 func TestFindInPathParents(t *testing.T) {

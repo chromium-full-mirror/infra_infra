@@ -13,8 +13,8 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/data"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/data"
 )
 
 // AndroidCompanionDutServiceStartCmd represents android dut service start cmd.

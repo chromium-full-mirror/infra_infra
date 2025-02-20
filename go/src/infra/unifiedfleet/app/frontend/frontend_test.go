@@ -16,8 +16,8 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 var nilHandler = func(ctx context.Context, req interface{}) (interface{}, error) {

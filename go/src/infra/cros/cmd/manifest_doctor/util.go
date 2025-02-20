@@ -9,10 +9,10 @@ import (
 
 	lgs "go.chromium.org/luci/common/gcloud/gs"
 
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/gs"
-	"infra/cros/internal/manifestutil"
-	"infra/cros/internal/repo"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/gs"
+	"go.chromium.org/infra/cros/internal/manifestutil"
+	"go.chromium.org/infra/cros/internal/repo"
 )
 
 const (

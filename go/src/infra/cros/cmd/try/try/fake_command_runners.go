@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/cmd"
 )
 
 // fakeBBBuildersRunner mocks stdout for `bb builders {projectBucket}`.

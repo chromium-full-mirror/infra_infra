@@ -17,7 +17,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/rts/cmd/rts-chromium
+  - go.chromium.org/infra/rts/cmd/rts-chromium
 install_mode: copy
 root: ../../go/bin
 data:

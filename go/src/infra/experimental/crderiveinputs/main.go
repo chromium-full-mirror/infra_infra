@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/experimental/crderiveinputs/inputpb"
+	"go.chromium.org/infra/experimental/crderiveinputs/inputpb"
 )
 
 func MainImpl(ctx context.Context, args *Args, authenticator *auth.Authenticator) (*inputpb.Manifest, error) {

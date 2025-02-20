@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 // UprevContainer performs the logic for upreving a container.

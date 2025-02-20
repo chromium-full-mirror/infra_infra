@@ -29,9 +29,9 @@ import (
 	"go.chromium.org/luci/common/tsmon"
 	"go.chromium.org/luci/common/tsmon/target"
 
-	"infra/cmdsupport/service"
-	"infra/libs/infraenv"
-	"infra/tools/cloudtail"
+	"go.chromium.org/infra/cmdsupport/service"
+	"go.chromium.org/infra/libs/infraenv"
+	"go.chromium.org/infra/tools/cloudtail"
 )
 
 // Where to look for service account JSON creds if not provided via CLI.

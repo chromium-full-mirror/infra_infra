@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"log"
 
-	"infra/cros/cmd/k8s-management/tag-manager/internal/image"
+	"go.chromium.org/infra/cros/cmd/k8s-management/tag-manager/internal/image"
 )
 
 // tagPolicy is the interface for all tag policies.

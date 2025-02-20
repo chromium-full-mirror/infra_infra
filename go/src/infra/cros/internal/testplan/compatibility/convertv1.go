@@ -27,7 +27,7 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/internal/testplan/compatibility/priority"
+	"go.chromium.org/infra/cros/internal/testplan/compatibility/priority"
 )
 
 // criterionMatchesAttribute returns true if criterion's AttributeId matches

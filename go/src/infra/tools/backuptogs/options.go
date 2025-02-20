@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/common/tsmon"
 	"go.chromium.org/luci/common/tsmon/target"
 
-	"infra/tools/backuptogs/filetree"
+	"go.chromium.org/infra/tools/backuptogs/filetree"
 )
 
 // options holds various options for both the main app, as well as modules like tsmon and logging

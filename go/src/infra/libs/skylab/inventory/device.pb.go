@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/libs/skylab/inventory/device.proto
+// source: go.chromium.org/infra/libs/skylab/inventory/device.proto
 
 package inventory
 
@@ -67,11 +67,11 @@ func (x ServoFwChannel) String() string {
 }
 
 func (ServoFwChannel) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[0].Descriptor()
 }
 
 func (ServoFwChannel) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[0]
 }
 
 func (x ServoFwChannel) Number() protoreflect.EnumNumber {
@@ -90,7 +90,7 @@ func (x *ServoFwChannel) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use ServoFwChannel.Descriptor instead.
 func (ServoFwChannel) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{0}
 }
 
 // copy of enum from dut_state.proto
@@ -233,11 +233,11 @@ func (x PeripheralState) String() string {
 }
 
 func (PeripheralState) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[1].Descriptor()
 }
 
 func (PeripheralState) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[1]
 }
 
 func (x PeripheralState) Number() protoreflect.EnumNumber {
@@ -256,7 +256,7 @@ func (x *PeripheralState) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use PeripheralState.Descriptor instead.
 func (PeripheralState) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{1}
 }
 
 // copy of enum from dut_state.proto
@@ -308,11 +308,11 @@ func (x HardwareState) String() string {
 }
 
 func (HardwareState) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[2].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[2].Descriptor()
 }
 
 func (HardwareState) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[2]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[2]
 }
 
 func (x HardwareState) Number() protoreflect.EnumNumber {
@@ -331,7 +331,7 @@ func (x *HardwareState) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use HardwareState.Descriptor instead.
 func (HardwareState) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{2}
 }
 
 // Next Tag: 3
@@ -372,11 +372,11 @@ func (x LicenseType) String() string {
 }
 
 func (LicenseType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[3].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[3].Descriptor()
 }
 
 func (LicenseType) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[3]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[3]
 }
 
 func (x LicenseType) Number() protoreflect.EnumNumber {
@@ -395,7 +395,7 @@ func (x *LicenseType) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use LicenseType.Descriptor instead.
 func (LicenseType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{3}
 }
 
 // Next Tag: 9
@@ -470,11 +470,11 @@ func (x ModemType) String() string {
 }
 
 func (ModemType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[4].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[4].Descriptor()
 }
 
 func (ModemType) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[4]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[4]
 }
 
 func (x ModemType) Number() protoreflect.EnumNumber {
@@ -493,7 +493,7 @@ func (x *ModemType) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use ModemType.Descriptor instead.
 func (ModemType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{4}
 }
 
 // Next Tag: 22
@@ -587,11 +587,11 @@ func (x NetworkProvider) String() string {
 }
 
 func (NetworkProvider) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[5].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[5].Descriptor()
 }
 
 func (NetworkProvider) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[5]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[5]
 }
 
 func (x NetworkProvider) Number() protoreflect.EnumNumber {
@@ -610,7 +610,7 @@ func (x *NetworkProvider) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use NetworkProvider.Descriptor instead.
 func (NetworkProvider) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{5}
 }
 
 // Next Tag: 3
@@ -647,11 +647,11 @@ func (x SIMType) String() string {
 }
 
 func (SIMType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[6].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[6].Descriptor()
 }
 
 func (SIMType) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[6]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[6]
 }
 
 func (x SIMType) Number() protoreflect.EnumNumber {
@@ -670,7 +670,7 @@ func (x *SIMType) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use SIMType.Descriptor instead.
 func (SIMType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{6}
 }
 
 // Similar to device phases, but for the cr50 module onboard.
@@ -709,11 +709,11 @@ func (x SchedulableLabels_CR50_Phase) String() string {
 }
 
 func (SchedulableLabels_CR50_Phase) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[7].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[7].Descriptor()
 }
 
 func (SchedulableLabels_CR50_Phase) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[7]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[7]
 }
 
 func (x SchedulableLabels_CR50_Phase) Number() protoreflect.EnumNumber {
@@ -732,7 +732,7 @@ func (x *SchedulableLabels_CR50_Phase) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use SchedulableLabels_CR50_Phase.Descriptor instead.
 func (SchedulableLabels_CR50_Phase) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 0}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 0}
 }
 
 // critical_pools are pool labels that the builders are dependent on, and that
@@ -791,11 +791,11 @@ func (x SchedulableLabels_DUTPool) String() string {
 }
 
 func (SchedulableLabels_DUTPool) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[8].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[8].Descriptor()
 }
 
 func (SchedulableLabels_DUTPool) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[8]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[8]
 }
 
 func (x SchedulableLabels_DUTPool) Number() protoreflect.EnumNumber {
@@ -814,7 +814,7 @@ func (x *SchedulableLabels_DUTPool) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use SchedulableLabels_DUTPool.Descriptor instead.
 func (SchedulableLabels_DUTPool) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 1}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 1}
 }
 
 // NEXT TAG: 3
@@ -851,11 +851,11 @@ func (x SchedulableLabels_CTSABI) String() string {
 }
 
 func (SchedulableLabels_CTSABI) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[9].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[9].Descriptor()
 }
 
 func (SchedulableLabels_CTSABI) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[9]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[9]
 }
 
 func (x SchedulableLabels_CTSABI) Number() protoreflect.EnumNumber {
@@ -874,7 +874,7 @@ func (x *SchedulableLabels_CTSABI) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use SchedulableLabels_CTSABI.Descriptor instead.
 func (SchedulableLabels_CTSABI) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 2}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 2}
 }
 
 // NEXT TAG: 3
@@ -911,11 +911,11 @@ func (x SchedulableLabels_CTSCPU) String() string {
 }
 
 func (SchedulableLabels_CTSCPU) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[10].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[10].Descriptor()
 }
 
 func (SchedulableLabels_CTSCPU) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[10]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[10]
 }
 
 func (x SchedulableLabels_CTSCPU) Number() protoreflect.EnumNumber {
@@ -934,7 +934,7 @@ func (x *SchedulableLabels_CTSCPU) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use SchedulableLabels_CTSCPU.Descriptor instead.
 func (SchedulableLabels_CTSCPU) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 3}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 3}
 }
 
 // NEXT TAG: 2
@@ -968,11 +968,11 @@ func (x SchedulableLabels_ECType) String() string {
 }
 
 func (SchedulableLabels_ECType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[11].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[11].Descriptor()
 }
 
 func (SchedulableLabels_ECType) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[11]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[11]
 }
 
 func (x SchedulableLabels_ECType) Number() protoreflect.EnumNumber {
@@ -991,7 +991,7 @@ func (x *SchedulableLabels_ECType) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use SchedulableLabels_ECType.Descriptor instead.
 func (SchedulableLabels_ECType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 4}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 4}
 }
 
 // NEXT TAG: 6
@@ -1037,11 +1037,11 @@ func (x SchedulableLabels_OSType) String() string {
 }
 
 func (SchedulableLabels_OSType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[12].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[12].Descriptor()
 }
 
 func (SchedulableLabels_OSType) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[12]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[12]
 }
 
 func (x SchedulableLabels_OSType) Number() protoreflect.EnumNumber {
@@ -1060,7 +1060,7 @@ func (x *SchedulableLabels_OSType) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use SchedulableLabels_OSType.Descriptor instead.
 func (SchedulableLabels_OSType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 5}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 5}
 }
 
 // Devices go through the phases EVT -> DVT -> PVT during early development.
@@ -1120,11 +1120,11 @@ func (x SchedulableLabels_Phase) String() string {
 }
 
 func (SchedulableLabels_Phase) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[13].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[13].Descriptor()
 }
 
 func (SchedulableLabels_Phase) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[13]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[13]
 }
 
 func (x SchedulableLabels_Phase) Number() protoreflect.EnumNumber {
@@ -1143,7 +1143,7 @@ func (x *SchedulableLabels_Phase) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use SchedulableLabels_Phase.Descriptor instead.
 func (SchedulableLabels_Phase) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 6}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 6}
 }
 
 // NEXT TAG: 2
@@ -1177,11 +1177,11 @@ func (x SchedulableLabels_BotSize) String() string {
 }
 
 func (SchedulableLabels_BotSize) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[14].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[14].Descriptor()
 }
 
 func (SchedulableLabels_BotSize) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[14]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[14]
 }
 
 func (x SchedulableLabels_BotSize) Number() protoreflect.EnumNumber {
@@ -1200,7 +1200,7 @@ func (x *SchedulableLabels_BotSize) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use SchedulableLabels_BotSize.Descriptor instead.
 func (SchedulableLabels_BotSize) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 7}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 7}
 }
 
 // NEXT TAG: 4
@@ -1240,11 +1240,11 @@ func (x SchedulableLabels_DevboardType) String() string {
 }
 
 func (SchedulableLabels_DevboardType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[15].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[15].Descriptor()
 }
 
 func (SchedulableLabels_DevboardType) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[15]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[15]
 }
 
 func (x SchedulableLabels_DevboardType) Number() protoreflect.EnumNumber {
@@ -1263,7 +1263,7 @@ func (x *SchedulableLabels_DevboardType) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use SchedulableLabels_DevboardType.Descriptor instead.
 func (SchedulableLabels_DevboardType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 8}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10, 8}
 }
 
 // NEXT TAG: 30
@@ -1381,11 +1381,11 @@ func (x HardwareCapabilities_Carrier) String() string {
 }
 
 func (HardwareCapabilities_Carrier) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[16].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[16].Descriptor()
 }
 
 func (HardwareCapabilities_Carrier) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[16]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[16]
 }
 
 func (x HardwareCapabilities_Carrier) Number() protoreflect.EnumNumber {
@@ -1404,7 +1404,7 @@ func (x *HardwareCapabilities_Carrier) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use HardwareCapabilities_Carrier.Descriptor instead.
 func (HardwareCapabilities_Carrier) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{11, 0}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{11, 0}
 }
 
 // Next tag: 3
@@ -1443,11 +1443,11 @@ func (x HardwareCapabilities_CbxState) String() string {
 }
 
 func (HardwareCapabilities_CbxState) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[17].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[17].Descriptor()
 }
 
 func (HardwareCapabilities_CbxState) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[17]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[17]
 }
 
 func (x HardwareCapabilities_CbxState) Number() protoreflect.EnumNumber {
@@ -1466,7 +1466,7 @@ func (x *HardwareCapabilities_CbxState) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use HardwareCapabilities_CbxState.Descriptor instead.
 func (HardwareCapabilities_CbxState) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{11, 1}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{11, 1}
 }
 
 // Next tag: 3
@@ -1503,11 +1503,11 @@ func (x HardwareCapabilities_CbxBranding) String() string {
 }
 
 func (HardwareCapabilities_CbxBranding) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[18].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[18].Descriptor()
 }
 
 func (HardwareCapabilities_CbxBranding) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[18]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[18]
 }
 
 func (x HardwareCapabilities_CbxBranding) Number() protoreflect.EnumNumber {
@@ -1526,7 +1526,7 @@ func (x *HardwareCapabilities_CbxBranding) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use HardwareCapabilities_CbxBranding.Descriptor instead.
 func (HardwareCapabilities_CbxBranding) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{11, 2}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{11, 2}
 }
 
 // Next tag: 8
@@ -1578,11 +1578,11 @@ func (x HardwareCapabilities_FormFactor) String() string {
 }
 
 func (HardwareCapabilities_FormFactor) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[19].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[19].Descriptor()
 }
 
 func (HardwareCapabilities_FormFactor) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[19]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[19]
 }
 
 func (x HardwareCapabilities_FormFactor) Number() protoreflect.EnumNumber {
@@ -1601,7 +1601,7 @@ func (x *HardwareCapabilities_FormFactor) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use HardwareCapabilities_FormFactor.Descriptor instead.
 func (HardwareCapabilities_FormFactor) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{11, 3}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{11, 3}
 }
 
 // NEXT TAG: 13
@@ -1668,11 +1668,11 @@ func (x HardwareCapabilities_VideoAcceleration) String() string {
 }
 
 func (HardwareCapabilities_VideoAcceleration) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[20].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[20].Descriptor()
 }
 
 func (HardwareCapabilities_VideoAcceleration) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[20]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[20]
 }
 
 func (x HardwareCapabilities_VideoAcceleration) Number() protoreflect.EnumNumber {
@@ -1691,7 +1691,7 @@ func (x *HardwareCapabilities_VideoAcceleration) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use HardwareCapabilities_VideoAcceleration.Descriptor instead.
 func (HardwareCapabilities_VideoAcceleration) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{11, 4}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{11, 4}
 }
 
 // NEXT TAG: 12
@@ -1700,9 +1700,9 @@ type Peripherals_ChameleonType int32
 const (
 	Peripherals_CHAMELEON_TYPE_INVALID Peripherals_ChameleonType = 0
 	Peripherals_CHAMELEON_TYPE_DP      Peripherals_ChameleonType = 2
-	// Deprecated: Marked as deprecated in infra/libs/skylab/inventory/device.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/libs/skylab/inventory/device.proto.
 	Peripherals_CHAMELEON_TYPE_DP_HDMI Peripherals_ChameleonType = 3
-	// Deprecated: Marked as deprecated in infra/libs/skylab/inventory/device.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/libs/skylab/inventory/device.proto.
 	Peripherals_CHAMELEON_TYPE_VGA  Peripherals_ChameleonType = 4
 	Peripherals_CHAMELEON_TYPE_HDMI Peripherals_ChameleonType = 5
 	Peripherals_CHAMELEON_TYPE_V2   Peripherals_ChameleonType = 9
@@ -1745,11 +1745,11 @@ func (x Peripherals_ChameleonType) String() string {
 }
 
 func (Peripherals_ChameleonType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[21].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[21].Descriptor()
 }
 
 func (Peripherals_ChameleonType) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[21]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[21]
 }
 
 func (x Peripherals_ChameleonType) Number() protoreflect.EnumNumber {
@@ -1768,7 +1768,7 @@ func (x *Peripherals_ChameleonType) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use Peripherals_ChameleonType.Descriptor instead.
 func (Peripherals_ChameleonType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 0}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 0}
 }
 
 type Peripherals_ChameleonConnectionType int32
@@ -1810,11 +1810,11 @@ func (x Peripherals_ChameleonConnectionType) String() string {
 }
 
 func (Peripherals_ChameleonConnectionType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[22].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[22].Descriptor()
 }
 
 func (Peripherals_ChameleonConnectionType) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[22]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[22]
 }
 
 func (x Peripherals_ChameleonConnectionType) Number() protoreflect.EnumNumber {
@@ -1833,7 +1833,7 @@ func (x *Peripherals_ChameleonConnectionType) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use Peripherals_ChameleonConnectionType.Descriptor instead.
 func (Peripherals_ChameleonConnectionType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 1}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 1}
 }
 
 // copy from chameleon.proto
@@ -1874,11 +1874,11 @@ func (x Peripherals_AudioBoxJackPlugger) String() string {
 }
 
 func (Peripherals_AudioBoxJackPlugger) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[23].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[23].Descriptor()
 }
 
 func (Peripherals_AudioBoxJackPlugger) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[23]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[23]
 }
 
 func (x Peripherals_AudioBoxJackPlugger) Number() protoreflect.EnumNumber {
@@ -1897,7 +1897,7 @@ func (x *Peripherals_AudioBoxJackPlugger) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use Peripherals_AudioBoxJackPlugger.Descriptor instead.
 func (Peripherals_AudioBoxJackPlugger) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 2}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 2}
 }
 
 // copy from peripheral.proto
@@ -1935,11 +1935,11 @@ func (x Peripherals_TRRSType) String() string {
 }
 
 func (Peripherals_TRRSType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[24].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[24].Descriptor()
 }
 
 func (Peripherals_TRRSType) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[24]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[24]
 }
 
 func (x Peripherals_TRRSType) Number() protoreflect.EnumNumber {
@@ -1958,7 +1958,7 @@ func (x *Peripherals_TRRSType) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use Peripherals_TRRSType.Descriptor instead.
 func (Peripherals_TRRSType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 3}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 3}
 }
 
 // Facing of DUT's camera to be tested whose FOV should cover chart tablet's
@@ -2000,11 +2000,11 @@ func (x Peripherals_CameraboxFacing) String() string {
 }
 
 func (Peripherals_CameraboxFacing) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[25].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[25].Descriptor()
 }
 
 func (Peripherals_CameraboxFacing) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[25]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[25]
 }
 
 func (x Peripherals_CameraboxFacing) Number() protoreflect.EnumNumber {
@@ -2023,7 +2023,7 @@ func (x *Peripherals_CameraboxFacing) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use Peripherals_CameraboxFacing.Descriptor instead.
 func (Peripherals_CameraboxFacing) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 4}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 4}
 }
 
 // External light source in the camerabox, LED or NOLED.
@@ -2061,11 +2061,11 @@ func (x Peripherals_CameraboxLight) String() string {
 }
 
 func (Peripherals_CameraboxLight) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[26].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[26].Descriptor()
 }
 
 func (Peripherals_CameraboxLight) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[26]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[26]
 }
 
 func (x Peripherals_CameraboxLight) Number() protoreflect.EnumNumber {
@@ -2084,7 +2084,7 @@ func (x *Peripherals_CameraboxLight) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use Peripherals_CameraboxLight.Descriptor instead.
 func (Peripherals_CameraboxLight) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 5}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 5}
 }
 
 // Copy of chromiumos.test.lab.api.WifiRouterFeature.
@@ -2171,11 +2171,11 @@ func (x Peripherals_WifiRouterFeature) String() string {
 }
 
 func (Peripherals_WifiRouterFeature) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[27].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[27].Descriptor()
 }
 
 func (Peripherals_WifiRouterFeature) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[27]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[27]
 }
 
 func (x Peripherals_WifiRouterFeature) Number() protoreflect.EnumNumber {
@@ -2194,7 +2194,7 @@ func (x *Peripherals_WifiRouterFeature) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use Peripherals_WifiRouterFeature.Descriptor instead.
 func (Peripherals_WifiRouterFeature) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 6}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 6}
 }
 
 // HMRToolType describe the enum of types of tool on HMR.
@@ -2232,11 +2232,11 @@ func (x Peripherals_HMRToolType) String() string {
 }
 
 func (Peripherals_HMRToolType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[28].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[28].Descriptor()
 }
 
 func (Peripherals_HMRToolType) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[28]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[28]
 }
 
 func (x Peripherals_HMRToolType) Number() protoreflect.EnumNumber {
@@ -2255,7 +2255,7 @@ func (x *Peripherals_HMRToolType) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use Peripherals_HMRToolType.Descriptor instead.
 func (Peripherals_HMRToolType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 7}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 7}
 }
 
 // HMRGen describe the enum of generation of the HMR.
@@ -2293,11 +2293,11 @@ func (x Peripherals_HMRGen) String() string {
 }
 
 func (Peripherals_HMRGen) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[29].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[29].Descriptor()
 }
 
 func (Peripherals_HMRGen) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[29]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[29]
 }
 
 func (x Peripherals_HMRGen) Number() protoreflect.EnumNumber {
@@ -2316,7 +2316,7 @@ func (x *Peripherals_HMRGen) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use Peripherals_HMRGen.Descriptor instead.
 func (Peripherals_HMRGen) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 8}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 8}
 }
 
 // Possible features that the SIM supports.
@@ -2356,11 +2356,11 @@ func (x Peripherals_SIMFeature) String() string {
 }
 
 func (Peripherals_SIMFeature) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[30].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[30].Descriptor()
 }
 
 func (Peripherals_SIMFeature) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[30]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[30]
 }
 
 func (x Peripherals_SIMFeature) Number() protoreflect.EnumNumber {
@@ -2379,7 +2379,7 @@ func (x *Peripherals_SIMFeature) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use Peripherals_SIMFeature.Descriptor instead.
 func (Peripherals_SIMFeature) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 9}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12, 9}
 }
 
 // Related to sparse CTS testing. See b/70309087
@@ -2420,11 +2420,11 @@ func (x TestCoverageHints_CTSSparse) String() string {
 }
 
 func (TestCoverageHints_CTSSparse) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_skylab_inventory_device_proto_enumTypes[31].Descriptor()
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[31].Descriptor()
 }
 
 func (TestCoverageHints_CTSSparse) Type() protoreflect.EnumType {
-	return &file_infra_libs_skylab_inventory_device_proto_enumTypes[31]
+	return &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes[31]
 }
 
 func (x TestCoverageHints_CTSSparse) Number() protoreflect.EnumNumber {
@@ -2443,7 +2443,7 @@ func (x *TestCoverageHints_CTSSparse) UnmarshalJSON(b []byte) error {
 
 // Deprecated: Use TestCoverageHints_CTSSparse.Descriptor instead.
 func (TestCoverageHints_CTSSparse) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{15, 0}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{15, 0}
 }
 
 // NEXT TAG: 4
@@ -2466,7 +2466,7 @@ type Device struct {
 
 func (x *Device) Reset() {
 	*x = Device{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2478,7 +2478,7 @@ func (x *Device) String() string {
 func (*Device) ProtoMessage() {}
 
 func (x *Device) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2491,7 +2491,7 @@ func (x *Device) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Device.ProtoReflect.Descriptor instead.
 func (*Device) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Device) GetDevice() isDevice_Device {
@@ -2561,7 +2561,7 @@ type DeviceUnderTest struct {
 
 func (x *DeviceUnderTest) Reset() {
 	*x = DeviceUnderTest{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2573,7 +2573,7 @@ func (x *DeviceUnderTest) String() string {
 func (*DeviceUnderTest) ProtoMessage() {}
 
 func (x *DeviceUnderTest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2586,7 +2586,7 @@ func (x *DeviceUnderTest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceUnderTest.ProtoReflect.Descriptor instead.
 func (*DeviceUnderTest) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *DeviceUnderTest) GetCommon() *CommonDeviceSpecs {
@@ -2614,7 +2614,7 @@ type ServoHostDevice struct {
 
 func (x *ServoHostDevice) Reset() {
 	*x = ServoHostDevice{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2626,7 +2626,7 @@ func (x *ServoHostDevice) String() string {
 func (*ServoHostDevice) ProtoMessage() {}
 
 func (x *ServoHostDevice) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2639,7 +2639,7 @@ func (x *ServoHostDevice) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServoHostDevice.ProtoReflect.Descriptor instead.
 func (*ServoHostDevice) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ServoHostDevice) GetCommon() *CommonDeviceSpecs {
@@ -2666,7 +2666,7 @@ type ChameleonDevice struct {
 
 func (x *ChameleonDevice) Reset() {
 	*x = ChameleonDevice{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2678,7 +2678,7 @@ func (x *ChameleonDevice) String() string {
 func (*ChameleonDevice) ProtoMessage() {}
 
 func (x *ChameleonDevice) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2691,7 +2691,7 @@ func (x *ChameleonDevice) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChameleonDevice.ProtoReflect.Descriptor instead.
 func (*ChameleonDevice) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ChameleonDevice) GetCommon() *CommonDeviceSpecs {
@@ -2726,7 +2726,7 @@ type CommonDeviceSpecs struct {
 	// forward RPCs to the relevant shard for a device.
 	// Not to be used in skylab.
 	//
-	// Deprecated: Marked as deprecated in infra/libs/skylab/inventory/device.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/libs/skylab/inventory/device.proto.
 	OwnerShard *Shard `protobuf:"bytes,7,opt,name=owner_shard,json=ownerShard" json:"owner_shard,omitempty"`
 	// An invariant about the distros inventory tag associated with the device.
 	// For ChromeOS devices, this can be read off of vboot.
@@ -2741,7 +2741,7 @@ type CommonDeviceSpecs struct {
 
 func (x *CommonDeviceSpecs) Reset() {
 	*x = CommonDeviceSpecs{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2753,7 +2753,7 @@ func (x *CommonDeviceSpecs) String() string {
 func (*CommonDeviceSpecs) ProtoMessage() {}
 
 func (x *CommonDeviceSpecs) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2766,7 +2766,7 @@ func (x *CommonDeviceSpecs) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CommonDeviceSpecs.ProtoReflect.Descriptor instead.
 func (*CommonDeviceSpecs) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CommonDeviceSpecs) GetAttributes() []*KeyValue {
@@ -2825,7 +2825,7 @@ func (x *CommonDeviceSpecs) GetLocation() *Location {
 	return nil
 }
 
-// Deprecated: Marked as deprecated in infra/libs/skylab/inventory/device.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/libs/skylab/inventory/device.proto.
 func (x *CommonDeviceSpecs) GetOwnerShard() *Shard {
 	if x != nil {
 		return x.OwnerShard
@@ -2866,7 +2866,7 @@ type RemovalReason struct {
 
 func (x *RemovalReason) Reset() {
 	*x = RemovalReason{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2878,7 +2878,7 @@ func (x *RemovalReason) String() string {
 func (*RemovalReason) ProtoMessage() {}
 
 func (x *RemovalReason) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2891,7 +2891,7 @@ func (x *RemovalReason) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RemovalReason.ProtoReflect.Descriptor instead.
 func (*RemovalReason) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *RemovalReason) GetBug() string {
@@ -2928,7 +2928,7 @@ type Location struct {
 
 func (x *Location) Reset() {
 	*x = Location{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2940,7 +2940,7 @@ func (x *Location) String() string {
 func (*Location) ProtoMessage() {}
 
 func (x *Location) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2953,7 +2953,7 @@ func (x *Location) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Location.ProtoReflect.Descriptor instead.
 func (*Location) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Location) GetLab() *PhysicalLab {
@@ -2994,7 +2994,7 @@ type PhysicalLab struct {
 
 func (x *PhysicalLab) Reset() {
 	*x = PhysicalLab{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3006,7 +3006,7 @@ func (x *PhysicalLab) String() string {
 func (*PhysicalLab) ProtoMessage() {}
 
 func (x *PhysicalLab) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3019,7 +3019,7 @@ func (x *PhysicalLab) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhysicalLab.ProtoReflect.Descriptor instead.
 func (*PhysicalLab) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *PhysicalLab) GetName() string {
@@ -3036,7 +3036,7 @@ func (x *PhysicalLab) GetName() string {
 // NEXT TAG: 6
 type DeviceLock struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Deprecated: Marked as deprecated in infra/libs/skylab/inventory/device.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/libs/skylab/inventory/device.proto.
 	Lock *bool `protobuf:"varint,1,req,name=lock" json:"lock,omitempty"`
 	// This field is informational only. Do not assume this as a real user
 	// identity in any auth domain.
@@ -3044,7 +3044,7 @@ type DeviceLock struct {
 	LockReason *string    `protobuf:"bytes,3,req,name=lock_reason,json=lockReason" json:"lock_reason,omitempty"`
 	BeginTime  *Timestamp `protobuf:"bytes,4,req,name=begin_time,json=beginTime" json:"begin_time,omitempty"`
 	ExpireTime *Timestamp `protobuf:"bytes,5,req,name=expire_time,json=expireTime" json:"expire_time,omitempty"`
-	// Deprecated: Marked as deprecated in infra/libs/skylab/inventory/device.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/libs/skylab/inventory/device.proto.
 	LockId        *int32  `protobuf:"varint,6,req,name=lock_id,json=lockId" json:"lock_id,omitempty"`
 	Id            *string `protobuf:"bytes,7,req,name=id" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -3053,7 +3053,7 @@ type DeviceLock struct {
 
 func (x *DeviceLock) Reset() {
 	*x = DeviceLock{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3065,7 +3065,7 @@ func (x *DeviceLock) String() string {
 func (*DeviceLock) ProtoMessage() {}
 
 func (x *DeviceLock) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3078,10 +3078,10 @@ func (x *DeviceLock) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceLock.ProtoReflect.Descriptor instead.
 func (*DeviceLock) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{8}
 }
 
-// Deprecated: Marked as deprecated in infra/libs/skylab/inventory/device.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/libs/skylab/inventory/device.proto.
 func (x *DeviceLock) GetLock() bool {
 	if x != nil && x.Lock != nil {
 		return *x.Lock
@@ -3117,7 +3117,7 @@ func (x *DeviceLock) GetExpireTime() *Timestamp {
 	return nil
 }
 
-// Deprecated: Marked as deprecated in infra/libs/skylab/inventory/device.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/libs/skylab/inventory/device.proto.
 func (x *DeviceLock) GetLockId() int32 {
 	if x != nil && x.LockId != nil {
 		return *x.LockId
@@ -3142,7 +3142,7 @@ type Shard struct {
 
 func (x *Shard) Reset() {
 	*x = Shard{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3154,7 +3154,7 @@ func (x *Shard) String() string {
 func (*Shard) ProtoMessage() {}
 
 func (x *Shard) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3167,7 +3167,7 @@ func (x *Shard) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Shard.ProtoReflect.Descriptor instead.
 func (*Shard) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *Shard) GetHostname() string {
@@ -3259,7 +3259,7 @@ type SchedulableLabels struct {
 
 func (x *SchedulableLabels) Reset() {
 	*x = SchedulableLabels{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3271,7 +3271,7 @@ func (x *SchedulableLabels) String() string {
 func (*SchedulableLabels) ProtoMessage() {}
 
 func (x *SchedulableLabels) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3284,7 +3284,7 @@ func (x *SchedulableLabels) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SchedulableLabels.ProtoReflect.Descriptor instead.
 func (*SchedulableLabels) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *SchedulableLabels) GetArc() bool {
@@ -3591,7 +3591,7 @@ type HardwareCapabilities struct {
 
 func (x *HardwareCapabilities) Reset() {
 	*x = HardwareCapabilities{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3603,7 +3603,7 @@ func (x *HardwareCapabilities) String() string {
 func (*HardwareCapabilities) ProtoMessage() {}
 
 func (x *HardwareCapabilities) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3616,7 +3616,7 @@ func (x *HardwareCapabilities) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HardwareCapabilities.ProtoReflect.Descriptor instead.
 func (*HardwareCapabilities) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{11}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *HardwareCapabilities) GetAtrus() bool {
@@ -3938,7 +3938,7 @@ type Peripherals struct {
 
 func (x *Peripherals) Reset() {
 	*x = Peripherals{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3950,7 +3950,7 @@ func (x *Peripherals) String() string {
 func (*Peripherals) ProtoMessage() {}
 
 func (x *Peripherals) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3963,7 +3963,7 @@ func (x *Peripherals) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Peripherals.ProtoReflect.Descriptor instead.
 func (*Peripherals) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *Peripherals) GetAudioBoard() bool {
@@ -4343,7 +4343,7 @@ type ServoTopology struct {
 
 func (x *ServoTopology) Reset() {
 	*x = ServoTopology{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4355,7 +4355,7 @@ func (x *ServoTopology) String() string {
 func (*ServoTopology) ProtoMessage() {}
 
 func (x *ServoTopology) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4368,7 +4368,7 @@ func (x *ServoTopology) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServoTopology.ProtoReflect.Descriptor instead.
 func (*ServoTopology) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{13}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ServoTopology) GetMain() *ServoTopologyItem {
@@ -4416,7 +4416,7 @@ type ServoTopologyItem struct {
 
 func (x *ServoTopologyItem) Reset() {
 	*x = ServoTopologyItem{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4428,7 +4428,7 @@ func (x *ServoTopologyItem) String() string {
 func (*ServoTopologyItem) ProtoMessage() {}
 
 func (x *ServoTopologyItem) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4441,7 +4441,7 @@ func (x *ServoTopologyItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServoTopologyItem.ProtoReflect.Descriptor instead.
 func (*ServoTopologyItem) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{14}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ServoTopologyItem) GetType() string {
@@ -4518,7 +4518,7 @@ type TestCoverageHints struct {
 
 func (x *TestCoverageHints) Reset() {
 	*x = TestCoverageHints{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4530,7 +4530,7 @@ func (x *TestCoverageHints) String() string {
 func (*TestCoverageHints) ProtoMessage() {}
 
 func (x *TestCoverageHints) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4543,7 +4543,7 @@ func (x *TestCoverageHints) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestCoverageHints.ProtoReflect.Descriptor instead.
 func (*TestCoverageHints) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{15}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *TestCoverageHints) GetChaosDut() bool {
@@ -4648,7 +4648,7 @@ type KeyValue struct {
 
 func (x *KeyValue) Reset() {
 	*x = KeyValue{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4660,7 +4660,7 @@ func (x *KeyValue) String() string {
 func (*KeyValue) ProtoMessage() {}
 
 func (x *KeyValue) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4673,7 +4673,7 @@ func (x *KeyValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KeyValue.ProtoReflect.Descriptor instead.
 func (*KeyValue) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{16}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *KeyValue) GetKey() string {
@@ -4705,7 +4705,7 @@ type License struct {
 
 func (x *License) Reset() {
 	*x = License{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4717,7 +4717,7 @@ func (x *License) String() string {
 func (*License) ProtoMessage() {}
 
 func (x *License) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4730,7 +4730,7 @@ func (x *License) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use License.ProtoReflect.Descriptor instead.
 func (*License) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{17}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *License) GetType() LicenseType {
@@ -4766,7 +4766,7 @@ type ModemInfo struct {
 
 func (x *ModemInfo) Reset() {
 	*x = ModemInfo{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4778,7 +4778,7 @@ func (x *ModemInfo) String() string {
 func (*ModemInfo) ProtoMessage() {}
 
 func (x *ModemInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4791,7 +4791,7 @@ func (x *ModemInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ModemInfo.ProtoReflect.Descriptor instead.
 func (*ModemInfo) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{18}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ModemInfo) GetType() ModemType {
@@ -4843,7 +4843,7 @@ type SIMInfo struct {
 
 func (x *SIMInfo) Reset() {
 	*x = SIMInfo{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[19]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4855,7 +4855,7 @@ func (x *SIMInfo) String() string {
 func (*SIMInfo) ProtoMessage() {}
 
 func (x *SIMInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[19]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4868,7 +4868,7 @@ func (x *SIMInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SIMInfo.ProtoReflect.Descriptor instead.
 func (*SIMInfo) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{19}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *SIMInfo) GetSlotId() int32 {
@@ -4921,7 +4921,7 @@ type SIMProfileInfo struct {
 
 func (x *SIMProfileInfo) Reset() {
 	*x = SIMProfileInfo{}
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[20]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4933,7 +4933,7 @@ func (x *SIMProfileInfo) String() string {
 func (*SIMProfileInfo) ProtoMessage() {}
 
 func (x *SIMProfileInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_skylab_inventory_device_proto_msgTypes[20]
+	mi := &file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4946,7 +4946,7 @@ func (x *SIMProfileInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SIMProfileInfo.ProtoReflect.Descriptor instead.
 func (*SIMProfileInfo) Descriptor() ([]byte, []int) {
-	return file_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{20}
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *SIMProfileInfo) GetIccid() string {
@@ -4984,15 +4984,17 @@ func (x *SIMProfileInfo) GetOwnNumber() string {
 	return ""
 }
 
-var File_infra_libs_skylab_inventory_device_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_libs_skylab_inventory_device_proto protoreflect.FileDescriptor
 
-var file_infra_libs_skylab_inventory_device_proto_rawDesc = string([]byte{
-	0x0a, 0x28, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x6c, 0x69, 0x62, 0x73, 0x2f, 0x73, 0x6b, 0x79,
+var file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDesc = string([]byte{
+	0x0a, 0x38, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x6c, 0x69, 0x62, 0x73, 0x2f, 0x73, 0x6b, 0x79,
 	0x6c, 0x61, 0x62, 0x2f, 0x69, 0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79, 0x2f, 0x64, 0x65,
 	0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x2c, 0x63, 0x68, 0x72, 0x6f,
 	0x6d, 0x65, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x5f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2e, 0x73, 0x6b, 0x79, 0x6c, 0x61, 0x62, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x69,
-	0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79, 0x1a, 0x28, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
+	0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79, 0x1a, 0x38, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72,
+	0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
 	0x6c, 0x69, 0x62, 0x73, 0x2f, 0x73, 0x6b, 0x79, 0x6c, 0x61, 0x62, 0x2f, 0x69, 0x6e, 0x76, 0x65,
 	0x6e, 0x74, 0x6f, 0x72, 0x79, 0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x22, 0xa4, 0x02, 0x0a, 0x06, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x12, 0x51, 0x0a,
@@ -6087,26 +6089,27 @@ var file_infra_libs_skylab_inventory_device_proto_rawDesc = string([]byte{
 	0x49, 0x4d, 0x5f, 0x55, 0x4e, 0x4b, 0x4e, 0x4f, 0x57, 0x4e, 0x10, 0x00, 0x12, 0x10, 0x0a, 0x0c,
 	0x53, 0x49, 0x4d, 0x5f, 0x50, 0x48, 0x59, 0x53, 0x49, 0x43, 0x41, 0x4c, 0x10, 0x01, 0x12, 0x0f,
 	0x0a, 0x0b, 0x53, 0x49, 0x4d, 0x5f, 0x44, 0x49, 0x47, 0x49, 0x54, 0x41, 0x4c, 0x10, 0x02, 0x42,
-	0x27, 0x5a, 0x25, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x6c, 0x69, 0x62, 0x73, 0x2f, 0x73, 0x6b,
+	0x37, 0x5a, 0x35, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f,
+	0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x6c, 0x69, 0x62, 0x73, 0x2f, 0x73, 0x6b,
 	0x79, 0x6c, 0x61, 0x62, 0x2f, 0x69, 0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79, 0x3b, 0x69,
 	0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79,
 })
 
 var (
-	file_infra_libs_skylab_inventory_device_proto_rawDescOnce sync.Once
-	file_infra_libs_skylab_inventory_device_proto_rawDescData []byte
+	file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescData []byte
 )
 
-func file_infra_libs_skylab_inventory_device_proto_rawDescGZIP() []byte {
-	file_infra_libs_skylab_inventory_device_proto_rawDescOnce.Do(func() {
-		file_infra_libs_skylab_inventory_device_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_libs_skylab_inventory_device_proto_rawDesc), len(file_infra_libs_skylab_inventory_device_proto_rawDesc)))
+func file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDesc), len(file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDesc)))
 	})
-	return file_infra_libs_skylab_inventory_device_proto_rawDescData
+	return file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDescData
 }
 
-var file_infra_libs_skylab_inventory_device_proto_enumTypes = make([]protoimpl.EnumInfo, 32)
-var file_infra_libs_skylab_inventory_device_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
-var file_infra_libs_skylab_inventory_device_proto_goTypes = []any{
+var file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes = make([]protoimpl.EnumInfo, 32)
+var file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
+var file_go_chromium_org_infra_libs_skylab_inventory_device_proto_goTypes = []any{
 	(ServoFwChannel)(0),                         // 0: chrome.chromeos_infra.skylab.proto.inventory.ServoFwChannel
 	(PeripheralState)(0),                        // 1: chrome.chromeos_infra.skylab.proto.inventory.PeripheralState
 	(HardwareState)(0),                          // 2: chrome.chromeos_infra.skylab.proto.inventory.HardwareState
@@ -6163,7 +6166,7 @@ var file_infra_libs_skylab_inventory_device_proto_goTypes = []any{
 	(Environment)(0),                            // 53: chrome.chromeos_infra.skylab.proto.inventory.Environment
 	(*Timestamp)(nil),                           // 54: chrome.chromeos_infra.skylab.proto.inventory.Timestamp
 }
-var file_infra_libs_skylab_inventory_device_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_libs_skylab_inventory_device_proto_depIdxs = []int32{
 	33, // 0: chrome.chromeos_infra.skylab.proto.inventory.Device.dut:type_name -> chrome.chromeos_infra.skylab.proto.inventory.DeviceUnderTest
 	34, // 1: chrome.chromeos_infra.skylab.proto.inventory.Device.servo_host:type_name -> chrome.chromeos_infra.skylab.proto.inventory.ServoHostDevice
 	35, // 2: chrome.chromeos_infra.skylab.proto.inventory.Device.chameleon:type_name -> chrome.chromeos_infra.skylab.proto.inventory.ChameleonDevice
@@ -6246,13 +6249,13 @@ var file_infra_libs_skylab_inventory_device_proto_depIdxs = []int32{
 	0,  // [0:75] is the sub-list for field type_name
 }
 
-func init() { file_infra_libs_skylab_inventory_device_proto_init() }
-func file_infra_libs_skylab_inventory_device_proto_init() {
-	if File_infra_libs_skylab_inventory_device_proto != nil {
+func init() { file_go_chromium_org_infra_libs_skylab_inventory_device_proto_init() }
+func file_go_chromium_org_infra_libs_skylab_inventory_device_proto_init() {
+	if File_go_chromium_org_infra_libs_skylab_inventory_device_proto != nil {
 		return
 	}
-	file_infra_libs_skylab_inventory_common_proto_init()
-	file_infra_libs_skylab_inventory_device_proto_msgTypes[0].OneofWrappers = []any{
+	file_go_chromium_org_infra_libs_skylab_inventory_common_proto_init()
+	file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes[0].OneofWrappers = []any{
 		(*Device_Dut)(nil),
 		(*Device_ServoHost)(nil),
 		(*Device_Chameleon)(nil),
@@ -6261,18 +6264,18 @@ func file_infra_libs_skylab_inventory_device_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_libs_skylab_inventory_device_proto_rawDesc), len(file_infra_libs_skylab_inventory_device_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDesc), len(file_go_chromium_org_infra_libs_skylab_inventory_device_proto_rawDesc)),
 			NumEnums:      32,
 			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_libs_skylab_inventory_device_proto_goTypes,
-		DependencyIndexes: file_infra_libs_skylab_inventory_device_proto_depIdxs,
-		EnumInfos:         file_infra_libs_skylab_inventory_device_proto_enumTypes,
-		MessageInfos:      file_infra_libs_skylab_inventory_device_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_libs_skylab_inventory_device_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_libs_skylab_inventory_device_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_libs_skylab_inventory_device_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_libs_skylab_inventory_device_proto_msgTypes,
 	}.Build()
-	File_infra_libs_skylab_inventory_device_proto = out.File
-	file_infra_libs_skylab_inventory_device_proto_goTypes = nil
-	file_infra_libs_skylab_inventory_device_proto_depIdxs = nil
+	File_go_chromium_org_infra_libs_skylab_inventory_device_proto = out.File
+	file_go_chromium_org_infra_libs_skylab_inventory_device_proto_goTypes = nil
+	file_go_chromium_org_infra_libs_skylab_inventory_device_proto_depIdxs = nil
 }

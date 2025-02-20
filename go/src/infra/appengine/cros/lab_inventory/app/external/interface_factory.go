@@ -17,9 +17,9 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server/auth"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // InterfaceFactoryKey is the key used to store instance of InterfaceFactory in context.

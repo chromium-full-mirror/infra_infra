@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/internal/components"
 )
 
 // copyInitrdUtils is a script that copies the required utilities into the initrd image when it

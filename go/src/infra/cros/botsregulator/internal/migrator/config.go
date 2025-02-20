@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/botsregulator/protos"
+	"go.chromium.org/infra/cros/botsregulator/protos"
 )
 
 type configSearchable struct {

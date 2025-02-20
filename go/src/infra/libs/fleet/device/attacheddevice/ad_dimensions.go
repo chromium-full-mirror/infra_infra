@@ -8,10 +8,10 @@ import (
 	"context"
 	"fmt"
 
-	"infra/cros/dutstate"
-	"infra/libs/skylab/inventory/swarming"
-	"infra/libs/skylab/inventory/swarming/attacheddevice"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/libs/skylab/inventory/swarming"
+	"go.chromium.org/infra/libs/skylab/inventory/swarming/attacheddevice"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // GetAttachedDeviceBotDims gets all Swarming dimensions of an AttachedDevice bot.

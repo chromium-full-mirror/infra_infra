@@ -15,7 +15,7 @@ import (
 
 	sv "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 
-	"infra/cmd/stable_version2/internal/utils"
+	"go.chromium.org/infra/cmd/stable_version2/internal/utils"
 )
 
 type errpred func(e error) bool

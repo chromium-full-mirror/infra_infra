@@ -7,7 +7,7 @@ package external
 import (
 	"context"
 
-	"infra/appengine/cros/lab_inventory/app/frontend/fake"
+	"go.chromium.org/infra/appengine/cros/lab_inventory/app/frontend/fake"
 )
 
 // WithTestingContext allows for mocked external interface.

@@ -12,11 +12,11 @@ import (
 
 	"go.chromium.org/luci/server/secrets"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
-	"infra/fleetconsole/cmd/fleetconsoleserver/flags"
-	"infra/fleetconsole/internal/database"
-	"infra/fleetconsole/internal/devicemanagerclient"
-	"infra/fleetconsole/internal/ufsclient"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/cmd/fleetconsoleserver/flags"
+	"go.chromium.org/infra/fleetconsole/internal/database"
+	"go.chromium.org/infra/fleetconsole/internal/devicemanagerclient"
+	"go.chromium.org/infra/fleetconsole/internal/ufsclient"
 )
 
 // NewFleetConsoleFrontend creates a new fleet console frontend.

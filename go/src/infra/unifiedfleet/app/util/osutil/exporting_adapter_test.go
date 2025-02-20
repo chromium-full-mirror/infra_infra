@@ -15,10 +15,10 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/libs/skylab/inventory"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	manufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
+	"go.chromium.org/infra/libs/skylab/inventory"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	manufacturing "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 )
 
 var servoInV2 = chromeosLab.Servo{

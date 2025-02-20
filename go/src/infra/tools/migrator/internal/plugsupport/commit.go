@@ -11,7 +11,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/tools/migrator"
+	"go.chromium.org/infra/tools/migrator"
 )
 
 // ExecuteCommit implements "commit" subcommand.

@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/realms"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 // OldBrowserLabAdminRealm is the Old realm for browser lab

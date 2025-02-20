@@ -13,10 +13,10 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmd/crosfleet/internal/buildbucket"
-	"infra/cmd/crosfleet/internal/common"
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cmd/crosfleet/internal/ufs"
+	"go.chromium.org/infra/cmd/crosfleet/internal/buildbucket"
+	"go.chromium.org/infra/cmd/crosfleet/internal/common"
+	"go.chromium.org/infra/cmd/crosfleet/internal/site"
+	"go.chromium.org/infra/cmd/crosfleet/internal/ufs"
 )
 
 // testCmdName is the name of the `crosfleet run test` command.

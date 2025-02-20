@@ -10,10 +10,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components/servo"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/execs/servo/topology"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/components/servo"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/execs/servo/topology"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // servoPowerCycleRootServoExec resets(power-cycle) the servo via smart usbhub.

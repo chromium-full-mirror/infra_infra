@@ -15,8 +15,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"infra/cros/cmd/lucifer/internal/autotest/atutil"
-	"infra/cros/cmd/lucifer/internal/autotest/dutprep"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/autotest/atutil"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/autotest/dutprep"
 )
 
 type commaList struct {

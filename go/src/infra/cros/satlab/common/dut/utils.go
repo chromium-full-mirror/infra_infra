@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/satlab/common/satlabcommands"
-	"infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/satlabcommands"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 )
 
 type Flagmap = map[string][]string

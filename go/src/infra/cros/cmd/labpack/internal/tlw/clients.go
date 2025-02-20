@@ -13,17 +13,17 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/cros/cmd/labpack/cft"
-	"infra/cros/cmd/labpack/internal/site"
-	"infra/cros/recovery"
-	"infra/cros/recovery/ctr"
-	"infra/cros/recovery/logger"
-	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/scopes"
-	"infra/cros/recovery/tlw"
-	"infra/cros/recovery/version"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/cros/cmd/labpack/cft"
+	"go.chromium.org/infra/cros/cmd/labpack/internal/site"
+	"go.chromium.org/infra/cros/recovery"
+	"go.chromium.org/infra/cros/recovery/ctr"
+	"go.chromium.org/infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/scopes"
+	"go.chromium.org/infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/version"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 type AccessData struct {

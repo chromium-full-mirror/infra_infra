@@ -7,10 +7,10 @@ package configs
 import (
 	"fmt"
 
-	"infra/cros/cmd/common_lib/commonexecutors"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/cmd/ctpv2/internal/executors"
+	"go.chromium.org/infra/cros/cmd/common_lib/commonexecutors"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"go.chromium.org/infra/cros/cmd/ctpv2/internal/executors"
 )
 
 // ExecutorConfig represents executor configs.

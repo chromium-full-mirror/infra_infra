@@ -14,8 +14,8 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/satlab/internal/ccd"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/satlab/internal/ccd"
 )
 
 // ccdBase is a placeholder command for ccd command.

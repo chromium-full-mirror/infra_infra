@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
 
-	"infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/site"
 )
 
 // Task contains the information that we want

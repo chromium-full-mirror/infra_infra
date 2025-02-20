@@ -8,7 +8,7 @@ package scheduling.api;
 
 import "go.chromium.org/luci/buildbucket/proto/builds_service.proto";
 
-option go_package = "infra/libs/fleet/scheduling/api";
+option go_package = "go.chromium.org/infra/libs/fleet/scheduling/api";
 
 // Task contains a task ID and url provided by the backend.
 message Task {

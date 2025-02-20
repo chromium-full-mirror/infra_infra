@@ -16,12 +16,12 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/model/configuration"
-	ufsds "infra/unifiedfleet/app/model/datastore"
-	"infra/unifiedfleet/app/model/inventory"
-	"infra/unifiedfleet/app/model/registration"
-	ufsUtil "infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
+	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
+	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	"go.chromium.org/infra/unifiedfleet/app/model/registration"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // CreateNic creates a new nic in datastore.

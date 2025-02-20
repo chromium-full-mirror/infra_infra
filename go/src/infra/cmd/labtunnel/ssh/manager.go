@@ -10,7 +10,7 @@ import (
 	"sort"
 	"time"
 
-	"infra/cmd/labtunnel/log"
+	"go.chromium.org/infra/cmd/labtunnel/log"
 )
 
 type Executor func(ctx context.Context, r *Runner) error

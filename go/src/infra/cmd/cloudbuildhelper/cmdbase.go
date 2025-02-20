@@ -27,7 +27,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/signals"
 
-	"infra/cmd/cloudbuildhelper/manifest"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/manifest"
 )
 
 // execCb a signature of a function that executes a subcommand.

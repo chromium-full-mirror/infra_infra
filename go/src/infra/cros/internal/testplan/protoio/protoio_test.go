@@ -17,7 +17,7 @@ import (
 	test_api_v1 "go.chromium.org/chromiumos/config/go/test/api/v1"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cros/internal/testplan/protoio"
+	"go.chromium.org/infra/cros/internal/testplan/protoio"
 )
 
 func TestReadBinaryOrJSONPb(t *testing.T) {

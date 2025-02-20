@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/crosfleet/internal/site"
-	"infra/libs/cipd"
+	"go.chromium.org/infra/cmd/crosfleet/internal/site"
+	"go.chromium.org/infra/libs/cipd"
 )
 
 // Version subcommand: Version of crosfleet tool.

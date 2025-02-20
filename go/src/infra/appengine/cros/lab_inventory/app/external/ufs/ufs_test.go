@@ -18,11 +18,11 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	api "infra/appengine/cros/lab_inventory/api/v1"
-	"infra/appengine/cros/lab_inventory/app/config"
-	"infra/appengine/cros/lab_inventory/app/external"
-	"infra/appengine/cros/lab_inventory/app/frontend/fake"
-	ufspb "infra/unifiedfleet/api/v1/models"
+	api "go.chromium.org/infra/appengine/cros/lab_inventory/api/v1"
+	"go.chromium.org/infra/appengine/cros/lab_inventory/app/config"
+	"go.chromium.org/infra/appengine/cros/lab_inventory/app/external"
+	"go.chromium.org/infra/appengine/cros/lab_inventory/app/frontend/fake"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 type testFixture struct {

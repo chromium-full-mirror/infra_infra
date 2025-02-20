@@ -9,7 +9,7 @@ import (
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
-	"infra/cros/internal/chromeosversion"
+	"go.chromium.org/infra/cros/internal/chromeosversion"
 )
 
 func TestInitTotManager(t *testing.T) {

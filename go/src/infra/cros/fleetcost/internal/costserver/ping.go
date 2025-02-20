@@ -7,7 +7,7 @@ package costserver
 import (
 	"context"
 
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
 )
 
 // Ping takes a PingRequest which is empty and returns a PingResponse which is empty.

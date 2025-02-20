@@ -12,9 +12,9 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/cmd/common_lib/commonconfigs"
-	"infra/cros/cmd/common_lib/containers"
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"go.chromium.org/infra/cros/cmd/common_lib/commonconfigs"
+	"go.chromium.org/infra/cros/cmd/common_lib/containers"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
 
 func TestGetContainer_UnsupportedContainerType(t *testing.T) {

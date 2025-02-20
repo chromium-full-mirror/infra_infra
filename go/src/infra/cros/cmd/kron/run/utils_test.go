@@ -15,8 +15,8 @@ import (
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cros/cmd/kron/common"
-	"infra/cros/cmd/kron/metrics"
+	"go.chromium.org/infra/cros/cmd/kron/common"
+	"go.chromium.org/infra/cros/cmd/kron/metrics"
 )
 
 // SetUp sets the RunID and discards the stdout and stderr for cleaner test

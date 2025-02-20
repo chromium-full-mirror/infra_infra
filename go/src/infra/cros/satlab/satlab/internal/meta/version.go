@@ -14,8 +14,8 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/satlab/common/site"
-	"infra/libs/cipd"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/libs/cipd"
 )
 
 // Version subcommand: the version of satlab

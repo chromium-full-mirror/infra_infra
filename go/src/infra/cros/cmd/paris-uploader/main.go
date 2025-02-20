@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cros/cmd/paris-uploader/internal/cmds"
+	"go.chromium.org/infra/cros/cmd/paris-uploader/internal/cmds"
 )
 
 // GetApplication returns the paris-uploader application.

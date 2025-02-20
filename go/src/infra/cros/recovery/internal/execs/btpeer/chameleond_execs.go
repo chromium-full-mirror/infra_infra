@@ -13,10 +13,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components/btpeer"
-	"infra/cros/recovery/internal/components/btpeer/chameleond"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/components/btpeer"
+	"go.chromium.org/infra/cros/recovery/internal/components/btpeer/chameleond"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // fetchInstalledChameleondBundleCommitExec retrieves the chameleond commit of

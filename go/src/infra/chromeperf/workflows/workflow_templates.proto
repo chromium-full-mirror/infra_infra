@@ -16,7 +16,7 @@ syntax = "proto3";
 
 package workflows;
 
-option go_package = "infra/chromeperf/workflows";
+option go_package = "go.chromium.org/infra/chromeperf/workflows";
 
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";

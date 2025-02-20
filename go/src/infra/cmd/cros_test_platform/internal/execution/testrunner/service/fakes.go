@@ -16,9 +16,9 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/luci/common/data/stringset"
 
-	"infra/cmd/cros_test_platform/internal/execution/types"
-	"infra/libs/skylab/request"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/types"
+	"go.chromium.org/infra/libs/skylab/request"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // StubClient implements a noop Client with "reasonable" default behavior for

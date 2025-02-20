@@ -15,10 +15,10 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
-	"infra/fleetconsole/internal/database/devicesdb"
-	"infra/fleetconsole/internal/devicemanagerclient"
-	"infra/fleetconsole/internal/utils"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/internal/database/devicesdb"
+	"go.chromium.org/infra/fleetconsole/internal/devicemanagerclient"
+	"go.chromium.org/infra/fleetconsole/internal/utils"
 )
 
 // The sql library doesn't support more than this number of parameters

@@ -7,7 +7,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/cros/satlab/satlab
+  - go.chromium.org/infra/cros/satlab/satlab
 root: ../../go/bin
 data:
   - file: satlab${exe_suffix}

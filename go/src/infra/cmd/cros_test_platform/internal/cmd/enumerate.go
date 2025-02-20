@@ -24,11 +24,11 @@ import (
 	"go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/cros_test_platform/internal/autotest/artifacts"
-	"infra/cmd/cros_test_platform/internal/autotest/testspec"
-	"infra/cmd/cros_test_platform/internal/enumeration"
-	"infra/cmd/cros_test_platform/internal/site"
-	"infra/cmd/cros_test_platform/internal/utils"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/autotest/artifacts"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/autotest/testspec"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/enumeration"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/site"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/utils"
 )
 
 // Enumerate is the `enumerate` subcommand implementation.

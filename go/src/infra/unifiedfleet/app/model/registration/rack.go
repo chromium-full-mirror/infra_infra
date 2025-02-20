@@ -19,10 +19,10 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/config"
-	ufsds "infra/unifiedfleet/app/model/datastore"
-	"infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // RackKind is the datastore entity kind Rack.

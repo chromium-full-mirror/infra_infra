@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/logger"
 )
 
 // Use cases to test parseServodLogTime function.

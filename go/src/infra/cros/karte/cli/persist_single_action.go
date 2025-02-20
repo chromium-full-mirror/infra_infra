@@ -15,10 +15,10 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/client"
-	"infra/cros/karte/internal/commonflags"
-	"infra/cros/karte/internal/site"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	"go.chromium.org/infra/cros/karte/client"
+	"go.chromium.org/infra/cros/karte/internal/commonflags"
+	"go.chromium.org/infra/cros/karte/internal/site"
 )
 
 // PersistSingleAction is a command that persists a single action to BigQuery.

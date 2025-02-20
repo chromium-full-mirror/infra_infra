@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/tricium/api/v1/platform.proto
+// source: go.chromium.org/infra/tricium/api/v1/platform.proto
 
 package tricium
 
@@ -45,23 +45,23 @@ const (
 	Platform_UBUNTU Platform_Name = 2 // reserved 3,4,5,6,7,8,9,10
 	// Generic Android.
 	//
-	// Deprecated: Marked as deprecated in infra/tricium/api/v1/platform.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/tricium/api/v1/platform.proto.
 	Platform_ANDROID Platform_Name = 11 // reserved 12,13,14,15
 	// Generic Mac
 	//
-	// Deprecated: Marked as deprecated in infra/tricium/api/v1/platform.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/tricium/api/v1/platform.proto.
 	Platform_MAC Platform_Name = 16
-	// Deprecated: Marked as deprecated in infra/tricium/api/v1/platform.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/tricium/api/v1/platform.proto.
 	Platform_OSX Platform_Name = 17
-	// Deprecated: Marked as deprecated in infra/tricium/api/v1/platform.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/tricium/api/v1/platform.proto.
 	Platform_IOS Platform_Name = 18 // reserved 19,20
 	// Generic Windows.
 	//
-	// Deprecated: Marked as deprecated in infra/tricium/api/v1/platform.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/tricium/api/v1/platform.proto.
 	Platform_WINDOWS Platform_Name = 21 // reserved 22,23,24,25
-	// Deprecated: Marked as deprecated in infra/tricium/api/v1/platform.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/tricium/api/v1/platform.proto.
 	Platform_CHROMEOS Platform_Name = 26 // reserved 27,28,29,30
-	// Deprecated: Marked as deprecated in infra/tricium/api/v1/platform.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/tricium/api/v1/platform.proto.
 	Platform_FUCHSIA Platform_Name = 31 // reserved 32,33,34,35
 )
 
@@ -104,11 +104,11 @@ func (x Platform_Name) String() string {
 }
 
 func (Platform_Name) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_tricium_api_v1_platform_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_tricium_api_v1_platform_proto_enumTypes[0].Descriptor()
 }
 
 func (Platform_Name) Type() protoreflect.EnumType {
-	return &file_infra_tricium_api_v1_platform_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_tricium_api_v1_platform_proto_enumTypes[0]
 }
 
 func (x Platform_Name) Number() protoreflect.EnumNumber {
@@ -117,7 +117,7 @@ func (x Platform_Name) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Platform_Name.Descriptor instead.
 func (Platform_Name) EnumDescriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_platform_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_tricium_api_v1_platform_proto_rawDescGZIP(), []int{0, 0}
 }
 
 // Platforms supported by Tricium.
@@ -129,7 +129,7 @@ type Platform struct {
 
 func (x *Platform) Reset() {
 	*x = Platform{}
-	mi := &file_infra_tricium_api_v1_platform_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_platform_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -141,7 +141,7 @@ func (x *Platform) String() string {
 func (*Platform) ProtoMessage() {}
 
 func (x *Platform) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_platform_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_platform_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -154,7 +154,7 @@ func (x *Platform) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Platform.ProtoReflect.Descriptor instead.
 func (*Platform) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_platform_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_tricium_api_v1_platform_proto_rawDescGZIP(), []int{0}
 }
 
 // Platform details for supported platforms.
@@ -163,7 +163,7 @@ type Platform_Details struct {
 	Name  Platform_Name          `protobuf:"varint,1,opt,name=name,proto3,enum=tricium.Platform_Name" json:"name,omitempty"`
 	// Deprecated, ignored.
 	//
-	// Deprecated: Marked as deprecated in infra/tricium/api/v1/platform.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/tricium/api/v1/platform.proto.
 	Dimensions []string `protobuf:"bytes,2,rep,name=dimensions,proto3" json:"dimensions,omitempty"`
 	// Whether this platform can be used as a runtime platform.
 	//
@@ -175,7 +175,7 @@ type Platform_Details struct {
 
 func (x *Platform_Details) Reset() {
 	*x = Platform_Details{}
-	mi := &file_infra_tricium_api_v1_platform_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_platform_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -187,7 +187,7 @@ func (x *Platform_Details) String() string {
 func (*Platform_Details) ProtoMessage() {}
 
 func (x *Platform_Details) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_platform_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_platform_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -200,7 +200,7 @@ func (x *Platform_Details) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Platform_Details.ProtoReflect.Descriptor instead.
 func (*Platform_Details) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_platform_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_tricium_api_v1_platform_proto_rawDescGZIP(), []int{0, 0}
 }
 
 func (x *Platform_Details) GetName() Platform_Name {
@@ -210,7 +210,7 @@ func (x *Platform_Details) GetName() Platform_Name {
 	return Platform_ANY
 }
 
-// Deprecated: Marked as deprecated in infra/tricium/api/v1/platform.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/tricium/api/v1/platform.proto.
 func (x *Platform_Details) GetDimensions() []string {
 	if x != nil {
 		return x.Dimensions
@@ -225,10 +225,11 @@ func (x *Platform_Details) GetHasRuntime() bool {
 	return false
 }
 
-var File_infra_tricium_api_v1_platform_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_tricium_api_v1_platform_proto protoreflect.FileDescriptor
 
-var file_infra_tricium_api_v1_platform_proto_rawDesc = string([]byte{
-	0x0a, 0x23, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
+var file_go_chromium_org_infra_tricium_api_v1_platform_proto_rawDesc = string([]byte{
+	0x0a, 0x33, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x07, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x22, 0x9b,
 	0x02, 0x0a, 0x08, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x1a, 0x7a, 0x0a, 0x07, 0x44,
@@ -248,32 +249,33 @@ var file_infra_tricium_api_v1_platform_proto_rawDesc = string([]byte{
 	0x4f, 0x53, 0x10, 0x12, 0x1a, 0x02, 0x08, 0x01, 0x12, 0x0f, 0x0a, 0x07, 0x57, 0x49, 0x4e, 0x44,
 	0x4f, 0x57, 0x53, 0x10, 0x15, 0x1a, 0x02, 0x08, 0x01, 0x12, 0x10, 0x0a, 0x08, 0x43, 0x48, 0x52,
 	0x4f, 0x4d, 0x45, 0x4f, 0x53, 0x10, 0x1a, 0x1a, 0x02, 0x08, 0x01, 0x12, 0x0f, 0x0a, 0x07, 0x46,
-	0x55, 0x43, 0x48, 0x53, 0x49, 0x41, 0x10, 0x1f, 0x1a, 0x02, 0x08, 0x01, 0x42, 0x1e, 0x5a, 0x1c,
+	0x55, 0x43, 0x48, 0x53, 0x49, 0x41, 0x10, 0x1f, 0x1a, 0x02, 0x08, 0x01, 0x42, 0x2e, 0x5a, 0x2c,
+	0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f,
 	0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f, 0x61, 0x70,
 	0x69, 0x2f, 0x76, 0x31, 0x3b, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x62, 0x06, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_tricium_api_v1_platform_proto_rawDescOnce sync.Once
-	file_infra_tricium_api_v1_platform_proto_rawDescData []byte
+	file_go_chromium_org_infra_tricium_api_v1_platform_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_tricium_api_v1_platform_proto_rawDescData []byte
 )
 
-func file_infra_tricium_api_v1_platform_proto_rawDescGZIP() []byte {
-	file_infra_tricium_api_v1_platform_proto_rawDescOnce.Do(func() {
-		file_infra_tricium_api_v1_platform_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_tricium_api_v1_platform_proto_rawDesc), len(file_infra_tricium_api_v1_platform_proto_rawDesc)))
+func file_go_chromium_org_infra_tricium_api_v1_platform_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_tricium_api_v1_platform_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_tricium_api_v1_platform_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tricium_api_v1_platform_proto_rawDesc), len(file_go_chromium_org_infra_tricium_api_v1_platform_proto_rawDesc)))
 	})
-	return file_infra_tricium_api_v1_platform_proto_rawDescData
+	return file_go_chromium_org_infra_tricium_api_v1_platform_proto_rawDescData
 }
 
-var file_infra_tricium_api_v1_platform_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_infra_tricium_api_v1_platform_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_infra_tricium_api_v1_platform_proto_goTypes = []any{
+var file_go_chromium_org_infra_tricium_api_v1_platform_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_go_chromium_org_infra_tricium_api_v1_platform_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_go_chromium_org_infra_tricium_api_v1_platform_proto_goTypes = []any{
 	(Platform_Name)(0),       // 0: tricium.Platform.Name
 	(*Platform)(nil),         // 1: tricium.Platform
 	(*Platform_Details)(nil), // 2: tricium.Platform.Details
 }
-var file_infra_tricium_api_v1_platform_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_tricium_api_v1_platform_proto_depIdxs = []int32{
 	0, // 0: tricium.Platform.Details.name:type_name -> tricium.Platform.Name
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
@@ -282,27 +284,27 @@ var file_infra_tricium_api_v1_platform_proto_depIdxs = []int32{
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_infra_tricium_api_v1_platform_proto_init() }
-func file_infra_tricium_api_v1_platform_proto_init() {
-	if File_infra_tricium_api_v1_platform_proto != nil {
+func init() { file_go_chromium_org_infra_tricium_api_v1_platform_proto_init() }
+func file_go_chromium_org_infra_tricium_api_v1_platform_proto_init() {
+	if File_go_chromium_org_infra_tricium_api_v1_platform_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_tricium_api_v1_platform_proto_rawDesc), len(file_infra_tricium_api_v1_platform_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tricium_api_v1_platform_proto_rawDesc), len(file_go_chromium_org_infra_tricium_api_v1_platform_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_tricium_api_v1_platform_proto_goTypes,
-		DependencyIndexes: file_infra_tricium_api_v1_platform_proto_depIdxs,
-		EnumInfos:         file_infra_tricium_api_v1_platform_proto_enumTypes,
-		MessageInfos:      file_infra_tricium_api_v1_platform_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_tricium_api_v1_platform_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_tricium_api_v1_platform_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_tricium_api_v1_platform_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_tricium_api_v1_platform_proto_msgTypes,
 	}.Build()
-	File_infra_tricium_api_v1_platform_proto = out.File
-	file_infra_tricium_api_v1_platform_proto_goTypes = nil
-	file_infra_tricium_api_v1_platform_proto_depIdxs = nil
+	File_go_chromium_org_infra_tricium_api_v1_platform_proto = out.File
+	file_go_chromium_org_infra_tricium_api_v1_platform_proto_goTypes = nil
+	file_go_chromium_org_infra_tricium_api_v1_platform_proto_depIdxs = nil
 }

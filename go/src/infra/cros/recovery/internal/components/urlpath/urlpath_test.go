@@ -8,7 +8,7 @@ import (
 	"context"
 	"testing"
 
-	"infra/cros/recovery/scopes"
+	"go.chromium.org/infra/cros/recovery/scopes"
 )
 
 var enrichWithTrackingIdsCases = []struct {

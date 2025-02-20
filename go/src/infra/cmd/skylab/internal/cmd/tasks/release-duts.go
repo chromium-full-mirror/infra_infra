@@ -16,10 +16,10 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
-	"infra/cmd/skylab/internal/site"
-	"infra/cmdsupport/cmdlib"
-	"infra/libs/skylab/swarming"
+	skycmdlib "go.chromium.org/infra/cmd/skylab/internal/cmd/cmdlib"
+	"go.chromium.org/infra/cmd/skylab/internal/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/libs/skylab/swarming"
 )
 
 // ReleaseDuts subcommand: Release a DUT previously leased via LeaseDuts.

@@ -12,8 +12,8 @@ import (
 	"log"
 	"testing"
 
-	"infra/cros/recovery/config"
-	"infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/config"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
 )
 
 // Testing plans here as that required access to execs and we try to avoid extra linking.

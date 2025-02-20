@@ -15,7 +15,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	dirmdpb "infra/tools/dirmd/proto"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
 )
 
 // The file implements reading of metadata from legacy OWNERS files.

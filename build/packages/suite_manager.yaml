@@ -3,7 +3,7 @@ description: WIP ChromeOS TSE CLI tool for go/suitemanager-dd
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/suite_manager
+  - go.chromium.org/infra/cros/cmd/suite_manager
 root: ../../go/bin
 data:
   - file: suite_manager${exe_suffix}

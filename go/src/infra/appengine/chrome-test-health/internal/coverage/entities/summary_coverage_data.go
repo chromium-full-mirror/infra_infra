@@ -10,7 +10,7 @@ import (
 
 	"cloud.google.com/go/datastore"
 
-	"infra/appengine/chrome-test-health/datastorage"
+	"go.chromium.org/infra/appengine/chrome-test-health/datastorage"
 )
 
 type SummaryCoverageData struct {

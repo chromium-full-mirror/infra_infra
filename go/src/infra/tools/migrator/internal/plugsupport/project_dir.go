@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/tools/migrator/internal/migratorpb"
+	"go.chromium.org/infra/tools/migrator/internal/migratorpb"
 )
 
 // ProjectDir is an absolute path to a migrator project directory.

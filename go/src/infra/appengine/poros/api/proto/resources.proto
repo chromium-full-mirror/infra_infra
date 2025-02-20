@@ -8,7 +8,7 @@ package poros;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "infra/appengine/poros/api/proto;proto";
+option go_package = "go.chromium.org/infra/appengine/poros/api/proto;proto";
 
 message AssetModel {
   // Unique identifier of the asset

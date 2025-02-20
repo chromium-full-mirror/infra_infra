@@ -17,15 +17,15 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/libs/git"
-	"infra/libs/sheet"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/model/configuration"
-	ufsds "infra/unifiedfleet/app/model/datastore"
-	"infra/unifiedfleet/app/model/inventory"
-	"infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/libs/git"
+	"go.chromium.org/infra/libs/sheet"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
+	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
+	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // CreateVlan creates a new vlan in datastore.

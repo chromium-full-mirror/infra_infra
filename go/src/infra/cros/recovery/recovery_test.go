@@ -17,11 +17,11 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/recovery/config"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/logger"
-	"infra/cros/recovery/tlw"
-	"infra/libs/skylab/buildbucket"
+	"go.chromium.org/infra/cros/recovery/config"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/tlw"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
 )
 
 // Test cases for TestDUTPlans

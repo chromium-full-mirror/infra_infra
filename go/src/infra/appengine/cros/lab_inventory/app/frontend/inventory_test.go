@@ -22,11 +22,11 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	ds "go.chromium.org/luci/gae/service/datastore"
 
-	api "infra/appengine/cros/lab_inventory/api/v1"
-	"infra/appengine/cros/lab_inventory/app/config"
-	"infra/cros/lab_inventory/datastore"
-	"infra/cros/lab_inventory/deviceconfig"
-	invlibs "infra/cros/lab_inventory/protos"
+	api "go.chromium.org/infra/appengine/cros/lab_inventory/api/v1"
+	"go.chromium.org/infra/appengine/cros/lab_inventory/app/config"
+	"go.chromium.org/infra/cros/lab_inventory/datastore"
+	"go.chromium.org/infra/cros/lab_inventory/deviceconfig"
+	invlibs "go.chromium.org/infra/cros/lab_inventory/protos"
 )
 
 type testFixture struct {

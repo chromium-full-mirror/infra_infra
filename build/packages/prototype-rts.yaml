@@ -17,7 +17,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/cros/cmd/prototype-rts
+  - go.chromium.org/infra/cros/cmd/prototype-rts
 root: ../../go/bin
 data:
   - file: prototype-rts${exe_suffix}

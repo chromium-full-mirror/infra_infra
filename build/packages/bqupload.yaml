@@ -11,7 +11,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/cmd/bqupload
+  - go.chromium.org/infra/cmd/bqupload
 root: ../../go/bin
 data:
   - file: bqupload${exe_suffix}

@@ -7,7 +7,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/cros/cmd/test_plan
+  - go.chromium.org/infra/cros/cmd/test_plan
 root: ../../go/bin
 data:
   - file: test_plan${exe_suffix}

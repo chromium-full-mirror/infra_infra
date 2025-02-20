@@ -16,9 +16,9 @@ import (
 
 	"github.com/shirou/gopsutil/v3/process"
 
-	"infra/cros/servo/errors"
-	tastexec "infra/cros/servo/exec"
-	"infra/cros/servo/testing"
+	"go.chromium.org/infra/cros/servo/errors"
+	tastexec "go.chromium.org/infra/cros/servo/exec"
+	"go.chromium.org/infra/cros/servo/testing"
 )
 
 func TestKillAll(t *gotesting.T) {

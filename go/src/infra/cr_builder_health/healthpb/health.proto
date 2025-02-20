@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package healthpb;
 
-option go_package = "infra/cr_builder_health/healthpb";
+option go_package = "go.chromium.org/infra/cr_builder_health/healthpb";
 
 import "google/protobuf/timestamp.proto";
 

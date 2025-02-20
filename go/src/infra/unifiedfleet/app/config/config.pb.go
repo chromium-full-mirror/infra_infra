@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/unifiedfleet/app/config/config.proto
+// source: go.chromium.org/infra/unifiedfleet/app/config/config.proto
 
 package config
 
@@ -29,7 +29,7 @@ const (
 // Config is the configuration data served by luci-config for this app.
 type Config struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/app/config/config.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/app/config/config.proto.
 	LuciConfigService      string           `protobuf:"bytes,1,opt,name=luci_config_service,json=luciConfigService,proto3" json:"luci_config_service,omitempty"`
 	CrosNetworkConfig      *OSNetworkConfig `protobuf:"bytes,2,opt,name=cros_network_config,json=crosNetworkConfig,proto3" json:"cros_network_config,omitempty"`
 	BucketName             string           `protobuf:"bytes,3,opt,name=bucket_name,json=bucketName,proto3" json:"bucket_name,omitempty"`
@@ -44,7 +44,7 @@ type Config struct {
 	// cron job for dronequeen push.
 	// As UFS migration is over, this is no longer used.
 	//
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/app/config/config.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/app/config/config.proto.
 	EnableDronequeenPush bool `protobuf:"varint,11,opt,name=enable_dronequeen_push,json=enableDronequeenPush,proto3" json:"enable_dronequeen_push,omitempty"`
 	// cron job for Inv2 to UFS sync(MachineLSE/Asset).
 	DisableInv2Sync bool `protobuf:"varint,12,opt,name=disable_inv2_sync,json=disableInv2Sync,proto3" json:"disable_inv2_sync,omitempty"`
@@ -53,13 +53,13 @@ type Config struct {
 	// DEPRECATED. Disable use of cached ManufacturingConfig in datastore. If
 	// true, GetChromeOSDeviceData will return None for ManufacturingConfig.
 	//
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/app/config/config.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/app/config/config.proto.
 	DisableCachedManufacturingConfig bool `protobuf:"varint,14,opt,name=disable_cached_manufacturing_config,json=disableCachedManufacturingConfig,proto3" json:"disable_cached_manufacturing_config,omitempty"`
 	// DEPRECATED. Disable use of old cached manufacturing configs from the
 	// datastore and use configs cached from HWID server instead. If true,
 	// GetChromeOSDeviceData will return None for ManufacturingConfig.
 	//
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/app/config/config.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/app/config/config.proto.
 	UseCachedHwidManufacturingConfig bool `protobuf:"varint,15,opt,name=use_cached_hwid_manufacturing_config,json=useCachedHwidManufacturingConfig,proto3" json:"use_cached_hwid_manufacturing_config,omitempty"`
 	// Enable generation of schedulable labels using Boxster configs.
 	EnableBoxsterLabels bool `protobuf:"varint,16,opt,name=enable_boxster_labels,json=enableBoxsterLabels,proto3" json:"enable_boxster_labels,omitempty"`
@@ -96,7 +96,7 @@ type Config struct {
 
 func (x *Config) Reset() {
 	*x = Config{}
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -108,7 +108,7 @@ func (x *Config) String() string {
 func (*Config) ProtoMessage() {}
 
 func (x *Config) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -121,10 +121,10 @@ func (x *Config) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Config.ProtoReflect.Descriptor instead.
 func (*Config) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{0}
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/app/config/config.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/app/config/config.proto.
 func (x *Config) GetLuciConfigService() string {
 	if x != nil {
 		return x.LuciConfigService
@@ -195,7 +195,7 @@ func (x *Config) GetQueenService() string {
 	return ""
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/app/config/config.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/app/config/config.proto.
 func (x *Config) GetEnableDronequeenPush() bool {
 	if x != nil {
 		return x.EnableDronequeenPush
@@ -217,7 +217,7 @@ func (x *Config) GetEnableLabStateconfigPush() bool {
 	return false
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/app/config/config.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/app/config/config.proto.
 func (x *Config) GetDisableCachedManufacturingConfig() bool {
 	if x != nil {
 		return x.DisableCachedManufacturingConfig
@@ -225,7 +225,7 @@ func (x *Config) GetDisableCachedManufacturingConfig() bool {
 	return false
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/app/config/config.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/app/config/config.proto.
 func (x *Config) GetUseCachedHwidManufacturingConfig() bool {
 	if x != nil {
 		return x.UseCachedHwidManufacturingConfig
@@ -343,7 +343,7 @@ type OSNetworkConfig struct {
 
 func (x *OSNetworkConfig) Reset() {
 	*x = OSNetworkConfig{}
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -355,7 +355,7 @@ func (x *OSNetworkConfig) String() string {
 func (*OSNetworkConfig) ProtoMessage() {}
 
 func (x *OSNetworkConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -368,7 +368,7 @@ func (x *OSNetworkConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OSNetworkConfig.ProtoReflect.Descriptor instead.
 func (*OSNetworkConfig) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *OSNetworkConfig) GetGitilesHost() string {
@@ -417,7 +417,7 @@ type OwnershipConfig struct {
 
 func (x *OwnershipConfig) Reset() {
 	*x = OwnershipConfig{}
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -429,7 +429,7 @@ func (x *OwnershipConfig) String() string {
 func (*OwnershipConfig) ProtoMessage() {}
 
 func (x *OwnershipConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -442,7 +442,7 @@ func (x *OwnershipConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OwnershipConfig.ProtoReflect.Descriptor instead.
 func (*OwnershipConfig) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *OwnershipConfig) GetGitilesHost() string {
@@ -494,7 +494,7 @@ type PubSub struct {
 
 func (x *PubSub) Reset() {
 	*x = PubSub{}
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -506,7 +506,7 @@ func (x *PubSub) String() string {
 func (*PubSub) ProtoMessage() {}
 
 func (x *PubSub) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -519,7 +519,7 @@ func (x *PubSub) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PubSub.ProtoReflect.Descriptor instead.
 func (*PubSub) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *PubSub) GetProject() string {
@@ -557,7 +557,7 @@ type UserAgent struct {
 
 func (x *UserAgent) Reset() {
 	*x = UserAgent{}
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -569,7 +569,7 @@ func (x *UserAgent) String() string {
 func (*UserAgent) ProtoMessage() {}
 
 func (x *UserAgent) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -582,7 +582,7 @@ func (x *UserAgent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserAgent.ProtoReflect.Descriptor instead.
 func (*UserAgent) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *UserAgent) GetName() string {
@@ -611,7 +611,7 @@ type ACL struct {
 
 func (x *ACL) Reset() {
 	*x = ACL{}
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -623,7 +623,7 @@ func (x *ACL) String() string {
 func (*ACL) ProtoMessage() {}
 
 func (x *ACL) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -636,7 +636,7 @@ func (x *ACL) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ACL.ProtoReflect.Descriptor instead.
 func (*ACL) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ACL) GetMatch() string {
@@ -671,7 +671,7 @@ type DeviceConfigPushConfigs struct {
 
 func (x *DeviceConfigPushConfigs) Reset() {
 	*x = DeviceConfigPushConfigs{}
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -683,7 +683,7 @@ func (x *DeviceConfigPushConfigs) String() string {
 func (*DeviceConfigPushConfigs) ProtoMessage() {}
 
 func (x *DeviceConfigPushConfigs) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -696,7 +696,7 @@ func (x *DeviceConfigPushConfigs) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceConfigPushConfigs.ProtoReflect.Descriptor instead.
 func (*DeviceConfigPushConfigs) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *DeviceConfigPushConfigs) GetEnabled() bool {
@@ -765,7 +765,7 @@ type ExperimentalAPI struct {
 
 func (x *ExperimentalAPI) Reset() {
 	*x = ExperimentalAPI{}
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -777,7 +777,7 @@ func (x *ExperimentalAPI) String() string {
 func (*ExperimentalAPI) ProtoMessage() {}
 
 func (x *ExperimentalAPI) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -790,7 +790,7 @@ func (x *ExperimentalAPI) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExperimentalAPI.ProtoReflect.Descriptor instead.
 func (*ExperimentalAPI) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ExperimentalAPI) GetListAssetsACL() uint32 {
@@ -880,7 +880,7 @@ type Swarming struct {
 
 func (x *Swarming) Reset() {
 	*x = Swarming{}
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -892,7 +892,7 @@ func (x *Swarming) String() string {
 func (*Swarming) ProtoMessage() {}
 
 func (x *Swarming) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -905,7 +905,7 @@ func (x *Swarming) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Swarming.ProtoReflect.Descriptor instead.
 func (*Swarming) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Swarming) GetHost() string {
@@ -933,7 +933,7 @@ type OSNetworkConfig_OSNetworkTopology struct {
 
 func (x *OSNetworkConfig_OSNetworkTopology) Reset() {
 	*x = OSNetworkConfig_OSNetworkTopology{}
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -945,7 +945,7 @@ func (x *OSNetworkConfig_OSNetworkTopology) String() string {
 func (*OSNetworkConfig_OSNetworkTopology) ProtoMessage() {}
 
 func (x *OSNetworkConfig_OSNetworkTopology) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -958,7 +958,7 @@ func (x *OSNetworkConfig_OSNetworkTopology) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use OSNetworkConfig_OSNetworkTopology.ProtoReflect.Descriptor instead.
 func (*OSNetworkConfig_OSNetworkTopology) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{1, 0}
+	return file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{1, 0}
 }
 
 func (x *OSNetworkConfig_OSNetworkTopology) GetName() string {
@@ -994,7 +994,7 @@ type OwnershipConfig_ConfigFile struct {
 
 func (x *OwnershipConfig_ConfigFile) Reset() {
 	*x = OwnershipConfig_ConfigFile{}
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1006,7 +1006,7 @@ func (x *OwnershipConfig_ConfigFile) String() string {
 func (*OwnershipConfig_ConfigFile) ProtoMessage() {}
 
 func (x *OwnershipConfig_ConfigFile) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_app_config_config_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1019,7 +1019,7 @@ func (x *OwnershipConfig_ConfigFile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OwnershipConfig_ConfigFile.ProtoReflect.Descriptor instead.
 func (*OwnershipConfig_ConfigFile) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{2, 0}
+	return file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescGZIP(), []int{2, 0}
 }
 
 func (x *OwnershipConfig_ConfigFile) GetName() string {
@@ -1036,10 +1036,11 @@ func (x *OwnershipConfig_ConfigFile) GetRemotePath() string {
 	return ""
 }
 
-var File_infra_unifiedfleet_app_config_config_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_unifiedfleet_app_config_config_proto protoreflect.FileDescriptor
 
-var file_infra_unifiedfleet_app_config_config_proto_rawDesc = string([]byte{
-	0x0a, 0x2a, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+var file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDesc = string([]byte{
+	0x0a, 0x3a, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x70, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2f,
 	0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0a, 0x75, 0x66,
 	0x73, 0x2e, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x22, 0xd2, 0x0c, 0x0a, 0x06, 0x43, 0x6f, 0x6e,
@@ -1239,25 +1240,26 @@ var file_infra_unifiedfleet_app_config_config_proto_rawDesc = string([]byte{
 	0x6e, 0x67, 0x12, 0x12, 0x0a, 0x04, 0x68, 0x6f, 0x73, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x04, 0x68, 0x6f, 0x73, 0x74, 0x12, 0x19, 0x0a, 0x08, 0x62, 0x6f, 0x74, 0x5f, 0x70, 0x6f,
 	0x6f, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x62, 0x6f, 0x74, 0x50, 0x6f, 0x6f,
-	0x6c, 0x42, 0x1f, 0x5a, 0x1d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69,
+	0x6c, 0x42, 0x2f, 0x5a, 0x2d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d,
+	0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69,
 	0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x70, 0x2f, 0x63, 0x6f, 0x6e, 0x66,
 	0x69, 0x67, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_unifiedfleet_app_config_config_proto_rawDescOnce sync.Once
-	file_infra_unifiedfleet_app_config_config_proto_rawDescData []byte
+	file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescData []byte
 )
 
-func file_infra_unifiedfleet_app_config_config_proto_rawDescGZIP() []byte {
-	file_infra_unifiedfleet_app_config_config_proto_rawDescOnce.Do(func() {
-		file_infra_unifiedfleet_app_config_config_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_app_config_config_proto_rawDesc), len(file_infra_unifiedfleet_app_config_config_proto_rawDesc)))
+func file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDesc)))
 	})
-	return file_infra_unifiedfleet_app_config_config_proto_rawDescData
+	return file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_app_config_config_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
-var file_infra_unifiedfleet_app_config_config_proto_goTypes = []any{
+var file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_goTypes = []any{
 	(*Config)(nil),                            // 0: ufs.config.Config
 	(*OSNetworkConfig)(nil),                   // 1: ufs.config.OSNetworkConfig
 	(*OwnershipConfig)(nil),                   // 2: ufs.config.OwnershipConfig
@@ -1270,7 +1272,7 @@ var file_infra_unifiedfleet_app_config_config_proto_goTypes = []any{
 	(*OSNetworkConfig_OSNetworkTopology)(nil), // 9: ufs.config.OSNetworkConfig.OSNetworkTopology
 	(*OwnershipConfig_ConfigFile)(nil),        // 10: ufs.config.OwnershipConfig.ConfigFile
 }
-var file_infra_unifiedfleet_app_config_config_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_depIdxs = []int32{
 	1,  // 0: ufs.config.Config.cros_network_config:type_name -> ufs.config.OSNetworkConfig
 	3,  // 1: ufs.config.Config.hart:type_name -> ufs.config.PubSub
 	4,  // 2: ufs.config.Config.clients:type_name -> ufs.config.UserAgent
@@ -1289,26 +1291,26 @@ var file_infra_unifiedfleet_app_config_config_proto_depIdxs = []int32{
 	0,  // [0:11] is the sub-list for field type_name
 }
 
-func init() { file_infra_unifiedfleet_app_config_config_proto_init() }
-func file_infra_unifiedfleet_app_config_config_proto_init() {
-	if File_infra_unifiedfleet_app_config_config_proto != nil {
+func init() { file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_init() }
+func file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_init() {
+	if File_go_chromium_org_infra_unifiedfleet_app_config_config_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_app_config_config_proto_rawDesc), len(file_infra_unifiedfleet_app_config_config_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_unifiedfleet_app_config_config_proto_goTypes,
-		DependencyIndexes: file_infra_unifiedfleet_app_config_config_proto_depIdxs,
-		MessageInfos:      file_infra_unifiedfleet_app_config_config_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_msgTypes,
 	}.Build()
-	File_infra_unifiedfleet_app_config_config_proto = out.File
-	file_infra_unifiedfleet_app_config_config_proto_goTypes = nil
-	file_infra_unifiedfleet_app_config_config_proto_depIdxs = nil
+	File_go_chromium_org_infra_unifiedfleet_app_config_config_proto = out.File
+	file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_goTypes = nil
+	file_go_chromium_org_infra_unifiedfleet_app_config_config_proto_depIdxs = nil
 }

@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/libs/skylab/common/heuristics"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
 )
 
 // TestValidatePattern tests that validating accepts the correct strings.

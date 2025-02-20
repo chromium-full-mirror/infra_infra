@@ -11,9 +11,9 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	androidapi "infra/cros/cmd/common_lib/android_api"
-	mock_androidapi "infra/cros/cmd/common_lib/android_api/mocks"
-	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api"
+	mock_androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api/mocks"
+	"go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 func TestSealInvocation(t *testing.T) {

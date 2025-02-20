@@ -13,8 +13,8 @@ import (
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	dashpb "infra/appengine/dashboard/api/dashboard"
-	"infra/appengine/dashboard/backend"
+	dashpb "go.chromium.org/infra/appengine/dashboard/api/dashboard"
+	"go.chromium.org/infra/appengine/dashboard/backend"
 )
 
 var baseTime = time.Date(2017, time.April, 11, 23, 0, 0, 0, time.UTC)

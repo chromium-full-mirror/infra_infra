@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/router"
 
-	"infra/appengine/cr-rev/config"
+	"go.chromium.org/infra/appengine/cr-rev/config"
 )
 
 func main() {

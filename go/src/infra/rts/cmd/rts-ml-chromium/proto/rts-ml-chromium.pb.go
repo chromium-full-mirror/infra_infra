@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/rts/cmd/rts-ml-chromium/proto/rts-ml-chromium.proto
+// source: go.chromium.org/infra/rts/cmd/rts-ml-chromium/proto/rts-ml-chromium.proto
 
 package proto
 
@@ -46,7 +46,7 @@ type Stability struct {
 
 func (x *Stability) Reset() {
 	*x = Stability{}
-	mi := &file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -58,7 +58,7 @@ func (x *Stability) String() string {
 func (*Stability) ProtoMessage() {}
 
 func (x *Stability) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -71,7 +71,7 @@ func (x *Stability) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Stability.ProtoReflect.Descriptor instead.
 func (*Stability) Descriptor() ([]byte, []int) {
-	return file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Stability) GetSixMonthFailCount() int64 {
@@ -135,7 +135,7 @@ type TestStability struct {
 
 func (x *TestStability) Reset() {
 	*x = TestStability{}
-	mi := &file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -147,7 +147,7 @@ func (x *TestStability) String() string {
 func (*TestStability) ProtoMessage() {}
 
 func (x *TestStability) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -160,7 +160,7 @@ func (x *TestStability) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestStability.ProtoReflect.Descriptor instead.
 func (*TestStability) Descriptor() ([]byte, []int) {
-	return file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *TestStability) GetTestId() string {
@@ -198,10 +198,11 @@ func (x *TestStability) GetStability() *Stability {
 	return nil
 }
 
-var File_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto protoreflect.FileDescriptor
 
-var file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDesc = string([]byte{
-	0x0a, 0x39, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x72, 0x74, 0x73, 0x2f, 0x63, 0x6d, 0x64, 0x2f,
+var file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDesc = string([]byte{
+	0x0a, 0x49, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x72, 0x74, 0x73, 0x2f, 0x63, 0x6d, 0x64, 0x2f,
 	0x72, 0x74, 0x73, 0x2d, 0x6d, 0x6c, 0x2d, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2f,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x72, 0x74, 0x73, 0x2d, 0x6d, 0x6c, 0x2d, 0x63, 0x68, 0x72,
 	0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x04, 0x6d, 0x61, 0x69,
@@ -234,30 +235,31 @@ var file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDesc = str
 	0x09, 0x74, 0x65, 0x73, 0x74, 0x53, 0x75, 0x69, 0x74, 0x65, 0x12, 0x2d, 0x0a, 0x09, 0x73, 0x74,
 	0x61, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e,
 	0x6d, 0x61, 0x69, 0x6e, 0x2e, 0x53, 0x74, 0x61, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x52, 0x09,
-	0x73, 0x74, 0x61, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x42, 0x25, 0x5a, 0x23, 0x69, 0x6e, 0x66,
+	0x73, 0x74, 0x61, 0x62, 0x69, 0x6c, 0x69, 0x74, 0x79, 0x42, 0x35, 0x5a, 0x33, 0x67, 0x6f, 0x2e,
+	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66,
 	0x72, 0x61, 0x2f, 0x72, 0x74, 0x73, 0x2f, 0x63, 0x6d, 0x64, 0x2f, 0x72, 0x74, 0x73, 0x2d, 0x6d,
 	0x6c, 0x2d, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescOnce sync.Once
-	file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescData []byte
+	file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescData []byte
 )
 
-func file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescGZIP() []byte {
-	file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescOnce.Do(func() {
-		file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDesc), len(file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDesc)))
+func file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDesc), len(file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDesc)))
 	})
-	return file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescData
+	return file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDescData
 }
 
-var file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_goTypes = []any{
+var file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_goTypes = []any{
 	(*Stability)(nil),     // 0: main.Stability
 	(*TestStability)(nil), // 1: main.TestStability
 }
-var file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_depIdxs = []int32{
 	0, // 0: main.TestStability.stability:type_name -> main.Stability
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
@@ -266,26 +268,26 @@ var file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_depIdxs = []i
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_init() }
-func file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_init() {
-	if File_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto != nil {
+func init() { file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_init() }
+func file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_init() {
+	if File_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDesc), len(file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDesc), len(file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_goTypes,
-		DependencyIndexes: file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_depIdxs,
-		MessageInfos:      file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_msgTypes,
 	}.Build()
-	File_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto = out.File
-	file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_goTypes = nil
-	file_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_depIdxs = nil
+	File_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto = out.File
+	file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_goTypes = nil
+	file_go_chromium_org_infra_rts_cmd_rts_ml_chromium_proto_rts_ml_chromium_proto_depIdxs = nil
 }

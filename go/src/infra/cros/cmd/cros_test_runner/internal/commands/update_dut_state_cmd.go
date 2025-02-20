@@ -18,14 +18,14 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/common_lib/tools/ufs"
-	"infra/cros/cmd/cros_test_runner/data"
-	"infra/cros/dutstate"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/ufs"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/data"
+	"go.chromium.org/infra/cros/dutstate"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 var (

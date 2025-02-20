@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_local_state"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/libs/skylab/dutstate"
+	"go.chromium.org/infra/libs/skylab/dutstate"
 )
 
 func validateMultiBotHostInfo(message *skylab_local_state.MultiBotHostInfo) error {

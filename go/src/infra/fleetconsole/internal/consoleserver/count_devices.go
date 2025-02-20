@@ -9,8 +9,8 @@ import (
 
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
-	"infra/fleetconsole/internal/database/devicesdb"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/internal/database/devicesdb"
 )
 
 func (frontend *FleetConsoleFrontend) CountDevices(ctx context.Context, req *fleetconsolerpc.CountDevicesRequest) (_ *fleetconsolerpc.CountDevicesResponse, err error) {

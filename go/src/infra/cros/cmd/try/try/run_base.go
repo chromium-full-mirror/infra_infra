@@ -18,9 +18,9 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/gerrit"
-	"infra/cros/lib/buildbucket"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/lib/buildbucket"
 )
 
 const PatchRegexpPattern = `^crrev\.com\/([ci])\/(\d+)$`

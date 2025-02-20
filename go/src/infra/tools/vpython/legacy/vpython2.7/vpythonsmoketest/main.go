@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	vpython "infra/tools/vpython/legacy/vpython2.7"
+	vpython "go.chromium.org/infra/tools/vpython/legacy/vpython2.7"
 )
 
 // removeAll removes a tree, even for read-only directories.

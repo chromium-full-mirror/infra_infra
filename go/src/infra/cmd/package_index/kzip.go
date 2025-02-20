@@ -22,7 +22,7 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	kpb "infra/cmd/package_index/kythe/proto"
+	kpb "go.chromium.org/infra/cmd/package_index/kythe/proto"
 )
 
 // The kzip directories to write data files and compilation units into.

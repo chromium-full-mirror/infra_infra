@@ -4,7 +4,7 @@
 
 syntax = "proto3";
 
-option go_package = "infra/tools/vpython/legacy/vpython2.7/luci/api/vpython";
+option go_package = "go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/api/vpython";
 
 package vpython;
 

@@ -8,7 +8,7 @@ package mocks
 
 import (
 	context "context"
-	datastorage "infra/appengine/chrome-test-health/datastorage"
+	datastorage "go.chromium.org/infra/appengine/chrome-test-health/datastorage"
 
 	mock "github.com/stretchr/testify/mock"
 )

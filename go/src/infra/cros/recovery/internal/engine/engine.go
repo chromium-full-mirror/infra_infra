@@ -16,11 +16,11 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/recovery/config"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/logger"
-	"infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/config"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
 )
 
 // recoveryEngine holds info required for running a recovery plan.

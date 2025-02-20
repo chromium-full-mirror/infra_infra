@@ -11,7 +11,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	"infra/cros/recovery/internal/components/mocks"
+	"go.chromium.org/infra/cros/recovery/internal/components/mocks"
 )
 
 func TestSet(t *testing.T) {

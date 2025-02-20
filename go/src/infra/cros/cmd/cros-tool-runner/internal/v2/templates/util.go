@@ -20,8 +20,8 @@ import (
 	labApi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
-	"infra/cros/cmd/cros-tool-runner/internal/v2/state"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/v2/state"
 )
 
 // ContainerLookuper provides interface to lookup information for a container

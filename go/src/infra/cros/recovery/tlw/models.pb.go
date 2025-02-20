@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/cros/recovery/tlw/models.proto
+// source: go.chromium.org/infra/cros/recovery/tlw/models.proto
 
 package tlw
 
@@ -64,11 +64,11 @@ func (x RPMType) String() string {
 }
 
 func (RPMType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[0].Descriptor()
 }
 
 func (RPMType) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[0]
 }
 
 func (x RPMType) Number() protoreflect.EnumNumber {
@@ -77,7 +77,7 @@ func (x RPMType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use RPMType.Descriptor instead.
 func (RPMType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{0}
 }
 
 // HardwareState describes the state of hardware components.
@@ -127,11 +127,11 @@ func (x HardwareState) String() string {
 }
 
 func (HardwareState) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[1].Descriptor()
 }
 
 func (HardwareState) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[1]
 }
 
 func (x HardwareState) Number() protoreflect.EnumNumber {
@@ -140,7 +140,7 @@ func (x HardwareState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use HardwareState.Descriptor instead.
 func (HardwareState) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{1}
 }
 
 // Servo Firmware Channel describes the firmware expected to have on servos.
@@ -187,11 +187,11 @@ func (x ServoFwChannel) String() string {
 }
 
 func (ServoFwChannel) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[2].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[2].Descriptor()
 }
 
 func (ServoFwChannel) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[2]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[2]
 }
 
 func (x ServoFwChannel) Number() protoreflect.EnumNumber {
@@ -200,7 +200,7 @@ func (x ServoFwChannel) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ServoFwChannel.Descriptor instead.
 func (ServoFwChannel) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{2}
 }
 
 // RepairRequest describes different repair-requests.
@@ -247,11 +247,11 @@ func (x RepairRequest) String() string {
 }
 
 func (RepairRequest) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[3].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[3].Descriptor()
 }
 
 func (RepairRequest) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[3]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[3]
 }
 
 func (x RepairRequest) Number() protoreflect.EnumNumber {
@@ -260,7 +260,7 @@ func (x RepairRequest) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use RepairRequest.Descriptor instead.
 func (RepairRequest) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{3}
 }
 
 // DUTSetupType describes different DUT setups.
@@ -323,11 +323,11 @@ func (x DUTSetupType) String() string {
 }
 
 func (DUTSetupType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[4].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[4].Descriptor()
 }
 
 func (DUTSetupType) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[4]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[4]
 }
 
 func (x DUTSetupType) Number() protoreflect.EnumNumber {
@@ -336,7 +336,7 @@ func (x DUTSetupType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DUTSetupType.Descriptor instead.
 func (DUTSetupType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{4}
 }
 
 // Action represents action expecting to perform on power supplier.
@@ -379,11 +379,11 @@ func (x RunRPMActionRequest_Action) String() string {
 }
 
 func (RunRPMActionRequest_Action) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[5].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[5].Descriptor()
 }
 
 func (RunRPMActionRequest_Action) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[5]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[5]
 }
 
 func (x RunRPMActionRequest_Action) Number() protoreflect.EnumNumber {
@@ -392,7 +392,7 @@ func (x RunRPMActionRequest_Action) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use RunRPMActionRequest_Action.Descriptor instead.
 func (RunRPMActionRequest_Action) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{7, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{7, 0}
 }
 
 // RPMState describes the state of RPM outlet.
@@ -437,11 +437,11 @@ func (x RPMOutlet_State) String() string {
 }
 
 func (RPMOutlet_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[6].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[6].Descriptor()
 }
 
 func (RPMOutlet_State) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[6]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[6]
 }
 
 func (x RPMOutlet_State) Number() protoreflect.EnumNumber {
@@ -450,7 +450,7 @@ func (x RPMOutlet_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use RPMOutlet_State.Descriptor instead.
 func (RPMOutlet_State) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{8, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{8, 0}
 }
 
 // State of the device.
@@ -487,11 +487,11 @@ func (x WifiRouterHost_State) String() string {
 }
 
 func (WifiRouterHost_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[7].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[7].Descriptor()
 }
 
 func (WifiRouterHost_State) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[7]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[7]
 }
 
 func (x WifiRouterHost_State) Number() protoreflect.EnumNumber {
@@ -500,7 +500,7 @@ func (x WifiRouterHost_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use WifiRouterHost_State.Descriptor instead.
 func (WifiRouterHost_State) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{9, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{9, 0}
 }
 
 // LoopbackState representes states for loopback dongle.
@@ -535,11 +535,11 @@ func (x DUTAudio_LoopbackState) String() string {
 }
 
 func (DUTAudio_LoopbackState) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[8].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[8].Descriptor()
 }
 
 func (DUTAudio_LoopbackState) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[8]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[8]
 }
 
 func (x DUTAudio_LoopbackState) Number() protoreflect.EnumNumber {
@@ -548,7 +548,7 @@ func (x DUTAudio_LoopbackState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DUTAudio_LoopbackState.Descriptor instead.
 func (DUTAudio_LoopbackState) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{14, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{14, 0}
 }
 
 // State of the servo.
@@ -688,11 +688,11 @@ func (x ServoHost_State) String() string {
 }
 
 func (ServoHost_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[9].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[9].Descriptor()
 }
 
 func (ServoHost_State) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[9]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[9]
 }
 
 func (x ServoHost_State) Number() protoreflect.EnumNumber {
@@ -701,7 +701,7 @@ func (x ServoHost_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ServoHost_State.Descriptor instead.
 func (ServoHost_State) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{19, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{19, 0}
 }
 
 // Type describes which type or storage used on the DUT.
@@ -747,11 +747,11 @@ func (x Storage_Type) String() string {
 }
 
 func (Storage_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[10].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[10].Descriptor()
 }
 
 func (Storage_Type) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[10]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[10]
 }
 
 func (x Storage_Type) Number() protoreflect.EnumNumber {
@@ -760,7 +760,7 @@ func (x Storage_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Storage_Type.Descriptor instead.
 func (Storage_Type) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{21, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{21, 0}
 }
 
 // State describes the state of chameleon device.
@@ -803,11 +803,11 @@ func (x Chameleon_State) String() string {
 }
 
 func (Chameleon_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[11].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[11].Descriptor()
 }
 
 func (Chameleon_State) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[11]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[11]
 }
 
 func (x Chameleon_State) Number() protoreflect.EnumNumber {
@@ -816,7 +816,7 @@ func (x Chameleon_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Chameleon_State.Descriptor instead.
 func (Chameleon_State) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{22, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{22, 0}
 }
 
 // AudioBoxJackPluggerState describes the state of AudioboxJackplugger
@@ -859,11 +859,11 @@ func (x Chameleon_AudioBoxJackPluggerState) String() string {
 }
 
 func (Chameleon_AudioBoxJackPluggerState) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[12].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[12].Descriptor()
 }
 
 func (Chameleon_AudioBoxJackPluggerState) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[12]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[12]
 }
 
 func (x Chameleon_AudioBoxJackPluggerState) Number() protoreflect.EnumNumber {
@@ -872,7 +872,7 @@ func (x Chameleon_AudioBoxJackPluggerState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Chameleon_AudioBoxJackPluggerState.Descriptor instead.
 func (Chameleon_AudioBoxJackPluggerState) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{22, 1}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{22, 1}
 }
 
 // State describes the state of bluetooth peer device.
@@ -911,11 +911,11 @@ func (x BluetoothPeer_State) String() string {
 }
 
 func (BluetoothPeer_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[13].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[13].Descriptor()
 }
 
 func (BluetoothPeer_State) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[13]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[13]
 }
 
 func (x BluetoothPeer_State) Number() protoreflect.EnumNumber {
@@ -924,7 +924,7 @@ func (x BluetoothPeer_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use BluetoothPeer_State.Descriptor instead.
 func (BluetoothPeer_State) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{23, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{23, 0}
 }
 
 // Type of modem hardware.
@@ -998,11 +998,11 @@ func (x Cellular_ModemType) String() string {
 }
 
 func (Cellular_ModemType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[14].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[14].Descriptor()
 }
 
 func (Cellular_ModemType) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[14]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[14]
 }
 
 func (x Cellular_ModemType) Number() protoreflect.EnumNumber {
@@ -1011,7 +1011,7 @@ func (x Cellular_ModemType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Cellular_ModemType.Descriptor instead.
 func (Cellular_ModemType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 0}
 }
 
 // The network operator for a particular SIM.
@@ -1105,11 +1105,11 @@ func (x Cellular_NetworkProvider) String() string {
 }
 
 func (Cellular_NetworkProvider) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[15].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[15].Descriptor()
 }
 
 func (Cellular_NetworkProvider) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[15]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[15]
 }
 
 func (x Cellular_NetworkProvider) Number() protoreflect.EnumNumber {
@@ -1118,7 +1118,7 @@ func (x Cellular_NetworkProvider) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Cellular_NetworkProvider.Descriptor instead.
 func (Cellular_NetworkProvider) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 1}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 1}
 }
 
 // The type of SIM in the slot.
@@ -1155,11 +1155,11 @@ func (x Cellular_SIMType) String() string {
 }
 
 func (Cellular_SIMType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[16].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[16].Descriptor()
 }
 
 func (Cellular_SIMType) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[16]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[16]
 }
 
 func (x Cellular_SIMType) Number() protoreflect.EnumNumber {
@@ -1168,7 +1168,7 @@ func (x Cellular_SIMType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Cellular_SIMType.Descriptor instead.
 func (Cellular_SIMType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 2}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 2}
 }
 
 // StarfishState describes the state of a starfish device in a testbed.
@@ -1211,11 +1211,11 @@ func (x Cellular_StarfishState) String() string {
 }
 
 func (Cellular_StarfishState) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[17].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[17].Descriptor()
 }
 
 func (Cellular_StarfishState) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[17]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[17]
 }
 
 func (x Cellular_StarfishState) Number() protoreflect.EnumNumber {
@@ -1224,7 +1224,7 @@ func (x Cellular_StarfishState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Cellular_StarfishState.Descriptor instead.
 func (Cellular_StarfishState) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 3}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 3}
 }
 
 // The allowed cellular connection states as reported by the modem.
@@ -1276,11 +1276,11 @@ func (x Cellular_SIMProfileInfo_State) String() string {
 }
 
 func (Cellular_SIMProfileInfo_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[18].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[18].Descriptor()
 }
 
 func (Cellular_SIMProfileInfo_State) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[18]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[18]
 }
 
 func (x Cellular_SIMProfileInfo_State) Number() protoreflect.EnumNumber {
@@ -1289,7 +1289,7 @@ func (x Cellular_SIMProfileInfo_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Cellular_SIMProfileInfo_State.Descriptor instead.
 func (Cellular_SIMProfileInfo_State) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 1, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 1, 0}
 }
 
 // Possible features that the SIM supports.
@@ -1329,11 +1329,11 @@ func (x Cellular_SIMProfileInfo_Feature) String() string {
 }
 
 func (Cellular_SIMProfileInfo_Feature) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[19].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[19].Descriptor()
 }
 
 func (Cellular_SIMProfileInfo_Feature) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[19]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[19]
 }
 
 func (x Cellular_SIMProfileInfo_Feature) Number() protoreflect.EnumNumber {
@@ -1342,7 +1342,7 @@ func (x Cellular_SIMProfileInfo_Feature) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Cellular_SIMProfileInfo_Feature.Descriptor instead.
 func (Cellular_SIMProfileInfo_Feature) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 1, 1}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 1, 1}
 }
 
 // State describes the state of device.
@@ -1385,11 +1385,11 @@ func (x HumanMotionRobot_State) String() string {
 }
 
 func (HumanMotionRobot_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[20].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[20].Descriptor()
 }
 
 func (HumanMotionRobot_State) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[20]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[20]
 }
 
 func (x HumanMotionRobot_State) Number() protoreflect.EnumNumber {
@@ -1398,7 +1398,7 @@ func (x HumanMotionRobot_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use HumanMotionRobot_State.Descriptor instead.
 func (HumanMotionRobot_State) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{28, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{28, 0}
 }
 
 type Dolos_DolosHWMajorRevision int32
@@ -1432,11 +1432,11 @@ func (x Dolos_DolosHWMajorRevision) String() string {
 }
 
 func (Dolos_DolosHWMajorRevision) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[21].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[21].Descriptor()
 }
 
 func (Dolos_DolosHWMajorRevision) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[21]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[21]
 }
 
 func (x Dolos_DolosHWMajorRevision) Number() protoreflect.EnumNumber {
@@ -1445,7 +1445,7 @@ func (x Dolos_DolosHWMajorRevision) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Dolos_DolosHWMajorRevision.Descriptor instead.
 func (Dolos_DolosHWMajorRevision) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{29, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{29, 0}
 }
 
 // State describes the state of Dolos.
@@ -1453,11 +1453,11 @@ type Dolos_State int32
 
 const (
 	Dolos_STATE_UNSPECIFIED Dolos_State = 0
-	// Deprecated: Marked as deprecated in infra/cros/recovery/tlw/models.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/cros/recovery/tlw/models.proto.
 	Dolos_WORKING Dolos_State = 1
-	// Deprecated: Marked as deprecated in infra/cros/recovery/tlw/models.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/cros/recovery/tlw/models.proto.
 	Dolos_BROKEN Dolos_State = 2
-	// Deprecated: Marked as deprecated in infra/cros/recovery/tlw/models.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/cros/recovery/tlw/models.proto.
 	Dolos_NOT_APPLICABLE                Dolos_State = 3
 	Dolos_DOLOS_UNKNOWN                 Dolos_State = 4
 	Dolos_DOLOS_NO_POWER_SUPPLIED       Dolos_State = 5
@@ -1518,11 +1518,11 @@ func (x Dolos_State) String() string {
 }
 
 func (Dolos_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[22].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[22].Descriptor()
 }
 
 func (Dolos_State) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[22]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[22]
 }
 
 func (x Dolos_State) Number() protoreflect.EnumNumber {
@@ -1531,7 +1531,7 @@ func (x Dolos_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Dolos_State.Descriptor instead.
 func (Dolos_State) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{29, 1}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{29, 1}
 }
 
 // State describes the state of device.
@@ -1574,11 +1574,11 @@ func (x AudioLatencyToolkit_State) String() string {
 }
 
 func (AudioLatencyToolkit_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[23].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[23].Descriptor()
 }
 
 func (AudioLatencyToolkit_State) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[23]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[23]
 }
 
 func (x AudioLatencyToolkit_State) Number() protoreflect.EnumNumber {
@@ -1587,7 +1587,7 @@ func (x AudioLatencyToolkit_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AudioLatencyToolkit_State.Descriptor instead.
 func (AudioLatencyToolkit_State) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{30, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{30, 0}
 }
 
 // State describes the state of AMT on the device.
@@ -1630,11 +1630,11 @@ func (x AMTManager_State) String() string {
 }
 
 func (AMTManager_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[24].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[24].Descriptor()
 }
 
 func (AMTManager_State) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[24]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[24]
 }
 
 func (x AMTManager_State) Number() protoreflect.EnumNumber {
@@ -1643,7 +1643,7 @@ func (x AMTManager_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AMTManager_State.Descriptor instead.
 func (AMTManager_State) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{33, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{33, 0}
 }
 
 // PowerSupplyType describes different power supply types for a DUT.
@@ -1684,11 +1684,11 @@ func (x ChromeOS_PowerSupplyType) String() string {
 }
 
 func (ChromeOS_PowerSupplyType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[25].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[25].Descriptor()
 }
 
 func (ChromeOS_PowerSupplyType) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[25]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[25]
 }
 
 func (x ChromeOS_PowerSupplyType) Number() protoreflect.EnumNumber {
@@ -1697,7 +1697,7 @@ func (x ChromeOS_PowerSupplyType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ChromeOS_PowerSupplyType.Descriptor instead.
 func (ChromeOS_PowerSupplyType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{35, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{35, 0}
 }
 
 // Cr50Phase describes different phases of CR50 firmware used on DUT.
@@ -1735,11 +1735,11 @@ func (x ChromeOS_Cr50Phase) String() string {
 }
 
 func (ChromeOS_Cr50Phase) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[26].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[26].Descriptor()
 }
 
 func (ChromeOS_Cr50Phase) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[26]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[26]
 }
 
 func (x ChromeOS_Cr50Phase) Number() protoreflect.EnumNumber {
@@ -1748,7 +1748,7 @@ func (x ChromeOS_Cr50Phase) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ChromeOS_Cr50Phase.Descriptor instead.
 func (ChromeOS_Cr50Phase) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{35, 1}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{35, 1}
 }
 
 // Cr50KeyEnv describes key env for cr50 RW version.
@@ -1786,11 +1786,11 @@ func (x ChromeOS_Cr50KeyEnv) String() string {
 }
 
 func (ChromeOS_Cr50KeyEnv) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[27].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[27].Descriptor()
 }
 
 func (ChromeOS_Cr50KeyEnv) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[27]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[27]
 }
 
 func (x ChromeOS_Cr50KeyEnv) Number() protoreflect.EnumNumber {
@@ -1799,7 +1799,7 @@ func (x ChromeOS_Cr50KeyEnv) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ChromeOS_Cr50KeyEnv.Descriptor instead.
 func (ChromeOS_Cr50KeyEnv) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{35, 2}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{35, 2}
 }
 
 // PeripheralWifiState describes the state of peripheral wifi testbed.
@@ -1842,11 +1842,11 @@ func (x ChromeOS_PeripheralWifiState) String() string {
 }
 
 func (ChromeOS_PeripheralWifiState) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[28].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[28].Descriptor()
 }
 
 func (ChromeOS_PeripheralWifiState) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[28]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[28]
 }
 
 func (x ChromeOS_PeripheralWifiState) Number() protoreflect.EnumNumber {
@@ -1855,7 +1855,7 @@ func (x ChromeOS_PeripheralWifiState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ChromeOS_PeripheralWifiState.Descriptor instead.
 func (ChromeOS_PeripheralWifiState) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{35, 3}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{35, 3}
 }
 
 // Need to exactly matches VersionInfo_OsType in UFS dut_state.
@@ -1892,11 +1892,11 @@ func (x VersionInfo_OsType) String() string {
 }
 
 func (VersionInfo_OsType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_tlw_models_proto_enumTypes[29].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[29].Descriptor()
 }
 
 func (VersionInfo_OsType) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_tlw_models_proto_enumTypes[29]
+	return &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes[29]
 }
 
 func (x VersionInfo_OsType) Number() protoreflect.EnumNumber {
@@ -1905,7 +1905,7 @@ func (x VersionInfo_OsType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use VersionInfo_OsType.Descriptor instead.
 func (VersionInfo_OsType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{42, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{42, 0}
 }
 
 // RunRequest represents result of executed command.
@@ -1929,7 +1929,7 @@ type RunRequest struct {
 
 func (x *RunRequest) Reset() {
 	*x = RunRequest{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1941,7 +1941,7 @@ func (x *RunRequest) String() string {
 func (*RunRequest) ProtoMessage() {}
 
 func (x *RunRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1954,7 +1954,7 @@ func (x *RunRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunRequest.ProtoReflect.Descriptor instead.
 func (*RunRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *RunRequest) GetResource() string {
@@ -2020,7 +2020,7 @@ type RunResult struct {
 
 func (x *RunResult) Reset() {
 	*x = RunResult{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2032,7 +2032,7 @@ func (x *RunResult) String() string {
 func (*RunResult) ProtoMessage() {}
 
 func (x *RunResult) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2045,7 +2045,7 @@ func (x *RunResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunResult.ProtoReflect.Descriptor instead.
 func (*RunResult) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *RunResult) GetCommand() string {
@@ -2093,7 +2093,7 @@ type ProvisionRequest struct {
 
 func (x *ProvisionRequest) Reset() {
 	*x = ProvisionRequest{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2105,7 +2105,7 @@ func (x *ProvisionRequest) String() string {
 func (*ProvisionRequest) ProtoMessage() {}
 
 func (x *ProvisionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2118,7 +2118,7 @@ func (x *ProvisionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProvisionRequest.ProtoReflect.Descriptor instead.
 func (*ProvisionRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ProvisionRequest) GetResource() string {
@@ -2157,7 +2157,7 @@ type CallBluetoothPeerRequest struct {
 
 func (x *CallBluetoothPeerRequest) Reset() {
 	*x = CallBluetoothPeerRequest{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2169,7 +2169,7 @@ func (x *CallBluetoothPeerRequest) String() string {
 func (*CallBluetoothPeerRequest) ProtoMessage() {}
 
 func (x *CallBluetoothPeerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2182,7 +2182,7 @@ func (x *CallBluetoothPeerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CallBluetoothPeerRequest.ProtoReflect.Descriptor instead.
 func (*CallBluetoothPeerRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CallBluetoothPeerRequest) GetResource() string {
@@ -2218,7 +2218,7 @@ type CallBluetoothPeerResponse struct {
 
 func (x *CallBluetoothPeerResponse) Reset() {
 	*x = CallBluetoothPeerResponse{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2230,7 +2230,7 @@ func (x *CallBluetoothPeerResponse) String() string {
 func (*CallBluetoothPeerResponse) ProtoMessage() {}
 
 func (x *CallBluetoothPeerResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2243,7 +2243,7 @@ func (x *CallBluetoothPeerResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CallBluetoothPeerResponse.ProtoReflect.Descriptor instead.
 func (*CallBluetoothPeerResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CallBluetoothPeerResponse) GetValue() *xmlrpc.Value {
@@ -2277,7 +2277,7 @@ type CallTouchHostdRequest struct {
 
 func (x *CallTouchHostdRequest) Reset() {
 	*x = CallTouchHostdRequest{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2289,7 +2289,7 @@ func (x *CallTouchHostdRequest) String() string {
 func (*CallTouchHostdRequest) ProtoMessage() {}
 
 func (x *CallTouchHostdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2302,7 +2302,7 @@ func (x *CallTouchHostdRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CallTouchHostdRequest.ProtoReflect.Descriptor instead.
 func (*CallTouchHostdRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CallTouchHostdRequest) GetResource() string {
@@ -2345,7 +2345,7 @@ type CallTouchHostdResponse struct {
 
 func (x *CallTouchHostdResponse) Reset() {
 	*x = CallTouchHostdResponse{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2357,7 +2357,7 @@ func (x *CallTouchHostdResponse) String() string {
 func (*CallTouchHostdResponse) ProtoMessage() {}
 
 func (x *CallTouchHostdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2370,7 +2370,7 @@ func (x *CallTouchHostdResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CallTouchHostdResponse.ProtoReflect.Descriptor instead.
 func (*CallTouchHostdResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CallTouchHostdResponse) GetValue() *xmlrpc.Value {
@@ -2406,7 +2406,7 @@ type RunRPMActionRequest struct {
 
 func (x *RunRPMActionRequest) Reset() {
 	*x = RunRPMActionRequest{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2418,7 +2418,7 @@ func (x *RunRPMActionRequest) String() string {
 func (*RunRPMActionRequest) ProtoMessage() {}
 
 func (x *RunRPMActionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2431,7 +2431,7 @@ func (x *RunRPMActionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RunRPMActionRequest.ProtoReflect.Descriptor instead.
 func (*RunRPMActionRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *RunRPMActionRequest) GetHostname() string {
@@ -2487,7 +2487,7 @@ type RPMOutlet struct {
 
 func (x *RPMOutlet) Reset() {
 	*x = RPMOutlet{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2499,7 +2499,7 @@ func (x *RPMOutlet) String() string {
 func (*RPMOutlet) ProtoMessage() {}
 
 func (x *RPMOutlet) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2512,7 +2512,7 @@ func (x *RPMOutlet) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RPMOutlet.ProtoReflect.Descriptor instead.
 func (*RPMOutlet) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *RPMOutlet) GetHostname() string {
@@ -2554,7 +2554,7 @@ type WifiRouterHost struct {
 	Model string `protobuf:"bytes,3,opt,name=model,proto3" json:"model,omitempty"`
 	// The board of the router. Deprecated as it is not used by anything anymore.
 	//
-	// Deprecated: Marked as deprecated in infra/cros/recovery/tlw/models.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/cros/recovery/tlw/models.proto.
 	Board string `protobuf:"bytes,4,opt,name=board,proto3" json:"board,omitempty"`
 	// RPMOutlet the router power connects to if it exists.
 	RPMOutlet *RPMOutlet `protobuf:"bytes,5,opt,name=RPMOutlet,proto3" json:"RPMOutlet,omitempty"`
@@ -2568,7 +2568,7 @@ type WifiRouterHost struct {
 
 func (x *WifiRouterHost) Reset() {
 	*x = WifiRouterHost{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2580,7 +2580,7 @@ func (x *WifiRouterHost) String() string {
 func (*WifiRouterHost) ProtoMessage() {}
 
 func (x *WifiRouterHost) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2593,7 +2593,7 @@ func (x *WifiRouterHost) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WifiRouterHost.ProtoReflect.Descriptor instead.
 func (*WifiRouterHost) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *WifiRouterHost) GetName() string {
@@ -2617,7 +2617,7 @@ func (x *WifiRouterHost) GetModel() string {
 	return ""
 }
 
-// Deprecated: Marked as deprecated in infra/cros/recovery/tlw/models.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/cros/recovery/tlw/models.proto.
 func (x *WifiRouterHost) GetBoard() string {
 	if x != nil {
 		return x.Board
@@ -2655,7 +2655,7 @@ type AsusWrtRouterControllerState struct {
 
 func (x *AsusWrtRouterControllerState) Reset() {
 	*x = AsusWrtRouterControllerState{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2667,7 +2667,7 @@ func (x *AsusWrtRouterControllerState) String() string {
 func (*AsusWrtRouterControllerState) ProtoMessage() {}
 
 func (x *AsusWrtRouterControllerState) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2680,7 +2680,7 @@ func (x *AsusWrtRouterControllerState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AsusWrtRouterControllerState.ProtoReflect.Descriptor instead.
 func (*AsusWrtRouterControllerState) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *AsusWrtRouterControllerState) GetAsusModel() string {
@@ -2701,7 +2701,7 @@ type OpenWrtRouterControllerState struct {
 
 func (x *OpenWrtRouterControllerState) Reset() {
 	*x = OpenWrtRouterControllerState{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2713,7 +2713,7 @@ func (x *OpenWrtRouterControllerState) String() string {
 func (*OpenWrtRouterControllerState) ProtoMessage() {}
 
 func (x *OpenWrtRouterControllerState) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2726,7 +2726,7 @@ func (x *OpenWrtRouterControllerState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpenWrtRouterControllerState.ProtoReflect.Descriptor instead.
 func (*OpenWrtRouterControllerState) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{11}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *OpenWrtRouterControllerState) GetDeviceBuildInfo() *api.CrosOpenWrtImageBuildInfo {
@@ -2765,7 +2765,7 @@ type UbuntuRouterControllerState struct {
 
 func (x *UbuntuRouterControllerState) Reset() {
 	*x = UbuntuRouterControllerState{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2777,7 +2777,7 @@ func (x *UbuntuRouterControllerState) String() string {
 func (*UbuntuRouterControllerState) ProtoMessage() {}
 
 func (x *UbuntuRouterControllerState) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2790,7 +2790,7 @@ func (x *UbuntuRouterControllerState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UbuntuRouterControllerState.ProtoReflect.Descriptor instead.
 func (*UbuntuRouterControllerState) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{12}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *UbuntuRouterControllerState) GetSystemProductName() string {
@@ -2824,7 +2824,7 @@ type BluetoothPeerScopeState struct {
 
 func (x *BluetoothPeerScopeState) Reset() {
 	*x = BluetoothPeerScopeState{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2836,7 +2836,7 @@ func (x *BluetoothPeerScopeState) String() string {
 func (*BluetoothPeerScopeState) ProtoMessage() {}
 
 func (x *BluetoothPeerScopeState) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2849,7 +2849,7 @@ func (x *BluetoothPeerScopeState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BluetoothPeerScopeState.ProtoReflect.Descriptor instead.
 func (*BluetoothPeerScopeState) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{13}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *BluetoothPeerScopeState) GetBtpeer() *BluetoothPeer {
@@ -2893,7 +2893,7 @@ type DUTAudio struct {
 
 func (x *DUTAudio) Reset() {
 	*x = DUTAudio{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2905,7 +2905,7 @@ func (x *DUTAudio) String() string {
 func (*DUTAudio) ProtoMessage() {}
 
 func (x *DUTAudio) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2918,7 +2918,7 @@ func (x *DUTAudio) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DUTAudio.ProtoReflect.Descriptor instead.
 func (*DUTAudio) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{14}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *DUTAudio) GetInBox() bool {
@@ -2971,7 +2971,7 @@ type InitServodRequest struct {
 
 func (x *InitServodRequest) Reset() {
 	*x = InitServodRequest{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2983,7 +2983,7 @@ func (x *InitServodRequest) String() string {
 func (*InitServodRequest) ProtoMessage() {}
 
 func (x *InitServodRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2996,7 +2996,7 @@ func (x *InitServodRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InitServodRequest.ProtoReflect.Descriptor instead.
 func (*InitServodRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{15}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *InitServodRequest) GetResource() string {
@@ -3043,7 +3043,7 @@ type ServodOptions struct {
 
 func (x *ServodOptions) Reset() {
 	*x = ServodOptions{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3055,7 +3055,7 @@ func (x *ServodOptions) String() string {
 func (*ServodOptions) ProtoMessage() {}
 
 func (x *ServodOptions) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3068,7 +3068,7 @@ func (x *ServodOptions) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServodOptions.ProtoReflect.Descriptor instead.
 func (*ServodOptions) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{16}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ServodOptions) GetDutBoard() string {
@@ -3131,7 +3131,7 @@ type ServoTopology struct {
 
 func (x *ServoTopology) Reset() {
 	*x = ServoTopology{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3143,7 +3143,7 @@ func (x *ServoTopology) String() string {
 func (*ServoTopology) ProtoMessage() {}
 
 func (x *ServoTopology) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3156,7 +3156,7 @@ func (x *ServoTopology) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServoTopology.ProtoReflect.Descriptor instead.
 func (*ServoTopology) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{17}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ServoTopology) GetRoot() *ServoTopologyItem {
@@ -3205,7 +3205,7 @@ type ServoTopologyItem struct {
 
 func (x *ServoTopologyItem) Reset() {
 	*x = ServoTopologyItem{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3217,7 +3217,7 @@ func (x *ServoTopologyItem) String() string {
 func (*ServoTopologyItem) ProtoMessage() {}
 
 func (x *ServoTopologyItem) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3230,7 +3230,7 @@ func (x *ServoTopologyItem) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServoTopologyItem.ProtoReflect.Descriptor instead.
 func (*ServoTopologyItem) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{18}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ServoTopologyItem) GetType() string {
@@ -3309,7 +3309,7 @@ type ServoHost struct {
 
 func (x *ServoHost) Reset() {
 	*x = ServoHost{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[19]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3321,7 +3321,7 @@ func (x *ServoHost) String() string {
 func (*ServoHost) ProtoMessage() {}
 
 func (x *ServoHost) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[19]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3334,7 +3334,7 @@ func (x *ServoHost) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServoHost.ProtoReflect.Descriptor instead.
 func (*ServoHost) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{19}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ServoHost) GetName() string {
@@ -3429,7 +3429,7 @@ type ProvisionedInfo struct {
 
 func (x *ProvisionedInfo) Reset() {
 	*x = ProvisionedInfo{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[20]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3441,7 +3441,7 @@ func (x *ProvisionedInfo) String() string {
 func (*ProvisionedInfo) ProtoMessage() {}
 
 func (x *ProvisionedInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[20]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3454,7 +3454,7 @@ func (x *ProvisionedInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProvisionedInfo.ProtoReflect.Descriptor instead.
 func (*ProvisionedInfo) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{20}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ProvisionedInfo) GetCrosVersion() string {
@@ -3484,7 +3484,7 @@ type Storage struct {
 
 func (x *Storage) Reset() {
 	*x = Storage{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[21]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3496,7 +3496,7 @@ func (x *Storage) String() string {
 func (*Storage) ProtoMessage() {}
 
 func (x *Storage) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[21]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3509,7 +3509,7 @@ func (x *Storage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Storage.ProtoReflect.Descriptor instead.
 func (*Storage) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{21}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *Storage) GetState() HardwareState {
@@ -3543,7 +3543,7 @@ type Chameleon struct {
 
 func (x *Chameleon) Reset() {
 	*x = Chameleon{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[22]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3555,7 +3555,7 @@ func (x *Chameleon) String() string {
 func (*Chameleon) ProtoMessage() {}
 
 func (x *Chameleon) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[22]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3568,7 +3568,7 @@ func (x *Chameleon) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Chameleon.ProtoReflect.Descriptor instead.
 func (*Chameleon) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{22}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *Chameleon) GetName() string {
@@ -3613,7 +3613,7 @@ type BluetoothPeer struct {
 
 func (x *BluetoothPeer) Reset() {
 	*x = BluetoothPeer{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[23]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3625,7 +3625,7 @@ func (x *BluetoothPeer) String() string {
 func (*BluetoothPeer) ProtoMessage() {}
 
 func (x *BluetoothPeer) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[23]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3638,7 +3638,7 @@ func (x *BluetoothPeer) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BluetoothPeer.ProtoReflect.Descriptor instead.
 func (*BluetoothPeer) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{23}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *BluetoothPeer) GetName() string {
@@ -3668,7 +3668,7 @@ type Wifi struct {
 
 func (x *Wifi) Reset() {
 	*x = Wifi{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[24]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3680,7 +3680,7 @@ func (x *Wifi) String() string {
 func (*Wifi) ProtoMessage() {}
 
 func (x *Wifi) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[24]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3693,7 +3693,7 @@ func (x *Wifi) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Wifi.ProtoReflect.Descriptor instead.
 func (*Wifi) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{24}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *Wifi) GetState() HardwareState {
@@ -3723,7 +3723,7 @@ type Bluetooth struct {
 
 func (x *Bluetooth) Reset() {
 	*x = Bluetooth{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[25]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3735,7 +3735,7 @@ func (x *Bluetooth) String() string {
 func (*Bluetooth) ProtoMessage() {}
 
 func (x *Bluetooth) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[25]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3748,7 +3748,7 @@ func (x *Bluetooth) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Bluetooth.ProtoReflect.Descriptor instead.
 func (*Bluetooth) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{25}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *Bluetooth) GetState() HardwareState {
@@ -3788,7 +3788,7 @@ type Cellular struct {
 
 func (x *Cellular) Reset() {
 	*x = Cellular{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[26]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3800,7 +3800,7 @@ func (x *Cellular) String() string {
 func (*Cellular) ProtoMessage() {}
 
 func (x *Cellular) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[26]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3813,7 +3813,7 @@ func (x *Cellular) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Cellular.ProtoReflect.Descriptor instead.
 func (*Cellular) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *Cellular) GetModemState() HardwareState {
@@ -3876,7 +3876,7 @@ type Battery struct {
 
 func (x *Battery) Reset() {
 	*x = Battery{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[27]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3888,7 +3888,7 @@ func (x *Battery) String() string {
 func (*Battery) ProtoMessage() {}
 
 func (x *Battery) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[27]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3901,7 +3901,7 @@ func (x *Battery) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Battery.ProtoReflect.Descriptor instead.
 func (*Battery) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{27}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *Battery) GetState() HardwareState {
@@ -3926,7 +3926,7 @@ type HumanMotionRobot struct {
 
 func (x *HumanMotionRobot) Reset() {
 	*x = HumanMotionRobot{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[28]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3938,7 +3938,7 @@ func (x *HumanMotionRobot) String() string {
 func (*HumanMotionRobot) ProtoMessage() {}
 
 func (x *HumanMotionRobot) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[28]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3951,7 +3951,7 @@ func (x *HumanMotionRobot) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HumanMotionRobot.ProtoReflect.Descriptor instead.
 func (*HumanMotionRobot) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{28}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *HumanMotionRobot) GetName() string {
@@ -3998,7 +3998,7 @@ type Dolos struct {
 
 func (x *Dolos) Reset() {
 	*x = Dolos{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[29]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4010,7 +4010,7 @@ func (x *Dolos) String() string {
 func (*Dolos) ProtoMessage() {}
 
 func (x *Dolos) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[29]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4023,7 +4023,7 @@ func (x *Dolos) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Dolos.ProtoReflect.Descriptor instead.
 func (*Dolos) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{29}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *Dolos) GetSerialCable() string {
@@ -4088,7 +4088,7 @@ type AudioLatencyToolkit struct {
 
 func (x *AudioLatencyToolkit) Reset() {
 	*x = AudioLatencyToolkit{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[30]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4100,7 +4100,7 @@ func (x *AudioLatencyToolkit) String() string {
 func (*AudioLatencyToolkit) ProtoMessage() {}
 
 func (x *AudioLatencyToolkit) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[30]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4113,7 +4113,7 @@ func (x *AudioLatencyToolkit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AudioLatencyToolkit.ProtoReflect.Descriptor instead.
 func (*AudioLatencyToolkit) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{30}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *AudioLatencyToolkit) GetVersion() string {
@@ -4146,7 +4146,7 @@ type FirmwareInfo struct {
 
 func (x *FirmwareInfo) Reset() {
 	*x = FirmwareInfo{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[31]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4158,7 +4158,7 @@ func (x *FirmwareInfo) String() string {
 func (*FirmwareInfo) ProtoMessage() {}
 
 func (x *FirmwareInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[31]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4171,7 +4171,7 @@ func (x *FirmwareInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FirmwareInfo.ProtoReflect.Descriptor instead.
 func (*FirmwareInfo) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{31}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *FirmwareInfo) GetEcTarget() string {
@@ -4203,7 +4203,7 @@ type Fingerprint struct {
 
 func (x *Fingerprint) Reset() {
 	*x = Fingerprint{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[32]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4215,7 +4215,7 @@ func (x *Fingerprint) String() string {
 func (*Fingerprint) ProtoMessage() {}
 
 func (x *Fingerprint) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[32]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4228,7 +4228,7 @@ func (x *Fingerprint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Fingerprint.ProtoReflect.Descriptor instead.
 func (*Fingerprint) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{32}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *Fingerprint) GetBoard() string {
@@ -4266,7 +4266,7 @@ type AMTManager struct {
 
 func (x *AMTManager) Reset() {
 	*x = AMTManager{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[33]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4278,7 +4278,7 @@ func (x *AMTManager) String() string {
 func (*AMTManager) ProtoMessage() {}
 
 func (x *AMTManager) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[33]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4291,7 +4291,7 @@ func (x *AMTManager) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AMTManager.ProtoReflect.Descriptor instead.
 func (*AMTManager) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{33}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *AMTManager) GetHostname() string {
@@ -4326,7 +4326,7 @@ type Camera struct {
 
 func (x *Camera) Reset() {
 	*x = Camera{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[34]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4338,7 +4338,7 @@ func (x *Camera) String() string {
 func (*Camera) ProtoMessage() {}
 
 func (x *Camera) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[34]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4351,7 +4351,7 @@ func (x *Camera) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Camera.ProtoReflect.Descriptor instead.
 func (*Camera) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{34}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *Camera) GetState() HardwareState {
@@ -4454,7 +4454,7 @@ type ChromeOS struct {
 
 func (x *ChromeOS) Reset() {
 	*x = ChromeOS{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[35]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4466,7 +4466,7 @@ func (x *ChromeOS) String() string {
 func (*ChromeOS) ProtoMessage() {}
 
 func (x *ChromeOS) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[35]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4479,7 +4479,7 @@ func (x *ChromeOS) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromeOS.ProtoReflect.Descriptor instead.
 func (*ChromeOS) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{35}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *ChromeOS) GetIsAndroidBased() bool {
@@ -4752,7 +4752,7 @@ type TestbedCapability struct {
 
 func (x *TestbedCapability) Reset() {
 	*x = TestbedCapability{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[36]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4764,7 +4764,7 @@ func (x *TestbedCapability) String() string {
 func (*TestbedCapability) ProtoMessage() {}
 
 func (x *TestbedCapability) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[36]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4777,7 +4777,7 @@ func (x *TestbedCapability) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestbedCapability.ProtoReflect.Descriptor instead.
 func (*TestbedCapability) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{36}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *TestbedCapability) GetAudiojack() bool {
@@ -4825,7 +4825,7 @@ type Android struct {
 
 func (x *Android) Reset() {
 	*x = Android{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[37]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4837,7 +4837,7 @@ func (x *Android) String() string {
 func (*Android) ProtoMessage() {}
 
 func (x *Android) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[37]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4850,7 +4850,7 @@ func (x *Android) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Android.ProtoReflect.Descriptor instead.
 func (*Android) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{37}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *Android) GetBoard() string {
@@ -4899,7 +4899,7 @@ type DevBoard struct {
 
 func (x *DevBoard) Reset() {
 	*x = DevBoard{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[38]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4911,7 +4911,7 @@ func (x *DevBoard) String() string {
 func (*DevBoard) ProtoMessage() {}
 
 func (x *DevBoard) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[38]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4924,7 +4924,7 @@ func (x *DevBoard) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DevBoard.ProtoReflect.Descriptor instead.
 func (*DevBoard) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{38}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *DevBoard) GetBoard() string {
@@ -4970,7 +4970,7 @@ type CopyRequest struct {
 
 func (x *CopyRequest) Reset() {
 	*x = CopyRequest{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[39]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4982,7 +4982,7 @@ func (x *CopyRequest) String() string {
 func (*CopyRequest) ProtoMessage() {}
 
 func (x *CopyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[39]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4995,7 +4995,7 @@ func (x *CopyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CopyRequest.ProtoReflect.Descriptor instead.
 func (*CopyRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{39}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *CopyRequest) GetResource() string {
@@ -5032,7 +5032,7 @@ type CallServodRequest struct {
 
 func (x *CallServodRequest) Reset() {
 	*x = CallServodRequest{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[40]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5044,7 +5044,7 @@ func (x *CallServodRequest) String() string {
 func (*CallServodRequest) ProtoMessage() {}
 
 func (x *CallServodRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[40]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5057,7 +5057,7 @@ func (x *CallServodRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CallServodRequest.ProtoReflect.Descriptor instead.
 func (*CallServodRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{40}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *CallServodRequest) GetResource() string {
@@ -5099,7 +5099,7 @@ type CallServodResponse struct {
 
 func (x *CallServodResponse) Reset() {
 	*x = CallServodResponse{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[41]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5111,7 +5111,7 @@ func (x *CallServodResponse) String() string {
 func (*CallServodResponse) ProtoMessage() {}
 
 func (x *CallServodResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[41]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5124,7 +5124,7 @@ func (x *CallServodResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CallServodResponse.ProtoReflect.Descriptor instead.
 func (*CallServodResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{41}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *CallServodResponse) GetValue() *xmlrpc.Value {
@@ -5155,7 +5155,7 @@ type VersionInfo struct {
 
 func (x *VersionInfo) Reset() {
 	*x = VersionInfo{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[42]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5167,7 +5167,7 @@ func (x *VersionInfo) String() string {
 func (*VersionInfo) ProtoMessage() {}
 
 func (x *VersionInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[42]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5180,7 +5180,7 @@ func (x *VersionInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VersionInfo.ProtoReflect.Descriptor instead.
 func (*VersionInfo) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{42}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *VersionInfo) GetOs() string {
@@ -5229,7 +5229,7 @@ type BluetoothPeerScopeState_Chameleond struct {
 
 func (x *BluetoothPeerScopeState_Chameleond) Reset() {
 	*x = BluetoothPeerScopeState_Chameleond{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[43]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5241,7 +5241,7 @@ func (x *BluetoothPeerScopeState_Chameleond) String() string {
 func (*BluetoothPeerScopeState_Chameleond) ProtoMessage() {}
 
 func (x *BluetoothPeerScopeState_Chameleond) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[43]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5254,7 +5254,7 @@ func (x *BluetoothPeerScopeState_Chameleond) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use BluetoothPeerScopeState_Chameleond.ProtoReflect.Descriptor instead.
 func (*BluetoothPeerScopeState_Chameleond) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{13, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{13, 0}
 }
 
 func (x *BluetoothPeerScopeState_Chameleond) GetInstalledCommit() string {
@@ -5297,7 +5297,7 @@ type BluetoothPeerScopeState_RaspiosCrosBtpeerImage struct {
 
 func (x *BluetoothPeerScopeState_RaspiosCrosBtpeerImage) Reset() {
 	*x = BluetoothPeerScopeState_RaspiosCrosBtpeerImage{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[44]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5309,7 +5309,7 @@ func (x *BluetoothPeerScopeState_RaspiosCrosBtpeerImage) String() string {
 func (*BluetoothPeerScopeState_RaspiosCrosBtpeerImage) ProtoMessage() {}
 
 func (x *BluetoothPeerScopeState_RaspiosCrosBtpeerImage) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[44]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5322,7 +5322,7 @@ func (x *BluetoothPeerScopeState_RaspiosCrosBtpeerImage) ProtoReflect() protoref
 
 // Deprecated: Use BluetoothPeerScopeState_RaspiosCrosBtpeerImage.ProtoReflect.Descriptor instead.
 func (*BluetoothPeerScopeState_RaspiosCrosBtpeerImage) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{13, 1}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{13, 1}
 }
 
 func (x *BluetoothPeerScopeState_RaspiosCrosBtpeerImage) GetInstalledImageUuid() string {
@@ -5357,7 +5357,7 @@ type Cellular_ModemInfo struct {
 
 func (x *Cellular_ModemInfo) Reset() {
 	*x = Cellular_ModemInfo{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[45]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5369,7 +5369,7 @@ func (x *Cellular_ModemInfo) String() string {
 func (*Cellular_ModemInfo) ProtoMessage() {}
 
 func (x *Cellular_ModemInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[45]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5382,7 +5382,7 @@ func (x *Cellular_ModemInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Cellular_ModemInfo.ProtoReflect.Descriptor instead.
 func (*Cellular_ModemInfo) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 0}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 0}
 }
 
 func (x *Cellular_ModemInfo) GetType() Cellular_ModemType {
@@ -5426,7 +5426,7 @@ type Cellular_SIMProfileInfo struct {
 
 func (x *Cellular_SIMProfileInfo) Reset() {
 	*x = Cellular_SIMProfileInfo{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[46]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5438,7 +5438,7 @@ func (x *Cellular_SIMProfileInfo) String() string {
 func (*Cellular_SIMProfileInfo) ProtoMessage() {}
 
 func (x *Cellular_SIMProfileInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[46]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5451,7 +5451,7 @@ func (x *Cellular_SIMProfileInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Cellular_SIMProfileInfo.ProtoReflect.Descriptor instead.
 func (*Cellular_SIMProfileInfo) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 1}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 1}
 }
 
 func (x *Cellular_SIMProfileInfo) GetIccid() string {
@@ -5535,7 +5535,7 @@ type Cellular_SIMInfo struct {
 
 func (x *Cellular_SIMInfo) Reset() {
 	*x = Cellular_SIMInfo{}
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[47]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5547,7 +5547,7 @@ func (x *Cellular_SIMInfo) String() string {
 func (*Cellular_SIMInfo) ProtoMessage() {}
 
 func (x *Cellular_SIMInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_tlw_models_proto_msgTypes[47]
+	mi := &file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5560,7 +5560,7 @@ func (x *Cellular_SIMInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Cellular_SIMInfo.ProtoReflect.Descriptor instead.
 func (*Cellular_SIMInfo) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 2}
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP(), []int{26, 2}
 }
 
 func (x *Cellular_SIMInfo) GetSlotId() int32 {
@@ -5598,10 +5598,11 @@ func (x *Cellular_SIMInfo) GetProfileInfos() []*Cellular_SIMProfileInfo {
 	return nil
 }
 
-var File_infra_cros_recovery_tlw_models_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_cros_recovery_tlw_models_proto protoreflect.FileDescriptor
 
-var file_infra_cros_recovery_tlw_models_proto_rawDesc = string([]byte{
-	0x0a, 0x24, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65, 0x63,
+var file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDesc = string([]byte{
+	0x0a, 0x34, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65, 0x63,
 	0x6f, 0x76, 0x65, 0x72, 0x79, 0x2f, 0x74, 0x6c, 0x77, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x11, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73,
 	0x2e, 0x72, 0x65, 0x63, 0x6f, 0x76, 0x65, 0x72, 0x79, 0x1a, 0x1e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
@@ -6556,27 +6557,28 @@ var file_infra_cros_recovery_tlw_models_proto_rawDesc = string([]byte{
 	0x42, 0x52, 0x4f, 0x57, 0x53, 0x45, 0x52, 0x10, 0x04, 0x12, 0x0b, 0x0a, 0x07, 0x41, 0x4e, 0x44,
 	0x52, 0x4f, 0x49, 0x44, 0x10, 0x05, 0x12, 0x07, 0x0a, 0x03, 0x49, 0x4f, 0x53, 0x10, 0x06, 0x12,
 	0x0a, 0x0a, 0x06, 0x43, 0x52, 0x4f, 0x53, 0x56, 0x4d, 0x10, 0x07, 0x12, 0x0d, 0x0a, 0x09, 0x44,
-	0x45, 0x56, 0x5f, 0x42, 0x4f, 0x41, 0x52, 0x44, 0x10, 0x08, 0x42, 0x1d, 0x5a, 0x1b, 0x69, 0x6e,
+	0x45, 0x56, 0x5f, 0x42, 0x4f, 0x41, 0x52, 0x44, 0x10, 0x08, 0x42, 0x2d, 0x5a, 0x2b, 0x67, 0x6f,
+	0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e,
 	0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65, 0x63, 0x6f, 0x76, 0x65, 0x72,
 	0x79, 0x2f, 0x74, 0x6c, 0x77, 0x3b, 0x74, 0x6c, 0x77, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x33,
 })
 
 var (
-	file_infra_cros_recovery_tlw_models_proto_rawDescOnce sync.Once
-	file_infra_cros_recovery_tlw_models_proto_rawDescData []byte
+	file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescData []byte
 )
 
-func file_infra_cros_recovery_tlw_models_proto_rawDescGZIP() []byte {
-	file_infra_cros_recovery_tlw_models_proto_rawDescOnce.Do(func() {
-		file_infra_cros_recovery_tlw_models_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_cros_recovery_tlw_models_proto_rawDesc), len(file_infra_cros_recovery_tlw_models_proto_rawDesc)))
+func file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDesc), len(file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDesc)))
 	})
-	return file_infra_cros_recovery_tlw_models_proto_rawDescData
+	return file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDescData
 }
 
-var file_infra_cros_recovery_tlw_models_proto_enumTypes = make([]protoimpl.EnumInfo, 30)
-var file_infra_cros_recovery_tlw_models_proto_msgTypes = make([]protoimpl.MessageInfo, 49)
-var file_infra_cros_recovery_tlw_models_proto_goTypes = []any{
+var file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes = make([]protoimpl.EnumInfo, 30)
+var file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes = make([]protoimpl.MessageInfo, 49)
+var file_go_chromium_org_infra_cros_recovery_tlw_models_proto_goTypes = []any{
 	(RPMType)(0),                                           // 0: chromeos.recovery.RPMType
 	(HardwareState)(0),                                     // 1: chromeos.recovery.HardwareState
 	(ServoFwChannel)(0),                                    // 2: chromeos.recovery.ServoFwChannel
@@ -6669,7 +6671,7 @@ var file_infra_cros_recovery_tlw_models_proto_goTypes = []any{
 	(*api.RaspiosCrosBtpeerImageConfig)(nil),                   // 89: chromiumos.test.lab.api.RaspiosCrosBtpeerImageConfig
 	(*api.RaspiosCrosBtpeerImageConfig_OSImage)(nil),           // 90: chromiumos.test.lab.api.RaspiosCrosBtpeerImageConfig.OSImage
 }
-var file_infra_cros_recovery_tlw_models_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_cros_recovery_tlw_models_proto_depIdxs = []int32{
 	79, // 0: chromeos.recovery.RunRequest.timeout:type_name -> google.protobuf.Duration
 	80, // 1: chromeos.recovery.CallBluetoothPeerRequest.args:type_name -> chromiumos.config.api.test.xmlrpc.Value
 	80, // 2: chromeos.recovery.CallBluetoothPeerResponse.value:type_name -> chromiumos.config.api.test.xmlrpc.Value
@@ -6766,27 +6768,27 @@ var file_infra_cros_recovery_tlw_models_proto_depIdxs = []int32{
 	0,  // [0:89] is the sub-list for field type_name
 }
 
-func init() { file_infra_cros_recovery_tlw_models_proto_init() }
-func file_infra_cros_recovery_tlw_models_proto_init() {
-	if File_infra_cros_recovery_tlw_models_proto != nil {
+func init() { file_go_chromium_org_infra_cros_recovery_tlw_models_proto_init() }
+func file_go_chromium_org_infra_cros_recovery_tlw_models_proto_init() {
+	if File_go_chromium_org_infra_cros_recovery_tlw_models_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_cros_recovery_tlw_models_proto_rawDesc), len(file_infra_cros_recovery_tlw_models_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDesc), len(file_go_chromium_org_infra_cros_recovery_tlw_models_proto_rawDesc)),
 			NumEnums:      30,
 			NumMessages:   49,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_cros_recovery_tlw_models_proto_goTypes,
-		DependencyIndexes: file_infra_cros_recovery_tlw_models_proto_depIdxs,
-		EnumInfos:         file_infra_cros_recovery_tlw_models_proto_enumTypes,
-		MessageInfos:      file_infra_cros_recovery_tlw_models_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_cros_recovery_tlw_models_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_cros_recovery_tlw_models_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_cros_recovery_tlw_models_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_cros_recovery_tlw_models_proto_msgTypes,
 	}.Build()
-	File_infra_cros_recovery_tlw_models_proto = out.File
-	file_infra_cros_recovery_tlw_models_proto_goTypes = nil
-	file_infra_cros_recovery_tlw_models_proto_depIdxs = nil
+	File_go_chromium_org_infra_cros_recovery_tlw_models_proto = out.File
+	file_go_chromium_org_infra_cros_recovery_tlw_models_proto_goTypes = nil
+	file_go_chromium_org_infra_cros_recovery_tlw_models_proto_depIdxs = nil
 }

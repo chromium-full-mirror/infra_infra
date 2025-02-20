@@ -9,7 +9,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 )
 
 func TestExecuteMultipleCommandShouldSuccess(t *testing.T) {

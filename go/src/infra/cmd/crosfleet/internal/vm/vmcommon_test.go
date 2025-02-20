@@ -15,8 +15,8 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	croscommon "infra/cros/cmd/common_lib/common"
-	"infra/vm_leaser/client"
+	croscommon "go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/vm_leaser/client"
 )
 
 const (

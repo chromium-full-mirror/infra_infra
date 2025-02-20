@@ -10,7 +10,7 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 // CSVWriter refers to a customized csv writer

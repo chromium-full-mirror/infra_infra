@@ -13,12 +13,12 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/satlab/common/commands"
-	"infra/cros/satlab/common/paths"
-	"infra/cros/satlab/common/site"
-	e "infra/cros/satlab/common/utils/errors"
-	"infra/cros/satlab/common/utils/executor"
-	"infra/cros/satlab/common/utils/misc"
+	"go.chromium.org/infra/cros/satlab/common/commands"
+	"go.chromium.org/infra/cros/satlab/common/paths"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	e "go.chromium.org/infra/cros/satlab/common/utils/errors"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/utils/misc"
 )
 
 // DUT contains all the information necessary to add a DUT.

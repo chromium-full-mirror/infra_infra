@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/unifiedfleet/app/external"
+	"go.chromium.org/infra/unifiedfleet/app/external"
 )
 
 // CreatePubSubTopicClient returns back an instance of a Pub/Sub client for the

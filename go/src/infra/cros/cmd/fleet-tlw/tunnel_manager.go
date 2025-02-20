@@ -10,7 +10,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"infra/libs/sshtunnel"
+	"go.chromium.org/infra/libs/sshtunnel"
 )
 
 // tunnelManager keeps track of SSH tunnels. Any client using tunnelManager must

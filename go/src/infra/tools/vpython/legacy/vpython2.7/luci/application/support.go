@@ -21,7 +21,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	vpython "infra/tools/vpython/legacy/vpython2.7/luci"
+	vpython "go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci"
 )
 
 // returnCodeError is an error wrapping a return code value.

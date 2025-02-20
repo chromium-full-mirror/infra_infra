@@ -8,4 +8,4 @@ import (
 	"go.opentelemetry.io/otel"
 )
 
-var tracer = otel.Tracer("infra/qscheduler/qslib")
+var tracer = otel.Tracer("go.chromium.org/infra/qscheduler/qslib")

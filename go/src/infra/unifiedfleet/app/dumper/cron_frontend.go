@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 
-	api "infra/unifiedfleet/api/v1/cron"
+	api "go.chromium.org/infra/unifiedfleet/api/v1/cron"
 )
 
 // InstallCronServices installs ...

@@ -13,8 +13,8 @@ import (
 	"go.chromium.org/luci/config/server/cfgcache"
 	"go.chromium.org/luci/server/router"
 
-	"infra/libs/skylab/common/heuristics"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // unique type to prevent assignment.

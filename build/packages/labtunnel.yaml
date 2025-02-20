@@ -3,7 +3,7 @@ description: Utility provides a CLI for commonly performed tunneling related com
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cmd/labtunnel
+  - go.chromium.org/infra/cmd/labtunnel
 root: ../../go/bin
 data:
   - file: labtunnel${exe_suffix}

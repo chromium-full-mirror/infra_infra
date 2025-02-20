@@ -21,10 +21,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/git"
-	"infra/cros/internal/repo"
-	test_util "infra/cros/internal/testutil"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/repo"
+	test_util "go.chromium.org/infra/cros/internal/testutil"
 )
 
 var (

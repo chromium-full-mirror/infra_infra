@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 
-	"infra/chromium/bootstrapper/clients/gob"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gob"
 )
 
 // Client provides the gitiles-oriented operations required for bootstrapping.
@@ -40,7 +40,7 @@ var _ GitilesClient = (gitilespb.GitilesClient)(nil)
 // instance.
 type GitilesClientFactory func(ctx context.Context, host string) (GitilesClient, error)
 
-var ctxKey = "infra/chromium/bootstrapper/clients/gitiles.GitilesClientFactory"
+var ctxKey = "go.chromium.org/infra/chromium/bootstrapper/clients/gitiles.GitilesClientFactory"
 
 // UseGitilesClientFactory returns a context that causes new Client instances to
 // use the given factory when getting gitiles clients.

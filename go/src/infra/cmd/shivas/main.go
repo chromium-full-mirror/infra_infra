@@ -11,7 +11,7 @@ import (
 
 	"github.com/maruel/subcommands"
 
-	"infra/cmd/shivas/clilib"
+	"go.chromium.org/infra/cmd/shivas/clilib"
 )
 
 func main() {

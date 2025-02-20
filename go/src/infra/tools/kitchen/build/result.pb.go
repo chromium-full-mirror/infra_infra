@@ -2,15 +2,15 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/tools/kitchen/build/result.proto
+// source: go.chromium.org/infra/tools/kitchen/build/result.proto
 
 package build
 
 import (
+	recipe_engine "go.chromium.org/infra/tools/kitchen/third_party/recipe_engine"
 	proto "go.chromium.org/luci/luciexe/legacy/annotee/proto"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	recipe_engine "infra/tools/kitchen/third_party/recipe_engine"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -63,11 +63,11 @@ func (x InfraFailure_Type) String() string {
 }
 
 func (InfraFailure_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_tools_kitchen_build_result_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_tools_kitchen_build_result_proto_enumTypes[0].Descriptor()
 }
 
 func (InfraFailure_Type) Type() protoreflect.EnumType {
-	return &file_infra_tools_kitchen_build_result_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_tools_kitchen_build_result_proto_enumTypes[0]
 }
 
 func (x InfraFailure_Type) Number() protoreflect.EnumNumber {
@@ -76,7 +76,7 @@ func (x InfraFailure_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use InfraFailure_Type.Descriptor instead.
 func (InfraFailure_Type) EnumDescriptor() ([]byte, []int) {
-	return file_infra_tools_kitchen_build_result_proto_rawDescGZIP(), []int{2, 0}
+	return file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDescGZIP(), []int{2, 0}
 }
 
 // Result of a build run from the perspective of a build bootstrapper.
@@ -102,7 +102,7 @@ type BuildRunResult struct {
 
 func (x *BuildRunResult) Reset() {
 	*x = BuildRunResult{}
-	mi := &file_infra_tools_kitchen_build_result_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tools_kitchen_build_result_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -114,7 +114,7 @@ func (x *BuildRunResult) String() string {
 func (*BuildRunResult) ProtoMessage() {}
 
 func (x *BuildRunResult) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_kitchen_build_result_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tools_kitchen_build_result_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -127,7 +127,7 @@ func (x *BuildRunResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildRunResult.ProtoReflect.Descriptor instead.
 func (*BuildRunResult) Descriptor() ([]byte, []int) {
-	return file_infra_tools_kitchen_build_result_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *BuildRunResult) GetInfraFailure() *InfraFailure {
@@ -182,7 +182,7 @@ type OptionalInt32 struct {
 
 func (x *OptionalInt32) Reset() {
 	*x = OptionalInt32{}
-	mi := &file_infra_tools_kitchen_build_result_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tools_kitchen_build_result_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -194,7 +194,7 @@ func (x *OptionalInt32) String() string {
 func (*OptionalInt32) ProtoMessage() {}
 
 func (x *OptionalInt32) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_kitchen_build_result_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tools_kitchen_build_result_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -207,7 +207,7 @@ func (x *OptionalInt32) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OptionalInt32.ProtoReflect.Descriptor instead.
 func (*OptionalInt32) Descriptor() ([]byte, []int) {
-	return file_infra_tools_kitchen_build_result_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *OptionalInt32) GetValue() int32 {
@@ -229,7 +229,7 @@ type InfraFailure struct {
 
 func (x *InfraFailure) Reset() {
 	*x = InfraFailure{}
-	mi := &file_infra_tools_kitchen_build_result_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_tools_kitchen_build_result_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -241,7 +241,7 @@ func (x *InfraFailure) String() string {
 func (*InfraFailure) ProtoMessage() {}
 
 func (x *InfraFailure) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_kitchen_build_result_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_tools_kitchen_build_result_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -254,7 +254,7 @@ func (x *InfraFailure) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InfraFailure.ProtoReflect.Descriptor instead.
 func (*InfraFailure) Descriptor() ([]byte, []int) {
-	return file_infra_tools_kitchen_build_result_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *InfraFailure) GetType() InfraFailure_Type {
@@ -295,7 +295,7 @@ type BuildRunResult_Recipe struct {
 
 func (x *BuildRunResult_Recipe) Reset() {
 	*x = BuildRunResult_Recipe{}
-	mi := &file_infra_tools_kitchen_build_result_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_tools_kitchen_build_result_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -307,7 +307,7 @@ func (x *BuildRunResult_Recipe) String() string {
 func (*BuildRunResult_Recipe) ProtoMessage() {}
 
 func (x *BuildRunResult_Recipe) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_kitchen_build_result_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_tools_kitchen_build_result_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -320,7 +320,7 @@ func (x *BuildRunResult_Recipe) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildRunResult_Recipe.ProtoReflect.Descriptor instead.
 func (*BuildRunResult_Recipe) Descriptor() ([]byte, []int) {
-	return file_infra_tools_kitchen_build_result_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDescGZIP(), []int{0, 0}
 }
 
 func (x *BuildRunResult_Recipe) GetName() string {
@@ -344,13 +344,15 @@ func (x *BuildRunResult_Recipe) GetRevision() string {
 	return ""
 }
 
-var File_infra_tools_kitchen_build_result_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_tools_kitchen_build_result_proto protoreflect.FileDescriptor
 
-var file_infra_tools_kitchen_build_result_proto_rawDesc = string([]byte{
-	0x0a, 0x26, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x6b, 0x69,
+var file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDesc = string([]byte{
+	0x0a, 0x36, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x6b, 0x69,
 	0x74, 0x63, 0x68, 0x65, 0x6e, 0x2f, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2f, 0x72, 0x65, 0x73, 0x75,
 	0x6c, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0a, 0x6c, 0x75, 0x63, 0x69, 0x2e, 0x62,
-	0x75, 0x69, 0x6c, 0x64, 0x1a, 0x3a, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c,
+	0x75, 0x69, 0x6c, 0x64, 0x1a, 0x4a, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75,
+	0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c,
 	0x73, 0x2f, 0x6b, 0x69, 0x74, 0x63, 0x68, 0x65, 0x6e, 0x2f, 0x74, 0x68, 0x69, 0x72, 0x64, 0x5f,
 	0x70, 0x61, 0x72, 0x74, 0x79, 0x2f, 0x72, 0x65, 0x63, 0x69, 0x70, 0x65, 0x5f, 0x65, 0x6e, 0x67,
 	0x69, 0x6e, 0x65, 0x2f, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
@@ -403,27 +405,28 @@ var file_infra_tools_kitchen_build_result_proto_rawDesc = string([]byte{
 	0x11, 0x0a, 0x0d, 0x49, 0x4e, 0x56, 0x41, 0x4c, 0x49, 0x44, 0x5f, 0x49, 0x4e, 0x50, 0x55, 0x54,
 	0x10, 0x01, 0x12, 0x0c, 0x0a, 0x08, 0x43, 0x41, 0x4e, 0x43, 0x45, 0x4c, 0x45, 0x44, 0x10, 0x02,
 	0x12, 0x18, 0x0a, 0x14, 0x52, 0x45, 0x43, 0x49, 0x50, 0x45, 0x5f, 0x49, 0x4e, 0x46, 0x52, 0x41,
-	0x5f, 0x46, 0x41, 0x49, 0x4c, 0x55, 0x52, 0x45, 0x10, 0x03, 0x42, 0x21, 0x5a, 0x1f, 0x69, 0x6e,
+	0x5f, 0x46, 0x41, 0x49, 0x4c, 0x55, 0x52, 0x45, 0x10, 0x03, 0x42, 0x31, 0x5a, 0x2f, 0x67, 0x6f,
+	0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e,
 	0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x6b, 0x69, 0x74, 0x63, 0x68, 0x65,
 	0x6e, 0x2f, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x3b, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x62, 0x06, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_tools_kitchen_build_result_proto_rawDescOnce sync.Once
-	file_infra_tools_kitchen_build_result_proto_rawDescData []byte
+	file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDescData []byte
 )
 
-func file_infra_tools_kitchen_build_result_proto_rawDescGZIP() []byte {
-	file_infra_tools_kitchen_build_result_proto_rawDescOnce.Do(func() {
-		file_infra_tools_kitchen_build_result_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_tools_kitchen_build_result_proto_rawDesc), len(file_infra_tools_kitchen_build_result_proto_rawDesc)))
+func file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDesc), len(file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDesc)))
 	})
-	return file_infra_tools_kitchen_build_result_proto_rawDescData
+	return file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDescData
 }
 
-var file_infra_tools_kitchen_build_result_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_infra_tools_kitchen_build_result_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_infra_tools_kitchen_build_result_proto_goTypes = []any{
+var file_go_chromium_org_infra_tools_kitchen_build_result_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_go_chromium_org_infra_tools_kitchen_build_result_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_go_chromium_org_infra_tools_kitchen_build_result_proto_goTypes = []any{
 	(InfraFailure_Type)(0),        // 0: luci.build.InfraFailure.Type
 	(*BuildRunResult)(nil),        // 1: luci.build.BuildRunResult
 	(*OptionalInt32)(nil),         // 2: luci.build.OptionalInt32
@@ -432,7 +435,7 @@ var file_infra_tools_kitchen_build_result_proto_goTypes = []any{
 	(*recipe_engine.Result)(nil),  // 5: recipe_engine.Result
 	(*proto.Step)(nil),            // 6: annotation.Step
 }
-var file_infra_tools_kitchen_build_result_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_tools_kitchen_build_result_proto_depIdxs = []int32{
 	3, // 0: luci.build.BuildRunResult.infra_failure:type_name -> luci.build.InfraFailure
 	2, // 1: luci.build.BuildRunResult.recipe_exit_code:type_name -> luci.build.OptionalInt32
 	5, // 2: luci.build.BuildRunResult.recipe_result:type_name -> recipe_engine.Result
@@ -446,27 +449,27 @@ var file_infra_tools_kitchen_build_result_proto_depIdxs = []int32{
 	0, // [0:6] is the sub-list for field type_name
 }
 
-func init() { file_infra_tools_kitchen_build_result_proto_init() }
-func file_infra_tools_kitchen_build_result_proto_init() {
-	if File_infra_tools_kitchen_build_result_proto != nil {
+func init() { file_go_chromium_org_infra_tools_kitchen_build_result_proto_init() }
+func file_go_chromium_org_infra_tools_kitchen_build_result_proto_init() {
+	if File_go_chromium_org_infra_tools_kitchen_build_result_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_tools_kitchen_build_result_proto_rawDesc), len(file_infra_tools_kitchen_build_result_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDesc), len(file_go_chromium_org_infra_tools_kitchen_build_result_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_tools_kitchen_build_result_proto_goTypes,
-		DependencyIndexes: file_infra_tools_kitchen_build_result_proto_depIdxs,
-		EnumInfos:         file_infra_tools_kitchen_build_result_proto_enumTypes,
-		MessageInfos:      file_infra_tools_kitchen_build_result_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_tools_kitchen_build_result_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_tools_kitchen_build_result_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_tools_kitchen_build_result_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_tools_kitchen_build_result_proto_msgTypes,
 	}.Build()
-	File_infra_tools_kitchen_build_result_proto = out.File
-	file_infra_tools_kitchen_build_result_proto_goTypes = nil
-	file_infra_tools_kitchen_build_result_proto_depIdxs = nil
+	File_go_chromium_org_infra_tools_kitchen_build_result_proto = out.File
+	file_go_chromium_org_infra_tools_kitchen_build_result_proto_goTypes = nil
+	file_go_chromium_org_infra_tools_kitchen_build_result_proto_depIdxs = nil
 }

@@ -14,7 +14,7 @@ import (
 	"golang.org/x/sys/unix"
 	"google.golang.org/grpc"
 
-	"infra/cros/cmd/labservice/internal/log"
+	"go.chromium.org/infra/cros/cmd/labservice/internal/log"
 )
 
 var handledSignals = []os.Signal{unix.SIGINT, unix.SIGHUP, unix.SIGTERM, unix.SIGQUIT}

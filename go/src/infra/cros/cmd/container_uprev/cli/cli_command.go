@@ -12,7 +12,7 @@ import (
 	"os"
 	"strings"
 
-	"infra/cros/cmd/container_uprev/executions"
+	"go.chromium.org/infra/cros/cmd/container_uprev/executions"
 )
 
 // CLICommand runs  in CLI mode. This will only be used for local debugging, not deployment.

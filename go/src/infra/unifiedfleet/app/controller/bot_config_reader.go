@@ -25,13 +25,13 @@ import (
 	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/libs/git"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	api "infra/unifiedfleet/api/v1/rpc"
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/external"
-	"infra/unifiedfleet/app/model/inventory"
-	"infra/unifiedfleet/app/model/registration"
+	"go.chromium.org/infra/libs/git"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	api "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/external"
+	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	"go.chromium.org/infra/unifiedfleet/app/model/registration"
 )
 
 const (

@@ -9,7 +9,7 @@ import (
 	"context"
 	"fmt"
 
-	"infra/cros/servo/logging"
+	"go.chromium.org/infra/cros/servo/logging"
 )
 
 // ContextLog formats its arguments using default formatting and logs them via

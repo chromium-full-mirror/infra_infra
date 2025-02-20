@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/grpc/prpc"
 
-	schedulingapi "infra/libs/fleet/scheduling/api"
+	schedulingapi "go.chromium.org/infra/libs/fleet/scheduling/api"
 )
 
 // TestAsMap tests structbuilder-compatibility.

@@ -11,7 +11,7 @@ import (
 	"context"
 	"io"
 
-	"infra/cros/cmd/lucifer/internal/autotest"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/autotest"
 )
 
 func runTask(ctx context.Context, c autotest.Config, a *autotest.AutoservArgs, w io.Writer) (*Result, error) {

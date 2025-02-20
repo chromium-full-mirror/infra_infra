@@ -10,7 +10,7 @@ import (
 	"log"
 	"strings"
 
-	"infra/cros/cmd/cros_test_platformV2/internal"
+	"go.chromium.org/infra/cros/cmd/cros_test_platformV2/internal"
 )
 
 // CLI command runs CTPv2 in CLI mode. This will only be used for local debugging, not deployment.

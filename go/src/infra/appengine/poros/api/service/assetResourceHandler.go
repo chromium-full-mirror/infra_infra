@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
 
-	. "infra/appengine/poros/api/entities"
-	proto "infra/appengine/poros/api/proto"
+	. "go.chromium.org/infra/appengine/poros/api/entities"
+	proto "go.chromium.org/infra/appengine/poros/api/proto"
 )
 
 type AssetResourceHandler struct {

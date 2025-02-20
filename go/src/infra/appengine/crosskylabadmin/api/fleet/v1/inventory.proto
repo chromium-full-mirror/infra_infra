@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package crosskylabadmin.fleet;
 
-option go_package = "infra/appengine/crosskylabadmin/api/fleet/v1;fleet";
+option go_package = "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1;fleet";
 
 import "go.chromium.org/chromiumos/infra/proto/src/lab_platform/stable_version.proto";
 import "google/api/field_behavior.proto";

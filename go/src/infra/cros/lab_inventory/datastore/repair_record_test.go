@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	invlibs "infra/cros/lab_inventory/protos"
+	invlibs "go.chromium.org/infra/cros/lab_inventory/protos"
 )
 
 func mockDeviceManualRepairRecord(hostname string, assetTag string, createdTime int64) *invlibs.DeviceManualRepairRecord {

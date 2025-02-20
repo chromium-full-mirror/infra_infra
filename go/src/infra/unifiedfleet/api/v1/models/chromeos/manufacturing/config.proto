@@ -6,9 +6,9 @@ syntax = "proto3";
 
 package unifiedfleet.api.v1.models.chromeos.manufacturing;
 
-option go_package = "infra/unifiedfleet/api/v1/models/chromeos/manufacturing;ufspb";
+option go_package = "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing;ufspb";
 
-import "infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config_id.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config_id.proto";
 
 // These are the configs that's provided in manufacture stage of a ChromeOS device.
 // Next Tag: 7

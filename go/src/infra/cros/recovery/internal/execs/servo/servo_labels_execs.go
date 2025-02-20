@@ -9,9 +9,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components/servo"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/components/servo"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // updateServoTypeLabelExec updates DUT's servo type to the correct servo type string.

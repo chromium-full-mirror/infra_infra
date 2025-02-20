@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 )
 
 // PingDeviceManager pings device manager.

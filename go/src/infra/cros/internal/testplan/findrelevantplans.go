@@ -8,9 +8,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/plan"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/testplan/computemapping"
-	"infra/cros/internal/testplan/relevance"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/testplan/computemapping"
+	"go.chromium.org/infra/cros/internal/testplan/relevance"
 )
 
 func FindRelevantPlans(

@@ -10,8 +10,8 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // Call calls XMLRPC on touchhost.

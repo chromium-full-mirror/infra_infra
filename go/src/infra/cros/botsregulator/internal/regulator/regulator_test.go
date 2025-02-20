@@ -13,7 +13,7 @@ import (
 
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 func TestConsolidateAvailableDUTs(t *testing.T) {

@@ -6,9 +6,9 @@ syntax = "proto3";
 
 package chrome.rts;
 
-import "infra/rts/presubmit/eval/proto/results.proto";
+import "go.chromium.org/infra/rts/presubmit/eval/proto/results.proto";
 
-option go_package = "infra/rts/internal/chromium;chromium";
+option go_package = "go.chromium.org/infra/rts/internal/chromium;chromium";
 
 // A test file used in Chromium.
 //

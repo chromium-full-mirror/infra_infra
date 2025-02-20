@@ -16,15 +16,15 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmd/crosfleet/internal/buildbucket"
-	crosfleetcommon "infra/cmd/crosfleet/internal/common"
-	"infra/cmd/crosfleet/internal/flagx"
-	dutinfopb "infra/cmd/crosfleet/internal/proto"
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cmd/crosfleet/internal/ufs"
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/cmd/common_lib/common"
-	"infra/libs/skylab/common/heuristics"
+	"go.chromium.org/infra/cmd/crosfleet/internal/buildbucket"
+	crosfleetcommon "go.chromium.org/infra/cmd/crosfleet/internal/common"
+	"go.chromium.org/infra/cmd/crosfleet/internal/flagx"
+	dutinfopb "go.chromium.org/infra/cmd/crosfleet/internal/proto"
+	"go.chromium.org/infra/cmd/crosfleet/internal/site"
+	"go.chromium.org/infra/cmd/crosfleet/internal/ufs"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
 )
 
 const (

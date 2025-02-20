@@ -11,7 +11,7 @@ import (
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	"go.chromium.org/luci/auth"
 
-	"infra/cros/cmd/kron/common"
+	"go.chromium.org/infra/cros/cmd/kron/common"
 )
 
 // IsFirmware returns if the given config is a firmware config.

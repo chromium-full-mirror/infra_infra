@@ -16,7 +16,7 @@ import (
 	dynamic_common "go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/common"
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/generators"
 
-	"infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 const (

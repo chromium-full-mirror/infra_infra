@@ -16,13 +16,13 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	. "infra/unifiedfleet/app/model/datastore"
-	"infra/unifiedfleet/app/model/history"
-	"infra/unifiedfleet/app/model/inventory"
-	"infra/unifiedfleet/app/model/registration"
-	"infra/unifiedfleet/app/model/state"
-	"infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	. "go.chromium.org/infra/unifiedfleet/app/model/datastore"
+	"go.chromium.org/infra/unifiedfleet/app/model/history"
+	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	"go.chromium.org/infra/unifiedfleet/app/model/registration"
+	"go.chromium.org/infra/unifiedfleet/app/model/state"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 func mockSwitch(id string) *ufspb.Switch {

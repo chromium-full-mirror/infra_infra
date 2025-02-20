@@ -3,7 +3,7 @@ description: Tool for running tests against DUTs and uploading test results to T
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/phosphorus
+  - go.chromium.org/infra/cros/cmd/phosphorus
 root: ../../go/bin
 data:
   - file: phosphorus${exe_suffix}

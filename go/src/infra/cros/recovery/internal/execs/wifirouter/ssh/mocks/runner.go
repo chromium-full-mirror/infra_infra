@@ -10,8 +10,8 @@ package mocks
 
 import (
 	context "context"
-	ssh "infra/cros/recovery/internal/execs/wifirouter/ssh"
-	tlw "infra/cros/recovery/tlw"
+	ssh "go.chromium.org/infra/cros/recovery/internal/execs/wifirouter/ssh"
+	tlw "go.chromium.org/infra/cros/recovery/tlw"
 	reflect "reflect"
 	time "time"
 

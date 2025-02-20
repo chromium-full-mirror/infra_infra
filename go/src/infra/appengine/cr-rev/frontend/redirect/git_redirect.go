@@ -8,7 +8,7 @@ import (
 	"errors"
 	"fmt"
 
-	"infra/appengine/cr-rev/models"
+	"go.chromium.org/infra/appengine/cr-rev/models"
 )
 
 var (

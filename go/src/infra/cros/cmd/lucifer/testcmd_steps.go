@@ -14,10 +14,10 @@ import (
 
 	"github.com/pkg/errors"
 
-	"infra/cros/cmd/lucifer/internal/api"
-	"infra/cros/cmd/lucifer/internal/autotest"
-	"infra/cros/cmd/lucifer/internal/autotest/atutil"
-	"infra/cros/cmd/lucifer/internal/event"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/api"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/autotest"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/autotest/atutil"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/event"
 )
 
 func doProvisioningStep(ctx context.Context, c *testCmd, ac *api.Client) (err error) {

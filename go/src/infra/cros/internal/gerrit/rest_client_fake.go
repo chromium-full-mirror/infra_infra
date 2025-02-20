@@ -9,7 +9,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/assert"
 )
 
 type FakeAPIClient struct {

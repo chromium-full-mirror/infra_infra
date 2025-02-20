@@ -11,8 +11,8 @@ import (
 
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // an ipCallback is a function that takes an ip and returns whether to keep going and what the error is.

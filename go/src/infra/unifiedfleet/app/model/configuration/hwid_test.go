@@ -19,9 +19,9 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsmfg "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
-	ufsds "infra/unifiedfleet/app/model/datastore"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsmfg "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
+	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
 )
 
 func mockHwidData() *ufspb.HwidData {

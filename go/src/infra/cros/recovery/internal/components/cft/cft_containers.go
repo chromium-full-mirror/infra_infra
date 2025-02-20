@@ -6,8 +6,8 @@
 package cft
 
 import (
-	"infra/cros/internal/env"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/internal/env"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // Container names.

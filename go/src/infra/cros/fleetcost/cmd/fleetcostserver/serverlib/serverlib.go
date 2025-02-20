@@ -24,9 +24,9 @@ import (
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 
-	"infra/cros/fleetcost/internal/costserver"
-	"infra/libs/bqwrapper"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver"
+	"go.chromium.org/infra/libs/bqwrapper"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // GetModules computes the modules needed to run the service from the command-line flags.

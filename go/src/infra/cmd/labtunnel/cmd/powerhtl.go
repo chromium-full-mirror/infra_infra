@@ -11,8 +11,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"infra/cmd/labtunnel/log"
-	"infra/cmd/labtunnel/ssh"
+	"go.chromium.org/infra/cmd/labtunnel/log"
+	"go.chromium.org/infra/cmd/labtunnel/ssh"
 )
 
 var (

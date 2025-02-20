@@ -11,9 +11,9 @@ import (
 	"context"
 	"fmt"
 
-	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/client"
-	"infra/cros/karte/internal/site"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	"go.chromium.org/infra/cros/karte/client"
+	"go.chromium.org/infra/cros/karte/internal/site"
 )
 
 // main creates a single unimportant action in the dev karte instance for testing

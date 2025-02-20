@@ -24,7 +24,7 @@ import (
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/router"
 
-	"infra/appengine/depot_tools_metrics/schema"
+	"go.chromium.org/infra/appengine/depot_tools_metrics/schema"
 )
 
 const (

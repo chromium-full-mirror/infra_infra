@@ -14,8 +14,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // List of UART streams consoles of CPU, EC, Cr50, etc.

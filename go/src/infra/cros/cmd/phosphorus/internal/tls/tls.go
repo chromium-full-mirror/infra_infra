@@ -16,7 +16,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/tlslib"
+	"go.chromium.org/infra/cros/tlslib"
 )
 
 // Server holds local state for a TLS server running in the background.

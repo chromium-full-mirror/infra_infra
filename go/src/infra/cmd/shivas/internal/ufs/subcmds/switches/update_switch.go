@@ -15,13 +15,13 @@ import (
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/cmd/shivas/cmdhelp"
-	"infra/cmd/shivas/site"
-	"infra/cmd/shivas/utils"
-	"infra/cmdsupport/cmdlib"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cmd/shivas/cmdhelp"
+	"go.chromium.org/infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // UpdateSwitchCmd Update switch by given name.

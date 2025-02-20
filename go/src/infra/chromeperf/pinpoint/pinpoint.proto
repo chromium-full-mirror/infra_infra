@@ -15,7 +15,7 @@
 syntax = "proto3";
 
 package pinpoint;
-option go_package = "infra/chromeperf/pinpoint/proto";
+option go_package = "go.chromium.org/infra/chromeperf/pinpoint/proto";
 
 
 import "google/api/annotations.proto";

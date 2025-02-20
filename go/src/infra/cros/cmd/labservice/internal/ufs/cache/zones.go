@@ -13,9 +13,9 @@ import (
 
 	"google.golang.org/grpc/metadata"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
-	ufsutil "infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsutil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // zonesFinder finds a cache server in the same UFS zone of the given SU.

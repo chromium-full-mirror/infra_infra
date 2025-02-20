@@ -15,8 +15,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/config"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/config"
 )
 
 // PSRequest helps to unmarshall json data sent from pubsub

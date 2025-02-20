@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/cros/stableversion/keys"
+	"go.chromium.org/infra/cros/stableversion/keys"
 )
 
 const (

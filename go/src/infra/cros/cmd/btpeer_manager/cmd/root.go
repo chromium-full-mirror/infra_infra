@@ -11,9 +11,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"infra/cros/cmd/btpeer_manager/cmd/chameleond"
-	"infra/cros/cmd/btpeer_manager/cmd/image"
-	"infra/cros/cmd/btpeer_manager/dirs"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/cmd/chameleond"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/cmd/image"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/dirs"
 )
 
 func RootCmd() (*cobra.Command, error) {

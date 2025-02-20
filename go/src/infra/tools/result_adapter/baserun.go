@@ -29,7 +29,7 @@ import (
 	"go.chromium.org/luci/lucictx"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 
-	exceptionpb "infra/tools/result_adapter/proto"
+	exceptionpb "go.chromium.org/infra/tools/result_adapter/proto"
 )
 
 // ExitCodeCommandFailure indicates that a given command failed due to internal errors

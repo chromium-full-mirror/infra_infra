@@ -14,9 +14,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/stable_version2/internal/utils"
-	svlib "infra/cros/stableversion"
-	svdata "infra/cros/stableversion/proto/stableversion"
+	"go.chromium.org/infra/cmd/stable_version2/internal/utils"
+	svlib "go.chromium.org/infra/cros/stableversion"
+	svdata "go.chromium.org/infra/cros/stableversion/proto/stableversion"
 )
 
 // ParseOmahaStatus the omaha stable version strings.

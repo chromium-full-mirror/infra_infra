@@ -19,8 +19,8 @@ import (
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsds "infra/unifiedfleet/app/model/datastore"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
 )
 
 // ConfigBundleKind is the datastore entity kind ConfigBundle.

@@ -13,10 +13,10 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	"infra/cros/cmd/btpeer_manager/dirs"
-	"infra/cros/cmd/btpeer_manager/fileutils"
-	"infra/cros/cmd/btpeer_manager/log"
-	release "infra/cros/cmd/btpeer_manager/release/image"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/dirs"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/fileutils"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/log"
+	release "go.chromium.org/infra/cros/cmd/btpeer_manager/release/image"
 )
 
 func setCmd(dirContext *dirs.DirContext) *cobra.Command {

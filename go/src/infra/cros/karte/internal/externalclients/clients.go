@@ -7,7 +7,7 @@ package externalclients
 import (
 	"context"
 
-	"infra/libs/bqwrapper"
+	"go.chromium.org/infra/libs/bqwrapper"
 )
 
 type key string

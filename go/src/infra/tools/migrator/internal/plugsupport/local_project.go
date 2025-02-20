@@ -19,7 +19,7 @@ import (
 	lucipb "go.chromium.org/luci/common/proto"
 	configpb "go.chromium.org/luci/common/proto/config"
 
-	"infra/tools/migrator"
+	"go.chromium.org/infra/tools/migrator"
 )
 
 type localProject struct {

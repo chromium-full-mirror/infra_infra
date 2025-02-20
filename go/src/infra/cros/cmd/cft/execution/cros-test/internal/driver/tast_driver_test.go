@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/testing/localonly"
 
-	"infra/cros/cmd/cft/execution/cros-test/internal/device"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/device"
 )
 
 // TestNewTastArgs makes sure newTastArgs creates the correct arguments for tast.

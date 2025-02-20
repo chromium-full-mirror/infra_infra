@@ -6,9 +6,9 @@ syntax = "proto3";
 
 package unifiedfleet.api.v1.models.chromeos.lab;
 
-option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
+option go_package = "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
 
-import "infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
 
 // Next Tag: 9
 message Chameleon {

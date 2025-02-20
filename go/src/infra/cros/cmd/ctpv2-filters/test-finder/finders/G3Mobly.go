@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	finder "go.chromium.org/chromiumos/test/util/finder"
 
-	"infra/cros/cmd/ctpv2-filters/test-finder/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/common"
 )
 
 var G3MoblyFinderType = common.FinderHarness("G3Mobly")

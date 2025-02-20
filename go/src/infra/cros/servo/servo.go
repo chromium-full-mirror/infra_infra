@@ -14,8 +14,8 @@ package servo
 import (
 	"context"
 
-	"infra/cros/servo/errors"
-	"infra/cros/servo/xmlrpc"
+	"go.chromium.org/infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/xmlrpc"
 )
 
 // Servo holds the servod connection information.

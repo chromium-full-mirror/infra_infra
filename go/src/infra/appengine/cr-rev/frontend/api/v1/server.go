@@ -9,9 +9,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/appengine/cr-rev/frontend/redirect"
-	"infra/appengine/cr-rev/models"
-	"infra/appengine/cr-rev/utils"
+	"go.chromium.org/infra/appengine/cr-rev/frontend/redirect"
+	"go.chromium.org/infra/appengine/cr-rev/models"
+	"go.chromium.org/infra/appengine/cr-rev/utils"
 )
 
 type server struct {

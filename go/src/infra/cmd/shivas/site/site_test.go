@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	ufsUtil "infra/unifiedfleet/app/util"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // TestEnvFlags_Namespace tests the Namespace() function on env flags accept

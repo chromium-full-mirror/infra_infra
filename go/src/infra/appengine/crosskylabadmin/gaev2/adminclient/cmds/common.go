@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/appengine/crosskylabadmin/site"
+	"go.chromium.org/infra/appengine/crosskylabadmin/site"
 )
 
 // Constants for possible locations of the CrOSSkylabAdmin service.

@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/flag"
 
-	"infra/qscheduler/cmd/qscheduler/internal/site"
-	qscheduler "infra/qscheduler/service/api/qscheduler/v1"
+	"go.chromium.org/infra/qscheduler/cmd/qscheduler/internal/site"
+	qscheduler "go.chromium.org/infra/qscheduler/service/api/qscheduler/v1"
 )
 
 // ModAccount subcommand: add an account.

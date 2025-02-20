@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	serverauth "go.chromium.org/luci/server/auth"
 
-	"infra/cros/cmd/cros-tool-runner/internal/tasks"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/tasks"
 )
 
 func main() {

@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/cros/cmd/try/try"
+	"go.chromium.org/infra/cros/cmd/try/try"
 )
 
 func newApplication(authOpts auth.Options) *cli.Application {

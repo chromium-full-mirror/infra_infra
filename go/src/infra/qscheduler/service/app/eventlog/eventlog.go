@@ -21,7 +21,7 @@ import (
 
 	"go.chromium.org/luci/common/bq"
 
-	"infra/qscheduler/qslib/protos/metrics"
+	"go.chromium.org/infra/qscheduler/qslib/protos/metrics"
 )
 
 const (

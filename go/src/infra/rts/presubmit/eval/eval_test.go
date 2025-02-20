@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/rts"
-	evalpb "infra/rts/presubmit/eval/proto"
+	"go.chromium.org/infra/rts"
+	evalpb "go.chromium.org/infra/rts/presubmit/eval/proto"
 )
 
 func TestBucketSlice(t *testing.T) {

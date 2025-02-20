@@ -4,7 +4,7 @@ platforms:
   - mac-amd64
   - mac-arm64
 go_packages:
-  - infra/tools/vpython/cmd/vpython3
+  - go.chromium.org/infra/tools/vpython/cmd/vpython3
 install_mode: copy
 root: ../../go/bin
 upload_on_change:

@@ -9,7 +9,7 @@ import (
 	"log"
 	"os/exec"
 
-	"infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 )
 
 // MultipleCommandsExecutor a executor for executing multiple commands.

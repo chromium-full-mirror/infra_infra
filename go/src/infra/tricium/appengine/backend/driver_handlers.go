@@ -25,8 +25,8 @@ import (
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 	"go.chromium.org/luci/server/router"
 
-	admin "infra/tricium/api/admin/v1"
-	"infra/tricium/appengine/common"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
+	"go.chromium.org/infra/tricium/appengine/common"
 )
 
 var driver = driverServer{}

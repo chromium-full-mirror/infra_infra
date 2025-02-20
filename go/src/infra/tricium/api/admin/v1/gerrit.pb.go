@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/tricium/api/admin/v1/gerrit.proto
+// source: go.chromium.org/infra/tricium/api/admin/v1/gerrit.proto
 
 package admin
 
@@ -42,7 +42,7 @@ type PollProjectRequest struct {
 
 func (x *PollProjectRequest) Reset() {
 	*x = PollProjectRequest{}
-	mi := &file_infra_tricium_api_admin_v1_gerrit_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -54,7 +54,7 @@ func (x *PollProjectRequest) String() string {
 func (*PollProjectRequest) ProtoMessage() {}
 
 func (x *PollProjectRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_admin_v1_gerrit_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -67,7 +67,7 @@ func (x *PollProjectRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PollProjectRequest.ProtoReflect.Descriptor instead.
 func (*PollProjectRequest) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_admin_v1_gerrit_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *PollProjectRequest) GetProject() string {
@@ -85,7 +85,7 @@ type PollProjectResponse struct {
 
 func (x *PollProjectResponse) Reset() {
 	*x = PollProjectResponse{}
-	mi := &file_infra_tricium_api_admin_v1_gerrit_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -97,7 +97,7 @@ func (x *PollProjectResponse) String() string {
 func (*PollProjectResponse) ProtoMessage() {}
 
 func (x *PollProjectResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_admin_v1_gerrit_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -110,13 +110,14 @@ func (x *PollProjectResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PollProjectResponse.ProtoReflect.Descriptor instead.
 func (*PollProjectResponse) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_admin_v1_gerrit_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_rawDescGZIP(), []int{1}
 }
 
-var File_infra_tricium_api_admin_v1_gerrit_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto protoreflect.FileDescriptor
 
-var file_infra_tricium_api_admin_v1_gerrit_proto_rawDesc = string([]byte{
-	0x0a, 0x27, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
+var file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_rawDesc = string([]byte{
+	0x0a, 0x37, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f, 0x76, 0x31, 0x2f, 0x67, 0x65, 0x72,
 	0x72, 0x69, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x05, 0x61, 0x64, 0x6d, 0x69, 0x6e,
 	0x22, 0x2e, 0x0a, 0x12, 0x50, 0x6f, 0x6c, 0x6c, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52,
@@ -128,30 +129,31 @@ var file_infra_tricium_api_admin_v1_gerrit_proto_rawDesc = string([]byte{
 	0x12, 0x19, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x50, 0x6f, 0x6c, 0x6c, 0x50, 0x72, 0x6f,
 	0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1a, 0x2e, 0x61, 0x64,
 	0x6d, 0x69, 0x6e, 0x2e, 0x50, 0x6f, 0x6c, 0x6c, 0x50, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x22, 0x5a, 0x20, 0x69, 0x6e, 0x66, 0x72, 0x61,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x32, 0x5a, 0x30, 0x67, 0x6f, 0x2e, 0x63, 0x68,
+	0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61,
 	0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x64, 0x6d,
 	0x69, 0x6e, 0x2f, 0x76, 0x31, 0x3b, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_tricium_api_admin_v1_gerrit_proto_rawDescOnce sync.Once
-	file_infra_tricium_api_admin_v1_gerrit_proto_rawDescData []byte
+	file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_rawDescData []byte
 )
 
-func file_infra_tricium_api_admin_v1_gerrit_proto_rawDescGZIP() []byte {
-	file_infra_tricium_api_admin_v1_gerrit_proto_rawDescOnce.Do(func() {
-		file_infra_tricium_api_admin_v1_gerrit_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_tricium_api_admin_v1_gerrit_proto_rawDesc), len(file_infra_tricium_api_admin_v1_gerrit_proto_rawDesc)))
+func file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_rawDesc), len(file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_rawDesc)))
 	})
-	return file_infra_tricium_api_admin_v1_gerrit_proto_rawDescData
+	return file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_rawDescData
 }
 
-var file_infra_tricium_api_admin_v1_gerrit_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_infra_tricium_api_admin_v1_gerrit_proto_goTypes = []any{
+var file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_goTypes = []any{
 	(*PollProjectRequest)(nil),  // 0: admin.PollProjectRequest
 	(*PollProjectResponse)(nil), // 1: admin.PollProjectResponse
 }
-var file_infra_tricium_api_admin_v1_gerrit_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_depIdxs = []int32{
 	0, // 0: admin.Gerrit.PollProject:input_type -> admin.PollProjectRequest
 	1, // 1: admin.Gerrit.PollProject:output_type -> admin.PollProjectResponse
 	1, // [1:2] is the sub-list for method output_type
@@ -161,28 +163,28 @@ var file_infra_tricium_api_admin_v1_gerrit_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_infra_tricium_api_admin_v1_gerrit_proto_init() }
-func file_infra_tricium_api_admin_v1_gerrit_proto_init() {
-	if File_infra_tricium_api_admin_v1_gerrit_proto != nil {
+func init() { file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_init() }
+func file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_init() {
+	if File_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_tricium_api_admin_v1_gerrit_proto_rawDesc), len(file_infra_tricium_api_admin_v1_gerrit_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_rawDesc), len(file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_tricium_api_admin_v1_gerrit_proto_goTypes,
-		DependencyIndexes: file_infra_tricium_api_admin_v1_gerrit_proto_depIdxs,
-		MessageInfos:      file_infra_tricium_api_admin_v1_gerrit_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_msgTypes,
 	}.Build()
-	File_infra_tricium_api_admin_v1_gerrit_proto = out.File
-	file_infra_tricium_api_admin_v1_gerrit_proto_goTypes = nil
-	file_infra_tricium_api_admin_v1_gerrit_proto_depIdxs = nil
+	File_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto = out.File
+	file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_goTypes = nil
+	file_go_chromium_org_infra_tricium_api_admin_v1_gerrit_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -280,5 +282,5 @@ var _Gerrit_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/tricium/api/admin/v1/gerrit.proto",
+	Metadata: "go.chromium.org/infra/tricium/api/admin/v1/gerrit.proto",
 }

@@ -15,9 +15,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/model/caching"
-	ufsUtil "infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/model/caching"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // CreateCachingService creates a new CachingService in datastore.

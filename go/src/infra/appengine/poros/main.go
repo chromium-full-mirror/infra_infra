@@ -25,10 +25,10 @@ import (
 	"go.chromium.org/luci/server/templates"
 	"go.chromium.org/luci/server/tq"
 
-	"infra/appengine/poros/api/handlers"
-	"infra/appengine/poros/api/proto"
-	"infra/appengine/poros/api/service"
-	"infra/appengine/poros/taskspb"
+	"go.chromium.org/infra/appengine/poros/api/handlers"
+	"go.chromium.org/infra/appengine/poros/api/proto"
+	"go.chromium.org/infra/appengine/poros/api/service"
+	"go.chromium.org/infra/appengine/poros/taskspb"
 )
 
 // authGroup is the name of the LUCI Auth group that controls whether the user

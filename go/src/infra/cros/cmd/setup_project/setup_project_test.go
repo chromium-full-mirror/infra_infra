@@ -14,9 +14,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/gs"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/gs"
 )
 
 func checkFiles(t *testing.T, path string, expected map[string]string) {

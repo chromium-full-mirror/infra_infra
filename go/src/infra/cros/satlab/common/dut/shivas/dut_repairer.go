@@ -10,11 +10,11 @@ import (
 	"os/exec"
 	"regexp"
 
-	"infra/cros/satlab/common/commands"
-	"infra/cros/satlab/common/paths"
-	"infra/cros/satlab/common/site"
-	e "infra/cros/satlab/common/utils/errors"
-	"infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/commands"
+	"go.chromium.org/infra/cros/satlab/common/paths"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	e "go.chromium.org/infra/cros/satlab/common/utils/errors"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 )
 
 type RepairAction string

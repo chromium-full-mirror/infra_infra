@@ -20,9 +20,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/cloudbuildhelper/fileset"
-	"infra/cmd/cloudbuildhelper/manifest"
-	"infra/cmd/cloudbuildhelper/storage"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/fileset"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/manifest"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/storage"
 )
 
 var cmdUpload = &subcommands.Command{

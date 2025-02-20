@@ -17,11 +17,11 @@ import (
 	"go.chromium.org/luci/config"
 	"go.chromium.org/luci/config/cfgclient"
 
-	"infra/cros/botsregulator/internal/clients"
-	"infra/cros/botsregulator/internal/regulator"
-	"infra/cros/botsregulator/protos"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/botsregulator/internal/clients"
+	"go.chromium.org/infra/cros/botsregulator/internal/regulator"
+	"go.chromium.org/infra/cros/botsregulator/protos"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 const (

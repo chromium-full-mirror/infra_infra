@@ -23,7 +23,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
 
-	"infra/qscheduler/qslib/protos/metrics"
+	"go.chromium.org/infra/qscheduler/qslib/protos/metrics"
 )
 
 const max_sort_amount = 100000

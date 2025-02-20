@@ -14,10 +14,10 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/cloudbuildhelper/builder"
-	"infra/cmd/cloudbuildhelper/dockerfile"
-	"infra/cmd/cloudbuildhelper/fileset"
-	"infra/cmd/cloudbuildhelper/manifest"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/builder"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/dockerfile"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/fileset"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/manifest"
 )
 
 var cmdStage = &subcommands.Command{

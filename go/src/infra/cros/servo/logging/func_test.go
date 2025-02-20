@@ -10,7 +10,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/cros/servo/logging"
+	"go.chromium.org/infra/cros/servo/logging"
 )
 
 func TestFuncLogger(t *testing.T) {

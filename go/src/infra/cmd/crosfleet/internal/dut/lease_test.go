@@ -11,7 +11,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/cmd/crosfleet/internal/common"
+	"go.chromium.org/infra/cmd/crosfleet/internal/common"
 )
 
 var testValidateData = []struct {

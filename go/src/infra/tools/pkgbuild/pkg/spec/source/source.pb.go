@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/tools/pkgbuild/pkg/spec/source/source.proto
+// source: go.chromium.org/infra/tools/pkgbuild/pkg/spec/source/source.proto
 
 package source
 
@@ -38,7 +38,7 @@ type SourceLockFile struct {
 
 func (x *SourceLockFile) Reset() {
 	*x = SourceLockFile{}
-	mi := &file_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -50,7 +50,7 @@ func (x *SourceLockFile) String() string {
 func (*SourceLockFile) ProtoMessage() {}
 
 func (x *SourceLockFile) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -63,7 +63,7 @@ func (x *SourceLockFile) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceLockFile.ProtoReflect.Descriptor instead.
 func (*SourceLockFile) Descriptor() ([]byte, []int) {
-	return file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *SourceLockFile) GetInfos() map[string]*SourceInfo {
@@ -94,7 +94,7 @@ type SourceInfo struct {
 
 func (x *SourceInfo) Reset() {
 	*x = SourceInfo{}
-	mi := &file_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -106,7 +106,7 @@ func (x *SourceInfo) String() string {
 func (*SourceInfo) ProtoMessage() {}
 
 func (x *SourceInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -119,7 +119,7 @@ func (x *SourceInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceInfo.ProtoReflect.Descriptor instead.
 func (*SourceInfo) Descriptor() ([]byte, []int) {
-	return file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *SourceInfo) GetVersion() string {
@@ -180,7 +180,7 @@ type SourceInfo_Git struct {
 
 func (x *SourceInfo_Git) Reset() {
 	*x = SourceInfo_Git{}
-	mi := &file_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -192,7 +192,7 @@ func (x *SourceInfo_Git) String() string {
 func (*SourceInfo_Git) ProtoMessage() {}
 
 func (x *SourceInfo_Git) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -205,7 +205,7 @@ func (x *SourceInfo_Git) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceInfo_Git.ProtoReflect.Descriptor instead.
 func (*SourceInfo_Git) Descriptor() ([]byte, []int) {
-	return file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescGZIP(), []int{1, 0}
+	return file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescGZIP(), []int{1, 0}
 }
 
 func (x *SourceInfo_Git) GetUrl() string {
@@ -233,7 +233,7 @@ type SourceInfo_HTTP struct {
 
 func (x *SourceInfo_HTTP) Reset() {
 	*x = SourceInfo_HTTP{}
-	mi := &file_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -245,7 +245,7 @@ func (x *SourceInfo_HTTP) String() string {
 func (*SourceInfo_HTTP) ProtoMessage() {}
 
 func (x *SourceInfo_HTTP) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -258,7 +258,7 @@ func (x *SourceInfo_HTTP) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SourceInfo_HTTP.ProtoReflect.Descriptor instead.
 func (*SourceInfo_HTTP) Descriptor() ([]byte, []int) {
-	return file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescGZIP(), []int{1, 1}
+	return file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescGZIP(), []int{1, 1}
 }
 
 func (x *SourceInfo_HTTP) GetUrl() []string {
@@ -282,10 +282,11 @@ func (x *SourceInfo_HTTP) GetExt() string {
 	return ""
 }
 
-var File_infra_tools_pkgbuild_pkg_spec_source_source_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto protoreflect.FileDescriptor
 
-var file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDesc = string([]byte{
-	0x0a, 0x31, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x70, 0x6b,
+var file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDesc = string([]byte{
+	0x0a, 0x41, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x70, 0x6b,
 	0x67, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2f, 0x70, 0x6b, 0x67, 0x2f, 0x73, 0x70, 0x65, 0x63, 0x2f,
 	0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x2f, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x12, 0x06, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x1a, 0x1f, 0x67, 0x6f, 0x6f,
@@ -320,26 +321,27 @@ var file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDesc = string([]by
 	0x03, 0x75, 0x72, 0x6c, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x03,
 	0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x65, 0x78, 0x74, 0x18,
 	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x65, 0x78, 0x74, 0x42, 0x08, 0x0a, 0x06, 0x73, 0x6f,
-	0x75, 0x72, 0x63, 0x65, 0x42, 0x2d, 0x5a, 0x2b, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f,
+	0x75, 0x72, 0x63, 0x65, 0x42, 0x3d, 0x5a, 0x3b, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d,
+	0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f,
 	0x6f, 0x6c, 0x73, 0x2f, 0x70, 0x6b, 0x67, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2f, 0x70, 0x6b, 0x67,
 	0x2f, 0x73, 0x70, 0x65, 0x63, 0x2f, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x3b, 0x73, 0x6f, 0x75,
 	0x72, 0x63, 0x65, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescOnce sync.Once
-	file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescData []byte
+	file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescData []byte
 )
 
-func file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescGZIP() []byte {
-	file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescOnce.Do(func() {
-		file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDesc), len(file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDesc)))
+func file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDesc), len(file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDesc)))
 	})
-	return file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescData
+	return file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDescData
 }
 
-var file_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
-var file_infra_tools_pkgbuild_pkg_spec_source_source_proto_goTypes = []any{
+var file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_goTypes = []any{
 	(*SourceLockFile)(nil),        // 0: source.SourceLockFile
 	(*SourceInfo)(nil),            // 1: source.SourceInfo
 	nil,                           // 2: source.SourceLockFile.InfosEntry
@@ -347,7 +349,7 @@ var file_infra_tools_pkgbuild_pkg_spec_source_source_proto_goTypes = []any{
 	(*SourceInfo_HTTP)(nil),       // 4: source.SourceInfo.HTTP
 	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
 }
-var file_infra_tools_pkgbuild_pkg_spec_source_source_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_depIdxs = []int32{
 	2, // 0: source.SourceLockFile.infos:type_name -> source.SourceLockFile.InfosEntry
 	5, // 1: source.SourceLockFile.last_updated:type_name -> google.protobuf.Timestamp
 	3, // 2: source.SourceInfo.git:type_name -> source.SourceInfo.Git
@@ -360,12 +362,12 @@ var file_infra_tools_pkgbuild_pkg_spec_source_source_proto_depIdxs = []int32{
 	0, // [0:5] is the sub-list for field type_name
 }
 
-func init() { file_infra_tools_pkgbuild_pkg_spec_source_source_proto_init() }
-func file_infra_tools_pkgbuild_pkg_spec_source_source_proto_init() {
-	if File_infra_tools_pkgbuild_pkg_spec_source_source_proto != nil {
+func init() { file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_init() }
+func file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_init() {
+	if File_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto != nil {
 		return
 	}
-	file_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[1].OneofWrappers = []any{
+	file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes[1].OneofWrappers = []any{
 		(*SourceInfo_Git_)(nil),
 		(*SourceInfo_Http)(nil),
 	}
@@ -373,17 +375,17 @@ func file_infra_tools_pkgbuild_pkg_spec_source_source_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDesc), len(file_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDesc), len(file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_tools_pkgbuild_pkg_spec_source_source_proto_goTypes,
-		DependencyIndexes: file_infra_tools_pkgbuild_pkg_spec_source_source_proto_depIdxs,
-		MessageInfos:      file_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_msgTypes,
 	}.Build()
-	File_infra_tools_pkgbuild_pkg_spec_source_source_proto = out.File
-	file_infra_tools_pkgbuild_pkg_spec_source_source_proto_goTypes = nil
-	file_infra_tools_pkgbuild_pkg_spec_source_source_proto_depIdxs = nil
+	File_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto = out.File
+	file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_goTypes = nil
+	file_go_chromium_org_infra_tools_pkgbuild_pkg_spec_source_source_proto_depIdxs = nil
 }

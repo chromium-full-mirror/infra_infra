@@ -14,9 +14,9 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"infra/cros/cmd/btpeer_manager/dirs"
-	"infra/cros/cmd/btpeer_manager/fileutils"
-	"infra/cros/cmd/btpeer_manager/log"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/dirs"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/fileutils"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/log"
 )
 
 func makeCmd(dirContext *dirs.DirContext) *cobra.Command {

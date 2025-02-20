@@ -138,11 +138,11 @@ func hardcodedCommandOutput(data string) writeGitCLJSON {
 const (
 	// The output from running `git cl issue --json $FILE` inside the pinpoint
 	// directory as of 2021-03-23.
-	infraGitClIssueOutput = `{"gerrit_host": "chromium-review.googlesource.com", "gerrit_project": "infra/infra", "issue_url": null, "issue": null}`
+	infraGitClIssueOutput = `{"gerrit_host": "chromium-review.googlesource.com", "gerrit_project": "go.chromium.org/infra/infra", "issue_url": null, "issue": null}`
 	// Constants to represent the values in infraGitClIssueOutput
 	infraGerritHost  = "chromium-review.googlesource.com"
 	infraGitilesHost = "chromium.googlesource.com"
-	infraRepository  = "infra/infra"
+	infraRepository  = "go.chromium.org/infra/infra"
 
 	// The output from running `git cl issue --json $FILE` before
 	// https://crrev.com/c/2766153 was applied.

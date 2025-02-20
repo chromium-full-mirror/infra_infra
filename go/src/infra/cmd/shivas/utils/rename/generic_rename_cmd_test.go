@@ -9,10 +9,10 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
-	"infra/cmd/shivas/site"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cmd/shivas/site"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 func fakeRename(ctx context.Context, ic ufsAPI.FleetClient, name, newName string) (interface{}, error) {

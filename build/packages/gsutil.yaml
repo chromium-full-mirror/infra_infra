@@ -18,7 +18,7 @@ platforms:
   - windows-arm64
 install_mode: copy
 go_packages:
-  - infra/tools/gsutil
+  - go.chromium.org/infra/tools/gsutil
 root: ../../go/bin
 data:
   - file: gsutil${exe_suffix}

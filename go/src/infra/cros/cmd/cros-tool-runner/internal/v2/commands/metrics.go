@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"time"
 
-	"infra/cros/cmd/cros-tool-runner/internal/docker"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/docker"
 )
 
 const (

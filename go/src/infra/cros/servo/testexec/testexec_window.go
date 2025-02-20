@@ -23,8 +23,8 @@ import (
 	"os/exec"
 	"sync"
 
-	"infra/cros/servo/errors"
-	tastexec "infra/cros/servo/exec"
+	"go.chromium.org/infra/cros/servo/errors"
+	tastexec "go.chromium.org/infra/cros/servo/exec"
 )
 
 // Cmd represents an external command being prepared or run.

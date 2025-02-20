@@ -15,7 +15,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // SSHClient provides base API to work with SSH client.

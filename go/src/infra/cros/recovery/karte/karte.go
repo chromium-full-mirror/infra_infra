@@ -11,9 +11,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	kartepb "infra/cros/karte/api"
-	kclient "infra/cros/karte/client"
-	"infra/cros/recovery/logger/metrics"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	kclient "go.chromium.org/infra/cros/karte/client"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
 )
 
 // Client is a wrapped Karte client that exposes only the metrics.Metrics interface.

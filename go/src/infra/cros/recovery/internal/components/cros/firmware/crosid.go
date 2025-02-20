@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/internal/components"
 )
 
 // Regexp that match to output of `crosid` from a given DUT.

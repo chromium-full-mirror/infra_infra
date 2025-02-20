@@ -16,16 +16,16 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/internal/components/servo"
-	components_topology "infra/cros/recovery/internal/components/servo/topology"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/execs/cros/battery"
-	"infra/cros/recovery/internal/execs/servo/topology"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/internal/retry"
-	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/internal/components/servo"
+	components_topology "go.chromium.org/infra/cros/recovery/internal/components/servo/topology"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/execs/cros/battery"
+	"go.chromium.org/infra/cros/recovery/internal/execs/servo/topology"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/retry"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 const (

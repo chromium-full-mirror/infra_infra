@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/libs/skylab/buildbucket"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
 )
 
 // ActionStatus is the status of an action.

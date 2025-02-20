@@ -14,10 +14,10 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/config"
-	. "infra/unifiedfleet/app/model/datastore"
-	ufsutil "infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	. "go.chromium.org/infra/unifiedfleet/app/model/datastore"
+	ufsutil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 func mockChromeOSMachine(id, lab, board string, zone ufspb.Zone) *ufspb.Machine {

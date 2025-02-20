@@ -28,4 +28,4 @@ message ExceptionOccurrence {
   google.protobuf.Timestamp occurred_time = 3;
 }
 
-option go_package = "infra/tools/result_adapter/proto;exception_occurrences_pb";
+option go_package = "go.chromium.org/infra/tools/result_adapter/proto;exception_occurrences_pb";

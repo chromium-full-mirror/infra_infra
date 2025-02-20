@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"sort"
 
-	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
-	"infra/cros/cmd/common_lib/common"
+	atp "go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 // WULayer is and enum signifying what WU layer type the node represents

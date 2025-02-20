@@ -36,13 +36,13 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/commonbuilders"
-	"infra/cros/cmd/common_lib/dynamicupdates"
-	"infra/cros/cmd/ctpv2/data"
-	"infra/libs/skylab/inventory"
-	"infra/libs/skylab/request"
-	"infra/libs/skylab/worker"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/commonbuilders"
+	"go.chromium.org/infra/cros/cmd/common_lib/dynamicupdates"
+	"go.chromium.org/infra/cros/cmd/ctpv2/data"
+	"go.chromium.org/infra/libs/skylab/inventory"
+	"go.chromium.org/infra/libs/skylab/request"
+	"go.chromium.org/infra/libs/skylab/worker"
 )
 
 const (

@@ -13,10 +13,10 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"infra/cros/servo/errors"
-	"infra/cros/servo/exec"
-	"infra/cros/servo/logging"
-	"infra/cros/servo/shutil"
+	"go.chromium.org/infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/exec"
+	"go.chromium.org/infra/cros/servo/logging"
+	"go.chromium.org/infra/cros/servo/shutil"
 )
 
 // Cmd represents an external command being prepared or run on a remote host.

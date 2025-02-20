@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/appengine/rotation-proxy/proto/rotation_proxy.proto
+// source: go.chromium.org/infra/appengine/rotation-proxy/proto/rotation_proxy.proto
 
 package rotationproxy
 
@@ -44,7 +44,7 @@ type BatchUpdateRotationsRequest struct {
 
 func (x *BatchUpdateRotationsRequest) Reset() {
 	*x = BatchUpdateRotationsRequest{}
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -56,7 +56,7 @@ func (x *BatchUpdateRotationsRequest) String() string {
 func (*BatchUpdateRotationsRequest) ProtoMessage() {}
 
 func (x *BatchUpdateRotationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -69,7 +69,7 @@ func (x *BatchUpdateRotationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchUpdateRotationsRequest.ProtoReflect.Descriptor instead.
 func (*BatchUpdateRotationsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *BatchUpdateRotationsRequest) GetRequests() []*UpdateRotationRequest {
@@ -89,7 +89,7 @@ type UpdateRotationRequest struct {
 
 func (x *UpdateRotationRequest) Reset() {
 	*x = UpdateRotationRequest{}
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -101,7 +101,7 @@ func (x *UpdateRotationRequest) String() string {
 func (*UpdateRotationRequest) ProtoMessage() {}
 
 func (x *UpdateRotationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -114,7 +114,7 @@ func (x *UpdateRotationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRotationRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRotationRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *UpdateRotationRequest) GetRotation() *Rotation {
@@ -134,7 +134,7 @@ type BatchUpdateRotationsResponse struct {
 
 func (x *BatchUpdateRotationsResponse) Reset() {
 	*x = BatchUpdateRotationsResponse{}
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -146,7 +146,7 @@ func (x *BatchUpdateRotationsResponse) String() string {
 func (*BatchUpdateRotationsResponse) ProtoMessage() {}
 
 func (x *BatchUpdateRotationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -159,7 +159,7 @@ func (x *BatchUpdateRotationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchUpdateRotationsResponse.ProtoReflect.Descriptor instead.
 func (*BatchUpdateRotationsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *BatchUpdateRotationsResponse) GetRotations() []*Rotation {
@@ -179,7 +179,7 @@ type GetRotationRequest struct {
 
 func (x *GetRotationRequest) Reset() {
 	*x = GetRotationRequest{}
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -191,7 +191,7 @@ func (x *GetRotationRequest) String() string {
 func (*GetRotationRequest) ProtoMessage() {}
 
 func (x *GetRotationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -204,7 +204,7 @@ func (x *GetRotationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRotationRequest.ProtoReflect.Descriptor instead.
 func (*GetRotationRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetRotationRequest) GetName() string {
@@ -224,7 +224,7 @@ type BatchGetRotationsRequest struct {
 
 func (x *BatchGetRotationsRequest) Reset() {
 	*x = BatchGetRotationsRequest{}
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -236,7 +236,7 @@ func (x *BatchGetRotationsRequest) String() string {
 func (*BatchGetRotationsRequest) ProtoMessage() {}
 
 func (x *BatchGetRotationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -249,7 +249,7 @@ func (x *BatchGetRotationsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetRotationsRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetRotationsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *BatchGetRotationsRequest) GetNames() []string {
@@ -269,7 +269,7 @@ type BatchGetRotationsResponse struct {
 
 func (x *BatchGetRotationsResponse) Reset() {
 	*x = BatchGetRotationsResponse{}
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -281,7 +281,7 @@ func (x *BatchGetRotationsResponse) String() string {
 func (*BatchGetRotationsResponse) ProtoMessage() {}
 
 func (x *BatchGetRotationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -294,7 +294,7 @@ func (x *BatchGetRotationsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetRotationsResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetRotationsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *BatchGetRotationsResponse) GetRotations() []*Rotation {
@@ -318,7 +318,7 @@ type Rotation struct {
 
 func (x *Rotation) Reset() {
 	*x = Rotation{}
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -330,7 +330,7 @@ func (x *Rotation) String() string {
 func (*Rotation) ProtoMessage() {}
 
 func (x *Rotation) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -343,7 +343,7 @@ func (x *Rotation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Rotation.ProtoReflect.Descriptor instead.
 func (*Rotation) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Rotation) GetName() string {
@@ -374,7 +374,7 @@ type Shift struct {
 
 func (x *Shift) Reset() {
 	*x = Shift{}
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -386,7 +386,7 @@ func (x *Shift) String() string {
 func (*Shift) ProtoMessage() {}
 
 func (x *Shift) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -399,7 +399,7 @@ func (x *Shift) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Shift.ProtoReflect.Descriptor instead.
 func (*Shift) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Shift) GetOncalls() []*OncallPerson {
@@ -433,7 +433,7 @@ type OncallPerson struct {
 
 func (x *OncallPerson) Reset() {
 	*x = OncallPerson{}
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -445,7 +445,7 @@ func (x *OncallPerson) String() string {
 func (*OncallPerson) ProtoMessage() {}
 
 func (x *OncallPerson) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -458,7 +458,7 @@ func (x *OncallPerson) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OncallPerson.ProtoReflect.Descriptor instead.
 func (*OncallPerson) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *OncallPerson) GetEmail() string {
@@ -468,10 +468,11 @@ func (x *OncallPerson) GetEmail() string {
 	return ""
 }
 
-var File_infra_appengine_rotation_proxy_proto_rotation_proxy_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto protoreflect.FileDescriptor
 
-var file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDesc = string([]byte{
-	0x0a, 0x39, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
+var file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDesc = string([]byte{
+	0x0a, 0x49, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
 	0x65, 0x2f, 0x72, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2d, 0x70, 0x72, 0x6f, 0x78, 0x79,
 	0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x72, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x5f,
 	0x70, 0x72, 0x6f, 0x78, 0x79, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0d, 0x72, 0x6f, 0x74,
@@ -547,7 +548,8 @@ var file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDesc = str
 	0x6f, 0x6e, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x72, 0x6f, 0x74,
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x70, 0x72, 0x6f, 0x78, 0x79, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68,
 	0x47, 0x65, 0x74, 0x52, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x42, 0x34, 0x5a, 0x32, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x42, 0x44, 0x5a, 0x42, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d,
+	0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70,
 	0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x72, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
 	0x2d, 0x70, 0x72, 0x6f, 0x78, 0x79, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x72, 0x6f, 0x74,
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x70, 0x72, 0x6f, 0x78, 0x79, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
@@ -555,19 +557,19 @@ var file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDesc = str
 })
 
 var (
-	file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescOnce sync.Once
-	file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescData []byte
+	file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescData []byte
 )
 
-func file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP() []byte {
-	file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescOnce.Do(func() {
-		file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDesc), len(file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDesc)))
+func file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDesc), len(file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDesc)))
 	})
-	return file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescData
+	return file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDescData
 }
 
-var file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
-var file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_goTypes = []any{
+var file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_goTypes = []any{
 	(*BatchUpdateRotationsRequest)(nil),  // 0: rotationproxy.BatchUpdateRotationsRequest
 	(*UpdateRotationRequest)(nil),        // 1: rotationproxy.UpdateRotationRequest
 	(*BatchUpdateRotationsResponse)(nil), // 2: rotationproxy.BatchUpdateRotationsResponse
@@ -579,7 +581,7 @@ var file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_goTypes = []a
 	(*OncallPerson)(nil),                 // 8: rotationproxy.OncallPerson
 	(*timestamppb.Timestamp)(nil),        // 9: google.protobuf.Timestamp
 }
-var file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_depIdxs = []int32{
 	1,  // 0: rotationproxy.BatchUpdateRotationsRequest.requests:type_name -> rotationproxy.UpdateRotationRequest
 	6,  // 1: rotationproxy.UpdateRotationRequest.rotation:type_name -> rotationproxy.Rotation
 	6,  // 2: rotationproxy.BatchUpdateRotationsResponse.rotations:type_name -> rotationproxy.Rotation
@@ -601,28 +603,28 @@ var file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_depIdxs = []i
 	0,  // [0:8] is the sub-list for field type_name
 }
 
-func init() { file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_init() }
-func file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_init() {
-	if File_infra_appengine_rotation_proxy_proto_rotation_proxy_proto != nil {
+func init() { file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_init() }
+func file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_init() {
+	if File_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDesc), len(file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDesc), len(file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_goTypes,
-		DependencyIndexes: file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_depIdxs,
-		MessageInfos:      file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_msgTypes,
 	}.Build()
-	File_infra_appengine_rotation_proxy_proto_rotation_proxy_proto = out.File
-	file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_goTypes = nil
-	file_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_depIdxs = nil
+	File_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto = out.File
+	file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_goTypes = nil
+	file_go_chromium_org_infra_appengine_rotation_proxy_proto_rotation_proxy_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -808,5 +810,5 @@ var _RotationProxyService_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/appengine/rotation-proxy/proto/rotation_proxy.proto",
+	Metadata: "go.chromium.org/infra/appengine/rotation-proxy/proto/rotation_proxy.proto",
 }

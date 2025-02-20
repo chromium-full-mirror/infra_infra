@@ -14,8 +14,8 @@ import (
 	"go.chromium.org/luci/server/router"
 	"go.chromium.org/luci/server/tq"
 
-	"infra/appengine/rubber-stamper/cron"
-	"infra/appengine/rubber-stamper/internal/gerrit"
+	"go.chromium.org/infra/appengine/rubber-stamper/cron"
+	"go.chromium.org/infra/appengine/rubber-stamper/internal/gerrit"
 )
 
 func main() {

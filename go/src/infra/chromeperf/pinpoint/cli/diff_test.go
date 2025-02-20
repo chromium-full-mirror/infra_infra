@@ -8,7 +8,7 @@ import (
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 
-	pppb "infra/chromeperf/pinpoint/proto"
+	pppb "go.chromium.org/infra/chromeperf/pinpoint/proto"
 )
 
 func TestDiffJob(t *testing.T) {

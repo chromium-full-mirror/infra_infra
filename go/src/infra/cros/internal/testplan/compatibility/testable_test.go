@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cros/internal/testplan/compatibility"
+	"go.chromium.org/infra/cros/internal/testplan/compatibility"
 )
 
 // coverageRule returns a CoverageRule with programs as the values for

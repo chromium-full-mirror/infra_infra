@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/internal/tlw/cache"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/tlw/cache"
 )
 
 type Server interface {

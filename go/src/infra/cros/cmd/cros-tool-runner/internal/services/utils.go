@@ -18,7 +18,7 @@ import (
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/cros-tool-runner/internal/docker"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/docker"
 )
 
 func startService(ctx context.Context, d *docker.Docker, block bool, netbind bool, service string) (*docker.Docker, error) {

@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/cros/karte/internal/identifiers"
+	"go.chromium.org/infra/cros/karte/internal/identifiers"
 )
 
 // actionRangePersistOptions is a structure that can be used to manage an attempt to persist a range of actions.

@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/auth"
 
-	"infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/site"
 )
 
 // CommandWithFlags is a representation of a command with subcommands that takes a combination

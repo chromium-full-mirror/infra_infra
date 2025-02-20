@@ -21,15 +21,15 @@ import (
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	"infra/unifiedfleet/app/model/configuration"
-	. "infra/unifiedfleet/app/model/datastore"
-	"infra/unifiedfleet/app/model/inventory"
-	"infra/unifiedfleet/app/model/registration"
-	"infra/unifiedfleet/app/model/state"
-	"infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
+	. "go.chromium.org/infra/unifiedfleet/app/model/datastore"
+	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	"go.chromium.org/infra/unifiedfleet/app/model/registration"
+	"go.chromium.org/infra/unifiedfleet/app/model/state"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 func mockMachineLSE(id string) *ufspb.MachineLSE {

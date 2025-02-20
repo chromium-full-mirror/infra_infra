@@ -27,7 +27,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/tools/migrator/internal/plugsupport"
+	"go.chromium.org/infra/tools/migrator/internal/plugsupport"
 )
 
 // TODO(iannucci): the 'subcommands' library is a mess, use something better.

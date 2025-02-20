@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/server"
 
-	"infra/cros/fleetcost/cmd/fleetcostserver/serverlib"
+	"go.chromium.org/infra/cros/fleetcost/cmd/fleetcostserver/serverlib"
 )
 
 // main starts the fleet cost server.

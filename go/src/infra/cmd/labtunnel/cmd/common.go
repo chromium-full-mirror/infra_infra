@@ -16,11 +16,11 @@ import (
 	"strings"
 	"time"
 
-	"infra/cmd/labtunnel/cmdutils"
-	"infra/cmd/labtunnel/crosfleet"
-	"infra/cmd/labtunnel/fileutils"
-	clog "infra/cmd/labtunnel/log"
-	"infra/cmd/labtunnel/ssh"
+	"go.chromium.org/infra/cmd/labtunnel/cmdutils"
+	"go.chromium.org/infra/cmd/labtunnel/crosfleet"
+	"go.chromium.org/infra/cmd/labtunnel/fileutils"
+	clog "go.chromium.org/infra/cmd/labtunnel/log"
+	"go.chromium.org/infra/cmd/labtunnel/ssh"
 )
 
 const (

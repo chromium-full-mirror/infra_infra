@@ -18,7 +18,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/tools/dirmd/cmd/dirmd
+  - go.chromium.org/infra/tools/dirmd/cmd/dirmd
 install_mode: copy
 root: ../../go/bin
 data:

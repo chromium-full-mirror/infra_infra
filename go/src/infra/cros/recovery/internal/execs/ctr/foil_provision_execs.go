@@ -13,12 +13,12 @@ import (
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/ctr"
-	"infra/cros/recovery/internal/components/cft"
-	"infra/cros/recovery/internal/components/cft/foilprovision"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/version"
+	"go.chromium.org/infra/cros/recovery/ctr"
+	"go.chromium.org/infra/cros/recovery/internal/components/cft"
+	"go.chromium.org/infra/cros/recovery/internal/components/cft/foilprovision"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/version"
 )
 
 func startFoilProvisionContainerExec(ctx context.Context, info *execs.ExecInfo) error {

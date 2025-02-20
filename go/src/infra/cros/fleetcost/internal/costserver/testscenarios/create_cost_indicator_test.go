@@ -10,9 +10,9 @@ import (
 
 	"google.golang.org/genproto/googleapis/type/money"
 
-	models "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/costserver/testsupport"
+	models "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/testsupport"
 )
 
 // TestCannotCreateDuplicateCostIndicator tests the behavior of creating a duplicate cost entity.

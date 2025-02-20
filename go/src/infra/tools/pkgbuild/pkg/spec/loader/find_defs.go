@@ -17,7 +17,7 @@ import (
 
 	"go.chromium.org/luci/cipkg/base/generators"
 
-	"infra/tools/pkgbuild/pkg/spec"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/spec"
 )
 
 // Run `protoc -I../recipes --go_out=src ../recipes/recipe_modules/support_3pp/spec.proto`

@@ -29,9 +29,9 @@ import (
 	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/common/tsmon/types"
 
-	common_lib "infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/cros-tool-runner/internal/common"
-	"infra/cros/internal/env"
+	common_lib "go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/common"
+	"go.chromium.org/infra/cros/internal/env"
 )
 
 const (

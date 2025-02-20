@@ -13,8 +13,8 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/execs/wifirouter/ssh"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/internal/execs/wifirouter/ssh"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 type routerSSHRunner struct {

@@ -5,8 +5,8 @@
 package atutil
 
 import (
-	"infra/cros/cmd/lucifer/internal/autotest"
-	"infra/cros/cmd/lucifer/internal/osutil"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/autotest"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/osutil"
 )
 
 // MainJob describes the overall job, which dictates certain job

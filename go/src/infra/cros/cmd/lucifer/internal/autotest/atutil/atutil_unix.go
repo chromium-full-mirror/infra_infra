@@ -14,8 +14,8 @@ import (
 
 	"github.com/pkg/errors"
 
-	"infra/cros/cmd/lucifer/internal/autotest"
-	"infra/cros/cmd/lucifer/internal/osutil"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/autotest"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/osutil"
 )
 
 // runTask runs an autoserv task.

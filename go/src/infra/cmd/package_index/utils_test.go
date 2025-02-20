@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	kpb "infra/cmd/package_index/kythe/proto"
+	kpb "go.chromium.org/infra/cmd/package_index/kythe/proto"
 )
 
 func TestRemoveFilepathsFiles(t *testing.T) {

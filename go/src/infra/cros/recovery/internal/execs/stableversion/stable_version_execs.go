@@ -10,10 +10,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/scopes"
-	"infra/cros/recovery/version"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/scopes"
+	"go.chromium.org/infra/cros/recovery/version"
 )
 
 // hasStableVersionServicePathExec checks the path of the stable version service in the context params.

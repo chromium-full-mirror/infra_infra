@@ -18,10 +18,10 @@ import (
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/server/auth"
 
-	apibq "infra/tricium/api/bigquery"
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common"
-	"infra/tricium/appengine/common/track"
+	apibq "go.chromium.org/infra/tricium/api/bigquery"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common"
+	"go.chromium.org/infra/tricium/appengine/common/track"
 )
 
 // ReportNotUseful processes one report not useful request to Tricium.

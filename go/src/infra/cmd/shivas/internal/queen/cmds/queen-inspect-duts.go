@@ -17,9 +17,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/appengine/drone-queen/api"
-	"infra/cmd/shivas/site"
-	"infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/appengine/drone-queen/api"
+	"go.chromium.org/infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
 )
 
 // InspectDuts subcommand: Inspect drone queen DUT info.

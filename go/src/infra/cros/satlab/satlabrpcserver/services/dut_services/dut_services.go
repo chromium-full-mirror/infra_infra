@@ -6,8 +6,8 @@ package dut_services
 import (
 	"context"
 
-	"infra/cros/satlab/common/enumeration"
-	"infra/cros/satlab/satlabrpcserver/models"
+	"go.chromium.org/infra/cros/satlab/common/enumeration"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/models"
 )
 
 // Device is a struct provides the information

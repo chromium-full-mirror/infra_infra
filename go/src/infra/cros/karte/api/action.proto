@@ -9,9 +9,9 @@ package chromeos.karte;
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
 import "google/protobuf/timestamp.proto";
-import "infra/cros/karte/api/storage_policy.proto";
+import "go.chromium.org/infra/cros/karte/api/storage_policy.proto";
 
-option go_package = "infra/cros/karte/api;kartepb";
+option go_package = "go.chromium.org/infra/cros/karte/api;kartepb";
 
 // An action represents an event that was intentionally performed on a DUT.
 // Examples include running a command on a DUT or resetting the servo

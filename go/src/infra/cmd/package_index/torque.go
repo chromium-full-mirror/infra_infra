@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/data/stringset"
 
-	kpb "infra/cmd/package_index/kythe/proto"
+	kpb "go.chromium.org/infra/cmd/package_index/kythe/proto"
 )
 
 type torqueTarget struct {

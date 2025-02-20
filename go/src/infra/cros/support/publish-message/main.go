@@ -11,8 +11,8 @@ import (
 
 	luciPubsub "go.chromium.org/luci/common/gcloud/pubsub"
 
-	"infra/cros/support/internal/cli"
-	"infra/cros/support/internal/pubsub"
+	"go.chromium.org/infra/cros/support/internal/cli"
+	"go.chromium.org/infra/cros/support/internal/pubsub"
 )
 
 // Publish a message containing `data` to projects/`projectId`/topics/`topic-id`. `data` must be

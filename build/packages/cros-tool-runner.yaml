@@ -3,7 +3,7 @@ description: Program for running corresponding tools for ChromeOS testing proces
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/cros-tool-runner
+  - go.chromium.org/infra/cros/cmd/cros-tool-runner
 root: ../../go/bin
 data:
   - file: cros-tool-runner${exe_suffix}

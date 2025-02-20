@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/appengine/cr-rev/config"
-	"infra/appengine/cr-rev/models"
+	"go.chromium.org/infra/appengine/cr-rev/config"
+	"go.chromium.org/infra/appengine/cr-rev/models"
 )
 
 func redirectTestSetup() context.Context {

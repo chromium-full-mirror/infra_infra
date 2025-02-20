@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/vm_leaser/internal/constants"
+	"go.chromium.org/infra/vm_leaser/internal/constants"
 )
 
 var (

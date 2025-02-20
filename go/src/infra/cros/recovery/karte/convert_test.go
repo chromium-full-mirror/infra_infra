@@ -11,8 +11,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	kartepb "infra/cros/karte/api"
-	"infra/cros/recovery/logger/metrics"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
 )
 
 // TestConvertActionToKarteAction tests conversion from an action internal to

@@ -8,10 +8,10 @@ import (
 	"context"
 	"os/exec"
 
-	"infra/cros/satlab/common/commands"
-	"infra/cros/satlab/common/paths"
-	e "infra/cros/satlab/common/utils/errors"
-	"infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/commands"
+	"go.chromium.org/infra/cros/satlab/common/paths"
+	e "go.chromium.org/infra/cros/satlab/common/utils/errors"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 )
 
 // DUTUpdater updates a DUT with the given name.

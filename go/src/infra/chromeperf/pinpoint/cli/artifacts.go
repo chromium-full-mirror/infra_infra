@@ -36,8 +36,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/chromeperf/pinpoint"
-	"infra/chromeperf/pinpoint/proto"
+	"go.chromium.org/infra/chromeperf/pinpoint"
+	"go.chromium.org/infra/chromeperf/pinpoint/proto"
 )
 
 type downloadArtifactsMixin struct {

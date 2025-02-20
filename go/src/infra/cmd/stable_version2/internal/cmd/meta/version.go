@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cmd/stable_version2/internal/site"
+	"go.chromium.org/infra/cmd/stable_version2/internal/site"
 )
 
 // Version is a command that prints version of stable_version2 tool.

@@ -31,12 +31,12 @@ import (
 	"go.chromium.org/luci/common/proto/structmask"
 	"go.chromium.org/luci/common/sync/parallel"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/docker"
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/gs"
-	"infra/cros/internal/shared"
-	"infra/tools/dirmd"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/docker"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/gs"
+	"go.chromium.org/infra/cros/internal/shared"
+	"go.chromium.org/infra/tools/dirmd"
 )
 
 type validator struct {

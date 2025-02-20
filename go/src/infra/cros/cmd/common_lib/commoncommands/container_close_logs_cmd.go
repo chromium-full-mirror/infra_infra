@@ -5,7 +5,7 @@
 package commoncommands
 
 import (
-	"infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 )
 
 // ContainerCloseLogsCmd represents container close logs command.

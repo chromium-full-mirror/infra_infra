@@ -10,7 +10,7 @@ import (
 	"log"
 	"sync"
 
-	"infra/cmd/drone-agent/internal/bot"
+	"go.chromium.org/infra/cmd/drone-agent/internal/bot"
 )
 
 // WorldHook defines the interface that a Botman uses to

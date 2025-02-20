@@ -13,7 +13,7 @@ syntax = "proto3";
 
 package crrev;
 
-option go_package = "infra/appengine/cr-rev/frontend/api/v1;api";
+option go_package = "go.chromium.org/infra/appengine/cr-rev/frontend/api/v1;api";
 
 message RedirectRequest {
   // query is equal to URL path of crrev main redirect logic. For example, it

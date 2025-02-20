@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/cros/lab_inventory/protos/repair_record.proto
+// source: go.chromium.org/infra/cros/lab_inventory/protos/repair_record.proto
 
 package invlibs
 
@@ -73,11 +73,11 @@ func (x LabstationRepairAction) String() string {
 }
 
 func (LabstationRepairAction) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[0].Descriptor()
 }
 
 func (LabstationRepairAction) Type() protoreflect.EnumType {
-	return &file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[0]
 }
 
 func (x LabstationRepairAction) Number() protoreflect.EnumNumber {
@@ -86,7 +86,7 @@ func (x LabstationRepairAction) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use LabstationRepairAction.Descriptor instead.
 func (LabstationRepairAction) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{0}
 }
 
 // Standard manual repair actions taken to fix the servo (servo_v4, servo_v3).
@@ -136,11 +136,11 @@ func (x ServoRepairAction) String() string {
 }
 
 func (ServoRepairAction) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[1].Descriptor()
 }
 
 func (ServoRepairAction) Type() protoreflect.EnumType {
-	return &file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[1]
 }
 
 func (x ServoRepairAction) Number() protoreflect.EnumNumber {
@@ -149,7 +149,7 @@ func (x ServoRepairAction) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ServoRepairAction.Descriptor instead.
 func (ServoRepairAction) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{1}
 }
 
 // Standard manual repair actions taken to fix the yoshi cable (ribbon cable or
@@ -194,11 +194,11 @@ func (x YoshiRepairAction) String() string {
 }
 
 func (YoshiRepairAction) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[2].Descriptor()
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[2].Descriptor()
 }
 
 func (YoshiRepairAction) Type() protoreflect.EnumType {
-	return &file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[2]
+	return &file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[2]
 }
 
 func (x YoshiRepairAction) Number() protoreflect.EnumNumber {
@@ -207,7 +207,7 @@ func (x YoshiRepairAction) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use YoshiRepairAction.Descriptor instead.
 func (YoshiRepairAction) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{2}
 }
 
 // Standard manual repair actions taken to fix the charger.
@@ -248,11 +248,11 @@ func (x ChargerRepairAction) String() string {
 }
 
 func (ChargerRepairAction) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[3].Descriptor()
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[3].Descriptor()
 }
 
 func (ChargerRepairAction) Type() protoreflect.EnumType {
-	return &file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[3]
+	return &file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[3]
 }
 
 func (x ChargerRepairAction) Number() protoreflect.EnumNumber {
@@ -261,7 +261,7 @@ func (x ChargerRepairAction) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ChargerRepairAction.Descriptor instead.
 func (ChargerRepairAction) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{3}
 }
 
 // Standard manual repair actions taken to fix the usb stick on the servo.
@@ -305,11 +305,11 @@ func (x UsbStickRepairAction) String() string {
 }
 
 func (UsbStickRepairAction) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[4].Descriptor()
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[4].Descriptor()
 }
 
 func (UsbStickRepairAction) Type() protoreflect.EnumType {
-	return &file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[4]
+	return &file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[4]
 }
 
 func (x UsbStickRepairAction) Number() protoreflect.EnumNumber {
@@ -318,7 +318,7 @@ func (x UsbStickRepairAction) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use UsbStickRepairAction.Descriptor instead.
 func (UsbStickRepairAction) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{4}
 }
 
 // Standard manual repair actions taken to fix any other cables.
@@ -362,11 +362,11 @@ func (x CableRepairAction) String() string {
 }
 
 func (CableRepairAction) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[5].Descriptor()
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[5].Descriptor()
 }
 
 func (CableRepairAction) Type() protoreflect.EnumType {
-	return &file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[5]
+	return &file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[5]
 }
 
 func (x CableRepairAction) Number() protoreflect.EnumNumber {
@@ -375,7 +375,7 @@ func (x CableRepairAction) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CableRepairAction.Descriptor instead.
 func (CableRepairAction) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{5}
 }
 
 // Standard manual repair actions taken to fix the rpm.
@@ -419,11 +419,11 @@ func (x RpmRepairAction) String() string {
 }
 
 func (RpmRepairAction) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[6].Descriptor()
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[6].Descriptor()
 }
 
 func (RpmRepairAction) Type() protoreflect.EnumType {
-	return &file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[6]
+	return &file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[6]
 }
 
 func (x RpmRepairAction) Number() protoreflect.EnumNumber {
@@ -432,7 +432,7 @@ func (x RpmRepairAction) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use RpmRepairAction.Descriptor instead.
 func (RpmRepairAction) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{6}
 }
 
 // Standard manual repair actions taken to fix the dut.
@@ -488,11 +488,11 @@ func (x DutRepairAction) String() string {
 }
 
 func (DutRepairAction) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[7].Descriptor()
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[7].Descriptor()
 }
 
 func (DutRepairAction) Type() protoreflect.EnumType {
-	return &file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[7]
+	return &file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[7]
 }
 
 func (x DutRepairAction) Number() protoreflect.EnumNumber {
@@ -501,7 +501,7 @@ func (x DutRepairAction) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DutRepairAction.Descriptor instead.
 func (DutRepairAction) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{7}
 }
 
 // The triggering device that led you to work on this repair.
@@ -543,11 +543,11 @@ func (x DeviceManualRepairRecord_RepairTargetType) String() string {
 }
 
 func (DeviceManualRepairRecord_RepairTargetType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[8].Descriptor()
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[8].Descriptor()
 }
 
 func (DeviceManualRepairRecord_RepairTargetType) Type() protoreflect.EnumType {
-	return &file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[8]
+	return &file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[8]
 }
 
 func (x DeviceManualRepairRecord_RepairTargetType) Number() protoreflect.EnumNumber {
@@ -556,7 +556,7 @@ func (x DeviceManualRepairRecord_RepairTargetType) Number() protoreflect.EnumNum
 
 // Deprecated: Use DeviceManualRepairRecord_RepairTargetType.Descriptor instead.
 func (DeviceManualRepairRecord_RepairTargetType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{0, 0}
 }
 
 // State for tracking manual repair progress.
@@ -597,11 +597,11 @@ func (x DeviceManualRepairRecord_RepairState) String() string {
 }
 
 func (DeviceManualRepairRecord_RepairState) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[9].Descriptor()
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[9].Descriptor()
 }
 
 func (DeviceManualRepairRecord_RepairState) Type() protoreflect.EnumType {
-	return &file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[9]
+	return &file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[9]
 }
 
 func (x DeviceManualRepairRecord_RepairState) Number() protoreflect.EnumNumber {
@@ -610,7 +610,7 @@ func (x DeviceManualRepairRecord_RepairState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DeviceManualRepairRecord_RepairState.Descriptor instead.
 func (DeviceManualRepairRecord_RepairState) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{0, 1}
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{0, 1}
 }
 
 // DEPRECATED: Using more granular actions instead.
@@ -668,11 +668,11 @@ func (x DeviceManualRepairRecord_ManualRepairAction) String() string {
 }
 
 func (DeviceManualRepairRecord_ManualRepairAction) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[10].Descriptor()
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[10].Descriptor()
 }
 
 func (DeviceManualRepairRecord_ManualRepairAction) Type() protoreflect.EnumType {
-	return &file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[10]
+	return &file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes[10]
 }
 
 func (x DeviceManualRepairRecord_ManualRepairAction) Number() protoreflect.EnumNumber {
@@ -681,7 +681,7 @@ func (x DeviceManualRepairRecord_ManualRepairAction) Number() protoreflect.EnumN
 
 // Deprecated: Use DeviceManualRepairRecord_ManualRepairAction.Descriptor instead.
 func (DeviceManualRepairRecord_ManualRepairAction) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{0, 2}
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{0, 2}
 }
 
 // Next tag: 30
@@ -697,26 +697,26 @@ type DeviceManualRepairRecord struct {
 	ChromiumBugUrl string `protobuf:"bytes,6,opt,name=chromium_bug_url,json=chromiumBugUrl,proto3" json:"chromium_bug_url,omitempty"`
 	// DUT repair failure description.
 	//
-	// Deprecated: Marked as deprecated in infra/cros/lab_inventory/protos/repair_record.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/cros/lab_inventory/protos/repair_record.proto.
 	DutRepairFailureDescription string `protobuf:"bytes,7,opt,name=dut_repair_failure_description,json=dutRepairFailureDescription,proto3" json:"dut_repair_failure_description,omitempty"`
 	// The last DUT repair verifier that failed.
 	//
-	// Deprecated: Marked as deprecated in infra/cros/lab_inventory/protos/repair_record.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/cros/lab_inventory/protos/repair_record.proto.
 	DutVerifierFailureDescription string `protobuf:"bytes,8,opt,name=dut_verifier_failure_description,json=dutVerifierFailureDescription,proto3" json:"dut_verifier_failure_description,omitempty"`
 	// Servo repair failure description.
 	//
-	// Deprecated: Marked as deprecated in infra/cros/lab_inventory/protos/repair_record.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/cros/lab_inventory/protos/repair_record.proto.
 	ServoRepairFailureDescription string `protobuf:"bytes,9,opt,name=servo_repair_failure_description,json=servoRepairFailureDescription,proto3" json:"servo_repair_failure_description,omitempty"`
 	// The last Servo repair verifier that failed.
 	//
-	// Deprecated: Marked as deprecated in infra/cros/lab_inventory/protos/repair_record.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/cros/lab_inventory/protos/repair_record.proto.
 	ServoVerifierFailureDescription string `protobuf:"bytes,10,opt,name=servo_verifier_failure_description,json=servoVerifierFailureDescription,proto3" json:"servo_verifier_failure_description,omitempty"`
 	// Diagnosis of what is wrong with the device.
 	Diagnosis string `protobuf:"bytes,11,opt,name=diagnosis,proto3" json:"diagnosis,omitempty"`
 	// The procedure that fixed the device. This can be a best guess. Assumption
 	// is that admin/skylab repairs will run to verify the repair post fix.
 	RepairProcedure string `protobuf:"bytes,12,opt,name=repair_procedure,json=repairProcedure,proto3" json:"repair_procedure,omitempty"`
-	// Deprecated: Marked as deprecated in infra/cros/lab_inventory/protos/repair_record.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/cros/lab_inventory/protos/repair_record.proto.
 	ManualRepairActions     []DeviceManualRepairRecord_ManualRepairAction `protobuf:"varint,13,rep,packed,name=manual_repair_actions,json=manualRepairActions,proto3,enum=inventory.libs.protos.DeviceManualRepairRecord_ManualRepairAction" json:"manual_repair_actions,omitempty"`
 	LabstationRepairActions []LabstationRepairAction                      `protobuf:"varint,20,rep,packed,name=labstation_repair_actions,json=labstationRepairActions,proto3,enum=inventory.libs.protos.LabstationRepairAction" json:"labstation_repair_actions,omitempty"`
 	ServoRepairActions      []ServoRepairAction                           `protobuf:"varint,21,rep,packed,name=servo_repair_actions,json=servoRepairActions,proto3,enum=inventory.libs.protos.ServoRepairAction" json:"servo_repair_actions,omitempty"`
@@ -752,7 +752,7 @@ type DeviceManualRepairRecord struct {
 
 func (x *DeviceManualRepairRecord) Reset() {
 	*x = DeviceManualRepairRecord{}
-	mi := &file_infra_cros_lab_inventory_protos_repair_record_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -764,7 +764,7 @@ func (x *DeviceManualRepairRecord) String() string {
 func (*DeviceManualRepairRecord) ProtoMessage() {}
 
 func (x *DeviceManualRepairRecord) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_lab_inventory_protos_repair_record_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -777,7 +777,7 @@ func (x *DeviceManualRepairRecord) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceManualRepairRecord.ProtoReflect.Descriptor instead.
 func (*DeviceManualRepairRecord) Descriptor() ([]byte, []int) {
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *DeviceManualRepairRecord) GetHostname() string {
@@ -822,7 +822,7 @@ func (x *DeviceManualRepairRecord) GetChromiumBugUrl() string {
 	return ""
 }
 
-// Deprecated: Marked as deprecated in infra/cros/lab_inventory/protos/repair_record.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/cros/lab_inventory/protos/repair_record.proto.
 func (x *DeviceManualRepairRecord) GetDutRepairFailureDescription() string {
 	if x != nil {
 		return x.DutRepairFailureDescription
@@ -830,7 +830,7 @@ func (x *DeviceManualRepairRecord) GetDutRepairFailureDescription() string {
 	return ""
 }
 
-// Deprecated: Marked as deprecated in infra/cros/lab_inventory/protos/repair_record.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/cros/lab_inventory/protos/repair_record.proto.
 func (x *DeviceManualRepairRecord) GetDutVerifierFailureDescription() string {
 	if x != nil {
 		return x.DutVerifierFailureDescription
@@ -838,7 +838,7 @@ func (x *DeviceManualRepairRecord) GetDutVerifierFailureDescription() string {
 	return ""
 }
 
-// Deprecated: Marked as deprecated in infra/cros/lab_inventory/protos/repair_record.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/cros/lab_inventory/protos/repair_record.proto.
 func (x *DeviceManualRepairRecord) GetServoRepairFailureDescription() string {
 	if x != nil {
 		return x.ServoRepairFailureDescription
@@ -846,7 +846,7 @@ func (x *DeviceManualRepairRecord) GetServoRepairFailureDescription() string {
 	return ""
 }
 
-// Deprecated: Marked as deprecated in infra/cros/lab_inventory/protos/repair_record.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/cros/lab_inventory/protos/repair_record.proto.
 func (x *DeviceManualRepairRecord) GetServoVerifierFailureDescription() string {
 	if x != nil {
 		return x.ServoVerifierFailureDescription
@@ -868,7 +868,7 @@ func (x *DeviceManualRepairRecord) GetRepairProcedure() string {
 	return ""
 }
 
-// Deprecated: Marked as deprecated in infra/cros/lab_inventory/protos/repair_record.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/cros/lab_inventory/protos/repair_record.proto.
 func (x *DeviceManualRepairRecord) GetManualRepairActions() []DeviceManualRepairRecord_ManualRepairAction {
 	if x != nil {
 		return x.ManualRepairActions
@@ -988,10 +988,11 @@ func (x *DeviceManualRepairRecord) GetAdditionalComments() string {
 	return ""
 }
 
-var File_infra_cros_lab_inventory_protos_repair_record_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto protoreflect.FileDescriptor
 
-var file_infra_cros_lab_inventory_protos_repair_record_proto_rawDesc = string([]byte{
-	0x0a, 0x33, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62,
+var file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDesc = string([]byte{
+	0x0a, 0x43, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62,
 	0x5f, 0x69, 0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x73, 0x2f, 0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x5f, 0x72, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x15, 0x69, 0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79,
@@ -1220,27 +1221,28 @@ var file_infra_cros_lab_inventory_protos_repair_record_proto_rawDesc = string([]
 	0x5f, 0x50, 0x52, 0x45, 0x53, 0x45, 0x4e, 0x54, 0x10, 0x06, 0x12, 0x0f, 0x0a, 0x0b, 0x44, 0x55,
 	0x54, 0x5f, 0x52, 0x45, 0x46, 0x4c, 0x41, 0x53, 0x48, 0x10, 0x07, 0x12, 0x0f, 0x0a, 0x0b, 0x44,
 	0x55, 0x54, 0x5f, 0x52, 0x45, 0x50, 0x4c, 0x41, 0x43, 0x45, 0x10, 0x08, 0x12, 0x0d, 0x0a, 0x09,
-	0x44, 0x55, 0x54, 0x5f, 0x4f, 0x54, 0x48, 0x45, 0x52, 0x10, 0x09, 0x42, 0x29, 0x5a, 0x27, 0x69,
+	0x44, 0x55, 0x54, 0x5f, 0x4f, 0x54, 0x48, 0x45, 0x52, 0x10, 0x09, 0x42, 0x39, 0x5a, 0x37, 0x67,
+	0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69,
 	0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x5f, 0x69, 0x6e,
 	0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x3b, 0x69,
 	0x6e, 0x76, 0x6c, 0x69, 0x62, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescOnce sync.Once
-	file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescData []byte
+	file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescData []byte
 )
 
-func file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP() []byte {
-	file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescOnce.Do(func() {
-		file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_cros_lab_inventory_protos_repair_record_proto_rawDesc), len(file_infra_cros_lab_inventory_protos_repair_record_proto_rawDesc)))
+func file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDesc), len(file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDesc)))
 	})
-	return file_infra_cros_lab_inventory_protos_repair_record_proto_rawDescData
+	return file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDescData
 }
 
-var file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
-var file_infra_cros_lab_inventory_protos_repair_record_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_infra_cros_lab_inventory_protos_repair_record_proto_goTypes = []any{
+var file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
+var file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_goTypes = []any{
 	(LabstationRepairAction)(0),                      // 0: inventory.libs.protos.LabstationRepairAction
 	(ServoRepairAction)(0),                           // 1: inventory.libs.protos.ServoRepairAction
 	(YoshiRepairAction)(0),                           // 2: inventory.libs.protos.YoshiRepairAction
@@ -1255,7 +1257,7 @@ var file_infra_cros_lab_inventory_protos_repair_record_proto_goTypes = []any{
 	(*DeviceManualRepairRecord)(nil),                 // 11: inventory.libs.protos.DeviceManualRepairRecord
 	(*timestamppb.Timestamp)(nil),                    // 12: google.protobuf.Timestamp
 }
-var file_infra_cros_lab_inventory_protos_repair_record_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_depIdxs = []int32{
 	8,  // 0: inventory.libs.protos.DeviceManualRepairRecord.repair_target_type:type_name -> inventory.libs.protos.DeviceManualRepairRecord.RepairTargetType
 	9,  // 1: inventory.libs.protos.DeviceManualRepairRecord.repair_state:type_name -> inventory.libs.protos.DeviceManualRepairRecord.RepairState
 	10, // 2: inventory.libs.protos.DeviceManualRepairRecord.manual_repair_actions:type_name -> inventory.libs.protos.DeviceManualRepairRecord.ManualRepairAction
@@ -1277,27 +1279,27 @@ var file_infra_cros_lab_inventory_protos_repair_record_proto_depIdxs = []int32{
 	0,  // [0:14] is the sub-list for field type_name
 }
 
-func init() { file_infra_cros_lab_inventory_protos_repair_record_proto_init() }
-func file_infra_cros_lab_inventory_protos_repair_record_proto_init() {
-	if File_infra_cros_lab_inventory_protos_repair_record_proto != nil {
+func init() { file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_init() }
+func file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_init() {
+	if File_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_cros_lab_inventory_protos_repair_record_proto_rawDesc), len(file_infra_cros_lab_inventory_protos_repair_record_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDesc), len(file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_rawDesc)),
 			NumEnums:      11,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_cros_lab_inventory_protos_repair_record_proto_goTypes,
-		DependencyIndexes: file_infra_cros_lab_inventory_protos_repair_record_proto_depIdxs,
-		EnumInfos:         file_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes,
-		MessageInfos:      file_infra_cros_lab_inventory_protos_repair_record_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_msgTypes,
 	}.Build()
-	File_infra_cros_lab_inventory_protos_repair_record_proto = out.File
-	file_infra_cros_lab_inventory_protos_repair_record_proto_goTypes = nil
-	file_infra_cros_lab_inventory_protos_repair_record_proto_depIdxs = nil
+	File_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto = out.File
+	file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_goTypes = nil
+	file_go_chromium_org_infra_cros_lab_inventory_protos_repair_record_proto_depIdxs = nil
 }

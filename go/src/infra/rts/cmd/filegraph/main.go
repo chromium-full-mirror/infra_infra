@@ -4,7 +4,7 @@
 
 package main
 
-import "infra/rts/filegraph/cli"
+import "go.chromium.org/infra/rts/filegraph/cli"
 
 func main() {
 	cli.Main()

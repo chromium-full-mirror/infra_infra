@@ -26,12 +26,12 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/logdog/client/butlerlib/streamclient"
 
-	"infra/chromium/bootstrapper/bootstrap"
-	"infra/chromium/bootstrapper/clients/cipd"
-	fakecipd "infra/chromium/bootstrapper/clients/fakes/cipd"
-	fakegitiles "infra/chromium/bootstrapper/clients/fakes/gitiles"
-	"infra/chromium/bootstrapper/clients/gitiles"
-	. "infra/chromium/util"
+	"go.chromium.org/infra/chromium/bootstrapper/bootstrap"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/cipd"
+	fakecipd "go.chromium.org/infra/chromium/bootstrapper/clients/fakes/cipd"
+	fakegitiles "go.chromium.org/infra/chromium/bootstrapper/clients/fakes/gitiles"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gitiles"
+	. "go.chromium.org/infra/chromium/util"
 )
 
 func createInput(buildJson string) io.Reader {

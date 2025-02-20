@@ -6,15 +6,15 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/tricium/api/bigquery/analyzer_results.proto
+// source: go.chromium.org/infra/tricium/api/bigquery/analyzer_results.proto
 
 package apibq
 
 import (
+	v1 "go.chromium.org/infra/tricium/api/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	v1 "infra/tricium/api/v1"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -52,7 +52,7 @@ type AnalysisRun struct {
 
 func (x *AnalysisRun) Reset() {
 	*x = AnalysisRun{}
-	mi := &file_infra_tricium_api_bigquery_analyzer_results_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -64,7 +64,7 @@ func (x *AnalysisRun) String() string {
 func (*AnalysisRun) ProtoMessage() {}
 
 func (x *AnalysisRun) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_bigquery_analyzer_results_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -77,7 +77,7 @@ func (x *AnalysisRun) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnalysisRun.ProtoReflect.Descriptor instead.
 func (*AnalysisRun) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_bigquery_analyzer_results_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *AnalysisRun) GetGerritRevision() *v1.GerritRevision {
@@ -154,7 +154,7 @@ type AnalysisRun_GerritComment struct {
 
 func (x *AnalysisRun_GerritComment) Reset() {
 	*x = AnalysisRun_GerritComment{}
-	mi := &file_infra_tricium_api_bigquery_analyzer_results_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -166,7 +166,7 @@ func (x *AnalysisRun_GerritComment) String() string {
 func (*AnalysisRun_GerritComment) ProtoMessage() {}
 
 func (x *AnalysisRun_GerritComment) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_bigquery_analyzer_results_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -179,7 +179,7 @@ func (x *AnalysisRun_GerritComment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnalysisRun_GerritComment.ProtoReflect.Descriptor instead.
 func (*AnalysisRun_GerritComment) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_bigquery_analyzer_results_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_rawDescGZIP(), []int{0, 0}
 }
 
 func (x *AnalysisRun_GerritComment) GetComment() *v1.Data_Comment {
@@ -217,18 +217,22 @@ func (x *AnalysisRun_GerritComment) GetSelected() bool {
 	return false
 }
 
-var File_infra_tricium_api_bigquery_analyzer_results_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto protoreflect.FileDescriptor
 
-var file_infra_tricium_api_bigquery_analyzer_results_proto_rawDesc = string([]byte{
-	0x0a, 0x31, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
+var file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_rawDesc = string([]byte{
+	0x0a, 0x41, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2f, 0x61, 0x6e, 0x61,
 	0x6c, 0x79, 0x7a, 0x65, 0x72, 0x5f, 0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x73, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x12, 0x05, 0x61, 0x70, 0x69, 0x62, 0x71, 0x1a, 0x1f, 0x69, 0x6e, 0x66, 0x72,
+	0x6f, 0x74, 0x6f, 0x12, 0x05, 0x61, 0x70, 0x69, 0x62, 0x71, 0x1a, 0x2f, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31,
-	0x2f, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x23, 0x69, 0x6e, 0x66,
+	0x2f, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x33, 0x67, 0x6f, 0x2e,
+	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66,
 	0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76,
 	0x31, 0x2f, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x1a, 0x22, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
+	0x1a, 0x32, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e,
@@ -273,25 +277,26 @@ var file_infra_tricium_api_bigquery_analyzer_results_proto_rawDesc = string([]by
 	0x6f, 0x72, 0x6d, 0x2e, 0x4e, 0x61, 0x6d, 0x65, 0x52, 0x09, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f,
 	0x72, 0x6d, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x65, 0x64, 0x18,
 	0x05, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x73, 0x65, 0x6c, 0x65, 0x63, 0x74, 0x65, 0x64, 0x42,
-	0x22, 0x5a, 0x20, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d,
+	0x32, 0x5a, 0x30, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f,
+	0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d,
 	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x3b, 0x61, 0x70,
 	0x69, 0x62, 0x71, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_tricium_api_bigquery_analyzer_results_proto_rawDescOnce sync.Once
-	file_infra_tricium_api_bigquery_analyzer_results_proto_rawDescData []byte
+	file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_rawDescData []byte
 )
 
-func file_infra_tricium_api_bigquery_analyzer_results_proto_rawDescGZIP() []byte {
-	file_infra_tricium_api_bigquery_analyzer_results_proto_rawDescOnce.Do(func() {
-		file_infra_tricium_api_bigquery_analyzer_results_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_tricium_api_bigquery_analyzer_results_proto_rawDesc), len(file_infra_tricium_api_bigquery_analyzer_results_proto_rawDesc)))
+func file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_rawDesc), len(file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_rawDesc)))
 	})
-	return file_infra_tricium_api_bigquery_analyzer_results_proto_rawDescData
+	return file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_rawDescData
 }
 
-var file_infra_tricium_api_bigquery_analyzer_results_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_infra_tricium_api_bigquery_analyzer_results_proto_goTypes = []any{
+var file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_goTypes = []any{
 	(*AnalysisRun)(nil),               // 0: apibq.AnalysisRun
 	(*AnalysisRun_GerritComment)(nil), // 1: apibq.AnalysisRun.GerritComment
 	(*v1.GerritRevision)(nil),         // 2: tricium.GerritRevision
@@ -301,7 +306,7 @@ var file_infra_tricium_api_bigquery_analyzer_results_proto_goTypes = []any{
 	(v1.State)(0),                     // 6: tricium.State
 	(*v1.Data_Comment)(nil),           // 7: tricium.Data.Comment
 }
-var file_infra_tricium_api_bigquery_analyzer_results_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_depIdxs = []int32{
 	2, // 0: apibq.AnalysisRun.gerrit_revision:type_name -> tricium.GerritRevision
 	3, // 1: apibq.AnalysisRun.files:type_name -> tricium.Data.File
 	4, // 2: apibq.AnalysisRun.requested_time:type_name -> google.protobuf.Timestamp
@@ -318,26 +323,26 @@ var file_infra_tricium_api_bigquery_analyzer_results_proto_depIdxs = []int32{
 	0, // [0:9] is the sub-list for field type_name
 }
 
-func init() { file_infra_tricium_api_bigquery_analyzer_results_proto_init() }
-func file_infra_tricium_api_bigquery_analyzer_results_proto_init() {
-	if File_infra_tricium_api_bigquery_analyzer_results_proto != nil {
+func init() { file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_init() }
+func file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_init() {
+	if File_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_tricium_api_bigquery_analyzer_results_proto_rawDesc), len(file_infra_tricium_api_bigquery_analyzer_results_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_rawDesc), len(file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_tricium_api_bigquery_analyzer_results_proto_goTypes,
-		DependencyIndexes: file_infra_tricium_api_bigquery_analyzer_results_proto_depIdxs,
-		MessageInfos:      file_infra_tricium_api_bigquery_analyzer_results_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_msgTypes,
 	}.Build()
-	File_infra_tricium_api_bigquery_analyzer_results_proto = out.File
-	file_infra_tricium_api_bigquery_analyzer_results_proto_goTypes = nil
-	file_infra_tricium_api_bigquery_analyzer_results_proto_depIdxs = nil
+	File_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto = out.File
+	file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_goTypes = nil
+	file_go_chromium_org_infra_tricium_api_bigquery_analyzer_results_proto_depIdxs = nil
 }

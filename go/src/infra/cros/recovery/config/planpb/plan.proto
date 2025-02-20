@@ -7,9 +7,9 @@ syntax = "proto3";
 package chromeos.recovery;
 
 import "google/protobuf/duration.proto";
-import "infra/cros/recovery/config/planpb/metric_config.proto";
+import "go.chromium.org/infra/cros/recovery/config/planpb/metric_config.proto";
 
-option go_package = "infra/cros/recovery/config;config";
+option go_package = "go.chromium.org/infra/cros/recovery/config;config";
 
 // Configuration provides the plans to be used by the recovery engine.
 message Configuration {

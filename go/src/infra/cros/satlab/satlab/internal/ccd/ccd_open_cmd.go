@@ -16,8 +16,8 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cros/satlab/common/dut"
-	"infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/dut"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 )
 
 // CCDOpenCmd contains the usage and implementation for the ccd open command

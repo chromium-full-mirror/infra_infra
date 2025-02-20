@@ -14,8 +14,8 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
-	"infra/fleetconsole/internal/site"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/internal/site"
 )
 
 // PingDBCommand tries to ping the database.

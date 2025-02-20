@@ -25,7 +25,7 @@ import (
 	"strings"
 	"testing"
 
-	"infra/cros/internal/gs"
+	"go.chromium.org/infra/cros/internal/gs"
 )
 
 type mockClient struct {

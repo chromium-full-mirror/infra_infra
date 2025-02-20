@@ -18,8 +18,8 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"infra/cros/satlab/common/paths"
-	"infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/paths"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 )
 
 // TestGetHostIPShouldSuccess test `GetHostIP` function.

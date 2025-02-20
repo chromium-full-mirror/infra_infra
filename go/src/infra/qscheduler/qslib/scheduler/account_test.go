@@ -19,7 +19,7 @@ import (
 
 	"github.com/kylelemons/godebug/pretty"
 
-	"infra/qscheduler/qslib/protos"
+	"go.chromium.org/infra/qscheduler/qslib/protos"
 )
 
 // TestBestPriority tests that BestPriorityFor behaves correctly.

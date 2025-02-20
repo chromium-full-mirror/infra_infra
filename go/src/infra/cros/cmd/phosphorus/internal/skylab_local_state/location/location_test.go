@@ -10,7 +10,7 @@ package location_test
 import (
 	"testing"
 
-	"infra/cros/cmd/phosphorus/internal/skylab_local_state/location"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/skylab_local_state/location"
 )
 
 func TestResultsParentDir(t *testing.T) {

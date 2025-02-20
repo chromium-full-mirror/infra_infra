@@ -9,8 +9,8 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/botsregulator/internal/migrator"
-	"infra/cros/botsregulator/internal/regulator"
+	"go.chromium.org/infra/cros/botsregulator/internal/migrator"
+	"go.chromium.org/infra/cros/botsregulator/internal/regulator"
 )
 
 // Cleanup flow rolls back excluded DUTs from Cloudbots to Drone.

@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/logger"
 )
 
 // MatchCrossystemValueToExpectation reads value from crossystem and compared to expected value.

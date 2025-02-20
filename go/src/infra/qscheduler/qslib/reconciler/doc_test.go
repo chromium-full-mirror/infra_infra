@@ -21,8 +21,8 @@ import (
 
 	"go.chromium.org/luci/common/data/stringset"
 
-	"infra/qscheduler/qslib/reconciler"
-	"infra/qscheduler/qslib/scheduler"
+	"go.chromium.org/infra/qscheduler/qslib/reconciler"
+	"go.chromium.org/infra/qscheduler/qslib/scheduler"
 )
 
 func Example() {

@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	"infra/cros/cmd/ctpv2-filters/pre_process_filter/interfaces"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/pre_process_filter/interfaces"
 )
 
 // BoardTestInfo holds list of tests and milestone for a given board.

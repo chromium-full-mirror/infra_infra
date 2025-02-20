@@ -21,10 +21,10 @@ import (
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/luciexe/exe"
 
-	"infra/chromium/bootstrapper/clients/gclient"
-	"infra/chromium/bootstrapper/clients/gerrit"
-	"infra/chromium/bootstrapper/clients/gitiles"
-	"infra/chromium/bootstrapper/clients/gob"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gclient"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gerrit"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gitiles"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gob"
 )
 
 type GclientGetter func(ctx context.Context) (*gclient.Client, error)

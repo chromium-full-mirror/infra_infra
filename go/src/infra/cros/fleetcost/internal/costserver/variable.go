@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
 )
 
 // CreateVariable creates a global variable.

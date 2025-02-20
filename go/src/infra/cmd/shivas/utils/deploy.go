@@ -11,11 +11,11 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/shivas/site"
-	schedulingapi "infra/libs/fleet/scheduling/api"
-	"infra/libs/skylab/buildbucket"
-	"infra/libs/skylab/swarming"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cmd/shivas/site"
+	schedulingapi "go.chromium.org/infra/libs/fleet/scheduling/api"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
+	"go.chromium.org/infra/libs/skylab/swarming"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // DeployTaskParams contain fields used when scheduling deploy task

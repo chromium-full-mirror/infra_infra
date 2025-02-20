@@ -13,8 +13,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	kartepb "infra/cros/karte/api"
-	"infra/cros/recovery/logger/metrics"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
 )
 
 // ConvertActionStatusToKarteActionStatus takes a metrics action status and converts it to a Karte action status.

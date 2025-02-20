@@ -14,11 +14,11 @@ import (
 	"github.com/google/subcommands"
 	"github.com/pkg/errors"
 
-	"infra/cros/cmd/lucifer/internal/api"
-	"infra/cros/cmd/lucifer/internal/autotest/atutil"
-	"infra/cros/cmd/lucifer/internal/dutstate"
-	"infra/cros/cmd/lucifer/internal/event"
-	"infra/cros/cmd/lucifer/internal/flagx"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/api"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/autotest/atutil"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/dutstate"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/event"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/flagx"
 )
 
 type adminTaskCmd struct {

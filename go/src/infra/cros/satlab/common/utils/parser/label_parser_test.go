@@ -10,7 +10,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	e "infra/cros/satlab/common/utils/errors"
+	e "go.chromium.org/infra/cros/satlab/common/utils/errors"
 )
 
 func TestExtractBoardAndBoardShouldWork(t *testing.T) {

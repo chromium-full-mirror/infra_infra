@@ -18,8 +18,8 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/phosphorus/internal/autotest"
-	"infra/cros/cmd/phosphorus/internal/autotest/atutil"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/autotest"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/autotest/atutil"
 )
 
 // CommonRun provides the basis for a command that accepts a

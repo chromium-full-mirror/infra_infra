@@ -10,9 +10,9 @@ import (
 
 	"go.chromium.org/luci/common/data/stringset"
 
-	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
-	"infra/libs/skylab/inventory"
-	"infra/libs/skylab/request"
+	trservice "go.chromium.org/infra/cmd/cros_test_platform/internal/execution/testrunner/service"
+	"go.chromium.org/infra/libs/skylab/inventory"
+	"go.chromium.org/infra/libs/skylab/request"
 )
 
 func TestBotsAwareFakeClient(t *testing.T) {

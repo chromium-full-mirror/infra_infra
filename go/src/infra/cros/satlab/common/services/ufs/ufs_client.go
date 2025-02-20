@@ -14,11 +14,11 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/cmd/shivas/site"
-	"infra/cmdsupport/cmdlib"
-	s "infra/cros/satlab/common/site"
-	ufsModels "infra/unifiedfleet/api/v1/models"
-	ufsApi "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	s "go.chromium.org/infra/cros/satlab/common/site"
+	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsApi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // UFSClient interface provides subset of UFS methods relevant to Satlab CLI

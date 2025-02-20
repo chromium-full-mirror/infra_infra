@@ -7,7 +7,7 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/appengine/sheriff-o-matic/som/client"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/client"
 )
 
 const configURL = "https://chromium.googlesource.com/infra/infra/+/HEAD/go/src/infra/appengine/sheriff-o-matic/config/config.json?format=text"

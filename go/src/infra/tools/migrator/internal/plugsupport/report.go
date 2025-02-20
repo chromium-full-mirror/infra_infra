@@ -7,7 +7,7 @@ package plugsupport
 import (
 	"context"
 
-	"infra/tools/migrator"
+	"go.chromium.org/infra/tools/migrator"
 )
 
 type reportSink struct {

@@ -7,7 +7,7 @@ package commands
 import (
 	"testing"
 
-	"infra/libs/skylab/inventory"
+	"go.chromium.org/infra/libs/skylab/inventory"
 )
 
 func TestCreateLabels(t *testing.T) {

@@ -7,7 +7,7 @@ package ufs
 import (
 	"context"
 
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // Used for UFS RPC calls.

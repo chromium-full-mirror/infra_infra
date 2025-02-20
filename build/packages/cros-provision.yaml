@@ -3,7 +3,7 @@ description: cros-provision is the CFT container handling cros provisioning.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/cft/provision/cros-provision
+  - go.chromium.org/infra/cros/cmd/cft/provision/cros-provision
 root: ../../go/bin
 data:
   - file: cros-provision${exe_suffix}

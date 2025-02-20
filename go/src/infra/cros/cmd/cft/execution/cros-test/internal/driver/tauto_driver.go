@@ -16,9 +16,9 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	"infra/cros/cmd/cft/execution/cros-test/internal/common"
-	"infra/cros/cmd/cft/execution/cros-test/internal/device"
-	"infra/cros/cmd/cft/execution/cros-test/internal/tautoresults"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/common"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/device"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/tautoresults"
 )
 
 // TautoDriver runs Tauto and report its results.

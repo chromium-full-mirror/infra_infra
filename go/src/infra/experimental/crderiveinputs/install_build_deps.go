@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/luci/common/exec"
 
-	"infra/experimental/crderiveinputs/inputpb"
+	"go.chromium.org/infra/experimental/crderiveinputs/inputpb"
 )
 
 func (e EmbedTools) ExtractInstallBuildDeps(ctx context.Context, oracle *Oracle, root string) (*inputpb.LinuxSystemDeps, error) {

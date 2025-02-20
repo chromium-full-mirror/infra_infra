@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/appengine/crosskylabadmin/internal/tq"
-	"infra/libs/skylab/common/heuristics"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/tq"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
 )
 
 const repairBotsQueue = "repair-bots"

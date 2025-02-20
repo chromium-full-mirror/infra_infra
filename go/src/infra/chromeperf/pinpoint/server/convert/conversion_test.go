@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/convey"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	pinpoint_proto "infra/chromeperf/pinpoint/proto"
+	pinpoint_proto "go.chromium.org/infra/chromeperf/pinpoint/proto"
 )
 
 const testPriority = 42

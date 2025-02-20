@@ -30,7 +30,7 @@ import (
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/experimental/swarming/fakebuild/fakebuildpb"
+	"go.chromium.org/infra/experimental/swarming/fakebuild/fakebuildpb"
 )
 
 var inputProps = build.RegisterInputProperty[*fakebuildpb.Inputs]("")

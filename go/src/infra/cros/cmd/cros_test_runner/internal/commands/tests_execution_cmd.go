@@ -18,9 +18,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/data"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/data"
 )
 
 // TestsExecutionCmd represents test execution cmd.

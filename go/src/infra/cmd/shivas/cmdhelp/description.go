@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"strings"
 
-	"infra/cmd/shivas/utils"
-	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsDumper "infra/unifiedfleet/app/dumper"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsDumper "go.chromium.org/infra/unifiedfleet/app/dumper"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 var (

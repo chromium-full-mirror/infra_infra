@@ -15,15 +15,15 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	fleetcostModels "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/costserver"
-	"infra/cros/fleetcost/internal/costserver/controller"
-	"infra/cros/fleetcost/internal/costserver/entities"
-	"infra/cros/fleetcost/internal/costserver/fakeufsdata"
-	"infra/cros/fleetcost/internal/costserver/testsupport"
-	"infra/cros/fleetcost/internal/utils"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	fleetcostModels "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/controller"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/entities"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/fakeufsdata"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/testsupport"
+	"go.chromium.org/infra/cros/fleetcost/internal/utils"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // TestGetCostResult tests the last mile of the cost result API.

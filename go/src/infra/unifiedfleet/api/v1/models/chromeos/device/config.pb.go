@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/unifiedfleet/api/v1/models/chromeos/device/config.proto
+// source: go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/device/config.proto
 
 package ufspb
 
@@ -74,11 +74,11 @@ func (x Config_FormFactor) String() string {
 }
 
 func (Config_FormFactor) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[0].Descriptor()
 }
 
 func (Config_FormFactor) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[0]
 }
 
 func (x Config_FormFactor) Number() protoreflect.EnumNumber {
@@ -87,7 +87,7 @@ func (x Config_FormFactor) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Config_FormFactor.Descriptor instead.
 func (Config_FormFactor) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 0}
 }
 
 // Next Tag: 3
@@ -124,11 +124,11 @@ func (x Config_Graphics) String() string {
 }
 
 func (Config_Graphics) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[1].Descriptor()
 }
 
 func (Config_Graphics) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[1]
 }
 
 func (x Config_Graphics) Number() protoreflect.EnumNumber {
@@ -137,7 +137,7 @@ func (x Config_Graphics) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Config_Graphics.Descriptor instead.
 func (Config_Graphics) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 1}
 }
 
 // Next Tag: 12
@@ -212,11 +212,11 @@ func (x Config_HardwareFeature) String() string {
 }
 
 func (Config_HardwareFeature) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[2].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[2].Descriptor()
 }
 
 func (Config_HardwareFeature) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[2]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[2]
 }
 
 func (x Config_HardwareFeature) Number() protoreflect.EnumNumber {
@@ -225,7 +225,7 @@ func (x Config_HardwareFeature) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Config_HardwareFeature.Descriptor instead.
 func (Config_HardwareFeature) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 2}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 2}
 }
 
 // Indicate the device's power supply.
@@ -263,11 +263,11 @@ func (x Config_PowerSupply) String() string {
 }
 
 func (Config_PowerSupply) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[3].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[3].Descriptor()
 }
 
 func (Config_PowerSupply) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[3]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[3]
 }
 
 func (x Config_PowerSupply) Number() protoreflect.EnumNumber {
@@ -276,7 +276,7 @@ func (x Config_PowerSupply) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Config_PowerSupply.Descriptor instead.
 func (Config_PowerSupply) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 3}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 3}
 }
 
 // Next Tag: 6
@@ -322,11 +322,11 @@ func (x Config_Storage) String() string {
 }
 
 func (Config_Storage) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[4].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[4].Descriptor()
 }
 
 func (Config_Storage) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[4]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[4]
 }
 
 func (x Config_Storage) Number() protoreflect.EnumNumber {
@@ -335,7 +335,7 @@ func (x Config_Storage) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Config_Storage.Descriptor instead.
 func (Config_Storage) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 4}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 4}
 }
 
 // Next tag: 13
@@ -402,11 +402,11 @@ func (x Config_VideoAcceleration) String() string {
 }
 
 func (Config_VideoAcceleration) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[5].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[5].Descriptor()
 }
 
 func (Config_VideoAcceleration) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[5]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[5]
 }
 
 func (x Config_VideoAcceleration) Number() protoreflect.EnumNumber {
@@ -415,7 +415,7 @@ func (x Config_VideoAcceleration) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Config_VideoAcceleration.Descriptor instead.
 func (Config_VideoAcceleration) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 5}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 5}
 }
 
 // Next Tag: 50
@@ -605,11 +605,11 @@ func (x Config_SOC) String() string {
 }
 
 func (Config_SOC) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[6].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[6].Descriptor()
 }
 
 func (Config_SOC) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[6]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[6]
 }
 
 func (x Config_SOC) Number() protoreflect.EnumNumber {
@@ -618,7 +618,7 @@ func (x Config_SOC) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Config_SOC.Descriptor instead.
 func (Config_SOC) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 6}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 6}
 }
 
 // Next Tag: 6
@@ -664,11 +664,11 @@ func (x Config_ODM) String() string {
 }
 
 func (Config_ODM) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[7].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[7].Descriptor()
 }
 
 func (Config_ODM) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[7]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[7]
 }
 
 func (x Config_ODM) Number() protoreflect.EnumNumber {
@@ -677,7 +677,7 @@ func (x Config_ODM) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Config_ODM.Descriptor instead.
 func (Config_ODM) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 7}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 7}
 }
 
 type Config_OEM int32
@@ -728,11 +728,11 @@ func (x Config_OEM) String() string {
 }
 
 func (Config_OEM) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[8].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[8].Descriptor()
 }
 
 func (Config_OEM) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[8]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[8]
 }
 
 func (x Config_OEM) Number() protoreflect.EnumNumber {
@@ -741,7 +741,7 @@ func (x Config_OEM) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Config_OEM.Descriptor instead.
 func (Config_OEM) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 8}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 8}
 }
 
 type Config_Architecture int32
@@ -783,11 +783,11 @@ func (x Config_Architecture) String() string {
 }
 
 func (Config_Architecture) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[9].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[9].Descriptor()
 }
 
 func (Config_Architecture) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[9]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[9]
 }
 
 func (x Config_Architecture) Number() protoreflect.EnumNumber {
@@ -796,7 +796,7 @@ func (x Config_Architecture) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Config_Architecture.Descriptor instead.
 func (Config_Architecture) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 9}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 9}
 }
 
 // Indicate the type of EC present on a device.
@@ -834,11 +834,11 @@ func (x Config_EC) String() string {
 }
 
 func (Config_EC) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[10].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[10].Descriptor()
 }
 
 func (Config_EC) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[10]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes[10]
 }
 
 func (x Config_EC) Number() protoreflect.EnumNumber {
@@ -847,7 +847,7 @@ func (x Config_EC) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Config_EC.Descriptor instead.
 func (Config_EC) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 10}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0, 10}
 }
 
 // Next tag: 22
@@ -900,7 +900,7 @@ type Config struct {
 
 func (x *Config) Reset() {
 	*x = Config{}
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -912,7 +912,7 @@ func (x *Config) String() string {
 func (*Config) ProtoMessage() {}
 
 func (x *Config) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -925,7 +925,7 @@ func (x *Config) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Config.ProtoReflect.Descriptor instead.
 func (*Config) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Config) GetId() *ConfigId {
@@ -1071,7 +1071,7 @@ type AllConfigs struct {
 
 func (x *AllConfigs) Reset() {
 	*x = AllConfigs{}
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1083,7 +1083,7 @@ func (x *AllConfigs) String() string {
 func (*AllConfigs) ProtoMessage() {}
 
 func (x *AllConfigs) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1096,7 +1096,7 @@ func (x *AllConfigs) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AllConfigs.ProtoReflect.Descriptor instead.
 func (*AllConfigs) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *AllConfigs) GetConfigs() []*Config {
@@ -1106,16 +1106,18 @@ func (x *AllConfigs) GetConfigs() []*Config {
 	return nil
 }
 
-var File_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto protoreflect.FileDescriptor
 
-var file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDesc = string([]byte{
-	0x0a, 0x3d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDesc = string([]byte{
+	0x0a, 0x4d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x64, 0x65, 0x76, 0x69,
 	0x63, 0x65, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12,
 	0x2a, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x61, 0x70,
 	0x69, 0x2e, 0x76, 0x31, 0x2e, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2e, 0x63, 0x68, 0x72, 0x6f,
-	0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x1a, 0x40, 0x69, 0x6e, 0x66,
+	0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x1a, 0x50, 0x67, 0x6f, 0x2e,
+	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66,
 	0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68,
 	0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x2f, 0x63, 0x6f,
@@ -1380,28 +1382,29 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDesc =
 	0x0b, 0x32, 0x32, 0x2e, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74,
 	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2e, 0x63,
 	0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x43,
-	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x07, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x42, 0x38,
-	0x5a, 0x36, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x07, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x73, 0x42, 0x48,
+	0x5a, 0x46, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x64, 0x65, 0x76, 0x69,
 	0x63, 0x65, 0x3b, 0x75, 0x66, 0x73, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescOnce sync.Once
-	file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescData []byte
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescData []byte
 )
 
-func file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP() []byte {
-	file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescOnce.Do(func() {
-		file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDesc)))
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDesc)))
 	})
-	return file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescData
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
-var file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_goTypes = []any{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_goTypes = []any{
 	(Config_FormFactor)(0),        // 0: unifiedfleet.api.v1.models.chromeos.device.Config.FormFactor
 	(Config_Graphics)(0),          // 1: unifiedfleet.api.v1.models.chromeos.device.Config.Graphics
 	(Config_HardwareFeature)(0),   // 2: unifiedfleet.api.v1.models.chromeos.device.Config.HardwareFeature
@@ -1417,7 +1420,7 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_goTypes =
 	(*AllConfigs)(nil),            // 12: unifiedfleet.api.v1.models.chromeos.device.AllConfigs
 	(*ConfigId)(nil),              // 13: unifiedfleet.api.v1.models.chromeos.device.ConfigId
 }
-var file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_depIdxs = []int32{
 	13, // 0: unifiedfleet.api.v1.models.chromeos.device.Config.id:type_name -> unifiedfleet.api.v1.models.chromeos.device.ConfigId
 	0,  // 1: unifiedfleet.api.v1.models.chromeos.device.Config.form_factor:type_name -> unifiedfleet.api.v1.models.chromeos.device.Config.FormFactor
 	1,  // 2: unifiedfleet.api.v1.models.chromeos.device.Config.graphics:type_name -> unifiedfleet.api.v1.models.chromeos.device.Config.Graphics
@@ -1438,28 +1441,30 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_depIdxs =
 	0,  // [0:13] is the sub-list for field type_name
 }
 
-func init() { file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_init() }
-func file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_init() {
-	if File_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto != nil {
+func init() {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_init()
+}
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_init() {
+	if File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto != nil {
 		return
 	}
-	file_infra_unifiedfleet_api_v1_models_chromeos_device_config_id_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_id_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_rawDesc)),
 			NumEnums:      11,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_goTypes,
-		DependencyIndexes: file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_depIdxs,
-		EnumInfos:         file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes,
-		MessageInfos:      file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_msgTypes,
 	}.Build()
-	File_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto = out.File
-	file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_goTypes = nil
-	file_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_depIdxs = nil
+	File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto = out.File
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_goTypes = nil
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_device_config_proto_depIdxs = nil
 }

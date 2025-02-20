@@ -11,10 +11,10 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/libs/fleet/device"
-	schedulingapi "infra/libs/fleet/scheduling/api"
-	"infra/libs/fleet/scheduling/schedulers"
-	"infra/libs/skylab/common/heuristics"
+	"go.chromium.org/infra/libs/fleet/device"
+	schedulingapi "go.chromium.org/infra/libs/fleet/scheduling/api"
+	"go.chromium.org/infra/libs/fleet/scheduling/schedulers"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
 )
 
 // SchedukeClient initializes a Scheduke client for CLI use.

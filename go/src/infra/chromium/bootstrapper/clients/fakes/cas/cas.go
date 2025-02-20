@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	bscas "infra/chromium/bootstrapper/clients/cas"
+	bscas "go.chromium.org/infra/chromium/bootstrapper/clients/cas"
 )
 
 // Instance provides the fake data for a RBE-CAS instance.

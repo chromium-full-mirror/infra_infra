@@ -8,7 +8,7 @@ import (
 
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
-	"infra/cros/recovery/models"
+	"go.chromium.org/infra/cros/recovery/models"
 )
 
 type BuildVersion struct {

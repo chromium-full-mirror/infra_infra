@@ -31,7 +31,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/chromeperf/pinpoint/proto"
+	"go.chromium.org/infra/chromeperf/pinpoint/proto"
 )
 
 const testPriority = 42

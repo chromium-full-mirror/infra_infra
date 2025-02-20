@@ -20,7 +20,7 @@ import (
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/router"
 
-	"infra/appengine/sheriff-o-matic/som/model"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/model"
 )
 
 // GetTrees retrieves all trees from the DataStore.

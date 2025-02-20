@@ -8,11 +8,11 @@ package configs
 import (
 	"context"
 
-	"infra/cros/cmd/common_lib/commoncommands"
-	"infra/cros/cmd/common_lib/commonconfigs"
-	"infra/cros/cmd/common_lib/commonexecutors"
-	"infra/cros/cmd/ctpv2/internal/commands"
-	"infra/cros/cmd/ctpv2/internal/executors"
+	"go.chromium.org/infra/cros/cmd/common_lib/commoncommands"
+	"go.chromium.org/infra/cros/cmd/common_lib/commonconfigs"
+	"go.chromium.org/infra/cros/cmd/common_lib/commonexecutors"
+	"go.chromium.org/infra/cros/cmd/ctpv2/internal/commands"
+	"go.chromium.org/infra/cros/cmd/ctpv2/internal/executors"
 )
 
 // All currently supported command-executor pairs.

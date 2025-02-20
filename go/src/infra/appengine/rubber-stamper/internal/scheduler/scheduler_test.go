@@ -19,9 +19,9 @@ import (
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/server/tq/tqtesting"
 
-	"infra/appengine/rubber-stamper/config"
-	"infra/appengine/rubber-stamper/internal/util"
-	"infra/appengine/rubber-stamper/tasks/taskspb"
+	"go.chromium.org/infra/appengine/rubber-stamper/config"
+	"go.chromium.org/infra/appengine/rubber-stamper/internal/util"
+	"go.chromium.org/infra/appengine/rubber-stamper/tasks/taskspb"
 )
 
 func TestScheduleReviews(t *testing.T) {

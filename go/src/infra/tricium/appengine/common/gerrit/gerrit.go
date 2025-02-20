@@ -25,8 +25,8 @@ import (
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/server/auth"
 
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common/track"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common/track"
 )
 
 const (

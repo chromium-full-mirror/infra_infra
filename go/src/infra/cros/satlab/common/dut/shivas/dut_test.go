@@ -10,8 +10,8 @@ import (
 	"os/exec"
 	"testing"
 
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 )
 
 // TestDUT_add ensures for given inputs, we run a specific command.

@@ -6,7 +6,7 @@
 package ufsclient
 
 import (
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 const (

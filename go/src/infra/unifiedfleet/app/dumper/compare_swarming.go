@@ -19,17 +19,17 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/dutstate"
-	"infra/libs/fleet/boxster/swarming"
-	skylabInv "infra/libs/skylab/inventory"
-	skylabSwarming "infra/libs/skylab/inventory/swarming"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	"infra/unifiedfleet/app/controller"
-	"infra/unifiedfleet/app/model/configuration"
-	"infra/unifiedfleet/app/model/inventory"
-	"infra/unifiedfleet/app/model/registration"
-	"infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/libs/fleet/boxster/swarming"
+	skylabInv "go.chromium.org/infra/libs/skylab/inventory"
+	skylabSwarming "go.chromium.org/infra/libs/skylab/inventory/swarming"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"go.chromium.org/infra/unifiedfleet/app/controller"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
+	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	"go.chromium.org/infra/unifiedfleet/app/model/registration"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // swarmingLabelsDiffHandler generated Swarming labels using new Boxster

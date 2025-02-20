@@ -32,10 +32,10 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/tools/pkgbuild/pkg/spec"
-	"infra/tools/pkgbuild/pkg/spec/loader"
-	"infra/tools/pkgbuild/pkg/spec/source"
-	"infra/tools/pkgbuild/pkg/stdenv"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/spec"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/spec/loader"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/spec/source"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/stdenv"
 )
 
 func initStdenv(t testing.TB, build generators.Platform) {

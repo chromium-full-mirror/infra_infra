@@ -19,11 +19,11 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
 
-	api "infra/unifiedfleet/api/v1/rpc"
-	"infra/unifiedfleet/app/acl"
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/untrusted"
-	"infra/unifiedfleet/app/util"
+	api "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/unifiedfleet/app/acl"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/untrusted"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // AllowOriginAllAndCustomHeaders is similar to LUCI's prpc.AllowOriginAll

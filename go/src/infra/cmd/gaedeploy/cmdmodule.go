@@ -18,8 +18,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/environ"
 
-	"infra/cmd/gaedeploy/gcloud"
-	"infra/cmd/gaedeploy/module"
+	"go.chromium.org/infra/cmd/gaedeploy/gcloud"
+	"go.chromium.org/infra/cmd/gaedeploy/module"
 )
 
 // Placeholders for some CLI flags that indicate they weren't set.

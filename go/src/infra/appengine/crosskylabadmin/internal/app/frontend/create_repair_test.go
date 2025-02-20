@@ -15,9 +15,9 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
-	"infra/libs/skylab/common/heuristics"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend/routing"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
 )
 
 // TestIsDisjoint tests that isDisjoint(a, b) returns true if and only if

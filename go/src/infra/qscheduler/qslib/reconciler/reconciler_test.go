@@ -26,7 +26,7 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
-	"infra/qscheduler/qslib/scheduler"
+	"go.chromium.org/infra/qscheduler/qslib/scheduler"
 )
 
 func assertAssignments(t *testing.T, description string,
@@ -227,13 +227,13 @@ func TestQueuedAssignment(t *testing.T) {
 }
 
 func TestPreemption(t *testing.T) {
-	Convey("Given an empty scheduler and reconciler state", t, func(t *T) {
+	Convey("empty state", t, func(t *T) {
 		ctx := context.Background()
 		t0 := time.Unix(0, 0)
 		r := New()
 		s := scheduler.New(t0)
 
-		Convey("given task & idle worker, and AssignTasks called and worker running task", t, func(t *T) {
+		Convey("given task & idle worker, and AssignTasks called", t, func(t *T) {
 			oldRequest := scheduler.RequestID("Request1")
 			taskUpdate := &TaskWaitingRequest{
 				EnqueueTime: t0,
@@ -262,7 +262,7 @@ func TestPreemption(t *testing.T) {
 				}
 				r.NotifyTaskWaiting(ctx, s, scheduler.NullEventSink, taskUpdate)
 
-				Convey("when AssignTasks called with no idle workers & scheduler preempts old request with new one", t, func(t *T) {
+				Convey("when AssignTasks called with no idle workers & preempt occurs", t, func(t *T) {
 					r.AssignTasks(ctx, s, t1, scheduler.NullEventSink)
 
 					// Note: This is more of a test of the scheduler's behavior than the
@@ -271,7 +271,7 @@ func TestPreemption(t *testing.T) {
 
 					Convey("when GetCancellations is called", t, func(t *T) {
 						c := r.Cancellations(ctx)
-						Convey("then it returns a cancellation for the old request on that worker.", t, func(t *T) {
+						Convey("then it returns a cancellation for the old request.", t, func(t *T) {
 							So(t, c, ShouldHaveLength(1))
 							So(t, c[0].RequestID, ShouldEqual(string(oldRequest)))
 							So(t, c[0].WorkerID, ShouldEqual(string(wid)))
@@ -283,29 +283,23 @@ func TestPreemption(t *testing.T) {
 						r.NotifyTaskAbsent(ctx, s, scheduler.NullEventSink, &TaskAbsentRequest{RequestID: oldRequest, Time: t2})
 						Convey("when GetCancellations is called", t, func(t *T) {
 							c := r.Cancellations(ctx)
-							Convey("then it returns nothing.", t, func(t *T) {
-								So(t, c, ShouldBeEmpty)
-							})
+							So(t, c, ShouldBeEmpty)
 						})
 					})
 
 					Convey("when AssignTasks is called for the intended worker", t, func(t *T) {
 						t2 := time.Unix(2, 0)
 						as := r.AssignTasks(ctx, s, t2, scheduler.NullEventSink, &IdleWorker{wid, stringset.New(0)})
-						Convey("then it returns the preempting request.", t, func(t *T) {
-							So(t, as, ShouldHaveLength(1))
-							So(t, as[0].RequestID, ShouldEqual(newRequest))
-							So(t, as[0].WorkerID, ShouldEqual(wid))
-						})
+						So(t, as, ShouldHaveLength(1))
+						So(t, as[0].RequestID, ShouldEqual(newRequest))
+						So(t, as[0].WorkerID, ShouldEqual(wid))
 					})
 
 					Convey("when AssignTasks is called for a different worker prior to ACK of the cancellation", t, func(t *T) {
 						t2 := time.Unix(2, 0)
 						wid2 := scheduler.WorkerID("Worker2")
 						as := r.AssignTasks(ctx, s, t2, scheduler.NullEventSink, &IdleWorker{wid2, stringset.New(0)})
-						Convey("then it returns nothing.", t, func(t *T) {
-							So(t, as, ShouldHaveLength(0))
-						})
+						So(t, as, ShouldHaveLength(0))
 					})
 
 					Convey("when the cancellation is ACKed", t, func(t *T) {
@@ -322,27 +316,23 @@ func TestPreemption(t *testing.T) {
 
 							wid2 := scheduler.WorkerID("Worker2")
 							as := r.AssignTasks(ctx, s, t2, scheduler.NullEventSink, &IdleWorker{wid2, stringset.New(0)})
-							Convey("then it returns the previously cancelled request.", t, func(t *T) {
-								So(t, as, ShouldHaveLength(1))
-								So(t, as[0].RequestID, ShouldEqual(oldRequest))
-								So(t, as[0].WorkerID, ShouldEqual(wid2))
-							})
+							So(t, as, ShouldHaveLength(1))
+							So(t, as[0].RequestID, ShouldEqual(oldRequest))
+							So(t, as[0].WorkerID, ShouldEqual(wid2))
 						})
 
 						Convey("when AssignTasks is called for the intended worker and a different worker simultaneously", t, func(t *T) {
 							wid2 := scheduler.WorkerID("Worker2")
 							as := r.AssignTasks(ctx, s, t2, scheduler.NullEventSink, &IdleWorker{wid, stringset.New(0)}, &IdleWorker{wid2, stringset.New(0)})
-							Convey("then intended worker receives preempting request, other receives preempted request.", t, func(t *T) {
-								So(t, as, ShouldHaveLength(2))
-								a1 := Assignment{RequestID: newRequest, WorkerID: wid}
-								a2 := Assignment{RequestID: oldRequest, WorkerID: wid2}
-								asm := make(map[scheduler.WorkerID]Assignment)
-								for _, a := range as {
-									asm[a.WorkerID] = a
-								}
-								So(t, asm[a1.WorkerID], ShouldResemble(a1))
-								So(t, asm[a2.WorkerID], ShouldResemble(a2))
-							})
+							So(t, as, ShouldHaveLength(2))
+							a1 := Assignment{RequestID: newRequest, WorkerID: wid}
+							a2 := Assignment{RequestID: oldRequest, WorkerID: wid2}
+							asm := make(map[scheduler.WorkerID]Assignment)
+							for _, a := range as {
+								asm[a.WorkerID] = a
+							}
+							So(t, asm[a1.WorkerID], ShouldResemble(a1))
+							So(t, asm[a2.WorkerID], ShouldResemble(a2))
 						})
 					})
 				})

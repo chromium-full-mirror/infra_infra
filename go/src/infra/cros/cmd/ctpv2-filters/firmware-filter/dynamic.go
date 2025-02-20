@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	"infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 // GenerateDynamicInfo creates dynamic updates for provision

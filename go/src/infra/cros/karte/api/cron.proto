@@ -8,7 +8,7 @@ package chromeos.karte;
 
 import "google/api/annotations.proto";
 
-option go_package = "infra/cros/karte/api;kartepb";
+option go_package = "go.chromium.org/infra/cros/karte/api;kartepb";
 
 // KarteCron is the Karte subservice for tasks that need to be periodically executed.
 // All of the routes that it installs should be under /v1/tasks/...

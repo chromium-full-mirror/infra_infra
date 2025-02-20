@@ -33,10 +33,10 @@ import (
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/secrets"
 
-	"infra/appengine/chrome-test-health/api"
-	"infra/appengine/chrome-test-health/internal/coverage"
-	covCron "infra/appengine/chrome-test-health/internal/coverage/cron"
-	"infra/appengine/chrome-test-health/internal/testmetrics"
+	"go.chromium.org/infra/appengine/chrome-test-health/api"
+	"go.chromium.org/infra/appengine/chrome-test-health/internal/coverage"
+	covCron "go.chromium.org/infra/appengine/chrome-test-health/internal/coverage/cron"
+	"go.chromium.org/infra/appengine/chrome-test-health/internal/testmetrics"
 )
 
 const (

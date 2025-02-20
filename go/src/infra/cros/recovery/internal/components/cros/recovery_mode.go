@@ -11,14 +11,14 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/internal/components/cros/android"
-	"infra/cros/recovery/internal/components/cros/storage"
-	"infra/cros/recovery/internal/components/servo"
-	"infra/cros/recovery/internal/retry"
-	"infra/cros/recovery/logger"
-	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros/android"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros/storage"
+	"go.chromium.org/infra/cros/recovery/internal/components/servo"
+	"go.chromium.org/infra/cros/recovery/internal/retry"
+	"go.chromium.org/infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // BootInRecoveryRequest holds info to boot device in recovery mode.

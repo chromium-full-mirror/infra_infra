@@ -18,8 +18,8 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
-	. "infra/unifiedfleet/app/model/datastore"
-	"infra/unifiedfleet/app/util"
+	. "go.chromium.org/infra/unifiedfleet/app/model/datastore"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // makeDevCfgForTesting creates a basic DeviceConfig. These configs have no

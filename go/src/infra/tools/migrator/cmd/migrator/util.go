@@ -26,8 +26,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/tools/migrator"
-	"infra/tools/migrator/internal/plugsupport"
+	"go.chromium.org/infra/tools/migrator"
+	"go.chromium.org/infra/tools/migrator/internal/plugsupport"
 )
 
 func ensureEmptyDirectory(ctx context.Context, path string) error {

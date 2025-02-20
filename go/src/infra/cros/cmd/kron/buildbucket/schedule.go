@@ -19,8 +19,8 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/lucictx"
 
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/cmd/kron/common"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cros/cmd/kron/common"
 )
 
 // buildBucketHost is the URL host for the BuildBucket API.

@@ -11,9 +11,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/internal/components/cros/usb"
-	"infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros/usb"
+	"go.chromium.org/infra/cros/recovery/logger"
 )
 
 // EnableDeviceTestHarnessMode resets device (https://developer.android.com/studio/command-line/adb#test_harness).

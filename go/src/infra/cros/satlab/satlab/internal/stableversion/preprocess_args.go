@@ -11,10 +11,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/satlab/common/satlabcommands"
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/executor"
-	"infra/libs/skylab/common/heuristics"
+	"go.chromium.org/infra/cros/satlab/common/satlabcommands"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
 )
 
 type getDHBID = func(context.Context, executor.IExecCommander) (string, error)

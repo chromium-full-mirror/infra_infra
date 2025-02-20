@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/server"
 
-	"infra/unifiedfleet/app/cron"
+	"go.chromium.org/infra/unifiedfleet/app/cron"
 )
 
 // Jobs is a list of all the cron jobs that are currently available for running

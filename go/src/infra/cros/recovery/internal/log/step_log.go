@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/logger"
 )
 
 // AddStepLog created and adds step's log to logger.

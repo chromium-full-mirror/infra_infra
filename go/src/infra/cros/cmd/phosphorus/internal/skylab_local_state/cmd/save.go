@@ -22,10 +22,10 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/cmd/phosphorus/internal/botcache"
-	"infra/cros/cmd/phosphorus/internal/skylab_local_state/location"
-	"infra/cros/cmd/phosphorus/internal/skylab_local_state/ufs"
-	ufsutil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/botcache"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/skylab_local_state/location"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/skylab_local_state/ufs"
+	ufsutil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // Save subcommand: Update the bot state json file.

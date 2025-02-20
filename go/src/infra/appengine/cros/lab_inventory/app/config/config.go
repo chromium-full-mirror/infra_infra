@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/server/router"
 	"go.chromium.org/luci/server/secrets"
 
-	"infra/appengine/cros/lab_inventory/app/external"
+	"go.chromium.org/infra/appengine/cros/lab_inventory/app/external"
 )
 
 const configFile = "config.cfg"

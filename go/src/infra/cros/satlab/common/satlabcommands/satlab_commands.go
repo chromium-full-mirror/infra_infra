@@ -17,10 +17,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/satlab/common/paths"
-	"infra/cros/satlab/common/utils/executor"
-	"infra/cros/satlab/common/utils/misc"
-	multiCmdExcutor "infra/cros/satlab/satlabrpcserver/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/paths"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/utils/misc"
+	multiCmdExcutor "go.chromium.org/infra/cros/satlab/satlabrpcserver/utils/executor"
 )
 
 // Decision is a classification of a line in a file.

@@ -9,7 +9,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes/empty"
 
-	api "infra/unifiedfleet/api/v1/cron"
+	api "go.chromium.org/infra/unifiedfleet/api/v1/cron"
 )
 
 type CronServerImpl struct {

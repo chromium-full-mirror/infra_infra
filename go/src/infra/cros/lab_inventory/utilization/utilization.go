@@ -13,8 +13,8 @@ import (
 	"go.chromium.org/luci/common/tsmon/metric"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
-	"infra/cros/dutstate"
-	invV1 "infra/libs/skylab/inventory"
+	"go.chromium.org/infra/cros/dutstate"
+	invV1 "go.chromium.org/infra/libs/skylab/inventory"
 )
 
 var dutmonMetric = metric.NewInt(

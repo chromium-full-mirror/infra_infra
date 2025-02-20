@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/cloudbuildhelper/fileset"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/fileset"
 )
 
 // Path is a path where the description is stored within the bundle.

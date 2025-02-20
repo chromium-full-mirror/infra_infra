@@ -23,7 +23,7 @@ import (
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
 )
 
 // TestMakeSatlabStableVersionEntry tests that we correctly convert form

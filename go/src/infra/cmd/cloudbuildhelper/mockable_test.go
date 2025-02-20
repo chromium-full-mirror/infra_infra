@@ -13,9 +13,9 @@ import (
 	"io/ioutil"
 	"strings"
 
-	"infra/cmd/cloudbuildhelper/cloudbuild"
-	"infra/cmd/cloudbuildhelper/registry"
-	"infra/cmd/cloudbuildhelper/storage"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/cloudbuild"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/registry"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/storage"
 )
 
 type storageImplMock struct {

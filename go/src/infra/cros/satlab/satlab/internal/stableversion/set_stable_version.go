@@ -19,14 +19,14 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/cmd/shivas/utils"
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/recovery/models"
-	"infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
-	"infra/cros/satlab/common/services/build_service"
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/misc"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cros/recovery/models"
+	"go.chromium.org/infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
+	"go.chromium.org/infra/cros/satlab/common/services/build_service"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/misc"
 )
 
 // If allowSetModelBoard is true, then the user is allowed to create new entries for a host&model.

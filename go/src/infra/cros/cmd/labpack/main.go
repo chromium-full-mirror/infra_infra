@@ -29,17 +29,17 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/labpack/internal/site"
-	"infra/cros/cmd/labpack/internal/tlw"
-	kclient "infra/cros/karte/client"
-	"infra/cros/recovery"
-	"infra/cros/recovery/karte"
-	"infra/cros/recovery/logger"
-	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/upload"
-	dm "infra/device_manager/client"
-	"infra/libs/skylab/buildbucket"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/cmd/labpack/internal/site"
+	"go.chromium.org/infra/cros/cmd/labpack/internal/tlw"
+	kclient "go.chromium.org/infra/cros/karte/client"
+	"go.chromium.org/infra/cros/recovery"
+	"go.chromium.org/infra/cros/recovery/karte"
+	"go.chromium.org/infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/upload"
+	dm "go.chromium.org/infra/device_manager/client"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // DescribeMyDirectoryAndEnvironment controls whether labpack should write information

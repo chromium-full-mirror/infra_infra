@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/logging"
 
-	kpb "infra/cmd/package_index/kythe/proto"
+	kpb "go.chromium.org/infra/cmd/package_index/kythe/proto"
 )
 
 // protoImportRe is used for finding required_input for a Proto target, by finding the imports in

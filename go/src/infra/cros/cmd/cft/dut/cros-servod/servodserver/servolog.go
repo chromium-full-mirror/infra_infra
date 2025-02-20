@@ -20,10 +20,10 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"infra/cros/servo"
-	"infra/cros/servo/errors"
-	"infra/cros/servo/logging"
-	"infra/cros/servo/testing"
+	"go.chromium.org/infra/cros/servo"
+	"go.chromium.org/infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/logging"
+	"go.chromium.org/infra/cros/servo/testing"
 )
 
 type logger struct {

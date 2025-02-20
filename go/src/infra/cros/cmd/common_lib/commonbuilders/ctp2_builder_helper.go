@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 const (

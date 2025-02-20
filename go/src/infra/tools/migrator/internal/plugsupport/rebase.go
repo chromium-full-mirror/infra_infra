@@ -8,7 +8,7 @@ import (
 	"context"
 	"fmt"
 
-	"infra/tools/migrator"
+	"go.chromium.org/infra/tools/migrator"
 )
 
 // ExecuteRebase implements "rebase" subcommand.

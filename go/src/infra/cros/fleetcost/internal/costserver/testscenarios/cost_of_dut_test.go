@@ -13,14 +13,14 @@ import (
 
 	"go.chromium.org/luci/common/testing/typed"
 
-	fleetcostpb "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/costserver"
-	"infra/cros/fleetcost/internal/costserver/fakeufsdata"
-	"infra/cros/fleetcost/internal/costserver/testsupport"
-	"infra/cros/fleetcost/internal/utils"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/fakeufsdata"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/testsupport"
+	"go.chromium.org/infra/cros/fleetcost/internal/utils"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // TestTotalCostOfDUT tests the cost of a DUT.

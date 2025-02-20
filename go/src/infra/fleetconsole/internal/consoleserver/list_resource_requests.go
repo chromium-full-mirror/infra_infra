@@ -13,9 +13,9 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
-	"infra/fleetconsole/internal/bigqueryclient"
-	"infra/fleetconsole/internal/utils"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/internal/bigqueryclient"
+	"go.chromium.org/infra/fleetconsole/internal/utils"
 )
 
 // ListResourceRequests lists resource requests.

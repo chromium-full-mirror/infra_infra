@@ -7,7 +7,7 @@ package servo
 import (
 	"testing"
 
-	"infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/errors"
 )
 
 func TestErrorChecking(t *testing.T) {

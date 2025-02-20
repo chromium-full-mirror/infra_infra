@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/server/servertest"
 
-	"infra/cros/fleetcost/cmd/fleetcost/cli"
-	"infra/cros/fleetcost/cmd/fleetcostserver/serverlib"
+	"go.chromium.org/infra/cros/fleetcost/cmd/fleetcost/cli"
+	"go.chromium.org/infra/cros/fleetcost/cmd/fleetcostserver/serverlib"
 )
 
 // TestPing tests starting a server, pinging it, and then tearing it down.

@@ -17,11 +17,11 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/cros_test_platform/internal/execution/args"
-	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
-	"infra/cmd/cros_test_platform/internal/execution/types"
-	"infra/cmd/cros_test_platform/internal/execution/vmlab"
-	"infra/libs/skylab/request"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/args"
+	trservice "go.chromium.org/infra/cmd/cros_test_platform/internal/execution/testrunner/service"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/types"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/vmlab"
+	"go.chromium.org/infra/libs/skylab/request"
 )
 
 // ArgsGenerator is used to generate arguments to buildbucket / swarming.

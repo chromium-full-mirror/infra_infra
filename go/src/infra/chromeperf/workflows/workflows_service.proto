@@ -16,11 +16,11 @@ syntax = "proto3";
 
 package workflows;
 
-option go_package = "infra/chromeperf/workflows";
+option go_package = "go.chromium.org/infra/chromeperf/workflows";
 
 import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
-import "infra/chromeperf/workflows/workflows.proto";
+import "go.chromium.org/infra/chromeperf/workflows/workflows.proto";
 
 
 // Service definition for the Workflows API to start execution engine workflows.

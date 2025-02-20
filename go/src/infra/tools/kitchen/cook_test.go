@@ -29,7 +29,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/lucictx"
 
-	"infra/tools/kitchen/third_party/recipe_engine"
+	"go.chromium.org/infra/tools/kitchen/third_party/recipe_engine"
 )
 
 func TestCook(t *testing.T) {

@@ -35,7 +35,7 @@ import (
 	"go.chromium.org/luci/config"
 	"go.chromium.org/luci/config/impl/memory"
 
-	"infra/chromeperf/workflows"
+	"go.chromium.org/infra/chromeperf/workflows"
 )
 
 const bufSize = 1024 * 1024

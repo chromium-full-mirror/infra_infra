@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/cros/cmd/labservice/api/service.proto
+// source: go.chromium.org/infra/cros/cmd/labservice/api/service.proto
 
 package api
 
@@ -39,7 +39,7 @@ type GetTkoAddressRequest struct {
 
 func (x *GetTkoAddressRequest) Reset() {
 	*x = GetTkoAddressRequest{}
-	mi := &file_infra_cros_cmd_labservice_api_service_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -51,7 +51,7 @@ func (x *GetTkoAddressRequest) String() string {
 func (*GetTkoAddressRequest) ProtoMessage() {}
 
 func (x *GetTkoAddressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_cmd_labservice_api_service_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -64,7 +64,7 @@ func (x *GetTkoAddressRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTkoAddressRequest.ProtoReflect.Descriptor instead.
 func (*GetTkoAddressRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_cmd_labservice_api_service_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_rawDescGZIP(), []int{0}
 }
 
 type GetTkoAddressResponse struct {
@@ -78,7 +78,7 @@ type GetTkoAddressResponse struct {
 
 func (x *GetTkoAddressResponse) Reset() {
 	*x = GetTkoAddressResponse{}
-	mi := &file_infra_cros_cmd_labservice_api_service_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -90,7 +90,7 @@ func (x *GetTkoAddressResponse) String() string {
 func (*GetTkoAddressResponse) ProtoMessage() {}
 
 func (x *GetTkoAddressResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_cmd_labservice_api_service_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -103,7 +103,7 @@ func (x *GetTkoAddressResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTkoAddressResponse.ProtoReflect.Descriptor instead.
 func (*GetTkoAddressResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_cmd_labservice_api_service_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *GetTkoAddressResponse) GetSocketPath() string {
@@ -113,10 +113,11 @@ func (x *GetTkoAddressResponse) GetSocketPath() string {
 	return ""
 }
 
-var File_infra_cros_cmd_labservice_api_service_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_cros_cmd_labservice_api_service_proto protoreflect.FileDescriptor
 
-var file_infra_cros_cmd_labservice_api_service_proto_rawDesc = string([]byte{
-	0x0a, 0x2b, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x63, 0x6d, 0x64,
+var file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_rawDesc = string([]byte{
+	0x0a, 0x3b, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x63, 0x6d, 0x64,
 	0x2f, 0x6c, 0x61, 0x62, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f,
 	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x17, 0x63,
 	0x68, 0x72, 0x6f, 0x6d, 0x65, 0x2e, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x6c, 0x61, 0x62, 0x73,
@@ -133,29 +134,30 @@ var file_infra_cros_cmd_labservice_api_service_proto_rawDesc = string([]byte{
 	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2e, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x2e,
 	0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x6c, 0x61, 0x62, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
 	0x2e, 0x47, 0x65, 0x74, 0x54, 0x6b, 0x6f, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x1f, 0x5a, 0x1d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x2f, 0x5a, 0x2d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72,
+	0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
 	0x63, 0x72, 0x6f, 0x73, 0x2f, 0x63, 0x6d, 0x64, 0x2f, 0x6c, 0x61, 0x62, 0x73, 0x65, 0x72, 0x76,
 	0x69, 0x63, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_cros_cmd_labservice_api_service_proto_rawDescOnce sync.Once
-	file_infra_cros_cmd_labservice_api_service_proto_rawDescData []byte
+	file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_rawDescData []byte
 )
 
-func file_infra_cros_cmd_labservice_api_service_proto_rawDescGZIP() []byte {
-	file_infra_cros_cmd_labservice_api_service_proto_rawDescOnce.Do(func() {
-		file_infra_cros_cmd_labservice_api_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_cros_cmd_labservice_api_service_proto_rawDesc), len(file_infra_cros_cmd_labservice_api_service_proto_rawDesc)))
+func file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_rawDesc), len(file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_rawDesc)))
 	})
-	return file_infra_cros_cmd_labservice_api_service_proto_rawDescData
+	return file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_rawDescData
 }
 
-var file_infra_cros_cmd_labservice_api_service_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_infra_cros_cmd_labservice_api_service_proto_goTypes = []any{
+var file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_goTypes = []any{
 	(*GetTkoAddressRequest)(nil),  // 0: chrome.fleet.labservice.GetTkoAddressRequest
 	(*GetTkoAddressResponse)(nil), // 1: chrome.fleet.labservice.GetTkoAddressResponse
 }
-var file_infra_cros_cmd_labservice_api_service_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_depIdxs = []int32{
 	0, // 0: chrome.fleet.labservice.LabService.GetTkoAddress:input_type -> chrome.fleet.labservice.GetTkoAddressRequest
 	1, // 1: chrome.fleet.labservice.LabService.GetTkoAddress:output_type -> chrome.fleet.labservice.GetTkoAddressResponse
 	1, // [1:2] is the sub-list for method output_type
@@ -165,28 +167,28 @@ var file_infra_cros_cmd_labservice_api_service_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_infra_cros_cmd_labservice_api_service_proto_init() }
-func file_infra_cros_cmd_labservice_api_service_proto_init() {
-	if File_infra_cros_cmd_labservice_api_service_proto != nil {
+func init() { file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_init() }
+func file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_init() {
+	if File_go_chromium_org_infra_cros_cmd_labservice_api_service_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_cros_cmd_labservice_api_service_proto_rawDesc), len(file_infra_cros_cmd_labservice_api_service_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_rawDesc), len(file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_cros_cmd_labservice_api_service_proto_goTypes,
-		DependencyIndexes: file_infra_cros_cmd_labservice_api_service_proto_depIdxs,
-		MessageInfos:      file_infra_cros_cmd_labservice_api_service_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_msgTypes,
 	}.Build()
-	File_infra_cros_cmd_labservice_api_service_proto = out.File
-	file_infra_cros_cmd_labservice_api_service_proto_goTypes = nil
-	file_infra_cros_cmd_labservice_api_service_proto_depIdxs = nil
+	File_go_chromium_org_infra_cros_cmd_labservice_api_service_proto = out.File
+	file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_goTypes = nil
+	file_go_chromium_org_infra_cros_cmd_labservice_api_service_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -282,5 +284,5 @@ var _LabService_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/cros/cmd/labservice/api/service.proto",
+	Metadata: "go.chromium.org/infra/cros/cmd/labservice/api/service.proto",
 }

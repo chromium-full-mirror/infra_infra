@@ -13,9 +13,9 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	"infra/cros/recovery/internal/execs/wifirouter/ssh"
-	"infra/cros/recovery/internal/execs/wifirouter/ssh/mocks"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/internal/execs/wifirouter/ssh"
+	"go.chromium.org/infra/cros/recovery/internal/execs/wifirouter/ssh/mocks"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 func Test_remoteFileContentsMatch(t *testing.T) {

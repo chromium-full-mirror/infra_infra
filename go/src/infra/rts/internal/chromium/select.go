@@ -18,9 +18,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/rts/filegraph/git"
-	"infra/rts/internal/gitutil"
-	evalpb "infra/rts/presubmit/eval/proto"
+	"go.chromium.org/infra/rts/filegraph/git"
+	"go.chromium.org/infra/rts/internal/gitutil"
+	evalpb "go.chromium.org/infra/rts/presubmit/eval/proto"
 )
 
 type BaseSelectRun struct {

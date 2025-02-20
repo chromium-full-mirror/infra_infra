@@ -6,14 +6,14 @@ syntax = "proto3";
 
 package unifiedfleet.api.v1.models;
 
-option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
+option go_package = "go.chromium.org/infra/unifiedfleet/api/v1/models;ufspb";
 
 import "google/protobuf/timestamp.proto";
 import "google/api/resource.proto";
 import "google/api/field_behavior.proto";
-import "infra/unifiedfleet/api/v1/models/location.proto";
-import "infra/unifiedfleet/api/v1/models/peripherals.proto";
-import "infra/unifiedfleet/api/v1/models/state.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/location.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/peripherals.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/state.proto";
 
 // Rack refers to the racks which are placed in
 // Chrome Browser lab and Chrome OS lab. Machines and Pheripherals

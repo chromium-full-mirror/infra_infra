@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // ExecsExist function to check if exec is exit.

@@ -3,7 +3,7 @@ description: Lucifer runner for Skylab.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/lucifer
+  - go.chromium.org/infra/cros/cmd/lucifer
 root: ../../go/bin
 data:
   - file: lucifer${exe_suffix}

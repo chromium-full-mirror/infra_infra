@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/sync/parallel"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	dashpb "infra/appengine/dashboard/api/dashboard"
+	dashpb "go.chromium.org/infra/appengine/dashboard/api/dashboard"
 )
 
 // Announcement contains details of an announcement

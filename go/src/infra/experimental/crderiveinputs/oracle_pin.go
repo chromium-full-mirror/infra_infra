@@ -24,8 +24,8 @@ import (
 	"go.chromium.org/luci/cipd/common"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/experimental/crderiveinputs/inputpb"
-	"infra/experimental/crderiveinputs/inputs"
+	"go.chromium.org/infra/experimental/crderiveinputs/inputpb"
+	"go.chromium.org/infra/experimental/crderiveinputs/inputs"
 )
 
 func (o *Oracle) PinCipdEnsureFile(root, ensureFile string) error {

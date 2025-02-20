@@ -19,9 +19,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/git"
-	"infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 // This file contains support for interacting with the Gerrit REST API client.

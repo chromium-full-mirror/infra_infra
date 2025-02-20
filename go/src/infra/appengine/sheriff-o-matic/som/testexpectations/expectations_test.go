@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/gae/service/info"
 	"go.chromium.org/luci/gae/service/urlfetch"
 
-	testhelper "infra/appengine/sheriff-o-matic/som/client/test"
+	testhelper "go.chromium.org/infra/appengine/sheriff-o-matic/som/client/test"
 )
 
 func TestUpdateExpectations(t *testing.T) {

@@ -9,7 +9,7 @@ import (
 
 	"github.com/maruel/subcommands"
 
-	"infra/fleetconsole/cmd/consoleadmin/clilib"
+	"go.chromium.org/infra/fleetconsole/cmd/consoleadmin/clilib"
 )
 
 func main() {

@@ -10,11 +10,11 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/internal/components/cros/storage"
-	"infra/cros/recovery/internal/components/servo"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/internal/retry"
+	"go.chromium.org/infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros/storage"
+	"go.chromium.org/infra/cros/recovery/internal/components/servo"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/retry"
 )
 
 // BootFromServoUSBDriveInDevMode performs booting device from external storage when DUT is in DEV-mode.

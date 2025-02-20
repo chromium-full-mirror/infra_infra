@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	gcepAPI "go.chromium.org/luci/gce/api/config/v1"
 
-	"infra/cros/botsregulator/internal/clients"
+	"go.chromium.org/infra/cros/botsregulator/internal/clients"
 )
 
 // gcepProvider is the GCE Provider implementation of the Provider interface.

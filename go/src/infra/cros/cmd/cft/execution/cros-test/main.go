@@ -8,7 +8,7 @@ import (
 	"context"
 	"os"
 
-	"infra/cros/cmd/cft/execution/cros-test/cli"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/cli"
 )
 
 func main() {

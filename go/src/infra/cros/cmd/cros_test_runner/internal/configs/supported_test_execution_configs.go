@@ -10,13 +10,13 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	tpcommon "go.chromium.org/chromiumos/infra/proto/go/test_platform/common"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/commoncommands"
-	"infra/cros/cmd/common_lib/commonconfigs"
-	"infra/cros/cmd/common_lib/commonexecutors"
-	"infra/cros/cmd/cros_test_runner/data"
-	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/cmd/cros_test_runner/internal/executors"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/commoncommands"
+	"go.chromium.org/infra/cros/cmd/common_lib/commonconfigs"
+	"go.chromium.org/infra/cros/cmd/common_lib/commonexecutors"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/data"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/internal/commands"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/internal/executors"
 )
 
 // All currently supported command-executor pairs.

@@ -10,13 +10,13 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	fleetcostpb "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	ufsFetcher "infra/cros/fleetcost/internal/costserver/inventory/ufs"
-	"infra/cros/fleetcost/internal/utils"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	ufsFetcher "go.chromium.org/infra/cros/fleetcost/internal/costserver/inventory/ufs"
+	"go.chromium.org/infra/cros/fleetcost/internal/utils"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // CalculateCostForOsResource calculates the cost for an OS resource.

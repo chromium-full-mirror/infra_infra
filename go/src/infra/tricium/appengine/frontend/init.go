@@ -11,8 +11,8 @@ import (
 	"go.chromium.org/luci/grpc/discovery"
 	"go.chromium.org/luci/server/router"
 
-	"infra/tricium/api/v1"
-	"infra/tricium/appengine/common"
+	"go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common"
 )
 
 func init() {

@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // BaseContainer describe API to work with containers.

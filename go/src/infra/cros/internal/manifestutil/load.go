@@ -15,10 +15,10 @@ import (
 	"go.chromium.org/luci/common/errors"
 	lgs "go.chromium.org/luci/common/gcloud/gs"
 
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/gs"
-	"infra/cros/internal/repo"
-	"infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/gs"
+	"go.chromium.org/infra/cros/internal/repo"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 var (

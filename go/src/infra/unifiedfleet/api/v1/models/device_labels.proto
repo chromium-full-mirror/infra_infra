@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package unifiedfleet.api.v1.models;
 
-option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
+option go_package = "go.chromium.org/infra/unifiedfleet/api/v1/models;ufspb";
 
 // DeviceLabels represents a map of device labels for scheduling purposes
 //

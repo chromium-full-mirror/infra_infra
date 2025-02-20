@@ -11,10 +11,10 @@ package mock
 
 import (
 	context "context"
-	clients "infra/appengine/crosskylabadmin/internal/app/clients"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	clients "go.chromium.org/infra/appengine/crosskylabadmin/internal/app/clients"
 	strpair "go.chromium.org/luci/common/data/strpair"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 )

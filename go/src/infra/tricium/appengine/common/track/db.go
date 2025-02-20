@@ -10,8 +10,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	ds "go.chromium.org/luci/gae/service/datastore"
 
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common/config"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common/config"
 )
 
 // FetchFunctionRuns returns a slice of all FunctionRuns for a run.

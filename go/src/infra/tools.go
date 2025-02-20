@@ -21,7 +21,7 @@ import (
 	_ "go.chromium.org/luci/grpc/cmd/svcmux"
 	_ "go.chromium.org/luci/tools/cmd/assets"
 
-	_ "infra/cmd/bqexport"
+	_ "go.chromium.org/infra/cmd/bqexport"
 
 	// Used by mobile_env.py script.
 	_ "golang.org/x/mobile/cmd/gomobile"

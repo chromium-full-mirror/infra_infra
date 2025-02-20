@@ -17,7 +17,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/cmd/shivas
+  - go.chromium.org/infra/cmd/shivas
 root: ../../go/bin
 data:
   - file: shivas${exe_suffix}

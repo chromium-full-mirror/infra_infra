@@ -27,9 +27,9 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/appengine/sheriff-o-matic/som/analyzer/step"
-	"infra/appengine/sheriff-o-matic/som/model"
-	"infra/monitoring/messages"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/analyzer/step"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/model"
+	"go.chromium.org/infra/monitoring/messages"
 )
 
 type mockResults struct {

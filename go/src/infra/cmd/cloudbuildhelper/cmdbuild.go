@@ -19,12 +19,12 @@ import (
 	"go.chromium.org/luci/common/flag/stringlistflag"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/cloudbuildhelper/cloudbuild"
-	"infra/cmd/cloudbuildhelper/docker"
-	"infra/cmd/cloudbuildhelper/fileset"
-	"infra/cmd/cloudbuildhelper/manifest"
-	"infra/cmd/cloudbuildhelper/registry"
-	"infra/cmd/cloudbuildhelper/storage"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/cloudbuild"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/docker"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/fileset"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/manifest"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/registry"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/storage"
 )
 
 var cmdBuild = &subcommands.Command{

@@ -9,11 +9,11 @@ package clients
 
 import (
 	context "context"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufspb0 "infra/unifiedfleet/api/v1/rpc"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufspb0 "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	grpc "google.golang.org/grpc"
 	protoadapt "google.golang.org/protobuf/protoadapt"
 )

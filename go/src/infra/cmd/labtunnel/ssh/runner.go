@@ -11,8 +11,8 @@ import (
 	"os/exec"
 	"strings"
 
-	"infra/cmd/labtunnel/cmdutils"
-	clog "infra/cmd/labtunnel/log"
+	"go.chromium.org/infra/cmd/labtunnel/cmdutils"
+	clog "go.chromium.org/infra/cmd/labtunnel/log"
 )
 
 const sshCmd = "ssh"

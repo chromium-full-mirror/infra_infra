@@ -32,10 +32,10 @@ import (
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/chromeperf/histograms"
-	"infra/chromeperf/pinpoint"
-	"infra/chromeperf/pinpoint/cli/render"
-	"infra/chromeperf/pinpoint/proto"
+	"go.chromium.org/infra/chromeperf/histograms"
+	"go.chromium.org/infra/chromeperf/pinpoint"
+	"go.chromium.org/infra/chromeperf/pinpoint/cli/render"
+	"go.chromium.org/infra/chromeperf/pinpoint/proto"
 )
 
 type metricNameKey string

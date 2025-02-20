@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package admin;
 
-option go_package = "infra/tricium/api/admin/v1;admin";
+option go_package = "go.chromium.org/infra/tricium/api/admin/v1;admin";
 
 // Gerrit implements the internal gerrit poll API of the Tricium service.
 service Gerrit {

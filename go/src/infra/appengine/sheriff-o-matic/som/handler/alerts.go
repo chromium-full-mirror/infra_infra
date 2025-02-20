@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/router"
 
-	"infra/appengine/sheriff-o-matic/som/model"
-	"infra/monitoring/messages"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/model"
+	"go.chromium.org/infra/monitoring/messages"
 )
 
 const (

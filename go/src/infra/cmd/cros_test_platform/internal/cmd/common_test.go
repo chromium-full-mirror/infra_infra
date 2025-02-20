@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/cros_test_platform/internal/testutils"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/testutils"
 )
 
 func TestExitCodeWithVanillaError(t *testing.T) {

@@ -13,8 +13,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	models "infra/cros/fleetcost/api/models"
-	"infra/cros/fleetcost/internal/costserver/entities"
+	models "go.chromium.org/infra/cros/fleetcost/api/models"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/entities"
 )
 
 // cacheTTL is how long a cache entity lives.

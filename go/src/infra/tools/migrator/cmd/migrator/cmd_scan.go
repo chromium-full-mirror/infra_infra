@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/tools/migrator"
-	"infra/tools/migrator/internal/plugsupport"
+	"go.chromium.org/infra/tools/migrator"
+	"go.chromium.org/infra/tools/migrator/internal/plugsupport"
 )
 
 func cmdScan(opts cmdBaseOptions) *subcommands.Command {

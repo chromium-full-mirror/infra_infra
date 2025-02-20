@@ -14,14 +14,14 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/dutstate"
-	"infra/libs/fleet/device/attacheddevice"
-	"infra/libs/fleet/device/dut"
-	"infra/libs/fleet/device/schedulingunit"
-	"infra/libs/skylab/inventory/swarming"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsutil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/libs/fleet/device/attacheddevice"
+	"go.chromium.org/infra/libs/fleet/device/dut"
+	"go.chromium.org/infra/libs/fleet/device/schedulingunit"
+	"go.chromium.org/infra/libs/skylab/inventory/swarming"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsutil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // GetOSResourceDims gets the dimensions of a fleet resource to present to the

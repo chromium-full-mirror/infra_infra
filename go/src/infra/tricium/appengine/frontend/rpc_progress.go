@@ -13,9 +13,9 @@ import (
 	ds "go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common/gerrit"
-	"infra/tricium/appengine/common/track"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common/gerrit"
+	"go.chromium.org/infra/tricium/appengine/common/track"
 )
 
 // Progress implements Tricium.Progress.

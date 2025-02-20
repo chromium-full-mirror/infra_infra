@@ -10,10 +10,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/internal/components/linux"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/internal/retry"
+	"go.chromium.org/infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/internal/components/linux"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/retry"
 )
 
 const (

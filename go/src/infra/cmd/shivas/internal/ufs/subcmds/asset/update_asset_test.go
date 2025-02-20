@@ -7,7 +7,7 @@ package asset
 import (
 	"testing"
 
-	ufsUtil "infra/unifiedfleet/app/util"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // TestUpdateAssetNamespace tests the output of getNamespace to ensure the

@@ -14,11 +14,11 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	androidapi "infra/cros/cmd/common_lib/android_api"
-	mock_androidapi "infra/cros/cmd/common_lib/android_api/mocks"
-	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/ctpv2/data"
+	androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api"
+	mock_androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api/mocks"
+	"go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2/data"
 )
 
 func TestUpdateInvocationProperties(t *testing.T) {

@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cros/satlab/common/site"
-	"infra/libs/skylab/common/heuristics"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
 )
 
 var IsSatlabRemoteAccessCmd = &subcommands.Command{

@@ -21,7 +21,7 @@ import (
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	rpb "infra/appengine/rotation-proxy/proto"
+	rpb "go.chromium.org/infra/appengine/rotation-proxy/proto"
 )
 
 var person1 = &rpb.OncallPerson{Email: "person1@google.com"}

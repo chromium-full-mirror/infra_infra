@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/rts/internal/chromium"
+	"go.chromium.org/infra/rts/internal/chromium"
 )
 
 func cmdSelect() *subcommands.Command {

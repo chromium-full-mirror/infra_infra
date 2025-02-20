@@ -6,9 +6,9 @@ syntax = "proto3";
 
 package chrome.dir_metadata;
 
-option go_package = "infra/tools/dirmd/proto;dirmdpb";
+option go_package = "go.chromium.org/infra/tools/dirmd/proto;dirmdpb";
 
-import "infra/tools/dirmd/proto/chromeos/chromeos.proto";
+import "go.chromium.org/infra/tools/dirmd/proto/chromeos/chromeos.proto";
 
 // Metadata information for a directory.
 //

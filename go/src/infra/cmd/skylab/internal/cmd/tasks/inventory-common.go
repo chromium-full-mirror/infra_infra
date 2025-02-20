@@ -12,11 +12,11 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
-	"infra/cmd/skylab/internal/site"
-	"infra/cmdsupport/cmdlib"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	skycmdlib "go.chromium.org/infra/cmd/skylab/internal/cmd/cmdlib"
+	"go.chromium.org/infra/cmd/skylab/internal/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // getUFSClient produces an UFS client.

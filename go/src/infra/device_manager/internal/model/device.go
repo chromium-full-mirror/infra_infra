@@ -19,8 +19,8 @@ import (
 	lucierr "go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/device_manager/internal/database"
-	"infra/libs/skylab/inventory/swarming"
+	"go.chromium.org/infra/device_manager/internal/database"
+	"go.chromium.org/infra/libs/skylab/inventory/swarming"
 )
 
 // Error types for Device model operations

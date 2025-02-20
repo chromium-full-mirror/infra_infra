@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	lucigs "go.chromium.org/luci/common/gcloud/gs"
 
-	"infra/cros/cmd/paris-uploader/site"
-	"infra/cros/recovery/upload"
+	"go.chromium.org/infra/cros/cmd/paris-uploader/site"
+	"go.chromium.org/infra/cros/recovery/upload"
 )
 
 // UploadCmd uploads a folder to Google Storage.

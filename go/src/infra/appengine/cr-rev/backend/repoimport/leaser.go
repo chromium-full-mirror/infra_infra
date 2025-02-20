@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/appengine/cr-rev/common"
-	"infra/appengine/cr-rev/models"
+	"go.chromium.org/infra/appengine/cr-rev/common"
+	"go.chromium.org/infra/appengine/cr-rev/models"
 )
 
 const (

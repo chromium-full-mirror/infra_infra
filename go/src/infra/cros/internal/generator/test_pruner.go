@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 
-	"infra/cros/internal/match"
+	"go.chromium.org/infra/cros/internal/match"
 )
 
 type testType int

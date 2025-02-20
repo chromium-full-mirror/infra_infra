@@ -6,9 +6,9 @@ syntax = "proto3";
 
 package fleetcost.api.models;
 
-import "infra/cros/fleetcost/api/models/cost_report.proto";
+import "go.chromium.org/infra/cros/fleetcost/api/models/cost_report.proto";
 
-option go_package = "infra/cros/fleetcost/api/models;fleetcostpb";
+option go_package = "go.chromium.org/infra/cros/fleetcost/api/models;fleetcostpb";
 
 // CostResult is a breakdown of cost for a given device.
 message CostResult {

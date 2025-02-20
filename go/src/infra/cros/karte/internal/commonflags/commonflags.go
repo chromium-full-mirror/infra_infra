@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/auth"
 
-	"infra/cros/karte/client"
+	"go.chromium.org/infra/cros/karte/client"
 )
 
 // Flags are the flags shared by most Karte commands.

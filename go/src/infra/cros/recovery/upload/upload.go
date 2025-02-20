@@ -10,7 +10,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	lucigs "go.chromium.org/luci/common/gcloud/gs"
 
-	"infra/libs/skylab/gs"
+	"go.chromium.org/infra/libs/skylab/gs"
 )
 
 // Params is a collection of parameters for uploading a directory.

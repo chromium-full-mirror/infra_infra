@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cmd/crosfleet/internal/common"
+	"go.chromium.org/infra/cmd/crosfleet/internal/common"
 )
 
 func TestAddServiceVersion(t *testing.T) {

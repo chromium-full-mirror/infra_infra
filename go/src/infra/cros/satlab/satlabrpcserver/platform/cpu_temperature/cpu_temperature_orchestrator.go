@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 package cpu_temperature
 
-import "infra/cros/satlab/satlabrpcserver/utils/sized_queue"
+import "go.chromium.org/infra/cros/satlab/satlabrpcserver/utils/sized_queue"
 
 // CPUTemperatureOrchestrator keep the history of cpu temperature queue and
 // then use the queue to calculate the average temperature.

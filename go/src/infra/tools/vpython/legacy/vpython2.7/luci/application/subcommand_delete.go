@@ -23,7 +23,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/venv"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/venv"
 )
 
 var subcommandDelete = &subcommands.Command{

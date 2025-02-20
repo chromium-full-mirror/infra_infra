@@ -10,7 +10,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/unifiedfleet/api/v1/models/assetinfo.proto
+// source: go.chromium.org/infra/unifiedfleet/api/v1/models/assetinfo.proto
 
 package ufspb
 
@@ -70,11 +70,11 @@ func (x RequestStatus) String() string {
 }
 
 func (RequestStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_assetinfo_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_enumTypes[0].Descriptor()
 }
 
 func (RequestStatus) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_assetinfo_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_enumTypes[0]
 }
 
 func (x RequestStatus) Number() protoreflect.EnumNumber {
@@ -83,7 +83,7 @@ func (x RequestStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use RequestStatus.Descriptor instead.
 func (RequestStatus) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescGZIP(), []int{0}
 }
 
 type AssetInfo struct {
@@ -119,7 +119,7 @@ type AssetInfo struct {
 
 func (x *AssetInfo) Reset() {
 	*x = AssetInfo{}
-	mi := &file_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -131,7 +131,7 @@ func (x *AssetInfo) String() string {
 func (*AssetInfo) ProtoMessage() {}
 
 func (x *AssetInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -144,7 +144,7 @@ func (x *AssetInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssetInfo.ProtoReflect.Descriptor instead.
 func (*AssetInfo) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *AssetInfo) GetAssetTag() string {
@@ -311,7 +311,7 @@ type AssetInfoRequest struct {
 
 func (x *AssetInfoRequest) Reset() {
 	*x = AssetInfoRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -323,7 +323,7 @@ func (x *AssetInfoRequest) String() string {
 func (*AssetInfoRequest) ProtoMessage() {}
 
 func (x *AssetInfoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -336,7 +336,7 @@ func (x *AssetInfoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssetInfoRequest.ProtoReflect.Descriptor instead.
 func (*AssetInfoRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *AssetInfoRequest) GetAssetTags() []string {
@@ -362,7 +362,7 @@ type AssetInfoResponse struct {
 
 func (x *AssetInfoResponse) Reset() {
 	*x = AssetInfoResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -374,7 +374,7 @@ func (x *AssetInfoResponse) String() string {
 func (*AssetInfoResponse) ProtoMessage() {}
 
 func (x *AssetInfoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -387,7 +387,7 @@ func (x *AssetInfoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssetInfoResponse.ProtoReflect.Descriptor instead.
 func (*AssetInfoResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *AssetInfoResponse) GetRequestStatus() RequestStatus {
@@ -418,17 +418,19 @@ func (x *AssetInfoResponse) GetFailedAssetTags() []string {
 	return nil
 }
 
-var File_infra_unifiedfleet_api_v1_models_assetinfo_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto protoreflect.FileDescriptor
 
-var file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDesc = string([]byte{
-	0x0a, 0x30, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDesc = string([]byte{
+	0x0a, 0x40, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x69, 0x6e, 0x66, 0x6f, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x12, 0x1a, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74,
 	0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x1a, 0x1f,
 	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x66, 0x69, 0x65, 0x6c, 0x64,
 	0x5f, 0x62, 0x65, 0x68, 0x61, 0x76, 0x69, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
-	0x30, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c,
+	0x40, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67,
+	0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c,
 	0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c,
 	0x73, 0x2f, 0x63, 0x68, 0x61, 0x73, 0x73, 0x69, 0x73, 0x5f, 0x78, 0x2e, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x22, 0xb9, 0x06, 0x0a, 0x09, 0x41, 0x73, 0x73, 0x65, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x12,
@@ -508,34 +510,35 @@ var file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDesc = string([]byt
 	0x10, 0x0a, 0x0c, 0x53, 0x45, 0x52, 0x56, 0x45, 0x52, 0x5f, 0x45, 0x52, 0x52, 0x4f, 0x52, 0x10,
 	0x02, 0x12, 0x10, 0x0a, 0x0c, 0x4e, 0x4f, 0x5f, 0x41, 0x53, 0x53, 0x45, 0x54, 0x5f, 0x54, 0x41,
 	0x47, 0x10, 0x03, 0x12, 0x0a, 0x0a, 0x06, 0x4e, 0x4f, 0x5f, 0x47, 0x50, 0x4e, 0x10, 0x04, 0x42,
-	0x28, 0x5a, 0x26, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64,
+	0x38, 0x5a, 0x36, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f,
+	0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64,
 	0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64,
 	0x65, 0x6c, 0x73, 0x3b, 0x75, 0x66, 0x73, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x33,
 })
 
 var (
-	file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescOnce sync.Once
-	file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescData []byte
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescData []byte
 )
 
-func file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescGZIP() []byte {
-	file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescOnce.Do(func() {
-		file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDesc)))
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDesc)))
 	})
-	return file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescData
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_models_assetinfo_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
-var file_infra_unifiedfleet_api_v1_models_assetinfo_proto_goTypes = []any{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_goTypes = []any{
 	(RequestStatus)(0),        // 0: unifiedfleet.api.v1.models.RequestStatus
 	(*AssetInfo)(nil),         // 1: unifiedfleet.api.v1.models.AssetInfo
 	(*AssetInfoRequest)(nil),  // 2: unifiedfleet.api.v1.models.AssetInfoRequest
 	(*AssetInfoResponse)(nil), // 3: unifiedfleet.api.v1.models.AssetInfoResponse
 	(ChassisXBrandType)(0),    // 4: unifiedfleet.api.v1.models.ChassisXBrandType
 }
-var file_infra_unifiedfleet_api_v1_models_assetinfo_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_depIdxs = []int32{
 	4, // 0: unifiedfleet.api.v1.models.AssetInfo.cbx_feature_type:type_name -> unifiedfleet.api.v1.models.ChassisXBrandType
 	0, // 1: unifiedfleet.api.v1.models.AssetInfoResponse.request_status:type_name -> unifiedfleet.api.v1.models.RequestStatus
 	1, // 2: unifiedfleet.api.v1.models.AssetInfoResponse.assets:type_name -> unifiedfleet.api.v1.models.AssetInfo
@@ -546,28 +549,28 @@ var file_infra_unifiedfleet_api_v1_models_assetinfo_proto_depIdxs = []int32{
 	0, // [0:3] is the sub-list for field type_name
 }
 
-func init() { file_infra_unifiedfleet_api_v1_models_assetinfo_proto_init() }
-func file_infra_unifiedfleet_api_v1_models_assetinfo_proto_init() {
-	if File_infra_unifiedfleet_api_v1_models_assetinfo_proto != nil {
+func init() { file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_init() }
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_init() {
+	if File_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto != nil {
 		return
 	}
-	file_infra_unifiedfleet_api_v1_models_chassis_x_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chassis_x_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_unifiedfleet_api_v1_models_assetinfo_proto_goTypes,
-		DependencyIndexes: file_infra_unifiedfleet_api_v1_models_assetinfo_proto_depIdxs,
-		EnumInfos:         file_infra_unifiedfleet_api_v1_models_assetinfo_proto_enumTypes,
-		MessageInfos:      file_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_msgTypes,
 	}.Build()
-	File_infra_unifiedfleet_api_v1_models_assetinfo_proto = out.File
-	file_infra_unifiedfleet_api_v1_models_assetinfo_proto_goTypes = nil
-	file_infra_unifiedfleet_api_v1_models_assetinfo_proto_depIdxs = nil
+	File_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto = out.File
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_goTypes = nil
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_depIdxs = nil
 }

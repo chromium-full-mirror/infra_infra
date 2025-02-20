@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto
+// source: go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto
 
 package ufspb
 
@@ -30,13 +30,13 @@ type ChameleonType int32
 
 const (
 	ChameleonType_CHAMELEON_TYPE_INVALID ChameleonType = 0
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto.
 	ChameleonType_CHAMELEON_TYPE_DP ChameleonType = 2
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto.
 	ChameleonType_CHAMELEON_TYPE_DP_HDMI ChameleonType = 3
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto.
 	ChameleonType_CHAMELEON_TYPE_VGA ChameleonType = 4
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/chameleon.proto.
 	ChameleonType_CHAMELEON_TYPE_HDMI ChameleonType = 5
 	ChameleonType_CHAMELEON_TYPE_V2   ChameleonType = 9
 	ChameleonType_CHAMELEON_TYPE_V3   ChameleonType = 10
@@ -78,11 +78,11 @@ func (x ChameleonType) String() string {
 }
 
 func (ChameleonType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[0].Descriptor()
 }
 
 func (ChameleonType) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[0]
 }
 
 func (x ChameleonType) Number() protoreflect.EnumNumber {
@@ -91,7 +91,7 @@ func (x ChameleonType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ChameleonType.Descriptor instead.
 func (ChameleonType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescGZIP(), []int{0}
 }
 
 type ChameleonConnectionType int32
@@ -133,11 +133,11 @@ func (x ChameleonConnectionType) String() string {
 }
 
 func (ChameleonConnectionType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[1].Descriptor()
 }
 
 func (ChameleonConnectionType) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[1]
 }
 
 func (x ChameleonConnectionType) Number() protoreflect.EnumNumber {
@@ -146,7 +146,7 @@ func (x ChameleonConnectionType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ChameleonConnectionType.Descriptor instead.
 func (ChameleonConnectionType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescGZIP(), []int{1}
 }
 
 // Indicate the audio box jack plugger state
@@ -187,11 +187,11 @@ func (x Chameleon_AudioBoxJackPlugger) String() string {
 }
 
 func (Chameleon_AudioBoxJackPlugger) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[2].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[2].Descriptor()
 }
 
 func (Chameleon_AudioBoxJackPlugger) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[2]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[2]
 }
 
 func (x Chameleon_AudioBoxJackPlugger) Number() protoreflect.EnumNumber {
@@ -200,7 +200,7 @@ func (x Chameleon_AudioBoxJackPlugger) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Chameleon_AudioBoxJackPlugger.Descriptor instead.
 func (Chameleon_AudioBoxJackPlugger) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescGZIP(), []int{0, 0}
 }
 
 // Indicate the trrs types
@@ -238,11 +238,11 @@ func (x Chameleon_TRRSType) String() string {
 }
 
 func (Chameleon_TRRSType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[3].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[3].Descriptor()
 }
 
 func (Chameleon_TRRSType) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[3]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes[3]
 }
 
 func (x Chameleon_TRRSType) Number() protoreflect.EnumNumber {
@@ -251,7 +251,7 @@ func (x Chameleon_TRRSType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Chameleon_TRRSType.Descriptor instead.
 func (Chameleon_TRRSType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescGZIP(), []int{0, 1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescGZIP(), []int{0, 1}
 }
 
 // Next Tag: 9
@@ -273,7 +273,7 @@ type Chameleon struct {
 
 func (x *Chameleon) Reset() {
 	*x = Chameleon{}
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -285,7 +285,7 @@ func (x *Chameleon) String() string {
 func (*Chameleon) ProtoMessage() {}
 
 func (x *Chameleon) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -298,7 +298,7 @@ func (x *Chameleon) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Chameleon.ProtoReflect.Descriptor instead.
 func (*Chameleon) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Chameleon) GetChameleonPeripherals() []ChameleonType {
@@ -350,16 +350,18 @@ func (x *Chameleon) GetTrrsType() Chameleon_TRRSType {
 	return Chameleon_TRRS_TYPE_UNSPECIFIED
 }
 
-var File_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto protoreflect.FileDescriptor
 
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDesc = string([]byte{
-	0x0a, 0x3d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDesc = string([]byte{
+	0x0a, 0x4d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x2f,
 	0x63, 0x68, 0x61, 0x6d, 0x65, 0x6c, 0x65, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12,
 	0x27, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x61, 0x70,
 	0x69, 0x2e, 0x76, 0x31, 0x2e, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2e, 0x63, 0x68, 0x72, 0x6f,
-	0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x6c, 0x61, 0x62, 0x1a, 0x37, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
+	0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x6c, 0x61, 0x62, 0x1a, 0x47, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72,
+	0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
 	0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69,
 	0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d,
 	0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x2f, 0x72, 0x70, 0x6d, 0x2e, 0x70, 0x72, 0x6f, 0x74,
@@ -444,7 +446,8 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDesc =
 	0x43, 0x4f, 0x4e, 0x4e, 0x45, 0x43, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f,
 	0x48, 0x44, 0x4d, 0x49, 0x10, 0x03, 0x12, 0x20, 0x0a, 0x1c, 0x43, 0x48, 0x41, 0x4d, 0x45, 0x4c,
 	0x45, 0x4f, 0x4e, 0x5f, 0x43, 0x4f, 0x4e, 0x4e, 0x45, 0x43, 0x54, 0x49, 0x4f, 0x4e, 0x5f, 0x54,
-	0x59, 0x50, 0x45, 0x5f, 0x44, 0x50, 0x10, 0x04, 0x42, 0x35, 0x5a, 0x33, 0x69, 0x6e, 0x66, 0x72,
+	0x59, 0x50, 0x45, 0x5f, 0x44, 0x50, 0x10, 0x04, 0x42, 0x45, 0x5a, 0x43, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61,
 	0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72,
 	0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x3b, 0x75, 0x66, 0x73, 0x70, 0x62, 0x62,
@@ -452,20 +455,20 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDesc =
 })
 
 var (
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescOnce sync.Once
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescData []byte
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescData []byte
 )
 
-func file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescGZIP() []byte {
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescOnce.Do(func() {
-		file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDesc)))
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDesc)))
 	})
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescData
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_goTypes = []any{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_goTypes = []any{
 	(ChameleonType)(0),                 // 0: unifiedfleet.api.v1.models.chromeos.lab.ChameleonType
 	(ChameleonConnectionType)(0),       // 1: unifiedfleet.api.v1.models.chromeos.lab.ChameleonConnectionType
 	(Chameleon_AudioBoxJackPlugger)(0), // 2: unifiedfleet.api.v1.models.chromeos.lab.Chameleon.AudioBoxJackPlugger
@@ -473,7 +476,7 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_goTypes =
 	(*Chameleon)(nil),                  // 4: unifiedfleet.api.v1.models.chromeos.lab.Chameleon
 	(*OSRPM)(nil),                      // 5: unifiedfleet.api.v1.models.chromeos.lab.OSRPM
 }
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_depIdxs = []int32{
 	0, // 0: unifiedfleet.api.v1.models.chromeos.lab.Chameleon.chameleon_peripherals:type_name -> unifiedfleet.api.v1.models.chromeos.lab.ChameleonType
 	1, // 1: unifiedfleet.api.v1.models.chromeos.lab.Chameleon.chameleon_connection_types:type_name -> unifiedfleet.api.v1.models.chromeos.lab.ChameleonConnectionType
 	5, // 2: unifiedfleet.api.v1.models.chromeos.lab.Chameleon.rpm:type_name -> unifiedfleet.api.v1.models.chromeos.lab.OSRPM
@@ -486,28 +489,30 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_depIdxs =
 	0, // [0:5] is the sub-list for field type_name
 }
 
-func init() { file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_init() }
-func file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_init() {
-	if File_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto != nil {
+func init() {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_init()
+}
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_init() {
+	if File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto != nil {
 		return
 	}
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_rpm_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_rpm_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_rawDesc)),
 			NumEnums:      4,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_goTypes,
-		DependencyIndexes: file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_depIdxs,
-		EnumInfos:         file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes,
-		MessageInfos:      file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_msgTypes,
 	}.Build()
-	File_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto = out.File
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_goTypes = nil
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_depIdxs = nil
+	File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto = out.File
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_goTypes = nil
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chameleon_proto_depIdxs = nil
 }

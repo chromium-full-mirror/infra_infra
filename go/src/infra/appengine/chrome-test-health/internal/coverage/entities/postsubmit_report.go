@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"time"
 
-	"infra/appengine/chrome-test-health/datastorage"
+	"go.chromium.org/infra/appengine/chrome-test-health/datastorage"
 )
 
 type DependencyRepository struct {

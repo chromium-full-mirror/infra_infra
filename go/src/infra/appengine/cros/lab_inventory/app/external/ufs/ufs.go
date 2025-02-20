@@ -17,13 +17,13 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/manufacturing"
 	"go.chromium.org/luci/common/logging"
 
-	api "infra/appengine/cros/lab_inventory/api/v1"
-	"infra/appengine/cros/lab_inventory/app/config"
-	"infra/appengine/cros/lab_inventory/app/external"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufschromeoslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
-	ufsutil "infra/unifiedfleet/app/util"
+	api "go.chromium.org/infra/appengine/cros/lab_inventory/api/v1"
+	"go.chromium.org/infra/appengine/cros/lab_inventory/app/config"
+	"go.chromium.org/infra/appengine/cros/lab_inventory/app/external"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufschromeoslab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsutil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // GetUFSDevicesByHostnames Gets MachineLSEs from UFS by MachineLSE name/hostname.

@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/common/tsmon/types"
 
-	"infra/appengine/depot_tools_metrics/schema"
+	"go.chromium.org/infra/appengine/depot_tools_metrics/schema"
 )
 
 // chromiumSrc is the URL of the chromium/src repo. It is counted apart from all

@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
 
-	"infra/appengine/sheriff-o-matic/som/analyzer"
-	"infra/appengine/sheriff-o-matic/som/handler"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/analyzer"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/handler"
 )
 
 // base is the root of the middleware chain.

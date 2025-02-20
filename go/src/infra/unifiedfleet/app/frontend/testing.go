@@ -17,11 +17,11 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/external"
-	"infra/unifiedfleet/app/model/configuration"
-	"infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/external"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 type testFixture struct {

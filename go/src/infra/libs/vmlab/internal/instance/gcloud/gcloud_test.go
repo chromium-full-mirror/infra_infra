@@ -13,7 +13,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	"infra/libs/vmlab/api"
+	"go.chromium.org/infra/libs/vmlab/api"
 )
 
 type fakeRandomGenerator struct{}

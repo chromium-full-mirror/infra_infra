@@ -12,10 +12,10 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	androidapi "infra/cros/cmd/common_lib/android_api"
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/ctpv2/data"
+	androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/ctpv2/data"
 )
 
 type AlStatusCleanUpCmd struct {

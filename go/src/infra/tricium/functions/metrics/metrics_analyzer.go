@@ -21,7 +21,7 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	findingspb "go.chromium.org/luci/common/proto/findings"
 
-	tricium "infra/tricium/api/v1"
+	tricium "go.chromium.org/infra/tricium/api/v1"
 )
 
 // enum contains all the data about a particular enum.

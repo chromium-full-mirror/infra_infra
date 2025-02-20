@@ -16,12 +16,12 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	ds "go.chromium.org/luci/gae/service/datastore"
 
-	"infra/qscheduler/qslib/tutils"
-	admin "infra/tricium/api/admin/v1"
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common/gerrit"
-	"infra/tricium/appengine/common/track"
-	"infra/tricium/appengine/common/triciumtest"
+	"go.chromium.org/infra/qscheduler/qslib/tutils"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common/gerrit"
+	"go.chromium.org/infra/tricium/appengine/common/track"
+	"go.chromium.org/infra/tricium/appengine/common/triciumtest"
 )
 
 func TestWorkerDoneRequest(t *testing.T) {

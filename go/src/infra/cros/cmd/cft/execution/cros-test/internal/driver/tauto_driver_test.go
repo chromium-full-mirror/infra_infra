@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	"infra/cros/cmd/cft/execution/cros-test/internal/device"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/device"
 )
 
 // TestNewTautoArgs makes sure newTautoArgs creates the correct arguments for tauto.

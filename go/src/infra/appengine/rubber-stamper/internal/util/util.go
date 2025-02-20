@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/luci/server/auth"
 )
 
-var errorReportingClientCtxKey = "infra/appengine/rubber-stamper/internal/util/ErrorReportingClient"
+var errorReportingClientCtxKey = "go.chromium.org/infra/appengine/rubber-stamper/internal/util/ErrorReportingClient"
 
 // GetServiceAccountName returns the app's service account name.
 func GetServiceAccountName(ctx context.Context) (string, error) {

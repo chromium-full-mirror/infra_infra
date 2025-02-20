@@ -20,7 +20,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/chromeperf/pinpoint/proto"
+	"go.chromium.org/infra/chromeperf/pinpoint/proto"
 )
 
 var (

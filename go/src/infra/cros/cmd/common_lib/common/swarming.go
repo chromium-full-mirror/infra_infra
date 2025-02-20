@@ -16,7 +16,7 @@ import (
 	swarm_v1 "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
 )
 
 var BotCountCache sync.Map

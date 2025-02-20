@@ -10,19 +10,19 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/unifiedfleet/api/v1/models/machine_lse.proto
+// source: go.chromium.org/infra/unifiedfleet/api/v1/models/machine_lse.proto
 
 package ufspb
 
 import (
+	inventory "go.chromium.org/infra/libs/skylab/inventory"
+	device "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/device"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	manufacturing "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	inventory "infra/libs/skylab/inventory"
-	device "infra/unifiedfleet/api/v1/models/chromeos/device"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	manufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -66,11 +66,11 @@ func (x LogicalZone) String() string {
 }
 
 func (LogicalZone) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_enumTypes[0].Descriptor()
 }
 
 func (LogicalZone) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_enumTypes[0]
 }
 
 func (x LogicalZone) Number() protoreflect.EnumNumber {
@@ -79,7 +79,7 @@ func (x LogicalZone) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use LogicalZone.Descriptor instead.
 func (LogicalZone) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{0}
 }
 
 // MachineLSE is the Machine Lab Setup Environment.
@@ -151,7 +151,7 @@ type MachineLSE struct {
 
 func (x *MachineLSE) Reset() {
 	*x = MachineLSE{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -163,7 +163,7 @@ func (x *MachineLSE) String() string {
 func (*MachineLSE) ProtoMessage() {}
 
 func (x *MachineLSE) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -176,7 +176,7 @@ func (x *MachineLSE) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MachineLSE.ProtoReflect.Descriptor instead.
 func (*MachineLSE) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *MachineLSE) GetName() string {
@@ -402,7 +402,7 @@ type ChromeBrowserMachineLSE struct {
 
 func (x *ChromeBrowserMachineLSE) Reset() {
 	*x = ChromeBrowserMachineLSE{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -414,7 +414,7 @@ func (x *ChromeBrowserMachineLSE) String() string {
 func (*ChromeBrowserMachineLSE) ProtoMessage() {}
 
 func (x *ChromeBrowserMachineLSE) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -427,7 +427,7 @@ func (x *ChromeBrowserMachineLSE) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromeBrowserMachineLSE.ProtoReflect.Descriptor instead.
 func (*ChromeBrowserMachineLSE) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ChromeBrowserMachineLSE) GetVms() []*VM {
@@ -496,7 +496,7 @@ type VM struct {
 
 func (x *VM) Reset() {
 	*x = VM{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -508,7 +508,7 @@ func (x *VM) String() string {
 func (*VM) ProtoMessage() {}
 
 func (x *VM) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -521,7 +521,7 @@ func (x *VM) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VM.ProtoReflect.Descriptor instead.
 func (*VM) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *VM) GetName() string {
@@ -656,7 +656,7 @@ type OSVersion struct {
 
 func (x *OSVersion) Reset() {
 	*x = OSVersion{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -668,7 +668,7 @@ func (x *OSVersion) String() string {
 func (*OSVersion) ProtoMessage() {}
 
 func (x *OSVersion) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -681,7 +681,7 @@ func (x *OSVersion) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OSVersion.ProtoReflect.Descriptor instead.
 func (*OSVersion) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *OSVersion) GetValue() string {
@@ -722,7 +722,7 @@ type ChromeOSMachineLSE struct {
 
 func (x *ChromeOSMachineLSE) Reset() {
 	*x = ChromeOSMachineLSE{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -734,7 +734,7 @@ func (x *ChromeOSMachineLSE) String() string {
 func (*ChromeOSMachineLSE) ProtoMessage() {}
 
 func (x *ChromeOSMachineLSE) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -747,7 +747,7 @@ func (x *ChromeOSMachineLSE) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromeOSMachineLSE.ProtoReflect.Descriptor instead.
 func (*ChromeOSMachineLSE) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ChromeOSMachineLSE) GetChromeosLse() isChromeOSMachineLSE_ChromeosLse {
@@ -757,7 +757,7 @@ func (x *ChromeOSMachineLSE) GetChromeosLse() isChromeOSMachineLSE_ChromeosLse {
 	return nil
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/machine_lse.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/machine_lse.proto.
 func (x *ChromeOSMachineLSE) GetDut() *ChromeOSDeviceLSE {
 	if x != nil {
 		if x, ok := x.ChromeosLse.(*ChromeOSMachineLSE_Dut); ok {
@@ -767,7 +767,7 @@ func (x *ChromeOSMachineLSE) GetDut() *ChromeOSDeviceLSE {
 	return nil
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/machine_lse.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/machine_lse.proto.
 func (x *ChromeOSMachineLSE) GetServer() *ChromeOSServerLSE {
 	if x != nil {
 		if x, ok := x.ChromeosLse.(*ChromeOSMachineLSE_Server); ok {
@@ -800,12 +800,12 @@ type isChromeOSMachineLSE_ChromeosLse interface {
 }
 
 type ChromeOSMachineLSE_Dut struct {
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/machine_lse.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/machine_lse.proto.
 	Dut *ChromeOSDeviceLSE `protobuf:"bytes,1,opt,name=dut,proto3,oneof"`
 }
 
 type ChromeOSMachineLSE_Server struct {
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/machine_lse.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/machine_lse.proto.
 	Server *ChromeOSServerLSE `protobuf:"bytes,2,opt,name=server,proto3,oneof"`
 }
 
@@ -829,7 +829,7 @@ func (*ChromeOSMachineLSE_ServerLse) isChromeOSMachineLSE_ChromeosLse() {}
 // e.g., DUT, test Bed, Labstation
 type ChromeOSDeviceLSE struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/machine_lse.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/machine_lse.proto.
 	Config                 *lab.DeviceUnderTest `protobuf:"bytes,1,opt,name=config,proto3" json:"config,omitempty"`
 	RpmInterface           *RPMInterface        `protobuf:"bytes,2,opt,name=rpm_interface,json=rpmInterface,proto3" json:"rpm_interface,omitempty"`
 	NetworkDeviceInterface *SwitchInterface     `protobuf:"bytes,3,opt,name=network_device_interface,json=networkDeviceInterface,proto3" json:"network_device_interface,omitempty"`
@@ -845,7 +845,7 @@ type ChromeOSDeviceLSE struct {
 
 func (x *ChromeOSDeviceLSE) Reset() {
 	*x = ChromeOSDeviceLSE{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -857,7 +857,7 @@ func (x *ChromeOSDeviceLSE) String() string {
 func (*ChromeOSDeviceLSE) ProtoMessage() {}
 
 func (x *ChromeOSDeviceLSE) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -870,10 +870,10 @@ func (x *ChromeOSDeviceLSE) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromeOSDeviceLSE.ProtoReflect.Descriptor instead.
 func (*ChromeOSDeviceLSE) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{5}
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/machine_lse.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/machine_lse.proto.
 func (x *ChromeOSDeviceLSE) GetConfig() *lab.DeviceUnderTest {
 	if x != nil {
 		return x.Config
@@ -964,7 +964,7 @@ type DutMeta struct {
 
 func (x *DutMeta) Reset() {
 	*x = DutMeta{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -976,7 +976,7 @@ func (x *DutMeta) String() string {
 func (*DutMeta) ProtoMessage() {}
 
 func (x *DutMeta) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -989,7 +989,7 @@ func (x *DutMeta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DutMeta.ProtoReflect.Descriptor instead.
 func (*DutMeta) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *DutMeta) GetChromeosDeviceId() string {
@@ -1040,7 +1040,7 @@ type LabMeta struct {
 
 func (x *LabMeta) Reset() {
 	*x = LabMeta{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1052,7 +1052,7 @@ func (x *LabMeta) String() string {
 func (*LabMeta) ProtoMessage() {}
 
 func (x *LabMeta) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1065,7 +1065,7 @@ func (x *LabMeta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LabMeta.ProtoReflect.Descriptor instead.
 func (*LabMeta) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *LabMeta) GetChromeosDeviceId() string {
@@ -1108,7 +1108,7 @@ type ChromeOSDeviceData struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
 	LabConfig *MachineLSE            `protobuf:"bytes,1,opt,name=lab_config,json=labConfig,proto3" json:"lab_config,omitempty"`
 	Machine   *Machine               `protobuf:"bytes,2,opt,name=machine,proto3" json:"machine,omitempty"`
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/machine_lse.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/machine_lse.proto.
 	DeviceConfig        *device.Config                     `protobuf:"bytes,3,opt,name=device_config,json=deviceConfig,proto3" json:"device_config,omitempty"`
 	ManufacturingConfig *manufacturing.ManufacturingConfig `protobuf:"bytes,4,opt,name=manufacturing_config,json=manufacturingConfig,proto3" json:"manufacturing_config,omitempty"`
 	HwidData            *HwidData                          `protobuf:"bytes,5,opt,name=hwid_data,json=hwidData,proto3" json:"hwid_data,omitempty"`
@@ -1125,7 +1125,7 @@ type ChromeOSDeviceData struct {
 
 func (x *ChromeOSDeviceData) Reset() {
 	*x = ChromeOSDeviceData{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1137,7 +1137,7 @@ func (x *ChromeOSDeviceData) String() string {
 func (*ChromeOSDeviceData) ProtoMessage() {}
 
 func (x *ChromeOSDeviceData) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1150,7 +1150,7 @@ func (x *ChromeOSDeviceData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromeOSDeviceData.ProtoReflect.Descriptor instead.
 func (*ChromeOSDeviceData) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ChromeOSDeviceData) GetLabConfig() *MachineLSE {
@@ -1167,7 +1167,7 @@ func (x *ChromeOSDeviceData) GetMachine() *Machine {
 	return nil
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/machine_lse.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/machine_lse.proto.
 func (x *ChromeOSDeviceData) GetDeviceConfig() *device.Config {
 	if x != nil {
 		return x.DeviceConfig
@@ -1245,7 +1245,7 @@ type RecoveryConfig struct {
 
 func (x *RecoveryConfig) Reset() {
 	*x = RecoveryConfig{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1257,7 +1257,7 @@ func (x *RecoveryConfig) String() string {
 func (*RecoveryConfig) ProtoMessage() {}
 
 func (x *RecoveryConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1270,7 +1270,7 @@ func (x *RecoveryConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecoveryConfig.ProtoReflect.Descriptor instead.
 func (*RecoveryConfig) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *RecoveryConfig) GetPowerSupply() string {
@@ -1304,7 +1304,7 @@ type SchedulableLabelValues struct {
 
 func (x *SchedulableLabelValues) Reset() {
 	*x = SchedulableLabelValues{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1316,7 +1316,7 @@ func (x *SchedulableLabelValues) String() string {
 func (*SchedulableLabelValues) ProtoMessage() {}
 
 func (x *SchedulableLabelValues) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1329,7 +1329,7 @@ func (x *SchedulableLabelValues) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SchedulableLabelValues.ProtoReflect.Descriptor instead.
 func (*SchedulableLabelValues) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *SchedulableLabelValues) GetLabelValues() []string {
@@ -1354,7 +1354,7 @@ type ChromeOSServerLSE struct {
 
 func (x *ChromeOSServerLSE) Reset() {
 	*x = ChromeOSServerLSE{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1366,7 +1366,7 @@ func (x *ChromeOSServerLSE) String() string {
 func (*ChromeOSServerLSE) ProtoMessage() {}
 
 func (x *ChromeOSServerLSE) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1379,7 +1379,7 @@ func (x *ChromeOSServerLSE) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromeOSServerLSE.ProtoReflect.Descriptor instead.
 func (*ChromeOSServerLSE) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{11}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ChromeOSServerLSE) GetSupportedRestrictedVlan() string {
@@ -1418,7 +1418,7 @@ type AttachedDeviceLSE struct {
 
 func (x *AttachedDeviceLSE) Reset() {
 	*x = AttachedDeviceLSE{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1430,7 +1430,7 @@ func (x *AttachedDeviceLSE) String() string {
 func (*AttachedDeviceLSE) ProtoMessage() {}
 
 func (x *AttachedDeviceLSE) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1443,7 +1443,7 @@ func (x *AttachedDeviceLSE) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AttachedDeviceLSE.ProtoReflect.Descriptor instead.
 func (*AttachedDeviceLSE) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{12}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *AttachedDeviceLSE) GetOsVersion() *OSVersion {
@@ -1467,10 +1467,11 @@ func (x *AttachedDeviceLSE) GetAssociatedHostPort() string {
 	return ""
 }
 
-var File_infra_unifiedfleet_api_v1_models_machine_lse_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto protoreflect.FileDescriptor
 
-var file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDesc = string([]byte{
-	0x0a, 0x32, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDesc = string([]byte{
+	0x0a, 0x42, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x6d, 0x61, 0x63, 0x68, 0x69, 0x6e, 0x65, 0x5f, 0x6c, 0x73, 0x65, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x12, 0x1a, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65,
@@ -1480,45 +1481,57 @@ var file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDesc = string([]b
 	0x6f, 0x1a, 0x19, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65,
 	0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f,
 	0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x5f, 0x62,
-	0x65, 0x68, 0x61, 0x76, 0x69, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x32, 0x69,
+	0x65, 0x68, 0x61, 0x76, 0x69, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x42, 0x67,
+	0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69,
 	0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65,
 	0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f,
 	0x70, 0x65, 0x72, 0x69, 0x70, 0x68, 0x65, 0x72, 0x61, 0x6c, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x1a, 0x3a, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64,
+	0x6f, 0x1a, 0x4a, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f,
+	0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64,
 	0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64,
 	0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62,
-	0x2f, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x39, 0x69,
+	0x2f, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x49, 0x67,
+	0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69,
 	0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65,
 	0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f,
 	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x2f, 0x73, 0x65, 0x72,
-	0x76, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2c, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
+	0x76, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3c, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72,
+	0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
 	0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69,
 	0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x73, 0x74, 0x61, 0x74, 0x65,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x4d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d,
+	0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e,
 	0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76,
 	0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f,
 	0x73, 0x2f, 0x6c, 0x61, 0x62, 0x2f, 0x64, 0x75, 0x74, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x65, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x4d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69,
+	0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69,
 	0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31,
 	0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73,
 	0x2f, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x44, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66,
+	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x54, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75,
+	0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66,
 	0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f,
 	0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f,
 	0x6d, 0x61, 0x6e, 0x75, 0x66, 0x61, 0x63, 0x74, 0x75, 0x72, 0x69, 0x6e, 0x67, 0x2f, 0x63, 0x6f,
-	0x6e, 0x66, 0x69, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2e, 0x69, 0x6e, 0x66, 0x72,
+	0x6e, 0x66, 0x69, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3e, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61,
 	0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x6d, 0x61, 0x63,
-	0x68, 0x69, 0x6e, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2b, 0x69, 0x6e, 0x66, 0x72,
+	0x68, 0x69, 0x6e, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3b, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61,
 	0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x68, 0x77, 0x69,
-	0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75,
+	0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f,
+	0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75,
 	0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f,
 	0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x28, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x6c, 0x69,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x38, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d,
+	0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x6c, 0x69,
 	0x62, 0x73, 0x2f, 0x73, 0x6b, 0x79, 0x6c, 0x61, 0x62, 0x2f, 0x69, 0x6e, 0x76, 0x65, 0x6e, 0x74,
 	0x6f, 0x72, 0x79, 0x2f, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x1a, 0x30, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+	0x1a, 0x40, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x22, 0xe7, 0x0b, 0x0a, 0x0a, 0x4d, 0x61, 0x63, 0x68, 0x69, 0x6e, 0x65, 0x4c, 0x53,
@@ -1867,27 +1880,28 @@ var file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDesc = string([]b
 	0x0a, 0x18, 0x4c, 0x4f, 0x47, 0x49, 0x43, 0x41, 0x4c, 0x5f, 0x5a, 0x4f, 0x4e, 0x45, 0x5f, 0x55,
 	0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x20, 0x0a, 0x1c,
 	0x4c, 0x4f, 0x47, 0x49, 0x43, 0x41, 0x4c, 0x5f, 0x5a, 0x4f, 0x4e, 0x45, 0x5f, 0x44, 0x52, 0x49,
-	0x4c, 0x4c, 0x5a, 0x4f, 0x4e, 0x45, 0x5f, 0x53, 0x46, 0x4f, 0x33, 0x36, 0x10, 0x01, 0x42, 0x28,
-	0x5a, 0x26, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+	0x4c, 0x4c, 0x5a, 0x4f, 0x4e, 0x45, 0x5f, 0x53, 0x46, 0x4f, 0x33, 0x36, 0x10, 0x01, 0x42, 0x38,
+	0x5a, 0x36, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x3b, 0x75, 0x66, 0x73, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescOnce sync.Once
-	file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescData []byte
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescData []byte
 )
 
-func file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP() []byte {
-	file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescOnce.Do(func() {
-		file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDesc)))
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDesc)))
 	})
-	return file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescData
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_models_machine_lse_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
-var file_infra_unifiedfleet_api_v1_models_machine_lse_proto_goTypes = []any{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_goTypes = []any{
 	(LogicalZone)(0),                          // 0: unifiedfleet.api.v1.models.LogicalZone
 	(*MachineLSE)(nil),                        // 1: unifiedfleet.api.v1.models.MachineLSE
 	(*ChromeBrowserMachineLSE)(nil),           // 2: unifiedfleet.api.v1.models.ChromeBrowserMachineLSE
@@ -1920,7 +1934,7 @@ var file_infra_unifiedfleet_api_v1_models_machine_lse_proto_goTypes = []any{
 	(*lab.DutState)(nil),                      // 29: unifiedfleet.api.v1.models.chromeos.lab.DutState
 	(*inventory.DeviceUnderTest)(nil),         // 30: chrome.chromeos_infra.skylab.proto.inventory.DeviceUnderTest
 }
-var file_infra_unifiedfleet_api_v1_models_machine_lse_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_depIdxs = []int32{
 	2,  // 0: unifiedfleet.api.v1.models.MachineLSE.chrome_browser_machine_lse:type_name -> unifiedfleet.api.v1.models.ChromeBrowserMachineLSE
 	5,  // 1: unifiedfleet.api.v1.models.MachineLSE.chromeos_machine_lse:type_name -> unifiedfleet.api.v1.models.ChromeOSMachineLSE
 	13, // 2: unifiedfleet.api.v1.models.MachineLSE.attached_device_lse:type_name -> unifiedfleet.api.v1.models.AttachedDeviceLSE
@@ -1964,29 +1978,29 @@ var file_infra_unifiedfleet_api_v1_models_machine_lse_proto_depIdxs = []int32{
 	0,  // [0:36] is the sub-list for field type_name
 }
 
-func init() { file_infra_unifiedfleet_api_v1_models_machine_lse_proto_init() }
-func file_infra_unifiedfleet_api_v1_models_machine_lse_proto_init() {
-	if File_infra_unifiedfleet_api_v1_models_machine_lse_proto != nil {
+func init() { file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_init() }
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_init() {
+	if File_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto != nil {
 		return
 	}
-	file_infra_unifiedfleet_api_v1_models_peripherals_proto_init()
-	file_infra_unifiedfleet_api_v1_models_state_proto_init()
-	file_infra_unifiedfleet_api_v1_models_machine_proto_init()
-	file_infra_unifiedfleet_api_v1_models_hwid_proto_init()
-	file_infra_unifiedfleet_api_v1_models_secret_proto_init()
-	file_infra_unifiedfleet_api_v1_models_ownership_proto_init()
-	file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[0].OneofWrappers = []any{
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_peripherals_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_state_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_hwid_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_secret_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_ownership_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[0].OneofWrappers = []any{
 		(*MachineLSE_ChromeBrowserMachineLse)(nil),
 		(*MachineLSE_ChromeosMachineLse)(nil),
 		(*MachineLSE_AttachedDeviceLse)(nil),
 	}
-	file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[4].OneofWrappers = []any{
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[4].OneofWrappers = []any{
 		(*ChromeOSMachineLSE_Dut)(nil),
 		(*ChromeOSMachineLSE_Server)(nil),
 		(*ChromeOSMachineLSE_DeviceLse)(nil),
 		(*ChromeOSMachineLSE_ServerLse)(nil),
 	}
-	file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[5].OneofWrappers = []any{
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes[5].OneofWrappers = []any{
 		(*ChromeOSDeviceLSE_Dut)(nil),
 		(*ChromeOSDeviceLSE_Labstation)(nil),
 		(*ChromeOSDeviceLSE_Devboard)(nil),
@@ -1995,18 +2009,18 @@ func file_infra_unifiedfleet_api_v1_models_machine_lse_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_unifiedfleet_api_v1_models_machine_lse_proto_goTypes,
-		DependencyIndexes: file_infra_unifiedfleet_api_v1_models_machine_lse_proto_depIdxs,
-		EnumInfos:         file_infra_unifiedfleet_api_v1_models_machine_lse_proto_enumTypes,
-		MessageInfos:      file_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_msgTypes,
 	}.Build()
-	File_infra_unifiedfleet_api_v1_models_machine_lse_proto = out.File
-	file_infra_unifiedfleet_api_v1_models_machine_lse_proto_goTypes = nil
-	file_infra_unifiedfleet_api_v1_models_machine_lse_proto_depIdxs = nil
+	File_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto = out.File
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_goTypes = nil
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_lse_proto_depIdxs = nil
 }

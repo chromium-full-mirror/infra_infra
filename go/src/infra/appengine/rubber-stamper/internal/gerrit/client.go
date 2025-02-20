@@ -29,7 +29,7 @@ type ClientFactory func(ctx context.Context, gerritHost string) (Client, error)
 // Client must be a subset of gerritpb.Client
 var _ Client = (gerritpb.GerritClient)(nil)
 
-var clientCtxKey = "infra/appengine/rubber-stamper/internal/client/gerrit.Client"
+var clientCtxKey = "go.chromium.org/infra/appengine/rubber-stamper/internal/client/gerrit.Client"
 var gerritScope = "https://www.googleapis.com/auth/gerritcodereview"
 
 // setClientFactory puts a given ClientFactory into in the context.

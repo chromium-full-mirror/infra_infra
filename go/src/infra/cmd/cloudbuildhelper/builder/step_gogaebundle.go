@@ -21,11 +21,11 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/cloudbuildhelper/bundledesc"
-	"infra/cmd/cloudbuildhelper/fileset"
-	"infra/cmd/cloudbuildhelper/gaeapp"
-	"infra/cmd/cloudbuildhelper/gitignore"
-	"infra/cmd/cloudbuildhelper/godep"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/bundledesc"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/fileset"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/gaeapp"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/gitignore"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/godep"
 )
 
 // Names of Go sources roots in the bundle for GOPATH and modules mode.

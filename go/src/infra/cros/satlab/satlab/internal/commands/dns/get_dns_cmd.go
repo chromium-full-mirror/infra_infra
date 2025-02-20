@@ -14,8 +14,8 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/satlab/common/dns"
-	"infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/dns"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 )
 
 type readContentsFunc func(context.Context, executor.IExecCommander) (string, error)

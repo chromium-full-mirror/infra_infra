@@ -5,5 +5,5 @@
 // Package plugsupport provides implementations for loading migrator plugins.
 //
 // Users of the `migrator` tool should not import or use this package (just the
-// base "infra/tools/migrator" package).
+// base "go.chromium.org/infra/tools/migrator" package).
 package plugsupport

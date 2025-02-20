@@ -16,9 +16,9 @@ import (
 	gcepAPI "go.chromium.org/luci/gce/api/config/v1"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 
-	"infra/cros/botsregulator/internal/clients"
-	"infra/cros/botsregulator/internal/regulator"
-	ufspb "infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/cros/botsregulator/internal/clients"
+	"go.chromium.org/infra/cros/botsregulator/internal/regulator"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 func TestRegulate(t *testing.T) {

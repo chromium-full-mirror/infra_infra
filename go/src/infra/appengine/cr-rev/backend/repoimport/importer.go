@@ -9,7 +9,7 @@ package repoimport
 import (
 	"context"
 
-	"infra/appengine/cr-rev/common"
+	"go.chromium.org/infra/appengine/cr-rev/common"
 )
 
 // Importer defines interface for importing a repository.

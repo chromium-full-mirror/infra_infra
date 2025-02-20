@@ -17,8 +17,8 @@ import (
 
 	findingspb "go.chromium.org/luci/common/proto/findings"
 
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/functions/shellcheck/runner"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/functions/shellcheck/runner"
 )
 
 const (

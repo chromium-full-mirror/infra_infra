@@ -11,7 +11,7 @@ import (
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 func TestParseJSONProto(t *testing.T) {

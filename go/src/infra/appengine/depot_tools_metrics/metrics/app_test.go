@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/auth/identity"
 
-	"infra/appengine/depot_tools_metrics/schema"
+	"go.chromium.org/infra/appengine/depot_tools_metrics/schema"
 )
 
 func TestExtractsMetrics(t *testing.T) {

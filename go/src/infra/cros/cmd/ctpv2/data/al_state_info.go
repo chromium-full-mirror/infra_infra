@@ -14,9 +14,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	androidapi "infra/cros/cmd/common_lib/android_api"
-	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
-	"infra/cros/cmd/common_lib/common"
+	androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api"
+	"go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 // AlStateInfo captures the state info for Al runs

@@ -4,7 +4,7 @@
 
 syntax = "proto3";
 
-option go_package = "infra/cros/botsregulator/protos;protos";
+option go_package = "go.chromium.org/infra/cros/botsregulator/protos;protos";
 
 package protos;
 

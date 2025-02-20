@@ -3,7 +3,7 @@ description: CLI to publish Suite and SuiteSet data to cros-test-analytics
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/suite_publisher
+  - go.chromium.org/infra/cros/cmd/suite_publisher
 root: ../../go/bin
 data:
   - file: suite_publisher${exe_suffix}

@@ -11,10 +11,10 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/git"
-	"infra/tools/dirmd"
-	dirmdpb "infra/tools/dirmd/proto"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/tools/dirmd"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
 )
 
 const (

@@ -11,9 +11,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/internal/retry"
-	"infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/internal/retry"
+	"go.chromium.org/infra/cros/recovery/logger"
 )
 
 // EnableWiFi enables WiFi on DUT.

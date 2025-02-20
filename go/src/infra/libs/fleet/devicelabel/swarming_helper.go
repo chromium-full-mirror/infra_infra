@@ -5,7 +5,7 @@
 package devicelabel
 
 import (
-	ufslabconfigpb "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufslabconfigpb "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 const trueString = "True"

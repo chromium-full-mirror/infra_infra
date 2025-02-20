@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
 func TestPEP425TagSelector(t *testing.T) {

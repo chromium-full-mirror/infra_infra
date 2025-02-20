@@ -14,8 +14,8 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 func TestFindCacheServer_single(t *testing.T) {

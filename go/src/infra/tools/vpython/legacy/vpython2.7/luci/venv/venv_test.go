@@ -36,8 +36,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/convey"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-	"infra/tools/vpython/legacy/vpython2.7/luci/python"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/python"
 )
 
 var verbose = flag.Bool("test.gologger", false, "Enable Go logging.")

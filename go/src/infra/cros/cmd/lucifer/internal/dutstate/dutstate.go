@@ -9,7 +9,7 @@ import (
 	"log"
 	"path/filepath"
 
-	"infra/cros/cmd/lucifer/internal/event"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/event"
 )
 
 const dutStateFilename = "dut_state.repair"

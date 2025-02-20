@@ -15,8 +15,8 @@ import (
 	scron "go.chromium.org/luci/server/cron"
 	"go.chromium.org/luci/server/module"
 
-	"infra/cros/botsregulator/internal/cron"
-	"infra/cros/botsregulator/internal/regulator"
+	"go.chromium.org/infra/cros/botsregulator/internal/cron"
+	"go.chromium.org/infra/cros/botsregulator/internal/regulator"
 )
 
 // migrateSeenInfo caches the last successful migrate-bots run.

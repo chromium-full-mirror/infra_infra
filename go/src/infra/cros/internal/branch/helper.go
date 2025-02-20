@@ -18,11 +18,11 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	mv "infra/cros/internal/chromeosversion"
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/git"
-	"infra/cros/internal/repo"
-	"infra/cros/internal/shared"
+	mv "go.chromium.org/infra/cros/internal/chromeosversion"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/repo"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 const (

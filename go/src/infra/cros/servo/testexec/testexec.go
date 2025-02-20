@@ -45,10 +45,10 @@ import (
 
 	"golang.org/x/sys/unix"
 
-	"infra/cros/servo/errors"
-	tastexec "infra/cros/servo/exec"
-	"infra/cros/servo/shutil"
-	"infra/cros/servo/testing"
+	"go.chromium.org/infra/cros/servo/errors"
+	tastexec "go.chromium.org/infra/cros/servo/exec"
+	"go.chromium.org/infra/cros/servo/shutil"
+	"go.chromium.org/infra/cros/servo/testing"
 )
 
 // Cmd represents an external command being prepared or run.

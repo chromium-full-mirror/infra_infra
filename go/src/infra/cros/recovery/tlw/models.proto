@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package chromeos.recovery;
 
-option go_package = "infra/cros/recovery/tlw;tlw";
+option go_package = "go.chromium.org/infra/cros/recovery/tlw;tlw";
 
 import "google/protobuf/duration.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/config/api/test/xmlrpc/xmlrpc.proto";

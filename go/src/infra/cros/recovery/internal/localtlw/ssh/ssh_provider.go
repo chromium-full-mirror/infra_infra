@@ -10,8 +10,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/env"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/internal/env"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // SSHProvider provide access to SSH client manager.

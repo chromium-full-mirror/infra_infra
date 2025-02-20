@@ -20,8 +20,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/labpack/logger"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/cmd/labpack/logger"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // createLogger creates a logger for recovery lib.

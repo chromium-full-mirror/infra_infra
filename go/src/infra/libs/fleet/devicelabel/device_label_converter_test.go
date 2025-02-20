@@ -10,9 +10,9 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/libs/fleet"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufslabconfigpb "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"go.chromium.org/infra/libs/fleet"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufslabconfigpb "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 // TestConvert tests that Convert can successfully converts a UFS entry to a label-based representation.

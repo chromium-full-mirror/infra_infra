@@ -8,7 +8,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/fleet/findswarm
+  - go.chromium.org/infra/fleet/findswarm
 root: ../../go/bin
 data:
   - file: findswarm${exe_suffix}

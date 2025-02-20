@@ -3,7 +3,7 @@ description: Checks a project's deployments in GCE-provider configs for quota is
 platforms:
   - linux-amd64
 go_packages:
-  - infra/chromium/gce_quota_checker
+  - go.chromium.org/infra/chromium/gce_quota_checker
 root: ../../go/bin
 data:
   - file: gce_quota_checker${exe_suffix}

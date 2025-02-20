@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"strconv"
 
-	"infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/errors"
 )
 
 // pdStateCmdTarget specifies whether pd state commands go to the DUT or Servo

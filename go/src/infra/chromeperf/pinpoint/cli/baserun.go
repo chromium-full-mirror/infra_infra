@@ -36,7 +36,7 @@ import (
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/chromeperf/pinpoint/proto"
+	"go.chromium.org/infra/chromeperf/pinpoint/proto"
 )
 
 type baseCommandRun struct {

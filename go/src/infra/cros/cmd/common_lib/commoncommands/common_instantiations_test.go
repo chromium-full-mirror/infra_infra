@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/cmd/common_lib/commoncommands"
+	"go.chromium.org/infra/cros/cmd/common_lib/commoncommands"
 )
 
 func TestPopQueueInstantiation_BadCast(t *testing.T) {

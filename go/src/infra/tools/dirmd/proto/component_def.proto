@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package chrome.dir_metadata;
 
-option go_package = "infra/tools/dirmd/proto;dirmdpb";
+option go_package = "go.chromium.org/infra/tools/dirmd/proto;dirmdpb";
 
 // TODO(crbug.com/1505875) - Remove this once migration is complete.
 // Note that these definitions are separate from the ones in dir_metadata.proto

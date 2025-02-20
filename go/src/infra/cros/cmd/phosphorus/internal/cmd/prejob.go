@@ -25,10 +25,10 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/cmd/phosphorus/internal/autotest/atutil"
-	"infra/cros/cmd/phosphorus/internal/botcache"
-	"infra/cros/cmd/phosphorus/internal/tls"
-	"infra/libs/lro"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/autotest/atutil"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/botcache"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/tls"
+	"go.chromium.org/infra/libs/lro"
 )
 
 // If not set in the prejob requests we default to this bucket.

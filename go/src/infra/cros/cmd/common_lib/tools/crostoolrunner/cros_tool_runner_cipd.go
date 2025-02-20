@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 // CtrCipdInfo represents Ctr cipd related info.

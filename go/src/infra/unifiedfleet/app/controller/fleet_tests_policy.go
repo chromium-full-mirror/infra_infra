@@ -17,9 +17,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/auth"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	api "infra/unifiedfleet/api/v1/rpc"
-	"infra/unifiedfleet/app/model/configuration"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	api "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
 )
 
 const (

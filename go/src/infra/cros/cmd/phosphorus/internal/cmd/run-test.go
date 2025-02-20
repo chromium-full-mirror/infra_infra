@@ -21,8 +21,8 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/phosphorus"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cros/cmd/phosphorus/internal/autotest/atutil"
-	"infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/autotest/atutil"
+	"go.chromium.org/infra/cros/internal/cmd"
 )
 
 const (

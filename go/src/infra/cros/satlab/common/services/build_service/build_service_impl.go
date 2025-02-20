@@ -17,11 +17,11 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/recovery/models"
-	moblabapi "infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/collection"
-	"infra/cros/satlab/common/utils/parser"
+	"go.chromium.org/infra/cros/recovery/models"
+	moblabapi "go.chromium.org/infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/collection"
+	"go.chromium.org/infra/cros/satlab/common/utils/parser"
 )
 
 // PageSize The number of items to return in a page

@@ -3,7 +3,7 @@ description: VM Lab CLI.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cmd/vmlab
+  - go.chromium.org/infra/cmd/vmlab
 root: ../../go/bin
 data:
   - file: vmlab${exe_suffix}

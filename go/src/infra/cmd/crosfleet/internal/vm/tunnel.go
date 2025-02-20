@@ -22,8 +22,8 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmd/crosfleet/internal/common"
-	"infra/vm_leaser/client"
+	"go.chromium.org/infra/cmd/crosfleet/internal/common"
+	"go.chromium.org/infra/vm_leaser/client"
 )
 
 const tunnelCmd = "tunnel"

@@ -12,8 +12,8 @@ import (
 	"github.com/maruel/subcommands"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"infra/libs/vmlab"
-	"infra/libs/vmlab/api"
+	"go.chromium.org/infra/libs/vmlab"
+	"go.chromium.org/infra/libs/vmlab/api"
 )
 
 var ImageCmd = &subcommands.Command{

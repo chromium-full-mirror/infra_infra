@@ -11,7 +11,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"infra/cros/karte/internal/testsupport"
+	"go.chromium.org/infra/cros/karte/internal/testsupport"
 )
 
 // TestReadActionEntityFromEmptyDatastore check that a read from a consistent datastore with

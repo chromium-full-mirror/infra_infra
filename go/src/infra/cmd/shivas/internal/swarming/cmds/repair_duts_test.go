@@ -13,9 +13,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/shivas/site"
-	schedulingapi "infra/libs/fleet/scheduling/api"
-	"infra/libs/skylab/buildbucket"
+	"go.chromium.org/infra/cmd/shivas/site"
+	schedulingapi "go.chromium.org/infra/libs/fleet/scheduling/api"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
 )
 
 // TestScheduleRepairBuilder tests that scheduling a repair builder produces the correct

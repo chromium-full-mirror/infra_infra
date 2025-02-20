@@ -9,10 +9,10 @@ import (
 	"os"
 	"testing"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/gerrit"
-	bb "infra/cros/lib/buildbucket"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	bb "go.chromium.org/infra/cros/lib/buildbucket"
 )
 
 // TestDoesFWBranchHaveBuilder tests doesFWBranchHaveBuilder.

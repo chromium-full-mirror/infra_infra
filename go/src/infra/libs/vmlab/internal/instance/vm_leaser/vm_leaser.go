@@ -14,8 +14,8 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
 
-	vmlabpb "infra/libs/vmlab/api"
-	"infra/vm_leaser/client"
+	vmlabpb "go.chromium.org/infra/libs/vmlab/api"
+	"go.chromium.org/infra/vm_leaser/client"
 )
 
 // vmLeaserInstanceApi implements vmlabpb.InstanceApi

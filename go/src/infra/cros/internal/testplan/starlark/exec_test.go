@@ -20,7 +20,7 @@ import (
 	test_api_v1 "go.chromium.org/chromiumos/config/go/test/api/v1"
 	"go.chromium.org/chromiumos/config/go/test/plan"
 
-	"infra/cros/internal/testplan/starlark"
+	"go.chromium.org/infra/cros/internal/testplan/starlark"
 )
 
 var buildMetadataList = &buildpb.SystemImage_BuildMetadataList{

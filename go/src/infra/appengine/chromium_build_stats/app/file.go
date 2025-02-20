@@ -15,7 +15,7 @@ import (
 	"google.golang.org/appengine/v2/log"
 	"google.golang.org/appengine/v2/user"
 
-	"infra/appengine/chromium_build_stats/logstore"
+	"go.chromium.org/infra/appengine/chromium_build_stats/logstore"
 )
 
 func init() {

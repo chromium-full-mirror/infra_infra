@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/tricium/api/v1/tricium.proto
+// source: go.chromium.org/infra/tricium/api/v1/tricium.proto
 
 package tricium
 
@@ -87,11 +87,11 @@ func (x State) String() string {
 }
 
 func (State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_tricium_api_v1_tricium_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_tricium_api_v1_tricium_proto_enumTypes[0].Descriptor()
 }
 
 func (State) Type() protoreflect.EnumType {
-	return &file_infra_tricium_api_v1_tricium_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_enumTypes[0]
 }
 
 func (x State) Number() protoreflect.EnumNumber {
@@ -100,7 +100,7 @@ func (x State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use State.Descriptor instead.
 func (State) EnumDescriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{0}
 }
 
 // AnalyzeRequest contains the details needed for an analysis request.
@@ -121,7 +121,7 @@ type AnalyzeRequest struct {
 
 func (x *AnalyzeRequest) Reset() {
 	*x = AnalyzeRequest{}
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -133,7 +133,7 @@ func (x *AnalyzeRequest) String() string {
 func (*AnalyzeRequest) ProtoMessage() {}
 
 func (x *AnalyzeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -146,7 +146,7 @@ func (x *AnalyzeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnalyzeRequest.ProtoReflect.Descriptor instead.
 func (*AnalyzeRequest) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *AnalyzeRequest) GetProject() string {
@@ -241,7 +241,7 @@ type GerritRevision struct {
 
 func (x *GerritRevision) Reset() {
 	*x = GerritRevision{}
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -253,7 +253,7 @@ func (x *GerritRevision) String() string {
 func (*GerritRevision) ProtoMessage() {}
 
 func (x *GerritRevision) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -266,7 +266,7 @@ func (x *GerritRevision) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GerritRevision.ProtoReflect.Descriptor instead.
 func (*GerritRevision) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *GerritRevision) GetHost() string {
@@ -324,7 +324,7 @@ type GitCommit struct {
 
 func (x *GitCommit) Reset() {
 	*x = GitCommit{}
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -336,7 +336,7 @@ func (x *GitCommit) String() string {
 func (*GitCommit) ProtoMessage() {}
 
 func (x *GitCommit) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -349,7 +349,7 @@ func (x *GitCommit) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GitCommit.ProtoReflect.Descriptor instead.
 func (*GitCommit) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GitCommit) GetUrl() string {
@@ -378,7 +378,7 @@ type AnalyzeResponse struct {
 
 func (x *AnalyzeResponse) Reset() {
 	*x = AnalyzeResponse{}
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -390,7 +390,7 @@ func (x *AnalyzeResponse) String() string {
 func (*AnalyzeResponse) ProtoMessage() {}
 
 func (x *AnalyzeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -403,7 +403,7 @@ func (x *AnalyzeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnalyzeResponse.ProtoReflect.Descriptor instead.
 func (*AnalyzeResponse) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *AnalyzeResponse) GetRunId() string {
@@ -444,7 +444,7 @@ type ProgressRequest struct {
 
 func (x *ProgressRequest) Reset() {
 	*x = ProgressRequest{}
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -456,7 +456,7 @@ func (x *ProgressRequest) String() string {
 func (*ProgressRequest) ProtoMessage() {}
 
 func (x *ProgressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -469,7 +469,7 @@ func (x *ProgressRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProgressRequest.ProtoReflect.Descriptor instead.
 func (*ProgressRequest) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ProgressRequest) GetFunction() string {
@@ -546,7 +546,7 @@ type ProgressResponse struct {
 
 func (x *ProgressResponse) Reset() {
 	*x = ProgressResponse{}
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -558,7 +558,7 @@ func (x *ProgressResponse) String() string {
 func (*ProgressResponse) ProtoMessage() {}
 
 func (x *ProgressResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -571,7 +571,7 @@ func (x *ProgressResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProgressResponse.ProtoReflect.Descriptor instead.
 func (*ProgressResponse) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ProgressResponse) GetRunId() string {
@@ -620,7 +620,7 @@ type FunctionProgress struct {
 
 func (x *FunctionProgress) Reset() {
 	*x = FunctionProgress{}
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -632,7 +632,7 @@ func (x *FunctionProgress) String() string {
 func (*FunctionProgress) ProtoMessage() {}
 
 func (x *FunctionProgress) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -645,7 +645,7 @@ func (x *FunctionProgress) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FunctionProgress.ProtoReflect.Descriptor instead.
 func (*FunctionProgress) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *FunctionProgress) GetName() string {
@@ -725,7 +725,7 @@ type FeedbackRequest struct {
 
 func (x *FeedbackRequest) Reset() {
 	*x = FeedbackRequest{}
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -737,7 +737,7 @@ func (x *FeedbackRequest) String() string {
 func (*FeedbackRequest) ProtoMessage() {}
 
 func (x *FeedbackRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -750,7 +750,7 @@ func (x *FeedbackRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FeedbackRequest.ProtoReflect.Descriptor instead.
 func (*FeedbackRequest) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *FeedbackRequest) GetProject() string {
@@ -798,7 +798,7 @@ type FeedbackResponse struct {
 
 func (x *FeedbackResponse) Reset() {
 	*x = FeedbackResponse{}
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -810,7 +810,7 @@ func (x *FeedbackResponse) String() string {
 func (*FeedbackResponse) ProtoMessage() {}
 
 func (x *FeedbackResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -823,7 +823,7 @@ func (x *FeedbackResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FeedbackResponse.ProtoReflect.Descriptor instead.
 func (*FeedbackResponse) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *FeedbackResponse) GetComments() int32 {
@@ -850,7 +850,7 @@ type ReportNotUsefulRequest struct {
 
 func (x *ReportNotUsefulRequest) Reset() {
 	*x = ReportNotUsefulRequest{}
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -862,7 +862,7 @@ func (x *ReportNotUsefulRequest) String() string {
 func (*ReportNotUsefulRequest) ProtoMessage() {}
 
 func (x *ReportNotUsefulRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -875,7 +875,7 @@ func (x *ReportNotUsefulRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportNotUsefulRequest.ProtoReflect.Descriptor instead.
 func (*ReportNotUsefulRequest) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ReportNotUsefulRequest) GetCommentId() string {
@@ -891,7 +891,7 @@ type ReportNotUsefulResponse struct {
 	Owner string `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`
 	// Monorail bug component of the analyzer being.
 	//
-	// Deprecated: Marked as deprecated in infra/tricium/api/v1/tricium.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/tricium/api/v1/tricium.proto.
 	MonorailComponent string `protobuf:"bytes,2,opt,name=monorail_component,json=monorailComponent,proto3" json:"monorail_component,omitempty"`
 	// ID of the chromium issue tracker component for the analyzer.
 	IssueTrackerComponentId int64 `protobuf:"varint,3,opt,name=issue_tracker_component_id,json=issueTrackerComponentId,proto3" json:"issue_tracker_component_id,omitempty"`
@@ -901,7 +901,7 @@ type ReportNotUsefulResponse struct {
 
 func (x *ReportNotUsefulResponse) Reset() {
 	*x = ReportNotUsefulResponse{}
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -913,7 +913,7 @@ func (x *ReportNotUsefulResponse) String() string {
 func (*ReportNotUsefulResponse) ProtoMessage() {}
 
 func (x *ReportNotUsefulResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_v1_tricium_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -926,7 +926,7 @@ func (x *ReportNotUsefulResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportNotUsefulResponse.ProtoReflect.Descriptor instead.
 func (*ReportNotUsefulResponse) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ReportNotUsefulResponse) GetOwner() string {
@@ -936,7 +936,7 @@ func (x *ReportNotUsefulResponse) GetOwner() string {
 	return ""
 }
 
-// Deprecated: Marked as deprecated in infra/tricium/api/v1/tricium.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/tricium/api/v1/tricium.proto.
 func (x *ReportNotUsefulResponse) GetMonorailComponent() string {
 	if x != nil {
 		return x.MonorailComponent
@@ -951,17 +951,20 @@ func (x *ReportNotUsefulResponse) GetIssueTrackerComponentId() int64 {
 	return 0
 }
 
-var File_infra_tricium_api_v1_tricium_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_tricium_api_v1_tricium_proto protoreflect.FileDescriptor
 
-var file_infra_tricium_api_v1_tricium_proto_rawDesc = string([]byte{
-	0x0a, 0x22, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
+var file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDesc = string([]byte{
+	0x0a, 0x32, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x12, 0x07, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x1a, 0x1f, 0x67,
 	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74,
-	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f,
+	0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2f,
+	0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f,
 	0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f, 0x61, 0x70,
 	0x69, 0x2f, 0x76, 0x31, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
-	0x23, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f, 0x61,
+	0x33, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67,
+	0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f, 0x61,
 	0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x22, 0xd7, 0x01, 0x0a, 0x0e, 0x41, 0x6e, 0x61, 0x6c, 0x79, 0x7a, 0x65,
 	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x70, 0x72, 0x6f, 0x6a, 0x65,
@@ -1087,26 +1090,27 @@ var file_infra_tricium_api_v1_tricium_proto_rawDesc = string([]byte{
 	0x65, 0x70, 0x6f, 0x72, 0x74, 0x4e, 0x6f, 0x74, 0x55, 0x73, 0x65, 0x66, 0x75, 0x6c, 0x52, 0x65,
 	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2e,
 	0x52, 0x65, 0x70, 0x6f, 0x72, 0x74, 0x4e, 0x6f, 0x74, 0x55, 0x73, 0x65, 0x66, 0x75, 0x6c, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x1e, 0x5a, 0x1c, 0x69, 0x6e, 0x66, 0x72, 0x61,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x2e, 0x5a, 0x2c, 0x67, 0x6f, 0x2e, 0x63, 0x68,
+	0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61,
 	0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x3b,
 	0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_tricium_api_v1_tricium_proto_rawDescOnce sync.Once
-	file_infra_tricium_api_v1_tricium_proto_rawDescData []byte
+	file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescData []byte
 )
 
-func file_infra_tricium_api_v1_tricium_proto_rawDescGZIP() []byte {
-	file_infra_tricium_api_v1_tricium_proto_rawDescOnce.Do(func() {
-		file_infra_tricium_api_v1_tricium_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_tricium_api_v1_tricium_proto_rawDesc), len(file_infra_tricium_api_v1_tricium_proto_rawDesc)))
+func file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDesc), len(file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDesc)))
 	})
-	return file_infra_tricium_api_v1_tricium_proto_rawDescData
+	return file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDescData
 }
 
-var file_infra_tricium_api_v1_tricium_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_infra_tricium_api_v1_tricium_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
-var file_infra_tricium_api_v1_tricium_proto_goTypes = []any{
+var file_go_chromium_org_infra_tricium_api_v1_tricium_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_go_chromium_org_infra_tricium_api_v1_tricium_proto_goTypes = []any{
 	(State)(0),                      // 0: tricium.State
 	(*AnalyzeRequest)(nil),          // 1: tricium.AnalyzeRequest
 	(*GerritRevision)(nil),          // 2: tricium.GerritRevision
@@ -1124,7 +1128,7 @@ var file_infra_tricium_api_v1_tricium_proto_goTypes = []any{
 	(Platform_Name)(0),              // 14: tricium.Platform.Name
 	(*timestamppb.Timestamp)(nil),   // 15: google.protobuf.Timestamp
 }
-var file_infra_tricium_api_v1_tricium_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_tricium_api_v1_tricium_proto_depIdxs = []int32{
 	12, // 0: tricium.AnalyzeRequest.files:type_name -> tricium.Data.File
 	2,  // 1: tricium.AnalyzeRequest.gerrit_revision:type_name -> tricium.GerritRevision
 	3,  // 2: tricium.AnalyzeRequest.git_commit:type_name -> tricium.GitCommit
@@ -1151,18 +1155,18 @@ var file_infra_tricium_api_v1_tricium_proto_depIdxs = []int32{
 	0,  // [0:11] is the sub-list for field type_name
 }
 
-func init() { file_infra_tricium_api_v1_tricium_proto_init() }
-func file_infra_tricium_api_v1_tricium_proto_init() {
-	if File_infra_tricium_api_v1_tricium_proto != nil {
+func init() { file_go_chromium_org_infra_tricium_api_v1_tricium_proto_init() }
+func file_go_chromium_org_infra_tricium_api_v1_tricium_proto_init() {
+	if File_go_chromium_org_infra_tricium_api_v1_tricium_proto != nil {
 		return
 	}
-	file_infra_tricium_api_v1_data_proto_init()
-	file_infra_tricium_api_v1_platform_proto_init()
-	file_infra_tricium_api_v1_tricium_proto_msgTypes[0].OneofWrappers = []any{
+	file_go_chromium_org_infra_tricium_api_v1_data_proto_init()
+	file_go_chromium_org_infra_tricium_api_v1_platform_proto_init()
+	file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[0].OneofWrappers = []any{
 		(*AnalyzeRequest_GerritRevision)(nil),
 		(*AnalyzeRequest_GitCommit)(nil),
 	}
-	file_infra_tricium_api_v1_tricium_proto_msgTypes[4].OneofWrappers = []any{
+	file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes[4].OneofWrappers = []any{
 		(*ProgressRequest_GerritRevision)(nil),
 		(*ProgressRequest_RunId)(nil),
 	}
@@ -1170,20 +1174,20 @@ func file_infra_tricium_api_v1_tricium_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_tricium_api_v1_tricium_proto_rawDesc), len(file_infra_tricium_api_v1_tricium_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDesc), len(file_go_chromium_org_infra_tricium_api_v1_tricium_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_tricium_api_v1_tricium_proto_goTypes,
-		DependencyIndexes: file_infra_tricium_api_v1_tricium_proto_depIdxs,
-		EnumInfos:         file_infra_tricium_api_v1_tricium_proto_enumTypes,
-		MessageInfos:      file_infra_tricium_api_v1_tricium_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_tricium_api_v1_tricium_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_tricium_api_v1_tricium_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_tricium_api_v1_tricium_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_tricium_api_v1_tricium_proto_msgTypes,
 	}.Build()
-	File_infra_tricium_api_v1_tricium_proto = out.File
-	file_infra_tricium_api_v1_tricium_proto_goTypes = nil
-	file_infra_tricium_api_v1_tricium_proto_depIdxs = nil
+	File_go_chromium_org_infra_tricium_api_v1_tricium_proto = out.File
+	file_go_chromium_org_infra_tricium_api_v1_tricium_proto_goTypes = nil
+	file_go_chromium_org_infra_tricium_api_v1_tricium_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1434,5 +1438,5 @@ var _Tricium_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/tricium/api/v1/tricium.proto",
+	Metadata: "go.chromium.org/infra/tricium/api/v1/tricium.proto",
 }

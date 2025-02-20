@@ -12,7 +12,7 @@ import (
 
 	"cloud.google.com/go/bigquery"
 
-	"infra/cros/cmd/suite_publisher/internal/suite"
+	"go.chromium.org/infra/cros/cmd/suite_publisher/internal/suite"
 )
 
 // BuildInfo holds the build and version info that is associated with

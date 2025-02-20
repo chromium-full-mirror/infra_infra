@@ -23,7 +23,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cros/internal/testplan/compatibility"
+	"go.chromium.org/infra/cros/internal/testplan/compatibility"
 )
 
 // newStruct is a convenience method to build a structpb.Struct from a map of

@@ -10,9 +10,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	fleetcostpb "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/utils"
+	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/utils"
 )
 
 // ValidateCreateCostIndicatorRequest performs a shallow validation of cost indicator request fields.

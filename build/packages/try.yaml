@@ -3,7 +3,7 @@ description: CLI to create ChromeOS builders with common configurations. See go/
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/try
+  - go.chromium.org/infra/cros/cmd/try
 root: ../../go/bin
 data:
   - file: try${exe_suffix}

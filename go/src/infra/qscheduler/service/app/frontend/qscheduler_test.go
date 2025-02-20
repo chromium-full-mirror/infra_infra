@@ -22,10 +22,10 @@ import (
 	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 	swarming "go.chromium.org/luci/swarming/proto/plugin"
 
-	"infra/qscheduler/qslib/tutils"
-	qscheduler "infra/qscheduler/service/api/qscheduler/v1"
-	"infra/qscheduler/service/app/eventlog"
-	"infra/qscheduler/service/app/frontend"
+	"go.chromium.org/infra/qscheduler/qslib/tutils"
+	qscheduler "go.chromium.org/infra/qscheduler/service/api/qscheduler/v1"
+	"go.chromium.org/infra/qscheduler/service/app/eventlog"
+	"go.chromium.org/infra/qscheduler/service/app/frontend"
 )
 
 func TestAssignTasks(t *testing.T) {

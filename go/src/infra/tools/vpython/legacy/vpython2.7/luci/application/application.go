@@ -34,12 +34,12 @@ import (
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/filesystem"
 
-	vpython "infra/tools/vpython/legacy/vpython2.7/luci"
-	vpythonAPI "infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-	"infra/tools/vpython/legacy/vpython2.7/luci/application/internal/prober"
-	"infra/tools/vpython/legacy/vpython2.7/luci/python"
-	"infra/tools/vpython/legacy/vpython2.7/luci/spec"
-	"infra/tools/vpython/legacy/vpython2.7/luci/venv"
+	vpython "go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci"
+	vpythonAPI "go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/application/internal/prober"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/python"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/spec"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/venv"
 )
 
 const (

@@ -11,9 +11,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
-	"infra/libs/skylab/common/heuristics"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend/routing"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
 )
 
 // RouteTaskParams are the parameters needed to route a task between legacy and paris

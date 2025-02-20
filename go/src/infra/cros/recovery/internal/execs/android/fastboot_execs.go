@@ -7,8 +7,8 @@ package android
 import (
 	"context"
 
-	"infra/cros/recovery/internal/components/android/fastboot"
-	"infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/components/android/fastboot"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
 )
 
 // deviceInFastbootMode check if the device is in fastboot mode and returns error if not.

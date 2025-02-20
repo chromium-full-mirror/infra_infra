@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	ufsUtil "infra/unifiedfleet/app/util"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // OAuth scope for the whole of cloud platform.

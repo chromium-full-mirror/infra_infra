@@ -8,7 +8,7 @@ import (
 	"context"
 	"testing"
 
-	"infra/cros/karte/internal/testsupport"
+	"go.chromium.org/infra/cros/karte/internal/testsupport"
 )
 
 // TestListObservationsWithFilter tests listing observations with a simple filter.

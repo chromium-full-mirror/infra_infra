@@ -13,10 +13,10 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/router"
 
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/controller"
-	"infra/unifiedfleet/app/external"
-	"infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/controller"
+	"go.chromium.org/infra/unifiedfleet/app/external"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // VerifierEndpoint is the POST endpoint for use by pubsub service.

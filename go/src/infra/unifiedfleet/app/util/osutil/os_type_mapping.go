@@ -5,7 +5,7 @@
 package osutil
 
 import (
-	"infra/libs/skylab/inventory"
+	"go.chromium.org/infra/libs/skylab/inventory"
 )
 
 var boardToOsTypeMapping = map[string]inventory.SchedulableLabels_OSType{

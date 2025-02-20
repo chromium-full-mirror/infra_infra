@@ -10,8 +10,8 @@ import (
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 
-	"infra/appengine/cros/lab_inventory/app/cron"
-	"infra/appengine/cros/lab_inventory/app/frontend"
+	"go.chromium.org/infra/appengine/cros/lab_inventory/app/cron"
+	"go.chromium.org/infra/appengine/cros/lab_inventory/app/frontend"
 )
 
 func main() {

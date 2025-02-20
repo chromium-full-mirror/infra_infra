@@ -8,8 +8,8 @@ import (
 	"context"
 	"fmt"
 
-	m "infra/tools/migrator"
-	"infra/tools/migrator/plugin"
+	m "go.chromium.org/infra/tools/migrator"
+	"go.chromium.org/infra/tools/migrator/plugin"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging"

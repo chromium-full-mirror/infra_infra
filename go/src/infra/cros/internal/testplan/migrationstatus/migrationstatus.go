@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	cvpb "go.chromium.org/luci/cv/api/config/v2"
 
-	"infra/cros/internal/repo"
+	"go.chromium.org/infra/cros/internal/repo"
 )
 
 // names of relevant ConfigGroups and Builders in the CV config.

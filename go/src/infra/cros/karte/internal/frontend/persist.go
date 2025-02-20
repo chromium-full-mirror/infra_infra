@@ -18,9 +18,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/externalclients"
-	"infra/cros/karte/internal/scalars"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	"go.chromium.org/infra/cros/karte/internal/externalclients"
+	"go.chromium.org/infra/cros/karte/internal/scalars"
 )
 
 // PersistAction persists a single action.

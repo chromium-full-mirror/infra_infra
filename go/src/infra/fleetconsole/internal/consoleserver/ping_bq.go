@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
-	"infra/fleetconsole/internal/bigqueryclient"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/internal/bigqueryclient"
 )
 
 // PingBigQuery pings the mock BQ database with a random query and logs the results.

@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/cft/dut/cros-servod/ssh"
+	"go.chromium.org/infra/cros/cmd/cft/dut/cros-servod/ssh"
 )
 
 // proxy holds info to perform proxy confection to servod daemon.

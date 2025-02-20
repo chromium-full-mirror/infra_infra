@@ -6,7 +6,7 @@ package suite
 import (
 	"testing"
 
-	"infra/cros/cmd/suite_publisher/test"
+	"go.chromium.org/infra/cros/cmd/suite_publisher/test"
 )
 
 func TestNewSuiteSet(t *testing.T) {

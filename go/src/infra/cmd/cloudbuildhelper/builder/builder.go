@@ -17,9 +17,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/cloudbuildhelper/fileset"
-	"infra/cmd/cloudbuildhelper/gitignore"
-	"infra/cmd/cloudbuildhelper/manifest"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/fileset"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/gitignore"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/manifest"
 )
 
 // Builder executes build steps specified via "build" field in the manifest.

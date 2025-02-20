@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 // ManualExecution represents manual executions.

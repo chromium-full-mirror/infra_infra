@@ -16,10 +16,10 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/libs/skylab/inventory"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsmanufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
+	"go.chromium.org/infra/libs/skylab/inventory"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsmanufacturing "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 )
 
 var (

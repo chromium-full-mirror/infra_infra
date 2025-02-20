@@ -14,9 +14,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/cft/base-adb/internal/cli"
-	"infra/cros/cmd/cft/base-adb/internal/server"
-	"infra/cros/cmd/cft/base-adb/internal/version"
+	"go.chromium.org/infra/cros/cmd/cft/base-adb/internal/cli"
+	"go.chromium.org/infra/cros/cmd/cft/base-adb/internal/server"
+	"go.chromium.org/infra/cros/cmd/cft/base-adb/internal/version"
 )
 
 type Runner interface {

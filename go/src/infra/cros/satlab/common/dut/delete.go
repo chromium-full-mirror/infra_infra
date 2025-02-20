@@ -14,13 +14,13 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/satlab/common/paths"
-	"infra/cros/satlab/common/satlabcommands"
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/executor"
-	ufsModels "infra/unifiedfleet/api/v1/models"
-	ufsApi "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/satlab/common/paths"
+	"go.chromium.org/infra/cros/satlab/common/satlabcommands"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
+	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsApi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 type DeleteClient interface {
@@ -78,7 +78,7 @@ func (d *DeleteDUT) Validate() error {
 // If we want to pass the `Namespace`, we can set up it in the context
 // e.g.
 // ```
-// import "infra/cmd/shivas/utils"
+// import "go.chromium.org/infra/cmd/shivas/utils"
 //
 // ctx = utils.SetupContext(ctx, c.envFlags.GetNamespace())
 // ```

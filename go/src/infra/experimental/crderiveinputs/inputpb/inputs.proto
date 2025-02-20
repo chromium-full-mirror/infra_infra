@@ -6,7 +6,7 @@ syntax = "proto3";
 
 import "google/protobuf/wrappers.proto";
 
-option go_package = "infra/experimental/crderiveinputs/inputpb";
+option go_package = "go.chromium.org/infra/experimental/crderiveinputs/inputpb";
 
 message ResolvableString {
   string requested = 1;

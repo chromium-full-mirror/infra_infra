@@ -15,11 +15,11 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/skylab/internal/bb"
-	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
-	"infra/cmd/skylab/internal/cmd/recipe"
-	"infra/cmd/skylab/internal/site"
-	"infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cmd/skylab/internal/bb"
+	skycmdlib "go.chromium.org/infra/cmd/skylab/internal/cmd/cmdlib"
+	"go.chromium.org/infra/cmd/skylab/internal/cmd/recipe"
+	"go.chromium.org/infra/cmd/skylab/internal/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
 )
 
 // CreateSuite subcommand: create a suite task.

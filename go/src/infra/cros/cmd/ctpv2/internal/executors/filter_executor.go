@@ -18,13 +18,13 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/analytics"
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/interfaces"
-	ctpv2_data "infra/cros/cmd/ctpv2/data"
-	"infra/cros/cmd/ctpv2/internal/commands"
-	"infra/libs/skylab/inventory/autotest/labels"
-	s "infra/libs/skylab/inventory/swarming"
+	"go.chromium.org/infra/cros/cmd/common_lib/analytics"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
+	ctpv2_data "go.chromium.org/infra/cros/cmd/ctpv2/data"
+	"go.chromium.org/infra/cros/cmd/ctpv2/internal/commands"
+	"go.chromium.org/infra/libs/skylab/inventory/autotest/labels"
+	s "go.chromium.org/infra/libs/skylab/inventory/swarming"
 )
 
 // FilterExecutor represents executor for all filter related commands.

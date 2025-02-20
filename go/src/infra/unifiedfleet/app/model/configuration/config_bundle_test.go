@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 func mockConfigBundle(id string, programId string, name string) *payload.ConfigBundle {

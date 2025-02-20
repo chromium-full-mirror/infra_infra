@@ -11,7 +11,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/tricium/appengine/common/track"
+	"go.chromium.org/infra/tricium/appengine/common/track"
 )
 
 func TestCLAndPatchSetNumberFunctions(t *testing.T) {

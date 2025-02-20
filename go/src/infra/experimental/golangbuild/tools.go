@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/experimental/golangbuild/golangbuildpb"
+	"go.chromium.org/infra/experimental/golangbuild/golangbuildpb"
 )
 
 // CIPD dependencies for non-coordinator mode builds.

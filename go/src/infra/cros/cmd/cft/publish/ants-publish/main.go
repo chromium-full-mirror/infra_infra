@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"infra/cros/cmd/cft/publish/ants-publish/cli"
+	"go.chromium.org/infra/cros/cmd/cft/publish/ants-publish/cli"
 )
 
 func main() {

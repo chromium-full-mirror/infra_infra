@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/fleetconsole/internal/site"
+	"go.chromium.org/infra/fleetconsole/internal/site"
 )
 
 // PingUICommand pings the service.

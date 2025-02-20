@@ -28,9 +28,9 @@ import (
 	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/qscheduler/qslib/scheduler"
-	"infra/qscheduler/service/app/state/nodestore"
-	"infra/qscheduler/service/app/state/types"
+	"go.chromium.org/infra/qscheduler/qslib/scheduler"
+	"go.chromium.org/infra/qscheduler/service/app/state/nodestore"
+	"go.chromium.org/infra/qscheduler/service/app/state/types"
 )
 
 type createUniqueAccounts struct {

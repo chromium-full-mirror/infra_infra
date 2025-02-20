@@ -4,7 +4,7 @@ description: Uprev service responsible for building and pushing
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/container_uprev
+  - go.chromium.org/infra/cros/cmd/container_uprev
 root: ../../go/bin
 data:
   - file: container_uprev${exe_suffix}

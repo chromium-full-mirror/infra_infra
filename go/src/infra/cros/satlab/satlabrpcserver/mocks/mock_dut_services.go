@@ -8,9 +8,9 @@ import (
 
 	"github.com/stretchr/testify/mock"
 
-	"infra/cros/satlab/common/enumeration"
-	"infra/cros/satlab/satlabrpcserver/models"
-	"infra/cros/satlab/satlabrpcserver/services/dut_services"
+	"go.chromium.org/infra/cros/satlab/common/enumeration"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/models"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/services/dut_services"
 )
 
 // MockDUTServices This object is only for testing

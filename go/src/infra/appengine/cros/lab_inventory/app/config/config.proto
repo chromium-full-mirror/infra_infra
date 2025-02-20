@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package lab_inventory.config;
 
-option go_package = "infra/appengine/cros/lab_inventory/app/config";
+option go_package = "go.chromium.org/infra/appengine/cros/lab_inventory/app/config";
 
 // Note: docstrings use generated go style variable names.
 

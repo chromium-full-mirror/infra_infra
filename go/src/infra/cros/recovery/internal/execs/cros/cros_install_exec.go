@@ -12,16 +12,16 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/dutstate"
-	"infra/cros/recovery/internal/components/cft"
-	"infra/cros/recovery/internal/components/cros"
-	"infra/cros/recovery/internal/components/cros/firmware"
-	"infra/cros/recovery/internal/components/cros/storage"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/internal/retry"
-	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/version"
+	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/cros/recovery/internal/components/cft"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros/firmware"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros/storage"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/retry"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/version"
 )
 
 // Boot device from servo USB drive when device is in DEV mode.

@@ -12,10 +12,10 @@ import (
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cros/cmd/try/try"
-	"infra/cros/internal/assert"
-	"infra/cros/internal/cmd"
-	bb "infra/cros/lib/buildbucket"
+	"go.chromium.org/infra/cros/cmd/try/try"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/cmd"
+	bb "go.chromium.org/infra/cros/lib/buildbucket"
 )
 
 const (

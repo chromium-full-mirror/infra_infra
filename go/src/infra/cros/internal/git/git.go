@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/cmd"
 )
 
 var (

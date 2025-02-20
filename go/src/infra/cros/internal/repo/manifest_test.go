@@ -12,7 +12,7 @@ import (
 	"reflect"
 	"testing"
 
-	"infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/assert"
 )
 
 func ManifestEq(a, b *Manifest) bool {

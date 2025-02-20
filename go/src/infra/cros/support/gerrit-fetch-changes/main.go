@@ -9,8 +9,8 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/api/gerrit"
 
-	"infra/cros/support/internal/cli"
-	sgerrit "infra/cros/support/internal/gerrit"
+	"go.chromium.org/infra/cros/support/internal/cli"
+	sgerrit "go.chromium.org/infra/cros/support/internal/gerrit"
 )
 
 type Input struct {

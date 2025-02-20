@@ -8,7 +8,7 @@ import (
 
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 
-	"infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/assert"
 )
 
 func TestDownloadFileRequestMatcher(t *testing.T) {

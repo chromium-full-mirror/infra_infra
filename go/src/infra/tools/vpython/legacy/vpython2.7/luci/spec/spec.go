@@ -25,7 +25,7 @@ import (
 	"go.chromium.org/luci/common/data/sortby"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
 // Render creates a human-readable string from spec.

@@ -22,9 +22,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/satlab/common/utils/executor"
-	"infra/cros/satlab/common/utils/expect"
-	"infra/cros/satlab/common/utils/misc"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/utils/expect"
+	"go.chromium.org/infra/cros/satlab/common/utils/misc"
 )
 
 type CCDOpenRun struct {

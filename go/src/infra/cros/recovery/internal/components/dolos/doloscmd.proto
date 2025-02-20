@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package chromeos.recovery;
 
-option go_package = "infra/cros/recovery/internal/components/dolos;dolos";
+option go_package = "go.chromium.org/infra/cros/recovery/internal/components/dolos;dolos";
 
 enum ERROR_CODE {
     OK = 0;

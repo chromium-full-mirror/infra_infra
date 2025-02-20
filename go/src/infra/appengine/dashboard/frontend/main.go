@@ -24,7 +24,7 @@ import (
 	"go.chromium.org/luci/server/secrets"
 	"go.chromium.org/luci/server/templates"
 
-	dashpb "infra/appengine/dashboard/api/dashboard"
+	dashpb "go.chromium.org/infra/appengine/dashboard/api/dashboard"
 )
 
 const authGroup = "chopsdash-access"

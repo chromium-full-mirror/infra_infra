@@ -12,9 +12,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/tlw"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // Data provides access to versions data.

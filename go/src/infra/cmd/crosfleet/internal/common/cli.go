@@ -21,8 +21,8 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/gcloud/googleoauth"
 
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cmd/crosfleet/internal/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
 )
 
 // Tag to add to Buildbucket builds to indicate which crosfleet subcommand was

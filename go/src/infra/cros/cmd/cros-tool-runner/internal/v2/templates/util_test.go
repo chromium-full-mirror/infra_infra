@@ -13,8 +13,8 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labApi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
-	"infra/cros/cmd/cros-tool-runner/internal/v2/state"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/v2/state"
 )
 
 func TestParsePortBindingString(t *testing.T) {

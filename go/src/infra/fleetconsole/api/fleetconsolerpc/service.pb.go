@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/fleetconsole/api/fleetconsolerpc/service.proto
+// source: go.chromium.org/infra/fleetconsole/api/fleetconsolerpc/service.proto
 
 package fleetconsolerpc
 
@@ -59,11 +59,11 @@ func (x DeviceType) String() string {
 }
 
 func (DeviceType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_enumTypes[0].Descriptor()
 }
 
 func (DeviceType) Type() protoreflect.EnumType {
-	return &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_enumTypes[0]
 }
 
 func (x DeviceType) Number() protoreflect.EnumNumber {
@@ -72,7 +72,7 @@ func (x DeviceType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DeviceType.Descriptor instead.
 func (DeviceType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{0}
 }
 
 type DeviceState int32
@@ -111,11 +111,11 @@ func (x DeviceState) String() string {
 }
 
 func (DeviceState) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_enumTypes[1].Descriptor()
 }
 
 func (DeviceState) Type() protoreflect.EnumType {
-	return &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_enumTypes[1]
 }
 
 func (x DeviceState) Number() protoreflect.EnumNumber {
@@ -124,7 +124,7 @@ func (x DeviceState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DeviceState.Descriptor instead.
 func (DeviceState) EnumDescriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{1}
 }
 
 // PingRequest intentionally contains nothing.
@@ -136,7 +136,7 @@ type PingRequest struct {
 
 func (x *PingRequest) Reset() {
 	*x = PingRequest{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -148,7 +148,7 @@ func (x *PingRequest) String() string {
 func (*PingRequest) ProtoMessage() {}
 
 func (x *PingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -161,7 +161,7 @@ func (x *PingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingRequest.ProtoReflect.Descriptor instead.
 func (*PingRequest) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{0}
 }
 
 // PingResponse intentionally contains nothing.
@@ -173,7 +173,7 @@ type PingResponse struct {
 
 func (x *PingResponse) Reset() {
 	*x = PingResponse{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -185,7 +185,7 @@ func (x *PingResponse) String() string {
 func (*PingResponse) ProtoMessage() {}
 
 func (x *PingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -198,7 +198,7 @@ func (x *PingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingResponse.ProtoReflect.Descriptor instead.
 func (*PingResponse) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{1}
 }
 
 // PingBigQueryRequest intentionally contains nothing.
@@ -210,7 +210,7 @@ type PingBigQueryRequest struct {
 
 func (x *PingBigQueryRequest) Reset() {
 	*x = PingBigQueryRequest{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -222,7 +222,7 @@ func (x *PingBigQueryRequest) String() string {
 func (*PingBigQueryRequest) ProtoMessage() {}
 
 func (x *PingBigQueryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -235,7 +235,7 @@ func (x *PingBigQueryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingBigQueryRequest.ProtoReflect.Descriptor instead.
 func (*PingBigQueryRequest) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{2}
 }
 
 // PingBigQueryResponse intentionally contains nothing.
@@ -247,7 +247,7 @@ type PingBigQueryResponse struct {
 
 func (x *PingBigQueryResponse) Reset() {
 	*x = PingBigQueryResponse{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -259,7 +259,7 @@ func (x *PingBigQueryResponse) String() string {
 func (*PingBigQueryResponse) ProtoMessage() {}
 
 func (x *PingBigQueryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -272,7 +272,7 @@ func (x *PingBigQueryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingBigQueryResponse.ProtoReflect.Descriptor instead.
 func (*PingBigQueryResponse) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{3}
 }
 
 // PingDeviceManagerRequest intentionally contains nothing.
@@ -284,7 +284,7 @@ type PingDeviceManagerRequest struct {
 
 func (x *PingDeviceManagerRequest) Reset() {
 	*x = PingDeviceManagerRequest{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -296,7 +296,7 @@ func (x *PingDeviceManagerRequest) String() string {
 func (*PingDeviceManagerRequest) ProtoMessage() {}
 
 func (x *PingDeviceManagerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -309,7 +309,7 @@ func (x *PingDeviceManagerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingDeviceManagerRequest.ProtoReflect.Descriptor instead.
 func (*PingDeviceManagerRequest) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{4}
 }
 
 // PingDeviceManagerResponse intentionally contains nothing.
@@ -321,7 +321,7 @@ type PingDeviceManagerResponse struct {
 
 func (x *PingDeviceManagerResponse) Reset() {
 	*x = PingDeviceManagerResponse{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -333,7 +333,7 @@ func (x *PingDeviceManagerResponse) String() string {
 func (*PingDeviceManagerResponse) ProtoMessage() {}
 
 func (x *PingDeviceManagerResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -346,7 +346,7 @@ func (x *PingDeviceManagerResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingDeviceManagerResponse.ProtoReflect.Descriptor instead.
 func (*PingDeviceManagerResponse) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{5}
 }
 
 // PingUfsRequest intentionally contains nothing.
@@ -358,7 +358,7 @@ type PingUfsRequest struct {
 
 func (x *PingUfsRequest) Reset() {
 	*x = PingUfsRequest{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -370,7 +370,7 @@ func (x *PingUfsRequest) String() string {
 func (*PingUfsRequest) ProtoMessage() {}
 
 func (x *PingUfsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -383,7 +383,7 @@ func (x *PingUfsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingUfsRequest.ProtoReflect.Descriptor instead.
 func (*PingUfsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{6}
 }
 
 // PingUfsResponse intentionally contains nothing.
@@ -395,7 +395,7 @@ type PingUfsResponse struct {
 
 func (x *PingUfsResponse) Reset() {
 	*x = PingUfsResponse{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -407,7 +407,7 @@ func (x *PingUfsResponse) String() string {
 func (*PingUfsResponse) ProtoMessage() {}
 
 func (x *PingUfsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -420,7 +420,7 @@ func (x *PingUfsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingUfsResponse.ProtoReflect.Descriptor instead.
 func (*PingUfsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{7}
 }
 
 type Device struct {
@@ -441,7 +441,7 @@ type Device struct {
 
 func (x *Device) Reset() {
 	*x = Device{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -453,7 +453,7 @@ func (x *Device) String() string {
 func (*Device) ProtoMessage() {}
 
 func (x *Device) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -466,7 +466,7 @@ func (x *Device) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Device.ProtoReflect.Descriptor instead.
 func (*Device) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Device) GetId() string {
@@ -523,7 +523,7 @@ type DeviceAddress struct {
 
 func (x *DeviceAddress) Reset() {
 	*x = DeviceAddress{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -535,7 +535,7 @@ func (x *DeviceAddress) String() string {
 func (*DeviceAddress) ProtoMessage() {}
 
 func (x *DeviceAddress) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -548,7 +548,7 @@ func (x *DeviceAddress) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceAddress.ProtoReflect.Descriptor instead.
 func (*DeviceAddress) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *DeviceAddress) GetHost() string {
@@ -585,7 +585,7 @@ type ListDevicesRequest struct {
 
 func (x *ListDevicesRequest) Reset() {
 	*x = ListDevicesRequest{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -597,7 +597,7 @@ func (x *ListDevicesRequest) String() string {
 func (*ListDevicesRequest) ProtoMessage() {}
 
 func (x *ListDevicesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -610,7 +610,7 @@ func (x *ListDevicesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDevicesRequest.ProtoReflect.Descriptor instead.
 func (*ListDevicesRequest) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ListDevicesRequest) GetPageSize() int32 {
@@ -654,7 +654,7 @@ type ListDevicesResponse struct {
 
 func (x *ListDevicesResponse) Reset() {
 	*x = ListDevicesResponse{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -666,7 +666,7 @@ func (x *ListDevicesResponse) String() string {
 func (*ListDevicesResponse) ProtoMessage() {}
 
 func (x *ListDevicesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -679,7 +679,7 @@ func (x *ListDevicesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDevicesResponse.ProtoReflect.Descriptor instead.
 func (*ListDevicesResponse) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{11}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ListDevicesResponse) GetDevices() []*Device {
@@ -706,7 +706,7 @@ type DeviceSpec struct {
 
 func (x *DeviceSpec) Reset() {
 	*x = DeviceSpec{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -718,7 +718,7 @@ func (x *DeviceSpec) String() string {
 func (*DeviceSpec) ProtoMessage() {}
 
 func (x *DeviceSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -731,7 +731,7 @@ func (x *DeviceSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceSpec.ProtoReflect.Descriptor instead.
 func (*DeviceSpec) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{12}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DeviceSpec) GetLabels() map[string]*LabelValues {
@@ -751,7 +751,7 @@ type GetDeviceDimensionsResponse struct {
 
 func (x *GetDeviceDimensionsResponse) Reset() {
 	*x = GetDeviceDimensionsResponse{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -763,7 +763,7 @@ func (x *GetDeviceDimensionsResponse) String() string {
 func (*GetDeviceDimensionsResponse) ProtoMessage() {}
 
 func (x *GetDeviceDimensionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -776,7 +776,7 @@ func (x *GetDeviceDimensionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeviceDimensionsResponse.ProtoReflect.Descriptor instead.
 func (*GetDeviceDimensionsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{13}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetDeviceDimensionsResponse) GetBaseDimensions() map[string]*LabelValues {
@@ -802,7 +802,7 @@ type LabelValues struct {
 
 func (x *LabelValues) Reset() {
 	*x = LabelValues{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -814,7 +814,7 @@ func (x *LabelValues) String() string {
 func (*LabelValues) ProtoMessage() {}
 
 func (x *LabelValues) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -827,7 +827,7 @@ func (x *LabelValues) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LabelValues.ProtoReflect.Descriptor instead.
 func (*LabelValues) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{14}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *LabelValues) GetValues() []string {
@@ -848,7 +848,7 @@ type CountDevicesRequest struct {
 
 func (x *CountDevicesRequest) Reset() {
 	*x = CountDevicesRequest{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -860,7 +860,7 @@ func (x *CountDevicesRequest) String() string {
 func (*CountDevicesRequest) ProtoMessage() {}
 
 func (x *CountDevicesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -873,7 +873,7 @@ func (x *CountDevicesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CountDevicesRequest.ProtoReflect.Descriptor instead.
 func (*CountDevicesRequest) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{15}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *CountDevicesRequest) GetFilter() string {
@@ -894,7 +894,7 @@ type CountDevicesResponse struct {
 
 func (x *CountDevicesResponse) Reset() {
 	*x = CountDevicesResponse{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -906,7 +906,7 @@ func (x *CountDevicesResponse) String() string {
 func (*CountDevicesResponse) ProtoMessage() {}
 
 func (x *CountDevicesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -919,7 +919,7 @@ func (x *CountDevicesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CountDevicesResponse.ProtoReflect.Descriptor instead.
 func (*CountDevicesResponse) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{16}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *CountDevicesResponse) GetTotal() int32 {
@@ -953,7 +953,7 @@ type TaskStateCounts struct {
 
 func (x *TaskStateCounts) Reset() {
 	*x = TaskStateCounts{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -965,7 +965,7 @@ func (x *TaskStateCounts) String() string {
 func (*TaskStateCounts) ProtoMessage() {}
 
 func (x *TaskStateCounts) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -978,7 +978,7 @@ func (x *TaskStateCounts) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskStateCounts.ProtoReflect.Descriptor instead.
 func (*TaskStateCounts) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{17}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *TaskStateCounts) GetBusy() int32 {
@@ -1007,7 +1007,7 @@ type DeviceStateCounts struct {
 
 func (x *DeviceStateCounts) Reset() {
 	*x = DeviceStateCounts{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1019,7 +1019,7 @@ func (x *DeviceStateCounts) String() string {
 func (*DeviceStateCounts) ProtoMessage() {}
 
 func (x *DeviceStateCounts) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1032,7 +1032,7 @@ func (x *DeviceStateCounts) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceStateCounts.ProtoReflect.Descriptor instead.
 func (*DeviceStateCounts) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{18}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *DeviceStateCounts) GetReady() int32 {
@@ -1071,7 +1071,7 @@ type RepopulateCacheRequest struct {
 
 func (x *RepopulateCacheRequest) Reset() {
 	*x = RepopulateCacheRequest{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[19]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1083,7 +1083,7 @@ func (x *RepopulateCacheRequest) String() string {
 func (*RepopulateCacheRequest) ProtoMessage() {}
 
 func (x *RepopulateCacheRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[19]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1096,7 +1096,7 @@ func (x *RepopulateCacheRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepopulateCacheRequest.ProtoReflect.Descriptor instead.
 func (*RepopulateCacheRequest) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{19}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{19}
 }
 
 type RepopulateCacheResponse struct {
@@ -1107,7 +1107,7 @@ type RepopulateCacheResponse struct {
 
 func (x *RepopulateCacheResponse) Reset() {
 	*x = RepopulateCacheResponse{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[20]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1119,7 +1119,7 @@ func (x *RepopulateCacheResponse) String() string {
 func (*RepopulateCacheResponse) ProtoMessage() {}
 
 func (x *RepopulateCacheResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[20]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1132,7 +1132,7 @@ func (x *RepopulateCacheResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepopulateCacheResponse.ProtoReflect.Descriptor instead.
 func (*RepopulateCacheResponse) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{20}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{20}
 }
 
 type PingDBRequest struct {
@@ -1143,7 +1143,7 @@ type PingDBRequest struct {
 
 func (x *PingDBRequest) Reset() {
 	*x = PingDBRequest{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[21]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1155,7 +1155,7 @@ func (x *PingDBRequest) String() string {
 func (*PingDBRequest) ProtoMessage() {}
 
 func (x *PingDBRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[21]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1168,7 +1168,7 @@ func (x *PingDBRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingDBRequest.ProtoReflect.Descriptor instead.
 func (*PingDBRequest) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{21}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{21}
 }
 
 type PingDBResponse struct {
@@ -1179,7 +1179,7 @@ type PingDBResponse struct {
 
 func (x *PingDBResponse) Reset() {
 	*x = PingDBResponse{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[22]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1191,7 +1191,7 @@ func (x *PingDBResponse) String() string {
 func (*PingDBResponse) ProtoMessage() {}
 
 func (x *PingDBResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[22]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1204,7 +1204,7 @@ func (x *PingDBResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingDBResponse.ProtoReflect.Descriptor instead.
 func (*PingDBResponse) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{22}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{22}
 }
 
 type CleanExitRequest struct {
@@ -1215,7 +1215,7 @@ type CleanExitRequest struct {
 
 func (x *CleanExitRequest) Reset() {
 	*x = CleanExitRequest{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[23]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1227,7 +1227,7 @@ func (x *CleanExitRequest) String() string {
 func (*CleanExitRequest) ProtoMessage() {}
 
 func (x *CleanExitRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[23]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1240,7 +1240,7 @@ func (x *CleanExitRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CleanExitRequest.ProtoReflect.Descriptor instead.
 func (*CleanExitRequest) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{23}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{23}
 }
 
 type CleanExitResponse struct {
@@ -1251,7 +1251,7 @@ type CleanExitResponse struct {
 
 func (x *CleanExitResponse) Reset() {
 	*x = CleanExitResponse{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[24]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1263,7 +1263,7 @@ func (x *CleanExitResponse) String() string {
 func (*CleanExitResponse) ProtoMessage() {}
 
 func (x *CleanExitResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[24]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1276,7 +1276,7 @@ func (x *CleanExitResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CleanExitResponse.ProtoReflect.Descriptor instead.
 func (*CleanExitResponse) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{24}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{24}
 }
 
 type ListResourceRequestsRequest struct {
@@ -1299,7 +1299,7 @@ type ListResourceRequestsRequest struct {
 
 func (x *ListResourceRequestsRequest) Reset() {
 	*x = ListResourceRequestsRequest{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[25]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1311,7 +1311,7 @@ func (x *ListResourceRequestsRequest) String() string {
 func (*ListResourceRequestsRequest) ProtoMessage() {}
 
 func (x *ListResourceRequestsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[25]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1324,7 +1324,7 @@ func (x *ListResourceRequestsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListResourceRequestsRequest.ProtoReflect.Descriptor instead.
 func (*ListResourceRequestsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{25}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ListResourceRequestsRequest) GetPageSize() int32 {
@@ -1368,7 +1368,7 @@ type ListResourceRequestsResponse struct {
 
 func (x *ListResourceRequestsResponse) Reset() {
 	*x = ListResourceRequestsResponse{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[26]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1380,7 +1380,7 @@ func (x *ListResourceRequestsResponse) String() string {
 func (*ListResourceRequestsResponse) ProtoMessage() {}
 
 func (x *ListResourceRequestsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[26]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1393,7 +1393,7 @@ func (x *ListResourceRequestsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListResourceRequestsResponse.ProtoReflect.Descriptor instead.
 func (*ListResourceRequestsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{26}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ListResourceRequestsResponse) GetResourceRequests() []*ResourceRequest {
@@ -1433,7 +1433,7 @@ type ResourceRequest struct {
 
 func (x *ResourceRequest) Reset() {
 	*x = ResourceRequest{}
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[27]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1445,7 +1445,7 @@ func (x *ResourceRequest) String() string {
 func (*ResourceRequest) ProtoMessage() {}
 
 func (x *ResourceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[27]
+	mi := &file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1458,7 +1458,7 @@ func (x *ResourceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResourceRequest.ProtoReflect.Descriptor instead.
 func (*ResourceRequest) Descriptor() ([]byte, []int) {
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{27}
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *ResourceRequest) GetName() string {
@@ -1510,16 +1510,18 @@ func (x *ResourceRequest) GetConfigEndDate() *DateOnly {
 	return nil
 }
 
-var File_infra_fleetconsole_api_fleetconsolerpc_service_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto protoreflect.FileDescriptor
 
-var file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDesc = string([]byte{
-	0x0a, 0x34, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x6e,
+var file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDesc = string([]byte{
+	0x0a, 0x44, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x6e,
 	0x73, 0x6f, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f,
 	0x6e, 0x73, 0x6f, 0x6c, 0x65, 0x72, 0x70, 0x63, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0c, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x6e,
 	0x73, 0x6f, 0x6c, 0x65, 0x1a, 0x1b, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x65, 0x6d, 0x70, 0x74, 0x79, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x1a, 0x39, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f,
+	0x6f, 0x1a, 0x49, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f,
+	0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f,
 	0x6e, 0x73, 0x6f, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63,
 	0x6f, 0x6e, 0x73, 0x6f, 0x6c, 0x65, 0x72, 0x70, 0x63, 0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e,
 	0x5f, 0x74, 0x79, 0x70, 0x65, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x0d, 0x0a, 0x0b,
@@ -1754,28 +1756,29 @@ var file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDesc = string([
 	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
 	0x1a, 0x2a, 0x2e, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x6e, 0x73, 0x6f, 0x6c, 0x65, 0x2e,
 	0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x38,
-	0x5a, 0x36, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x6e,
+	0x65, 0x73, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x48,
+	0x5a, 0x46, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x6e,
 	0x73, 0x6f, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f,
 	0x6e, 0x73, 0x6f, 0x6c, 0x65, 0x72, 0x70, 0x63, 0x3b, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f,
 	0x6e, 0x73, 0x6f, 0x6c, 0x65, 0x72, 0x70, 0x63, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescOnce sync.Once
-	file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescData []byte
+	file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescData []byte
 )
 
-func file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP() []byte {
-	file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescOnce.Do(func() {
-		file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDesc), len(file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDesc)))
+func file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDesc), len(file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDesc)))
 	})
-	return file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescData
+	return file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDescData
 }
 
-var file_infra_fleetconsole_api_fleetconsolerpc_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
-var file_infra_fleetconsole_api_fleetconsolerpc_service_proto_goTypes = []any{
+var file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes = make([]protoimpl.MessageInfo, 31)
+var file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_goTypes = []any{
 	(DeviceType)(0),                      // 0: fleetconsole.DeviceType
 	(DeviceState)(0),                     // 1: fleetconsole.DeviceState
 	(*PingRequest)(nil),                  // 2: fleetconsole.PingRequest
@@ -1812,7 +1815,7 @@ var file_infra_fleetconsole_api_fleetconsolerpc_service_proto_goTypes = []any{
 	(*DateOnly)(nil),                     // 33: fleetconsole.DateOnly
 	(*emptypb.Empty)(nil),                // 34: google.protobuf.Empty
 }
-var file_infra_fleetconsole_api_fleetconsolerpc_service_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_depIdxs = []int32{
 	11, // 0: fleetconsole.Device.address:type_name -> fleetconsole.DeviceAddress
 	0,  // 1: fleetconsole.Device.type:type_name -> fleetconsole.DeviceType
 	1,  // 2: fleetconsole.Device.state:type_name -> fleetconsole.DeviceState
@@ -1860,28 +1863,28 @@ var file_infra_fleetconsole_api_fleetconsolerpc_service_proto_depIdxs = []int32{
 	0,  // [0:18] is the sub-list for field type_name
 }
 
-func init() { file_infra_fleetconsole_api_fleetconsolerpc_service_proto_init() }
-func file_infra_fleetconsole_api_fleetconsolerpc_service_proto_init() {
-	if File_infra_fleetconsole_api_fleetconsolerpc_service_proto != nil {
+func init() { file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_init() }
+func file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_init() {
+	if File_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto != nil {
 		return
 	}
-	file_infra_fleetconsole_api_fleetconsolerpc_common_types_proto_init()
+	file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_common_types_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDesc), len(file_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDesc), len(file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_rawDesc)),
 			NumEnums:      2,
 			NumMessages:   31,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_fleetconsole_api_fleetconsolerpc_service_proto_goTypes,
-		DependencyIndexes: file_infra_fleetconsole_api_fleetconsolerpc_service_proto_depIdxs,
-		EnumInfos:         file_infra_fleetconsole_api_fleetconsolerpc_service_proto_enumTypes,
-		MessageInfos:      file_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_msgTypes,
 	}.Build()
-	File_infra_fleetconsole_api_fleetconsolerpc_service_proto = out.File
-	file_infra_fleetconsole_api_fleetconsolerpc_service_proto_goTypes = nil
-	file_infra_fleetconsole_api_fleetconsolerpc_service_proto_depIdxs = nil
+	File_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto = out.File
+	file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_goTypes = nil
+	file_go_chromium_org_infra_fleetconsole_api_fleetconsolerpc_service_proto_depIdxs = nil
 }

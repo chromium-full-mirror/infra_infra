@@ -10,7 +10,7 @@ package log
 import (
 	"context"
 
-	"infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/logger"
 )
 
 // loggerKeyType is a unique type for a context key.

@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/experimental/golangbuild/golangbuildpb/params.proto
+// source: go.chromium.org/infra/experimental/golangbuild/golangbuildpb/params.proto
 
 package golangbuildpb
 
@@ -76,11 +76,11 @@ func (x Mode) String() string {
 }
 
 func (Mode) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_experimental_golangbuild_golangbuildpb_params_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_enumTypes[0].Descriptor()
 }
 
 func (Mode) Type() protoreflect.EnumType {
-	return &file_infra_experimental_golangbuild_golangbuildpb_params_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_enumTypes[0]
 }
 
 func (x Mode) Number() protoreflect.EnumNumber {
@@ -89,7 +89,7 @@ func (x Mode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Mode.Descriptor instead.
 func (Mode) EnumDescriptor() ([]byte, []int) {
-	return file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{0}
 }
 
 // Input properties.
@@ -234,7 +234,7 @@ type Inputs struct {
 
 func (x *Inputs) Reset() {
 	*x = Inputs{}
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -246,7 +246,7 @@ func (x *Inputs) String() string {
 func (*Inputs) ProtoMessage() {}
 
 func (x *Inputs) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -259,7 +259,7 @@ func (x *Inputs) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Inputs.ProtoReflect.Descriptor instead.
 func (*Inputs) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Inputs) GetProject() string {
@@ -510,7 +510,7 @@ type Port struct {
 
 func (x *Port) Reset() {
 	*x = Port{}
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -522,7 +522,7 @@ func (x *Port) String() string {
 func (*Port) ProtoMessage() {}
 
 func (x *Port) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -535,7 +535,7 @@ func (x *Port) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Port.ProtoReflect.Descriptor instead.
 func (*Port) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Port) GetGoos() string {
@@ -561,7 +561,7 @@ type AllMode struct {
 
 func (x *AllMode) Reset() {
 	*x = AllMode{}
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -573,7 +573,7 @@ func (x *AllMode) String() string {
 func (*AllMode) ProtoMessage() {}
 
 func (x *AllMode) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -586,7 +586,7 @@ func (x *AllMode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AllMode.ProtoReflect.Descriptor instead.
 func (*AllMode) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{2}
 }
 
 // CoordinatorMode contains properties specific to MODE_COORDINATOR.
@@ -609,7 +609,7 @@ type CoordinatorMode struct {
 
 func (x *CoordinatorMode) Reset() {
 	*x = CoordinatorMode{}
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -621,7 +621,7 @@ func (x *CoordinatorMode) String() string {
 func (*CoordinatorMode) ProtoMessage() {}
 
 func (x *CoordinatorMode) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -634,7 +634,7 @@ func (x *CoordinatorMode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CoordinatorMode.ProtoReflect.Descriptor instead.
 func (*CoordinatorMode) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CoordinatorMode) GetBuildBuilder() string {
@@ -674,7 +674,7 @@ type BuildMode struct {
 
 func (x *BuildMode) Reset() {
 	*x = BuildMode{}
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -686,7 +686,7 @@ func (x *BuildMode) String() string {
 func (*BuildMode) ProtoMessage() {}
 
 func (x *BuildMode) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -699,7 +699,7 @@ func (x *BuildMode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BuildMode.ProtoReflect.Descriptor instead.
 func (*BuildMode) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{4}
 }
 
 // TestMode contains properties specific to MODE_TEST.
@@ -711,7 +711,7 @@ type TestMode struct {
 
 func (x *TestMode) Reset() {
 	*x = TestMode{}
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -723,7 +723,7 @@ func (x *TestMode) String() string {
 func (*TestMode) ProtoMessage() {}
 
 func (x *TestMode) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -736,7 +736,7 @@ func (x *TestMode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestMode.ProtoReflect.Descriptor instead.
 func (*TestMode) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{5}
 }
 
 // TestShard is specific to MODE_TEST and represents the build's
@@ -755,7 +755,7 @@ type TestShard struct {
 
 func (x *TestShard) Reset() {
 	*x = TestShard{}
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -767,7 +767,7 @@ func (x *TestShard) String() string {
 func (*TestShard) ProtoMessage() {}
 
 func (x *TestShard) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -780,7 +780,7 @@ func (x *TestShard) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestShard.ProtoReflect.Descriptor instead.
 func (*TestShard) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *TestShard) GetShardId() uint32 {
@@ -834,7 +834,7 @@ type PerfMode struct {
 
 func (x *PerfMode) Reset() {
 	*x = PerfMode{}
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -846,7 +846,7 @@ func (x *PerfMode) String() string {
 func (*PerfMode) ProtoMessage() {}
 
 func (x *PerfMode) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -859,7 +859,7 @@ func (x *PerfMode) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PerfMode.ProtoReflect.Descriptor instead.
 func (*PerfMode) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *PerfMode) GetBaseline() string {
@@ -889,7 +889,7 @@ type Outputs struct {
 
 func (x *Outputs) Reset() {
 	*x = Outputs{}
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -901,7 +901,7 @@ func (x *Outputs) String() string {
 func (*Outputs) ProtoMessage() {}
 
 func (x *Outputs) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -914,7 +914,7 @@ func (x *Outputs) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Outputs.ProtoReflect.Descriptor instead.
 func (*Outputs) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *Outputs) GetFailure() *FailureSummary {
@@ -948,7 +948,7 @@ type FailureSummary struct {
 
 func (x *FailureSummary) Reset() {
 	*x = FailureSummary{}
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -960,7 +960,7 @@ func (x *FailureSummary) String() string {
 func (*FailureSummary) ProtoMessage() {}
 
 func (x *FailureSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -973,7 +973,7 @@ func (x *FailureSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FailureSummary.ProtoReflect.Descriptor instead.
 func (*FailureSummary) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *FailureSummary) GetDescription() string {
@@ -1010,7 +1010,7 @@ type Link struct {
 
 func (x *Link) Reset() {
 	*x = Link{}
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1022,7 +1022,7 @@ func (x *Link) String() string {
 func (*Link) ProtoMessage() {}
 
 func (x *Link) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1035,7 +1035,7 @@ func (x *Link) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Link.ProtoReflect.Descriptor instead.
 func (*Link) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *Link) GetName() string {
@@ -1066,7 +1066,7 @@ type Source struct {
 
 func (x *Source) Reset() {
 	*x = Source{}
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1078,7 +1078,7 @@ func (x *Source) String() string {
 func (*Source) ProtoMessage() {}
 
 func (x *Source) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1091,7 +1091,7 @@ func (x *Source) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Source.ProtoReflect.Descriptor instead.
 func (*Source) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{11}
+	return file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *Source) GetGitilesCommit() *proto.GitilesCommit {
@@ -1108,10 +1108,11 @@ func (x *Source) GetGerritChange() *proto.GerritChange {
 	return nil
 }
 
-var File_infra_experimental_golangbuild_golangbuildpb_params_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto protoreflect.FileDescriptor
 
-var file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDesc = string([]byte{
-	0x0a, 0x39, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x65, 0x78, 0x70, 0x65, 0x72, 0x69, 0x6d, 0x65,
+var file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDesc = string([]byte{
+	0x0a, 0x49, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x65, 0x78, 0x70, 0x65, 0x72, 0x69, 0x6d, 0x65,
 	0x6e, 0x74, 0x61, 0x6c, 0x2f, 0x67, 0x6f, 0x6c, 0x61, 0x6e, 0x67, 0x62, 0x75, 0x69, 0x6c, 0x64,
 	0x2f, 0x67, 0x6f, 0x6c, 0x61, 0x6e, 0x67, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x70, 0x62, 0x2f, 0x70,
 	0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0d, 0x67, 0x6f, 0x6c,
@@ -1270,27 +1271,28 @@ var file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDesc = str
 	0x52, 0x10, 0x01, 0x12, 0x0e, 0x0a, 0x0a, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x42, 0x55, 0x49, 0x4c,
 	0x44, 0x10, 0x02, 0x12, 0x0d, 0x0a, 0x09, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x54, 0x45, 0x53, 0x54,
 	0x10, 0x03, 0x12, 0x0d, 0x0a, 0x09, 0x4d, 0x4f, 0x44, 0x45, 0x5f, 0x50, 0x45, 0x52, 0x46, 0x10,
-	0x04, 0x42, 0x2e, 0x5a, 0x2c, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x65, 0x78, 0x70, 0x65, 0x72,
+	0x04, 0x42, 0x3e, 0x5a, 0x3c, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d,
+	0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x65, 0x78, 0x70, 0x65, 0x72,
 	0x69, 0x6d, 0x65, 0x6e, 0x74, 0x61, 0x6c, 0x2f, 0x67, 0x6f, 0x6c, 0x61, 0x6e, 0x67, 0x62, 0x75,
 	0x69, 0x6c, 0x64, 0x2f, 0x67, 0x6f, 0x6c, 0x61, 0x6e, 0x67, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x70,
 	0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescOnce sync.Once
-	file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescData []byte
+	file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescData []byte
 )
 
-func file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP() []byte {
-	file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescOnce.Do(func() {
-		file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDesc), len(file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDesc)))
+func file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDesc), len(file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDesc)))
 	})
-	return file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescData
+	return file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDescData
 }
 
-var file_infra_experimental_golangbuild_golangbuildpb_params_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
-var file_infra_experimental_golangbuild_golangbuildpb_params_proto_goTypes = []any{
+var file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_goTypes = []any{
 	(Mode)(0),                   // 0: golangbuildpb.Mode
 	(*Inputs)(nil),              // 1: golangbuildpb.Inputs
 	(*Port)(nil),                // 2: golangbuildpb.Port
@@ -1308,7 +1310,7 @@ var file_infra_experimental_golangbuild_golangbuildpb_params_proto_goTypes = []a
 	(*proto.GitilesCommit)(nil), // 14: buildbucket.v2.GitilesCommit
 	(*proto.GerritChange)(nil),  // 15: buildbucket.v2.GerritChange
 }
-var file_infra_experimental_golangbuild_golangbuildpb_params_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_depIdxs = []int32{
 	2,  // 0: golangbuildpb.Inputs.host:type_name -> golangbuildpb.Port
 	2,  // 1: golangbuildpb.Inputs.target:type_name -> golangbuildpb.Port
 	13, // 2: golangbuildpb.Inputs.env:type_name -> golangbuildpb.Inputs.EnvEntry
@@ -1331,27 +1333,27 @@ var file_infra_experimental_golangbuild_golangbuildpb_params_proto_depIdxs = []i
 	0,  // [0:15] is the sub-list for field type_name
 }
 
-func init() { file_infra_experimental_golangbuild_golangbuildpb_params_proto_init() }
-func file_infra_experimental_golangbuild_golangbuildpb_params_proto_init() {
-	if File_infra_experimental_golangbuild_golangbuildpb_params_proto != nil {
+func init() { file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_init() }
+func file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_init() {
+	if File_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDesc), len(file_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDesc), len(file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_experimental_golangbuild_golangbuildpb_params_proto_goTypes,
-		DependencyIndexes: file_infra_experimental_golangbuild_golangbuildpb_params_proto_depIdxs,
-		EnumInfos:         file_infra_experimental_golangbuild_golangbuildpb_params_proto_enumTypes,
-		MessageInfos:      file_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_msgTypes,
 	}.Build()
-	File_infra_experimental_golangbuild_golangbuildpb_params_proto = out.File
-	file_infra_experimental_golangbuild_golangbuildpb_params_proto_goTypes = nil
-	file_infra_experimental_golangbuild_golangbuildpb_params_proto_depIdxs = nil
+	File_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto = out.File
+	file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_goTypes = nil
+	file_go_chromium_org_infra_experimental_golangbuild_golangbuildpb_params_proto_depIdxs = nil
 }

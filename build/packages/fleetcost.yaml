@@ -19,7 +19,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/cros/fleetcost/cmd/fleetcost
+  - go.chromium.org/infra/cros/fleetcost/cmd/fleetcost
 root: ../../go/bin
 data:
   - file: fleetcost${exe_suffix}

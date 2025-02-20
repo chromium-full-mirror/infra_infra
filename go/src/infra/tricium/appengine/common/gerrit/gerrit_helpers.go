@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"infra/tricium/appengine/common/track"
+	"go.chromium.org/infra/tricium/appengine/common/track"
 )
 
 var refRegexp = regexp.MustCompile("^refs/changes/[0-9]+/([0-9]+)/([0-9]+)$")

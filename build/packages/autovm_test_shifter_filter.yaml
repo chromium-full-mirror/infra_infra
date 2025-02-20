@@ -3,7 +3,7 @@ description: CTPv2 filter responsible for autovm test shifting
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/ctpv2-filters/autovm_test_shifter_filter
+  - go.chromium.org/infra/cros/cmd/ctpv2-filters/autovm_test_shifter_filter
 root: ../../go/bin
 data:
   - file: autovm_test_shifter_filter${exe_suffix}

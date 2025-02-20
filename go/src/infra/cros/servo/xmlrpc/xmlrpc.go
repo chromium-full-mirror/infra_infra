@@ -19,7 +19,7 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/errors"
 )
 
 const defaultRPCTimeout = 10 * time.Second

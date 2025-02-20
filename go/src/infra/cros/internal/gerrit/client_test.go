@@ -20,8 +20,8 @@ import (
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/common/proto/gitiles/mock_gitiles"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 func testDownloadFileFromGitilesSetUp(t *testing.T) Client {

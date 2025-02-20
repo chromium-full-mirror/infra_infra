@@ -36,7 +36,7 @@ import (
 	logdog_types "go.chromium.org/luci/logdog/common/types"
 	swarmingpb "go.chromium.org/luci/swarming/proto/api_v2"
 
-	"infra/tools/kitchen/cookflags"
+	"go.chromium.org/infra/tools/kitchen/cookflags"
 )
 
 const bbModPropKey = "$recipe_engine/buildbucket"

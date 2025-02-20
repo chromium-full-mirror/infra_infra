@@ -2,7 +2,7 @@ package main
 
 // import (
 // 	"context"
-// 	"infra/cros/internal/assert"
+// 	"go.chromium.org/infra/cros/internal/assert"
 // 	"testing"
 
 // 	testpb "go.chromium.org/chromiumos/config/go/test/api"

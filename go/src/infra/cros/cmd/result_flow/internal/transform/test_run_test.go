@@ -21,7 +21,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/cmd/result_flow/internal/transform"
+	"go.chromium.org/infra/cros/cmd/result_flow/internal/transform"
 )
 
 var (

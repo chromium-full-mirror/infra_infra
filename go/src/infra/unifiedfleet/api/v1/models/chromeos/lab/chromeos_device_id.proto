@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package unifiedfleet.api.v1.models.chromeos.lab;
 
-option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
+option go_package = "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
 
 message ChromeOSDeviceID {
   // A unique ID for chromeos device, a randomly generated uuid or AssetTag.

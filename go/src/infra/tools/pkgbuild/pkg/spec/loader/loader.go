@@ -22,9 +22,9 @@ import (
 	"go.chromium.org/luci/cipkg/base/generators"
 	"go.chromium.org/luci/cipkg/core"
 
-	"infra/tools/pkgbuild/pkg/spec"
-	"infra/tools/pkgbuild/pkg/spec/source"
-	"infra/tools/pkgbuild/pkg/stdenv"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/spec"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/spec/source"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/stdenv"
 )
 
 const cipdVersionEpoch = "3@"

@@ -15,9 +15,9 @@ import (
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/cros_test_platformV2/containers"
-	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/cros_test_platformV2/containers"
+	managers "go.chromium.org/infra/cros/cmd/cros_test_platformV2/docker_managers"
 )
 
 type FilterExecutor struct {

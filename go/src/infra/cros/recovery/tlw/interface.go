@@ -8,7 +8,7 @@ package tlw
 import (
 	"context"
 
-	"infra/cros/dutstate"
+	"go.chromium.org/infra/cros/dutstate"
 )
 
 // Access represent TLW level to access to the devices and inventory.

@@ -11,7 +11,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/build/siso
+  - go.chromium.org/infra/build/siso
 root: ../../go/bin
 data:
   - file: siso${exe_suffix}

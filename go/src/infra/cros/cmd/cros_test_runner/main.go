@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"infra/cros/cmd/cros_test_runner/cli"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/cli"
 )
 
 func main() {

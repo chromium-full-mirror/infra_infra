@@ -13,7 +13,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/cros/servo/logging"
+	"go.chromium.org/infra/cros/servo/logging"
 )
 
 // memorySink is a Sink that accumulates logs to an in-memory buffer.

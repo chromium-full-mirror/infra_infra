@@ -11,8 +11,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 )
 
 // TestPreprocessHostname checks that preprocessHostname correctly determines the hostname and doesn't call

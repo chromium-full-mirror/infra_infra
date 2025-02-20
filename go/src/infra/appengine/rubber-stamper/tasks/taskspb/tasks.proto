@@ -8,7 +8,7 @@ package rubber_stamper.taskspb;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "infra/appengine/rubber-stamper/tasks/taskspb";
+option go_package = "go.chromium.org/infra/appengine/rubber-stamper/tasks/taskspb";
 
 // ChangeReviewTask describes a task to start reviewing a CL's metadata.
 message ChangeReviewTask {

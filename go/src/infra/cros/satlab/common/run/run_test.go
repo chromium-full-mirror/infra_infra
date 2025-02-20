@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
-	"infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
+	"go.chromium.org/infra/cros/satlab/common/site"
 )
 
 // FakeMoblabClient is a mock Moblab API client that returns hardcoded data

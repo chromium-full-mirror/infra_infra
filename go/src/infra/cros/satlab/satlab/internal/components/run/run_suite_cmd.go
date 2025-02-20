@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmdsupport/cmdlib"
-	common_run "infra/cros/satlab/common/run"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	common_run "go.chromium.org/infra/cros/satlab/common/run"
 )
 
 // RunCmd is the implementation of the "satlab run" command.

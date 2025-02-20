@@ -10,8 +10,8 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/luci/common/testing/typed"
 
-	"infra/cmd/cros_test_platform/internal/autotest/testspec"
-	"infra/cmd/cros_test_platform/internal/testutils"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/autotest/testspec"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/testutils"
 )
 
 func TestLoadAndParseSimple(t *testing.T) {

@@ -10,7 +10,7 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
 
-	"infra/appengine/sheriff-o-matic/som/client"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/client"
 )
 
 // getOAuthClient returns a client capable of making HTTP requests authenticated

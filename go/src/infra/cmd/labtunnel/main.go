@@ -11,8 +11,8 @@ import (
 	"os"
 	"os/signal"
 
-	"infra/cmd/labtunnel/cmd"
-	"infra/cmd/labtunnel/log"
+	"go.chromium.org/infra/cmd/labtunnel/cmd"
+	"go.chromium.org/infra/cmd/labtunnel/log"
 )
 
 func main() {

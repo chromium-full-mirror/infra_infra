@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/tools/kitchen/third_party/recipe_engine/result.proto
+// source: go.chromium.org/infra/tools/kitchen/third_party/recipe_engine/result.proto
 
 package recipe_engine
 
@@ -35,7 +35,7 @@ type Result struct {
 
 func (x *Result) Reset() {
 	*x = Result{}
-	mi := &file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -47,7 +47,7 @@ func (x *Result) String() string {
 func (*Result) ProtoMessage() {}
 
 func (x *Result) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -60,7 +60,7 @@ func (x *Result) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Result.ProtoReflect.Descriptor instead.
 func (*Result) Descriptor() ([]byte, []int) {
-	return file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Result) GetOneofResult() isResult_OneofResult {
@@ -126,7 +126,7 @@ type Failure struct {
 
 func (x *Failure) Reset() {
 	*x = Failure{}
-	mi := &file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -138,7 +138,7 @@ func (x *Failure) String() string {
 func (*Failure) ProtoMessage() {}
 
 func (x *Failure) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -151,7 +151,7 @@ func (x *Failure) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Failure.ProtoReflect.Descriptor instead.
 func (*Failure) Descriptor() ([]byte, []int) {
-	return file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Failure) GetHumanReason() string {
@@ -248,7 +248,7 @@ type Exception struct {
 
 func (x *Exception) Reset() {
 	*x = Exception{}
-	mi := &file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -260,7 +260,7 @@ func (x *Exception) String() string {
 func (*Exception) ProtoMessage() {}
 
 func (x *Exception) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -273,7 +273,7 @@ func (x *Exception) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Exception.ProtoReflect.Descriptor instead.
 func (*Exception) Descriptor() ([]byte, []int) {
-	return file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Exception) GetTraceback() []string {
@@ -295,7 +295,7 @@ type Timeout struct {
 
 func (x *Timeout) Reset() {
 	*x = Timeout{}
-	mi := &file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -307,7 +307,7 @@ func (x *Timeout) String() string {
 func (*Timeout) ProtoMessage() {}
 
 func (x *Timeout) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -320,7 +320,7 @@ func (x *Timeout) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Timeout.ProtoReflect.Descriptor instead.
 func (*Timeout) Descriptor() ([]byte, []int) {
-	return file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Timeout) GetTimeoutS() float32 {
@@ -342,7 +342,7 @@ type StepData struct {
 
 func (x *StepData) Reset() {
 	*x = StepData{}
-	mi := &file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -354,7 +354,7 @@ func (x *StepData) String() string {
 func (*StepData) ProtoMessage() {}
 
 func (x *StepData) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -367,7 +367,7 @@ func (x *StepData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StepData.ProtoReflect.Descriptor instead.
 func (*StepData) Descriptor() ([]byte, []int) {
-	return file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *StepData) GetStep() string {
@@ -389,7 +389,7 @@ type StepFailure struct {
 
 func (x *StepFailure) Reset() {
 	*x = StepFailure{}
-	mi := &file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -401,7 +401,7 @@ func (x *StepFailure) String() string {
 func (*StepFailure) ProtoMessage() {}
 
 func (x *StepFailure) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -414,7 +414,7 @@ func (x *StepFailure) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StepFailure.ProtoReflect.Descriptor instead.
 func (*StepFailure) Descriptor() ([]byte, []int) {
-	return file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *StepFailure) GetStep() string {
@@ -424,10 +424,11 @@ func (x *StepFailure) GetStep() string {
 	return ""
 }
 
-var File_infra_tools_kitchen_third_party_recipe_engine_result_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto protoreflect.FileDescriptor
 
-var file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDesc = string([]byte{
-	0x0a, 0x3a, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x6b, 0x69,
+var file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDesc = string([]byte{
+	0x0a, 0x4a, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x6b, 0x69,
 	0x74, 0x63, 0x68, 0x65, 0x6e, 0x2f, 0x74, 0x68, 0x69, 0x72, 0x64, 0x5f, 0x70, 0x61, 0x72, 0x74,
 	0x79, 0x2f, 0x72, 0x65, 0x63, 0x69, 0x70, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f,
 	0x72, 0x65, 0x73, 0x75, 0x6c, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0d, 0x72, 0x65,
@@ -466,7 +467,8 @@ var file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDesc = st
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x73, 0x74, 0x65, 0x70, 0x22, 0x21, 0x0a, 0x0b,
 	0x53, 0x74, 0x65, 0x70, 0x46, 0x61, 0x69, 0x6c, 0x75, 0x72, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x73,
 	0x74, 0x65, 0x70, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x73, 0x74, 0x65, 0x70, 0x42,
-	0x3d, 0x5a, 0x3b, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x6b,
+	0x4d, 0x5a, 0x4b, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f,
+	0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x6b,
 	0x69, 0x74, 0x63, 0x68, 0x65, 0x6e, 0x2f, 0x74, 0x68, 0x69, 0x72, 0x64, 0x5f, 0x70, 0x61, 0x72,
 	0x74, 0x79, 0x2f, 0x72, 0x65, 0x63, 0x69, 0x70, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65,
 	0x3b, 0x72, 0x65, 0x63, 0x69, 0x70, 0x65, 0x5f, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x62, 0x06,
@@ -474,19 +476,19 @@ var file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDesc = st
 })
 
 var (
-	file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescOnce sync.Once
-	file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescData []byte
+	file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescData []byte
 )
 
-func file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescGZIP() []byte {
-	file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescOnce.Do(func() {
-		file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDesc), len(file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDesc)))
+func file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDesc), len(file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDesc)))
 	})
-	return file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescData
+	return file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDescData
 }
 
-var file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
-var file_infra_tools_kitchen_third_party_recipe_engine_result_proto_goTypes = []any{
+var file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_goTypes = []any{
 	(*Result)(nil),      // 0: recipe_engine.Result
 	(*Failure)(nil),     // 1: recipe_engine.Failure
 	(*Exception)(nil),   // 2: recipe_engine.Exception
@@ -494,7 +496,7 @@ var file_infra_tools_kitchen_third_party_recipe_engine_result_proto_goTypes = []
 	(*StepData)(nil),    // 4: recipe_engine.StepData
 	(*StepFailure)(nil), // 5: recipe_engine.StepFailure
 }
-var file_infra_tools_kitchen_third_party_recipe_engine_result_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_depIdxs = []int32{
 	1, // 0: recipe_engine.Result.failure:type_name -> recipe_engine.Failure
 	3, // 1: recipe_engine.Failure.timeout:type_name -> recipe_engine.Timeout
 	2, // 2: recipe_engine.Failure.exception:type_name -> recipe_engine.Exception
@@ -507,16 +509,16 @@ var file_infra_tools_kitchen_third_party_recipe_engine_result_proto_depIdxs = []
 	0, // [0:5] is the sub-list for field type_name
 }
 
-func init() { file_infra_tools_kitchen_third_party_recipe_engine_result_proto_init() }
-func file_infra_tools_kitchen_third_party_recipe_engine_result_proto_init() {
-	if File_infra_tools_kitchen_third_party_recipe_engine_result_proto != nil {
+func init() { file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_init() }
+func file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_init() {
+	if File_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto != nil {
 		return
 	}
-	file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[0].OneofWrappers = []any{
+	file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[0].OneofWrappers = []any{
 		(*Result_JsonResult)(nil),
 		(*Result_Failure)(nil),
 	}
-	file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[1].OneofWrappers = []any{
+	file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes[1].OneofWrappers = []any{
 		(*Failure_Timeout)(nil),
 		(*Failure_Exception)(nil),
 		(*Failure_StepData)(nil),
@@ -526,17 +528,17 @@ func file_infra_tools_kitchen_third_party_recipe_engine_result_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDesc), len(file_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDesc), len(file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_tools_kitchen_third_party_recipe_engine_result_proto_goTypes,
-		DependencyIndexes: file_infra_tools_kitchen_third_party_recipe_engine_result_proto_depIdxs,
-		MessageInfos:      file_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_msgTypes,
 	}.Build()
-	File_infra_tools_kitchen_third_party_recipe_engine_result_proto = out.File
-	file_infra_tools_kitchen_third_party_recipe_engine_result_proto_goTypes = nil
-	file_infra_tools_kitchen_third_party_recipe_engine_result_proto_depIdxs = nil
+	File_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto = out.File
+	file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_goTypes = nil
+	file_go_chromium_org_infra_tools_kitchen_third_party_recipe_engine_result_proto_depIdxs = nil
 }

@@ -15,11 +15,11 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	"infra/cros/cmd/labservice/internal/ufs/cache"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	manufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cros/cmd/labservice/internal/ufs/cache"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	manufacturing "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 func TestGetChromeOsDutTopology_single(t *testing.T) {

@@ -5,8 +5,8 @@
 package devicelabel
 
 import (
-	"infra/libs/fleet"
-	ufspb "infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/libs/fleet"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 // ConvertChromeOS converts a UFS ChromeOS entity to a device representation with labels stored as key-value pairs.

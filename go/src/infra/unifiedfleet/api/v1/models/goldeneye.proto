@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package unifiedfleet.api.v1.models;
 
-option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
+option go_package = "go.chromium.org/infra/unifiedfleet/api/v1/models;ufspb";
 
 // A proto representation of the goldeneye all devices data json file at -
 // https://pantheon.corp.google.com/storage/browser/_details/chromeos-build-release-console/all_devices.json;tab=live_object?project=google.com:cros-goldeneye

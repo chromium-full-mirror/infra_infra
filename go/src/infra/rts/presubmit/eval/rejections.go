@@ -8,8 +8,8 @@ import (
 	"sort"
 	"strings"
 
-	"infra/rts"
-	evalpb "infra/rts/presubmit/eval/proto"
+	"go.chromium.org/infra/rts"
+	evalpb "go.chromium.org/infra/rts/presubmit/eval/proto"
 )
 
 type rejectionPrinter struct {

@@ -10,8 +10,8 @@ import (
 	"reflect"
 	"testing"
 
-	"infra/cros/cmd/lucifer/internal/autotest/atutil"
-	"infra/cros/cmd/lucifer/internal/autotest/dutprep"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/autotest/atutil"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/autotest/dutprep"
 )
 
 // Check that not passing the flag keeps the default nil value, which

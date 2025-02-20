@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 const (

@@ -14,8 +14,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/container_uprev/internal/preppers"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/container_uprev/internal/preppers"
 )
 
 var (
@@ -219,8 +219,8 @@ func GetConfigs() []*UprevConfig {
 			Name: "rdb-publish",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/cft/publish/rdb-publish/${platform}"),
-				NewCIPDPackageWithRef("infra/tools/result_adapter/linux-amd64", "prod"),
-				NewCIPDPackageWithRef("infra/tools/rdb/linux-amd64", "latest"),
+				NewCIPDPackageWithRef("go.chromium.org/infra/tools/result_adapter/linux-amd64", "prod"),
+				NewCIPDPackageWithRef("go.chromium.org/infra/tools/rdb/linux-amd64", "latest"),
 			},
 			Repositories: []*Repository{
 				DefaultRepository,

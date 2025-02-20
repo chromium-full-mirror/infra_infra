@@ -19,14 +19,14 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/satlab/common/enumeration"
-	"infra/cros/satlab/common/paths"
-	"infra/cros/satlab/common/utils/collection"
-	"infra/cros/satlab/common/utils/executor"
-	"infra/cros/satlab/satlabrpcserver/models"
-	"infra/cros/satlab/satlabrpcserver/utils"
-	"infra/cros/satlab/satlabrpcserver/utils/connector"
-	"infra/cros/satlab/satlabrpcserver/utils/constants"
+	"go.chromium.org/infra/cros/satlab/common/enumeration"
+	"go.chromium.org/infra/cros/satlab/common/paths"
+	"go.chromium.org/infra/cros/satlab/common/utils/collection"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/models"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/utils"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/utils/connector"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/utils/constants"
 )
 
 type ListFirmwareCommandResponse struct {

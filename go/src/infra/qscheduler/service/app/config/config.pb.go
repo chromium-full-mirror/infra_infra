@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/qscheduler/service/app/config/config.proto
+// source: go.chromium.org/infra/qscheduler/service/app/config/config.proto
 
 package config
 
@@ -29,7 +29,7 @@ const (
 // Config is the configuration data served by luci-config for this app.
 type Config struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Deprecated: Marked as deprecated in infra/qscheduler/service/app/config/config.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/qscheduler/service/app/config/config.proto.
 	AccessGroup string `protobuf:"bytes,1,opt,name=access_group,json=accessGroup,proto3" json:"access_group,omitempty"`
 	// QuotaScheduler contains QS-specific config information.
 	QuotaScheduler *QuotaScheduler `protobuf:"bytes,2,opt,name=quota_scheduler,json=quotaScheduler,proto3" json:"quota_scheduler,omitempty"`
@@ -41,7 +41,7 @@ type Config struct {
 
 func (x *Config) Reset() {
 	*x = Config{}
-	mi := &file_infra_qscheduler_service_app_config_config_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -53,7 +53,7 @@ func (x *Config) String() string {
 func (*Config) ProtoMessage() {}
 
 func (x *Config) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_app_config_config_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -66,10 +66,10 @@ func (x *Config) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Config.ProtoReflect.Descriptor instead.
 func (*Config) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_app_config_config_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_rawDescGZIP(), []int{0}
 }
 
-// Deprecated: Marked as deprecated in infra/qscheduler/service/app/config/config.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/qscheduler/service/app/config/config.proto.
 func (x *Config) GetAccessGroup() string {
 	if x != nil {
 		return x.AccessGroup
@@ -110,7 +110,7 @@ type Auth struct {
 
 func (x *Auth) Reset() {
 	*x = Auth{}
-	mi := &file_infra_qscheduler_service_app_config_config_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -122,7 +122,7 @@ func (x *Auth) String() string {
 func (*Auth) ProtoMessage() {}
 
 func (x *Auth) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_app_config_config_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -135,7 +135,7 @@ func (x *Auth) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Auth.ProtoReflect.Descriptor instead.
 func (*Auth) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_app_config_config_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Auth) GetAdminGroup() string {
@@ -185,7 +185,7 @@ type QuotaScheduler struct {
 
 func (x *QuotaScheduler) Reset() {
 	*x = QuotaScheduler{}
-	mi := &file_infra_qscheduler_service_app_config_config_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -197,7 +197,7 @@ func (x *QuotaScheduler) String() string {
 func (*QuotaScheduler) ProtoMessage() {}
 
 func (x *QuotaScheduler) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_service_app_config_config_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -210,7 +210,7 @@ func (x *QuotaScheduler) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use QuotaScheduler.ProtoReflect.Descriptor instead.
 func (*QuotaScheduler) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_service_app_config_config_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *QuotaScheduler) GetBatchConstructionWait() *durationpb.Duration {
@@ -234,10 +234,11 @@ func (x *QuotaScheduler) GetRequestInsertionWait() *durationpb.Duration {
 	return nil
 }
 
-var File_infra_qscheduler_service_app_config_config_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_qscheduler_service_app_config_config_proto protoreflect.FileDescriptor
 
-var file_infra_qscheduler_service_app_config_config_proto_rawDesc = string([]byte{
-	0x0a, 0x30, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c,
+var file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_rawDesc = string([]byte{
+	0x0a, 0x40, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c,
 	0x65, 0x72, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2f, 0x61, 0x70, 0x70, 0x2f, 0x63,
 	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x12, 0x11, 0x71, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x72, 0x2e, 0x63,
@@ -276,32 +277,33 @@ var file_infra_qscheduler_service_app_config_config_proto_rawDesc = string([]byt
 	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x14, 0x72, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x49,
 	0x6e, 0x73, 0x65, 0x72, 0x74, 0x69, 0x6f, 0x6e, 0x57, 0x61, 0x69, 0x74, 0x4a, 0x04, 0x08, 0x01,
 	0x10, 0x02, 0x52, 0x0f, 0x68, 0x61, 0x6e, 0x64, 0x6c, 0x65, 0x72, 0x5f, 0x74, 0x69, 0x6d, 0x65,
-	0x6f, 0x75, 0x74, 0x42, 0x2c, 0x5a, 0x2a, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63,
+	0x6f, 0x75, 0x74, 0x42, 0x3c, 0x5a, 0x3a, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69,
+	0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63,
 	0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x72, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2f,
 	0x61, 0x70, 0x70, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x3b, 0x63, 0x6f, 0x6e, 0x66, 0x69,
 	0x67, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_qscheduler_service_app_config_config_proto_rawDescOnce sync.Once
-	file_infra_qscheduler_service_app_config_config_proto_rawDescData []byte
+	file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_rawDescData []byte
 )
 
-func file_infra_qscheduler_service_app_config_config_proto_rawDescGZIP() []byte {
-	file_infra_qscheduler_service_app_config_config_proto_rawDescOnce.Do(func() {
-		file_infra_qscheduler_service_app_config_config_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_qscheduler_service_app_config_config_proto_rawDesc), len(file_infra_qscheduler_service_app_config_config_proto_rawDesc)))
+func file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_rawDesc), len(file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_rawDesc)))
 	})
-	return file_infra_qscheduler_service_app_config_config_proto_rawDescData
+	return file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_rawDescData
 }
 
-var file_infra_qscheduler_service_app_config_config_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
-var file_infra_qscheduler_service_app_config_config_proto_goTypes = []any{
+var file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_goTypes = []any{
 	(*Config)(nil),              // 0: qscheduler.config.Config
 	(*Auth)(nil),                // 1: qscheduler.config.Auth
 	(*QuotaScheduler)(nil),      // 2: qscheduler.config.QuotaScheduler
 	(*durationpb.Duration)(nil), // 3: google.protobuf.Duration
 }
-var file_infra_qscheduler_service_app_config_config_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_depIdxs = []int32{
 	2, // 0: qscheduler.config.Config.quota_scheduler:type_name -> qscheduler.config.QuotaScheduler
 	1, // 1: qscheduler.config.Config.auth:type_name -> qscheduler.config.Auth
 	3, // 2: qscheduler.config.QuotaScheduler.batch_construction_wait:type_name -> google.protobuf.Duration
@@ -313,26 +315,26 @@ var file_infra_qscheduler_service_app_config_config_proto_depIdxs = []int32{
 	0, // [0:4] is the sub-list for field type_name
 }
 
-func init() { file_infra_qscheduler_service_app_config_config_proto_init() }
-func file_infra_qscheduler_service_app_config_config_proto_init() {
-	if File_infra_qscheduler_service_app_config_config_proto != nil {
+func init() { file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_init() }
+func file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_init() {
+	if File_go_chromium_org_infra_qscheduler_service_app_config_config_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_qscheduler_service_app_config_config_proto_rawDesc), len(file_infra_qscheduler_service_app_config_config_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_rawDesc), len(file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_qscheduler_service_app_config_config_proto_goTypes,
-		DependencyIndexes: file_infra_qscheduler_service_app_config_config_proto_depIdxs,
-		MessageInfos:      file_infra_qscheduler_service_app_config_config_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_msgTypes,
 	}.Build()
-	File_infra_qscheduler_service_app_config_config_proto = out.File
-	file_infra_qscheduler_service_app_config_config_proto_goTypes = nil
-	file_infra_qscheduler_service_app_config_config_proto_depIdxs = nil
+	File_go_chromium_org_infra_qscheduler_service_app_config_config_proto = out.File
+	file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_goTypes = nil
+	file_go_chromium_org_infra_qscheduler_service_app_config_config_proto_depIdxs = nil
 }

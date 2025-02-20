@@ -16,9 +16,9 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"gopkg.in/yaml.v3"
 
-	"infra/cros/recovery/config/tree"
-	"infra/cros/recovery/tlw"
-	"infra/libs/skylab/buildbucket"
+	"go.chromium.org/infra/cros/recovery/config/tree"
+	"go.chromium.org/infra/cros/recovery/tlw"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
 )
 
 // Test cases for TestConfigTreeChanges

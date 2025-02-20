@@ -13,16 +13,16 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/recovery/dev"
-	"infra/cros/recovery/internal/components/btpeer"
-	"infra/cros/recovery/internal/components/btpeer/image"
-	"infra/cros/recovery/internal/components/cache"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/execs/wifirouter/ssh"
-	"infra/cros/recovery/internal/localtlw/localproxy"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/internal/retry"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/dev"
+	"go.chromium.org/infra/cros/recovery/internal/components/btpeer"
+	"go.chromium.org/infra/cros/recovery/internal/components/btpeer/image"
+	"go.chromium.org/infra/cros/recovery/internal/components/cache"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/execs/wifirouter/ssh"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw/localproxy"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/retry"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 const (

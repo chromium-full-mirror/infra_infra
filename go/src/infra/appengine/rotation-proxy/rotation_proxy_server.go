@@ -22,7 +22,7 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/router"
 
-	rpb "infra/appengine/rotation-proxy/proto"
+	rpb "go.chromium.org/infra/appengine/rotation-proxy/proto"
 )
 
 // Rotation is used to store rpb.Rotation in Datastore.

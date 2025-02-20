@@ -11,8 +11,8 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 const (

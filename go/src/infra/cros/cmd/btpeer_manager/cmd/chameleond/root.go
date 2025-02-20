@@ -7,8 +7,8 @@ package chameleond
 import (
 	"github.com/spf13/cobra"
 
-	"infra/cros/cmd/btpeer_manager/cmd/chameleond/release"
-	"infra/cros/cmd/btpeer_manager/dirs"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/cmd/chameleond/release"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/dirs"
 )
 
 func RootCmd(dirContext *dirs.DirContext, initDirContext func() error) *cobra.Command {

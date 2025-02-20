@@ -191,7 +191,7 @@ def run_all(package_root):
 
 def main(args):
   if not args:
-    package_root = 'infra'
+    package_root = 'go.chromium.org/infra'
   elif len(args) == 1:
     package_root = args[0]
   else:

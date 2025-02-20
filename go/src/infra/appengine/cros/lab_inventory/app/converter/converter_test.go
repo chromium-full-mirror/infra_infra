@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/lab"
 	"go.chromium.org/luci/common/errors"
 
-	apibq "infra/appengine/cros/lab_inventory/api/bigquery"
-	"infra/cros/lab_inventory/datastore"
+	apibq "go.chromium.org/infra/appengine/cros/lab_inventory/api/bigquery"
+	"go.chromium.org/infra/cros/lab_inventory/datastore"
 )
 
 var testDeviceToBQMsgsData = []struct {

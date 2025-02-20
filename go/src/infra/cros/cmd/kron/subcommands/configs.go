@@ -17,10 +17,10 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cros/cmd/kron/builds"
-	"infra/cros/cmd/kron/common"
-	"infra/cros/cmd/kron/configparser"
-	"infra/cros/cmd/kron/ctprequest"
+	"go.chromium.org/infra/cros/cmd/kron/builds"
+	"go.chromium.org/infra/cros/cmd/kron/common"
+	"go.chromium.org/infra/cros/cmd/kron/configparser"
+	"go.chromium.org/infra/cros/cmd/kron/ctprequest"
 )
 
 const (

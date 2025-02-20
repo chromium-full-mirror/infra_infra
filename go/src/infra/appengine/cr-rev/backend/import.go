@@ -10,11 +10,11 @@ import (
 	"go.chromium.org/luci/common/logging"
 	gitilesProto "go.chromium.org/luci/common/proto/gitiles"
 
-	"infra/appengine/cr-rev/backend/gitiles"
-	"infra/appengine/cr-rev/backend/pubsub"
-	"infra/appengine/cr-rev/backend/repoimport"
-	"infra/appengine/cr-rev/common"
-	"infra/appengine/cr-rev/config"
+	"go.chromium.org/infra/appengine/cr-rev/backend/gitiles"
+	"go.chromium.org/infra/appengine/cr-rev/backend/pubsub"
+	"go.chromium.org/infra/appengine/cr-rev/backend/repoimport"
+	"go.chromium.org/infra/appengine/cr-rev/common"
+	"go.chromium.org/infra/appengine/cr-rev/config"
 )
 
 // rateLimit is the maximum number of requests per second that gitiles client

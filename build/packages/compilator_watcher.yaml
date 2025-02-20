@@ -9,7 +9,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/chromium/compilator_watcher
+  - go.chromium.org/infra/chromium/compilator_watcher
 root: ../../go/bin
 data:
   - file: compilator_watcher${exe_suffix}

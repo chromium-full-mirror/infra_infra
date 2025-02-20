@@ -25,13 +25,13 @@ import (
 	"go.chromium.org/luci/common/retry/transient"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	"infra/cmd/cros_test_platform/internal/execution/args"
-	"infra/cmd/cros_test_platform/internal/execution/build"
-	"infra/cmd/cros_test_platform/internal/execution/response"
-	"infra/cmd/cros_test_platform/internal/execution/retry"
-	"infra/cmd/cros_test_platform/internal/execution/testrunner"
-	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
-	"infra/cmd/cros_test_platform/internal/execution/types"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/args"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/build"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/response"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/retry"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/testrunner"
+	trservice "go.chromium.org/infra/cmd/cros_test_platform/internal/execution/testrunner/service"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/types"
 )
 
 // Retry count on transient errors

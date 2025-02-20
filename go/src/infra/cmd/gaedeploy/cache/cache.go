@@ -21,7 +21,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/gaedeploy/source"
+	"go.chromium.org/infra/cmd/gaedeploy/source"
 )
 
 // Cache represents an on-disk cache of unpacked tarballs.

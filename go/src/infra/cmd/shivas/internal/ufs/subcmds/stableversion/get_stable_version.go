@@ -13,13 +13,13 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/grpc/prpc"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/cmd/shivas/cmdhelp"
-	"infra/cmd/shivas/site"
-	"infra/cmd/shivas/utils"
-	"infra/cmdsupport/cmdlib"
-	"infra/libs/skylab/autotest/hostinfo"
-	ufsUtil "infra/unifiedfleet/app/util"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/cmd/shivas/cmdhelp"
+	"go.chromium.org/infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/libs/skylab/autotest/hostinfo"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // GetStableVersionCmd get stable version for given host and board/model.

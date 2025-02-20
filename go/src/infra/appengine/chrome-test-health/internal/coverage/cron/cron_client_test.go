@@ -18,10 +18,10 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/appengine/chrome-test-health/datastorage"
-	"infra/appengine/chrome-test-health/datastorage/mocks"
-	"infra/appengine/chrome-test-health/internal/coverage"
-	"infra/appengine/chrome-test-health/internal/coverage/entities"
+	"go.chromium.org/infra/appengine/chrome-test-health/datastorage"
+	"go.chromium.org/infra/appengine/chrome-test-health/datastorage/mocks"
+	"go.chromium.org/infra/appengine/chrome-test-health/internal/coverage"
+	"go.chromium.org/infra/appengine/chrome-test-health/internal/coverage/entities"
 )
 
 func getMockPresubmitData() []*entities.PresubmitCoverageData {

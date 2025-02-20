@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 
-	"infra/cros/internal/testplan/compatibility/priority"
+	"go.chromium.org/infra/cros/internal/testplan/compatibility/priority"
 )
 
 func TestRandomWeighted_MixedPriorities(t *testing.T) {

@@ -20,11 +20,11 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cmd/crosfleet/internal/buildbucket"
-	"infra/cmd/crosfleet/internal/common"
-	"infra/cmd/crosfleet/internal/site"
-	models "infra/unifiedfleet/api/v1/models"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cmd/crosfleet/internal/buildbucket"
+	"go.chromium.org/infra/cmd/crosfleet/internal/common"
+	"go.chromium.org/infra/cmd/crosfleet/internal/site"
+	models "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 var testValidateArgsData = []struct {

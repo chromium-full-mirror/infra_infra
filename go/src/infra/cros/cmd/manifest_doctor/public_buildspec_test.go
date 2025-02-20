@@ -15,9 +15,9 @@ import (
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/common/proto/gitiles/mock_gitiles"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/gs"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/gs"
 )
 
 const (

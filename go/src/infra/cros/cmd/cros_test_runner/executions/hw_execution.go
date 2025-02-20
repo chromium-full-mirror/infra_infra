@@ -32,13 +32,13 @@ import (
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/commonbuilders"
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/cmd/cros_test_runner/analytics"
-	"infra/cros/cmd/cros_test_runner/data"
-	"infra/cros/cmd/cros_test_runner/internal/configs"
-	"infra/cros/cmd/cros_test_runner/protos"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/commonbuilders"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/analytics"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/data"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/internal/configs"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/protos"
 )
 
 var ioProps = build.RegisterSplitProperty[*steps.RunTestsRequest, *steps.RunTestsResponse]("")

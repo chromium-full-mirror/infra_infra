@@ -22,8 +22,8 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	"infra/cros/cmd/btpeer_manager/fileutils"
-	"infra/cros/cmd/btpeer_manager/log"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/fileutils"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/log"
 )
 
 const (

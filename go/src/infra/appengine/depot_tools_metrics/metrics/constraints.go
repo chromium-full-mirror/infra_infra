@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/common/data/stringset"
 
-	"infra/appengine/depot_tools_metrics/schema"
+	"go.chromium.org/infra/appengine/depot_tools_metrics/schema"
 )
 
 func checkConstraints(m *schema.Metrics) error {

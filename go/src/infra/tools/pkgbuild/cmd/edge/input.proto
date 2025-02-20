@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package main;
 
-option go_package = "infra/tools/pkgbuild/cmd/edge;main";
+option go_package = "go.chromium.org/infra/tools/pkgbuild/cmd/edge;main";
 
 // Proto message which reflects the input properties fora the pkgbuild recipe.
 // See more detailed description for each field there.

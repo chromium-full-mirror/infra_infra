@@ -22,7 +22,7 @@ import (
 	"google.golang.org/appengine/v2"
 	"google.golang.org/appengine/v2/log"
 
-	"infra/appengine/chromium_build_stats/ninjalog"
+	"go.chromium.org/infra/appengine/chromium_build_stats/ninjalog"
 )
 
 // Req is parsed data of http request.

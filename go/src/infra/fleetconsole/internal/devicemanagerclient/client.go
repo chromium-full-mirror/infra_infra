@@ -13,9 +13,9 @@ import (
 	"go.chromium.org/luci/server/auth"
 
 	// In the device_manager library, please ONLY depend on the constants that are not specific to Scheduke.
-	"infra/device_manager/client"
-	"infra/fleetconsole/api/fleetconsolerpc"
-	"infra/fleetconsole/internal/site"
+	"go.chromium.org/infra/device_manager/client"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/internal/site"
 )
 
 const (

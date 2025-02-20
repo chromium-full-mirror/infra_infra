@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	kartecli "infra/cros/karte/cli"
+	kartecli "go.chromium.org/infra/cros/karte/cli"
 )
 
 // newApplication returns an application object for the karte command line client.

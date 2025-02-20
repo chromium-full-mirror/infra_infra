@@ -8,7 +8,7 @@ import (
 	"io"
 	"testing"
 
-	"infra/appengine/chromium_build_stats/ninjalog"
+	"go.chromium.org/infra/appengine/chromium_build_stats/ninjalog"
 )
 
 func TestNinjalogPath(t *testing.T) {

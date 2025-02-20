@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"infra/cros/cmd/ctpv2/cli"
+	"go.chromium.org/infra/cros/cmd/ctpv2/cli"
 )
 
 func main() {

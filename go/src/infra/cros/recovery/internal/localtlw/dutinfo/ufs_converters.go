@@ -7,8 +7,8 @@ package dutinfo
 import (
 	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 
-	"infra/cros/recovery/tlw"
-	ufslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"go.chromium.org/infra/cros/recovery/tlw"
+	ufslab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 // TODO(otabek@): Use bidirectional maps when will be available.

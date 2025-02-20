@@ -13,13 +13,13 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/dev"
-	"infra/cros/recovery/docker"
-	"infra/cros/recovery/internal/localtlw/localproxy"
-	"infra/cros/recovery/internal/localtlw/ssh"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/dev"
+	"go.chromium.org/infra/cros/recovery/docker"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw/localproxy"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw/ssh"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // StartServodRequest holds data to start servod container.

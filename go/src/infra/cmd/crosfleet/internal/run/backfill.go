@@ -18,10 +18,10 @@ import (
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmd/crosfleet/internal/buildbucket"
-	"infra/cmd/crosfleet/internal/common"
-	"infra/cmd/crosfleet/internal/flagx"
-	"infra/cmd/crosfleet/internal/site"
+	"go.chromium.org/infra/cmd/crosfleet/internal/buildbucket"
+	"go.chromium.org/infra/cmd/crosfleet/internal/common"
+	"go.chromium.org/infra/cmd/crosfleet/internal/flagx"
+	"go.chromium.org/infra/cmd/crosfleet/internal/site"
 )
 
 const backfillCmd = "backfill"

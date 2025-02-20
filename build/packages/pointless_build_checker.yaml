@@ -3,7 +3,7 @@ description: Used by CI orchestrator builds to identify pointless builds.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/pointless_build_checker
+  - go.chromium.org/infra/cros/cmd/pointless_build_checker
 root: ../../go/bin
 data:
   - file: pointless_build_checker${exe_suffix}

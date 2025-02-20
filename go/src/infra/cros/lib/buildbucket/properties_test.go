@@ -13,8 +13,8 @@ import (
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/cmd"
 )
 
 const (

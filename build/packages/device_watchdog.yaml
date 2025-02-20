@@ -4,7 +4,7 @@ platforms:
   - android-amd64
   - android-armv6l
 go_packages:
-  - infra/tools/device_watchdog
+  - go.chromium.org/infra/tools/device_watchdog
 root: ../../go/bin
 data:
   - file: device_watchdog

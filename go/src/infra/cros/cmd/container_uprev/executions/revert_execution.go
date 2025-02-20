@@ -10,8 +10,8 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/container_uprev/internal"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/container_uprev/internal"
 )
 
 // RevertExecution goes through each container and reverts its sha.

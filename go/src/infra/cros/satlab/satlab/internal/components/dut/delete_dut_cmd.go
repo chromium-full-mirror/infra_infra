@@ -14,13 +14,13 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/shivas/utils"
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/satlab/common/dut"
-	"infra/cros/satlab/common/services/ufs"
-	"infra/cros/satlab/common/utils/executor"
-	ufsModels "infra/unifiedfleet/api/v1/models"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cros/satlab/common/dut"
+	"go.chromium.org/infra/cros/satlab/common/services/ufs"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
+	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // DeleteDUTCmd is the implementation of the "satlab delete DUT" command.

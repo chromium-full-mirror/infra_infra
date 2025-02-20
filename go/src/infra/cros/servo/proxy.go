@@ -24,11 +24,11 @@ import (
 	"github.com/docker/docker/pkg/stdcopy"
 	crypto_ssh "golang.org/x/crypto/ssh"
 
-	"infra/cros/servo/errors"
-	"infra/cros/servo/ssh"
-	"infra/cros/servo/ssh/linuxssh"
-	"infra/cros/servo/testexec"
-	"infra/cros/servo/testing"
+	"go.chromium.org/infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/ssh"
+	"go.chromium.org/infra/cros/servo/ssh/linuxssh"
+	"go.chromium.org/infra/cros/servo/testexec"
+	"go.chromium.org/infra/cros/servo/testing"
 )
 
 const proxyTimeout = 10 * time.Second // max time for establishing SSH connection

@@ -16,8 +16,8 @@ import (
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/system/signals"
 
-	"infra/tools/dirmd"
-	dirmdpb "infra/tools/dirmd/proto"
+	"go.chromium.org/infra/tools/dirmd"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
 )
 
 func cmdExport() *subcommands.Command {

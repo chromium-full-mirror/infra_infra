@@ -15,17 +15,17 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/auth"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/internal/app/clients"
-	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/routing"
-	"infra/appengine/crosskylabadmin/site"
-	"infra/cros/recovery/karte"
-	"infra/cros/recovery/logger/metrics"
-	schedulingapi "infra/libs/fleet/scheduling/api"
-	"infra/libs/fleet/scheduling/schedulers"
-	"infra/libs/skylab/buildbucket"
-	"infra/libs/skylab/common/heuristics"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/clients"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend/routing"
+	"go.chromium.org/infra/appengine/crosskylabadmin/site"
+	"go.chromium.org/infra/cros/recovery/karte"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
+	schedulingapi "go.chromium.org/infra/libs/fleet/scheduling/api"
+	"go.chromium.org/infra/libs/fleet/scheduling/schedulers"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
 )
 
 // UFSErrorPolicy controls how UFS errors are handled.

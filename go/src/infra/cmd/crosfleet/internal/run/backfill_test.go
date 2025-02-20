@@ -14,9 +14,9 @@ import (
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cmd/crosfleet/internal/buildbucket"
-	"infra/cmd/crosfleet/internal/common"
-	crosbb "infra/cros/lib/buildbucket"
+	"go.chromium.org/infra/cmd/crosfleet/internal/buildbucket"
+	"go.chromium.org/infra/cmd/crosfleet/internal/common"
+	crosbb "go.chromium.org/infra/cros/lib/buildbucket"
 )
 
 func TestRemoveBackfills(t *testing.T) {

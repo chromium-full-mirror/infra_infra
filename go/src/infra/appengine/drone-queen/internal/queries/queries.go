@@ -16,14 +16,14 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/appengine/drone-queen/api"
-	"infra/appengine/drone-queen/internal/config"
-	"infra/appengine/drone-queen/internal/entities"
-	"infra/libs/otil"
+	"go.chromium.org/infra/appengine/drone-queen/api"
+	"go.chromium.org/infra/appengine/drone-queen/internal/config"
+	"go.chromium.org/infra/appengine/drone-queen/internal/entities"
+	"go.chromium.org/infra/libs/otil"
 )
 
 // Name used for OpenTelemetry tracers.
-const tname = "infra/appengine/drone-queen/internal/queries"
+const tname = "go.chromium.org/infra/appengine/drone-queen/internal/queries"
 
 // CreateNewDrone creates a new Drone datastore entity with a unique ID.
 // This function cannot be called in a transaction.

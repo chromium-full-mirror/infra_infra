@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/container_uprev/internal"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/container_uprev/internal"
 )
 
 var UpdateShaStorage = internal.UpdateShaStorage

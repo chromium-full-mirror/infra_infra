@@ -13,10 +13,10 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	bqpb "infra/cros/fleetcost/api/bigquery"
-	"infra/cros/fleetcost/api/bigquery/bqvaluesavers"
-	"infra/cros/fleetcost/internal/costserver/entities"
-	"infra/libs/bqwrapper"
+	bqpb "go.chromium.org/infra/cros/fleetcost/api/bigquery"
+	"go.chromium.org/infra/cros/fleetcost/api/bigquery/bqvaluesavers"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/entities"
+	"go.chromium.org/infra/libs/bqwrapper"
 )
 
 // PersistToBigquery persists everything to BigQuery.

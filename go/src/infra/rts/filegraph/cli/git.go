@@ -13,9 +13,9 @@ import (
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/rts/filegraph"
-	"infra/rts/filegraph/git"
-	"infra/rts/internal/gitutil"
+	"go.chromium.org/infra/rts/filegraph"
+	"go.chromium.org/infra/rts/filegraph/git"
+	"go.chromium.org/infra/rts/internal/gitutil"
 )
 
 // gitGraph loads a file graph from a git log.

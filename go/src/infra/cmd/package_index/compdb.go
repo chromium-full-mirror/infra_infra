@@ -18,7 +18,7 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	kpb "infra/cmd/package_index/kythe/proto"
+	kpb "go.chromium.org/infra/cmd/package_index/kythe/proto"
 )
 
 // clangUnit contains all the JSON information for a given clang target.

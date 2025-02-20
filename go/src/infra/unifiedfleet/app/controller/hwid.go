@@ -13,11 +13,11 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/hwid"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/model/configuration"
-	"infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/hwid"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 const cacheAge = time.Hour

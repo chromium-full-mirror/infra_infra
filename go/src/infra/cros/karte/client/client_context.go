@@ -7,7 +7,7 @@ package client
 import (
 	"context"
 
-	kartepb "infra/cros/karte/api"
+	kartepb "go.chromium.org/infra/cros/karte/api"
 )
 
 // contextKey is an opaque type that holds a context key.

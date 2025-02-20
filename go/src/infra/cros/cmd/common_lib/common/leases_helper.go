@@ -16,8 +16,8 @@ import (
 	"go.chromium.org/luci/common/gcloud/googleoauth"
 	"go.chromium.org/luci/grpc/prpc"
 
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
-	ufsutil "infra/unifiedfleet/app/util"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsutil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 const ufsHost = "ufs.api.cr.dev"

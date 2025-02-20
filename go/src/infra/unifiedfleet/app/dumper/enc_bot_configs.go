@@ -7,7 +7,7 @@ package dumper
 import (
 	"context"
 
-	"infra/unifiedfleet/app/controller"
+	"go.chromium.org/infra/unifiedfleet/app/controller"
 )
 
 // getBotConfigs reads the bot configs.

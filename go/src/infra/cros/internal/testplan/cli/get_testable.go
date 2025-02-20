@@ -24,9 +24,9 @@ import (
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/internal/testplan"
-	"infra/cros/internal/testplan/compatibility"
-	"infra/cros/internal/testplan/protoio"
+	"go.chromium.org/infra/cros/internal/testplan"
+	"go.chromium.org/infra/cros/internal/testplan/compatibility"
+	"go.chromium.org/infra/cros/internal/testplan/protoio"
 )
 
 type getTestableRun struct {

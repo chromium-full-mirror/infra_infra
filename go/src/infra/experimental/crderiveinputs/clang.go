@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/common/data/text/sequence"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/experimental/crderiveinputs/inputpb"
+	"go.chromium.org/infra/experimental/crderiveinputs/inputpb"
 )
 
 type ClangUpdate struct{}

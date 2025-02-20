@@ -6,17 +6,17 @@ syntax = "proto3";
 
 package unifiedfleet.api.v1.models.chromeos.lab;
 
-option go_package = "infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
+option go_package = "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab;ufspb";
 
-import "infra/unifiedfleet/api/v1/models/chromeos/device/config_id.proto";
-import "infra/unifiedfleet/api/v1/models/chromeos/lab/chromeos_device_id.proto";
-import "infra/unifiedfleet/api/v1/models/chromeos/lab/license.proto";
-import "infra/unifiedfleet/api/v1/models/chromeos/lab/modeminfo.proto";
-import "infra/unifiedfleet/api/v1/models/chromeos/lab/peripherals.proto";
-import "infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
-import "infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
-import "infra/unifiedfleet/api/v1/models/chromeos/lab/siminfo.proto";
-import "infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config_id.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/device/config_id.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/chromeos_device_id.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/license.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/modeminfo.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/peripherals.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/rpm.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/servo.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/siminfo.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config_id.proto";
 
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/cbi.proto";
 

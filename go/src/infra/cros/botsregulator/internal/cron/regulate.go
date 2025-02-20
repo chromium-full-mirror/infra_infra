@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/botsregulator/internal/regulator"
+	"go.chromium.org/infra/cros/botsregulator/internal/regulator"
 )
 
 var dronePrefix = "crossk"

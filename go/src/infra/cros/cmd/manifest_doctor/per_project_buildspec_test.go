@@ -15,9 +15,9 @@ import (
 	lgs "go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/cros/internal/assert"
-	gerrit "infra/cros/internal/gerrit"
-	"infra/cros/internal/gs"
+	"go.chromium.org/infra/cros/internal/assert"
+	gerrit "go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/gs"
 )
 
 const (

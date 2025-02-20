@@ -7,7 +7,7 @@ package execs
 import (
 	"time"
 
-	"infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
 )
 
 // AddObservation adds observation to the metric assigned to the current exec.

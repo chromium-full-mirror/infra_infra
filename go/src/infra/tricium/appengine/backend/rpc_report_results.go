@@ -17,12 +17,12 @@ import (
 	ds "go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	admin "infra/tricium/api/admin/v1"
-	apibq "infra/tricium/api/bigquery"
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common"
-	gc "infra/tricium/appengine/common/gerrit"
-	"infra/tricium/appengine/common/track"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
+	apibq "go.chromium.org/infra/tricium/api/bigquery"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common"
+	gc "go.chromium.org/infra/tricium/appengine/common/gerrit"
+	"go.chromium.org/infra/tricium/appengine/common/track"
 )
 
 const (

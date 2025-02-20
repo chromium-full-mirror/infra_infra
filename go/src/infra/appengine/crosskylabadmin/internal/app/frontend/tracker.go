@@ -19,15 +19,15 @@ import (
 	"go.chromium.org/luci/server/auth"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/internal/app/clients"
-	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/util"
-	"infra/appengine/crosskylabadmin/internal/ufs"
-	"infra/appengine/crosskylabadmin/site"
-	"infra/cros/lab_inventory/utilization"
-	"infra/cros/recovery/karte"
-	"infra/cros/recovery/logger/metrics"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/clients"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend/util"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/ufs"
+	"go.chromium.org/infra/appengine/crosskylabadmin/site"
+	"go.chromium.org/infra/cros/lab_inventory/utilization"
+	"go.chromium.org/infra/cros/recovery/karte"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
 )
 
 // SwarmingFactory is a constructor for a SwarmingClient.

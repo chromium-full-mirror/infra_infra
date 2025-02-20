@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cmd/stable_version2/internal/site"
+	"go.chromium.org/infra/cmd/stable_version2/internal/site"
 )
 
 // Update is the command to update the stable_version2 tool.

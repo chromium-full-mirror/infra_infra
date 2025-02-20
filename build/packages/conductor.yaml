@@ -3,7 +3,7 @@ description: Utility for collecting/retrying ChromeOS builders. See go/cros-infr
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/conductor
+  - go.chromium.org/infra/cros/cmd/conductor
 root: ../../go/bin
 data:
   - file: conductor${exe_suffix}

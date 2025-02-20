@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package poros;
 
-option go_package = "infra/appengine/poros/api/proto;proto";
+option go_package = "go.chromium.org/infra/appengine/poros/api/proto;proto";
 
 enum DeploymentStatus {
     // Ready to start the deployment

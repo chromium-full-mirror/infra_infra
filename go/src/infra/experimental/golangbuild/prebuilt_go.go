@@ -21,7 +21,7 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 	"go.chromium.org/luci/swarming/client/swarming"
 
-	"infra/experimental/golangbuild/golangbuildpb"
+	"go.chromium.org/infra/experimental/golangbuild/golangbuildpb"
 )
 
 // prebuiltGoVersion is a versioning mechanism for what golangbuild expects to be inside of a prebuilt

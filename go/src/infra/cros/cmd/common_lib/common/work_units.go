@@ -7,7 +7,7 @@ package common
 import (
 	"strings"
 
-	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	"go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 func InvocationSealed(inv *androidbuildinternal.Invocation) bool {

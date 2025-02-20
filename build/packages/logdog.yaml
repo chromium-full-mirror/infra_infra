@@ -8,7 +8,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/tools/logdog
+  - go.chromium.org/infra/tools/logdog
 root: ../../go/bin
 data:
   - file: logdog${exe_suffix}

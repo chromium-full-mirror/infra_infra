@@ -14,7 +14,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-var tracer = otel.Tracer("infra/qscheduler")
+var tracer = otel.Tracer("go.chromium.org/infra/qscheduler")
 
 // Start opens a tracing span.
 //

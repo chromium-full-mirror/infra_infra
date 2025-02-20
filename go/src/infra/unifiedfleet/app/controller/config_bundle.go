@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/unifiedfleet/app/model/configuration"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
 )
 
 // UpdateConfigBundle updates ConfigBundle in datastore.

@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/satlab/common/commands"
-	"infra/cros/satlab/common/paths"
+	"go.chromium.org/infra/cros/satlab/common/commands"
+	"go.chromium.org/infra/cros/satlab/common/paths"
 )
 
 // DUTUpdater updates a DUT with the given name.

@@ -4,7 +4,7 @@
 
 package routing
 
-import "infra/libs/skylab/common/heuristics"
+import "go.chromium.org/infra/libs/skylab/common/heuristics"
 
 const (
 	// ProdTaskType represents a decision to use the paris stack for this request.

@@ -11,7 +11,7 @@ import (
 	"net"
 	"strings"
 
-	models "infra/unifiedfleet/api/v1/models"
+	models "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 // Below constants indicate the role a node has in the caching backend.

@@ -8,10 +8,10 @@ import (
 	"context"
 	"fmt"
 
-	"infra/cros/dutstate"
-	"infra/libs/skylab/inventory/swarming"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/libs/skylab/inventory/swarming"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufslab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 // GetDUTBotDims gets all Swarming dimensions of a DUT bot.

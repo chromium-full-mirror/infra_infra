@@ -16,7 +16,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/qscheduler/qslib/protos/metrics/metrics.proto
+// source: go.chromium.org/infra/qscheduler/qslib/protos/metrics/metrics.proto
 
 package metrics
 
@@ -72,11 +72,11 @@ func (x TaskEvent_EventCategory) String() string {
 }
 
 func (TaskEvent_EventCategory) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes[0].Descriptor()
 }
 
 func (TaskEvent_EventCategory) Type() protoreflect.EnumType {
-	return &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes[0]
 }
 
 func (x TaskEvent_EventCategory) Number() protoreflect.EnumNumber {
@@ -85,7 +85,7 @@ func (x TaskEvent_EventCategory) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TaskEvent_EventCategory.Descriptor instead.
 func (TaskEvent_EventCategory) EnumDescriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 0}
 }
 
 type TaskEvent_EventType int32
@@ -143,11 +143,11 @@ func (x TaskEvent_EventType) String() string {
 }
 
 func (TaskEvent_EventType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes[1].Descriptor()
 }
 
 func (TaskEvent_EventType) Type() protoreflect.EnumType {
-	return &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes[1]
 }
 
 func (x TaskEvent_EventType) Number() protoreflect.EnumNumber {
@@ -156,7 +156,7 @@ func (x TaskEvent_EventType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TaskEvent_EventType.Descriptor instead.
 func (TaskEvent_EventType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 1}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 1}
 }
 
 type TaskEvent_CompletedDetails_Reason int32
@@ -210,11 +210,11 @@ func (x TaskEvent_CompletedDetails_Reason) String() string {
 }
 
 func (TaskEvent_CompletedDetails_Reason) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes[2].Descriptor()
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes[2].Descriptor()
 }
 
 func (TaskEvent_CompletedDetails_Reason) Type() protoreflect.EnumType {
-	return &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes[2]
+	return &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes[2]
 }
 
 func (x TaskEvent_CompletedDetails_Reason) Number() protoreflect.EnumNumber {
@@ -223,7 +223,7 @@ func (x TaskEvent_CompletedDetails_Reason) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TaskEvent_CompletedDetails_Reason.Descriptor instead.
 func (TaskEvent_CompletedDetails_Reason) EnumDescriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 4, 0}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 4, 0}
 }
 
 // TaskEvent represents a quotascheduler event that happened to a particular
@@ -282,7 +282,7 @@ type TaskEvent struct {
 
 func (x *TaskEvent) Reset() {
 	*x = TaskEvent{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -294,7 +294,7 @@ func (x *TaskEvent) String() string {
 func (*TaskEvent) ProtoMessage() {}
 
 func (x *TaskEvent) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -307,7 +307,7 @@ func (x *TaskEvent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskEvent.ProtoReflect.Descriptor instead.
 func (*TaskEvent) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *TaskEvent) GetEventType() TaskEvent_EventType {
@@ -519,7 +519,7 @@ type EventList struct {
 
 func (x *EventList) Reset() {
 	*x = EventList{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -531,7 +531,7 @@ func (x *EventList) String() string {
 func (*EventList) ProtoMessage() {}
 
 func (x *EventList) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -544,7 +544,7 @@ func (x *EventList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EventList.ProtoReflect.Descriptor instead.
 func (*EventList) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *EventList) GetEvents() []*TaskEvent {
@@ -572,7 +572,7 @@ type SchedulerState struct {
 
 func (x *SchedulerState) Reset() {
 	*x = SchedulerState{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -584,7 +584,7 @@ func (x *SchedulerState) String() string {
 func (*SchedulerState) ProtoMessage() {}
 
 func (x *SchedulerState) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -597,7 +597,7 @@ func (x *SchedulerState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SchedulerState.ProtoReflect.Descriptor instead.
 func (*SchedulerState) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *SchedulerState) GetQueuedTasks() []*SchedulerState_Task {
@@ -669,7 +669,7 @@ type Task struct {
 
 func (x *Task) Reset() {
 	*x = Task{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -681,7 +681,7 @@ func (x *Task) String() string {
 func (*Task) ProtoMessage() {}
 
 func (x *Task) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -694,7 +694,7 @@ func (x *Task) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Task.ProtoReflect.Descriptor instead.
 func (*Task) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Task) GetId() *Task_ID {
@@ -763,7 +763,7 @@ type Worker struct {
 
 func (x *Worker) Reset() {
 	*x = Worker{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -775,7 +775,7 @@ func (x *Worker) String() string {
 func (*Worker) ProtoMessage() {}
 
 func (x *Worker) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -788,7 +788,7 @@ func (x *Worker) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Worker.ProtoReflect.Descriptor instead.
 func (*Worker) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Worker) GetId() *Worker_ID {
@@ -842,7 +842,7 @@ type Account struct {
 
 func (x *Account) Reset() {
 	*x = Account{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -854,7 +854,7 @@ func (x *Account) String() string {
 func (*Account) ProtoMessage() {}
 
 func (x *Account) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -867,7 +867,7 @@ func (x *Account) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Account.ProtoReflect.Descriptor instead.
 func (*Account) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Account) GetId() *Account_ID {
@@ -908,7 +908,7 @@ type Pool struct {
 
 func (x *Pool) Reset() {
 	*x = Pool{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -920,7 +920,7 @@ func (x *Pool) String() string {
 func (*Pool) ProtoMessage() {}
 
 func (x *Pool) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -933,7 +933,7 @@ func (x *Pool) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Pool.ProtoReflect.Descriptor instead.
 func (*Pool) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Pool) GetId() string {
@@ -955,7 +955,7 @@ type TaskEvent_EnqueuedDetails struct {
 
 func (x *TaskEvent_EnqueuedDetails) Reset() {
 	*x = TaskEvent_EnqueuedDetails{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -967,7 +967,7 @@ func (x *TaskEvent_EnqueuedDetails) String() string {
 func (*TaskEvent_EnqueuedDetails) ProtoMessage() {}
 
 func (x *TaskEvent_EnqueuedDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -980,7 +980,7 @@ func (x *TaskEvent_EnqueuedDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskEvent_EnqueuedDetails.ProtoReflect.Descriptor instead.
 func (*TaskEvent_EnqueuedDetails) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 0}
 }
 
 func (x *TaskEvent_EnqueuedDetails) GetTags() []string {
@@ -1014,7 +1014,7 @@ type TaskEvent_AssignedDetails struct {
 
 func (x *TaskEvent_AssignedDetails) Reset() {
 	*x = TaskEvent_AssignedDetails{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1026,7 +1026,7 @@ func (x *TaskEvent_AssignedDetails) String() string {
 func (*TaskEvent_AssignedDetails) ProtoMessage() {}
 
 func (x *TaskEvent_AssignedDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1039,7 +1039,7 @@ func (x *TaskEvent_AssignedDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskEvent_AssignedDetails.ProtoReflect.Descriptor instead.
 func (*TaskEvent_AssignedDetails) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 1}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 1}
 }
 
 func (x *TaskEvent_AssignedDetails) GetProvisionRequired() bool {
@@ -1097,7 +1097,7 @@ type TaskEvent_PreemptedDetails struct {
 
 func (x *TaskEvent_PreemptedDetails) Reset() {
 	*x = TaskEvent_PreemptedDetails{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1109,7 +1109,7 @@ func (x *TaskEvent_PreemptedDetails) String() string {
 func (*TaskEvent_PreemptedDetails) ProtoMessage() {}
 
 func (x *TaskEvent_PreemptedDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1122,7 +1122,7 @@ func (x *TaskEvent_PreemptedDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskEvent_PreemptedDetails.ProtoReflect.Descriptor instead.
 func (*TaskEvent_PreemptedDetails) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 2}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 2}
 }
 
 func (x *TaskEvent_PreemptedDetails) GetPreemptingAccountId() string {
@@ -1167,7 +1167,7 @@ type TaskEvent_ReprioritizedDetails struct {
 
 func (x *TaskEvent_ReprioritizedDetails) Reset() {
 	*x = TaskEvent_ReprioritizedDetails{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1179,7 +1179,7 @@ func (x *TaskEvent_ReprioritizedDetails) String() string {
 func (*TaskEvent_ReprioritizedDetails) ProtoMessage() {}
 
 func (x *TaskEvent_ReprioritizedDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1192,7 +1192,7 @@ func (x *TaskEvent_ReprioritizedDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskEvent_ReprioritizedDetails.ProtoReflect.Descriptor instead.
 func (*TaskEvent_ReprioritizedDetails) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 3}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 3}
 }
 
 func (x *TaskEvent_ReprioritizedDetails) GetOldPriority() int32 {
@@ -1226,7 +1226,7 @@ type TaskEvent_CompletedDetails struct {
 
 func (x *TaskEvent_CompletedDetails) Reset() {
 	*x = TaskEvent_CompletedDetails{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1238,7 +1238,7 @@ func (x *TaskEvent_CompletedDetails) String() string {
 func (*TaskEvent_CompletedDetails) ProtoMessage() {}
 
 func (x *TaskEvent_CompletedDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1251,7 +1251,7 @@ func (x *TaskEvent_CompletedDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskEvent_CompletedDetails.ProtoReflect.Descriptor instead.
 func (*TaskEvent_CompletedDetails) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 4}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 4}
 }
 
 func (x *TaskEvent_CompletedDetails) GetReason() TaskEvent_CompletedDetails_Reason {
@@ -1285,7 +1285,7 @@ type TaskEvent_UnassignedDetails struct {
 
 func (x *TaskEvent_UnassignedDetails) Reset() {
 	*x = TaskEvent_UnassignedDetails{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1297,7 +1297,7 @@ func (x *TaskEvent_UnassignedDetails) String() string {
 func (*TaskEvent_UnassignedDetails) ProtoMessage() {}
 
 func (x *TaskEvent_UnassignedDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1310,7 +1310,7 @@ func (x *TaskEvent_UnassignedDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskEvent_UnassignedDetails.ProtoReflect.Descriptor instead.
 func (*TaskEvent_UnassignedDetails) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 5}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{0, 5}
 }
 
 type SchedulerState_Task struct {
@@ -1326,7 +1326,7 @@ type SchedulerState_Task struct {
 
 func (x *SchedulerState_Task) Reset() {
 	*x = SchedulerState_Task{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1338,7 +1338,7 @@ func (x *SchedulerState_Task) String() string {
 func (*SchedulerState_Task) ProtoMessage() {}
 
 func (x *SchedulerState_Task) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1351,7 +1351,7 @@ func (x *SchedulerState_Task) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SchedulerState_Task.ProtoReflect.Descriptor instead.
 func (*SchedulerState_Task) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{2, 0}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{2, 0}
 }
 
 func (x *SchedulerState_Task) GetId() string {
@@ -1400,7 +1400,7 @@ type SchedulerState_Worker struct {
 
 func (x *SchedulerState_Worker) Reset() {
 	*x = SchedulerState_Worker{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1412,7 +1412,7 @@ func (x *SchedulerState_Worker) String() string {
 func (*SchedulerState_Worker) ProtoMessage() {}
 
 func (x *SchedulerState_Worker) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1425,7 +1425,7 @@ func (x *SchedulerState_Worker) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SchedulerState_Worker.ProtoReflect.Descriptor instead.
 func (*SchedulerState_Worker) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{2, 1}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{2, 1}
 }
 
 func (x *SchedulerState_Worker) GetId() string {
@@ -1459,7 +1459,7 @@ type SchedulerState_Account struct {
 
 func (x *SchedulerState_Account) Reset() {
 	*x = SchedulerState_Account{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1471,7 +1471,7 @@ func (x *SchedulerState_Account) String() string {
 func (*SchedulerState_Account) ProtoMessage() {}
 
 func (x *SchedulerState_Account) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1484,7 +1484,7 @@ func (x *SchedulerState_Account) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SchedulerState_Account.ProtoReflect.Descriptor instead.
 func (*SchedulerState_Account) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{2, 2}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{2, 2}
 }
 
 func (x *SchedulerState_Account) GetId() string {
@@ -1511,7 +1511,7 @@ type Task_ID struct {
 
 func (x *Task_ID) Reset() {
 	*x = Task_ID{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1523,7 +1523,7 @@ func (x *Task_ID) String() string {
 func (*Task_ID) ProtoMessage() {}
 
 func (x *Task_ID) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1536,7 +1536,7 @@ func (x *Task_ID) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Task_ID.ProtoReflect.Descriptor instead.
 func (*Task_ID) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{3, 0}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{3, 0}
 }
 
 func (x *Task_ID) GetName() string {
@@ -1556,7 +1556,7 @@ type Worker_ID struct {
 
 func (x *Worker_ID) Reset() {
 	*x = Worker_ID{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1568,7 +1568,7 @@ func (x *Worker_ID) String() string {
 func (*Worker_ID) ProtoMessage() {}
 
 func (x *Worker_ID) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1581,7 +1581,7 @@ func (x *Worker_ID) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Worker_ID.ProtoReflect.Descriptor instead.
 func (*Worker_ID) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{4, 0}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{4, 0}
 }
 
 func (x *Worker_ID) GetName() string {
@@ -1601,7 +1601,7 @@ type Account_ID struct {
 
 func (x *Account_ID) Reset() {
 	*x = Account_ID{}
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1613,7 +1613,7 @@ func (x *Account_ID) String() string {
 func (*Account_ID) ProtoMessage() {}
 
 func (x *Account_ID) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1626,7 +1626,7 @@ func (x *Account_ID) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Account_ID.ProtoReflect.Descriptor instead.
 func (*Account_ID) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{5, 0}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP(), []int{5, 0}
 }
 
 func (x *Account_ID) GetName() string {
@@ -1636,10 +1636,11 @@ func (x *Account_ID) GetName() string {
 	return ""
 }
 
-var File_infra_qscheduler_qslib_protos_metrics_metrics_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto protoreflect.FileDescriptor
 
-var file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDesc = string([]byte{
-	0x0a, 0x33, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c,
+var file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDesc = string([]byte{
+	0x0a, 0x43, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c,
 	0x65, 0x72, 0x2f, 0x71, 0x73, 0x6c, 0x69, 0x62, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2f,
 	0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x2f, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x07, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x1a, 0x1f,
@@ -1884,27 +1885,28 @@ var file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDesc = string([]
 	0x65, 0x1a, 0x18, 0x0a, 0x02, 0x49, 0x44, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x16, 0x0a, 0x04, 0x50,
 	0x6f, 0x6f, 0x6c, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x02, 0x69, 0x64, 0x42, 0x27, 0x5a, 0x25, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63,
+	0x02, 0x69, 0x64, 0x42, 0x37, 0x5a, 0x35, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69,
+	0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63,
 	0x68, 0x65, 0x64, 0x75, 0x6c, 0x65, 0x72, 0x2f, 0x71, 0x73, 0x6c, 0x69, 0x62, 0x2f, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x73, 0x2f, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x62, 0x06, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescOnce sync.Once
-	file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescData []byte
+	file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescData []byte
 )
 
-func file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP() []byte {
-	file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescOnce.Do(func() {
-		file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDesc), len(file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDesc)))
+func file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDesc), len(file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDesc)))
 	})
-	return file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescData
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDescData
 }
 
-var file_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
-var file_infra_qscheduler_qslib_protos_metrics_metrics_proto_goTypes = []any{
+var file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_goTypes = []any{
 	(TaskEvent_EventCategory)(0),           // 0: metrics.TaskEvent.EventCategory
 	(TaskEvent_EventType)(0),               // 1: metrics.TaskEvent.EventType
 	(TaskEvent_CompletedDetails_Reason)(0), // 2: metrics.TaskEvent.CompletedDetails.Reason
@@ -1929,7 +1931,7 @@ var file_infra_qscheduler_qslib_protos_metrics_metrics_proto_goTypes = []any{
 	(*Account_ID)(nil),                     // 21: metrics.Account.ID
 	(*timestamppb.Timestamp)(nil),          // 22: google.protobuf.Timestamp
 }
-var file_infra_qscheduler_qslib_protos_metrics_metrics_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_depIdxs = []int32{
 	1,  // 0: metrics.TaskEvent.event_type:type_name -> metrics.TaskEvent.EventType
 	22, // 1: metrics.TaskEvent.time:type_name -> google.protobuf.Timestamp
 	0,  // 2: metrics.TaskEvent.category:type_name -> metrics.TaskEvent.EventCategory
@@ -1966,12 +1968,12 @@ var file_infra_qscheduler_qslib_protos_metrics_metrics_proto_depIdxs = []int32{
 	0,  // [0:29] is the sub-list for field type_name
 }
 
-func init() { file_infra_qscheduler_qslib_protos_metrics_metrics_proto_init() }
-func file_infra_qscheduler_qslib_protos_metrics_metrics_proto_init() {
-	if File_infra_qscheduler_qslib_protos_metrics_metrics_proto != nil {
+func init() { file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_init() }
+func file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_init() {
+	if File_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto != nil {
 		return
 	}
-	file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[0].OneofWrappers = []any{
+	file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes[0].OneofWrappers = []any{
 		(*TaskEvent_EnqueuedDetails_)(nil),
 		(*TaskEvent_AssignedDetails_)(nil),
 		(*TaskEvent_PreemptedDetails_)(nil),
@@ -1983,18 +1985,18 @@ func file_infra_qscheduler_qslib_protos_metrics_metrics_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDesc), len(file_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDesc), len(file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_rawDesc)),
 			NumEnums:      3,
 			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_qscheduler_qslib_protos_metrics_metrics_proto_goTypes,
-		DependencyIndexes: file_infra_qscheduler_qslib_protos_metrics_metrics_proto_depIdxs,
-		EnumInfos:         file_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes,
-		MessageInfos:      file_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_msgTypes,
 	}.Build()
-	File_infra_qscheduler_qslib_protos_metrics_metrics_proto = out.File
-	file_infra_qscheduler_qslib_protos_metrics_metrics_proto_goTypes = nil
-	file_infra_qscheduler_qslib_protos_metrics_metrics_proto_depIdxs = nil
+	File_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto = out.File
+	file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_goTypes = nil
+	file_go_chromium_org_infra_qscheduler_qslib_protos_metrics_metrics_proto_depIdxs = nil
 }

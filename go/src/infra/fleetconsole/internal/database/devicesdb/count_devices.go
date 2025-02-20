@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 )
 
 func CountDevices(ctx context.Context, dbConn *sql.DB, filter string) (*fleetconsolerpc.CountDevicesResponse, error) {

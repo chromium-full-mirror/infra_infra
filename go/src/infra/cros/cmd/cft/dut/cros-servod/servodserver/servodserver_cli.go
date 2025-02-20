@@ -24,7 +24,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/cft/dut/cros-servod/model"
+	"go.chromium.org/infra/cros/cmd/cft/dut/cros-servod/model"
 )
 
 const (

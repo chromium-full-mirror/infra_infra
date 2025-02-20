@@ -10,11 +10,11 @@ import (
 	"sort"
 	"strconv"
 
-	"infra/libs/skylab/inventory"
-	"infra/libs/skylab/inventory/swarming"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/libs/skylab/inventory"
+	"go.chromium.org/infra/libs/skylab/inventory/swarming"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 var dutToSULabelMap = map[string]string{

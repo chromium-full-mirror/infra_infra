@@ -17,7 +17,7 @@ package main
 import (
 	"os"
 
-	"infra/chromeperf/weekly"
+	"go.chromium.org/infra/chromeperf/weekly"
 )
 
 func main() {

@@ -3,7 +3,7 @@ description: Labpack command line tool.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/labpack
+  - go.chromium.org/infra/cros/cmd/labpack
 root: ../../go/bin
 data:
   - file: labpack${exe_suffix}

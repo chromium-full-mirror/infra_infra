@@ -16,9 +16,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/site"
-	"infra/cmdsupport/cmdlib"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/appengine/crosskylabadmin/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
 )
 
 // SetStableVersion is a command for the GetStableVersion RPC.

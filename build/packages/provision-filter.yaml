@@ -4,7 +4,7 @@ description: CTPv2 filter responsible for defining default provision
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/ctpv2-filters/provision-filter
+  - go.chromium.org/infra/cros/cmd/ctpv2-filters/provision-filter
 root: ../../go/bin
 data:
   - file: provision-filter${exe_suffix}

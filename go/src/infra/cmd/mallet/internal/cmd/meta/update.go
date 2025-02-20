@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/mallet/internal/site"
+	"go.chromium.org/infra/cmd/mallet/internal/site"
 )
 
 // malletLatest is a fragment of a cipd manifest that is used to install the latest version of the skylab

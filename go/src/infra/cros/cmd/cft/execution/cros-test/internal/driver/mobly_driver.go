@@ -18,8 +18,8 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	c "go.chromium.org/chromiumos/test/util/adb"
 
-	"infra/cros/cmd/cft/execution/cros-test/internal/common"
-	"infra/cros/cmd/cft/execution/cros-test/internal/device"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/common"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/device"
 )
 
 // MoblyDriver runs Mobly tests.

@@ -16,10 +16,10 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/externalclients"
-	"infra/cros/karte/internal/identifiers"
-	"infra/cros/karte/internal/scalars"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	"go.chromium.org/infra/cros/karte/internal/externalclients"
+	"go.chromium.org/infra/cros/karte/internal/identifiers"
+	"go.chromium.org/infra/cros/karte/internal/scalars"
 )
 
 // CreateAction creates an action, stores it in datastore, and then returns the just-created action.

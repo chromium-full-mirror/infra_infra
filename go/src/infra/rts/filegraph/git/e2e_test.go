@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/rts/filegraph"
-	"infra/rts/internal/gitutil"
+	"go.chromium.org/infra/rts/filegraph"
+	"go.chromium.org/infra/rts/internal/gitutil"
 )
 
 // BenchmarkE2E measures performance of this package end to end:

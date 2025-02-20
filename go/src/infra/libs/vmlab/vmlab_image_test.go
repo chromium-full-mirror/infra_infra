@@ -8,8 +8,8 @@ import (
 	"reflect"
 	"testing"
 
-	"infra/libs/vmlab/api"
-	"infra/libs/vmlab/internal/image/cloudsdk"
+	"go.chromium.org/infra/libs/vmlab/api"
+	"go.chromium.org/infra/libs/vmlab/internal/image/cloudsdk"
 )
 
 func TestNewImageApi_unimplemented(t *testing.T) {

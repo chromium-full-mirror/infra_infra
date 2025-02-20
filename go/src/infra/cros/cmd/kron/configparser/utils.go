@@ -11,7 +11,7 @@ import (
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
-	"infra/cros/cmd/kron/builds"
+	"go.chromium.org/infra/cros/cmd/kron/builds"
 )
 
 // isDayCompliant checks the day int type to ensure that it is within the

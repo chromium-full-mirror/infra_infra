@@ -23,16 +23,16 @@ import (
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/server/auth"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/internal/app/config"
-	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/satlab"
-	"infra/appengine/crosskylabadmin/internal/ufs"
-	"infra/cros/stableversion"
-	"infra/libs/git"
-	"infra/libs/skylab/common/heuristics"
-	"infra/libs/skylab/inventory"
-	ufsUtil "infra/unifiedfleet/app/util"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config"
+	dssv "go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/satlab"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/ufs"
+	"go.chromium.org/infra/cros/stableversion"
+	"go.chromium.org/infra/libs/git"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
+	"go.chromium.org/infra/libs/skylab/inventory"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // StableVersionGitClientFactory is a constructor for a git client pointed at the source of truth

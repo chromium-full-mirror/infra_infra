@@ -19,8 +19,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/cmd/common_lib/common"
-	dynamic "infra/cros/cmd/common_lib/dynamicupdates"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	dynamic "go.chromium.org/infra/cros/cmd/common_lib/dynamicupdates"
 )
 
 var (

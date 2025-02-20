@@ -7,8 +7,8 @@ package devicesdb
 import (
 	"regexp"
 
-	"infra/fleetconsole/internal/database/queryutils"
-	"infra/fleetconsole/internal/utils"
+	"go.chromium.org/infra/fleetconsole/internal/database/queryutils"
+	"go.chromium.org/infra/fleetconsole/internal/utils"
 )
 
 func buildListDevicesQuery(offset, pageSize int, filter, orderby string) (*queryutils.Query, error) {

@@ -16,12 +16,12 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	androidapi "infra/cros/cmd/common_lib/android_api"
-	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/common_lib/tools/outputprops"
-	"infra/cros/cmd/ctpv2/data"
+	androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api"
+	"go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/outputprops"
+	"go.chromium.org/infra/cros/cmd/ctpv2/data"
 )
 
 // AlStatusUpdateCmd represents al state update cmd.

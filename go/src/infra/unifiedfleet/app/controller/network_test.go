@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/model/configuration"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
 )
 
 // TestGetFreeIPSimple tests getting a free IP address form a mostly empty Vlan.

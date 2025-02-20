@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 
-	fleetcostpb "infra/cros/fleetcost/api/models"
-	"infra/cros/fleetcost/internal/utils"
+	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
+	"go.chromium.org/infra/cros/fleetcost/internal/utils"
 )
 
 // getSecureClient gets a secure http.Client pointed at a specific host.

@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cros/cmd/suite_publisher/internal/bqsuites"
-	"infra/cros/cmd/suite_publisher/internal/parse"
+	"go.chromium.org/infra/cros/cmd/suite_publisher/internal/bqsuites"
+	"go.chromium.org/infra/cros/cmd/suite_publisher/internal/parse"
 )
 
 const (

@@ -18,8 +18,8 @@ import (
 	"context"
 	"time"
 
-	"infra/qscheduler/qslib/reconciler"
-	"infra/qscheduler/qslib/scheduler"
+	"go.chromium.org/infra/qscheduler/qslib/reconciler"
+	"go.chromium.org/infra/qscheduler/qslib/scheduler"
 )
 
 // Operation is the type for functions that examine and mutate a state.

@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/environ"
 
-	"infra/cmd/gaedeploy/gcloud"
+	"go.chromium.org/infra/cmd/gaedeploy/gcloud"
 )
 
 var cmdCleanup = &subcommands.Command{

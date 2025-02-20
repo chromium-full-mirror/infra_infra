@@ -26,13 +26,13 @@ import (
 	"go.chromium.org/luci/common/logging"
 	swarming "go.chromium.org/luci/swarming/proto/plugin"
 
-	"infra/qscheduler/qslib/scheduler"
-	"infra/qscheduler/service/app/config"
-	"infra/qscheduler/service/app/state/metrics"
-	"infra/qscheduler/service/app/state/nodestore"
-	"infra/qscheduler/service/app/state/operations"
-	"infra/qscheduler/service/app/state/types"
-	"infra/qscheduler/service/app/tracing"
+	"go.chromium.org/infra/qscheduler/qslib/scheduler"
+	"go.chromium.org/infra/qscheduler/service/app/config"
+	"go.chromium.org/infra/qscheduler/service/app/state/metrics"
+	"go.chromium.org/infra/qscheduler/service/app/state/nodestore"
+	"go.chromium.org/infra/qscheduler/service/app/state/operations"
+	"go.chromium.org/infra/qscheduler/service/app/state/types"
+	"go.chromium.org/infra/qscheduler/service/app/tracing"
 )
 
 const (

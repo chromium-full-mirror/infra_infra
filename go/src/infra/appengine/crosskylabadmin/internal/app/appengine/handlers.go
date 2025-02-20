@@ -25,10 +25,10 @@ import (
 	"go.chromium.org/luci/appengine/gaemiddleware/standard"
 	"go.chromium.org/luci/server/router"
 
-	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/app/cron"
-	"infra/appengine/crosskylabadmin/internal/app/frontend"
-	"infra/appengine/crosskylabadmin/internal/app/queue"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/cron"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/queue"
 )
 
 func main() {

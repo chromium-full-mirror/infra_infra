@@ -14,13 +14,13 @@ import (
 	"go.chromium.org/luci/common/errors"
 	lgs "go.chromium.org/luci/common/gcloud/gs"
 
-	"infra/cros/internal/branch"
-	mv "infra/cros/internal/chromeosversion"
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/git"
-	"infra/cros/internal/gs"
-	"infra/cros/internal/manifestutil"
-	"infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/internal/branch"
+	mv "go.chromium.org/infra/cros/internal/chromeosversion"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/gs"
+	"go.chromium.org/infra/cros/internal/manifestutil"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 const (

@@ -16,9 +16,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmd/crosfleet/internal/common"
-	croscommon "infra/cros/cmd/common_lib/common"
-	"infra/vm_leaser/client"
+	"go.chromium.org/infra/cmd/crosfleet/internal/common"
+	croscommon "go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/vm_leaser/client"
 )
 
 const abandonCmd = "abandon"

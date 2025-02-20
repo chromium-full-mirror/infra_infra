@@ -27,7 +27,7 @@ import (
 	configpb "go.chromium.org/luci/common/proto/config"
 	"go.chromium.org/luci/common/sync/parallel"
 
-	"infra/tools/migrator"
+	"go.chromium.org/infra/tools/migrator"
 )
 
 const localBranch = "fix_config"

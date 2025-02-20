@@ -14,8 +14,8 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	"infra/fleetconsole/internal/commands"
-	"infra/fleetconsole/internal/site"
+	"go.chromium.org/infra/fleetconsole/internal/commands"
+	"go.chromium.org/infra/fleetconsole/internal/site"
 )
 
 // Application returns the consoleadmin command line application.

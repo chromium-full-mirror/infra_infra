@@ -3,7 +3,7 @@ description: Used by CI builders to plan tests.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/test_plan_generator
+  - go.chromium.org/infra/cros/cmd/test_plan_generator
 root: ../../go/bin
 data:
   - file: test_plan_generator${exe_suffix}

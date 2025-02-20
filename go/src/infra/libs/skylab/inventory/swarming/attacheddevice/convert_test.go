@@ -10,8 +10,8 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 
-	"infra/libs/skylab/inventory/swarming"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/libs/skylab/inventory/swarming"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 const attachedDeviceDataProto = `

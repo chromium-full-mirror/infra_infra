@@ -4,7 +4,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"infra/appengine/sheriff-o-matic/som/analyzer"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/analyzer"
 )
 
 // This test reads config.json and parses it. This tests both that the config is

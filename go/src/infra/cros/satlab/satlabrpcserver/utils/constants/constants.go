@@ -8,7 +8,7 @@ import (
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 
-	"infra/cros/satlab/common/services/build_service"
+	"go.chromium.org/infra/cros/satlab/common/services/build_service"
 )
 
 // F64Epsilon Machine epsilon value for f64

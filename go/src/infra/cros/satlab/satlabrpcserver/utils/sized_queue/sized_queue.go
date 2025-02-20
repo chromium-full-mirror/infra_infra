@@ -6,7 +6,7 @@ package sized_queue
 import (
 	"sync"
 
-	"infra/cros/satlab/satlabrpcserver/utils"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/utils"
 )
 
 // SizedQueue the queue uses the standard `List`.

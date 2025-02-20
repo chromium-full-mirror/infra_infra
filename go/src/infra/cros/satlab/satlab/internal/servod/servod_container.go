@@ -11,9 +11,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/docker"
-	"infra/cros/satlab/common/utils/misc"
-	ufspb "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"go.chromium.org/infra/cros/recovery/docker"
+	"go.chromium.org/infra/cros/satlab/common/utils/misc"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 // DockerClient is an interface fulfilled by the recovery docker lib

@@ -9,9 +9,9 @@ import (
 
 	"google.golang.org/grpc"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/cros/recovery/scopes"
-	"infra/cros/stableversion/keys"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/cros/recovery/scopes"
+	"go.chromium.org/infra/cros/stableversion/keys"
 )
 
 // versionKeyType is a unique type for a context key.

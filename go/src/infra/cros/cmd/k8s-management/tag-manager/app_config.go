@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/cmd/k8s-management/tag-manager/internal/image"
+	"go.chromium.org/infra/cros/cmd/k8s-management/tag-manager/internal/image"
 )
 
 // appConfig is the image config for a K8s application.

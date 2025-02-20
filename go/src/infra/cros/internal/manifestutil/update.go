@@ -15,7 +15,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/repo"
+	"go.chromium.org/infra/cros/internal/repo"
 )
 
 const (

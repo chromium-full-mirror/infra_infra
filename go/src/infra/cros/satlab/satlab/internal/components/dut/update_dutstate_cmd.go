@@ -14,12 +14,12 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/shivas/utils"
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/dutstate"
-	"infra/cros/satlab/common/services/ufs"
-	"infra/cros/satlab/common/site"
-	ufsProto "infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/cros/satlab/common/services/ufs"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	ufsProto "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 // UpdateDUTCmd is the command that updates fields for a satlab DUT.

@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/unifiedfleet/api/v1/models/chromeos/lab/dolos.proto
+// source: go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/dolos.proto
 
 package ufspb
 
@@ -58,11 +58,11 @@ func (x DolosHWMajorRevision) String() string {
 }
 
 func (DolosHWMajorRevision) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_enumTypes[0].Descriptor()
 }
 
 func (DolosHWMajorRevision) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_enumTypes[0]
 }
 
 func (x DolosHWMajorRevision) Number() protoreflect.EnumNumber {
@@ -71,7 +71,7 @@ func (x DolosHWMajorRevision) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DolosHWMajorRevision.Descriptor instead.
 func (DolosHWMajorRevision) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescGZIP(), []int{0}
 }
 
 // Next Tag: 7
@@ -95,7 +95,7 @@ type Dolos struct {
 
 func (x *Dolos) Reset() {
 	*x = Dolos{}
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -107,7 +107,7 @@ func (x *Dolos) String() string {
 func (*Dolos) ProtoMessage() {}
 
 func (x *Dolos) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -120,7 +120,7 @@ func (x *Dolos) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Dolos.ProtoReflect.Descriptor instead.
 func (*Dolos) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Dolos) GetSerialCable() string {
@@ -165,16 +165,18 @@ func (x *Dolos) GetRpm() *OSRPM {
 	return nil
 }
 
-var File_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto protoreflect.FileDescriptor
 
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDesc = string([]byte{
-	0x0a, 0x39, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDesc = string([]byte{
+	0x0a, 0x49, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x2f,
 	0x64, 0x6f, 0x6c, 0x6f, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x27, 0x75, 0x6e, 0x69,
 	0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31,
 	0x2e, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73,
-	0x2e, 0x6c, 0x61, 0x62, 0x1a, 0x37, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66,
+	0x2e, 0x6c, 0x61, 0x62, 0x1a, 0x47, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75,
+	0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66,
 	0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f,
 	0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f,
 	0x6c, 0x61, 0x62, 0x2f, 0x72, 0x70, 0x6d, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xb1, 0x02,
@@ -200,33 +202,34 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDesc = str
 	0x6d, 0x2a, 0x3b, 0x0a, 0x14, 0x44, 0x6f, 0x6c, 0x6f, 0x73, 0x48, 0x57, 0x4d, 0x61, 0x6a, 0x6f,
 	0x72, 0x52, 0x65, 0x76, 0x69, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x15, 0x0a, 0x11, 0x44, 0x4f, 0x4c,
 	0x4f, 0x53, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00,
-	0x12, 0x0c, 0x0a, 0x08, 0x44, 0x4f, 0x4c, 0x4f, 0x53, 0x5f, 0x56, 0x31, 0x10, 0x01, 0x42, 0x35,
-	0x5a, 0x33, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+	0x12, 0x0c, 0x0a, 0x08, 0x44, 0x4f, 0x4c, 0x4f, 0x53, 0x5f, 0x56, 0x31, 0x10, 0x01, 0x42, 0x45,
+	0x5a, 0x43, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x3b,
 	0x75, 0x66, 0x73, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescOnce sync.Once
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescData []byte
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescData []byte
 )
 
-func file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescGZIP() []byte {
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescOnce.Do(func() {
-		file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDesc)))
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDesc)))
 	})
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescData
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_goTypes = []any{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_goTypes = []any{
 	(DolosHWMajorRevision)(0), // 0: unifiedfleet.api.v1.models.chromeos.lab.DolosHWMajorRevision
 	(*Dolos)(nil),             // 1: unifiedfleet.api.v1.models.chromeos.lab.Dolos
 	(*OSRPM)(nil),             // 2: unifiedfleet.api.v1.models.chromeos.lab.OSRPM
 }
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_depIdxs = []int32{
 	0, // 0: unifiedfleet.api.v1.models.chromeos.lab.Dolos.hw_major_revision:type_name -> unifiedfleet.api.v1.models.chromeos.lab.DolosHWMajorRevision
 	2, // 1: unifiedfleet.api.v1.models.chromeos.lab.Dolos.rpm:type_name -> unifiedfleet.api.v1.models.chromeos.lab.OSRPM
 	2, // [2:2] is the sub-list for method output_type
@@ -236,28 +239,28 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_depIdxs = []i
 	0, // [0:2] is the sub-list for field type_name
 }
 
-func init() { file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_init() }
-func file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_init() {
-	if File_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto != nil {
+func init() { file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_init() }
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_init() {
+	if File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto != nil {
 		return
 	}
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_rpm_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_rpm_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_goTypes,
-		DependencyIndexes: file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_depIdxs,
-		EnumInfos:         file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_enumTypes,
-		MessageInfos:      file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_msgTypes,
 	}.Build()
-	File_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto = out.File
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_goTypes = nil
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_depIdxs = nil
+	File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto = out.File
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_goTypes = nil
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dolos_proto_depIdxs = nil
 }

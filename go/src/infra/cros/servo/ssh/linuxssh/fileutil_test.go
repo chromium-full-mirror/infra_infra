@@ -13,11 +13,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	"infra/cros/servo/logging"
-	"infra/cros/servo/logging/loggingtest"
-	"infra/cros/servo/ssh/linuxssh"
-	"infra/cros/servo/sshtest"
-	"infra/cros/servo/testutil"
+	"go.chromium.org/infra/cros/servo/logging"
+	"go.chromium.org/infra/cros/servo/logging/loggingtest"
+	"go.chromium.org/infra/cros/servo/ssh/linuxssh"
+	"go.chromium.org/infra/cros/servo/sshtest"
+	"go.chromium.org/infra/cros/servo/testutil"
 )
 
 const strangeFileName = "$()\"'` "

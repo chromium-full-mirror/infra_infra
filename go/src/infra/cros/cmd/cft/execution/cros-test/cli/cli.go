@@ -21,7 +21,7 @@ import (
 	"go.chromium.org/chromiumos/test/util/metadata"
 	"go.chromium.org/chromiumos/test/util/portdiscovery"
 
-	"infra/cros/cmd/cft/execution/cros-test/internal/common"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/common"
 )
 
 // Version is the version info of this command. It is filled in during emerge.

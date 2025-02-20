@@ -4,7 +4,7 @@ update_latest_ref: true
 platforms:
   - linux-amd64
 go_packages:
-  - infra/tricium/functions/metrics
+  - go.chromium.org/infra/tricium/functions/metrics
 root: ../../go/bin
 data:
   - file: metrics${exe_suffix}

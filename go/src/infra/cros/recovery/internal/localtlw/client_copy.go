@@ -10,10 +10,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	tlwio "infra/cros/recovery/internal/localtlw/io"
-	"infra/cros/recovery/internal/localtlw/localproxy"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/tlw"
+	tlwio "go.chromium.org/infra/cros/recovery/internal/localtlw/io"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw/localproxy"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // validateCopyRequest validates that all data is provided as part of request.

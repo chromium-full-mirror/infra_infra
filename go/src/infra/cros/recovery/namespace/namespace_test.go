@@ -8,7 +8,7 @@ import (
 	"context"
 	"testing"
 
-	ufsUtil "infra/unifiedfleet/app/util"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 func TestIsPartner(t *testing.T) {

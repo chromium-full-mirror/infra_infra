@@ -15,10 +15,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/models"
-	"infra/cros/satlab/common/services/build_service"
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/parser"
+	"go.chromium.org/infra/cros/recovery/models"
+	"go.chromium.org/infra/cros/satlab/common/services/build_service"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/parser"
 )
 
 // StageAndWriteLocalStableVersion stages a recovery image to partner bucket and writes the associated rv metadata locally.

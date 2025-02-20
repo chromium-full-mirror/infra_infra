@@ -12,9 +12,9 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/satlab/common/dut"
-	"infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cros/satlab/common/dut"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 )
 
 // AddDUTCmd is the command that deploys a Satlab DUT.

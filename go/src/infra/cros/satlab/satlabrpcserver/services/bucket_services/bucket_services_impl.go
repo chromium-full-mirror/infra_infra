@@ -18,8 +18,8 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/collection"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/collection"
 )
 
 type getDataFromObject = func(obj *storage.ObjectAttrs) (string, error)

@@ -23,7 +23,7 @@ import (
 	"golang.org/x/net/proxy"
 	"golang.org/x/term"
 
-	"infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/errors"
 )
 
 const (

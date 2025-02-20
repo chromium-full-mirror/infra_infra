@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
 )
 
 // powerSupplyInfo holds info from power_supply_info.

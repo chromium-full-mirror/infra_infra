@@ -15,7 +15,7 @@ import (
 
 	"go.chromium.org/luci/common/api/gerrit"
 
-	"infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 type ExpectedFetch struct {

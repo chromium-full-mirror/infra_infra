@@ -25,7 +25,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/tools/git/state"
+	"go.chromium.org/infra/tools/git/state"
 )
 
 const testAgentFailedReturnCode = 128

@@ -11,12 +11,12 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/recovery/internal/components/cache"
-	"infra/cros/recovery/internal/components/cft"
-	"infra/cros/recovery/internal/components/linux"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/recovery/internal/components/cache"
+	"go.chromium.org/infra/cros/recovery/internal/components/cft"
+	"go.chromium.org/infra/cros/recovery/internal/components/linux"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 const (

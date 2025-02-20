@@ -18,7 +18,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/appengine/chrome-test-health/api"
+	"go.chromium.org/infra/appengine/chrome-test-health/api"
 )
 
 // Base queries to build from

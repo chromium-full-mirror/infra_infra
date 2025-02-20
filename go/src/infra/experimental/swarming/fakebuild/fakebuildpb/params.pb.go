@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/experimental/swarming/fakebuild/fakebuildpb/params.proto
+// source: go.chromium.org/infra/experimental/swarming/fakebuild/fakebuildpb/params.proto
 
 package fakebuildpb
 
@@ -43,7 +43,7 @@ type ChildBuilds struct {
 
 func (x *ChildBuilds) Reset() {
 	*x = ChildBuilds{}
-	mi := &file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -55,7 +55,7 @@ func (x *ChildBuilds) String() string {
 func (*ChildBuilds) ProtoMessage() {}
 
 func (x *ChildBuilds) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -68,7 +68,7 @@ func (x *ChildBuilds) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChildBuilds.ProtoReflect.Descriptor instead.
 func (*ChildBuilds) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *ChildBuilds) GetChildren() int64 {
@@ -124,7 +124,7 @@ type SearchBuilds struct {
 
 func (x *SearchBuilds) Reset() {
 	*x = SearchBuilds{}
-	mi := &file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -136,7 +136,7 @@ func (x *SearchBuilds) String() string {
 func (*SearchBuilds) ProtoMessage() {}
 
 func (x *SearchBuilds) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -149,7 +149,7 @@ func (x *SearchBuilds) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchBuilds.ProtoReflect.Descriptor instead.
 func (*SearchBuilds) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *SearchBuilds) GetSteps() int64 {
@@ -186,7 +186,7 @@ type Inputs struct {
 
 func (x *Inputs) Reset() {
 	*x = Inputs{}
-	mi := &file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -198,7 +198,7 @@ func (x *Inputs) String() string {
 func (*Inputs) ProtoMessage() {}
 
 func (x *Inputs) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -211,7 +211,7 @@ func (x *Inputs) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Inputs.ProtoReflect.Descriptor instead.
 func (*Inputs) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Inputs) GetSteps() int64 {
@@ -249,10 +249,11 @@ func (x *Inputs) GetSearchBuilds() *SearchBuilds {
 	return nil
 }
 
-var File_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto protoreflect.FileDescriptor
 
-var file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDesc = string([]byte{
-	0x0a, 0x3e, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x65, 0x78, 0x70, 0x65, 0x72, 0x69, 0x6d, 0x65,
+var file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDesc = string([]byte{
+	0x0a, 0x4e, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x65, 0x78, 0x70, 0x65, 0x72, 0x69, 0x6d, 0x65,
 	0x6e, 0x74, 0x61, 0x6c, 0x2f, 0x73, 0x77, 0x61, 0x72, 0x6d, 0x69, 0x6e, 0x67, 0x2f, 0x66, 0x61,
 	0x6b, 0x65, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2f, 0x66, 0x61, 0x6b, 0x65, 0x62, 0x75, 0x69, 0x6c,
 	0x64, 0x70, 0x62, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
@@ -297,32 +298,33 @@ var file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDesc 
 	0x6c, 0x64, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x66, 0x61, 0x6b, 0x65,
 	0x62, 0x75, 0x69, 0x6c, 0x64, 0x70, 0x62, 0x2e, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x42, 0x75,
 	0x69, 0x6c, 0x64, 0x73, 0x52, 0x0c, 0x73, 0x65, 0x61, 0x72, 0x63, 0x68, 0x42, 0x75, 0x69, 0x6c,
-	0x64, 0x73, 0x42, 0x33, 0x5a, 0x31, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x65, 0x78, 0x70, 0x65,
+	0x64, 0x73, 0x42, 0x43, 0x5a, 0x41, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75,
+	0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x65, 0x78, 0x70, 0x65,
 	0x72, 0x69, 0x6d, 0x65, 0x6e, 0x74, 0x61, 0x6c, 0x2f, 0x73, 0x77, 0x61, 0x72, 0x6d, 0x69, 0x6e,
 	0x67, 0x2f, 0x66, 0x61, 0x6b, 0x65, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x2f, 0x66, 0x61, 0x6b, 0x65,
 	0x62, 0x75, 0x69, 0x6c, 0x64, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescOnce sync.Once
-	file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescData []byte
+	file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescData []byte
 )
 
-func file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescGZIP() []byte {
-	file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescOnce.Do(func() {
-		file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDesc), len(file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDesc)))
+func file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDesc), len(file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDesc)))
 	})
-	return file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescData
+	return file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDescData
 }
 
-var file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
-var file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_goTypes = []any{
+var file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_goTypes = []any{
 	(*ChildBuilds)(nil),     // 0: fakebuildpb.ChildBuilds
 	(*SearchBuilds)(nil),    // 1: fakebuildpb.SearchBuilds
 	(*Inputs)(nil),          // 2: fakebuildpb.Inputs
 	(*proto.BuilderID)(nil), // 3: buildbucket.v2.BuilderID
 }
-var file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_depIdxs = []int32{
 	3, // 0: fakebuildpb.ChildBuilds.builder:type_name -> buildbucket.v2.BuilderID
 	0, // 1: fakebuildpb.Inputs.child_builds:type_name -> fakebuildpb.ChildBuilds
 	1, // 2: fakebuildpb.Inputs.search_builds:type_name -> fakebuildpb.SearchBuilds
@@ -333,26 +335,28 @@ var file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_depIdxs 
 	0, // [0:3] is the sub-list for field type_name
 }
 
-func init() { file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_init() }
-func file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_init() {
-	if File_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto != nil {
+func init() {
+	file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_init()
+}
+func file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_init() {
+	if File_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDesc), len(file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDesc), len(file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_goTypes,
-		DependencyIndexes: file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_depIdxs,
-		MessageInfos:      file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_msgTypes,
 	}.Build()
-	File_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto = out.File
-	file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_goTypes = nil
-	file_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_depIdxs = nil
+	File_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto = out.File
+	file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_goTypes = nil
+	file_go_chromium_org_infra_experimental_swarming_fakebuild_fakebuildpb_params_proto_depIdxs = nil
 }

@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/appengine/dashboard/api/dashboard/dashboard.proto
+// source: go.chromium.org/infra/appengine/dashboard/api/dashboard/dashboard.proto
 
 package dashboard
 
@@ -65,11 +65,11 @@ func (x Severity) String() string {
 }
 
 func (Severity) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_enumTypes[0].Descriptor()
 }
 
 func (Severity) Type() protoreflect.EnumType {
-	return &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_enumTypes[0]
 }
 
 func (x Severity) Number() protoreflect.EnumNumber {
@@ -78,7 +78,7 @@ func (x Severity) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Severity.Descriptor instead.
 func (Severity) EnumDescriptor() ([]byte, []int) {
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{0}
 }
 
 type UpdateOpenIncidentsRequest struct {
@@ -90,7 +90,7 @@ type UpdateOpenIncidentsRequest struct {
 
 func (x *UpdateOpenIncidentsRequest) Reset() {
 	*x = UpdateOpenIncidentsRequest{}
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -102,7 +102,7 @@ func (x *UpdateOpenIncidentsRequest) String() string {
 func (*UpdateOpenIncidentsRequest) ProtoMessage() {}
 
 func (x *UpdateOpenIncidentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -115,7 +115,7 @@ func (x *UpdateOpenIncidentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateOpenIncidentsRequest.ProtoReflect.Descriptor instead.
 func (*UpdateOpenIncidentsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *UpdateOpenIncidentsRequest) GetChopsService() *ChopsService {
@@ -134,7 +134,7 @@ type UpdateOpenIncidentsResponse struct {
 
 func (x *UpdateOpenIncidentsResponse) Reset() {
 	*x = UpdateOpenIncidentsResponse{}
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -146,7 +146,7 @@ func (x *UpdateOpenIncidentsResponse) String() string {
 func (*UpdateOpenIncidentsResponse) ProtoMessage() {}
 
 func (x *UpdateOpenIncidentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -159,7 +159,7 @@ func (x *UpdateOpenIncidentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateOpenIncidentsResponse.ProtoReflect.Descriptor instead.
 func (*UpdateOpenIncidentsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *UpdateOpenIncidentsResponse) GetOpenIncidents() []*ChopsIncident {
@@ -180,7 +180,7 @@ type GetAllServicesDataRequest struct {
 
 func (x *GetAllServicesDataRequest) Reset() {
 	*x = GetAllServicesDataRequest{}
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -192,7 +192,7 @@ func (x *GetAllServicesDataRequest) String() string {
 func (*GetAllServicesDataRequest) ProtoMessage() {}
 
 func (x *GetAllServicesDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -205,7 +205,7 @@ func (x *GetAllServicesDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAllServicesDataRequest.ProtoReflect.Descriptor instead.
 func (*GetAllServicesDataRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetAllServicesDataRequest) GetUptoTime() int64 {
@@ -225,7 +225,7 @@ type GetAllServicesDataResponse struct {
 
 func (x *GetAllServicesDataResponse) Reset() {
 	*x = GetAllServicesDataResponse{}
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -237,7 +237,7 @@ func (x *GetAllServicesDataResponse) String() string {
 func (*GetAllServicesDataResponse) ProtoMessage() {}
 
 func (x *GetAllServicesDataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -250,7 +250,7 @@ func (x *GetAllServicesDataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAllServicesDataResponse.ProtoReflect.Descriptor instead.
 func (*GetAllServicesDataResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetAllServicesDataResponse) GetServices() []*ChopsService {
@@ -281,7 +281,7 @@ type ChopsIncident struct {
 
 func (x *ChopsIncident) Reset() {
 	*x = ChopsIncident{}
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -293,7 +293,7 @@ func (x *ChopsIncident) String() string {
 func (*ChopsIncident) ProtoMessage() {}
 
 func (x *ChopsIncident) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -306,7 +306,7 @@ func (x *ChopsIncident) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChopsIncident.ProtoReflect.Descriptor instead.
 func (*ChopsIncident) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ChopsIncident) GetId() string {
@@ -362,7 +362,7 @@ type ChopsService struct {
 
 func (x *ChopsService) Reset() {
 	*x = ChopsService{}
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -374,7 +374,7 @@ func (x *ChopsService) String() string {
 func (*ChopsService) ProtoMessage() {}
 
 func (x *ChopsService) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -387,7 +387,7 @@ func (x *ChopsService) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChopsService.ProtoReflect.Descriptor instead.
 func (*ChopsService) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ChopsService) GetName() string {
@@ -421,7 +421,7 @@ type CreateLiveAnnouncementRequest struct {
 
 func (x *CreateLiveAnnouncementRequest) Reset() {
 	*x = CreateLiveAnnouncementRequest{}
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -433,7 +433,7 @@ func (x *CreateLiveAnnouncementRequest) String() string {
 func (*CreateLiveAnnouncementRequest) ProtoMessage() {}
 
 func (x *CreateLiveAnnouncementRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -446,7 +446,7 @@ func (x *CreateLiveAnnouncementRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateLiveAnnouncementRequest.ProtoReflect.Descriptor instead.
 func (*CreateLiveAnnouncementRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CreateLiveAnnouncementRequest) GetMessageContent() string {
@@ -472,7 +472,7 @@ type CreateLiveAnnouncementResponse struct {
 
 func (x *CreateLiveAnnouncementResponse) Reset() {
 	*x = CreateLiveAnnouncementResponse{}
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -484,7 +484,7 @@ func (x *CreateLiveAnnouncementResponse) String() string {
 func (*CreateLiveAnnouncementResponse) ProtoMessage() {}
 
 func (x *CreateLiveAnnouncementResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -497,7 +497,7 @@ func (x *CreateLiveAnnouncementResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateLiveAnnouncementResponse.ProtoReflect.Descriptor instead.
 func (*CreateLiveAnnouncementResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *CreateLiveAnnouncementResponse) GetAnnouncement() *Announcement {
@@ -516,7 +516,7 @@ type RetireAnnouncementRequest struct {
 
 func (x *RetireAnnouncementRequest) Reset() {
 	*x = RetireAnnouncementRequest{}
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -528,7 +528,7 @@ func (x *RetireAnnouncementRequest) String() string {
 func (*RetireAnnouncementRequest) ProtoMessage() {}
 
 func (x *RetireAnnouncementRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -541,7 +541,7 @@ func (x *RetireAnnouncementRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RetireAnnouncementRequest.ProtoReflect.Descriptor instead.
 func (*RetireAnnouncementRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *RetireAnnouncementRequest) GetAnnouncementId() int64 {
@@ -565,7 +565,7 @@ type SearchAnnouncementsRequest struct {
 
 func (x *SearchAnnouncementsRequest) Reset() {
 	*x = SearchAnnouncementsRequest{}
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -577,7 +577,7 @@ func (x *SearchAnnouncementsRequest) String() string {
 func (*SearchAnnouncementsRequest) ProtoMessage() {}
 
 func (x *SearchAnnouncementsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -590,7 +590,7 @@ func (x *SearchAnnouncementsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchAnnouncementsRequest.ProtoReflect.Descriptor instead.
 func (*SearchAnnouncementsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *SearchAnnouncementsRequest) GetPlatformName() string {
@@ -630,7 +630,7 @@ type SearchAnnouncementsResponse struct {
 
 func (x *SearchAnnouncementsResponse) Reset() {
 	*x = SearchAnnouncementsResponse{}
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -642,7 +642,7 @@ func (x *SearchAnnouncementsResponse) String() string {
 func (*SearchAnnouncementsResponse) ProtoMessage() {}
 
 func (x *SearchAnnouncementsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -655,7 +655,7 @@ func (x *SearchAnnouncementsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchAnnouncementsResponse.ProtoReflect.Descriptor instead.
 func (*SearchAnnouncementsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *SearchAnnouncementsResponse) GetAnnouncements() []*Announcement {
@@ -680,7 +680,7 @@ type Platform struct {
 
 func (x *Platform) Reset() {
 	*x = Platform{}
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -692,7 +692,7 @@ func (x *Platform) String() string {
 func (*Platform) ProtoMessage() {}
 
 func (x *Platform) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -705,7 +705,7 @@ func (x *Platform) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Platform.ProtoReflect.Descriptor instead.
 func (*Platform) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{11}
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *Platform) GetName() string {
@@ -741,7 +741,7 @@ type Announcement struct {
 
 func (x *Announcement) Reset() {
 	*x = Announcement{}
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -753,7 +753,7 @@ func (x *Announcement) String() string {
 func (*Announcement) ProtoMessage() {}
 
 func (x *Announcement) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -766,7 +766,7 @@ func (x *Announcement) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Announcement.ProtoReflect.Descriptor instead.
 func (*Announcement) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{12}
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *Announcement) GetId() int64 {
@@ -825,10 +825,11 @@ func (x *Announcement) GetCloser() string {
 	return ""
 }
 
-var File_infra_appengine_dashboard_api_dashboard_dashboard_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto protoreflect.FileDescriptor
 
-var file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDesc = string([]byte{
-	0x0a, 0x37, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
+var file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDesc = string([]byte{
+	0x0a, 0x47, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
 	0x65, 0x2f, 0x64, 0x61, 0x73, 0x68, 0x62, 0x6f, 0x61, 0x72, 0x64, 0x2f, 0x61, 0x70, 0x69, 0x2f,
 	0x64, 0x61, 0x73, 0x68, 0x62, 0x6f, 0x61, 0x72, 0x64, 0x2f, 0x64, 0x61, 0x73, 0x68, 0x62, 0x6f,
 	0x61, 0x72, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x09, 0x64, 0x61, 0x73, 0x68, 0x62,
@@ -972,27 +973,28 @@ var file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDesc = strin
 	0x6e, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x64, 0x61, 0x73,
 	0x68, 0x62, 0x6f, 0x61, 0x72, 0x64, 0x2e, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x41, 0x6e, 0x6e,
 	0x6f, 0x75, 0x6e, 0x63, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x00, 0x42, 0x29, 0x5a, 0x27, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70,
+	0x73, 0x65, 0x22, 0x00, 0x42, 0x39, 0x5a, 0x37, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d,
+	0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70,
 	0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x64, 0x61, 0x73, 0x68, 0x62, 0x6f, 0x61, 0x72,
 	0x64, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x64, 0x61, 0x73, 0x68, 0x62, 0x6f, 0x61, 0x72, 0x64, 0x62,
 	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescOnce sync.Once
-	file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescData []byte
+	file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescData []byte
 )
 
-func file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP() []byte {
-	file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescOnce.Do(func() {
-		file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDesc), len(file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDesc)))
+func file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDesc), len(file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDesc)))
 	})
-	return file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescData
+	return file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDescData
 }
 
-var file_infra_appengine_dashboard_api_dashboard_dashboard_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
-var file_infra_appengine_dashboard_api_dashboard_dashboard_proto_goTypes = []any{
+var file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_goTypes = []any{
 	(Severity)(0),                          // 0: dashboard.Severity
 	(*UpdateOpenIncidentsRequest)(nil),     // 1: dashboard.UpdateOpenIncidentsRequest
 	(*UpdateOpenIncidentsResponse)(nil),    // 2: dashboard.UpdateOpenIncidentsResponse
@@ -1009,7 +1011,7 @@ var file_infra_appengine_dashboard_api_dashboard_dashboard_proto_goTypes = []any
 	(*Announcement)(nil),                   // 13: dashboard.Announcement
 	(*timestamppb.Timestamp)(nil),          // 14: google.protobuf.Timestamp
 }
-var file_infra_appengine_dashboard_api_dashboard_dashboard_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_depIdxs = []int32{
 	6,  // 0: dashboard.UpdateOpenIncidentsRequest.chops_service:type_name -> dashboard.ChopsService
 	5,  // 1: dashboard.UpdateOpenIncidentsResponse.open_incidents:type_name -> dashboard.ChopsIncident
 	6,  // 2: dashboard.GetAllServicesDataResponse.services:type_name -> dashboard.ChopsService
@@ -1039,29 +1041,29 @@ var file_infra_appengine_dashboard_api_dashboard_dashboard_proto_depIdxs = []int
 	0,  // [0:12] is the sub-list for field type_name
 }
 
-func init() { file_infra_appengine_dashboard_api_dashboard_dashboard_proto_init() }
-func file_infra_appengine_dashboard_api_dashboard_dashboard_proto_init() {
-	if File_infra_appengine_dashboard_api_dashboard_dashboard_proto != nil {
+func init() { file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_init() }
+func file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_init() {
+	if File_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDesc), len(file_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDesc), len(file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   2,
 		},
-		GoTypes:           file_infra_appengine_dashboard_api_dashboard_dashboard_proto_goTypes,
-		DependencyIndexes: file_infra_appengine_dashboard_api_dashboard_dashboard_proto_depIdxs,
-		EnumInfos:         file_infra_appengine_dashboard_api_dashboard_dashboard_proto_enumTypes,
-		MessageInfos:      file_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_msgTypes,
 	}.Build()
-	File_infra_appengine_dashboard_api_dashboard_dashboard_proto = out.File
-	file_infra_appengine_dashboard_api_dashboard_dashboard_proto_goTypes = nil
-	file_infra_appengine_dashboard_api_dashboard_dashboard_proto_depIdxs = nil
+	File_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto = out.File
+	file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_goTypes = nil
+	file_go_chromium_org_infra_appengine_dashboard_api_dashboard_dashboard_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1202,7 +1204,7 @@ var _ChopsServiceStatus_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/appengine/dashboard/api/dashboard/dashboard.proto",
+	Metadata: "go.chromium.org/infra/appengine/dashboard/api/dashboard/dashboard.proto",
 }
 
 // ChopsAnnouncementsClient is the client API for ChopsAnnouncements service.
@@ -1380,5 +1382,5 @@ var _ChopsAnnouncements_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/appengine/dashboard/api/dashboard/dashboard.proto",
+	Metadata: "go.chromium.org/infra/appengine/dashboard/api/dashboard/dashboard.proto",
 }

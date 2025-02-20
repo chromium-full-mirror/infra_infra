@@ -10,8 +10,8 @@ import (
 	testpb "go.chromium.org/chromiumos/config/go/test/api"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/testorchestrator"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/testorchestrator"
 )
 
 func TestGetRequestedDimensions(t *testing.T) {

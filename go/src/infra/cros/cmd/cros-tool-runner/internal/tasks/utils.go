@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/luci/common/tsmon/target"
 	"go.chromium.org/luci/lucictx"
 
-	"infra/cros/cmd/cros-tool-runner/internal/common"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/common"
 )
 
 // readContainersMetadata reads the jsonproto at path containers metadata file.

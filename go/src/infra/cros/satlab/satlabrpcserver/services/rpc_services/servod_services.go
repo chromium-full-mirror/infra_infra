@@ -15,13 +15,13 @@ import (
 	api "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/shivas/utils"
-	"infra/cros/recovery/docker"
-	"infra/cros/satlab/common/services/ufs"
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/misc"
-	ufsApi "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cros/recovery/docker"
+	"go.chromium.org/infra/cros/satlab/common/services/ufs"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/misc"
+	ufsApi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // StartServod start Docker servod container.

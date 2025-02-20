@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 func TestWifiCleanAndValidateFlags(t *testing.T) {

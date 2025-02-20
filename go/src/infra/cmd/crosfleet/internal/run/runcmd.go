@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmd/crosfleet/internal/common"
+	"go.chromium.org/infra/cmd/crosfleet/internal/common"
 )
 
 const runCmdName = "run"

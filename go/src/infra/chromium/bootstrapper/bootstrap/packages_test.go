@@ -17,10 +17,10 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 
-	"infra/chromium/bootstrapper/clients/cas"
-	"infra/chromium/bootstrapper/clients/cipd"
-	fakecas "infra/chromium/bootstrapper/clients/fakes/cas"
-	fakecipd "infra/chromium/bootstrapper/clients/fakes/cipd"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/cas"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/cipd"
+	fakecas "go.chromium.org/infra/chromium/bootstrapper/clients/fakes/cas"
+	fakecipd "go.chromium.org/infra/chromium/bootstrapper/clients/fakes/cipd"
 )
 
 func TestDownloadPackages(t *testing.T) {

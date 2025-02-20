@@ -17,8 +17,8 @@ package scheduler
 import (
 	"time"
 
-	"infra/qscheduler/qslib/protos"
-	"infra/qscheduler/qslib/tutils"
+	"go.chromium.org/infra/qscheduler/qslib/protos"
+	"go.chromium.org/infra/qscheduler/qslib/tutils"
 )
 
 // Config represents configuration fields that affect the behavior

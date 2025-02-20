@@ -9,9 +9,9 @@ import (
 	"os"
 	"testing"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/gerrit"
 )
 
 // gerritChangesToStr is a helper function to compare actual and expected

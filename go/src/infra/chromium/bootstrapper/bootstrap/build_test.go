@@ -17,13 +17,13 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	fakegerrit "infra/chromium/bootstrapper/clients/fakes/gerrit"
-	fakegitiles "infra/chromium/bootstrapper/clients/fakes/gitiles"
-	"infra/chromium/bootstrapper/clients/gclient"
-	"infra/chromium/bootstrapper/clients/gerrit"
-	"infra/chromium/bootstrapper/clients/gitiles"
-	"infra/chromium/bootstrapper/clients/gob"
-	"infra/chromium/util"
+	fakegerrit "go.chromium.org/infra/chromium/bootstrapper/clients/fakes/gerrit"
+	fakegitiles "go.chromium.org/infra/chromium/bootstrapper/clients/fakes/gitiles"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gclient"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gerrit"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gitiles"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gob"
+	"go.chromium.org/infra/chromium/util"
 )
 
 func TestGetBootstrapConfig(t *testing.T) {

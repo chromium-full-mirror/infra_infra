@@ -15,11 +15,11 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	fleetcostpb "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/costserver/maskutils"
-	"infra/cros/fleetcost/internal/fleetcosterror"
-	"infra/cros/fleetcost/internal/utils"
+	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/maskutils"
+	"go.chromium.org/infra/cros/fleetcost/internal/fleetcosterror"
+	"go.chromium.org/infra/cros/fleetcost/internal/utils"
 )
 
 // CostIndicatorKind is the datastore kind of a cost indicator entity.

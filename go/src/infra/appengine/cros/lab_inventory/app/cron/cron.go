@@ -15,10 +15,10 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
 
-	"infra/appengine/cros/lab_inventory/app/config"
-	"infra/cros/lab_inventory/cfg2datastore"
-	"infra/cros/lab_inventory/deviceconfig"
-	"infra/libs/git"
+	"go.chromium.org/infra/appengine/cros/lab_inventory/app/config"
+	"go.chromium.org/infra/cros/lab_inventory/cfg2datastore"
+	"go.chromium.org/infra/cros/lab_inventory/deviceconfig"
+	"go.chromium.org/infra/libs/git"
 )
 
 // InstallHandlers installs handlers for cron jobs that are part of this app.

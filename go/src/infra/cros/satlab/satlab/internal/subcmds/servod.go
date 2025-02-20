@@ -11,8 +11,8 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/satlab/internal/servod"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/satlab/internal/servod"
 )
 
 // servodBase is the type for the servod placeholder command.

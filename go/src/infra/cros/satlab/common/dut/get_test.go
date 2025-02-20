@@ -17,10 +17,10 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 
-	"infra/cros/satlab/common/paths"
-	"infra/cros/satlab/common/utils/executor"
-	ufsModels "infra/unifiedfleet/api/v1/models"
-	ufspb "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"go.chromium.org/infra/cros/satlab/common/paths"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
+	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 func TestMakeGetShivasFlags(t *testing.T) {

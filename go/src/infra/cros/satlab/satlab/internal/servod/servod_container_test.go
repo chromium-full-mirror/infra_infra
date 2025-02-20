@@ -13,8 +13,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/docker"
-	ufspb "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"go.chromium.org/infra/cros/recovery/docker"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 // TestStartServodContainerStartsContainer tests for the execution of `docker.Start()` in various conditions and ensures we use the correct args to do so

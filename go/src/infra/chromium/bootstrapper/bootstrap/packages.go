@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 
-	"infra/chromium/bootstrapper/clients/cas"
-	"infra/chromium/bootstrapper/clients/cipd"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/cas"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/cipd"
 )
 
 // ID values for referring to the packages to be downloaded during bootstrapping
@@ -26,7 +26,7 @@ const (
 )
 
 const (
-	depotToolsPackage        = "infra/recipe_bundles/chromium.googlesource.com/chromium/tools/depot_tools"
+	depotToolsPackage        = "go.chromium.org/infra/recipe_bundles/chromium.googlesource.com/chromium/tools/depot_tools"
 	depotToolsPackageVersion = "refs/heads/main"
 )
 

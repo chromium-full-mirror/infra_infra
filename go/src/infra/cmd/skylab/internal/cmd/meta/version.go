@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/skylab/internal/site"
-	"infra/libs/cipd"
+	"go.chromium.org/infra/cmd/skylab/internal/site"
+	"go.chromium.org/infra/libs/cipd"
 )
 
 // Version subcommand: Version skylab tool.

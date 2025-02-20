@@ -16,9 +16,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/model/inventory"
-	ufsUtil "infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // GetMachineLSEDeployment returns the deployment record for the given id.

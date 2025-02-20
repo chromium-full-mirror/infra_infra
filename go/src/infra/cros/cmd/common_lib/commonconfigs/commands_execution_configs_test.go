@@ -6,9 +6,9 @@ package commonconfigs_test
 
 // import (
 // 	"context"
-// 	"infra/cros/cmd/common_lib/commonconfigs"
-// 	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-// 	"infra/cros/cmd/cros_test_runner/data"
+// 	"go.chromium.org/infra/cros/cmd/common_lib/commonconfigs"
+// 	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
+// 	"go.chromium.org/infra/cros/cmd/cros_test_runner/data"
 
 // 	"testing"
 

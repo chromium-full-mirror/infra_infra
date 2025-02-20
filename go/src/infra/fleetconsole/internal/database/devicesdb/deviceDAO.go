@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 )
 
 // DeviceDAO represents a device as saved in AlloyDB

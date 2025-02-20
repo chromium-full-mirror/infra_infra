@@ -14,7 +14,7 @@ import (
 	resultpb "go.chromium.org/luci/resultdb/proto/v1"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 
-	dirmdpb "infra/tools/dirmd/proto"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
 )
 
 func TestLocationTag(t *testing.T) {

@@ -14,8 +14,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	"infra/cros/cmd/cft/dut/cros-servod/mock_commandexecutor"
-	"infra/cros/cmd/cft/dut/cros-servod/model"
+	"go.chromium.org/infra/cros/cmd/cft/dut/cros-servod/mock_commandexecutor"
+	"go.chromium.org/infra/cros/cmd/cft/dut/cros-servod/model"
 )
 
 // Tests that servod starts successfully.

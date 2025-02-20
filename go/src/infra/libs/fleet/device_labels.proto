@@ -8,7 +8,7 @@ syntax = "proto3";
 
 package fleet.device.labels;
 
-option go_package = "infra/libs/fleet;";
+option go_package = "go.chromium.org/infra/libs/fleet;";
 
 
 // NEXT TAG: 3

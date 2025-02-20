@@ -14,12 +14,12 @@ import (
 	"github.com/google/subcommands"
 	"github.com/pkg/errors"
 
-	"infra/cros/cmd/lucifer/internal/api"
-	"infra/cros/cmd/lucifer/internal/autotest"
-	"infra/cros/cmd/lucifer/internal/dutstate"
-	"infra/cros/cmd/lucifer/internal/event"
-	"infra/cros/cmd/lucifer/internal/flagx"
-	"infra/cros/cmd/lucifer/internal/osutil"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/api"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/autotest"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/dutstate"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/event"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/flagx"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/osutil"
 )
 
 type auditTaskCmd struct {

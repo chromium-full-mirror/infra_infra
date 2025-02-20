@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/experimental/crderiveinputs/inputpb/inputs.proto
+// source: go.chromium.org/infra/experimental/crderiveinputs/inputpb/inputs.proto
 
 package inputpb
 
@@ -62,11 +62,11 @@ func (x GCSArchive_Format) String() string {
 }
 
 func (GCSArchive_Format) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_enumTypes[0].Descriptor()
 }
 
 func (GCSArchive_Format) Type() protoreflect.EnumType {
-	return &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_enumTypes[0]
 }
 
 func (x GCSArchive_Format) Number() protoreflect.EnumNumber {
@@ -75,7 +75,7 @@ func (x GCSArchive_Format) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use GCSArchive_Format.Descriptor instead.
 func (GCSArchive_Format) EnumDescriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{7, 0}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{7, 0}
 }
 
 type ResolvableString struct {
@@ -89,7 +89,7 @@ type ResolvableString struct {
 
 func (x *ResolvableString) Reset() {
 	*x = ResolvableString{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -101,7 +101,7 @@ func (x *ResolvableString) String() string {
 func (*ResolvableString) ProtoMessage() {}
 
 func (x *ResolvableString) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -114,7 +114,7 @@ func (x *ResolvableString) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResolvableString.ProtoReflect.Descriptor instead.
 func (*ResolvableString) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *ResolvableString) GetRequested() string {
@@ -148,7 +148,7 @@ type GitCheckout struct {
 
 func (x *GitCheckout) Reset() {
 	*x = GitCheckout{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -160,7 +160,7 @@ func (x *GitCheckout) String() string {
 func (*GitCheckout) ProtoMessage() {}
 
 func (x *GitCheckout) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -173,7 +173,7 @@ func (x *GitCheckout) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GitCheckout.ProtoReflect.Descriptor instead.
 func (*GitCheckout) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *GitCheckout) GetRepo() string {
@@ -199,7 +199,7 @@ type CIPDPackages struct {
 
 func (x *CIPDPackages) Reset() {
 	*x = CIPDPackages{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -211,7 +211,7 @@ func (x *CIPDPackages) String() string {
 func (*CIPDPackages) ProtoMessage() {}
 
 func (x *CIPDPackages) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -224,7 +224,7 @@ func (x *CIPDPackages) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CIPDPackages.ProtoReflect.Descriptor instead.
 func (*CIPDPackages) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *CIPDPackages) GetPackges() []*CIPDPackage {
@@ -244,7 +244,7 @@ type CIPDPackage struct {
 
 func (x *CIPDPackage) Reset() {
 	*x = CIPDPackage{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -256,7 +256,7 @@ func (x *CIPDPackage) String() string {
 func (*CIPDPackage) ProtoMessage() {}
 
 func (x *CIPDPackage) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -269,7 +269,7 @@ func (x *CIPDPackage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CIPDPackage.ProtoReflect.Descriptor instead.
 func (*CIPDPackage) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CIPDPackage) GetPkg() *ResolvableString {
@@ -297,7 +297,7 @@ type VpythonEnv struct {
 
 func (x *VpythonEnv) Reset() {
 	*x = VpythonEnv{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -309,7 +309,7 @@ func (x *VpythonEnv) String() string {
 func (*VpythonEnv) ProtoMessage() {}
 
 func (x *VpythonEnv) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -322,7 +322,7 @@ func (x *VpythonEnv) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VpythonEnv.ProtoReflect.Descriptor instead.
 func (*VpythonEnv) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *VpythonEnv) GetManifestSha2() string {
@@ -357,7 +357,7 @@ type GCSBlob struct {
 
 func (x *GCSBlob) Reset() {
 	*x = GCSBlob{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -369,7 +369,7 @@ func (x *GCSBlob) String() string {
 func (*GCSBlob) ProtoMessage() {}
 
 func (x *GCSBlob) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -382,7 +382,7 @@ func (x *GCSBlob) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GCSBlob.ProtoReflect.Descriptor instead.
 func (*GCSBlob) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GCSBlob) GetBucket() string {
@@ -420,7 +420,7 @@ type GCSArchives struct {
 
 func (x *GCSArchives) Reset() {
 	*x = GCSArchives{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -432,7 +432,7 @@ func (x *GCSArchives) String() string {
 func (*GCSArchives) ProtoMessage() {}
 
 func (x *GCSArchives) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -445,7 +445,7 @@ func (x *GCSArchives) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GCSArchives.ProtoReflect.Descriptor instead.
 func (*GCSArchives) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GCSArchives) GetArchives() []*GCSArchive {
@@ -479,7 +479,7 @@ type GCSArchive struct {
 
 func (x *GCSArchive) Reset() {
 	*x = GCSArchive{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -491,7 +491,7 @@ func (x *GCSArchive) String() string {
 func (*GCSArchive) ProtoMessage() {}
 
 func (x *GCSArchive) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -504,7 +504,7 @@ func (x *GCSArchive) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GCSArchive.ProtoReflect.Descriptor instead.
 func (*GCSArchive) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GCSArchive) GetArchive() *GCSBlob {
@@ -538,7 +538,7 @@ type RawFileContent struct {
 
 func (x *RawFileContent) Reset() {
 	*x = RawFileContent{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -550,7 +550,7 @@ func (x *RawFileContent) String() string {
 func (*RawFileContent) ProtoMessage() {}
 
 func (x *RawFileContent) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -563,7 +563,7 @@ func (x *RawFileContent) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RawFileContent.ProtoReflect.Descriptor instead.
 func (*RawFileContent) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *RawFileContent) GetRawContent() string {
@@ -597,7 +597,7 @@ type Source struct {
 
 func (x *Source) Reset() {
 	*x = Source{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -609,7 +609,7 @@ func (x *Source) String() string {
 func (*Source) ProtoMessage() {}
 
 func (x *Source) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -622,7 +622,7 @@ func (x *Source) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Source.ProtoReflect.Descriptor instead.
 func (*Source) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *Source) GetPath() string {
@@ -738,7 +738,7 @@ type AptDependency struct {
 
 func (x *AptDependency) Reset() {
 	*x = AptDependency{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -750,7 +750,7 @@ func (x *AptDependency) String() string {
 func (*AptDependency) ProtoMessage() {}
 
 func (x *AptDependency) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -763,7 +763,7 @@ func (x *AptDependency) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AptDependency.ProtoReflect.Descriptor instead.
 func (*AptDependency) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *AptDependency) GetConditions() []*AptDependency_Condition {
@@ -804,7 +804,7 @@ type LinuxSystemDeps struct {
 
 func (x *LinuxSystemDeps) Reset() {
 	*x = LinuxSystemDeps{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -816,7 +816,7 @@ func (x *LinuxSystemDeps) String() string {
 func (*LinuxSystemDeps) ProtoMessage() {}
 
 func (x *LinuxSystemDeps) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -829,7 +829,7 @@ func (x *LinuxSystemDeps) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LinuxSystemDeps.ProtoReflect.Descriptor instead.
 func (*LinuxSystemDeps) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{11}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *LinuxSystemDeps) GetBaseImage() string {
@@ -862,7 +862,7 @@ type Manifest struct {
 
 func (x *Manifest) Reset() {
 	*x = Manifest{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -874,7 +874,7 @@ func (x *Manifest) String() string {
 func (*Manifest) ProtoMessage() {}
 
 func (x *Manifest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -887,7 +887,7 @@ func (x *Manifest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Manifest.ProtoReflect.Descriptor instead.
 func (*Manifest) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{12}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *Manifest) GetSystem() isManifest_System {
@@ -959,7 +959,7 @@ type GCSBlob_Hash struct {
 
 func (x *GCSBlob_Hash) Reset() {
 	*x = GCSBlob_Hash{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -971,7 +971,7 @@ func (x *GCSBlob_Hash) String() string {
 func (*GCSBlob_Hash) ProtoMessage() {}
 
 func (x *GCSBlob_Hash) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -984,7 +984,7 @@ func (x *GCSBlob_Hash) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GCSBlob_Hash.ProtoReflect.Descriptor instead.
 func (*GCSBlob_Hash) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{5, 0}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{5, 0}
 }
 
 func (x *GCSBlob_Hash) GetSize() *wrapperspb.Int64Value {
@@ -1026,7 +1026,7 @@ type AptDependency_Condition struct {
 
 func (x *AptDependency_Condition) Reset() {
 	*x = AptDependency_Condition{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1038,7 +1038,7 @@ func (x *AptDependency_Condition) String() string {
 func (*AptDependency_Condition) ProtoMessage() {}
 
 func (x *AptDependency_Condition) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1051,7 +1051,7 @@ func (x *AptDependency_Condition) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AptDependency_Condition.ProtoReflect.Descriptor instead.
 func (*AptDependency_Condition) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{10, 0}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{10, 0}
 }
 
 func (x *AptDependency_Condition) GetPackageAvailable() string {
@@ -1074,7 +1074,7 @@ type Manifest_GclientVal struct {
 
 func (x *Manifest_GclientVal) Reset() {
 	*x = Manifest_GclientVal{}
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1086,7 +1086,7 @@ func (x *Manifest_GclientVal) String() string {
 func (*Manifest_GclientVal) ProtoMessage() {}
 
 func (x *Manifest_GclientVal) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1099,7 +1099,7 @@ func (x *Manifest_GclientVal) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Manifest_GclientVal.ProtoReflect.Descriptor instead.
 func (*Manifest_GclientVal) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{12, 0}
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP(), []int{12, 0}
 }
 
 func (x *Manifest_GclientVal) GetValue() isManifest_GclientVal_Value {
@@ -1143,10 +1143,11 @@ func (*Manifest_GclientVal_StrVal) isManifest_GclientVal_Value() {}
 
 func (*Manifest_GclientVal_BoolVal) isManifest_GclientVal_Value() {}
 
-var File_infra_experimental_crderiveinputs_inputpb_inputs_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto protoreflect.FileDescriptor
 
-var file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDesc = string([]byte{
-	0x0a, 0x36, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x65, 0x78, 0x70, 0x65, 0x72, 0x69, 0x6d, 0x65,
+var file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDesc = string([]byte{
+	0x0a, 0x46, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x65, 0x78, 0x70, 0x65, 0x72, 0x69, 0x6d, 0x65,
 	0x6e, 0x74, 0x61, 0x6c, 0x2f, 0x63, 0x72, 0x64, 0x65, 0x72, 0x69, 0x76, 0x65, 0x69, 0x6e, 0x70,
 	0x75, 0x74, 0x73, 0x2f, 0x69, 0x6e, 0x70, 0x75, 0x74, 0x70, 0x62, 0x2f, 0x69, 0x6e, 0x70, 0x75,
 	0x74, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
@@ -1288,7 +1289,8 @@ var file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDesc = string
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x21, 0x0a, 0x05, 0x76,
 	0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0b, 0x2e, 0x56, 0x70, 0x79,
 	0x74, 0x68, 0x6f, 0x6e, 0x45, 0x6e, 0x76, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a, 0x02,
-	0x38, 0x01, 0x42, 0x08, 0x0a, 0x06, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x42, 0x2b, 0x5a, 0x29,
+	0x38, 0x01, 0x42, 0x08, 0x0a, 0x06, 0x73, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x42, 0x3b, 0x5a, 0x39,
+	0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f,
 	0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x65, 0x78, 0x70, 0x65, 0x72, 0x69, 0x6d, 0x65, 0x6e, 0x74,
 	0x61, 0x6c, 0x2f, 0x63, 0x72, 0x64, 0x65, 0x72, 0x69, 0x76, 0x65, 0x69, 0x6e, 0x70, 0x75, 0x74,
 	0x73, 0x2f, 0x69, 0x6e, 0x70, 0x75, 0x74, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
@@ -1296,20 +1298,20 @@ var file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDesc = string
 })
 
 var (
-	file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescOnce sync.Once
-	file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescData []byte
+	file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescData []byte
 )
 
-func file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP() []byte {
-	file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescOnce.Do(func() {
-		file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDesc), len(file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDesc)))
+func file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDesc), len(file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDesc)))
 	})
-	return file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescData
+	return file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDescData
 }
 
-var file_infra_experimental_crderiveinputs_inputpb_inputs_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
-var file_infra_experimental_crderiveinputs_inputpb_inputs_proto_goTypes = []any{
+var file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_goTypes = []any{
 	(GCSArchive_Format)(0),          // 0: GCSArchive.Format
 	(*ResolvableString)(nil),        // 1: ResolvableString
 	(*GitCheckout)(nil),             // 2: GitCheckout
@@ -1332,7 +1334,7 @@ var file_infra_experimental_crderiveinputs_inputpb_inputs_proto_goTypes = []any{
 	nil,                             // 19: Manifest.VirtualenvsEntry
 	(*wrapperspb.Int64Value)(nil),   // 20: google.protobuf.Int64Value
 }
-var file_infra_experimental_crderiveinputs_inputpb_inputs_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_depIdxs = []int32{
 	1,  // 0: GitCheckout.version:type_name -> ResolvableString
 	4,  // 1: CIPDPackages.packges:type_name -> CIPDPackage
 	1,  // 2: CIPDPackage.pkg:type_name -> ResolvableString
@@ -1367,22 +1369,22 @@ var file_infra_experimental_crderiveinputs_inputpb_inputs_proto_depIdxs = []int3
 	0,  // [0:27] is the sub-list for field type_name
 }
 
-func init() { file_infra_experimental_crderiveinputs_inputpb_inputs_proto_init() }
-func file_infra_experimental_crderiveinputs_inputpb_inputs_proto_init() {
-	if File_infra_experimental_crderiveinputs_inputpb_inputs_proto != nil {
+func init() { file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_init() }
+func file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_init() {
+	if File_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto != nil {
 		return
 	}
-	file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[9].OneofWrappers = []any{
+	file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[9].OneofWrappers = []any{
 		(*Source_RawFile)(nil),
 		(*Source_GcsFile)(nil),
 		(*Source_Git)(nil),
 		(*Source_Cipd)(nil),
 		(*Source_GcsArchives)(nil),
 	}
-	file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[12].OneofWrappers = []any{
+	file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[12].OneofWrappers = []any{
 		(*Manifest_LinuxDeps)(nil),
 	}
-	file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[15].OneofWrappers = []any{
+	file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes[15].OneofWrappers = []any{
 		(*Manifest_GclientVal_StrVal)(nil),
 		(*Manifest_GclientVal_BoolVal)(nil),
 	}
@@ -1390,18 +1392,18 @@ func file_infra_experimental_crderiveinputs_inputpb_inputs_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDesc), len(file_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDesc), len(file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_experimental_crderiveinputs_inputpb_inputs_proto_goTypes,
-		DependencyIndexes: file_infra_experimental_crderiveinputs_inputpb_inputs_proto_depIdxs,
-		EnumInfos:         file_infra_experimental_crderiveinputs_inputpb_inputs_proto_enumTypes,
-		MessageInfos:      file_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_msgTypes,
 	}.Build()
-	File_infra_experimental_crderiveinputs_inputpb_inputs_proto = out.File
-	file_infra_experimental_crderiveinputs_inputpb_inputs_proto_goTypes = nil
-	file_infra_experimental_crderiveinputs_inputpb_inputs_proto_depIdxs = nil
+	File_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto = out.File
+	file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_goTypes = nil
+	file_go_chromium_org_infra_experimental_crderiveinputs_inputpb_inputs_proto_depIdxs = nil
 }

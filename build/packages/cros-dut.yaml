@@ -4,7 +4,7 @@ description: cros-dut is the CFT container handling command
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/cft/dut/cros-dut
+  - go.chromium.org/infra/cros/cmd/cft/dut/cros-dut
 root: ../../go/bin
 data:
   - file: cros-dut${exe_suffix}

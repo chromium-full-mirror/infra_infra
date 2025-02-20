@@ -27,9 +27,9 @@ import (
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/rts"
-	"infra/rts/presubmit/eval"
-	evalpb "infra/rts/presubmit/eval/proto"
+	"go.chromium.org/infra/rts"
+	"go.chromium.org/infra/rts/presubmit/eval"
+	evalpb "go.chromium.org/infra/rts/presubmit/eval/proto"
 )
 
 type analyzeCommandRun struct {

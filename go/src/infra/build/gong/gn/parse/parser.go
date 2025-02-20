@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"io"
 
-	"infra/build/gong/gn/syntax"
+	"go.chromium.org/infra/build/gong/gn/syntax"
 )
 
 type parser struct {

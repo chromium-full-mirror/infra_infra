@@ -22,7 +22,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/proto/google/descutil"
 
-	"infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/git"
 )
 
 // getAllFileDescriptorProtos finds the FileDescriptorProto for descriptor and

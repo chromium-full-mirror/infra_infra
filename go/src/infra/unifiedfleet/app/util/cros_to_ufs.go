@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 // Example: subnet 100.115.224.0 netmask 255.255.254.0 {

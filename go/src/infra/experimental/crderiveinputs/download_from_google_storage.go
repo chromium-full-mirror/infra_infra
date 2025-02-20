@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/experimental/crderiveinputs/inputpb"
+	"go.chromium.org/infra/experimental/crderiveinputs/inputpb"
 )
 
 func shortLongStringVar(fs *flag.FlagSet, target *string, short, long string) {

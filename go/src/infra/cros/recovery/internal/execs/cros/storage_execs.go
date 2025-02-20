@@ -12,9 +12,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components/cros/storage"
-	"infra/cros/recovery/internal/components/linux"
-	"infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros/storage"
+	"go.chromium.org/infra/cros/recovery/internal/components/linux"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
 )
 
 // auditStorageSMARTExec confirms that it is able to audit

@@ -20,7 +20,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/auth"
 
-	"infra/monitoring/messages"
+	"go.chromium.org/infra/monitoring/messages"
 )
 
 const (

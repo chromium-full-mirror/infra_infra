@@ -7,10 +7,10 @@ import (
 
 	proto "github.com/golang/protobuf/proto"
 
+	models "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	models "infra/unifiedfleet/api/v1/models"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 type DecoratedFleet struct {

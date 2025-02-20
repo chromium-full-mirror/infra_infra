@@ -21,7 +21,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	"infra/chromium/bootstrapper/clients/gob"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gob"
 )
 
 func TestGerritClientForHost(t *testing.T) {

@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config.proto
+// source: go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config.proto
 
 package ufspb
 
@@ -77,11 +77,11 @@ func (x ManufacturingConfig_Phase) String() string {
 }
 
 func (ManufacturingConfig_Phase) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes[0].Descriptor()
 }
 
 func (ManufacturingConfig_Phase) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes[0]
 }
 
 func (x ManufacturingConfig_Phase) Number() protoreflect.EnumNumber {
@@ -90,7 +90,7 @@ func (x ManufacturingConfig_Phase) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ManufacturingConfig_Phase.Descriptor instead.
 func (ManufacturingConfig_Phase) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescGZIP(), []int{0, 0}
 }
 
 // phases for cr50 module. Next Tag: 3
@@ -128,11 +128,11 @@ func (x ManufacturingConfig_CR50Phase) String() string {
 }
 
 func (ManufacturingConfig_CR50Phase) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes[1].Descriptor()
 }
 
 func (ManufacturingConfig_CR50Phase) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes[1]
 }
 
 func (x ManufacturingConfig_CR50Phase) Number() protoreflect.EnumNumber {
@@ -141,7 +141,7 @@ func (x ManufacturingConfig_CR50Phase) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ManufacturingConfig_CR50Phase.Descriptor instead.
 func (ManufacturingConfig_CR50Phase) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescGZIP(), []int{0, 1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescGZIP(), []int{0, 1}
 }
 
 // key env for cr50 RW version. Next Tag: 3
@@ -179,11 +179,11 @@ func (x ManufacturingConfig_CR50KeyEnv) String() string {
 }
 
 func (ManufacturingConfig_CR50KeyEnv) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes[2].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes[2].Descriptor()
 }
 
 func (ManufacturingConfig_CR50KeyEnv) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes[2]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes[2]
 }
 
 func (x ManufacturingConfig_CR50KeyEnv) Number() protoreflect.EnumNumber {
@@ -192,7 +192,7 @@ func (x ManufacturingConfig_CR50KeyEnv) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ManufacturingConfig_CR50KeyEnv.Descriptor instead.
 func (ManufacturingConfig_CR50KeyEnv) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescGZIP(), []int{0, 2}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescGZIP(), []int{0, 2}
 }
 
 // These are the configs that's provided in manufacture stage of a ChromeOS device.
@@ -201,11 +201,11 @@ type ManufacturingConfig struct {
 	state           protoimpl.MessageState    `protogen:"open.v1"`
 	ManufacturingId *ConfigID                 `protobuf:"bytes,1,opt,name=manufacturing_id,json=manufacturingId,proto3" json:"manufacturing_id,omitempty"`
 	DevicePhase     ManufacturingConfig_Phase `protobuf:"varint,2,opt,name=device_phase,json=devicePhase,proto3,enum=unifiedfleet.api.v1.models.chromeos.manufacturing.ManufacturingConfig_Phase" json:"device_phase,omitempty"`
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config.proto.
 	Cr50Phase ManufacturingConfig_CR50Phase `protobuf:"varint,3,opt,name=cr50_phase,json=cr50Phase,proto3,enum=unifiedfleet.api.v1.models.chromeos.manufacturing.ManufacturingConfig_CR50Phase" json:"cr50_phase,omitempty"`
 	// Detected based on the cr50 RW version that the DUT is running on.
 	//
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config.proto.
 	Cr50KeyEnv ManufacturingConfig_CR50KeyEnv `protobuf:"varint,4,opt,name=cr50_key_env,json=cr50KeyEnv,proto3,enum=unifiedfleet.api.v1.models.chromeos.manufacturing.ManufacturingConfig_CR50KeyEnv" json:"cr50_key_env,omitempty"`
 	// wifi chip that is installed on the DUT in manufacturing stage.
 	WifiChip string `protobuf:"bytes,5,opt,name=wifi_chip,json=wifiChip,proto3" json:"wifi_chip,omitempty"`
@@ -221,7 +221,7 @@ type ManufacturingConfig struct {
 
 func (x *ManufacturingConfig) Reset() {
 	*x = ManufacturingConfig{}
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -233,7 +233,7 @@ func (x *ManufacturingConfig) String() string {
 func (*ManufacturingConfig) ProtoMessage() {}
 
 func (x *ManufacturingConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -246,7 +246,7 @@ func (x *ManufacturingConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ManufacturingConfig.ProtoReflect.Descriptor instead.
 func (*ManufacturingConfig) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *ManufacturingConfig) GetManufacturingId() *ConfigID {
@@ -263,7 +263,7 @@ func (x *ManufacturingConfig) GetDevicePhase() ManufacturingConfig_Phase {
 	return ManufacturingConfig_PHASE_INVALID
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config.proto.
 func (x *ManufacturingConfig) GetCr50Phase() ManufacturingConfig_CR50Phase {
 	if x != nil {
 		return x.Cr50Phase
@@ -271,7 +271,7 @@ func (x *ManufacturingConfig) GetCr50Phase() ManufacturingConfig_CR50Phase {
 	return ManufacturingConfig_CR50_PHASE_INVALID
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing/config.proto.
 func (x *ManufacturingConfig) GetCr50KeyEnv() ManufacturingConfig_CR50KeyEnv {
 	if x != nil {
 		return x.Cr50KeyEnv
@@ -324,7 +324,7 @@ type ManufacturingConfigList struct {
 
 func (x *ManufacturingConfigList) Reset() {
 	*x = ManufacturingConfigList{}
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -336,7 +336,7 @@ func (x *ManufacturingConfigList) String() string {
 func (*ManufacturingConfigList) ProtoMessage() {}
 
 func (x *ManufacturingConfigList) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -349,7 +349,7 @@ func (x *ManufacturingConfigList) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ManufacturingConfigList.ProtoReflect.Descriptor instead.
 func (*ManufacturingConfigList) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ManufacturingConfigList) GetValue() []*ManufacturingConfig {
@@ -359,17 +359,19 @@ func (x *ManufacturingConfigList) GetValue() []*ManufacturingConfig {
 	return nil
 }
 
-var File_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto protoreflect.FileDescriptor
 
-var file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDesc = string([]byte{
-	0x0a, 0x44, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDesc = string([]byte{
+	0x0a, 0x54, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6d, 0x61, 0x6e, 0x75,
 	0x66, 0x61, 0x63, 0x74, 0x75, 0x72, 0x69, 0x6e, 0x67, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x31, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x6d, 0x61, 0x6e, 0x75,
-	0x66, 0x61, 0x63, 0x74, 0x75, 0x72, 0x69, 0x6e, 0x67, 0x1a, 0x47, 0x69, 0x6e, 0x66, 0x72, 0x61,
+	0x66, 0x61, 0x63, 0x74, 0x75, 0x72, 0x69, 0x6e, 0x67, 0x1a, 0x57, 0x67, 0x6f, 0x2e, 0x63, 0x68,
+	0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61,
 	0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70,
 	0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f,
 	0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6d, 0x61, 0x6e, 0x75, 0x66, 0x61, 0x63, 0x74, 0x75, 0x72, 0x69,
@@ -440,8 +442,9 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_ra
 	0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2e, 0x63, 0x68, 0x72,
 	0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x6d, 0x61, 0x6e, 0x75, 0x66, 0x61, 0x63, 0x74, 0x75, 0x72,
 	0x69, 0x6e, 0x67, 0x2e, 0x4d, 0x61, 0x6e, 0x75, 0x66, 0x61, 0x63, 0x74, 0x75, 0x72, 0x69, 0x6e,
-	0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x42, 0x3f,
-	0x5a, 0x3d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+	0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x42, 0x4f,
+	0x5a, 0x4d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6d, 0x61, 0x6e, 0x75,
 	0x66, 0x61, 0x63, 0x74, 0x75, 0x72, 0x69, 0x6e, 0x67, 0x3b, 0x75, 0x66, 0x73, 0x70, 0x62, 0x62,
@@ -449,20 +452,20 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_ra
 })
 
 var (
-	file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescOnce sync.Once
-	file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescData []byte
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescData []byte
 )
 
-func file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescGZIP() []byte {
-	file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescOnce.Do(func() {
-		file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDesc)))
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDesc)))
 	})
-	return file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescData
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_goTypes = []any{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_goTypes = []any{
 	(ManufacturingConfig_Phase)(0),      // 0: unifiedfleet.api.v1.models.chromeos.manufacturing.ManufacturingConfig.Phase
 	(ManufacturingConfig_CR50Phase)(0),  // 1: unifiedfleet.api.v1.models.chromeos.manufacturing.ManufacturingConfig.CR50Phase
 	(ManufacturingConfig_CR50KeyEnv)(0), // 2: unifiedfleet.api.v1.models.chromeos.manufacturing.ManufacturingConfig.CR50KeyEnv
@@ -470,7 +473,7 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_go
 	(*ManufacturingConfigList)(nil),     // 4: unifiedfleet.api.v1.models.chromeos.manufacturing.ManufacturingConfigList
 	(*ConfigID)(nil),                    // 5: unifiedfleet.api.v1.models.chromeos.manufacturing.ConfigID
 }
-var file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_depIdxs = []int32{
 	5, // 0: unifiedfleet.api.v1.models.chromeos.manufacturing.ManufacturingConfig.manufacturing_id:type_name -> unifiedfleet.api.v1.models.chromeos.manufacturing.ConfigID
 	0, // 1: unifiedfleet.api.v1.models.chromeos.manufacturing.ManufacturingConfig.device_phase:type_name -> unifiedfleet.api.v1.models.chromeos.manufacturing.ManufacturingConfig.Phase
 	1, // 2: unifiedfleet.api.v1.models.chromeos.manufacturing.ManufacturingConfig.cr50_phase:type_name -> unifiedfleet.api.v1.models.chromeos.manufacturing.ManufacturingConfig.CR50Phase
@@ -483,28 +486,30 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_de
 	0, // [0:5] is the sub-list for field type_name
 }
 
-func init() { file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_init() }
-func file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_init() {
-	if File_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto != nil {
+func init() {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_init()
+}
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_init() {
+	if File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto != nil {
 		return
 	}
-	file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_id_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_id_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_rawDesc)),
 			NumEnums:      3,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_goTypes,
-		DependencyIndexes: file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_depIdxs,
-		EnumInfos:         file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes,
-		MessageInfos:      file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_msgTypes,
 	}.Build()
-	File_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto = out.File
-	file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_goTypes = nil
-	file_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_depIdxs = nil
+	File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto = out.File
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_goTypes = nil
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_manufacturing_config_proto_depIdxs = nil
 }

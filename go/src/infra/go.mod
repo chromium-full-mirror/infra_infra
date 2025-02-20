@@ -1,4 +1,4 @@
-module infra
+module go.chromium.org/infra
 
 // WARNING: When changing this, please first make sure that golangci-lint is
 // updated to a version that supports it.

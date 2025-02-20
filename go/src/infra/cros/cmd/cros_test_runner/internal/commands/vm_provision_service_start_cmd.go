@@ -5,7 +5,7 @@
 package commands
 
 import (
-	"infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 )
 
 // VMProvisionServiceStartCmd represents vm-provision service start cmd.

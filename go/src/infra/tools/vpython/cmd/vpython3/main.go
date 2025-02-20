@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/vpython/python"
 	"go.chromium.org/luci/vpython/wheels"
 
-	"infra/tools/vpython/vpythoncommon"
+	"go.chromium.org/infra/tools/vpython/vpythoncommon"
 )
 
 const DefaultPythonVersion = "3.8"
@@ -30,7 +30,7 @@ type PythonRuntime struct {
 	// version).
 	Version string
 
-	// The version of the "infra/3pp/tools/virtualenv" CIPD package to use for
+	// The version of the "go.chromium.org/infra/3pp/tools/virtualenv" CIPD package to use for
 	// virtualenv support.
 	//
 	// Should be a CIPD tag for this package.

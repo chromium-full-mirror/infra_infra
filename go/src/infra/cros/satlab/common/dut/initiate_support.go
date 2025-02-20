@@ -16,10 +16,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/satlab/common/paths"
-	"infra/cros/satlab/common/satlabcommands"
-	"infra/cros/satlab/common/utils/executor"
-	"infra/cros/satlab/common/utils/misc"
+	"go.chromium.org/infra/cros/satlab/common/paths"
+	"go.chromium.org/infra/cros/satlab/common/satlabcommands"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/utils/misc"
 )
 
 const gcloudSDKVersion = "507.0.0"

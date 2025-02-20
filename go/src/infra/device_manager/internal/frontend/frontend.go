@@ -17,11 +17,11 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/server"
 
-	"infra/device_manager/internal/controller"
-	"infra/device_manager/internal/database"
-	"infra/device_manager/internal/external"
-	"infra/device_manager/internal/model"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/device_manager/internal/controller"
+	"go.chromium.org/infra/device_manager/internal/database"
+	"go.chromium.org/infra/device_manager/internal/external"
+	"go.chromium.org/infra/device_manager/internal/model"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // Prove that Server implements pb.DeviceLeaseServiceServer by instantiating a Server.

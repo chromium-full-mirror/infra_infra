@@ -8,7 +8,7 @@ import (
 	"context"
 	"time"
 
-	"infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/errors"
 )
 
 // Sleep implements testing.Sleep.

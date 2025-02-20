@@ -12,9 +12,9 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 
-	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
-	"infra/cmd/skylab/internal/site"
-	"infra/cmdsupport/cmdlib"
+	skycmdlib "go.chromium.org/infra/cmd/skylab/internal/cmd/cmdlib"
+	"go.chromium.org/infra/cmd/skylab/internal/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
 )
 
 // Audit subcommand: Audit hosts.

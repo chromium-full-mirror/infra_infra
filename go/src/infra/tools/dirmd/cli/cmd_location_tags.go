@@ -18,9 +18,9 @@ import (
 	"go.chromium.org/luci/common/system/signals"
 	sinkpb "go.chromium.org/luci/resultdb/sink/proto/v1"
 
-	"infra/tools/dirmd"
-	"infra/tools/dirmd/git"
-	dirmdpb "infra/tools/dirmd/proto"
+	"go.chromium.org/infra/tools/dirmd"
+	"go.chromium.org/infra/tools/dirmd/git"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
 )
 
 func cmdLocationTags() *subcommands.Command {

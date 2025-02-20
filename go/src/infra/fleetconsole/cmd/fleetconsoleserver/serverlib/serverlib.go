@@ -23,12 +23,12 @@ import (
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/secrets"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
-	"infra/fleetconsole/cmd/fleetconsoleserver/flags"
-	"infra/fleetconsole/internal/consoleserver"
-	"infra/fleetconsole/internal/devicemanagerclient"
-	"infra/fleetconsole/internal/ufsclient"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/cmd/fleetconsoleserver/flags"
+	"go.chromium.org/infra/fleetconsole/internal/consoleserver"
+	"go.chromium.org/infra/fleetconsole/internal/devicemanagerclient"
+	"go.chromium.org/infra/fleetconsole/internal/ufsclient"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 func Options() *server.Options {

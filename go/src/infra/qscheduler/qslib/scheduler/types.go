@@ -20,8 +20,8 @@ import (
 
 	"go.chromium.org/luci/common/data/stringset"
 
-	"infra/qscheduler/qslib/protos"
-	"infra/qscheduler/qslib/tutils"
+	"go.chromium.org/infra/qscheduler/qslib/protos"
+	"go.chromium.org/infra/qscheduler/qslib/tutils"
 )
 
 var unixZeroTime = time.Unix(0, 0).UTC()

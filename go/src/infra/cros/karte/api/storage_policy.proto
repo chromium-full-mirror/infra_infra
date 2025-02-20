@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package chromeos.karte;
 
-option go_package = "infra/cros/karte/api;kartepb";
+option go_package = "go.chromium.org/infra/cros/karte/api;kartepb";
 
 // StoragePolicy controls where and how the Karte records will be stored.
 // For example, will we skip BigQuery.

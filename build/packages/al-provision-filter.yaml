@@ -4,7 +4,7 @@ description: CTPv2 filter responsible for updating the
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/ctpv2-filters/al-provision-filter
+  - go.chromium.org/infra/cros/cmd/ctpv2-filters/al-provision-filter
 root: ../../go/bin
 data:
   - file: al-provision-filter${exe_suffix}

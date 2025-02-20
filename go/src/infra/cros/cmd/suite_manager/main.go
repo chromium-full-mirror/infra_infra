@@ -14,7 +14,7 @@ import (
 
 	smpb "go.chromium.org/chromiumos/infra/proto/go/test_platform/suite_manager"
 
-	"infra/cros/cmd/suite_manager/server"
+	"go.chromium.org/infra/cros/cmd/suite_manager/server"
 )
 
 func innerRun() int {

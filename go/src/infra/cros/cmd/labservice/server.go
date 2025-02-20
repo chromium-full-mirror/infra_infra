@@ -12,9 +12,9 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	lsapi "infra/cros/cmd/labservice/api"
-	"infra/cros/cmd/labservice/internal/ufs"
-	"infra/cros/cmd/labservice/internal/ufs/cache"
+	lsapi "go.chromium.org/infra/cros/cmd/labservice/api"
+	"go.chromium.org/infra/cros/cmd/labservice/internal/ufs"
+	"go.chromium.org/infra/cros/cmd/labservice/internal/ufs/cache"
 )
 
 // A server implements the lab service RPCs.

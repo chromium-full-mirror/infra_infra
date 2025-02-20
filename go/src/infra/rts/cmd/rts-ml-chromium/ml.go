@@ -26,7 +26,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/rts/cmd/rts-ml-chromium/proto"
+	"go.chromium.org/infra/rts/cmd/rts-ml-chromium/proto"
 )
 
 var mlCli string = "ml_cli_logit.py"

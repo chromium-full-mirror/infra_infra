@@ -12,10 +12,10 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	ds "go.chromium.org/luci/gae/service/datastore"
 
-	admin "infra/tricium/api/admin/v1"
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common/track"
-	"infra/tricium/appengine/common/triciumtest"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common/track"
+	"go.chromium.org/infra/tricium/appengine/common/triciumtest"
 )
 
 func TestWorkerLaunchedRequest(t *testing.T) {

@@ -11,8 +11,8 @@ import (
 	"log"
 	"strings"
 
-	androidlib "infra/cros/cmd/common_lib/android_api"
-	"infra/cros/cmd/common_lib/common"
+	androidlib "go.chromium.org/infra/cros/cmd/common_lib/android_api"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 // TestCommand executed the provisioning as a Server

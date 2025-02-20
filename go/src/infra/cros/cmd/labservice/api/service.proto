@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package chrome.fleet.labservice;
 
-option go_package = "infra/cros/cmd/labservice/api";
+option go_package = "go.chromium.org/infra/cros/cmd/labservice/api";
 
 // LabSerivce provides any functionality/info to be expose for the Fleet managed
 // lab environment.

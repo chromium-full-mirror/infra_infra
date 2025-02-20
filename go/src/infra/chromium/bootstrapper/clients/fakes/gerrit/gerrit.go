@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 
-	"infra/chromium/bootstrapper/clients/gerrit"
-	"infra/chromium/util"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gerrit"
+	"go.chromium.org/infra/chromium/util"
 )
 
 // Patchset is the fake data for a patchset of a change.

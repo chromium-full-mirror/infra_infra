@@ -10,9 +10,9 @@ import (
 
 	"google.golang.org/genproto/googleapis/type/money"
 
-	models "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	testsupport "infra/cros/fleetcost/internal/costserver/testsupport"
+	models "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	testsupport "go.chromium.org/infra/cros/fleetcost/internal/costserver/testsupport"
 )
 
 func TestCreateCostIndicator(t *testing.T) {

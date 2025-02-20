@@ -25,9 +25,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/flag"
 
-	"infra/rts"
-	"infra/rts/filegraph/git"
-	"infra/rts/internal/chromium"
+	"go.chromium.org/infra/rts"
+	"go.chromium.org/infra/rts/filegraph/git"
+	"go.chromium.org/infra/rts/internal/chromium"
 )
 
 func cmdGenTrainingData(authOpt *auth.Options) *subcommands.Command {

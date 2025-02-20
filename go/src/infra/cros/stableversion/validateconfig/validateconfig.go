@@ -16,7 +16,7 @@ import (
 
 	labPlatform "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 
-	"infra/cros/stableversion"
+	"go.chromium.org/infra/cros/stableversion"
 )
 
 var unmarshaller = jsonpb.Unmarshaler{AllowUnknownFields: false}

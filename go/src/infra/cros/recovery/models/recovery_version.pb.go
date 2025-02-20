@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/cros/recovery/models/recovery_version.proto
+// source: go.chromium.org/infra/cros/recovery/models/recovery_version.proto
 
 package models
 
@@ -39,7 +39,7 @@ type RecoveryVersion struct {
 
 func (x *RecoveryVersion) Reset() {
 	*x = RecoveryVersion{}
-	mi := &file_infra_cros_recovery_models_recovery_version_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -51,7 +51,7 @@ func (x *RecoveryVersion) String() string {
 func (*RecoveryVersion) ProtoMessage() {}
 
 func (x *RecoveryVersion) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_models_recovery_version_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -64,7 +64,7 @@ func (x *RecoveryVersion) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RecoveryVersion.ProtoReflect.Descriptor instead.
 func (*RecoveryVersion) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_models_recovery_version_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *RecoveryVersion) GetBoard() string {
@@ -102,10 +102,11 @@ func (x *RecoveryVersion) GetFwImage() string {
 	return ""
 }
 
-var File_infra_cros_recovery_models_recovery_version_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_cros_recovery_models_recovery_version_proto protoreflect.FileDescriptor
 
-var file_infra_cros_recovery_models_recovery_version_proto_rawDesc = string([]byte{
-	0x0a, 0x31, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65, 0x63,
+var file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_rawDesc = string([]byte{
+	0x0a, 0x41, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65, 0x63,
 	0x6f, 0x76, 0x65, 0x72, 0x79, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x72, 0x65, 0x63,
 	0x6f, 0x76, 0x65, 0x72, 0x79, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x12, 0x11, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x72, 0x65,
@@ -118,29 +119,30 @@ var file_infra_cros_recovery_models_recovery_version_proto_rawDesc = string([]by
 	0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x66, 0x77, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18,
 	0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x66, 0x77, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e,
 	0x12, 0x19, 0x0a, 0x08, 0x66, 0x77, 0x5f, 0x69, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x05, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x07, 0x66, 0x77, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x42, 0x23, 0x5a, 0x21, 0x69,
+	0x28, 0x09, 0x52, 0x07, 0x66, 0x77, 0x49, 0x6d, 0x61, 0x67, 0x65, 0x42, 0x33, 0x5a, 0x31, 0x67,
+	0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69,
 	0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65, 0x63, 0x6f, 0x76, 0x65,
 	0x72, 0x79, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x3b, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73,
 	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_cros_recovery_models_recovery_version_proto_rawDescOnce sync.Once
-	file_infra_cros_recovery_models_recovery_version_proto_rawDescData []byte
+	file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_rawDescData []byte
 )
 
-func file_infra_cros_recovery_models_recovery_version_proto_rawDescGZIP() []byte {
-	file_infra_cros_recovery_models_recovery_version_proto_rawDescOnce.Do(func() {
-		file_infra_cros_recovery_models_recovery_version_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_cros_recovery_models_recovery_version_proto_rawDesc), len(file_infra_cros_recovery_models_recovery_version_proto_rawDesc)))
+func file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_rawDesc), len(file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_rawDesc)))
 	})
-	return file_infra_cros_recovery_models_recovery_version_proto_rawDescData
+	return file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_rawDescData
 }
 
-var file_infra_cros_recovery_models_recovery_version_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_infra_cros_recovery_models_recovery_version_proto_goTypes = []any{
+var file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_goTypes = []any{
 	(*RecoveryVersion)(nil), // 0: chromeos.recovery.RecoveryVersion
 }
-var file_infra_cros_recovery_models_recovery_version_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -148,26 +150,26 @@ var file_infra_cros_recovery_models_recovery_version_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_infra_cros_recovery_models_recovery_version_proto_init() }
-func file_infra_cros_recovery_models_recovery_version_proto_init() {
-	if File_infra_cros_recovery_models_recovery_version_proto != nil {
+func init() { file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_init() }
+func file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_init() {
+	if File_go_chromium_org_infra_cros_recovery_models_recovery_version_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_cros_recovery_models_recovery_version_proto_rawDesc), len(file_infra_cros_recovery_models_recovery_version_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_rawDesc), len(file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_cros_recovery_models_recovery_version_proto_goTypes,
-		DependencyIndexes: file_infra_cros_recovery_models_recovery_version_proto_depIdxs,
-		MessageInfos:      file_infra_cros_recovery_models_recovery_version_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_msgTypes,
 	}.Build()
-	File_infra_cros_recovery_models_recovery_version_proto = out.File
-	file_infra_cros_recovery_models_recovery_version_proto_goTypes = nil
-	file_infra_cros_recovery_models_recovery_version_proto_depIdxs = nil
+	File_go_chromium_org_infra_cros_recovery_models_recovery_version_proto = out.File
+	file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_goTypes = nil
+	file_go_chromium_org_infra_cros_recovery_models_recovery_version_proto_depIdxs = nil
 }

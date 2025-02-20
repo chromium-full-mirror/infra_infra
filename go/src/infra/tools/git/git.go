@@ -30,7 +30,7 @@ import (
 	"go.chromium.org/luci/common/system/exitcode"
 	"go.chromium.org/luci/common/system/filesystem"
 
-	"infra/tools/git/state"
+	"go.chromium.org/infra/tools/git/state"
 )
 
 // GitRunnerMode determines how a GitRunner should be run.

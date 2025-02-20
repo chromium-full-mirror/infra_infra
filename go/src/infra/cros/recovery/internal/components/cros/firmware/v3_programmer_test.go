@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/recovery/internal/components/mocks"
-	"infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/internal/components/mocks"
+	"go.chromium.org/infra/cros/recovery/logger"
 )
 
 func TestProgrammerV3ProgramEC(t *testing.T) {

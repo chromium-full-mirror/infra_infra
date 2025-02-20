@@ -21,8 +21,8 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/system/signals"
 
-	"infra/cros/cmd/cros-tool-runner/internal/v2/templates"
-	"infra/cros/cmd/cros-tool-runner/internal/v2/tsmon"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/v2/templates"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/v2/tsmon"
 )
 
 var serverCleanup = &serverStateManager{}

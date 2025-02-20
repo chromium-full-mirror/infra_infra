@@ -18,8 +18,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/chromeperf/pinpoint"
-	pppb "infra/chromeperf/pinpoint/proto"
+	"go.chromium.org/infra/chromeperf/pinpoint"
+	pppb "go.chromium.org/infra/chromeperf/pinpoint/proto"
 )
 
 const (

@@ -21,9 +21,9 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
 
-	admin "infra/tricium/api/admin/v1"
-	"infra/tricium/appengine/common"
-	"infra/tricium/appengine/common/config"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
+	"go.chromium.org/infra/tricium/appengine/common"
+	"go.chromium.org/infra/tricium/appengine/common/config"
 )
 
 func init() {

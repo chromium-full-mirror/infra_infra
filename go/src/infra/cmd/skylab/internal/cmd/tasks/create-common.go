@@ -14,10 +14,10 @@ import (
 	"go.chromium.org/luci/common/data/strpair"
 	luciflag "go.chromium.org/luci/common/flag"
 
-	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
-	"infra/cmd/skylab/internal/cmd/recipe"
-	skyflag "infra/cmd/skylab/internal/flagx"
-	"infra/cmdsupport/cmdlib"
+	skycmdlib "go.chromium.org/infra/cmd/skylab/internal/cmd/cmdlib"
+	"go.chromium.org/infra/cmd/skylab/internal/cmd/recipe"
+	skyflag "go.chromium.org/infra/cmd/skylab/internal/flagx"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
 )
 
 // createRunCommon encapsulates parameters that are common to

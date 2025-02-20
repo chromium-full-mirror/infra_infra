@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // RPMAction perform RPM action on RPM outlet.

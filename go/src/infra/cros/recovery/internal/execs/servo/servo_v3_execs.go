@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/retry"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/retry"
 )
 
 // Verify that the root of servo is enumerated/present on servo_v3 host.

@@ -6,7 +6,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.3
-// source: infra/fleetconsole/api/fleetconsolerpc/service.proto
+// source: go.chromium.org/infra/fleetconsole/api/fleetconsolerpc/service.proto
 
 package fleetconsolerpc
 
@@ -524,5 +524,5 @@ var FleetConsole_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/fleetconsole/api/fleetconsolerpc/service.proto",
+	Metadata: "go.chromium.org/infra/fleetconsole/api/fleetconsolerpc/service.proto",
 }

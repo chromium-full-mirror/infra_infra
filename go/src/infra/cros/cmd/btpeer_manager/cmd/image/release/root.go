@@ -12,10 +12,10 @@ import (
 	"cloud.google.com/go/storage"
 	"github.com/spf13/cobra"
 
-	"infra/cros/cmd/btpeer_manager/cmd/common"
-	"infra/cros/cmd/btpeer_manager/cmd/image/release/config"
-	"infra/cros/cmd/btpeer_manager/dirs"
-	release "infra/cros/cmd/btpeer_manager/release/image"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/cmd/common"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/cmd/image/release/config"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/dirs"
+	release "go.chromium.org/infra/cros/cmd/btpeer_manager/release/image"
 )
 
 func RootCmd(dirContext *dirs.DirContext, initDirContext func() error) *cobra.Command {

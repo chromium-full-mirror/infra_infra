@@ -17,7 +17,7 @@ import (
 
 	"go.chromium.org/luci/auth"
 
-	"infra/cros/support/internal/cli"
+	"go.chromium.org/infra/cros/support/internal/cli"
 )
 
 type Input struct {

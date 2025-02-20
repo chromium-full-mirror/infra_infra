@@ -10,7 +10,7 @@ import (
 	"log"
 	"os"
 
-	"infra/cros/cmd/cft/base-adb/internal/parser"
+	"go.chromium.org/infra/cros/cmd/cft/base-adb/internal/parser"
 )
 
 func main() {

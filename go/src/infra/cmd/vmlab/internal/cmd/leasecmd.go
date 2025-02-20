@@ -15,9 +15,9 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 
-	"infra/cmd/vmlab/internal/config"
-	"infra/libs/vmlab"
-	"infra/libs/vmlab/api"
+	"go.chromium.org/infra/cmd/vmlab/internal/config"
+	"go.chromium.org/infra/libs/vmlab"
+	"go.chromium.org/infra/libs/vmlab/api"
 )
 
 var LeaseCmd = &subcommands.Command{

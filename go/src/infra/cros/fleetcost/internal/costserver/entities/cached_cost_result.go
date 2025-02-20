@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/gae/service/datastore"
 
-	fleetcostpb "infra/cros/fleetcost/api/models"
+	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
 )
 
 // CachedCostResultKind is the datastore type for a cached DUT.

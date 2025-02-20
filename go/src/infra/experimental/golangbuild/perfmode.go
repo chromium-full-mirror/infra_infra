@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/experimental/golangbuild/golangbuildpb"
+	"go.chromium.org/infra/experimental/golangbuild/golangbuildpb"
 )
 
 // perfRunner runs performance tests and optionally uploads their results to perfdata.golang.org.

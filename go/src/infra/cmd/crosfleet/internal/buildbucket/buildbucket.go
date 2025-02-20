@@ -26,10 +26,10 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/lucictx"
 
-	"infra/cmd/crosfleet/internal/common"
-	dutinfopb "infra/cmd/crosfleet/internal/proto"
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cmd/crosfleet/internal/common"
+	dutinfopb "go.chromium.org/infra/cmd/crosfleet/internal/proto"
+	"go.chromium.org/infra/cmd/crosfleet/internal/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
 )
 
 const (

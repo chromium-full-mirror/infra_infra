@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	testplancli "infra/cros/internal/testplan/cli"
+	testplancli "go.chromium.org/infra/cros/internal/testplan/cli"
 )
 
 var logCfg = gologger.LoggerConfig{

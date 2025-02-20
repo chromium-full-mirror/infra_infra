@@ -8,7 +8,7 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/tools/migrator/internal/migratorpb"
+	"go.chromium.org/infra/tools/migrator/internal/migratorpb"
 )
 
 // Tweaks represents loaded `tweaks` section of the migrator config file.

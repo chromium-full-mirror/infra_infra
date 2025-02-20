@@ -7,10 +7,10 @@ package external
 import (
 	"context"
 
-	"infra/cros/hwid"
-	"infra/libs/git"
-	"infra/libs/sheet"
-	"infra/unifiedfleet/app/frontend/fake"
+	"go.chromium.org/infra/cros/hwid"
+	"go.chromium.org/infra/libs/git"
+	"go.chromium.org/infra/libs/sheet"
+	"go.chromium.org/infra/unifiedfleet/app/frontend/fake"
 )
 
 // WithTestingContext allows for mocked external interface.

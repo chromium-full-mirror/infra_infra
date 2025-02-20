@@ -10,7 +10,7 @@ import (
 
 	"google.golang.org/grpc/metadata"
 
-	ufsUtil "infra/unifiedfleet/app/util"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // Set sets up context with namespace.

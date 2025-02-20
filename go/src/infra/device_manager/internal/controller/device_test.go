@@ -21,8 +21,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/testing/typed"
 
-	"infra/device_manager/internal/database"
-	"infra/device_manager/internal/model"
+	"go.chromium.org/infra/device_manager/internal/database"
+	"go.chromium.org/infra/device_manager/internal/model"
 )
 
 func TestGetDevice(t *testing.T) {

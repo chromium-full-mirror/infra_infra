@@ -16,7 +16,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/chromeperf/workflows/workflows.proto
+// source: go.chromium.org/infra/chromeperf/workflows/workflows.proto
 
 package workflows
 
@@ -78,11 +78,11 @@ func (x Workflow_State) String() string {
 }
 
 func (Workflow_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_chromeperf_workflows_workflows_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_enumTypes[0].Descriptor()
 }
 
 func (Workflow_State) Type() protoreflect.EnumType {
-	return &file_infra_chromeperf_workflows_workflows_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_enumTypes[0]
 }
 
 func (x Workflow_State) Number() protoreflect.EnumNumber {
@@ -91,7 +91,7 @@ func (x Workflow_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Workflow_State.Descriptor instead.
 func (Workflow_State) EnumDescriptor() ([]byte, []int) {
-	return file_infra_chromeperf_workflows_workflows_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_rawDescGZIP(), []int{0, 0}
 }
 
 type Task_State int32
@@ -136,11 +136,11 @@ func (x Task_State) String() string {
 }
 
 func (Task_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_chromeperf_workflows_workflows_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_enumTypes[1].Descriptor()
 }
 
 func (Task_State) Type() protoreflect.EnumType {
-	return &file_infra_chromeperf_workflows_workflows_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_enumTypes[1]
 }
 
 func (x Task_State) Number() protoreflect.EnumNumber {
@@ -149,7 +149,7 @@ func (x Task_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Task_State.Descriptor instead.
 func (Task_State) EnumDescriptor() ([]byte, []int) {
-	return file_infra_chromeperf_workflows_workflows_proto_rawDescGZIP(), []int{1, 0}
+	return file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_rawDescGZIP(), []int{1, 0}
 }
 
 type Workflow struct {
@@ -182,7 +182,7 @@ type Workflow struct {
 
 func (x *Workflow) Reset() {
 	*x = Workflow{}
-	mi := &file_infra_chromeperf_workflows_workflows_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -194,7 +194,7 @@ func (x *Workflow) String() string {
 func (*Workflow) ProtoMessage() {}
 
 func (x *Workflow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_chromeperf_workflows_workflows_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -207,7 +207,7 @@ func (x *Workflow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Workflow.ProtoReflect.Descriptor instead.
 func (*Workflow) Descriptor() ([]byte, []int) {
-	return file_infra_chromeperf_workflows_workflows_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Workflow) GetName() string {
@@ -283,7 +283,7 @@ type Task struct {
 
 func (x *Task) Reset() {
 	*x = Task{}
-	mi := &file_infra_chromeperf_workflows_workflows_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -295,7 +295,7 @@ func (x *Task) String() string {
 func (*Task) ProtoMessage() {}
 
 func (x *Task) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_chromeperf_workflows_workflows_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -308,7 +308,7 @@ func (x *Task) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Task.ProtoReflect.Descriptor instead.
 func (*Task) Descriptor() ([]byte, []int) {
-	return file_infra_chromeperf_workflows_workflows_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Task) GetName() string {
@@ -360,10 +360,11 @@ func (x *Task) GetDependencies() []string {
 	return nil
 }
 
-var File_infra_chromeperf_workflows_workflows_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_chromeperf_workflows_workflows_proto protoreflect.FileDescriptor
 
-var file_infra_chromeperf_workflows_workflows_proto_rawDesc = string([]byte{
-	0x0a, 0x2a, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x70, 0x65,
+var file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_rawDesc = string([]byte{
+	0x0a, 0x3a, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x70, 0x65,
 	0x72, 0x66, 0x2f, 0x77, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x73, 0x2f, 0x77, 0x6f, 0x72,
 	0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x09, 0x77, 0x6f,
 	0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x73, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f,
@@ -447,27 +448,28 @@ var file_infra_chromeperf_workflows_workflows_proto_rawDesc = string([]byte{
 	0x67, 0x69, 0x6e, 0x65, 0x2e, 0x70, 0x65, 0x72, 0x66, 0x2e, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63,
 	0x72, 0x2e, 0x64, 0x65, 0x76, 0x2f, 0x54, 0x61, 0x73, 0x6b, 0x12, 0x21, 0x77, 0x6f, 0x72, 0x6b,
 	0x66, 0x6c, 0x6f, 0x77, 0x73, 0x2f, 0x7b, 0x77, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x7d,
-	0x2f, 0x74, 0x61, 0x73, 0x6b, 0x73, 0x2f, 0x7b, 0x74, 0x61, 0x73, 0x6b, 0x7d, 0x42, 0x1c, 0x5a,
-	0x1a, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x70, 0x65, 0x72,
+	0x2f, 0x74, 0x61, 0x73, 0x6b, 0x73, 0x2f, 0x7b, 0x74, 0x61, 0x73, 0x6b, 0x7d, 0x42, 0x2c, 0x5a,
+	0x2a, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67,
+	0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x70, 0x65, 0x72,
 	0x66, 0x2f, 0x77, 0x6f, 0x72, 0x6b, 0x66, 0x6c, 0x6f, 0x77, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_chromeperf_workflows_workflows_proto_rawDescOnce sync.Once
-	file_infra_chromeperf_workflows_workflows_proto_rawDescData []byte
+	file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_rawDescData []byte
 )
 
-func file_infra_chromeperf_workflows_workflows_proto_rawDescGZIP() []byte {
-	file_infra_chromeperf_workflows_workflows_proto_rawDescOnce.Do(func() {
-		file_infra_chromeperf_workflows_workflows_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_chromeperf_workflows_workflows_proto_rawDesc), len(file_infra_chromeperf_workflows_workflows_proto_rawDesc)))
+func file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_rawDesc), len(file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_rawDesc)))
 	})
-	return file_infra_chromeperf_workflows_workflows_proto_rawDescData
+	return file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_rawDescData
 }
 
-var file_infra_chromeperf_workflows_workflows_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_infra_chromeperf_workflows_workflows_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
-var file_infra_chromeperf_workflows_workflows_proto_goTypes = []any{
+var file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_goTypes = []any{
 	(Workflow_State)(0),           // 0: workflows.Workflow.State
 	(Task_State)(0),               // 1: workflows.Task.State
 	(*Workflow)(nil),              // 2: workflows.Workflow
@@ -477,7 +479,7 @@ var file_infra_chromeperf_workflows_workflows_proto_goTypes = []any{
 	(*structpb.Struct)(nil),       // 6: google.protobuf.Struct
 	(*structpb.Value)(nil),        // 7: google.protobuf.Value
 }
-var file_infra_chromeperf_workflows_workflows_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_depIdxs = []int32{
 	4,  // 0: workflows.Workflow.inputs:type_name -> workflows.Workflow.InputsEntry
 	0,  // 1: workflows.Workflow.state:type_name -> workflows.Workflow.State
 	5,  // 2: workflows.Workflow.create_time:type_name -> google.protobuf.Timestamp
@@ -496,27 +498,27 @@ var file_infra_chromeperf_workflows_workflows_proto_depIdxs = []int32{
 	0,  // [0:11] is the sub-list for field type_name
 }
 
-func init() { file_infra_chromeperf_workflows_workflows_proto_init() }
-func file_infra_chromeperf_workflows_workflows_proto_init() {
-	if File_infra_chromeperf_workflows_workflows_proto != nil {
+func init() { file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_init() }
+func file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_init() {
+	if File_go_chromium_org_infra_chromeperf_workflows_workflows_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_chromeperf_workflows_workflows_proto_rawDesc), len(file_infra_chromeperf_workflows_workflows_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_rawDesc), len(file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_rawDesc)),
 			NumEnums:      2,
 			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_chromeperf_workflows_workflows_proto_goTypes,
-		DependencyIndexes: file_infra_chromeperf_workflows_workflows_proto_depIdxs,
-		EnumInfos:         file_infra_chromeperf_workflows_workflows_proto_enumTypes,
-		MessageInfos:      file_infra_chromeperf_workflows_workflows_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_msgTypes,
 	}.Build()
-	File_infra_chromeperf_workflows_workflows_proto = out.File
-	file_infra_chromeperf_workflows_workflows_proto_goTypes = nil
-	file_infra_chromeperf_workflows_workflows_proto_depIdxs = nil
+	File_go_chromium_org_infra_chromeperf_workflows_workflows_proto = out.File
+	file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_goTypes = nil
+	file_go_chromium_org_infra_chromeperf_workflows_workflows_proto_depIdxs = nil
 }

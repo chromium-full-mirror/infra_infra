@@ -16,12 +16,12 @@ syntax = "proto3";
 
 package workflows;
 
-option go_package = "infra/chromeperf/workflows";
+option go_package = "go.chromium.org/infra/chromeperf/workflows";
 
 import "google/api/field_behavior.proto";
 import "google/api/annotations.proto";
 import "google/api/resource.proto";
-import "infra/chromeperf/workflows/workflow_templates.proto";
+import "go.chromium.org/infra/chromeperf/workflows/workflow_templates.proto";
 import "google/protobuf/empty.proto";
 
 // We're importing the luci-config service proto definition to allow us to refer

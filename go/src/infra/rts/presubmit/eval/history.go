@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/sync/parallel"
 
-	evalpb "infra/rts/presubmit/eval/proto"
+	evalpb "go.chromium.org/infra/rts/presubmit/eval/proto"
 )
 
 // readRejections reads rejections from a directory.

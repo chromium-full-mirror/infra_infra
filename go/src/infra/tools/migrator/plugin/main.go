@@ -11,8 +11,8 @@ import (
 	"io/ioutil"
 	"os"
 
-	"infra/tools/migrator"
-	"infra/tools/migrator/internal/plugsupport"
+	"go.chromium.org/infra/tools/migrator"
+	"go.chromium.org/infra/tools/migrator/internal/plugsupport"
 )
 
 // Main is the main entry point for the plugin called from the plugin code.

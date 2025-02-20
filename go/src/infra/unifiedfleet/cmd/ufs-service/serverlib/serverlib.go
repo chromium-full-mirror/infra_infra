@@ -26,13 +26,13 @@ import (
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/router"
 
-	version_compare "infra/libs/version"
-	"infra/unifiedfleet/app/acl"
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/external"
-	"infra/unifiedfleet/app/frontend"
-	"infra/unifiedfleet/app/untrusted"
-	"infra/unifiedfleet/app/util"
+	version_compare "go.chromium.org/infra/libs/version"
+	"go.chromium.org/infra/unifiedfleet/app/acl"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/external"
+	"go.chromium.org/infra/unifiedfleet/app/frontend"
+	"go.chromium.org/infra/unifiedfleet/app/untrusted"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // flag to control erroring out if namespace is not provided

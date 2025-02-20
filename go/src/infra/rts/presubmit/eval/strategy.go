@@ -8,8 +8,8 @@ import (
 	"context"
 	"time"
 
-	"infra/rts"
-	evalpb "infra/rts/presubmit/eval/proto"
+	"go.chromium.org/infra/rts"
+	evalpb "go.chromium.org/infra/rts/presubmit/eval/proto"
 )
 
 // Strategy evaluates how much a given test is affected by given changed files.

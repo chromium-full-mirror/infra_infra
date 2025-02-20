@@ -18,8 +18,8 @@ import (
 	"go.chromium.org/luci/server/auth"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
-	"infra/cros/lab_inventory/utilization"
-	"infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/cros/lab_inventory/utilization"
+	"go.chromium.org/infra/unifiedfleet/app/config"
 )
 
 const (

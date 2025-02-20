@@ -12,10 +12,10 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cmdsupport/cmdlib"
-	models "infra/unifiedfleet/api/v1/models"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cmd/crosfleet/internal/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	models "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // Client exposes a deliberately chosen subset of the UFS functionality.

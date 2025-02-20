@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cmd/stable_version2/internal/utils"
+	"go.chromium.org/infra/cmd/stable_version2/internal/utils"
 )
 
 func TestParseOmahaStatus(t *testing.T) {

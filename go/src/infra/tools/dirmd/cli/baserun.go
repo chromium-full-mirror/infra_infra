@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/tools/dirmd"
+	"go.chromium.org/infra/tools/dirmd"
 )
 
 // baseCommandRun provides common command run functionality.

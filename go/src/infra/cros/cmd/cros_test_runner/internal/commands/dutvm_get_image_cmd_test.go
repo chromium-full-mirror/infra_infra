@@ -13,11 +13,11 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/cmd/common_lib/commonexecutors"
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/cmd/cros_test_runner/data"
-	"infra/cros/cmd/cros_test_runner/internal/commands"
-	vmlabapi "infra/libs/vmlab/api"
+	"go.chromium.org/infra/cros/cmd/common_lib/commonexecutors"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/data"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/internal/commands"
+	vmlabapi "go.chromium.org/infra/libs/vmlab/api"
 )
 
 func buildDutVmGetImageCmdForTest() *commands.DutVmGetImageCmd {

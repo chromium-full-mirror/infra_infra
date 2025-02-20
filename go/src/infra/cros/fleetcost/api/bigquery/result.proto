@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package fleetcost.api.bqpb;
 
-option go_package = "infra/cros/fleetcost/api/bigquery;bqpb";
+option go_package = "go.chromium.org/infra/cros/fleetcost/api/bigquery;bqpb";
 
 // CostResult is a cached cost result.
 //

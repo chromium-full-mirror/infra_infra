@@ -9,8 +9,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/cmd/prototype-rts/internal/rtd"
-	"infra/cros/cmd/prototype-rts/internal/service"
+	"go.chromium.org/infra/cros/cmd/prototype-rts/internal/rtd"
+	"go.chromium.org/infra/cros/cmd/prototype-rts/internal/service"
 )
 
 // InvokeRTD starts an RTD container and executes Invocations against it.

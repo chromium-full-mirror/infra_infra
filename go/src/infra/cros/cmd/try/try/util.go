@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/gerrit"
 )
 
 // interfaceSlicetoStr converts a slice of interface{}s to a slice of strings.

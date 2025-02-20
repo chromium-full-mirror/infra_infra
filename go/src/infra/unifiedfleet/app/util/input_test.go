@@ -14,8 +14,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsmfg "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsmfg "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 )
 
 func TestUFSStateCoverage(t *testing.T) {

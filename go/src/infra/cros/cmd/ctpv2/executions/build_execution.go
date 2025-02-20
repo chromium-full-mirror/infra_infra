@@ -28,15 +28,15 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/analytics"
-	androidapi "infra/cros/cmd/common_lib/android_api"
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/cmd/common_lib/tools/outputprops"
-	"infra/cros/cmd/common_lib/tools/suitelimits"
-	"infra/cros/cmd/cros_test_runner/protos"
-	"infra/cros/cmd/ctpv2/data"
-	"infra/cros/cmd/ctpv2/internal/configs"
+	"go.chromium.org/infra/cros/cmd/common_lib/analytics"
+	androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/outputprops"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/suitelimits"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/protos"
+	"go.chromium.org/infra/cros/cmd/ctpv2/data"
+	"go.chromium.org/infra/cros/cmd/ctpv2/internal/configs"
 )
 
 var inputProps = build.RegisterInputProperty[*steps.CTPv2BinaryBuildInput]("")

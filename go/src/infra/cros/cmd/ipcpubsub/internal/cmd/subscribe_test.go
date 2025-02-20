@@ -8,7 +8,7 @@ import (
 	"context"
 	"testing"
 
-	"infra/cros/cmd/ipcpubsub/pubsublib"
+	"go.chromium.org/infra/cros/cmd/ipcpubsub/pubsublib"
 )
 
 type dummyMessage struct {

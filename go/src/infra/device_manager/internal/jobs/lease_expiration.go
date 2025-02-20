@@ -17,11 +17,11 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/device_manager/internal/external"
-	"infra/device_manager/internal/frontend"
-	"infra/device_manager/internal/model"
-	"infra/libs/fleet/device"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/device_manager/internal/external"
+	"go.chromium.org/infra/device_manager/internal/frontend"
+	"go.chromium.org/infra/device_manager/internal/model"
+	"go.chromium.org/infra/libs/fleet/device"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // ExpireLeases ends all expired Leases and release the corresponding Devices.

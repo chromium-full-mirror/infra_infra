@@ -23,8 +23,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	cvpb "go.chromium.org/luci/cv/api/config/v2"
 
-	"infra/cros/internal/manifestutil"
-	"infra/cros/internal/testplan/migrationstatus"
+	"go.chromium.org/infra/cros/internal/manifestutil"
+	"go.chromium.org/infra/cros/internal/testplan/migrationstatus"
 )
 
 func unmarshalTextproto(path string, m proto.Message) error {

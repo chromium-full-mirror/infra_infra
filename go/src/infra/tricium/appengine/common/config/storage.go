@@ -9,7 +9,7 @@ import (
 
 	ds "go.chromium.org/luci/gae/service/datastore"
 
-	tricium "infra/tricium/api/v1"
+	tricium "go.chromium.org/infra/tricium/api/v1"
 )
 
 // projectConfig contains a Tricium project config for one config.

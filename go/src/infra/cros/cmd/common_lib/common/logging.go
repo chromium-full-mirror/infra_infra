@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 )
 
 // WriteProtoToStepLog writes provided proto to build step.

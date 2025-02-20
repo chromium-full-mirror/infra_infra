@@ -20,7 +20,7 @@ import (
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/system/environ"
 
-	"infra/tools/git/state"
+	"go.chromium.org/infra/tools/git/state"
 )
 
 // versionString is the version string for this wrapper.

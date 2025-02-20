@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	parsers "infra/cros/cmd/cros_test_platformV2/tools"
+	parsers "go.chromium.org/infra/cros/cmd/cros_test_platformV2/tools"
 )
 
 func Execute(inputPath string, cloud bool) (*api.CTPv2Response, error) {

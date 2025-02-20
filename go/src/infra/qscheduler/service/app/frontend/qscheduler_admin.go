@@ -23,11 +23,11 @@ import (
 
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	"infra/qscheduler/qslib/reconciler"
-	"infra/qscheduler/qslib/scheduler"
-	qscheduler "infra/qscheduler/service/api/qscheduler/v1"
-	"infra/qscheduler/service/app/state/nodestore"
-	"infra/qscheduler/service/app/state/types"
+	"go.chromium.org/infra/qscheduler/qslib/reconciler"
+	"go.chromium.org/infra/qscheduler/qslib/scheduler"
+	qscheduler "go.chromium.org/infra/qscheduler/service/api/qscheduler/v1"
+	"go.chromium.org/infra/qscheduler/service/app/state/nodestore"
+	"go.chromium.org/infra/qscheduler/service/app/state/types"
 )
 
 // QSchedulerAdminServerImpl implements QSchedulerAdminServer.

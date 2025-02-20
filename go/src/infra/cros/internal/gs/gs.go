@@ -23,8 +23,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/gcloud/gs"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 type Client interface {

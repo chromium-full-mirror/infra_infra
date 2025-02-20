@@ -10,11 +10,11 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/localtlw/dutinfo"
-	"infra/cros/recovery/internal/localtlw/localinfo"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/tlw"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw/dutinfo"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw/localinfo"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/tlw"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // ListResourcesForUnit provides list of resources names related to target unit.

@@ -17,9 +17,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 
-	"infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
-	"infra/cros/cmd/ctpv2-filters/partner-staging/site"
-	"infra/cros/cmd/ctpv2-filters/partner-staging/tools"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/site"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/tools"
 )
 
 const (

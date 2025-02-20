@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package main;
 
-option go_package = "infra/rts/cmd/rts-ml-chromium/proto";
+option go_package = "go.chromium.org/infra/rts/cmd/rts-ml-chromium/proto";
 
 // The stability information for a test
 message Stability {

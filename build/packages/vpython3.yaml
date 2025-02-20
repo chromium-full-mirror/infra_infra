@@ -9,7 +9,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/tools/vpython/cmd/vpython3
+  - go.chromium.org/infra/tools/vpython/cmd/vpython3
 install_mode: copy
 root: ../../go/bin
 cipd_export: |

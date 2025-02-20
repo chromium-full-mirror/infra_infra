@@ -15,7 +15,7 @@ import (
 	"sort"
 	"strings"
 
-	"infra/libs/vmlab/api"
+	"go.chromium.org/infra/libs/vmlab/api"
 )
 
 // TODO(b/250961857): implement gcloud provider

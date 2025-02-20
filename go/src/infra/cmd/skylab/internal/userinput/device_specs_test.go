@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/testing/typed"
 
-	"infra/libs/skylab/inventory"
+	"go.chromium.org/infra/libs/skylab/inventory"
 )
 
 func TestGetDeviceSpecs(t *testing.T) {

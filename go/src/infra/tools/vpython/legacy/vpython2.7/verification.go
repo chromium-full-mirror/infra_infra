@@ -5,7 +5,7 @@
 package vpython
 
 import (
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
 var verificationScenarios = []*vpython.PEP425Tag{

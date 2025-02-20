@@ -19,10 +19,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/env"
-	access "infra/cros/recovery/internal/localtlw/ssh"
-	tlw_server "infra/cros/recovery/internal/tlw"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/internal/env"
+	access "go.chromium.org/infra/cros/recovery/internal/localtlw/ssh"
+	tlw_server "go.chromium.org/infra/cros/recovery/internal/tlw"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 const (

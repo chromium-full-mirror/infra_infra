@@ -23,8 +23,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/testing/typed"
 
-	"infra/device_manager/internal/database"
-	"infra/libs/skylab/inventory/swarming"
+	"go.chromium.org/infra/device_manager/internal/database"
+	"go.chromium.org/infra/libs/skylab/inventory/swarming"
 )
 
 func TestGetDeviceByID(t *testing.T) {

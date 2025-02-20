@@ -18,11 +18,11 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	swarmingv2 "go.chromium.org/luci/swarming/proto/api_v2"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/internal/app/clients"
-	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/tq"
-	"infra/cros/recovery/logger/metrics"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/clients"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/tq"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
 )
 
 const repairQ = "repair-bots"

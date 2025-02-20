@@ -14,12 +14,12 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/cmd/common_lib/containers"
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/cmd/cros_test_runner/data"
-	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/cmd/cros_test_runner/internal/executors"
-	vmlabapi "infra/libs/vmlab/api"
+	"go.chromium.org/infra/cros/cmd/common_lib/containers"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/data"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/internal/commands"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/internal/executors"
+	vmlabapi "go.chromium.org/infra/libs/vmlab/api"
 )
 
 func TestVMProvisionLeaseCmd_NoDeps(t *testing.T) {

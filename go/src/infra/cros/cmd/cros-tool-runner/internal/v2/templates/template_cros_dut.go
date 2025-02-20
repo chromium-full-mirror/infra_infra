@@ -14,8 +14,8 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
-	"infra/cros/internal/env"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+	"go.chromium.org/infra/cros/internal/env"
 )
 
 type crosDutProcessor struct {

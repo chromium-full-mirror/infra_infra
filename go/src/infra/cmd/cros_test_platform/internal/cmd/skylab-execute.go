@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmd/cros_test_platform/luciexe/execute"
+	"go.chromium.org/infra/cmd/cros_test_platform/luciexe/execute"
 )
 
 // SkylabExecute subcommand: Run a set of enumerated tests against skylab backend.

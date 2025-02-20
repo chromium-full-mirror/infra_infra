@@ -9,7 +9,7 @@ package chrome.rts.presubmit.eval;
 import "google/protobuf/duration.proto";
 import "google/protobuf/timestamp.proto";
 
-option go_package = "infra/rts/presubmit/eval/proto;evalpb";
+option go_package = "go.chromium.org/infra/rts/presubmit/eval/proto;evalpb";
 
 // A rejection of a code change due to test failures.
 //

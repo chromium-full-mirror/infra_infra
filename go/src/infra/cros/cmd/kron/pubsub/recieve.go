@@ -13,7 +13,7 @@ import (
 
 	"cloud.google.com/go/pubsub"
 
-	"infra/cros/cmd/kron/common"
+	"go.chromium.org/infra/cros/cmd/kron/common"
 )
 
 const (

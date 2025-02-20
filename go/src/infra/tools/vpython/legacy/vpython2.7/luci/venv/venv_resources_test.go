@@ -37,9 +37,9 @@ import (
 	"go.chromium.org/luci/common/system/filesystem"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-	"infra/tools/vpython/legacy/vpython2.7/luci/python"
-	"infra/tools/vpython/legacy/vpython2.7/luci/wheel"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/python"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/wheel"
 )
 
 const testDataDir = "test_data"
@@ -68,7 +68,7 @@ var remoteFiles = []struct {
 		install:     func(tl *testingLoader, path string) { tl.virtualEnvZIP = path },
 		name:        "virtualenv-15.1.0.zip",
 		contentHash: "f7682a57c98a10d32474b4c1df75478dea9a0802c140335c0269a6ec3af46201",
-		cipdPackage: "infra/test-data/vpython/virtualenv",
+		cipdPackage: "go.chromium.org/infra/test-data/vpython/virtualenv",
 		cipdVersion: "version:15.1.0",
 		urls: []string{
 			"https://github.com/pypa/virtualenv/archive/15.1.0.zip",

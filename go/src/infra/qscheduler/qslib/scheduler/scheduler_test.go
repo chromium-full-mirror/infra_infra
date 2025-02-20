@@ -23,8 +23,8 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
-	"infra/qscheduler/qslib/protos"
-	"infra/qscheduler/qslib/tutils"
+	"go.chromium.org/infra/qscheduler/qslib/protos"
+	"go.chromium.org/infra/qscheduler/qslib/tutils"
 )
 
 // TestReprioritize tests that the scheduler correctly changes the priority
@@ -50,10 +50,8 @@ func TestSchedulerReprioritize(t *testing.T) {
 		Convey("given both requests running at P0", t, func(t *T) {
 			Convey("when scheduling", t, func(t *T) {
 				s.RunOnce(ctx, NullEventSink)
-				Convey("then the cheaper request should be demoted.", t, func(t *T) {
-					So(t, int(s.state.workers["w1"].runningTask.priority), ShouldEqual(1))
-					So(t, int(s.state.workers["w2"].runningTask.priority), ShouldEqual(0))
-				})
+				So(t, int(s.state.workers["w1"].runningTask.priority), ShouldEqual(1))
+				So(t, int(s.state.workers["w2"].runningTask.priority), ShouldEqual(0))
 			})
 		})
 
@@ -64,10 +62,8 @@ func TestSchedulerReprioritize(t *testing.T) {
 			Convey("when scheduling", t, func(t *T) {
 
 				s.RunOnce(ctx, NullEventSink)
-				Convey("then the more expensive should be promoted.", t, func(t *T) {
-					So(t, int(s.state.workers["w1"].runningTask.priority), ShouldEqual(2))
-					So(t, int(s.state.workers["w2"].runningTask.priority), ShouldEqual(1))
-				})
+				So(t, int(s.state.workers["w1"].runningTask.priority), ShouldEqual(2))
+				So(t, int(s.state.workers["w2"].runningTask.priority), ShouldEqual(1))
 			})
 		})
 	})
@@ -98,18 +94,14 @@ func TestSchedulerPreempt(t *testing.T) {
 					tm1 := time.Unix(1, 0)
 					s.UpdateTime(ctx, tm1)
 					got := s.RunOnce(ctx, NullEventSink)
-					Convey("then the cheaper running job is preempted.", t, func(t *T) {
-						want := &Assignment{Type: AssignmentPreemptWorker, Priority: 0, WorkerID: "w2", RequestID: "r3", TaskToAbort: "r2", Time: tm1}
-						So(t, got, ShouldResemble([]*Assignment{want}))
-					})
+					want := &Assignment{Type: AssignmentPreemptWorker, Priority: 0, WorkerID: "w2", RequestID: "r3", TaskToAbort: "r2", Time: tm1}
+					So(t, got, ShouldResemble([]*Assignment{want}))
 				})
 			})
 			Convey("given insufficient balance", t, func(t *T) {
 				Convey("when scheduling", t, func(t *T) {
 					got := s.RunOnce(ctx, NullEventSink)
-					Convey("then nothing happens.", t, func(t *T) {
-						So(t, got, ShouldBeEmpty)
-					})
+					So(t, got, ShouldBeEmpty)
 				})
 			})
 		})
@@ -118,9 +110,7 @@ func TestSchedulerPreempt(t *testing.T) {
 			s.AddRequest(ctx, NewTaskRequest("r3", "a1", nil, nil, tm0), tm0, nil, NullEventSink)
 			Convey("when scheduling", t, func(t *T) {
 				got := s.RunOnce(ctx, NullEventSink)
-				Convey("then nothing happens.", t, func(t *T) {
-					So(t, got, ShouldBeEmpty)
-				})
+				So(t, got, ShouldBeEmpty)
 			})
 		})
 	})

@@ -8,8 +8,8 @@ package image
 import (
 	"github.com/spf13/cobra"
 
-	"infra/cros/cmd/btpeer_manager/cmd/image/release"
-	"infra/cros/cmd/btpeer_manager/dirs"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/cmd/image/release"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/dirs"
 )
 
 func RootCmd(dirContext *dirs.DirContext, initDirContext func() error) *cobra.Command {

@@ -24,8 +24,8 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/tools/dirmd/git"
-	dirmdpb "infra/tools/dirmd/proto"
+	"go.chromium.org/infra/tools/dirmd/git"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
 )
 
 // Filename is the standard name of the metadata file.

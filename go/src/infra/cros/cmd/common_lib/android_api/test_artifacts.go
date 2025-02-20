@@ -8,7 +8,7 @@ import (
 	"context"
 	"io"
 
-	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	atp "go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 // TestArtifactsService handles API calls related to testResults.

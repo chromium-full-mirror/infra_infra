@@ -34,7 +34,7 @@ import (
 	"go.chromium.org/luci/provenance/api/snooperpb/v1"
 	"go.chromium.org/luci/provenance/client"
 
-	"infra/tools/pkgbuild/pkg/spec/loader"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/spec/loader"
 )
 
 type Application struct {

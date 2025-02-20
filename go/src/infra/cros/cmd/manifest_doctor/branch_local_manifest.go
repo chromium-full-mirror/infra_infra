@@ -24,13 +24,13 @@ import (
 	"go.chromium.org/luci/common/errors"
 	luciflag "go.chromium.org/luci/common/flag"
 
-	"infra/cros/internal/branch"
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/git"
-	"infra/cros/internal/manifestutil"
-	"infra/cros/internal/osutils"
-	"infra/cros/internal/repo"
-	"infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/internal/branch"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/manifestutil"
+	"go.chromium.org/infra/cros/internal/osutils"
+	"go.chromium.org/infra/cros/internal/repo"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 const (

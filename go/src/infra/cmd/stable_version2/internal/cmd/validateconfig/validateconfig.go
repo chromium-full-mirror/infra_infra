@@ -16,12 +16,12 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmd/stable_version2/internal/cmd"
-	"infra/cmd/stable_version2/internal/cmd/validateconfig/querygs"
-	"infra/cmd/stable_version2/internal/site"
-	"infra/cmd/stable_version2/internal/utils"
-	vc "infra/cros/stableversion/validateconfig"
-	gitlib "infra/libs/git"
+	"go.chromium.org/infra/cmd/stable_version2/internal/cmd"
+	"go.chromium.org/infra/cmd/stable_version2/internal/cmd/validateconfig/querygs"
+	"go.chromium.org/infra/cmd/stable_version2/internal/site"
+	"go.chromium.org/infra/cmd/stable_version2/internal/utils"
+	vc "go.chromium.org/infra/cros/stableversion/validateconfig"
+	gitlib "go.chromium.org/infra/libs/git"
 )
 
 // Cmd is the top-level runnable for the validate-config subcommand of stable_version2

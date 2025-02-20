@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/servo/errors"
-	"infra/cros/servo/testing"
+	"go.chromium.org/infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/testing"
 )
 
 // HPDLevelValue is a type for storing a type-c alt state hpd level

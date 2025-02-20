@@ -10,11 +10,11 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
 
-	"infra/cros/recovery/docker"
-	"infra/cros/satlab/common/site"
-	ufsModels "infra/unifiedfleet/api/v1/models"
-	ufsCros "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsApi "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cros/recovery/docker"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsCros "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsApi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // FakeUFSClient is a mockUFS client that returns hardcoded data. It can also return bad/non-existent data

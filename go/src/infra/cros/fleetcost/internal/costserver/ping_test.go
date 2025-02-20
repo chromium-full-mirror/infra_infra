@@ -10,8 +10,8 @@ import (
 
 	"go.chromium.org/luci/common/testing/typed"
 
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	testsupport "infra/cros/fleetcost/internal/costserver/testsupport"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	testsupport "go.chromium.org/infra/cros/fleetcost/internal/costserver/testsupport"
 )
 
 // TestPing tests the ping API, which does nothing

@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/luci/common/exec"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/tools/pkgbuild/pkg/spec"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/spec"
 )
 
 // Resolver can resolve the latest valid version from source definition.

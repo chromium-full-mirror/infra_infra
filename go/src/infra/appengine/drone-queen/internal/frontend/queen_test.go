@@ -19,9 +19,9 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 
-	"infra/appengine/drone-queen/api"
-	"infra/appengine/drone-queen/internal/clients"
-	"infra/appengine/drone-queen/internal/entities"
+	"go.chromium.org/infra/appengine/drone-queen/api"
+	"go.chromium.org/infra/appengine/drone-queen/internal/clients"
+	"go.chromium.org/infra/appengine/drone-queen/internal/entities"
 )
 
 func TestDroneQueenImpl_DeclareDuts(t *testing.T) {

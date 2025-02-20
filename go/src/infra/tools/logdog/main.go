@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/logdog/client/cli"
 
-	"infra/libs/infraenv"
+	"go.chromium.org/infra/libs/infraenv"
 )
 
 func main() {

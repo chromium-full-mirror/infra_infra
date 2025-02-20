@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/libs/skylab/autotest/proxy"
+	"go.chromium.org/infra/libs/skylab/autotest/proxy"
 )
 
 func TestRunSuite(t *testing.T) {

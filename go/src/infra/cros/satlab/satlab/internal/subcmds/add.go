@@ -11,8 +11,8 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/satlab/internal/components/dut"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/satlab/internal/components/dut"
 )
 
 // AddBase is the type for the add placeholder command.

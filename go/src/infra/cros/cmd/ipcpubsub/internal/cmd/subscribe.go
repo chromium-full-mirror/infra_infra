@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/flag"
 
-	"infra/cros/cmd/ipcpubsub/pubsublib"
+	"go.chromium.org/infra/cros/cmd/ipcpubsub/pubsublib"
 )
 
 type subscribeRun struct {

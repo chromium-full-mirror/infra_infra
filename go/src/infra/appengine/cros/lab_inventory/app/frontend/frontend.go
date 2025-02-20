@@ -16,8 +16,8 @@ import (
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
 
-	api "infra/appengine/cros/lab_inventory/api/v1"
-	"infra/appengine/cros/lab_inventory/app/config"
+	api "go.chromium.org/infra/appengine/cros/lab_inventory/api/v1"
+	"go.chromium.org/infra/appengine/cros/lab_inventory/app/config"
 )
 
 // InstallServices install the prpc handlers in the server

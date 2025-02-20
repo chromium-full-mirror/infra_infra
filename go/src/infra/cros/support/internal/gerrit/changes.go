@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/common/api/gerrit"
 	gerrit2 "go.chromium.org/luci/common/proto/gerrit"
 
-	"infra/cros/support/internal/shared"
+	"go.chromium.org/infra/cros/support/internal/shared"
 )
 
 const (

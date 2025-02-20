@@ -12,9 +12,9 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 
-	"infra/cros/recovery/internal/localtlw/localproxy"
-	"infra/cros/recovery/internal/localtlw/servod"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw/localproxy"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw/servod"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 const (

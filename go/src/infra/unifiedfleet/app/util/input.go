@@ -19,9 +19,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/gae/service/info"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsmfg "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsmfg "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 )
 
 const (

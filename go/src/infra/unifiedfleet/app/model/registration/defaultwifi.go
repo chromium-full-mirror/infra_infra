@@ -12,8 +12,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsds "infra/unifiedfleet/app/model/datastore"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
 )
 
 // DefaultWifiKind is the datastore entity kind DefaultWifi.

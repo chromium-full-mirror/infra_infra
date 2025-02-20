@@ -9,7 +9,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	invlibs "infra/cros/lab_inventory/protos"
+	invlibs "go.chromium.org/infra/cros/lab_inventory/protos"
 )
 
 // DeviceManualRepairRecordsOpRes is for use in Datastore to RPC conversions

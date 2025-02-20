@@ -3,7 +3,7 @@ description: cros-test-finder is the CFT container handling test finding resolut
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/cft/cros-test-finder
+  - go.chromium.org/infra/cros/cmd/cft/cros-test-finder
 root: ../../go/bin
 data:
   - file: cros-test-finder${exe_suffix}

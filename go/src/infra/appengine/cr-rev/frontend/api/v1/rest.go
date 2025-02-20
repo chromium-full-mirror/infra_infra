@@ -22,9 +22,9 @@ type restAPIServer struct {
 // position that uses old reference.
 var crCPOldReferences = map[string]map[string]int{
 	"chromium": {
-		"chromium/src": 913133,
-		"v8/v8":        76350,
-		"infra/infra":  42976,
+		"chromium/src":                913133,
+		"v8/v8":                       76350,
+		"go.chromium.org/infra/infra": 42976,
 	},
 	"webrtc": {
 		"src": 34825,

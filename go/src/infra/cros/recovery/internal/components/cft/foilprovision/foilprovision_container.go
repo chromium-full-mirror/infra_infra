@@ -15,11 +15,11 @@ import (
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/recovery/ctr"
-	"infra/cros/recovery/internal/components/cft"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/recovery/ctr"
+	"go.chromium.org/infra/cros/recovery/internal/components/cft"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // Setup sets the service for future provision calls.

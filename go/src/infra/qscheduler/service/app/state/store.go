@@ -19,9 +19,9 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/qscheduler/service/app/state/metrics"
-	"infra/qscheduler/service/app/state/nodestore"
-	"infra/qscheduler/service/app/state/types"
+	"go.chromium.org/infra/qscheduler/service/app/state/metrics"
+	"go.chromium.org/infra/qscheduler/service/app/state/nodestore"
+	"go.chromium.org/infra/qscheduler/service/app/state/types"
 )
 
 // NodeStoreOperationRunner is a nodestore.Operator implementation

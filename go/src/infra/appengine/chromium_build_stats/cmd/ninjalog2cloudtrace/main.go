@@ -12,7 +12,7 @@ import (
 
 	"github.com/google/uuid"
 
-	"infra/appengine/chromium_build_stats/ninjalog"
+	"go.chromium.org/infra/appengine/chromium_build_stats/ninjalog"
 )
 
 var ninjaLog = flag.String("ninjalog", "", "")

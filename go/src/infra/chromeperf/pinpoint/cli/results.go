@@ -32,8 +32,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/chromeperf/pinpoint"
-	"infra/chromeperf/pinpoint/proto"
+	"go.chromium.org/infra/chromeperf/pinpoint"
+	"go.chromium.org/infra/chromeperf/pinpoint/proto"
 )
 
 // downloadResultsToDir copies the results associated with the provided job to the dstDir.

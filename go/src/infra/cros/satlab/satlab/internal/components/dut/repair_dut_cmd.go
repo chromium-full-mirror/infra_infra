@@ -13,10 +13,10 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/satlab/common/dut/shivas"
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cros/satlab/common/dut/shivas"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 )
 
 // RepairDUTCmd is the command that repairs a satlab DUT.

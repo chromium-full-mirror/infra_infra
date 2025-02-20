@@ -5,9 +5,9 @@
 package dut
 
 import (
-	"infra/cmd/shivas/cmdhelp"
-	"infra/cmd/shivas/utils"
-	"infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cmd/shivas/cmdhelp"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cros/satlab/common/site"
 )
 
 // RegisterUpdateShivasFlags registers the flags inherited from shivas.

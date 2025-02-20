@@ -12,8 +12,8 @@ import (
 	configProto "go.chromium.org/luci/common/proto/config"
 	"go.chromium.org/luci/config"
 
-	"infra/chromeperf/workflows"
-	"infra/chromeperf/workflows_server/proto"
+	"go.chromium.org/infra/chromeperf/workflows"
+	"go.chromium.org/infra/chromeperf/workflows_server/proto"
 )
 
 // Scopes to use for OAuth2.0 credentials.

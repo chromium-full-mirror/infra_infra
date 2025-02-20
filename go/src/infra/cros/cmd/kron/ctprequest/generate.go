@@ -17,8 +17,8 @@ import (
 	requestpb "go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
-	"infra/cros/cmd/kron/common"
-	"infra/cros/cmd/kron/configparser"
+	"go.chromium.org/infra/cros/cmd/kron/common"
+	"go.chromium.org/infra/cros/cmd/kron/configparser"
 )
 
 const (

@@ -14,9 +14,9 @@ import (
 	"log"
 	"sync"
 
-	"infra/cmd/drone-agent/internal/bot"
-	"infra/cmd/drone-agent/internal/botman"
-	"infra/cmd/drone-agent/internal/draining"
+	"go.chromium.org/infra/cmd/drone-agent/internal/bot"
+	"go.chromium.org/infra/cmd/drone-agent/internal/botman"
+	"go.chromium.org/infra/cmd/drone-agent/internal/draining"
 )
 
 // An Agent manages a static number of Swarming bots.

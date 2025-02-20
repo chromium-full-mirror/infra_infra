@@ -18,17 +18,17 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/cmd/shivas/site"
-	"infra/cmd/shivas/utils"
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/dutstate"
-	"infra/libs/fleet/device/attacheddevice"
-	"infra/libs/fleet/device/dut"
-	"infra/libs/fleet/device/schedulingunit"
-	"infra/libs/skylab/inventory/swarming"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/libs/fleet/device/attacheddevice"
+	"go.chromium.org/infra/libs/fleet/device/dut"
+	"go.chromium.org/infra/libs/fleet/device/schedulingunit"
+	"go.chromium.org/infra/libs/skylab/inventory/swarming"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // PrintBotInfo subcommand: Print Swarming dimensions for a DUT.

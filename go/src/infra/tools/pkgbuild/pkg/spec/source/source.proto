@@ -8,7 +8,7 @@ package source;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "infra/tools/pkgbuild/pkg/spec/source;source";
+option go_package = "go.chromium.org/infra/tools/pkgbuild/pkg/spec/source;source";
 
 // Proto message which reflects the input properties fora the pkgbuild recipe.
 // See more detailed description for each field there.

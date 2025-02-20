@@ -15,11 +15,11 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/appengine/crosskylabadmin/internal/ufs"
-	"infra/appengine/crosskylabadmin/site"
-	shivasUtils "infra/cmd/shivas/utils"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/ufs"
+	"go.chromium.org/infra/appengine/crosskylabadmin/site"
+	shivasUtils "go.chromium.org/infra/cmd/shivas/utils"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // GetMachineLSE calls the GetMachineLSE RPC of UFS the way that CrOSSkylabAdmin would.

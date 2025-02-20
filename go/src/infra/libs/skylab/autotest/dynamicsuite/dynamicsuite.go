@@ -15,7 +15,7 @@ import (
 	swarming "go.chromium.org/luci/common/api/swarming/swarming/v1"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/libs/skylab/autotest/proxy"
+	"go.chromium.org/infra/libs/skylab/autotest/proxy"
 )
 
 const suiteName = "cros_test_platform"

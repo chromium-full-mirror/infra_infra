@@ -10,7 +10,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/cft/base-adb/internal/runner"
+	"go.chromium.org/infra/cros/cmd/cft/base-adb/internal/runner"
 )
 
 // ExecCommand executes blocking ADB commands.

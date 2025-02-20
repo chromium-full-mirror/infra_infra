@@ -15,7 +15,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
-	"infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
 )
 
 // MoblabClient interface provides subset of Moblab API methods relevant to CTPV2

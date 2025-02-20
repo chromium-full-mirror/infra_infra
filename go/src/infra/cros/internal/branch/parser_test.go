@@ -9,10 +9,10 @@ package branch
 import (
 	"testing"
 
-	"infra/cros/internal/assert"
-	cv "infra/cros/internal/chromeosversion"
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/assert"
+	cv "go.chromium.org/infra/cros/internal/chromeosversion"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/git"
 )
 
 func TestExtractBuildNum(t *testing.T) {

@@ -20,7 +20,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	luciproto "go.chromium.org/luci/common/proto"
 
-	"infra/libs/bqschema/tabledef"
+	"go.chromium.org/infra/libs/bqschema/tabledef"
 )
 
 func sanitizeComment(v string) string {
@@ -52,7 +52,7 @@ var structTemplate = template.Must(template.New("").
 
 package {{.Package}}
 
-import pb "infra/libs/bqschema/tabledef"
+import pb "go.chromium.org/infra/libs/bqschema/tabledef"
 {{range .Imports -}}
 import {{.Alias}} "{{.Path}}"
 {{end -}}

@@ -13,12 +13,12 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/recovery/internal/components/btpeer"
-	"infra/cros/recovery/internal/components/cros"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/execs/wifirouter/ssh"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/internal/components/btpeer"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/execs/wifirouter/ssh"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // setStateBrokenExec sets state as BROKEN.

@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/appengine/chrome-test-health/api"
+	"go.chromium.org/infra/appengine/chrome-test-health/api"
 )
 
 // Runs the integration tests returning an error if any fail to run or a

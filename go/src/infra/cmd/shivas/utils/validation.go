@@ -6,9 +6,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	UfleetAPI "infra/unifiedfleet/api/v1/rpc"
-	UfleetUtil "infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	UfleetAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	UfleetUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 const (

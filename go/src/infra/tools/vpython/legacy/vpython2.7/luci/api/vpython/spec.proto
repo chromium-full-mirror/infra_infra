@@ -4,11 +4,11 @@
 
 syntax = "proto3";
 
-option go_package = "infra/tools/vpython/legacy/vpython2.7/luci/api/vpython";
+option go_package = "go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/api/vpython";
 
 package vpython;
 
-import "infra/tools/vpython/legacy/vpython2.7/luci/api/vpython/pep425.proto";
+import "go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/api/vpython/pep425.proto";
 
 
 // Spec is a "vpython" environment specification.

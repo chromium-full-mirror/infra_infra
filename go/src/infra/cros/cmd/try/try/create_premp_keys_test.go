@@ -13,9 +13,9 @@ import (
 
 	bapipb "go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/cmd"
-	bb "infra/cros/lib/buildbucket"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/cmd"
+	bb "go.chromium.org/infra/cros/lib/buildbucket"
 )
 
 func TestValidate_createPreMPKeysRun(t *testing.T) {

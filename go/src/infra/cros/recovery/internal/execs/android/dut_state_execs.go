@@ -9,8 +9,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components/android/adb"
-	"infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/components/android/adb"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
 )
 
 // isDutAccessibleExec verifies that DUT is accessible through the associated host.

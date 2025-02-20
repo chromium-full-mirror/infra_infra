@@ -11,7 +11,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	tricium "infra/tricium/api/v1"
+	tricium "go.chromium.org/infra/tricium/api/v1"
 )
 
 // These tests read from files on the filesystem, so modifying the tests may

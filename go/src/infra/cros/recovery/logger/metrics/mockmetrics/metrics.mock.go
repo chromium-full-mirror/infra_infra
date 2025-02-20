@@ -11,10 +11,10 @@ package mockmetrics
 
 import (
 	context "context"
-	metrics "infra/cros/recovery/logger/metrics"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	metrics "go.chromium.org/infra/cros/recovery/logger/metrics"
 )
 
 // MockMetrics is a mock of Metrics interface.

@@ -7,8 +7,8 @@ package execs
 import (
 	"context"
 
-	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // DefaultPinger returns pinger for current resource name specified per plan.

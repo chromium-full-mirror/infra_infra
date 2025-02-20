@@ -15,11 +15,11 @@ import (
 	"google.golang.org/grpc"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 
-	"infra/cros/satlab/common/utils/executor"
-	ufsModels "infra/unifiedfleet/api/v1/models"
-	ufsApi "infra/unifiedfleet/api/v1/rpc"
-	ufspb "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
+	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsApi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 type mockDeleteClient struct {

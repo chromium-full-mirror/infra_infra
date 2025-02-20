@@ -22,7 +22,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
 // LoadEnvironment loads an environment file text protobuf from the supplied

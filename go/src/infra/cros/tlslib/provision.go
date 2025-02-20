@@ -22,7 +22,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 
-	"infra/cros/internal/env"
+	"go.chromium.org/infra/cros/internal/env"
 )
 
 const (

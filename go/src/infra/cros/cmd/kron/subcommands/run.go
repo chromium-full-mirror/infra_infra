@@ -17,13 +17,13 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cros/cmd/kron/buildbucket"
-	"infra/cros/cmd/kron/common"
-	"infra/cros/cmd/kron/configparser"
-	"infra/cros/cmd/kron/metrics"
-	"infra/cros/cmd/kron/pubsub"
-	"infra/cros/cmd/kron/run"
-	"infra/cros/cmd/kron/totmanager"
+	"go.chromium.org/infra/cros/cmd/kron/buildbucket"
+	"go.chromium.org/infra/cros/cmd/kron/common"
+	"go.chromium.org/infra/cros/cmd/kron/configparser"
+	"go.chromium.org/infra/cros/cmd/kron/metrics"
+	"go.chromium.org/infra/cros/cmd/kron/pubsub"
+	"go.chromium.org/infra/cros/cmd/kron/run"
+	"go.chromium.org/infra/cros/cmd/kron/totmanager"
 )
 
 type runCommand struct {

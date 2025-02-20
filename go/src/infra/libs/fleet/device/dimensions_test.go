@@ -11,9 +11,9 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
 
-	models "infra/unifiedfleet/api/v1/models"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	models "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // TestGetPools tests that GetPools passes an appropriately annotated name to the

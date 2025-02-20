@@ -32,11 +32,11 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/libs/skylab/inventory"
-	"infra/libs/skylab/inventory/autotest/labels"
-	swarming "infra/libs/skylab/inventory/swarming"
-	"infra/libs/skylab/request"
-	"infra/libs/skylab/worker"
+	"go.chromium.org/infra/libs/skylab/inventory"
+	"go.chromium.org/infra/libs/skylab/inventory/autotest/labels"
+	swarming "go.chromium.org/infra/libs/skylab/inventory/swarming"
+	"go.chromium.org/infra/libs/skylab/request"
+	"go.chromium.org/infra/libs/skylab/worker"
 )
 
 // Generator defines the set of inputs for creating a request.Args object.

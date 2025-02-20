@@ -16,10 +16,10 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/cmd/cros_test_runner/data"
-	"infra/cros/cmd/cros_test_runner/internal/configs"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/data"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/internal/configs"
 )
 
 func LocalExecution(sk *data.LocalTestStateKeeper, ctrCipdVersion, pathToCipdBin, logPath string, noSudo bool) (*skylab_test_runner.ExecuteResponse, error) {

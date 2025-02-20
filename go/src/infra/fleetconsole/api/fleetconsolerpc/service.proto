@@ -6,10 +6,10 @@ syntax = "proto3";
 
 package fleetconsole;
 
-option go_package = "infra/fleetconsole/api/fleetconsolerpc;fleetconsolerpc";
+option go_package = "go.chromium.org/infra/fleetconsole/api/fleetconsolerpc;fleetconsolerpc";
 
 import "google/protobuf/empty.proto";
-import "infra/fleetconsole/api/fleetconsolerpc/common_types.proto";
+import "go.chromium.org/infra/fleetconsole/api/fleetconsolerpc/common_types.proto";
 
 service FleetConsole {
   // Ping does not send or receive any information. It just checks that the service is there.

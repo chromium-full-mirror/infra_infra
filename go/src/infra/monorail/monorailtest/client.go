@@ -5,7 +5,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"infra/monorail"
+	"go.chromium.org/infra/monorail"
 )
 
 // NewClient creates as client based on a server implementation.

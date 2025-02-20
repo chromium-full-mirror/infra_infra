@@ -11,8 +11,8 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	"infra/cros/cmd/ctpv2-filters/test-finder/common"
-	"infra/cros/cmd/ctpv2-filters/test-finder/finders"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/finders"
 )
 
 func FindTests(ctx context.Context, req *api.InternalTestplan, log *log.Logger) (*api.InternalTestplan, error) {

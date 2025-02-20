@@ -17,7 +17,7 @@ package venv
 import (
 	"context"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
 // PackageLoader loads package information from a specification file's Package

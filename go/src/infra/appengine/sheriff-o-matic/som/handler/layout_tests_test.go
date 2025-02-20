@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/luci/gae/service/urlfetch"
 	"go.chromium.org/luci/server/router"
 
-	testhelper "infra/appengine/sheriff-o-matic/som/client/test"
-	te "infra/appengine/sheriff-o-matic/som/testexpectations"
+	testhelper "go.chromium.org/infra/appengine/sheriff-o-matic/som/client/test"
+	te "go.chromium.org/infra/appengine/sheriff-o-matic/som/testexpectations"
 )
 
 const (

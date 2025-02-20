@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/tools/migrator/internal/plugsupport"
-	"infra/tools/migrator/internal/plugsupport/templates"
+	"go.chromium.org/infra/tools/migrator/internal/plugsupport"
+	"go.chromium.org/infra/tools/migrator/internal/plugsupport/templates"
 )
 
 func cmdInit(opts cmdBaseOptions) *subcommands.Command {

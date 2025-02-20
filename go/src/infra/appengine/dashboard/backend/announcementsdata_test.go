@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	dashpb "infra/appengine/dashboard/api/dashboard"
+	dashpb "go.chromium.org/infra/appengine/dashboard/api/dashboard"
 )
 
 var chickenAnn = &Announcement{Message: "chicken is missing", Creator: "farmer1"}

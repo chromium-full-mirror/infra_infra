@@ -22,7 +22,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/chromeperf/pinpoint/proto"
+	"go.chromium.org/infra/chromeperf/pinpoint/proto"
 )
 
 // userEmail is the email address of the entity running the smoke tests.
@@ -41,9 +41,9 @@ func compile(intoDir string) (testPaths, error) {
 		name, packagePath string
 		setPath           *string
 	}{
-		{"pinpoint_cli.exe", "infra/chromeperf/cmd/pinpoint", &paths.pinpointCLI},
-		{"grpc_pinpoint.exe", "infra/chromeperf/pinpoint_server", &paths.grpcServer},
-		{"fakelegacy_pinpoint.exe", "infra/chromeperf/pinpoint/fakelegacy/bin", &paths.fakelegacyServer},
+		{"pinpoint_cli.exe", "go.chromium.org/infra/chromeperf/cmd/pinpoint", &paths.pinpointCLI},
+		{"grpc_pinpoint.exe", "go.chromium.org/infra/chromeperf/pinpoint_server", &paths.grpcServer},
+		{"fakelegacy_pinpoint.exe", "go.chromium.org/infra/chromeperf/pinpoint/fakelegacy/bin", &paths.fakelegacyServer},
 	} {
 		outPath := filepath.Join(intoDir, bin.name)
 		*bin.setPath = outPath

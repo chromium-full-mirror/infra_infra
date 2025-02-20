@@ -11,8 +11,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	dashpb "infra/appengine/dashboard/api/dashboard"
-	"infra/appengine/dashboard/backend"
+	dashpb "go.chromium.org/infra/appengine/dashboard/api/dashboard"
+	"go.chromium.org/infra/appengine/dashboard/backend"
 )
 
 type dashboardService struct{}

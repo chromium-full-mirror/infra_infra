@@ -17,14 +17,14 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/cmd/mallet/internal/site"
-	"infra/cmdsupport/cmdlib"
-	"infra/libs/fleet/device"
-	"infra/libs/fleet/scheduling/schedulers"
-	"infra/libs/skylab/buildbucket"
-	"infra/libs/skylab/common/heuristics"
-	"infra/libs/skylab/swarming"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cmd/mallet/internal/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/libs/fleet/device"
+	"go.chromium.org/infra/libs/fleet/scheduling/schedulers"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
+	"go.chromium.org/infra/libs/skylab/swarming"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // Recovery subcommand: Recovering the devices.

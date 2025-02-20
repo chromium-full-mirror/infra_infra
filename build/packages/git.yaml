@@ -39,7 +39,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/tools/git
+  - go.chromium.org/infra/tools/git
 root: ../../go/bin
 data:
   - file: git${exe_suffix}

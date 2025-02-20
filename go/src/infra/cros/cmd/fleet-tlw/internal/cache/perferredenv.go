@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	ufsmodels "infra/unifiedfleet/api/v1/models"
+	ufsmodels "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 // NewPreferredEnv creates a new preferred caching service environment.

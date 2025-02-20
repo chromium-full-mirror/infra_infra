@@ -12,9 +12,9 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/cmd/cros_test_runner/data"
-	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/cros/dutstate"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/data"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/internal/commands"
+	"go.chromium.org/infra/cros/dutstate"
 )
 
 func TestUpdateDutStateCmd_UnsupportedSK(t *testing.T) {

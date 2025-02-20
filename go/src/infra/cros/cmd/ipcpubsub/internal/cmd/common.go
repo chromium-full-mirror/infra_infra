@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cros/cmd/ipcpubsub/internal/site"
+	"go.chromium.org/infra/cros/cmd/ipcpubsub/internal/site"
 )
 
 type baseRun struct {

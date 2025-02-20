@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 var stopRetryLoopTag = errors.BoolTag{Key: errors.NewTagKey("break retry loop")}

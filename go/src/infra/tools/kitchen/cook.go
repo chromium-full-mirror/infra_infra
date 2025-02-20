@@ -48,10 +48,10 @@ import (
 	"go.chromium.org/luci/luciexe/legacy/annotee/annotation"
 	annopb "go.chromium.org/luci/luciexe/legacy/annotee/proto"
 
-	"infra/libs/infraenv"
-	"infra/tools/kitchen/build"
-	"infra/tools/kitchen/cookflags"
-	"infra/tools/kitchen/third_party/recipe_engine"
+	"go.chromium.org/infra/libs/infraenv"
+	"go.chromium.org/infra/tools/kitchen/build"
+	"go.chromium.org/infra/tools/kitchen/cookflags"
+	"go.chromium.org/infra/tools/kitchen/third_party/recipe_engine"
 )
 
 const (

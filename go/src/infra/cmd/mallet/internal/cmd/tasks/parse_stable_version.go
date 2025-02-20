@@ -17,9 +17,9 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 
-	commonFlags "infra/cmd/mallet/internal/cmd/cmdlib"
-	"infra/cmd/mallet/internal/site"
-	"infra/cmdsupport/cmdlib"
+	commonFlags "go.chromium.org/infra/cmd/mallet/internal/cmd/cmdlib"
+	"go.chromium.org/infra/cmd/mallet/internal/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
 )
 
 var ParseStableVersion = &subcommands.Command{

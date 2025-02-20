@@ -3,14 +3,14 @@ description: Support tools for chromiumos recipes.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/support/bq-insert
-  - infra/cros/support/gerrit-fetch-changes
-  - infra/cros/support/git-test-submit
-  - infra/cros/support/gitiles-fetch-file
-  - infra/cros/support/gitiles-fetch-ref
-  - infra/cros/support/publish-message
-  - infra/cros/support/repo-log-trace
-  - infra/cros/support/repo-manifest-diff-projects
+  - go.chromium.org/infra/cros/support/bq-insert
+  - go.chromium.org/infra/cros/support/gerrit-fetch-changes
+  - go.chromium.org/infra/cros/support/git-test-submit
+  - go.chromium.org/infra/cros/support/gitiles-fetch-file
+  - go.chromium.org/infra/cros/support/gitiles-fetch-ref
+  - go.chromium.org/infra/cros/support/publish-message
+  - go.chromium.org/infra/cros/support/repo-log-trace
+  - go.chromium.org/infra/cros/support/repo-manifest-diff-projects
 root: ../../go/bin
 data:
   - file: bq-insert${exe_suffix}

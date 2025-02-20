@@ -13,9 +13,9 @@ import (
 	"go.chromium.org/luci/config"
 	"go.chromium.org/luci/config/impl/memory"
 
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common"
-	"infra/tricium/appengine/common/triciumtest"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common"
+	"go.chromium.org/infra/tricium/appengine/common/triciumtest"
 )
 
 var exampleConfig = map[config.Set]memory.Files{
@@ -83,7 +83,7 @@ var invalidConfig = map[config.Set]memory.Files{
 			    }
 			    deadline: 900
 			    cipd_packages {
-			      package_name: "infra/tricium/function/git-file-isolator"
+			      package_name: "go.chromium.org/infra/tricium/function/git-file-isolator"
 			      path: "."
 			      version: "live"
 			    }

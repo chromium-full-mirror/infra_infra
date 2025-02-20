@@ -9,11 +9,11 @@ import (
 
 	"github.com/golang/protobuf/proto"
 
-	"infra/cmd/shivas/site"
-	"infra/cmd/shivas/utils"
-	"infra/cmd/shivas/utils/rename"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cmd/shivas/utils/rename"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // RenameDUTCmd rename dut by given name.

@@ -17,9 +17,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/payload"
 	"go.chromium.org/luci/common/errors"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	"infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // Error messages for input validation

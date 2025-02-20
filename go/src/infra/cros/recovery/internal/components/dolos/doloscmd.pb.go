@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/cros/recovery/internal/components/dolos/doloscmd.proto
+// source: go.chromium.org/infra/cros/recovery/internal/components/dolos/doloscmd.proto
 
 package dolos
 
@@ -67,11 +67,11 @@ func (x ERROR_CODE) String() string {
 }
 
 func (ERROR_CODE) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_enumTypes[0].Descriptor()
 }
 
 func (ERROR_CODE) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_enumTypes[0]
 }
 
 func (x ERROR_CODE) Number() protoreflect.EnumNumber {
@@ -80,7 +80,7 @@ func (x ERROR_CODE) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ERROR_CODE.Descriptor instead.
 func (ERROR_CODE) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{0}
 }
 
 type DOLOS_STATUS int32
@@ -134,11 +134,11 @@ func (x DOLOS_STATUS) String() string {
 }
 
 func (DOLOS_STATUS) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_enumTypes[1].Descriptor()
 }
 
 func (DOLOS_STATUS) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_enumTypes[1]
 }
 
 func (x DOLOS_STATUS) Number() protoreflect.EnumNumber {
@@ -147,7 +147,7 @@ func (x DOLOS_STATUS) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DOLOS_STATUS.Descriptor instead.
 func (DOLOS_STATUS) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{1}
 }
 
 type Response struct {
@@ -160,7 +160,7 @@ type Response struct {
 
 func (x *Response) Reset() {
 	*x = Response{}
-	mi := &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -172,7 +172,7 @@ func (x *Response) String() string {
 func (*Response) ProtoMessage() {}
 
 func (x *Response) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -185,7 +185,7 @@ func (x *Response) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Response.ProtoReflect.Descriptor instead.
 func (*Response) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Response) GetMsg() string {
@@ -212,7 +212,7 @@ type FindUartNameResponse struct {
 
 func (x *FindUartNameResponse) Reset() {
 	*x = FindUartNameResponse{}
-	mi := &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -224,7 +224,7 @@ func (x *FindUartNameResponse) String() string {
 func (*FindUartNameResponse) ProtoMessage() {}
 
 func (x *FindUartNameResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -237,7 +237,7 @@ func (x *FindUartNameResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindUartNameResponse.ProtoReflect.Descriptor instead.
 func (*FindUartNameResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *FindUartNameResponse) GetUartname() string {
@@ -263,7 +263,7 @@ type FirmwareUpdateResponse struct {
 
 func (x *FirmwareUpdateResponse) Reset() {
 	*x = FirmwareUpdateResponse{}
-	mi := &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -275,7 +275,7 @@ func (x *FirmwareUpdateResponse) String() string {
 func (*FirmwareUpdateResponse) ProtoMessage() {}
 
 func (x *FirmwareUpdateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -288,7 +288,7 @@ func (x *FirmwareUpdateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FirmwareUpdateResponse.ProtoReflect.Descriptor instead.
 func (*FirmwareUpdateResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *FirmwareUpdateResponse) GetResponse() *Response {
@@ -308,7 +308,7 @@ type GetStatusResponse struct {
 
 func (x *GetStatusResponse) Reset() {
 	*x = GetStatusResponse{}
-	mi := &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -320,7 +320,7 @@ func (x *GetStatusResponse) String() string {
 func (*GetStatusResponse) ProtoMessage() {}
 
 func (x *GetStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -333,7 +333,7 @@ func (x *GetStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetStatusResponse.ProtoReflect.Descriptor instead.
 func (*GetStatusResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetStatusResponse) GetStatus() DOLOS_STATUS {
@@ -359,7 +359,7 @@ type GetRepairResponse struct {
 
 func (x *GetRepairResponse) Reset() {
 	*x = GetRepairResponse{}
-	mi := &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -371,7 +371,7 @@ func (x *GetRepairResponse) String() string {
 func (*GetRepairResponse) ProtoMessage() {}
 
 func (x *GetRepairResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -384,7 +384,7 @@ func (x *GetRepairResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRepairResponse.ProtoReflect.Descriptor instead.
 func (*GetRepairResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetRepairResponse) GetResponse() *Response {
@@ -404,7 +404,7 @@ type GetVersionResponse struct {
 
 func (x *GetVersionResponse) Reset() {
 	*x = GetVersionResponse{}
-	mi := &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -416,7 +416,7 @@ func (x *GetVersionResponse) String() string {
 func (*GetVersionResponse) ProtoMessage() {}
 
 func (x *GetVersionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -429,7 +429,7 @@ func (x *GetVersionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetVersionResponse.ProtoReflect.Descriptor instead.
 func (*GetVersionResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetVersionResponse) GetVersion() string {
@@ -455,7 +455,7 @@ type GenericResponse struct {
 
 func (x *GenericResponse) Reset() {
 	*x = GenericResponse{}
-	mi := &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -467,7 +467,7 @@ func (x *GenericResponse) String() string {
 func (*GenericResponse) ProtoMessage() {}
 
 func (x *GenericResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -480,7 +480,7 @@ func (x *GenericResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GenericResponse.ProtoReflect.Descriptor instead.
 func (*GenericResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GenericResponse) GetResponse() *Response {
@@ -490,10 +490,11 @@ func (x *GenericResponse) GetResponse() *Response {
 	return nil
 }
 
-var File_infra_cros_recovery_internal_components_dolos_doloscmd_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto protoreflect.FileDescriptor
 
-var file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDesc = string([]byte{
-	0x0a, 0x3c, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65, 0x63,
+var file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDesc = string([]byte{
+	0x0a, 0x4c, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65, 0x63,
 	0x6f, 0x76, 0x65, 0x72, 0x79, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x63,
 	0x6f, 0x6d, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x73, 0x2f, 0x64, 0x6f, 0x6c, 0x6f, 0x73, 0x2f,
 	0x64, 0x6f, 0x6c, 0x6f, 0x73, 0x63, 0x6d, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x11,
@@ -562,27 +563,28 @@ var file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDesc = 
 	0x44, 0x4f, 0x4c, 0x4f, 0x53, 0x5f, 0x4e, 0x4f, 0x5f, 0x43, 0x4f, 0x4d, 0x4d, 0x55, 0x4e, 0x49,
 	0x43, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x10, 0x07, 0x12, 0x15, 0x0a, 0x11, 0x44, 0x4f, 0x4c, 0x4f,
 	0x53, 0x5f, 0x4e, 0x4f, 0x54, 0x5f, 0x50, 0x52, 0x45, 0x53, 0x45, 0x4e, 0x54, 0x10, 0x08, 0x42,
-	0x35, 0x5a, 0x33, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65,
+	0x45, 0x5a, 0x43, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f,
+	0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65,
 	0x63, 0x6f, 0x76, 0x65, 0x72, 0x79, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f,
 	0x63, 0x6f, 0x6d, 0x70, 0x6f, 0x6e, 0x65, 0x6e, 0x74, 0x73, 0x2f, 0x64, 0x6f, 0x6c, 0x6f, 0x73,
 	0x3b, 0x64, 0x6f, 0x6c, 0x6f, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescOnce sync.Once
-	file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescData []byte
+	file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescData []byte
 )
 
-func file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP() []byte {
-	file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescOnce.Do(func() {
-		file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDesc), len(file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDesc)))
+func file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDesc), len(file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDesc)))
 	})
-	return file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescData
+	return file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDescData
 }
 
-var file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
-var file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_goTypes = []any{
+var file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_goTypes = []any{
 	(ERROR_CODE)(0),                // 0: chromeos.recovery.ERROR_CODE
 	(DOLOS_STATUS)(0),              // 1: chromeos.recovery.DOLOS_STATUS
 	(*Response)(nil),               // 2: chromeos.recovery.Response
@@ -593,7 +595,7 @@ var file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_goTypes = 
 	(*GetVersionResponse)(nil),     // 7: chromeos.recovery.GetVersionResponse
 	(*GenericResponse)(nil),        // 8: chromeos.recovery.GenericResponse
 }
-var file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_depIdxs = []int32{
 	0, // 0: chromeos.recovery.Response.code:type_name -> chromeos.recovery.ERROR_CODE
 	2, // 1: chromeos.recovery.FindUartNameResponse.response:type_name -> chromeos.recovery.Response
 	2, // 2: chromeos.recovery.FirmwareUpdateResponse.response:type_name -> chromeos.recovery.Response
@@ -609,27 +611,27 @@ var file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_depIdxs = 
 	0, // [0:8] is the sub-list for field type_name
 }
 
-func init() { file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_init() }
-func file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_init() {
-	if File_infra_cros_recovery_internal_components_dolos_doloscmd_proto != nil {
+func init() { file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_init() }
+func file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_init() {
+	if File_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDesc), len(file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDesc), len(file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_rawDesc)),
 			NumEnums:      2,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_goTypes,
-		DependencyIndexes: file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_depIdxs,
-		EnumInfos:         file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_enumTypes,
-		MessageInfos:      file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_msgTypes,
 	}.Build()
-	File_infra_cros_recovery_internal_components_dolos_doloscmd_proto = out.File
-	file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_goTypes = nil
-	file_infra_cros_recovery_internal_components_dolos_doloscmd_proto_depIdxs = nil
+	File_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto = out.File
+	file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_goTypes = nil
+	file_go_chromium_org_infra_cros_recovery_internal_components_dolos_doloscmd_proto_depIdxs = nil
 }

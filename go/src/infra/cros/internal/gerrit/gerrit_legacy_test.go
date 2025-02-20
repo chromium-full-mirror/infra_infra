@@ -15,7 +15,7 @@ import (
 
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 
-	"infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 func TestGetChangeRev_success(t *testing.T) {

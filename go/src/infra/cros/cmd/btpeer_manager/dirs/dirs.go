@@ -13,7 +13,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"infra/cros/cmd/btpeer_manager/log"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/log"
 )
 
 const defaultWorkingDirPath = "/tmp/btpeer_manager"

@@ -14,12 +14,12 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 
-	"infra/cros/dutstate"
-	"infra/libs/skylab/inventory/swarming"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	manufacturing "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
-	"infra/unifiedfleet/app/util/osutil"
+	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/libs/skylab/inventory/swarming"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	manufacturing "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
+	"go.chromium.org/infra/unifiedfleet/app/util/osutil"
 )
 
 var servo = lab.Servo{

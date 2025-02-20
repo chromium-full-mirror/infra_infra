@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/cmd"
 )
 
 // TestIsLUCIToolAuthed tests tryRunBase.IsLUCIToolAuthed() by mocking `bb auth-info` output.

@@ -15,9 +15,9 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	cmd_common "infra/cros/cmd/common_lib/common"
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/satlabrpcserver/utils/constants"
+	cmd_common "go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/utils/constants"
 )
 
 // ReadSSHKey read a ssh private key file and then parse it to `ssh.Signer`

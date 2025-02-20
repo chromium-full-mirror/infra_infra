@@ -13,7 +13,7 @@ import (
 	"strconv"
 	"syscall"
 
-	"infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/errors"
 )
 
 // CommandContextUser creates a CommandContext that will run as the

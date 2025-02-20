@@ -11,9 +11,9 @@ import (
 
 	"github.com/google/subcommands"
 
-	"infra/cros/cmd/lucifer/internal/api"
-	"infra/cros/cmd/lucifer/internal/autotest/atutil"
-	"infra/cros/cmd/lucifer/internal/event"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/api"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/autotest/atutil"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/event"
 )
 
 type prejobCmd struct {

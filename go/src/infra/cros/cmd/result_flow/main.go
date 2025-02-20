@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	"infra/cros/cmd/result_flow/internal/cmd"
-	"infra/cros/cmd/result_flow/internal/site"
+	"go.chromium.org/infra/cros/cmd/result_flow/internal/cmd"
+	"go.chromium.org/infra/cros/cmd/result_flow/internal/site"
 )
 
 func getApplication() *cli.Application {

@@ -8,7 +8,7 @@ package qscheduler.config;
 
 import "google/protobuf/duration.proto";
 
-option go_package = "infra/qscheduler/service/app/config;config";
+option go_package = "go.chromium.org/infra/qscheduler/service/app/config;config";
 
 // Note: docstrings use generated go style variable names.
 

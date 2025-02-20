@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"infra/appengine/sheriff-o-matic/som/client"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/client"
 )
 
 const (

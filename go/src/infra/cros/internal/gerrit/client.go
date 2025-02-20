@@ -27,7 +27,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 
-	"infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 type User struct {

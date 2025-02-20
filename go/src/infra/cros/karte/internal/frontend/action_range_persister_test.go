@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/gae/service/datastore"
 
-	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/testsupport"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	"go.chromium.org/infra/cros/karte/internal/testsupport"
 )
 
 // TestActionRangePersisterInsufficientInput tests that invoking actionRangePersister without

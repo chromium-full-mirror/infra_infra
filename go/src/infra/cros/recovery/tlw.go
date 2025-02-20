@@ -5,8 +5,8 @@
 package recovery
 
 import (
-	"infra/cros/recovery/internal/localtlw"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // NewLocalTLWAccess provides instance of local implementation of TLW Access.

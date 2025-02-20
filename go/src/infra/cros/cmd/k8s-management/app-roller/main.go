@@ -53,7 +53,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 
-	"infra/cros/cmd/k8s-management/app-roller/internal/changelog"
+	"go.chromium.org/infra/cros/cmd/k8s-management/app-roller/internal/changelog"
 )
 
 func main() {

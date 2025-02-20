@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/logger"
 )
 
 // metrics is a default Metric implementation that logs all events

@@ -9,13 +9,13 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmd/shivas/internal/ufs/subcmds/asset"
-	"infra/cmd/shivas/internal/ufs/subcmds/dut"
-	"infra/cmd/shivas/internal/ufs/subcmds/labstation"
-	"infra/cmd/shivas/internal/ufs/subcmds/machine"
-	"infra/cmd/shivas/internal/ufs/subcmds/nic"
-	"infra/cmd/shivas/internal/ufs/subcmds/rack"
-	"infra/cmd/shivas/internal/ufs/subcmds/switches"
+	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/asset"
+	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/dut"
+	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/labstation"
+	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/machine"
+	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/nic"
+	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/rack"
+	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/switches"
 )
 
 type rename struct {

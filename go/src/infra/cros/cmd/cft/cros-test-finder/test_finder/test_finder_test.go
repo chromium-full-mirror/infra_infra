@@ -16,7 +16,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	"infra/cros/cmd/cft/cros-test-finder/centralizedsuite"
+	"go.chromium.org/infra/cros/cmd/cft/cros-test-finder/centralizedsuite"
 )
 
 func TestReadInput(t *testing.T) {

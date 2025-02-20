@@ -20,7 +20,7 @@ import (
 	"testing"
 	"time"
 
-	"infra/libs/skylab/common/errctx"
+	"go.chromium.org/infra/libs/skylab/common/errctx"
 )
 
 func TestCustomCancel(t *testing.T) {

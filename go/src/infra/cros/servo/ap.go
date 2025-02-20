@@ -7,7 +7,7 @@ package servo
 import (
 	"context"
 
-	"infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/errors"
 )
 
 // These are the AP Servo controls which can be get/set with a string value.

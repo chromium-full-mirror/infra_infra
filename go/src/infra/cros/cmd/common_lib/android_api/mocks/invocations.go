@@ -6,8 +6,8 @@ package mock_androidapi
 
 import (
 	context "context"
-	androidapi "infra/cros/cmd/common_lib/android_api"
-	androidbuildinternal "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api"
+	androidbuildinternal "go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"

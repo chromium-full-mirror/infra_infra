@@ -27,16 +27,16 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/analytics"
-	androidapi "infra/cros/cmd/common_lib/android_api"
-	"infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/common_lib/schedulers"
-	"infra/cros/cmd/common_lib/tools/rdb"
-	"infra/cros/cmd/common_lib/tools/suitelimits"
-	"infra/cros/cmd/ctpv2/data"
-	dm "infra/device_manager/client"
+	"go.chromium.org/infra/cros/cmd/common_lib/analytics"
+	androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api"
+	"go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/common_lib/schedulers"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/rdb"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/suitelimits"
+	"go.chromium.org/infra/cros/cmd/ctpv2/data"
+	dm "go.chromium.org/infra/device_manager/client"
 )
 
 // getBuildFieldMask is the list of buildbucket fields that are needed.

@@ -18,7 +18,7 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
 )
 
 func getCollection(ctx context.Context, common commonFlags) (*firestore.CollectionRef, error) {

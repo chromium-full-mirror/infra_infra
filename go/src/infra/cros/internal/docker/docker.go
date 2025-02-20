@@ -21,7 +21,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/cmd"
 )
 
 func generateMountArgs(mounts []mount.Mount) ([]string, error) {

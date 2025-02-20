@@ -14,9 +14,9 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 
-	infra_common "infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/kron/common"
-	"infra/cros/cmd/kron/configparser"
+	infra_common "go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/kron/common"
+	"go.chromium.org/infra/cros/cmd/kron/configparser"
 )
 
 // firestoreCommand is the interface for the firestore-sync subcommand

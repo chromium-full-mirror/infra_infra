@@ -12,8 +12,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/testing/testfs"
 
-	real "infra/chromium/bootstrapper/clients/cipd"
-	"infra/chromium/util"
+	real "go.chromium.org/infra/chromium/bootstrapper/clients/cipd"
+	"go.chromium.org/infra/chromium/util"
 )
 
 // PackageInstance is the fake data for an instance of a package.

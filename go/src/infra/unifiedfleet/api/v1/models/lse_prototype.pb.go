@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/unifiedfleet/api/v1/models/lse_prototype.proto
+// source: go.chromium.org/infra/unifiedfleet/api/v1/models/lse_prototype.proto
 
 package ufspb
 
@@ -81,11 +81,11 @@ func (x PeripheralType) String() string {
 }
 
 func (PeripheralType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_enumTypes[0].Descriptor()
 }
 
 func (PeripheralType) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_enumTypes[0]
 }
 
 func (x PeripheralType) Number() protoreflect.EnumNumber {
@@ -94,7 +94,7 @@ func (x PeripheralType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use PeripheralType.Descriptor instead.
 func (PeripheralType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescGZIP(), []int{0}
 }
 
 // The supported virtual type in LSE definition.
@@ -128,11 +128,11 @@ func (x VirtualType) String() string {
 }
 
 func (VirtualType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_enumTypes[1].Descriptor()
 }
 
 func (VirtualType) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_enumTypes[1]
 }
 
 func (x VirtualType) Number() protoreflect.EnumNumber {
@@ -141,7 +141,7 @@ func (x VirtualType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use VirtualType.Descriptor instead.
 func (VirtualType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescGZIP(), []int{1}
 }
 
 type RackLSEPrototype struct {
@@ -160,7 +160,7 @@ type RackLSEPrototype struct {
 
 func (x *RackLSEPrototype) Reset() {
 	*x = RackLSEPrototype{}
-	mi := &file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -172,7 +172,7 @@ func (x *RackLSEPrototype) String() string {
 func (*RackLSEPrototype) ProtoMessage() {}
 
 func (x *RackLSEPrototype) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -185,7 +185,7 @@ func (x *RackLSEPrototype) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RackLSEPrototype.ProtoReflect.Descriptor instead.
 func (*RackLSEPrototype) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *RackLSEPrototype) GetName() string {
@@ -237,7 +237,7 @@ type MachineLSEPrototype struct {
 
 func (x *MachineLSEPrototype) Reset() {
 	*x = MachineLSEPrototype{}
-	mi := &file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -249,7 +249,7 @@ func (x *MachineLSEPrototype) String() string {
 func (*MachineLSEPrototype) ProtoMessage() {}
 
 func (x *MachineLSEPrototype) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -262,7 +262,7 @@ func (x *MachineLSEPrototype) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MachineLSEPrototype.ProtoReflect.Descriptor instead.
 func (*MachineLSEPrototype) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *MachineLSEPrototype) GetName() string {
@@ -327,7 +327,7 @@ type PeripheralRequirement struct {
 
 func (x *PeripheralRequirement) Reset() {
 	*x = PeripheralRequirement{}
-	mi := &file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -339,7 +339,7 @@ func (x *PeripheralRequirement) String() string {
 func (*PeripheralRequirement) ProtoMessage() {}
 
 func (x *PeripheralRequirement) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -352,7 +352,7 @@ func (x *PeripheralRequirement) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PeripheralRequirement.ProtoReflect.Descriptor instead.
 func (*PeripheralRequirement) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *PeripheralRequirement) GetPeripheralType() PeripheralType {
@@ -388,7 +388,7 @@ type VirtualRequirement struct {
 
 func (x *VirtualRequirement) Reset() {
 	*x = VirtualRequirement{}
-	mi := &file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -400,7 +400,7 @@ func (x *VirtualRequirement) String() string {
 func (*VirtualRequirement) ProtoMessage() {}
 
 func (x *VirtualRequirement) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -413,7 +413,7 @@ func (x *VirtualRequirement) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VirtualRequirement.ProtoReflect.Descriptor instead.
 func (*VirtualRequirement) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *VirtualRequirement) GetVirtualType() VirtualType {
@@ -437,10 +437,11 @@ func (x *VirtualRequirement) GetMax() int32 {
 	return 0
 }
 
-var File_infra_unifiedfleet_api_v1_models_lse_prototype_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto protoreflect.FileDescriptor
 
-var file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDesc = string([]byte{
-	0x0a, 0x34, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDesc = string([]byte{
+	0x0a, 0x44, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x6c, 0x73, 0x65, 0x5f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x74, 0x79, 0x70, 0x65,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x1a, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
@@ -541,27 +542,28 @@ var file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDesc = string([
 	0x72, 0x74, 0x75, 0x61, 0x6c, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1c, 0x0a, 0x18, 0x56, 0x49, 0x52,
 	0x54, 0x55, 0x41, 0x4c, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43,
 	0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x13, 0x0a, 0x0f, 0x56, 0x49, 0x52, 0x54, 0x55,
-	0x41, 0x4c, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x56, 0x4d, 0x10, 0x01, 0x42, 0x28, 0x5a, 0x26,
+	0x41, 0x4c, 0x5f, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x56, 0x4d, 0x10, 0x01, 0x42, 0x38, 0x5a, 0x36,
+	0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f,
 	0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65,
 	0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73,
 	0x3b, 0x75, 0x66, 0x73, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescOnce sync.Once
-	file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescData []byte
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescData []byte
 )
 
-func file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescGZIP() []byte {
-	file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescOnce.Do(func() {
-		file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDesc)))
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDesc)))
 	})
-	return file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescData
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_goTypes = []any{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_goTypes = []any{
 	(PeripheralType)(0),           // 0: unifiedfleet.api.v1.models.PeripheralType
 	(VirtualType)(0),              // 1: unifiedfleet.api.v1.models.VirtualType
 	(*RackLSEPrototype)(nil),      // 2: unifiedfleet.api.v1.models.RackLSEPrototype
@@ -570,7 +572,7 @@ var file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_goTypes = []any{
 	(*VirtualRequirement)(nil),    // 5: unifiedfleet.api.v1.models.VirtualRequirement
 	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
 }
-var file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_depIdxs = []int32{
 	4, // 0: unifiedfleet.api.v1.models.RackLSEPrototype.peripheral_requirements:type_name -> unifiedfleet.api.v1.models.PeripheralRequirement
 	6, // 1: unifiedfleet.api.v1.models.RackLSEPrototype.update_time:type_name -> google.protobuf.Timestamp
 	4, // 2: unifiedfleet.api.v1.models.MachineLSEPrototype.peripheral_requirements:type_name -> unifiedfleet.api.v1.models.PeripheralRequirement
@@ -585,27 +587,27 @@ var file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_depIdxs = []int32{
 	0, // [0:7] is the sub-list for field type_name
 }
 
-func init() { file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_init() }
-func file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_init() {
-	if File_infra_unifiedfleet_api_v1_models_lse_prototype_proto != nil {
+func init() { file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_init() }
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_init() {
+	if File_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_rawDesc)),
 			NumEnums:      2,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_goTypes,
-		DependencyIndexes: file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_depIdxs,
-		EnumInfos:         file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_enumTypes,
-		MessageInfos:      file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_msgTypes,
 	}.Build()
-	File_infra_unifiedfleet_api_v1_models_lse_prototype_proto = out.File
-	file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_goTypes = nil
-	file_infra_unifiedfleet_api_v1_models_lse_prototype_proto_depIdxs = nil
+	File_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto = out.File
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_goTypes = nil
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_lse_prototype_proto_depIdxs = nil
 }

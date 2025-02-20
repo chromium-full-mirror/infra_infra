@@ -16,9 +16,9 @@ import (
 
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 
-	"infra/appengine/rubber-stamper/config"
-	"infra/appengine/rubber-stamper/internal/gerrit"
-	"infra/appengine/rubber-stamper/tasks/taskspb"
+	"go.chromium.org/infra/appengine/rubber-stamper/config"
+	"go.chromium.org/infra/appengine/rubber-stamper/internal/gerrit"
+	"go.chromium.org/infra/appengine/rubber-stamper/tasks/taskspb"
 )
 
 var (

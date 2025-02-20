@@ -24,13 +24,13 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/proto/structmask"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/gs"
-	"infra/tools/dirmd"
-	dirmdpb "infra/tools/dirmd/proto"
-	"infra/tools/dirmd/proto/chromeos"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/gs"
+	"go.chromium.org/infra/tools/dirmd"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
+	"go.chromium.org/infra/tools/dirmd/proto/chromeos"
 )
 
 func newStructOrFatal(t *testing.T, v map[string]interface{}) *structpb.Struct {

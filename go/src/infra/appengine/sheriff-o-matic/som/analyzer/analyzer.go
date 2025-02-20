@@ -13,8 +13,8 @@ import (
 
 	"go.chromium.org/luci/gae/service/info"
 
-	"infra/appengine/sheriff-o-matic/som/client"
-	"infra/monitoring/messages"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/client"
+	"go.chromium.org/infra/monitoring/messages"
 )
 
 const (

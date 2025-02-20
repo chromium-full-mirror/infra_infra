@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package chrome.dir_metadata.chromeos;
 
-option go_package = "infra/tools/dirmd/proto/chromeos";
+option go_package = "go.chromium.org/infra/tools/dirmd/proto/chromeos";
 
 import "chromiumos/test/plan/source_test_plan.proto";
 

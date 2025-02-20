@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 func TestToLabDut(t *testing.T) {

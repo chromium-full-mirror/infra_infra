@@ -19,8 +19,8 @@ import (
 
 	"go.chromium.org/luci/common/data/stringset"
 
-	"infra/qscheduler/qslib/protos"
-	"infra/qscheduler/qslib/scheduler"
+	"go.chromium.org/infra/qscheduler/qslib/protos"
+	"go.chromium.org/infra/qscheduler/qslib/scheduler"
 )
 
 // State is the state of a reconciler.

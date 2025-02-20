@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/cros/fleetcost/api/models/indicator.proto
+// source: go.chromium.org/infra/cros/fleetcost/api/models/indicator.proto
 
 package fleetcostpb
 
@@ -88,11 +88,11 @@ func (x IndicatorType) String() string {
 }
 
 func (IndicatorType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_fleetcost_api_models_indicator_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_enumTypes[0].Descriptor()
 }
 
 func (IndicatorType) Type() protoreflect.EnumType {
-	return &file_infra_cros_fleetcost_api_models_indicator_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_enumTypes[0]
 }
 
 func (x IndicatorType) Number() protoreflect.EnumNumber {
@@ -101,7 +101,7 @@ func (x IndicatorType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use IndicatorType.Descriptor instead.
 func (IndicatorType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_models_indicator_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_rawDescGZIP(), []int{0}
 }
 
 // Location indicates location scope for costs that may vary in different sites.
@@ -144,11 +144,11 @@ func (x Location) String() string {
 }
 
 func (Location) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_fleetcost_api_models_indicator_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_enumTypes[1].Descriptor()
 }
 
 func (Location) Type() protoreflect.EnumType {
-	return &file_infra_cros_fleetcost_api_models_indicator_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_enumTypes[1]
 }
 
 func (x Location) Number() protoreflect.EnumNumber {
@@ -157,7 +157,7 @@ func (x Location) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Location.Descriptor instead.
 func (Location) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_models_indicator_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_rawDescGZIP(), []int{1}
 }
 
 type CostCadence int32
@@ -202,11 +202,11 @@ func (x CostCadence) String() string {
 }
 
 func (CostCadence) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_fleetcost_api_models_indicator_proto_enumTypes[2].Descriptor()
+	return file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_enumTypes[2].Descriptor()
 }
 
 func (CostCadence) Type() protoreflect.EnumType {
-	return &file_infra_cros_fleetcost_api_models_indicator_proto_enumTypes[2]
+	return &file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_enumTypes[2]
 }
 
 func (x CostCadence) Number() protoreflect.EnumNumber {
@@ -215,7 +215,7 @@ func (x CostCadence) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CostCadence.Descriptor instead.
 func (CostCadence) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_models_indicator_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_rawDescGZIP(), []int{2}
 }
 
 // Any combination of type/primary/secondary/tertiary/location will be unique.
@@ -246,7 +246,7 @@ type CostIndicator struct {
 
 func (x *CostIndicator) Reset() {
 	*x = CostIndicator{}
-	mi := &file_infra_cros_fleetcost_api_models_indicator_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -258,7 +258,7 @@ func (x *CostIndicator) String() string {
 func (*CostIndicator) ProtoMessage() {}
 
 func (x *CostIndicator) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_models_indicator_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -271,7 +271,7 @@ func (x *CostIndicator) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CostIndicator.ProtoReflect.Descriptor instead.
 func (*CostIndicator) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_models_indicator_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *CostIndicator) GetName() string {
@@ -358,10 +358,11 @@ func (x *CostIndicator) GetContextUrl() []string {
 	return nil
 }
 
-var File_infra_cros_fleetcost_api_models_indicator_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto protoreflect.FileDescriptor
 
-var file_infra_cros_fleetcost_api_models_indicator_proto_rawDesc = string([]byte{
-	0x0a, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x66, 0x6c, 0x65,
+var file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_rawDesc = string([]byte{
+	0x0a, 0x3f, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x66, 0x6c, 0x65,
 	0x65, 0x74, 0x63, 0x6f, 0x73, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c,
 	0x73, 0x2f, 0x69, 0x6e, 0x64, 0x69, 0x63, 0x61, 0x74, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x12, 0x14, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x73, 0x74, 0x2e, 0x61, 0x70, 0x69,
@@ -441,34 +442,35 @@ var file_infra_cros_fleetcost_api_models_indicator_proto_rawDesc = string([]byte
 	0x16, 0x0a, 0x12, 0x43, 0x4f, 0x53, 0x54, 0x5f, 0x43, 0x41, 0x44, 0x45, 0x4e, 0x43, 0x45, 0x5f,
 	0x44, 0x41, 0x49, 0x4c, 0x59, 0x10, 0x04, 0x12, 0x17, 0x0a, 0x13, 0x43, 0x4f, 0x53, 0x54, 0x5f,
 	0x43, 0x41, 0x44, 0x45, 0x4e, 0x43, 0x45, 0x5f, 0x48, 0x4f, 0x55, 0x52, 0x4c, 0x59, 0x10, 0x05,
-	0x42, 0x2d, 0x5a, 0x2b, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x66,
+	0x42, 0x3d, 0x5a, 0x3b, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e,
+	0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x73, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6d, 0x6f, 0x64,
 	0x65, 0x6c, 0x73, 0x3b, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x73, 0x74, 0x70, 0x62, 0x62,
 	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_cros_fleetcost_api_models_indicator_proto_rawDescOnce sync.Once
-	file_infra_cros_fleetcost_api_models_indicator_proto_rawDescData []byte
+	file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_rawDescData []byte
 )
 
-func file_infra_cros_fleetcost_api_models_indicator_proto_rawDescGZIP() []byte {
-	file_infra_cros_fleetcost_api_models_indicator_proto_rawDescOnce.Do(func() {
-		file_infra_cros_fleetcost_api_models_indicator_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_cros_fleetcost_api_models_indicator_proto_rawDesc), len(file_infra_cros_fleetcost_api_models_indicator_proto_rawDesc)))
+func file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_rawDesc), len(file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_rawDesc)))
 	})
-	return file_infra_cros_fleetcost_api_models_indicator_proto_rawDescData
+	return file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_rawDescData
 }
 
-var file_infra_cros_fleetcost_api_models_indicator_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_infra_cros_fleetcost_api_models_indicator_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_infra_cros_fleetcost_api_models_indicator_proto_goTypes = []any{
+var file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_goTypes = []any{
 	(IndicatorType)(0),    // 0: fleetcost.api.models.IndicatorType
 	(Location)(0),         // 1: fleetcost.api.models.Location
 	(CostCadence)(0),      // 2: fleetcost.api.models.CostCadence
 	(*CostIndicator)(nil), // 3: fleetcost.api.models.CostIndicator
 	(*money.Money)(nil),   // 4: google.type.Money
 }
-var file_infra_cros_fleetcost_api_models_indicator_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_depIdxs = []int32{
 	0, // 0: fleetcost.api.models.CostIndicator.type:type_name -> fleetcost.api.models.IndicatorType
 	4, // 1: fleetcost.api.models.CostIndicator.cost:type_name -> google.type.Money
 	2, // 2: fleetcost.api.models.CostIndicator.cost_cadence:type_name -> fleetcost.api.models.CostCadence
@@ -480,27 +482,27 @@ var file_infra_cros_fleetcost_api_models_indicator_proto_depIdxs = []int32{
 	0, // [0:4] is the sub-list for field type_name
 }
 
-func init() { file_infra_cros_fleetcost_api_models_indicator_proto_init() }
-func file_infra_cros_fleetcost_api_models_indicator_proto_init() {
-	if File_infra_cros_fleetcost_api_models_indicator_proto != nil {
+func init() { file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_init() }
+func file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_init() {
+	if File_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_cros_fleetcost_api_models_indicator_proto_rawDesc), len(file_infra_cros_fleetcost_api_models_indicator_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_rawDesc), len(file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_rawDesc)),
 			NumEnums:      3,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_cros_fleetcost_api_models_indicator_proto_goTypes,
-		DependencyIndexes: file_infra_cros_fleetcost_api_models_indicator_proto_depIdxs,
-		EnumInfos:         file_infra_cros_fleetcost_api_models_indicator_proto_enumTypes,
-		MessageInfos:      file_infra_cros_fleetcost_api_models_indicator_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_msgTypes,
 	}.Build()
-	File_infra_cros_fleetcost_api_models_indicator_proto = out.File
-	file_infra_cros_fleetcost_api_models_indicator_proto_goTypes = nil
-	file_infra_cros_fleetcost_api_models_indicator_proto_depIdxs = nil
+	File_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto = out.File
+	file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_goTypes = nil
+	file_go_chromium_org_infra_cros_fleetcost_api_models_indicator_proto_depIdxs = nil
 }

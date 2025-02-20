@@ -18,11 +18,11 @@ import (
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	admin "infra/tricium/api/admin/v1"
-	"infra/tricium/appengine/common"
-	"infra/tricium/appengine/common/config"
-	"infra/tricium/appengine/common/gerrit"
-	"infra/tricium/appengine/common/track"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
+	"go.chromium.org/infra/tricium/appengine/common"
+	"go.chromium.org/infra/tricium/appengine/common/config"
+	"go.chromium.org/infra/tricium/appengine/common/gerrit"
+	"go.chromium.org/infra/tricium/appengine/common/track"
 )
 
 // DriverServer represents the Tricium pRPC Driver server.

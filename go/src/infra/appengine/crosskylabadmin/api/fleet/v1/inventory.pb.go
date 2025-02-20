@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/appengine/crosskylabadmin/api/fleet/v1/inventory.proto
+// source: go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1/inventory.proto
 
 package fleet
 
@@ -58,7 +58,7 @@ type GetStableVersionRequest struct {
 
 func (x *GetStableVersionRequest) Reset() {
 	*x = GetStableVersionRequest{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -70,7 +70,7 @@ func (x *GetStableVersionRequest) String() string {
 func (*GetStableVersionRequest) ProtoMessage() {}
 
 func (x *GetStableVersionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -83,7 +83,7 @@ func (x *GetStableVersionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetStableVersionRequest.ProtoReflect.Descriptor instead.
 func (*GetStableVersionRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *GetStableVersionRequest) GetBuildTarget() string {
@@ -135,7 +135,7 @@ type GetStableVersionResponse struct {
 
 func (x *GetStableVersionResponse) Reset() {
 	*x = GetStableVersionResponse{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -147,7 +147,7 @@ func (x *GetStableVersionResponse) String() string {
 func (*GetStableVersionResponse) ProtoMessage() {}
 
 func (x *GetStableVersionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -160,7 +160,7 @@ func (x *GetStableVersionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetStableVersionResponse.ProtoReflect.Descriptor instead.
 func (*GetStableVersionResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *GetStableVersionResponse) GetCrosVersion() string {
@@ -212,7 +212,7 @@ type GetRecoveryVersionRequest struct {
 
 func (x *GetRecoveryVersionRequest) Reset() {
 	*x = GetRecoveryVersionRequest{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -224,7 +224,7 @@ func (x *GetRecoveryVersionRequest) String() string {
 func (*GetRecoveryVersionRequest) ProtoMessage() {}
 
 func (x *GetRecoveryVersionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -237,7 +237,7 @@ func (x *GetRecoveryVersionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRecoveryVersionRequest.ProtoReflect.Descriptor instead.
 func (*GetRecoveryVersionRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetRecoveryVersionRequest) GetDeviceName() string {
@@ -284,7 +284,7 @@ type GetRecoveryVersionResponse struct {
 
 func (x *GetRecoveryVersionResponse) Reset() {
 	*x = GetRecoveryVersionResponse{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -296,7 +296,7 @@ func (x *GetRecoveryVersionResponse) String() string {
 func (*GetRecoveryVersionResponse) ProtoMessage() {}
 
 func (x *GetRecoveryVersionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -309,7 +309,7 @@ func (x *GetRecoveryVersionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRecoveryVersionResponse.ProtoReflect.Descriptor instead.
 func (*GetRecoveryVersionResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetRecoveryVersionResponse) GetVersion() *lab_platform.StableVersion {
@@ -333,7 +333,7 @@ type SatlabBoardAndModelStrategy struct {
 
 func (x *SatlabBoardAndModelStrategy) Reset() {
 	*x = SatlabBoardAndModelStrategy{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -345,7 +345,7 @@ func (x *SatlabBoardAndModelStrategy) String() string {
 func (*SatlabBoardAndModelStrategy) ProtoMessage() {}
 
 func (x *SatlabBoardAndModelStrategy) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -358,7 +358,7 @@ func (x *SatlabBoardAndModelStrategy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SatlabBoardAndModelStrategy.ProtoReflect.Descriptor instead.
 func (*SatlabBoardAndModelStrategy) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *SatlabBoardAndModelStrategy) GetSatlabID() string {
@@ -394,7 +394,7 @@ type SatlabHostnameStrategy struct {
 
 func (x *SatlabHostnameStrategy) Reset() {
 	*x = SatlabHostnameStrategy{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -406,7 +406,7 @@ func (x *SatlabHostnameStrategy) String() string {
 func (*SatlabHostnameStrategy) ProtoMessage() {}
 
 func (x *SatlabHostnameStrategy) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -419,7 +419,7 @@ func (x *SatlabHostnameStrategy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SatlabHostnameStrategy.ProtoReflect.Descriptor instead.
 func (*SatlabHostnameStrategy) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *SatlabHostnameStrategy) GetSatlabID() string {
@@ -453,7 +453,7 @@ type SetSatlabStableVersionRequest struct {
 
 func (x *SetSatlabStableVersionRequest) Reset() {
 	*x = SetSatlabStableVersionRequest{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -465,7 +465,7 @@ func (x *SetSatlabStableVersionRequest) String() string {
 func (*SetSatlabStableVersionRequest) ProtoMessage() {}
 
 func (x *SetSatlabStableVersionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -478,7 +478,7 @@ func (x *SetSatlabStableVersionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetSatlabStableVersionRequest.ProtoReflect.Descriptor instead.
 func (*SetSatlabStableVersionRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *SetSatlabStableVersionRequest) GetStrategy() isSetSatlabStableVersionRequest_Strategy {
@@ -553,7 +553,7 @@ type SetSatlabStableVersionResponse struct {
 
 func (x *SetSatlabStableVersionResponse) Reset() {
 	*x = SetSatlabStableVersionResponse{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -565,7 +565,7 @@ func (x *SetSatlabStableVersionResponse) String() string {
 func (*SetSatlabStableVersionResponse) ProtoMessage() {}
 
 func (x *SetSatlabStableVersionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -578,7 +578,7 @@ func (x *SetSatlabStableVersionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetSatlabStableVersionResponse.ProtoReflect.Descriptor instead.
 func (*SetSatlabStableVersionResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{7}
 }
 
 // SatlabBoardModelDeletionCriterion is similar to SatlabBoardAndModelStrategy,
@@ -597,7 +597,7 @@ type SatlabBoardModelDeletionCriterion struct {
 
 func (x *SatlabBoardModelDeletionCriterion) Reset() {
 	*x = SatlabBoardModelDeletionCriterion{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -609,7 +609,7 @@ func (x *SatlabBoardModelDeletionCriterion) String() string {
 func (*SatlabBoardModelDeletionCriterion) ProtoMessage() {}
 
 func (x *SatlabBoardModelDeletionCriterion) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -622,7 +622,7 @@ func (x *SatlabBoardModelDeletionCriterion) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use SatlabBoardModelDeletionCriterion.ProtoReflect.Descriptor instead.
 func (*SatlabBoardModelDeletionCriterion) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *SatlabBoardModelDeletionCriterion) GetSatlabID() string {
@@ -661,7 +661,7 @@ type SatlabHostnameDeletionCriterion struct {
 
 func (x *SatlabHostnameDeletionCriterion) Reset() {
 	*x = SatlabHostnameDeletionCriterion{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -673,7 +673,7 @@ func (x *SatlabHostnameDeletionCriterion) String() string {
 func (*SatlabHostnameDeletionCriterion) ProtoMessage() {}
 
 func (x *SatlabHostnameDeletionCriterion) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -686,7 +686,7 @@ func (x *SatlabHostnameDeletionCriterion) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SatlabHostnameDeletionCriterion.ProtoReflect.Descriptor instead.
 func (*SatlabHostnameDeletionCriterion) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *SatlabHostnameDeletionCriterion) GetSatlabID() string {
@@ -716,7 +716,7 @@ type DeleteSatlabStableVersionRequest struct {
 
 func (x *DeleteSatlabStableVersionRequest) Reset() {
 	*x = DeleteSatlabStableVersionRequest{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -728,7 +728,7 @@ func (x *DeleteSatlabStableVersionRequest) String() string {
 func (*DeleteSatlabStableVersionRequest) ProtoMessage() {}
 
 func (x *DeleteSatlabStableVersionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -741,7 +741,7 @@ func (x *DeleteSatlabStableVersionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSatlabStableVersionRequest.ProtoReflect.Descriptor instead.
 func (*DeleteSatlabStableVersionRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DeleteSatlabStableVersionRequest) GetStrategy() isDeleteSatlabStableVersionRequest_Strategy {
@@ -797,7 +797,7 @@ type DeleteSatlabStableVersionResponse struct {
 
 func (x *DeleteSatlabStableVersionResponse) Reset() {
 	*x = DeleteSatlabStableVersionResponse{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -809,7 +809,7 @@ func (x *DeleteSatlabStableVersionResponse) String() string {
 func (*DeleteSatlabStableVersionResponse) ProtoMessage() {}
 
 func (x *DeleteSatlabStableVersionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -822,7 +822,7 @@ func (x *DeleteSatlabStableVersionResponse) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use DeleteSatlabStableVersionResponse.ProtoReflect.Descriptor instead.
 func (*DeleteSatlabStableVersionResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{11}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *DeleteSatlabStableVersionResponse) GetDidDelete() bool {
@@ -847,7 +847,7 @@ type DumpStableVersionToDatastoreRequest struct {
 
 func (x *DumpStableVersionToDatastoreRequest) Reset() {
 	*x = DumpStableVersionToDatastoreRequest{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -859,7 +859,7 @@ func (x *DumpStableVersionToDatastoreRequest) String() string {
 func (*DumpStableVersionToDatastoreRequest) ProtoMessage() {}
 
 func (x *DumpStableVersionToDatastoreRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -872,7 +872,7 @@ func (x *DumpStableVersionToDatastoreRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use DumpStableVersionToDatastoreRequest.ProtoReflect.Descriptor instead.
 func (*DumpStableVersionToDatastoreRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{12}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{12}
 }
 
 type DumpStableVersionToDatastoreResponse struct {
@@ -883,7 +883,7 @@ type DumpStableVersionToDatastoreResponse struct {
 
 func (x *DumpStableVersionToDatastoreResponse) Reset() {
 	*x = DumpStableVersionToDatastoreResponse{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -895,7 +895,7 @@ func (x *DumpStableVersionToDatastoreResponse) String() string {
 func (*DumpStableVersionToDatastoreResponse) ProtoMessage() {}
 
 func (x *DumpStableVersionToDatastoreResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -908,13 +908,14 @@ func (x *DumpStableVersionToDatastoreResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use DumpStableVersionToDatastoreResponse.ProtoReflect.Descriptor instead.
 func (*DumpStableVersionToDatastoreResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{13}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP(), []int{13}
 }
 
-var File_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto protoreflect.FileDescriptor
 
-var file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDesc = string([]byte{
-	0x0a, 0x3c, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
+var file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDesc = string([]byte{
+	0x0a, 0x4c, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
 	0x65, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x73, 0x6b, 0x79, 0x6c, 0x61, 0x62, 0x61, 0x64, 0x6d, 0x69,
 	0x6e, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x69,
 	0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x15,
@@ -1090,26 +1091,27 @@ var file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDesc = 
 	0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x44, 0x75, 0x6d, 0x70,
 	0x53, 0x74, 0x61, 0x62, 0x6c, 0x65, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x54, 0x6f, 0x44,
 	0x61, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x42, 0x34, 0x5a, 0x32, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67,
+	0x42, 0x44, 0x5a, 0x42, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e,
+	0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67,
 	0x69, 0x6e, 0x65, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x73, 0x6b, 0x79, 0x6c, 0x61, 0x62, 0x61, 0x64,
 	0x6d, 0x69, 0x6e, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x76, 0x31,
 	0x3b, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescOnce sync.Once
-	file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescData []byte
+	file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescData []byte
 )
 
-func file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP() []byte {
-	file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescOnce.Do(func() {
-		file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDesc), len(file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDesc)))
+func file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDesc), len(file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDesc)))
 	})
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescData
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDescData
 }
 
-var file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
-var file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_goTypes = []any{
+var file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_goTypes = []any{
 	(*GetStableVersionRequest)(nil),              // 0: crosskylabadmin.fleet.GetStableVersionRequest
 	(*GetStableVersionResponse)(nil),             // 1: crosskylabadmin.fleet.GetStableVersionResponse
 	(*GetRecoveryVersionRequest)(nil),            // 2: crosskylabadmin.fleet.GetRecoveryVersionRequest
@@ -1126,7 +1128,7 @@ var file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_goTypes = 
 	(*DumpStableVersionToDatastoreResponse)(nil), // 13: crosskylabadmin.fleet.DumpStableVersionToDatastoreResponse
 	(*lab_platform.StableVersion)(nil),           // 14: lab_platform.StableVersion
 }
-var file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_depIdxs = []int32{
 	14, // 0: crosskylabadmin.fleet.GetRecoveryVersionResponse.version:type_name -> lab_platform.StableVersion
 	4,  // 1: crosskylabadmin.fleet.SetSatlabStableVersionRequest.satlabBoardAndModelStrategy:type_name -> crosskylabadmin.fleet.SatlabBoardAndModelStrategy
 	5,  // 2: crosskylabadmin.fleet.SetSatlabStableVersionRequest.satlabHostnameStrategy:type_name -> crosskylabadmin.fleet.SatlabHostnameStrategy
@@ -1149,16 +1151,16 @@ var file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_depIdxs = 
 	0,  // [0:5] is the sub-list for field type_name
 }
 
-func init() { file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_init() }
-func file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_init() {
-	if File_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto != nil {
+func init() { file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_init() }
+func file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_init() {
+	if File_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto != nil {
 		return
 	}
-	file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[6].OneofWrappers = []any{
+	file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[6].OneofWrappers = []any{
 		(*SetSatlabStableVersionRequest_SatlabBoardAndModelStrategy)(nil),
 		(*SetSatlabStableVersionRequest_SatlabHostnameStrategy)(nil),
 	}
-	file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[10].OneofWrappers = []any{
+	file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes[10].OneofWrappers = []any{
 		(*DeleteSatlabStableVersionRequest_SatlabBoardModelDeletionCriterion)(nil),
 		(*DeleteSatlabStableVersionRequest_SatlabHostnameDeletionCriterion)(nil),
 	}
@@ -1166,19 +1168,19 @@ func file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDesc), len(file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDesc), len(file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_goTypes,
-		DependencyIndexes: file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_depIdxs,
-		MessageInfos:      file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_msgTypes,
 	}.Build()
-	File_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto = out.File
-	file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_goTypes = nil
-	file_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_depIdxs = nil
+	File_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto = out.File
+	file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_goTypes = nil
+	file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_inventory_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1474,5 +1476,5 @@ var _Inventory_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/appengine/crosskylabadmin/api/fleet/v1/inventory.proto",
+	Metadata: "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1/inventory.proto",
 }

@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/cmd/result_flow/internal/message"
-	"infra/cros/cmd/result_flow/internal/site"
+	"go.chromium.org/infra/cros/cmd/result_flow/internal/message"
+	"go.chromium.org/infra/cros/cmd/result_flow/internal/site"
 )
 
 // Publish subcommand pushes a build ID to Pub/Sub topic.

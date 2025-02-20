@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/site"
 )
 
 // CipdRoot is the path to root directory for CIPD.

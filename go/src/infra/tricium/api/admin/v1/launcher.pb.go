@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/tricium/api/admin/v1/launcher.proto
+// source: go.chromium.org/infra/tricium/api/admin/v1/launcher.proto
 
 package admin
 
@@ -14,12 +14,12 @@ import prpc "go.chromium.org/luci/grpc/prpc"
 
 import (
 	context "context"
+	v1 "go.chromium.org/infra/tricium/api/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	v1 "infra/tricium/api/v1"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -58,7 +58,7 @@ type LaunchRequest struct {
 
 func (x *LaunchRequest) Reset() {
 	*x = LaunchRequest{}
-	mi := &file_infra_tricium_api_admin_v1_launcher_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -70,7 +70,7 @@ func (x *LaunchRequest) String() string {
 func (*LaunchRequest) ProtoMessage() {}
 
 func (x *LaunchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_admin_v1_launcher_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -83,7 +83,7 @@ func (x *LaunchRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LaunchRequest.ProtoReflect.Descriptor instead.
 func (*LaunchRequest) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_admin_v1_launcher_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *LaunchRequest) GetRunId() int64 {
@@ -136,7 +136,7 @@ type LaunchResponse struct {
 
 func (x *LaunchResponse) Reset() {
 	*x = LaunchResponse{}
-	mi := &file_infra_tricium_api_admin_v1_launcher_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -148,7 +148,7 @@ func (x *LaunchResponse) String() string {
 func (*LaunchResponse) ProtoMessage() {}
 
 func (x *LaunchResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tricium_api_admin_v1_launcher_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -161,16 +161,18 @@ func (x *LaunchResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LaunchResponse.ProtoReflect.Descriptor instead.
 func (*LaunchResponse) Descriptor() ([]byte, []int) {
-	return file_infra_tricium_api_admin_v1_launcher_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_rawDescGZIP(), []int{1}
 }
 
-var File_infra_tricium_api_admin_v1_launcher_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto protoreflect.FileDescriptor
 
-var file_infra_tricium_api_admin_v1_launcher_proto_rawDesc = string([]byte{
-	0x0a, 0x29, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
+var file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_rawDesc = string([]byte{
+	0x0a, 0x39, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f, 0x76, 0x31, 0x2f, 0x6c, 0x61, 0x75,
 	0x6e, 0x63, 0x68, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x05, 0x61, 0x64, 0x6d,
-	0x69, 0x6e, 0x1a, 0x1f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75,
+	0x69, 0x6e, 0x1a, 0x2f, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e,
+	0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75,
 	0x6d, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x22, 0xc3, 0x01, 0x0a, 0x0d, 0x4c, 0x61, 0x75, 0x6e, 0x63, 0x68, 0x52, 0x65,
 	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x15, 0x0a, 0x06, 0x72, 0x75, 0x6e, 0x5f, 0x69, 0x64, 0x18,
@@ -189,31 +191,32 @@ var file_infra_tricium_api_admin_v1_launcher_proto_rawDesc = string([]byte{
 	0x61, 0x75, 0x6e, 0x63, 0x68, 0x65, 0x72, 0x12, 0x35, 0x0a, 0x06, 0x4c, 0x61, 0x75, 0x6e, 0x63,
 	0x68, 0x12, 0x14, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x4c, 0x61, 0x75, 0x6e, 0x63, 0x68,
 	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x15, 0x2e, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e,
-	0x4c, 0x61, 0x75, 0x6e, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x22,
-	0x5a, 0x20, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
+	0x4c, 0x61, 0x75, 0x6e, 0x63, 0x68, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x32,
+	0x5a, 0x30, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x72, 0x69, 0x63, 0x69, 0x75, 0x6d, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f, 0x76, 0x31, 0x3b, 0x61, 0x64, 0x6d,
 	0x69, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_tricium_api_admin_v1_launcher_proto_rawDescOnce sync.Once
-	file_infra_tricium_api_admin_v1_launcher_proto_rawDescData []byte
+	file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_rawDescData []byte
 )
 
-func file_infra_tricium_api_admin_v1_launcher_proto_rawDescGZIP() []byte {
-	file_infra_tricium_api_admin_v1_launcher_proto_rawDescOnce.Do(func() {
-		file_infra_tricium_api_admin_v1_launcher_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_tricium_api_admin_v1_launcher_proto_rawDesc), len(file_infra_tricium_api_admin_v1_launcher_proto_rawDesc)))
+func file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_rawDesc), len(file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_rawDesc)))
 	})
-	return file_infra_tricium_api_admin_v1_launcher_proto_rawDescData
+	return file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_rawDescData
 }
 
-var file_infra_tricium_api_admin_v1_launcher_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_infra_tricium_api_admin_v1_launcher_proto_goTypes = []any{
+var file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_goTypes = []any{
 	(*LaunchRequest)(nil),  // 0: admin.LaunchRequest
 	(*LaunchResponse)(nil), // 1: admin.LaunchResponse
 	(*v1.Data_File)(nil),   // 2: tricium.Data.File
 }
-var file_infra_tricium_api_admin_v1_launcher_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_depIdxs = []int32{
 	2, // 0: admin.LaunchRequest.files:type_name -> tricium.Data.File
 	0, // 1: admin.Launcher.Launch:input_type -> admin.LaunchRequest
 	1, // 2: admin.Launcher.Launch:output_type -> admin.LaunchResponse
@@ -224,28 +227,28 @@ var file_infra_tricium_api_admin_v1_launcher_proto_depIdxs = []int32{
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_infra_tricium_api_admin_v1_launcher_proto_init() }
-func file_infra_tricium_api_admin_v1_launcher_proto_init() {
-	if File_infra_tricium_api_admin_v1_launcher_proto != nil {
+func init() { file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_init() }
+func file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_init() {
+	if File_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_tricium_api_admin_v1_launcher_proto_rawDesc), len(file_infra_tricium_api_admin_v1_launcher_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_rawDesc), len(file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_tricium_api_admin_v1_launcher_proto_goTypes,
-		DependencyIndexes: file_infra_tricium_api_admin_v1_launcher_proto_depIdxs,
-		MessageInfos:      file_infra_tricium_api_admin_v1_launcher_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_msgTypes,
 	}.Build()
-	File_infra_tricium_api_admin_v1_launcher_proto = out.File
-	file_infra_tricium_api_admin_v1_launcher_proto_goTypes = nil
-	file_infra_tricium_api_admin_v1_launcher_proto_depIdxs = nil
+	File_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto = out.File
+	file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_goTypes = nil
+	file_go_chromium_org_infra_tricium_api_admin_v1_launcher_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -343,5 +346,5 @@ var _Launcher_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/tricium/api/admin/v1/launcher.proto",
+	Metadata: "go.chromium.org/infra/tricium/api/admin/v1/launcher.proto",
 }

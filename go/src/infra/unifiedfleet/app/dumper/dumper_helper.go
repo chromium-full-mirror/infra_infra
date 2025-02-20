@@ -17,14 +17,14 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	bqlib "infra/cros/lab_inventory/bq"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	apibq "infra/unifiedfleet/api/v1/models/bigquery"
-	chromeoslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/model/configuration"
-	"infra/unifiedfleet/app/model/history"
-	"infra/unifiedfleet/app/util"
+	bqlib "go.chromium.org/infra/cros/lab_inventory/bq"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	apibq "go.chromium.org/infra/unifiedfleet/api/v1/models/bigquery"
+	chromeoslab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
+	"go.chromium.org/infra/unifiedfleet/app/model/history"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 const pageSize = 500

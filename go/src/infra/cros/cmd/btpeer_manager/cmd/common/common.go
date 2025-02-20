@@ -12,7 +12,7 @@ import (
 	"os"
 	"strings"
 
-	"infra/cros/cmd/btpeer_manager/fileutils"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/fileutils"
 )
 
 func PromptYesNo(ctx context.Context, message string, defaultAnswer bool) (bool, error) {

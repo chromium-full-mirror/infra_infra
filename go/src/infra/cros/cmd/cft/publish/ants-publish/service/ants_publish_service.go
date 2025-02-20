@@ -26,9 +26,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	androidlib "infra/cros/cmd/common_lib/android_api"
-	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
-	"infra/cros/cmd/common_lib/common"
+	androidlib "go.chromium.org/infra/cros/cmd/common_lib/android_api"
+	atp "go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 const (

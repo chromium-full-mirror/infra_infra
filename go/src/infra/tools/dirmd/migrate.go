@@ -13,7 +13,7 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 
-	dirmdpb "infra/tools/dirmd/proto"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
 )
 
 // The file implements migrating metadata from legacy OWNERS files into

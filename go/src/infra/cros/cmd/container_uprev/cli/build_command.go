@@ -9,7 +9,7 @@ import (
 	"flag"
 	"log"
 
-	"infra/cros/cmd/container_uprev/executions"
+	"go.chromium.org/infra/cros/cmd/container_uprev/executions"
 )
 
 // BuildCommand runs as build. This is in place to support backward-compatibility with

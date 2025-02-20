@@ -19,8 +19,8 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmd/shivas/site"
-	"infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmd/shivas/utils"
 )
 
 // ChangelogCmd lists the changes made to a particular entity

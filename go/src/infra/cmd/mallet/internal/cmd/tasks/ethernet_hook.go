@@ -19,9 +19,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/mallet/internal/cmd/tasks/ethernethook"
-	"infra/cmd/mallet/internal/site"
-	"infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cmd/mallet/internal/cmd/tasks/ethernethook"
+	"go.chromium.org/infra/cmd/mallet/internal/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
 )
 
 // EthernetHook does nothing, but eventually it will print all the ethernet events for a single

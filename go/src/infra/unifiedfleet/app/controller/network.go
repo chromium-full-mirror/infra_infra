@@ -7,8 +7,8 @@ package controller
 import (
 	"context"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/model/configuration"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
 )
 
 // get a number of free IPs.

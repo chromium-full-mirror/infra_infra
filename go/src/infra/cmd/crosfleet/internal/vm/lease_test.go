@@ -12,7 +12,7 @@ import (
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	vmapi "infra/libs/vmlab/api"
+	vmapi "go.chromium.org/infra/libs/vmlab/api"
 )
 
 type mockImageApi struct {

@@ -21,7 +21,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"infra/cros/cmd/lucifer/internal/autotest"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/autotest"
 )
 
 const (

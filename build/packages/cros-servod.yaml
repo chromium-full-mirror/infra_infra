@@ -4,7 +4,7 @@ description: cros-servod is the CFT container handling servo
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/cft/dut/cros-servod
+  - go.chromium.org/infra/cros/cmd/cft/dut/cros-servod
 root: ../../go/bin
 data:
   - file: cros-servod${exe_suffix}

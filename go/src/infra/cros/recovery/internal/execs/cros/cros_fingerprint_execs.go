@@ -13,8 +13,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // checkFingerprintInfo confirms that fingerprint mcu and sensor from probing the fpmcu match the fingerprint board found in cros_config.

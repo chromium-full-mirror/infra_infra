@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/unifiedfleet/api/v1/models/asset.proto
+// source: go.chromium.org/infra/unifiedfleet/api/v1/models/asset.proto
 
 package ufspb
 
@@ -70,11 +70,11 @@ func (x AssetType) String() string {
 }
 
 func (AssetType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_asset_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_enumTypes[0].Descriptor()
 }
 
 func (AssetType) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_asset_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_enumTypes[0]
 }
 
 func (x AssetType) Number() protoreflect.EnumNumber {
@@ -83,7 +83,7 @@ func (x AssetType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AssetType.Descriptor instead.
 func (AssetType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_asset_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_rawDescGZIP(), []int{0}
 }
 
 // Asset stores location and some basic info about the asset
@@ -105,7 +105,7 @@ type Asset struct {
 
 func (x *Asset) Reset() {
 	*x = Asset{}
-	mi := &file_infra_unifiedfleet_api_v1_models_asset_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -117,7 +117,7 @@ func (x *Asset) String() string {
 func (*Asset) ProtoMessage() {}
 
 func (x *Asset) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_asset_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -130,7 +130,7 @@ func (x *Asset) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Asset.ProtoReflect.Descriptor instead.
 func (*Asset) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_asset_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Asset) GetName() string {
@@ -189,10 +189,11 @@ func (x *Asset) GetTags() []string {
 	return nil
 }
 
-var File_infra_unifiedfleet_api_v1_models_asset_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto protoreflect.FileDescriptor
 
-var file_infra_unifiedfleet_api_v1_models_asset_proto_rawDesc = string([]byte{
-	0x0a, 0x2c, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_rawDesc = string([]byte{
+	0x0a, 0x3c, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x1a,
 	0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x61, 0x70, 0x69,
@@ -202,10 +203,12 @@ var file_infra_unifiedfleet_api_v1_models_asset_proto_rawDesc = string([]byte{
 	0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61,
 	0x70, 0x69, 0x2f, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x5f, 0x62, 0x65, 0x68, 0x61, 0x76, 0x69, 0x6f,
-	0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75,
+	0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3f, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f,
+	0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75,
 	0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f,
 	0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x30, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
+	0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x40, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72,
+	0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
 	0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69,
 	0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x61, 0x73, 0x73, 0x65, 0x74,
 	0x69, 0x6e, 0x66, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x92, 0x03, 0x0a, 0x05, 0x61,
@@ -239,34 +242,35 @@ var file_infra_unifiedfleet_api_v1_models_asset_proto_rawDesc = string([]byte{
 	0x55, 0x54, 0x10, 0x01, 0x12, 0x09, 0x0a, 0x05, 0x53, 0x45, 0x52, 0x56, 0x4f, 0x10, 0x02, 0x12,
 	0x0e, 0x0a, 0x0a, 0x4c, 0x41, 0x42, 0x53, 0x54, 0x41, 0x54, 0x49, 0x4f, 0x4e, 0x10, 0x03, 0x12,
 	0x0c, 0x0a, 0x08, 0x44, 0x45, 0x56, 0x42, 0x4f, 0x41, 0x52, 0x44, 0x10, 0x04, 0x12, 0x0a, 0x0a,
-	0x06, 0x53, 0x45, 0x52, 0x56, 0x45, 0x52, 0x10, 0x05, 0x42, 0x28, 0x5a, 0x26, 0x69, 0x6e, 0x66,
+	0x06, 0x53, 0x45, 0x52, 0x56, 0x45, 0x52, 0x10, 0x05, 0x42, 0x38, 0x5a, 0x36, 0x67, 0x6f, 0x2e,
+	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66,
 	0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x3b, 0x75, 0x66,
 	0x73, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_unifiedfleet_api_v1_models_asset_proto_rawDescOnce sync.Once
-	file_infra_unifiedfleet_api_v1_models_asset_proto_rawDescData []byte
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_rawDescData []byte
 )
 
-func file_infra_unifiedfleet_api_v1_models_asset_proto_rawDescGZIP() []byte {
-	file_infra_unifiedfleet_api_v1_models_asset_proto_rawDescOnce.Do(func() {
-		file_infra_unifiedfleet_api_v1_models_asset_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_asset_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_asset_proto_rawDesc)))
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_rawDesc)))
 	})
-	return file_infra_unifiedfleet_api_v1_models_asset_proto_rawDescData
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_models_asset_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_infra_unifiedfleet_api_v1_models_asset_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_infra_unifiedfleet_api_v1_models_asset_proto_goTypes = []any{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_goTypes = []any{
 	(AssetType)(0),                // 0: unifiedfleet.api.v1.models.AssetType
 	(*Asset)(nil),                 // 1: unifiedfleet.api.v1.models.asset
 	(*Location)(nil),              // 2: unifiedfleet.api.v1.models.Location
 	(*AssetInfo)(nil),             // 3: unifiedfleet.api.v1.models.AssetInfo
 	(*timestamppb.Timestamp)(nil), // 4: google.protobuf.Timestamp
 }
-var file_infra_unifiedfleet_api_v1_models_asset_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_depIdxs = []int32{
 	0, // 0: unifiedfleet.api.v1.models.asset.type:type_name -> unifiedfleet.api.v1.models.AssetType
 	2, // 1: unifiedfleet.api.v1.models.asset.location:type_name -> unifiedfleet.api.v1.models.Location
 	3, // 2: unifiedfleet.api.v1.models.asset.info:type_name -> unifiedfleet.api.v1.models.AssetInfo
@@ -278,29 +282,29 @@ var file_infra_unifiedfleet_api_v1_models_asset_proto_depIdxs = []int32{
 	0, // [0:4] is the sub-list for field type_name
 }
 
-func init() { file_infra_unifiedfleet_api_v1_models_asset_proto_init() }
-func file_infra_unifiedfleet_api_v1_models_asset_proto_init() {
-	if File_infra_unifiedfleet_api_v1_models_asset_proto != nil {
+func init() { file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_init() }
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_init() {
+	if File_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto != nil {
 		return
 	}
-	file_infra_unifiedfleet_api_v1_models_location_proto_init()
-	file_infra_unifiedfleet_api_v1_models_assetinfo_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_location_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_assetinfo_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_asset_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_asset_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_unifiedfleet_api_v1_models_asset_proto_goTypes,
-		DependencyIndexes: file_infra_unifiedfleet_api_v1_models_asset_proto_depIdxs,
-		EnumInfos:         file_infra_unifiedfleet_api_v1_models_asset_proto_enumTypes,
-		MessageInfos:      file_infra_unifiedfleet_api_v1_models_asset_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_msgTypes,
 	}.Build()
-	File_infra_unifiedfleet_api_v1_models_asset_proto = out.File
-	file_infra_unifiedfleet_api_v1_models_asset_proto_goTypes = nil
-	file_infra_unifiedfleet_api_v1_models_asset_proto_depIdxs = nil
+	File_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto = out.File
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_goTypes = nil
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_asset_proto_depIdxs = nil
 }

@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/experimental/cipd_manifest_experiments/manifest.proto
+// source: go.chromium.org/infra/experimental/cipd_manifest_experiments/manifest.proto
 
 package main
 
@@ -36,7 +36,7 @@ type Digest struct {
 
 func (x *Digest) Reset() {
 	*x = Digest{}
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -48,7 +48,7 @@ func (x *Digest) String() string {
 func (*Digest) ProtoMessage() {}
 
 func (x *Digest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -61,7 +61,7 @@ func (x *Digest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Digest.ProtoReflect.Descriptor instead.
 func (*Digest) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Digest) GetSize() int64 {
@@ -88,7 +88,7 @@ type Digests struct {
 
 func (x *Digests) Reset() {
 	*x = Digests{}
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -100,7 +100,7 @@ func (x *Digests) String() string {
 func (*Digests) ProtoMessage() {}
 
 func (x *Digests) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -113,7 +113,7 @@ func (x *Digests) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Digests.ProtoReflect.Descriptor instead.
 func (*Digests) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Digests) GetOverallDigest() *Digest {
@@ -140,7 +140,7 @@ type WinAttributes struct {
 
 func (x *WinAttributes) Reset() {
 	*x = WinAttributes{}
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -152,7 +152,7 @@ func (x *WinAttributes) String() string {
 func (*WinAttributes) ProtoMessage() {}
 
 func (x *WinAttributes) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -165,7 +165,7 @@ func (x *WinAttributes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WinAttributes.ProtoReflect.Descriptor instead.
 func (*WinAttributes) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *WinAttributes) GetSystem() bool {
@@ -194,7 +194,7 @@ type Attributes struct {
 
 func (x *Attributes) Reset() {
 	*x = Attributes{}
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -206,7 +206,7 @@ func (x *Attributes) String() string {
 func (*Attributes) ProtoMessage() {}
 
 func (x *Attributes) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -219,7 +219,7 @@ func (x *Attributes) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Attributes.ProtoReflect.Descriptor instead.
 func (*Attributes) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Attributes) GetExecutable() bool {
@@ -267,7 +267,7 @@ type File struct {
 
 func (x *File) Reset() {
 	*x = File{}
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -279,7 +279,7 @@ func (x *File) String() string {
 func (*File) ProtoMessage() {}
 
 func (x *File) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -292,7 +292,7 @@ func (x *File) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use File.ProtoReflect.Descriptor instead.
 func (*File) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *File) GetPath() string {
@@ -392,7 +392,7 @@ type Manifest struct {
 
 func (x *Manifest) Reset() {
 	*x = Manifest{}
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -404,7 +404,7 @@ func (x *Manifest) String() string {
 func (*Manifest) ProtoMessage() {}
 
 func (x *Manifest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -417,7 +417,7 @@ func (x *Manifest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Manifest.ProtoReflect.Descriptor instead.
 func (*Manifest) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Manifest) GetVersion() int32 {
@@ -457,7 +457,7 @@ type HashGroups struct {
 
 func (x *HashGroups) Reset() {
 	*x = HashGroups{}
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -469,7 +469,7 @@ func (x *HashGroups) String() string {
 func (*HashGroups) ProtoMessage() {}
 
 func (x *HashGroups) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -482,7 +482,7 @@ func (x *HashGroups) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HashGroups.ProtoReflect.Descriptor instead.
 func (*HashGroups) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *HashGroups) GetGroups() []*HashGroups_Group {
@@ -501,7 +501,7 @@ type HashGroups_Group struct {
 
 func (x *HashGroups_Group) Reset() {
 	*x = HashGroups_Group{}
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -513,7 +513,7 @@ func (x *HashGroups_Group) String() string {
 func (*HashGroups_Group) ProtoMessage() {}
 
 func (x *HashGroups_Group) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -526,7 +526,7 @@ func (x *HashGroups_Group) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HashGroups_Group.ProtoReflect.Descriptor instead.
 func (*HashGroups_Group) Descriptor() ([]byte, []int) {
-	return file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{6, 0}
+	return file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP(), []int{6, 0}
 }
 
 func (x *HashGroups_Group) GetHashes() [][]byte {
@@ -536,10 +536,11 @@ func (x *HashGroups_Group) GetHashes() [][]byte {
 	return nil
 }
 
-var File_infra_experimental_cipd_manifest_experiments_manifest_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto protoreflect.FileDescriptor
 
-var file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDesc = string([]byte{
-	0x0a, 0x3b, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x65, 0x78, 0x70, 0x65, 0x72, 0x69, 0x6d, 0x65,
+var file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDesc = string([]byte{
+	0x0a, 0x4b, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x65, 0x78, 0x70, 0x65, 0x72, 0x69, 0x6d, 0x65,
 	0x6e, 0x74, 0x61, 0x6c, 0x2f, 0x63, 0x69, 0x70, 0x64, 0x5f, 0x6d, 0x61, 0x6e, 0x69, 0x66, 0x65,
 	0x73, 0x74, 0x5f, 0x65, 0x78, 0x70, 0x65, 0x72, 0x69, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x2f, 0x6d,
 	0x61, 0x6e, 0x69, 0x66, 0x65, 0x73, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0d, 0x63,
@@ -604,26 +605,27 @@ var file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDesc = s
 	0x6f, 0x75, 0x70, 0x73, 0x2e, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x52, 0x06, 0x67, 0x72, 0x6f, 0x75,
 	0x70, 0x73, 0x1a, 0x1f, 0x0a, 0x05, 0x47, 0x72, 0x6f, 0x75, 0x70, 0x12, 0x16, 0x0a, 0x06, 0x68,
 	0x61, 0x73, 0x68, 0x65, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0c, 0x52, 0x06, 0x68, 0x61, 0x73,
-	0x68, 0x65, 0x73, 0x42, 0x33, 0x5a, 0x31, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x65, 0x78, 0x70,
+	0x68, 0x65, 0x73, 0x42, 0x43, 0x5a, 0x41, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69,
+	0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x65, 0x78, 0x70,
 	0x65, 0x72, 0x69, 0x6d, 0x65, 0x6e, 0x74, 0x61, 0x6c, 0x2f, 0x63, 0x69, 0x70, 0x64, 0x5f, 0x6d,
 	0x61, 0x6e, 0x69, 0x66, 0x65, 0x73, 0x74, 0x5f, 0x65, 0x78, 0x70, 0x65, 0x72, 0x69, 0x6d, 0x65,
 	0x6e, 0x74, 0x73, 0x3b, 0x6d, 0x61, 0x69, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescOnce sync.Once
-	file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescData []byte
+	file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescData []byte
 )
 
-func file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP() []byte {
-	file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescOnce.Do(func() {
-		file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDesc), len(file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDesc)))
+func file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDesc), len(file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDesc)))
 	})
-	return file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescData
+	return file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDescData
 }
 
-var file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
-var file_infra_experimental_cipd_manifest_experiments_manifest_proto_goTypes = []any{
+var file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_goTypes = []any{
 	(*Digest)(nil),                // 0: cipd.manifest.Digest
 	(*Digests)(nil),               // 1: cipd.manifest.Digests
 	(*WinAttributes)(nil),         // 2: cipd.manifest.WinAttributes
@@ -634,7 +636,7 @@ var file_infra_experimental_cipd_manifest_experiments_manifest_proto_goTypes = [
 	(*HashGroups_Group)(nil),      // 7: cipd.manifest.HashGroups.Group
 	(*timestamppb.Timestamp)(nil), // 8: google.protobuf.Timestamp
 }
-var file_infra_experimental_cipd_manifest_experiments_manifest_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_depIdxs = []int32{
 	0, // 0: cipd.manifest.Digests.overall_digest:type_name -> cipd.manifest.Digest
 	0, // 1: cipd.manifest.Digests.digests:type_name -> cipd.manifest.Digest
 	8, // 2: cipd.manifest.Attributes.modtime:type_name -> google.protobuf.Timestamp
@@ -651,12 +653,12 @@ var file_infra_experimental_cipd_manifest_experiments_manifest_proto_depIdxs = [
 	0, // [0:9] is the sub-list for field type_name
 }
 
-func init() { file_infra_experimental_cipd_manifest_experiments_manifest_proto_init() }
-func file_infra_experimental_cipd_manifest_experiments_manifest_proto_init() {
-	if File_infra_experimental_cipd_manifest_experiments_manifest_proto != nil {
+func init() { file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_init() }
+func file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_init() {
+	if File_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto != nil {
 		return
 	}
-	file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[4].OneofWrappers = []any{
+	file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes[4].OneofWrappers = []any{
 		(*File_Symlink)(nil),
 		(*File_Chunk)(nil),
 		(*File_Chunked)(nil),
@@ -666,17 +668,17 @@ func file_infra_experimental_cipd_manifest_experiments_manifest_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDesc), len(file_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDesc), len(file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_experimental_cipd_manifest_experiments_manifest_proto_goTypes,
-		DependencyIndexes: file_infra_experimental_cipd_manifest_experiments_manifest_proto_depIdxs,
-		MessageInfos:      file_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_msgTypes,
 	}.Build()
-	File_infra_experimental_cipd_manifest_experiments_manifest_proto = out.File
-	file_infra_experimental_cipd_manifest_experiments_manifest_proto_goTypes = nil
-	file_infra_experimental_cipd_manifest_experiments_manifest_proto_depIdxs = nil
+	File_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto = out.File
+	file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_goTypes = nil
+	file_go_chromium_org_infra_experimental_cipd_manifest_experiments_manifest_proto_depIdxs = nil
 }

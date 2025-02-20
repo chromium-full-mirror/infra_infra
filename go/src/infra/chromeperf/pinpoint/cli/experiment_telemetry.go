@@ -30,8 +30,8 @@ import (
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/sync/parallel"
 
-	"infra/chromeperf/pinpoint/cli/render"
-	"infra/chromeperf/pinpoint/proto"
+	"go.chromium.org/infra/chromeperf/pinpoint/cli/render"
+	"go.chromium.org/infra/chromeperf/pinpoint/proto"
 )
 
 // TODO(crbug/1230880): Increase concurrency after we solve the underlying Datastore issue.

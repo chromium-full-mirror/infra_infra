@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/sync/parallel"
 
-	"infra/tools/dirmd"
-	dirmdpb "infra/tools/dirmd/proto"
+	"go.chromium.org/infra/tools/dirmd"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
 )
 
 var includedSubRepos = []string{

@@ -24,8 +24,8 @@ import (
 	"go.chromium.org/luci/server/caching"
 	"go.chromium.org/luci/server/router"
 
-	"infra/appengine/sheriff-o-matic/som/model"
-	monorailv3 "infra/monorailv2/api/v3/api_proto"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/model"
+	monorailv3 "go.chromium.org/infra/monorailv2/api/v3/api_proto"
 )
 
 const (

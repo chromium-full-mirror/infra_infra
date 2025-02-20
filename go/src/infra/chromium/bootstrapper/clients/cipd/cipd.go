@@ -50,7 +50,7 @@ type Client interface {
 // ClientFactory creates the client for accessing CIPD.
 type ClientFactory func(ctx context.Context) Client
 
-var ctxKey = "infra/chromium/bootstrapper/recipe.CipdClientFactory"
+var ctxKey = "go.chromium.org/infra/chromium/bootstrapper/recipe.CipdClientFactory"
 
 // UseClientFactory returns a context that causes new Client instances to be created using the given
 // factory.

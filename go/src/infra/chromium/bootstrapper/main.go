@@ -30,10 +30,10 @@ import (
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe"
 
-	"infra/chromium/bootstrapper/bootstrap"
-	"infra/chromium/bootstrapper/clients/gclient"
-	"infra/chromium/bootstrapper/clients/gerrit"
-	"infra/chromium/bootstrapper/clients/gitiles"
+	"go.chromium.org/infra/chromium/bootstrapper/bootstrap"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gclient"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gerrit"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gitiles"
 )
 
 type getOptionsFn func() options

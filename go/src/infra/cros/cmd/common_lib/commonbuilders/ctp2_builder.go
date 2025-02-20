@@ -11,7 +11,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 )
 
 type ManifestFetcher func(ctx context.Context, s string) (string, error)

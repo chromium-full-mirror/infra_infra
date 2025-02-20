@@ -15,16 +15,16 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/cmd/mallet/internal/site"
-	"infra/cmd/shivas/utils"
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/dutstate"
-	"infra/libs/skylab/buildbucket"
-	"infra/libs/skylab/common/heuristics"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cmd/mallet/internal/site"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufslab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // Run FW update to enable serial for the DUT.

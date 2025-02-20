@@ -7,7 +7,7 @@ package main
 import (
 	"go.chromium.org/luci/server"
 
-	"infra/unifiedfleet/cmd/ufs-service/serverlib"
+	"go.chromium.org/infra/unifiedfleet/cmd/ufs-service/serverlib"
 )
 
 func main() {

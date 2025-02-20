@@ -7,8 +7,8 @@ package main
 import (
 	"context"
 
-	"infra/cros/cmd/lucifer/internal/api"
-	"infra/cros/cmd/lucifer/internal/event"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/api"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/event"
 )
 
 func sendHostStatus(ctx context.Context, ac *api.Client, hosts []string, e event.Event) {

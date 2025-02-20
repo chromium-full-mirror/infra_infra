@@ -6,9 +6,9 @@ syntax = "proto3";
 
 package apibq;
 
-option go_package = "infra/tricium/api/bigquery;apibq";
+option go_package = "go.chromium.org/infra/tricium/api/bigquery;apibq";
 
-import "infra/tricium/api/v1/data.proto";
+import "go.chromium.org/infra/tricium/api/v1/data.proto";
 import "google/protobuf/timestamp.proto";
 
 // FeedbackEvent represents one event such as sending comments or a "not

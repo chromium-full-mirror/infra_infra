@@ -26,8 +26,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/cmd/result_flow/internal/bb"
-	"infra/cros/cmd/result_flow/internal/message"
+	"go.chromium.org/infra/cros/cmd/result_flow/internal/bb"
+	"go.chromium.org/infra/cros/cmd/result_flow/internal/message"
 )
 
 type state struct {

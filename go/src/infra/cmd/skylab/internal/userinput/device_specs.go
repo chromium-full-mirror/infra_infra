@@ -16,8 +16,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/libs/skylab/common/heuristics"
-	"infra/libs/skylab/inventory"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
+	"go.chromium.org/infra/libs/skylab/inventory"
 )
 
 const defaultCriticalPool = "DUT_POOL_QUOTA"

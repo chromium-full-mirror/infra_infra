@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/data/text/indented"
 
-	evalpb "infra/rts/presubmit/eval/proto"
+	evalpb "go.chromium.org/infra/rts/presubmit/eval/proto"
 )
 
 type printer struct {

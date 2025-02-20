@@ -24,7 +24,7 @@ import (
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/luciexe"
 
-	"infra/experimental/golangbuild/golangbuildpb"
+	"go.chromium.org/infra/experimental/golangbuild/golangbuildpb"
 )
 
 // gomoteSetup sets up a basic environment for a gomote from a builder name

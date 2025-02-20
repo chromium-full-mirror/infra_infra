@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/appengine/crosskylabadmin/internal/tq"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/tq"
 )
 
 func TestSuccessfulPushDuts(t *testing.T) {

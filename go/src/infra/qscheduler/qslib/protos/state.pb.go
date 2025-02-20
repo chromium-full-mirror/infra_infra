@@ -16,7 +16,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/qscheduler/qslib/protos/state.proto
+// source: go.chromium.org/infra/qscheduler/qslib/protos/state.proto
 
 package protos
 
@@ -68,7 +68,7 @@ type SchedulerState struct {
 
 func (x *SchedulerState) Reset() {
 	*x = SchedulerState{}
-	mi := &file_infra_qscheduler_qslib_protos_state_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -80,7 +80,7 @@ func (x *SchedulerState) String() string {
 func (*SchedulerState) ProtoMessage() {}
 
 func (x *SchedulerState) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_state_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -93,7 +93,7 @@ func (x *SchedulerState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SchedulerState.ProtoReflect.Descriptor instead.
 func (*SchedulerState) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_state_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *SchedulerState) GetQueuedRequests() map[string]*TaskRequest {
@@ -155,7 +155,7 @@ type TaskRequest struct {
 
 func (x *TaskRequest) Reset() {
 	*x = TaskRequest{}
-	mi := &file_infra_qscheduler_qslib_protos_state_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -167,7 +167,7 @@ func (x *TaskRequest) String() string {
 func (*TaskRequest) ProtoMessage() {}
 
 func (x *TaskRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_state_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -180,7 +180,7 @@ func (x *TaskRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskRequest.ProtoReflect.Descriptor instead.
 func (*TaskRequest) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_state_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *TaskRequest) GetAccountId() string {
@@ -244,7 +244,7 @@ type TaskRun struct {
 
 func (x *TaskRun) Reset() {
 	*x = TaskRun{}
-	mi := &file_infra_qscheduler_qslib_protos_state_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -256,7 +256,7 @@ func (x *TaskRun) String() string {
 func (*TaskRun) ProtoMessage() {}
 
 func (x *TaskRun) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_state_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -269,7 +269,7 @@ func (x *TaskRun) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TaskRun.ProtoReflect.Descriptor instead.
 func (*TaskRun) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_state_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *TaskRun) GetCost() []float32 {
@@ -323,7 +323,7 @@ type Worker struct {
 
 func (x *Worker) Reset() {
 	*x = Worker{}
-	mi := &file_infra_qscheduler_qslib_protos_state_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -335,7 +335,7 @@ func (x *Worker) String() string {
 func (*Worker) ProtoMessage() {}
 
 func (x *Worker) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_state_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -348,7 +348,7 @@ func (x *Worker) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Worker.ProtoReflect.Descriptor instead.
 func (*Worker) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_state_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Worker) GetRunningTask() *TaskRun {
@@ -388,7 +388,7 @@ type SchedulerState_Balance struct {
 
 func (x *SchedulerState_Balance) Reset() {
 	*x = SchedulerState_Balance{}
-	mi := &file_infra_qscheduler_qslib_protos_state_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -400,7 +400,7 @@ func (x *SchedulerState_Balance) String() string {
 func (*SchedulerState_Balance) ProtoMessage() {}
 
 func (x *SchedulerState_Balance) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_qscheduler_qslib_protos_state_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -413,7 +413,7 @@ func (x *SchedulerState_Balance) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SchedulerState_Balance.ProtoReflect.Descriptor instead.
 func (*SchedulerState_Balance) Descriptor() ([]byte, []int) {
-	return file_infra_qscheduler_qslib_protos_state_proto_rawDescGZIP(), []int{0, 1}
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDescGZIP(), []int{0, 1}
 }
 
 func (x *SchedulerState_Balance) GetValue() []float32 {
@@ -423,10 +423,11 @@ func (x *SchedulerState_Balance) GetValue() []float32 {
 	return nil
 }
 
-var File_infra_qscheduler_qslib_protos_state_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_qscheduler_qslib_protos_state_proto protoreflect.FileDescriptor
 
-var file_infra_qscheduler_qslib_protos_state_proto_rawDesc = string([]byte{
-	0x0a, 0x29, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c,
+var file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDesc = string([]byte{
+	0x0a, 0x39, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c,
 	0x65, 0x72, 0x2f, 0x71, 0x73, 0x6c, 0x69, 0x62, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x73, 0x2f,
 	0x73, 0x74, 0x61, 0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x06, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x73, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74,
@@ -521,25 +522,26 @@ var file_infra_qscheduler_qslib_protos_state_proto_rawDesc = string([]byte{
 	0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x0c, 0x6d,
 	0x6f, 0x64, 0x69, 0x66, 0x69, 0x65, 0x64, 0x54, 0x69, 0x6d, 0x65, 0x4a, 0x04, 0x08, 0x01, 0x10,
-	0x02, 0x42, 0x1f, 0x5a, 0x1d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63, 0x68, 0x65,
+	0x02, 0x42, 0x2f, 0x5a, 0x2d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d,
+	0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x71, 0x73, 0x63, 0x68, 0x65,
 	0x64, 0x75, 0x6c, 0x65, 0x72, 0x2f, 0x71, 0x73, 0x6c, 0x69, 0x62, 0x2f, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_qscheduler_qslib_protos_state_proto_rawDescOnce sync.Once
-	file_infra_qscheduler_qslib_protos_state_proto_rawDescData []byte
+	file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDescData []byte
 )
 
-func file_infra_qscheduler_qslib_protos_state_proto_rawDescGZIP() []byte {
-	file_infra_qscheduler_qslib_protos_state_proto_rawDescOnce.Do(func() {
-		file_infra_qscheduler_qslib_protos_state_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_qscheduler_qslib_protos_state_proto_rawDesc), len(file_infra_qscheduler_qslib_protos_state_proto_rawDesc)))
+func file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDesc), len(file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDesc)))
 	})
-	return file_infra_qscheduler_qslib_protos_state_proto_rawDescData
+	return file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDescData
 }
 
-var file_infra_qscheduler_qslib_protos_state_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
-var file_infra_qscheduler_qslib_protos_state_proto_goTypes = []any{
+var file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_goTypes = []any{
 	(*SchedulerState)(nil),         // 0: protos.SchedulerState
 	(*TaskRequest)(nil),            // 1: protos.TaskRequest
 	(*TaskRun)(nil),                // 2: protos.TaskRun
@@ -551,7 +553,7 @@ var file_infra_qscheduler_qslib_protos_state_proto_goTypes = []any{
 	nil,                            // 8: protos.SchedulerState.LabelMapEntry
 	(*timestamppb.Timestamp)(nil),  // 9: google.protobuf.Timestamp
 }
-var file_infra_qscheduler_qslib_protos_state_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_depIdxs = []int32{
 	4,  // 0: protos.SchedulerState.queued_requests:type_name -> protos.SchedulerState.QueuedRequestsEntry
 	6,  // 1: protos.SchedulerState.balances:type_name -> protos.SchedulerState.BalancesEntry
 	7,  // 2: protos.SchedulerState.workers:type_name -> protos.SchedulerState.WorkersEntry
@@ -574,26 +576,26 @@ var file_infra_qscheduler_qslib_protos_state_proto_depIdxs = []int32{
 	0,  // [0:15] is the sub-list for field type_name
 }
 
-func init() { file_infra_qscheduler_qslib_protos_state_proto_init() }
-func file_infra_qscheduler_qslib_protos_state_proto_init() {
-	if File_infra_qscheduler_qslib_protos_state_proto != nil {
+func init() { file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_init() }
+func file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_init() {
+	if File_go_chromium_org_infra_qscheduler_qslib_protos_state_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_qscheduler_qslib_protos_state_proto_rawDesc), len(file_infra_qscheduler_qslib_protos_state_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDesc), len(file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_qscheduler_qslib_protos_state_proto_goTypes,
-		DependencyIndexes: file_infra_qscheduler_qslib_protos_state_proto_depIdxs,
-		MessageInfos:      file_infra_qscheduler_qslib_protos_state_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_msgTypes,
 	}.Build()
-	File_infra_qscheduler_qslib_protos_state_proto = out.File
-	file_infra_qscheduler_qslib_protos_state_proto_goTypes = nil
-	file_infra_qscheduler_qslib_protos_state_proto_depIdxs = nil
+	File_go_chromium_org_infra_qscheduler_qslib_protos_state_proto = out.File
+	file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_goTypes = nil
+	file_go_chromium_org_infra_qscheduler_qslib_protos_state_proto_depIdxs = nil
 }

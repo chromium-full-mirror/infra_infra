@@ -22,8 +22,8 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/cmd"
-	bb "infra/cros/lib/buildbucket"
+	"go.chromium.org/infra/cros/internal/cmd"
+	bb "go.chromium.org/infra/cros/lib/buildbucket"
 )
 
 var (

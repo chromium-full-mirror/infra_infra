@@ -16,10 +16,10 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/client"
-	"infra/cros/karte/internal/scalars"
-	"infra/cros/karte/internal/site"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	"go.chromium.org/infra/cros/karte/client"
+	"go.chromium.org/infra/cros/karte/internal/scalars"
+	"go.chromium.org/infra/cros/karte/internal/site"
 )
 
 // PersistActionRange is a command that persists a range of actions to BigQuery.

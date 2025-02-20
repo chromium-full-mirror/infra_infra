@@ -25,7 +25,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
 )
 
 const SatlabStableVersionKind = "satlab_stable_version"

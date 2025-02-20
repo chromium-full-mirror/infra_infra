@@ -9,8 +9,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/assert"
-	"infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/recovery/internal/components"
 )
 
 func Test_extractHTTPResponseCodeFromCurlErr(t *testing.T) {

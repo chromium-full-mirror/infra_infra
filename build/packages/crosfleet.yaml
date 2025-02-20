@@ -5,7 +5,7 @@ platforms:
   - mac-amd64
   - mac-arm64
 go_packages:
-  - infra/cmd/crosfleet
+  - go.chromium.org/infra/cmd/crosfleet
 root: ../../go/bin
 data:
   - file: crosfleet${exe_suffix}

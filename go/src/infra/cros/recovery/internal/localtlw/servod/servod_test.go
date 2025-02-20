@@ -7,7 +7,7 @@ package servod
 import (
 	"testing"
 
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // Test cases for TestDUTPlans

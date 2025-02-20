@@ -22,7 +22,7 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cr_builder_health/healthpb"
+	"go.chromium.org/infra/cr_builder_health/healthpb"
 )
 
 var iso8601Format = "2006-01-02"

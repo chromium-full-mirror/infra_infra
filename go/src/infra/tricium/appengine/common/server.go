@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/server/auth"
 
-	admin "infra/tricium/api/admin/v1"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
 )
 
 // ResultState contains the current status of a given task.

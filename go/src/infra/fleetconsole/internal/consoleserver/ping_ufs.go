@@ -10,8 +10,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // PingUfs pings UFS.

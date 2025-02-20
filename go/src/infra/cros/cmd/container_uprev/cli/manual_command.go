@@ -11,8 +11,8 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/container_uprev/executions"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/container_uprev/executions"
 )
 
 // ManualCommand submits manual SHAs into the firestore.

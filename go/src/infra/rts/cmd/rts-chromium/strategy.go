@@ -14,11 +14,11 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/rts"
-	"infra/rts/filegraph/git"
-	"infra/rts/internal/chromium"
-	"infra/rts/presubmit/eval"
-	evalpb "infra/rts/presubmit/eval/proto"
+	"go.chromium.org/infra/rts"
+	"go.chromium.org/infra/rts/filegraph/git"
+	"go.chromium.org/infra/rts/internal/chromium"
+	"go.chromium.org/infra/rts/presubmit/eval"
+	evalpb "go.chromium.org/infra/rts/presubmit/eval/proto"
 )
 
 // mustAlwaysRunTest returns true if the test file must never be skipped.

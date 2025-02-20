@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components/cros"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // wgetStderrHTTPResponseCodeRegex is regex that matches the HTTP error code

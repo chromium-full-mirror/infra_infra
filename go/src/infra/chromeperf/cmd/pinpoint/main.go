@@ -17,7 +17,7 @@ package main
 import (
 	"os"
 
-	"infra/chromeperf/pinpoint/cli"
+	"go.chromium.org/infra/chromeperf/pinpoint/cli"
 )
 
 func main() {

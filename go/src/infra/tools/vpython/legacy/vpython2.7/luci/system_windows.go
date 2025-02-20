@@ -24,8 +24,8 @@ import (
 	"unicode/utf16"
 	"unsafe"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/python"
-	"infra/tools/vpython/legacy/vpython2.7/luci/venv"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/python"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/venv"
 
 	"go.chromium.org/luci/common/errors"
 

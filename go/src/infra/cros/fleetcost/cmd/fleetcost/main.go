@@ -9,7 +9,7 @@ import (
 
 	"github.com/maruel/subcommands"
 
-	"infra/cros/fleetcost/cmd/fleetcost/cli"
+	"go.chromium.org/infra/cros/fleetcost/cmd/fleetcost/cli"
 )
 
 // main is the entrypoint to the fleet command line application.

@@ -14,8 +14,8 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
 const DockerRdbPublishLogsDir = "/tmp/rdb-publish/"

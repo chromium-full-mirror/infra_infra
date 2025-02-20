@@ -7,7 +7,7 @@ package ssh
 import (
 	"fmt"
 
-	"infra/cros/servo/shutil"
+	"go.chromium.org/infra/cros/servo/shutil"
 )
 
 // Platform defines platform-specific behaviours for SSH connections.

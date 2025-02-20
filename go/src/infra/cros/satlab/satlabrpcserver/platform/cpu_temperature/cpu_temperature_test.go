@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"infra/cros/satlab/satlabrpcserver/utils"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/utils"
 )
 
 func TestGetCurrentTemperature(t *testing.T) {

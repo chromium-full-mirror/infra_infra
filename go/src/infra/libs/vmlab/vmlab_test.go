@@ -9,9 +9,9 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/libs/vmlab/api"
-	"infra/libs/vmlab/internal/instance/gcloud"
-	vmleaser "infra/libs/vmlab/internal/instance/vm_leaser"
+	"go.chromium.org/infra/libs/vmlab/api"
+	"go.chromium.org/infra/libs/vmlab/internal/instance/gcloud"
+	vmleaser "go.chromium.org/infra/libs/vmlab/internal/instance/vm_leaser"
 )
 
 func TestNewInstanceApi_unimplemented(t *testing.T) {

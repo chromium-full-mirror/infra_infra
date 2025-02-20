@@ -5,7 +5,7 @@ platforms:
   - mac-amd64
   - mac-arm64
 go_packages:
-  - infra/cros/cmd/manifest_doctor
+  - go.chromium.org/infra/cros/cmd/manifest_doctor
 root: ../../go/bin
 data:
   - file: manifest_doctor${exe_suffix}

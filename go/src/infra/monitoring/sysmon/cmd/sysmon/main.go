@@ -14,13 +14,13 @@ import (
 	"go.chromium.org/luci/common/logging/gologger"
 	"go.chromium.org/luci/common/tsmon"
 
-	"infra/cmdsupport/service"
-	"infra/monitoring/sysmon/android"
-	"infra/monitoring/sysmon/cipd"
-	"infra/monitoring/sysmon/cros"
-	"infra/monitoring/sysmon/docker"
-	"infra/monitoring/sysmon/puppet"
-	"infra/monitoring/sysmon/system"
+	"go.chromium.org/infra/cmdsupport/service"
+	"go.chromium.org/infra/monitoring/sysmon/android"
+	"go.chromium.org/infra/monitoring/sysmon/cipd"
+	"go.chromium.org/infra/monitoring/sysmon/cros"
+	"go.chromium.org/infra/monitoring/sysmon/docker"
+	"go.chromium.org/infra/monitoring/sysmon/puppet"
+	"go.chromium.org/infra/monitoring/sysmon/system"
 )
 
 func main() {

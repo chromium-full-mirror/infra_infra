@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/cros/cmd/suite_publisher/test"
+	"go.chromium.org/infra/cros/cmd/suite_publisher/test"
 )
 
 func TestClosures(t *testing.T) {

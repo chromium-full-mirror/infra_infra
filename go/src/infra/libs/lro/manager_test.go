@@ -11,7 +11,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 
-	"infra/libs/lro"
+	"go.chromium.org/infra/libs/lro"
 )
 
 type exampleServer struct {

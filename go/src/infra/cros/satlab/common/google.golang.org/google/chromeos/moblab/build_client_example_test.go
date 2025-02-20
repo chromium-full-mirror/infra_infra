@@ -10,7 +10,7 @@ import (
 	"google.golang.org/api/iterator"
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
-	"infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
+	"go.chromium.org/infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
 )
 
 func ExampleNewBuildClient() {

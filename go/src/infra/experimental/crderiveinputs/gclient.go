@@ -25,7 +25,7 @@ import (
 	"go.chromium.org/luci/common/exec"
 	"go.chromium.org/luci/common/flag/stringmapflag"
 
-	"infra/experimental/crderiveinputs/inputpb"
+	"go.chromium.org/infra/experimental/crderiveinputs/inputpb"
 )
 
 //go:embed all:embed

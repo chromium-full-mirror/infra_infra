@@ -16,7 +16,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	tricium "infra/tricium/api/v1"
+	tricium "go.chromium.org/infra/tricium/api/v1"
 )
 
 // Paths to the required resources relative to the executable directory.

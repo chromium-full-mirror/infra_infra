@@ -14,8 +14,8 @@ import (
 	"go.chromium.org/luci/common/data/rand/mathrand"
 	"go.chromium.org/luci/common/errors"
 
-	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/scalars"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	"go.chromium.org/infra/cros/karte/internal/scalars"
 )
 
 // The IDVersion must be four bytes long. Please record all previously used ID versions here.

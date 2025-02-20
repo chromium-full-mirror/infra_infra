@@ -61,7 +61,7 @@ import (
 	"strconv"
 	"strings"
 
-	gensupport "infra/cros/cmd/common_lib/ants/gensupport"
+	gensupport "go.chromium.org/infra/cros/cmd/common_lib/ants/gensupport"
 
 	googleapi "google.golang.org/api/googleapi"
 	option "google.golang.org/api/option"

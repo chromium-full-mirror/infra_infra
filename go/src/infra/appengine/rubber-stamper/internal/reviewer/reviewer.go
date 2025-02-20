@@ -12,11 +12,11 @@ import (
 	"go.chromium.org/luci/common/logging"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 
-	"infra/appengine/rubber-stamper/config"
-	"infra/appengine/rubber-stamper/internal/gerrit"
-	"infra/appengine/rubber-stamper/internal/metrics"
-	"infra/appengine/rubber-stamper/internal/util"
-	"infra/appengine/rubber-stamper/tasks/taskspb"
+	"go.chromium.org/infra/appengine/rubber-stamper/config"
+	"go.chromium.org/infra/appengine/rubber-stamper/internal/gerrit"
+	"go.chromium.org/infra/appengine/rubber-stamper/internal/metrics"
+	"go.chromium.org/infra/appengine/rubber-stamper/internal/util"
+	"go.chromium.org/infra/appengine/rubber-stamper/tasks/taskspb"
 )
 
 // ReviewChange reviews a CL and then either gives a Bot-Commit +1 label or

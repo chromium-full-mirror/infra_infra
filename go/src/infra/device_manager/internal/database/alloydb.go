@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/device_manager/internal/config"
+	"go.chromium.org/infra/device_manager/internal/config"
 )
 
 type DatabaseConfig struct {

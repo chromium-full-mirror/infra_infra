@@ -11,13 +11,13 @@ import (
 	"github.com/golang/mock/gomock"
 	"google.golang.org/genproto/googleapis/type/money"
 
-	fleetcostModels "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/costserver"
-	"infra/cros/fleetcost/internal/costserver/fakeufsdata"
-	testsupport "infra/cros/fleetcost/internal/costserver/testsupport"
-	models "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	fleetcostModels "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/fakeufsdata"
+	testsupport "go.chromium.org/infra/cros/fleetcost/internal/costserver/testsupport"
+	models "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 func TestRepopulateCache(t *testing.T) {

@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/router"
 
-	"infra/tricium/appengine/common/config"
+	"go.chromium.org/infra/tricium/appengine/common/config"
 )
 
 // UpdateHandler is the HTTP router handler for handling cron-triggered

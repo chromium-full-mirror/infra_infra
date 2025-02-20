@@ -11,9 +11,9 @@ import (
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 
-	"infra/appengine/drone-queen/internal/config"
-	icron "infra/appengine/drone-queen/internal/cron"
-	"infra/appengine/drone-queen/internal/frontend"
+	"go.chromium.org/infra/appengine/drone-queen/internal/config"
+	icron "go.chromium.org/infra/appengine/drone-queen/internal/cron"
+	"go.chromium.org/infra/appengine/drone-queen/internal/frontend"
 )
 
 func main() {

@@ -19,8 +19,8 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/tools/pkgbuild/pkg/spec"
-	"infra/tools/pkgbuild/pkg/stdenv"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/spec"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/stdenv"
 )
 
 const envEnableLuciexe = "PKGBUILD_ENABLE_LUCIEXE"

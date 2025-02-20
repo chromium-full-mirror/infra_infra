@@ -3,7 +3,7 @@ description: ants-publish is the CFT container handling ants publishing.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/cft/publish/ants-publish
+  - go.chromium.org/infra/cros/cmd/cft/publish/ants-publish
 root: ../../go/bin
 data:
   - file: ants-publish${exe_suffix}

@@ -11,7 +11,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/appengine/cr-rev/models"
+	"go.chromium.org/infra/appengine/cr-rev/models"
 )
 
 func TestGitilesRedirect(t *testing.T) {

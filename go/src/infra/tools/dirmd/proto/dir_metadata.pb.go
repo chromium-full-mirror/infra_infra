@@ -6,14 +6,14 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/tools/dirmd/proto/dir_metadata.proto
+// source: go.chromium.org/infra/tools/dirmd/proto/dir_metadata.proto
 
 package dirmdpb
 
 import (
+	chromeos "go.chromium.org/infra/tools/dirmd/proto/chromeos"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	chromeos "infra/tools/dirmd/proto/chromeos"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -78,11 +78,11 @@ func (x OS) String() string {
 }
 
 func (OS) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_tools_dirmd_proto_dir_metadata_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_enumTypes[0].Descriptor()
 }
 
 func (OS) Type() protoreflect.EnumType {
-	return &file_infra_tools_dirmd_proto_dir_metadata_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_enumTypes[0]
 }
 
 func (x OS) Number() protoreflect.EnumNumber {
@@ -91,7 +91,7 @@ func (x OS) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use OS.Descriptor instead.
 func (OS) EnumDescriptor() ([]byte, []int) {
-	return file_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{0}
 }
 
 // Trinary is a tri-state boolean.
@@ -142,11 +142,11 @@ func (x Trinary) String() string {
 }
 
 func (Trinary) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_tools_dirmd_proto_dir_metadata_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_enumTypes[1].Descriptor()
 }
 
 func (Trinary) Type() protoreflect.EnumType {
-	return &file_infra_tools_dirmd_proto_dir_metadata_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_enumTypes[1]
 }
 
 func (x Trinary) Number() protoreflect.EnumNumber {
@@ -155,7 +155,7 @@ func (x Trinary) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Trinary.Descriptor instead.
 func (Trinary) EnumDescriptor() ([]byte, []int) {
-	return file_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{1}
 }
 
 // Metadata information for a directory.
@@ -227,7 +227,7 @@ type Metadata struct {
 
 func (x *Metadata) Reset() {
 	*x = Metadata{}
-	mi := &file_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -239,7 +239,7 @@ func (x *Metadata) String() string {
 func (*Metadata) ProtoMessage() {}
 
 func (x *Metadata) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -252,7 +252,7 @@ func (x *Metadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Metadata.ProtoReflect.Descriptor instead.
 func (*Metadata) Descriptor() ([]byte, []int) {
-	return file_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Metadata) GetMixins() []string {
@@ -336,7 +336,7 @@ type WPT struct {
 
 func (x *WPT) Reset() {
 	*x = WPT{}
-	mi := &file_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -348,7 +348,7 @@ func (x *WPT) String() string {
 func (*WPT) ProtoMessage() {}
 
 func (x *WPT) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -361,7 +361,7 @@ func (x *WPT) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WPT.ProtoReflect.Descriptor instead.
 func (*WPT) Descriptor() ([]byte, []int) {
-	return file_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *WPT) GetNotify() Trinary {
@@ -385,7 +385,7 @@ type Monorail struct {
 
 func (x *Monorail) Reset() {
 	*x = Monorail{}
-	mi := &file_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -397,7 +397,7 @@ func (x *Monorail) String() string {
 func (*Monorail) ProtoMessage() {}
 
 func (x *Monorail) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -410,7 +410,7 @@ func (x *Monorail) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Monorail.ProtoReflect.Descriptor instead.
 func (*Monorail) Descriptor() ([]byte, []int) {
-	return file_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Monorail) GetProject() string {
@@ -438,7 +438,7 @@ type Buganizer struct {
 
 func (x *Buganizer) Reset() {
 	*x = Buganizer{}
-	mi := &file_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -450,7 +450,7 @@ func (x *Buganizer) String() string {
 func (*Buganizer) ProtoMessage() {}
 
 func (x *Buganizer) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -463,7 +463,7 @@ func (x *Buganizer) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Buganizer.ProtoReflect.Descriptor instead.
 func (*Buganizer) Descriptor() ([]byte, []int) {
-	return file_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Buganizer) GetComponentId() int64 {
@@ -493,7 +493,7 @@ type MetadataOverride struct {
 
 func (x *MetadataOverride) Reset() {
 	*x = MetadataOverride{}
-	mi := &file_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -505,7 +505,7 @@ func (x *MetadataOverride) String() string {
 func (*MetadataOverride) ProtoMessage() {}
 
 func (x *MetadataOverride) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -518,7 +518,7 @@ func (x *MetadataOverride) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MetadataOverride.ProtoReflect.Descriptor instead.
 func (*MetadataOverride) Descriptor() ([]byte, []int) {
-	return file_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *MetadataOverride) GetFilePatterns() []string {
@@ -548,7 +548,7 @@ type ResultDB struct {
 
 func (x *ResultDB) Reset() {
 	*x = ResultDB{}
-	mi := &file_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -560,7 +560,7 @@ func (x *ResultDB) String() string {
 func (*ResultDB) ProtoMessage() {}
 
 func (x *ResultDB) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -573,7 +573,7 @@ func (x *ResultDB) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResultDB.ProtoReflect.Descriptor instead.
 func (*ResultDB) Descriptor() ([]byte, []int) {
-	return file_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *ResultDB) GetTags() []string {
@@ -583,14 +583,16 @@ func (x *ResultDB) GetTags() []string {
 	return nil
 }
 
-var File_infra_tools_dirmd_proto_dir_metadata_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto protoreflect.FileDescriptor
 
-var file_infra_tools_dirmd_proto_dir_metadata_proto_rawDesc = string([]byte{
-	0x0a, 0x2a, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x64, 0x69,
+var file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDesc = string([]byte{
+	0x0a, 0x3a, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x64, 0x69,
 	0x72, 0x6d, 0x64, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x64, 0x69, 0x72, 0x5f, 0x6d, 0x65,
 	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x13, 0x63, 0x68,
 	0x72, 0x6f, 0x6d, 0x65, 0x2e, 0x64, 0x69, 0x72, 0x5f, 0x6d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
-	0x61, 0x1a, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x64,
+	0x61, 0x1a, 0x3f, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f,
+	0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x64,
 	0x69, 0x72, 0x6d, 0x64, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d,
 	0x65, 0x6f, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x70, 0x72, 0x6f,
 	0x74, 0x6f, 0x22, 0xc5, 0x04, 0x0a, 0x08, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0x12,
@@ -660,27 +662,28 @@ var file_infra_tools_dirmd_proto_dir_metadata_proto_rawDesc = string([]byte{
 	0x4c, 0x41, 0x43, 0x52, 0x4f, 0x53, 0x10, 0x08, 0x2a, 0x33, 0x0a, 0x07, 0x54, 0x72, 0x69, 0x6e,
 	0x61, 0x72, 0x79, 0x12, 0x17, 0x0a, 0x13, 0x54, 0x52, 0x49, 0x4e, 0x41, 0x52, 0x59, 0x5f, 0x55,
 	0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x07, 0x0a, 0x03,
-	0x59, 0x45, 0x53, 0x10, 0x01, 0x12, 0x06, 0x0a, 0x02, 0x4e, 0x4f, 0x10, 0x02, 0x42, 0x21, 0x5a,
-	0x1f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x64, 0x69, 0x72,
+	0x59, 0x45, 0x53, 0x10, 0x01, 0x12, 0x06, 0x0a, 0x02, 0x4e, 0x4f, 0x10, 0x02, 0x42, 0x31, 0x5a,
+	0x2f, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67,
+	0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x64, 0x69, 0x72,
 	0x6d, 0x64, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x3b, 0x64, 0x69, 0x72, 0x6d, 0x64, 0x70, 0x62,
 	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_tools_dirmd_proto_dir_metadata_proto_rawDescOnce sync.Once
-	file_infra_tools_dirmd_proto_dir_metadata_proto_rawDescData []byte
+	file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDescData []byte
 )
 
-func file_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP() []byte {
-	file_infra_tools_dirmd_proto_dir_metadata_proto_rawDescOnce.Do(func() {
-		file_infra_tools_dirmd_proto_dir_metadata_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_tools_dirmd_proto_dir_metadata_proto_rawDesc), len(file_infra_tools_dirmd_proto_dir_metadata_proto_rawDesc)))
+func file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDesc), len(file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDesc)))
 	})
-	return file_infra_tools_dirmd_proto_dir_metadata_proto_rawDescData
+	return file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDescData
 }
 
-var file_infra_tools_dirmd_proto_dir_metadata_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
-var file_infra_tools_dirmd_proto_dir_metadata_proto_goTypes = []any{
+var file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_goTypes = []any{
 	(OS)(0),                   // 0: chrome.dir_metadata.OS
 	(Trinary)(0),              // 1: chrome.dir_metadata.Trinary
 	(*Metadata)(nil),          // 2: chrome.dir_metadata.Metadata
@@ -691,7 +694,7 @@ var file_infra_tools_dirmd_proto_dir_metadata_proto_goTypes = []any{
 	(*ResultDB)(nil),          // 7: chrome.dir_metadata.ResultDB
 	(*chromeos.ChromeOS)(nil), // 8: chrome.dir_metadata.chromeos.ChromeOS
 }
-var file_infra_tools_dirmd_proto_dir_metadata_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_depIdxs = []int32{
 	4,  // 0: chrome.dir_metadata.Metadata.monorail:type_name -> chrome.dir_metadata.Monorail
 	0,  // 1: chrome.dir_metadata.Metadata.os:type_name -> chrome.dir_metadata.OS
 	3,  // 2: chrome.dir_metadata.Metadata.wpt:type_name -> chrome.dir_metadata.WPT
@@ -709,27 +712,27 @@ var file_infra_tools_dirmd_proto_dir_metadata_proto_depIdxs = []int32{
 	0,  // [0:10] is the sub-list for field type_name
 }
 
-func init() { file_infra_tools_dirmd_proto_dir_metadata_proto_init() }
-func file_infra_tools_dirmd_proto_dir_metadata_proto_init() {
-	if File_infra_tools_dirmd_proto_dir_metadata_proto != nil {
+func init() { file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_init() }
+func file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_init() {
+	if File_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_tools_dirmd_proto_dir_metadata_proto_rawDesc), len(file_infra_tools_dirmd_proto_dir_metadata_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDesc), len(file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_rawDesc)),
 			NumEnums:      2,
 			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_tools_dirmd_proto_dir_metadata_proto_goTypes,
-		DependencyIndexes: file_infra_tools_dirmd_proto_dir_metadata_proto_depIdxs,
-		EnumInfos:         file_infra_tools_dirmd_proto_dir_metadata_proto_enumTypes,
-		MessageInfos:      file_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_msgTypes,
 	}.Build()
-	File_infra_tools_dirmd_proto_dir_metadata_proto = out.File
-	file_infra_tools_dirmd_proto_dir_metadata_proto_goTypes = nil
-	file_infra_tools_dirmd_proto_dir_metadata_proto_depIdxs = nil
+	File_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto = out.File
+	file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_goTypes = nil
+	file_go_chromium_org_infra_tools_dirmd_proto_dir_metadata_proto_depIdxs = nil
 }

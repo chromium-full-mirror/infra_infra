@@ -7,7 +7,7 @@ package ctr
 import (
 	"go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 func toLabDut(d *tlw.Dut, cacheAddr *api.IpEndpoint) *api.Dut {

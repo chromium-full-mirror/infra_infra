@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/appengine/cros/lab_inventory/api/v1/service.proto
+// source: go.chromium.org/infra/appengine/cros/lab_inventory/api/v1/service.proto
 
 package api
 
@@ -17,13 +17,13 @@ import (
 	device "go.chromium.org/chromiumos/infra/proto/go/device"
 	lab "go.chromium.org/chromiumos/infra/proto/go/lab"
 	manufacturing "go.chromium.org/chromiumos/infra/proto/go/manufacturing"
+	protos "go.chromium.org/infra/cros/lab_inventory/protos"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	protos "infra/cros/lab_inventory/protos"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -44,7 +44,7 @@ type ListCrosDevicesLabConfigRequest struct {
 
 func (x *ListCrosDevicesLabConfigRequest) Reset() {
 	*x = ListCrosDevicesLabConfigRequest{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -56,7 +56,7 @@ func (x *ListCrosDevicesLabConfigRequest) String() string {
 func (*ListCrosDevicesLabConfigRequest) ProtoMessage() {}
 
 func (x *ListCrosDevicesLabConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -69,7 +69,7 @@ func (x *ListCrosDevicesLabConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCrosDevicesLabConfigRequest.ProtoReflect.Descriptor instead.
 func (*ListCrosDevicesLabConfigRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{0}
 }
 
 type ListCrosDevicesLabConfigResponse struct {
@@ -81,7 +81,7 @@ type ListCrosDevicesLabConfigResponse struct {
 
 func (x *ListCrosDevicesLabConfigResponse) Reset() {
 	*x = ListCrosDevicesLabConfigResponse{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -93,7 +93,7 @@ func (x *ListCrosDevicesLabConfigResponse) String() string {
 func (*ListCrosDevicesLabConfigResponse) ProtoMessage() {}
 
 func (x *ListCrosDevicesLabConfigResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -106,7 +106,7 @@ func (x *ListCrosDevicesLabConfigResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCrosDevicesLabConfigResponse.ProtoReflect.Descriptor instead.
 func (*ListCrosDevicesLabConfigResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ListCrosDevicesLabConfigResponse) GetLabConfigs() []*ListCrosDevicesLabConfigResponse_LabConfig {
@@ -126,7 +126,7 @@ type DeviceConfigsExistsRequest struct {
 
 func (x *DeviceConfigsExistsRequest) Reset() {
 	*x = DeviceConfigsExistsRequest{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -138,7 +138,7 @@ func (x *DeviceConfigsExistsRequest) String() string {
 func (*DeviceConfigsExistsRequest) ProtoMessage() {}
 
 func (x *DeviceConfigsExistsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -151,7 +151,7 @@ func (x *DeviceConfigsExistsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceConfigsExistsRequest.ProtoReflect.Descriptor instead.
 func (*DeviceConfigsExistsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *DeviceConfigsExistsRequest) GetConfigIds() []*device.ConfigId {
@@ -175,7 +175,7 @@ type DeviceConfigsExistsResponse struct {
 
 func (x *DeviceConfigsExistsResponse) Reset() {
 	*x = DeviceConfigsExistsResponse{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -187,7 +187,7 @@ func (x *DeviceConfigsExistsResponse) String() string {
 func (*DeviceConfigsExistsResponse) ProtoMessage() {}
 
 func (x *DeviceConfigsExistsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -200,7 +200,7 @@ func (x *DeviceConfigsExistsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceConfigsExistsResponse.ProtoReflect.Descriptor instead.
 func (*DeviceConfigsExistsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *DeviceConfigsExistsResponse) GetExists() map[int32]bool {
@@ -221,7 +221,7 @@ type DeviceOpResult struct {
 
 func (x *DeviceOpResult) Reset() {
 	*x = DeviceOpResult{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -233,7 +233,7 @@ func (x *DeviceOpResult) String() string {
 func (*DeviceOpResult) ProtoMessage() {}
 
 func (x *DeviceOpResult) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -246,7 +246,7 @@ func (x *DeviceOpResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceOpResult.ProtoReflect.Descriptor instead.
 func (*DeviceOpResult) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *DeviceOpResult) GetId() string {
@@ -283,7 +283,7 @@ type DeviceID struct {
 
 func (x *DeviceID) Reset() {
 	*x = DeviceID{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -295,7 +295,7 @@ func (x *DeviceID) String() string {
 func (*DeviceID) ProtoMessage() {}
 
 func (x *DeviceID) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -308,7 +308,7 @@ func (x *DeviceID) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceID.ProtoReflect.Descriptor instead.
 func (*DeviceID) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *DeviceID) GetId() isDeviceID_Id {
@@ -362,7 +362,7 @@ type GetCrosDevicesRequest struct {
 
 func (x *GetCrosDevicesRequest) Reset() {
 	*x = GetCrosDevicesRequest{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -374,7 +374,7 @@ func (x *GetCrosDevicesRequest) String() string {
 func (*GetCrosDevicesRequest) ProtoMessage() {}
 
 func (x *GetCrosDevicesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -387,7 +387,7 @@ func (x *GetCrosDevicesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCrosDevicesRequest.ProtoReflect.Descriptor instead.
 func (*GetCrosDevicesRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *GetCrosDevicesRequest) GetIds() []*DeviceID {
@@ -414,7 +414,7 @@ type HwidData struct {
 
 func (x *HwidData) Reset() {
 	*x = HwidData{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -426,7 +426,7 @@ func (x *HwidData) String() string {
 func (*HwidData) ProtoMessage() {}
 
 func (x *HwidData) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -439,7 +439,7 @@ func (x *HwidData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HwidData.ProtoReflect.Descriptor instead.
 func (*HwidData) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *HwidData) GetSku() string {
@@ -469,7 +469,7 @@ type ExtendedDeviceData struct {
 
 func (x *ExtendedDeviceData) Reset() {
 	*x = ExtendedDeviceData{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -481,7 +481,7 @@ func (x *ExtendedDeviceData) String() string {
 func (*ExtendedDeviceData) ProtoMessage() {}
 
 func (x *ExtendedDeviceData) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -494,7 +494,7 @@ func (x *ExtendedDeviceData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExtendedDeviceData.ProtoReflect.Descriptor instead.
 func (*ExtendedDeviceData) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ExtendedDeviceData) GetLabConfig() *lab.ChromeOSDevice {
@@ -542,7 +542,7 @@ type GetCrosDevicesResponse struct {
 
 func (x *GetCrosDevicesResponse) Reset() {
 	*x = GetCrosDevicesResponse{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -554,7 +554,7 @@ func (x *GetCrosDevicesResponse) String() string {
 func (*GetCrosDevicesResponse) ProtoMessage() {}
 
 func (x *GetCrosDevicesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -567,7 +567,7 @@ func (x *GetCrosDevicesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCrosDevicesResponse.ProtoReflect.Descriptor instead.
 func (*GetCrosDevicesResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *GetCrosDevicesResponse) GetData() []*ExtendedDeviceData {
@@ -599,7 +599,7 @@ type UpdateDutsStatusRequest struct {
 
 func (x *UpdateDutsStatusRequest) Reset() {
 	*x = UpdateDutsStatusRequest{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -611,7 +611,7 @@ func (x *UpdateDutsStatusRequest) String() string {
 func (*UpdateDutsStatusRequest) ProtoMessage() {}
 
 func (x *UpdateDutsStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -624,7 +624,7 @@ func (x *UpdateDutsStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDutsStatusRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDutsStatusRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *UpdateDutsStatusRequest) GetStates() []*lab.DutState {
@@ -667,7 +667,7 @@ type DutMeta struct {
 
 func (x *DutMeta) Reset() {
 	*x = DutMeta{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -679,7 +679,7 @@ func (x *DutMeta) String() string {
 func (*DutMeta) ProtoMessage() {}
 
 func (x *DutMeta) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -692,7 +692,7 @@ func (x *DutMeta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DutMeta.ProtoReflect.Descriptor instead.
 func (*DutMeta) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{11}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *DutMeta) GetChromeosDeviceId() string {
@@ -735,7 +735,7 @@ type LabMeta struct {
 
 func (x *LabMeta) Reset() {
 	*x = LabMeta{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -747,7 +747,7 @@ func (x *LabMeta) String() string {
 func (*LabMeta) ProtoMessage() {}
 
 func (x *LabMeta) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -760,7 +760,7 @@ func (x *LabMeta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LabMeta.ProtoReflect.Descriptor instead.
 func (*LabMeta) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{12}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *LabMeta) GetChromeosDeviceId() string {
@@ -801,7 +801,7 @@ type UpdateDutsStatusResponse struct {
 
 func (x *UpdateDutsStatusResponse) Reset() {
 	*x = UpdateDutsStatusResponse{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -813,7 +813,7 @@ func (x *UpdateDutsStatusResponse) String() string {
 func (*UpdateDutsStatusResponse) ProtoMessage() {}
 
 func (x *UpdateDutsStatusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -826,7 +826,7 @@ func (x *UpdateDutsStatusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDutsStatusResponse.ProtoReflect.Descriptor instead.
 func (*UpdateDutsStatusResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{13}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *UpdateDutsStatusResponse) GetUpdatedDevices() []*DeviceOpResult {
@@ -854,7 +854,7 @@ type DeviceProperty struct {
 
 func (x *DeviceProperty) Reset() {
 	*x = DeviceProperty{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -866,7 +866,7 @@ func (x *DeviceProperty) String() string {
 func (*DeviceProperty) ProtoMessage() {}
 
 func (x *DeviceProperty) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -879,7 +879,7 @@ func (x *DeviceProperty) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceProperty.ProtoReflect.Descriptor instead.
 func (*DeviceProperty) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{14}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *DeviceProperty) GetHostname() string {
@@ -912,7 +912,7 @@ type GetDeviceManualRepairRecordRequest struct {
 
 func (x *GetDeviceManualRepairRecordRequest) Reset() {
 	*x = GetDeviceManualRepairRecordRequest{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -924,7 +924,7 @@ func (x *GetDeviceManualRepairRecordRequest) String() string {
 func (*GetDeviceManualRepairRecordRequest) ProtoMessage() {}
 
 func (x *GetDeviceManualRepairRecordRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -937,7 +937,7 @@ func (x *GetDeviceManualRepairRecordRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use GetDeviceManualRepairRecordRequest.ProtoReflect.Descriptor instead.
 func (*GetDeviceManualRepairRecordRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{15}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *GetDeviceManualRepairRecordRequest) GetHostname() string {
@@ -957,7 +957,7 @@ type GetDeviceManualRepairRecordResponse struct {
 
 func (x *GetDeviceManualRepairRecordResponse) Reset() {
 	*x = GetDeviceManualRepairRecordResponse{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -969,7 +969,7 @@ func (x *GetDeviceManualRepairRecordResponse) String() string {
 func (*GetDeviceManualRepairRecordResponse) ProtoMessage() {}
 
 func (x *GetDeviceManualRepairRecordResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -982,7 +982,7 @@ func (x *GetDeviceManualRepairRecordResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use GetDeviceManualRepairRecordResponse.ProtoReflect.Descriptor instead.
 func (*GetDeviceManualRepairRecordResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{16}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *GetDeviceManualRepairRecordResponse) GetDeviceRepairRecord() *protos.DeviceManualRepairRecord {
@@ -1008,7 +1008,7 @@ type CreateDeviceManualRepairRecordRequest struct {
 
 func (x *CreateDeviceManualRepairRecordRequest) Reset() {
 	*x = CreateDeviceManualRepairRecordRequest{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1020,7 +1020,7 @@ func (x *CreateDeviceManualRepairRecordRequest) String() string {
 func (*CreateDeviceManualRepairRecordRequest) ProtoMessage() {}
 
 func (x *CreateDeviceManualRepairRecordRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1033,7 +1033,7 @@ func (x *CreateDeviceManualRepairRecordRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use CreateDeviceManualRepairRecordRequest.ProtoReflect.Descriptor instead.
 func (*CreateDeviceManualRepairRecordRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{17}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *CreateDeviceManualRepairRecordRequest) GetDeviceRepairRecord() *protos.DeviceManualRepairRecord {
@@ -1051,7 +1051,7 @@ type CreateDeviceManualRepairRecordResponse struct {
 
 func (x *CreateDeviceManualRepairRecordResponse) Reset() {
 	*x = CreateDeviceManualRepairRecordResponse{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1063,7 +1063,7 @@ func (x *CreateDeviceManualRepairRecordResponse) String() string {
 func (*CreateDeviceManualRepairRecordResponse) ProtoMessage() {}
 
 func (x *CreateDeviceManualRepairRecordResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1076,7 +1076,7 @@ func (x *CreateDeviceManualRepairRecordResponse) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use CreateDeviceManualRepairRecordResponse.ProtoReflect.Descriptor instead.
 func (*CreateDeviceManualRepairRecordResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{18}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{18}
 }
 
 type UpdateDeviceManualRepairRecordRequest struct {
@@ -1089,7 +1089,7 @@ type UpdateDeviceManualRepairRecordRequest struct {
 
 func (x *UpdateDeviceManualRepairRecordRequest) Reset() {
 	*x = UpdateDeviceManualRepairRecordRequest{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[19]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1101,7 +1101,7 @@ func (x *UpdateDeviceManualRepairRecordRequest) String() string {
 func (*UpdateDeviceManualRepairRecordRequest) ProtoMessage() {}
 
 func (x *UpdateDeviceManualRepairRecordRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[19]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1114,7 +1114,7 @@ func (x *UpdateDeviceManualRepairRecordRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use UpdateDeviceManualRepairRecordRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDeviceManualRepairRecordRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{19}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *UpdateDeviceManualRepairRecordRequest) GetDeviceRepairRecord() *protos.DeviceManualRepairRecord {
@@ -1139,7 +1139,7 @@ type UpdateDeviceManualRepairRecordResponse struct {
 
 func (x *UpdateDeviceManualRepairRecordResponse) Reset() {
 	*x = UpdateDeviceManualRepairRecordResponse{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[20]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1151,7 +1151,7 @@ func (x *UpdateDeviceManualRepairRecordResponse) String() string {
 func (*UpdateDeviceManualRepairRecordResponse) ProtoMessage() {}
 
 func (x *UpdateDeviceManualRepairRecordResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[20]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1164,7 +1164,7 @@ func (x *UpdateDeviceManualRepairRecordResponse) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use UpdateDeviceManualRepairRecordResponse.ProtoReflect.Descriptor instead.
 func (*UpdateDeviceManualRepairRecordResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{20}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{20}
 }
 
 // Next tag: 7
@@ -1182,7 +1182,7 @@ type ListManualRepairRecordsRequest struct {
 
 func (x *ListManualRepairRecordsRequest) Reset() {
 	*x = ListManualRepairRecordsRequest{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[21]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1194,7 +1194,7 @@ func (x *ListManualRepairRecordsRequest) String() string {
 func (*ListManualRepairRecordsRequest) ProtoMessage() {}
 
 func (x *ListManualRepairRecordsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[21]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1207,7 +1207,7 @@ func (x *ListManualRepairRecordsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListManualRepairRecordsRequest.ProtoReflect.Descriptor instead.
 func (*ListManualRepairRecordsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{21}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ListManualRepairRecordsRequest) GetHostname() string {
@@ -1261,7 +1261,7 @@ type ListManualRepairRecordsResponse struct {
 
 func (x *ListManualRepairRecordsResponse) Reset() {
 	*x = ListManualRepairRecordsResponse{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[22]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1273,7 +1273,7 @@ func (x *ListManualRepairRecordsResponse) String() string {
 func (*ListManualRepairRecordsResponse) ProtoMessage() {}
 
 func (x *ListManualRepairRecordsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[22]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1286,7 +1286,7 @@ func (x *ListManualRepairRecordsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListManualRepairRecordsResponse.ProtoReflect.Descriptor instead.
 func (*ListManualRepairRecordsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{22}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ListManualRepairRecordsResponse) GetRepairRecords() []*protos.DeviceManualRepairRecord {
@@ -1306,7 +1306,7 @@ type GetManufacturingConfigRequest struct {
 
 func (x *GetManufacturingConfigRequest) Reset() {
 	*x = GetManufacturingConfigRequest{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[23]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1318,7 +1318,7 @@ func (x *GetManufacturingConfigRequest) String() string {
 func (*GetManufacturingConfigRequest) ProtoMessage() {}
 
 func (x *GetManufacturingConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[23]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1331,7 +1331,7 @@ func (x *GetManufacturingConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetManufacturingConfigRequest.ProtoReflect.Descriptor instead.
 func (*GetManufacturingConfigRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{23}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *GetManufacturingConfigRequest) GetName() string {
@@ -1350,7 +1350,7 @@ type GetDeviceConfigRequest struct {
 
 func (x *GetDeviceConfigRequest) Reset() {
 	*x = GetDeviceConfigRequest{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[24]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1362,7 +1362,7 @@ func (x *GetDeviceConfigRequest) String() string {
 func (*GetDeviceConfigRequest) ProtoMessage() {}
 
 func (x *GetDeviceConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[24]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1375,7 +1375,7 @@ func (x *GetDeviceConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeviceConfigRequest.ProtoReflect.Descriptor instead.
 func (*GetDeviceConfigRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{24}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *GetDeviceConfigRequest) GetConfigId() *device.ConfigId {
@@ -1395,7 +1395,7 @@ type GetHwidDataRequest struct {
 
 func (x *GetHwidDataRequest) Reset() {
 	*x = GetHwidDataRequest{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[25]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1407,7 +1407,7 @@ func (x *GetHwidDataRequest) String() string {
 func (*GetHwidDataRequest) ProtoMessage() {}
 
 func (x *GetHwidDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[25]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1420,7 +1420,7 @@ func (x *GetHwidDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHwidDataRequest.ProtoReflect.Descriptor instead.
 func (*GetHwidDataRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{25}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *GetHwidDataRequest) GetName() string {
@@ -1439,7 +1439,7 @@ type BatchGetManualRepairRecordsRequest struct {
 
 func (x *BatchGetManualRepairRecordsRequest) Reset() {
 	*x = BatchGetManualRepairRecordsRequest{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[26]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1451,7 +1451,7 @@ func (x *BatchGetManualRepairRecordsRequest) String() string {
 func (*BatchGetManualRepairRecordsRequest) ProtoMessage() {}
 
 func (x *BatchGetManualRepairRecordsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[26]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1464,7 +1464,7 @@ func (x *BatchGetManualRepairRecordsRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use BatchGetManualRepairRecordsRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetManualRepairRecordsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{26}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *BatchGetManualRepairRecordsRequest) GetHostnames() []string {
@@ -1483,7 +1483,7 @@ type BatchGetManualRepairRecordsResponse struct {
 
 func (x *BatchGetManualRepairRecordsResponse) Reset() {
 	*x = BatchGetManualRepairRecordsResponse{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[27]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1495,7 +1495,7 @@ func (x *BatchGetManualRepairRecordsResponse) String() string {
 func (*BatchGetManualRepairRecordsResponse) ProtoMessage() {}
 
 func (x *BatchGetManualRepairRecordsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[27]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1508,7 +1508,7 @@ func (x *BatchGetManualRepairRecordsResponse) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use BatchGetManualRepairRecordsResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetManualRepairRecordsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{27}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *BatchGetManualRepairRecordsResponse) GetRepairRecords() []*ManualRepairRecordResult {
@@ -1527,7 +1527,7 @@ type BatchCreateManualRepairRecordsRequest struct {
 
 func (x *BatchCreateManualRepairRecordsRequest) Reset() {
 	*x = BatchCreateManualRepairRecordsRequest{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[28]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1539,7 +1539,7 @@ func (x *BatchCreateManualRepairRecordsRequest) String() string {
 func (*BatchCreateManualRepairRecordsRequest) ProtoMessage() {}
 
 func (x *BatchCreateManualRepairRecordsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[28]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1552,7 +1552,7 @@ func (x *BatchCreateManualRepairRecordsRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use BatchCreateManualRepairRecordsRequest.ProtoReflect.Descriptor instead.
 func (*BatchCreateManualRepairRecordsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{28}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *BatchCreateManualRepairRecordsRequest) GetRepairRecords() []*protos.DeviceManualRepairRecord {
@@ -1571,7 +1571,7 @@ type BatchCreateManualRepairRecordsResponse struct {
 
 func (x *BatchCreateManualRepairRecordsResponse) Reset() {
 	*x = BatchCreateManualRepairRecordsResponse{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[29]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1583,7 +1583,7 @@ func (x *BatchCreateManualRepairRecordsResponse) String() string {
 func (*BatchCreateManualRepairRecordsResponse) ProtoMessage() {}
 
 func (x *BatchCreateManualRepairRecordsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[29]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1596,7 +1596,7 @@ func (x *BatchCreateManualRepairRecordsResponse) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use BatchCreateManualRepairRecordsResponse.ProtoReflect.Descriptor instead.
 func (*BatchCreateManualRepairRecordsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{29}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *BatchCreateManualRepairRecordsResponse) GetRepairRecords() []*ManualRepairRecordResult {
@@ -1620,7 +1620,7 @@ type ManualRepairRecordResult struct {
 
 func (x *ManualRepairRecordResult) Reset() {
 	*x = ManualRepairRecordResult{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[30]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1632,7 +1632,7 @@ func (x *ManualRepairRecordResult) String() string {
 func (*ManualRepairRecordResult) ProtoMessage() {}
 
 func (x *ManualRepairRecordResult) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[30]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1645,7 +1645,7 @@ func (x *ManualRepairRecordResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ManualRepairRecordResult.ProtoReflect.Descriptor instead.
 func (*ManualRepairRecordResult) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{30}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *ManualRepairRecordResult) GetRepairRecord() *protos.DeviceManualRepairRecord {
@@ -1686,7 +1686,7 @@ type ListDeviceConfigsRequest struct {
 
 func (x *ListDeviceConfigsRequest) Reset() {
 	*x = ListDeviceConfigsRequest{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[31]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1698,7 +1698,7 @@ func (x *ListDeviceConfigsRequest) String() string {
 func (*ListDeviceConfigsRequest) ProtoMessage() {}
 
 func (x *ListDeviceConfigsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[31]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1711,7 +1711,7 @@ func (x *ListDeviceConfigsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDeviceConfigsRequest.ProtoReflect.Descriptor instead.
 func (*ListDeviceConfigsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{31}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{31}
 }
 
 // ListDeviceConfigsResponse contains a list of all device configs.
@@ -1724,7 +1724,7 @@ type ListDeviceConfigsResponse struct {
 
 func (x *ListDeviceConfigsResponse) Reset() {
 	*x = ListDeviceConfigsResponse{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[32]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1736,7 +1736,7 @@ func (x *ListDeviceConfigsResponse) String() string {
 func (*ListDeviceConfigsResponse) ProtoMessage() {}
 
 func (x *ListDeviceConfigsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[32]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1749,7 +1749,7 @@ func (x *ListDeviceConfigsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDeviceConfigsResponse.ProtoReflect.Descriptor instead.
 func (*ListDeviceConfigsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{32}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *ListDeviceConfigsResponse) GetDeviceConfigs() []*device.Config {
@@ -1770,7 +1770,7 @@ type ListCrosDevicesLabConfigResponse_LabConfig struct {
 
 func (x *ListCrosDevicesLabConfigResponse_LabConfig) Reset() {
 	*x = ListCrosDevicesLabConfigResponse_LabConfig{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[33]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1782,7 +1782,7 @@ func (x *ListCrosDevicesLabConfigResponse_LabConfig) String() string {
 func (*ListCrosDevicesLabConfigResponse_LabConfig) ProtoMessage() {}
 
 func (x *ListCrosDevicesLabConfigResponse_LabConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[33]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1795,7 +1795,7 @@ func (x *ListCrosDevicesLabConfigResponse_LabConfig) ProtoReflect() protoreflect
 
 // Deprecated: Use ListCrosDevicesLabConfigResponse_LabConfig.ProtoReflect.Descriptor instead.
 func (*ListCrosDevicesLabConfigResponse_LabConfig) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{1, 0}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{1, 0}
 }
 
 func (x *ListCrosDevicesLabConfigResponse_LabConfig) GetConfig() *lab.ChromeOSDevice {
@@ -1829,7 +1829,7 @@ type DeviceProperty_Rpm struct {
 
 func (x *DeviceProperty_Rpm) Reset() {
 	*x = DeviceProperty_Rpm{}
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[35]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1841,7 +1841,7 @@ func (x *DeviceProperty_Rpm) String() string {
 func (*DeviceProperty_Rpm) ProtoMessage() {}
 
 func (x *DeviceProperty_Rpm) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[35]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1854,7 +1854,7 @@ func (x *DeviceProperty_Rpm) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceProperty_Rpm.ProtoReflect.Descriptor instead.
 func (*DeviceProperty_Rpm) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{14, 0}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP(), []int{14, 0}
 }
 
 func (x *DeviceProperty_Rpm) GetPowerunitName() string {
@@ -1871,10 +1871,11 @@ func (x *DeviceProperty_Rpm) GetPowerunitOutlet() string {
 	return ""
 }
 
-var File_infra_appengine_cros_lab_inventory_api_v1_service_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto protoreflect.FileDescriptor
 
-var file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDesc = string([]byte{
-	0x0a, 0x37, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
+var file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDesc = string([]byte{
+	0x0a, 0x47, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
 	0x65, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x5f, 0x69, 0x6e, 0x76, 0x65, 0x6e,
 	0x74, 0x6f, 0x72, 0x79, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x73, 0x65, 0x72, 0x76,
 	0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x09, 0x69, 0x6e, 0x76, 0x65, 0x6e,
@@ -1897,7 +1898,8 @@ var file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDesc = strin
 	0x69, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x16, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65,
 	0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x5f, 0x69, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x1a, 0x0f, 0x6c, 0x61, 0x62, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x1a, 0x33, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x6c, 0x61,
+	0x6f, 0x1a, 0x43, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f,
+	0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x6c, 0x61,
 	0x62, 0x5f, 0x69, 0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79, 0x2f, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x73, 0x2f, 0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x5f, 0x72, 0x65, 0x63, 0x6f, 0x72, 0x64,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70,
@@ -2251,26 +2253,27 @@ var file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDesc = strin
 	0x69, 0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79, 0x2e, 0x42, 0x61, 0x74, 0x63, 0x68, 0x43,
 	0x72, 0x65, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x6e, 0x75, 0x61, 0x6c, 0x52, 0x65, 0x70, 0x61, 0x69,
 	0x72, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x42, 0x2f, 0x5a, 0x2d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67,
+	0x42, 0x3f, 0x5a, 0x3d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e,
+	0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67,
 	0x69, 0x6e, 0x65, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x5f, 0x69, 0x6e, 0x76,
 	0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x3b, 0x61, 0x70,
 	0x69, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescOnce sync.Once
-	file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescData []byte
+	file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescData []byte
 )
 
-func file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP() []byte {
-	file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescOnce.Do(func() {
-		file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDesc), len(file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDesc)))
+func file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDesc), len(file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDesc)))
 	})
-	return file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescData
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDescData
 }
 
-var file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 36)
-var file_infra_appengine_cros_lab_inventory_api_v1_service_proto_goTypes = []any{
+var file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 36)
+var file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_goTypes = []any{
 	(*ListCrosDevicesLabConfigRequest)(nil),            // 0: inventory.ListCrosDevicesLabConfigRequest
 	(*ListCrosDevicesLabConfigResponse)(nil),           // 1: inventory.ListCrosDevicesLabConfigResponse
 	(*DeviceConfigsExistsRequest)(nil),                 // 2: inventory.DeviceConfigsExistsRequest
@@ -2316,7 +2319,7 @@ var file_infra_appengine_cros_lab_inventory_api_v1_service_proto_goTypes = []any
 	(*protos.DeviceManualRepairRecord)(nil), // 42: inventory.libs.protos.DeviceManualRepairRecord
 	(*timestamppb.Timestamp)(nil),           // 43: google.protobuf.Timestamp
 }
-var file_infra_appengine_cros_lab_inventory_api_v1_service_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_depIdxs = []int32{
 	33, // 0: inventory.ListCrosDevicesLabConfigResponse.lab_configs:type_name -> inventory.ListCrosDevicesLabConfigResponse.LabConfig
 	36, // 1: inventory.DeviceConfigsExistsRequest.configIds:type_name -> device.ConfigId
 	34, // 2: inventory.DeviceConfigsExistsResponse.exists:type_name -> inventory.DeviceConfigsExistsResponse.ExistsEntry
@@ -2383,12 +2386,12 @@ var file_infra_appengine_cros_lab_inventory_api_v1_service_proto_depIdxs = []int
 	0,  // [0:31] is the sub-list for field type_name
 }
 
-func init() { file_infra_appengine_cros_lab_inventory_api_v1_service_proto_init() }
-func file_infra_appengine_cros_lab_inventory_api_v1_service_proto_init() {
-	if File_infra_appengine_cros_lab_inventory_api_v1_service_proto != nil {
+func init() { file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_init() }
+func file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_init() {
+	if File_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto != nil {
 		return
 	}
-	file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[5].OneofWrappers = []any{
+	file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes[5].OneofWrappers = []any{
 		(*DeviceID_Hostname)(nil),
 		(*DeviceID_ChromeosDeviceId)(nil),
 	}
@@ -2396,19 +2399,19 @@ func file_infra_appengine_cros_lab_inventory_api_v1_service_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDesc), len(file_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDesc), len(file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   36,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_appengine_cros_lab_inventory_api_v1_service_proto_goTypes,
-		DependencyIndexes: file_infra_appengine_cros_lab_inventory_api_v1_service_proto_depIdxs,
-		MessageInfos:      file_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_msgTypes,
 	}.Build()
-	File_infra_appengine_cros_lab_inventory_api_v1_service_proto = out.File
-	file_infra_appengine_cros_lab_inventory_api_v1_service_proto_goTypes = nil
-	file_infra_appengine_cros_lab_inventory_api_v1_service_proto_depIdxs = nil
+	File_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto = out.File
+	file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_goTypes = nil
+	file_go_chromium_org_infra_appengine_cros_lab_inventory_api_v1_service_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -3139,5 +3142,5 @@ var _Inventory_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/appengine/cros/lab_inventory/api/v1/service.proto",
+	Metadata: "go.chromium.org/infra/appengine/cros/lab_inventory/api/v1/service.proto",
 }

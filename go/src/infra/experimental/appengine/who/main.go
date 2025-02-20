@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/router"
 
-	"infra/monorail"
+	"go.chromium.org/infra/monorail"
 )
 
 const (

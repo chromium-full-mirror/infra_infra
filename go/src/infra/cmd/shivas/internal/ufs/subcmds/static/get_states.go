@@ -11,12 +11,12 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cmd/shivas/cmdhelp"
-	"infra/cmd/shivas/site"
-	"infra/cmd/shivas/utils"
-	"infra/cmdsupport/cmdlib"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cmd/shivas/cmdhelp"
+	"go.chromium.org/infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // GetStatesCmd get/list states offered by UFS.

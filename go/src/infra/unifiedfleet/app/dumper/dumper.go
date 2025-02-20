@@ -13,9 +13,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	bqlib "infra/cros/lab_inventory/bq"
-	"infra/unifiedfleet/app/model/configuration"
-	"infra/unifiedfleet/app/util"
+	bqlib "go.chromium.org/infra/cros/lab_inventory/bq"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // dumpDaily dumps a snapshot to BQ daily

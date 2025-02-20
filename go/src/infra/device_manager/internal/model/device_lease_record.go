@@ -17,7 +17,7 @@ import (
 	lucierr "go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/device_manager/internal/database"
+	"go.chromium.org/infra/device_manager/internal/database"
 )
 
 // Error types for DeviceLeaseRecord model operations

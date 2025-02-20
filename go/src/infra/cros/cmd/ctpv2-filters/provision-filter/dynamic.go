@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/generators"
 	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/helpers"
 
-	"infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 // GenerateDynamicInfo creates dynamic updates for provision

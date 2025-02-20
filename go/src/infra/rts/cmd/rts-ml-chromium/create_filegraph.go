@@ -18,8 +18,8 @@ import (
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/rts/filegraph/git"
-	"infra/rts/internal/chromium"
+	"go.chromium.org/infra/rts/filegraph/git"
+	"go.chromium.org/infra/rts/internal/chromium"
 )
 
 func cmdFileGraph(authOpt *auth.Options) *subcommands.Command {

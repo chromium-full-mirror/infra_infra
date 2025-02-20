@@ -16,13 +16,13 @@ import (
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/cmd/shivas/cmdhelp"
-	"infra/cmd/shivas/site"
-	"infra/cmd/shivas/utils"
-	"infra/cmdsupport/cmdlib"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	rpc "infra/unifiedfleet/api/v1/rpc"
-	"infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cmd/shivas/cmdhelp"
+	"go.chromium.org/infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	rpc "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 var (

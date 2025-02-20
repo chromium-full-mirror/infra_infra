@@ -16,11 +16,11 @@ import (
 	"strings"
 	"testing"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/git"
-	"infra/cros/internal/repo"
-	"infra/cros/internal/util"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/repo"
+	"go.chromium.org/infra/cros/internal/util"
 )
 
 var simpleHarnessConfig = Config{

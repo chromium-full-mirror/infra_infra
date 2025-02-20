@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	schedulingapi "infra/libs/fleet/scheduling/api"
+	schedulingapi "go.chromium.org/infra/libs/fleet/scheduling/api"
 )
 
 // Params are the parameters to the labpack job.

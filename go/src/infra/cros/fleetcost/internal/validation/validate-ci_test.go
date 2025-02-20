@@ -10,9 +10,9 @@ import (
 
 	"google.golang.org/genproto/googleapis/type/money"
 
-	models "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/validation"
+	models "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/validation"
 )
 
 // TestValidateCreateCostIndicatorRequest tests incoming indicator creation requests.

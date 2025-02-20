@@ -25,7 +25,7 @@ import (
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/luciexe/exe"
 
-	"infra/chromium/compilator_watcher/internal/bb"
+	"go.chromium.org/infra/chromium/compilator_watcher/internal/bb"
 )
 
 func main() {

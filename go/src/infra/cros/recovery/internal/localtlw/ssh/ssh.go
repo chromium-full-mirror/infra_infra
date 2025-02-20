@@ -12,9 +12,9 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/internal/rand"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/rand"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // Run executes command on the target address by SSH.

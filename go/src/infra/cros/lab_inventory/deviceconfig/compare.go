@@ -19,7 +19,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/logging"
 
-	inv "infra/cros/lab_inventory/protos"
+	inv "go.chromium.org/infra/cros/lab_inventory/protos"
 )
 
 func compareBoxsterWithV0(ctx context.Context, boxsterCfgs, v0Cfgs []*device.Config) error {

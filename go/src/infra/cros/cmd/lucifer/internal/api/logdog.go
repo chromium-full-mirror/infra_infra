@@ -7,7 +7,7 @@ package api
 import (
 	"fmt"
 
-	"infra/cros/cmd/lucifer/internal/logdog"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/logdog"
 )
 
 // Logger returns the root LogDog logger.

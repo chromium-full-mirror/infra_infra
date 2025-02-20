@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package test_resources;
 
-option go_package = "infra/appengine/chrome-test-health/api";
+option go_package = "go.chromium.org/infra/appengine/chrome-test-health/api";
 
 import "google/protobuf/descriptor.proto";
 import "google/api/field_behavior.proto";

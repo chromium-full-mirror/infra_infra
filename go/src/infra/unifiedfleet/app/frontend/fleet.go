@@ -12,8 +12,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	ufspb "infra/unifiedfleet/api/v1/rpc"
-	"infra/unifiedfleet/app/model/datastore"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/unifiedfleet/app/model/datastore"
 )
 
 const (

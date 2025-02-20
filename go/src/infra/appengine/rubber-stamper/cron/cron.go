@@ -10,8 +10,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/router"
 
-	"infra/appengine/rubber-stamper/config"
-	"infra/appengine/rubber-stamper/internal/scheduler"
+	"go.chromium.org/infra/appengine/rubber-stamper/config"
+	"go.chromium.org/infra/appengine/rubber-stamper/internal/scheduler"
 )
 
 // ScheduleReviews add tasks into Cloud Tasks queue, where each task handles

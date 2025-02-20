@@ -6,9 +6,9 @@ syntax = "proto3";
 
 package chrome.dir_metadata;
 
-option go_package = "infra/tools/dirmd/proto;dirmdpb";
+option go_package = "go.chromium.org/infra/tools/dirmd/proto;dirmdpb";
 
-import "infra/tools/dirmd/proto/dir_metadata.proto";
+import "go.chromium.org/infra/tools/dirmd/proto/dir_metadata.proto";
 
 // Maps from a directory to its metadata.
 message Mapping {

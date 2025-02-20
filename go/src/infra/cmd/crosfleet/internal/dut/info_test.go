@@ -10,9 +10,9 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"infra/cros/cmd/common_lib/common"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufslabpb "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufslabpb "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 var testDutInfoAsBashVariablesData = []struct {

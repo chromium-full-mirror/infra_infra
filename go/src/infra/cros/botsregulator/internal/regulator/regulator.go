@@ -13,10 +13,10 @@ import (
 	"go.chromium.org/luci/common/logging"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 
-	"infra/cros/botsregulator/internal/clients"
-	"infra/cros/botsregulator/internal/provider"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/botsregulator/internal/clients"
+	"go.chromium.org/infra/cros/botsregulator/internal/provider"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 type regulator struct {

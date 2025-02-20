@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 
-	admin "infra/tricium/api/admin/v1"
-	tricium "infra/tricium/api/v1"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
+	tricium "go.chromium.org/infra/tricium/api/v1"
 )
 
 // BuildbucketServer implements the ServerAPI for the buildbucket service.

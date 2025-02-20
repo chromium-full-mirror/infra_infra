@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"strings"
 
-	"infra/cros/satlab/satlabrpcserver/utils"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/utils"
 )
 
 // ThermalZoneDir /* It is a platform related constants */

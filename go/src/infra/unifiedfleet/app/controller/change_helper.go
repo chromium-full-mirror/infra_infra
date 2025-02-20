@@ -5,8 +5,8 @@
 package controller
 
 import (
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // LogAddRackChanges logs the changes for adding rack

@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package rubber_stamper.config;
 
-option go_package = "infra/appengine/rubber-stamper/config";
+option go_package = "go.chromium.org/infra/appengine/rubber-stamper/config";
 
 // Config is the service-wide configuration data for rubber-stamper.
 message Config {
@@ -22,7 +22,7 @@ message Config {
 // HostConfig describes the config to be used for a Gerrit host.
 message HostConfig {
   // A map stores config for repositories, where keys are names of repos (e.g.
-  // "chromium/src", "infra/infra") and values are corresponding configs.
+  // "chromium/src", "go.chromium.org/infra/infra") and values are corresponding configs.
   map<string, RepoConfig> repo_configs = 1;
   // The default valid time window for clean reverts. This time window is
   // applied at a host-level and the time window configured in repo-level

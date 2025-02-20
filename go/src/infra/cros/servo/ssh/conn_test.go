@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"infra/cros/servo/ssh"
-	"infra/cros/servo/sshtest"
-	"infra/cros/servo/testutil"
+	"go.chromium.org/infra/cros/servo/ssh"
+	"go.chromium.org/infra/cros/servo/sshtest"
+	"go.chromium.org/infra/cros/servo/testutil"
 )
 
 var userKey, hostKey = sshtest.MustGenerateKeys()

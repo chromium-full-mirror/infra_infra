@@ -28,10 +28,10 @@ import (
 	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 	swarming "go.chromium.org/luci/swarming/proto/plugin"
 
-	"infra/qscheduler/qslib/tutils"
-	"infra/qscheduler/service/app/eventlog"
-	"infra/qscheduler/service/app/state"
-	"infra/qscheduler/service/app/state/nodestore"
+	"go.chromium.org/infra/qscheduler/qslib/tutils"
+	"go.chromium.org/infra/qscheduler/service/app/eventlog"
+	"go.chromium.org/infra/qscheduler/service/app/state"
+	"go.chromium.org/infra/qscheduler/service/app/state/nodestore"
 )
 
 func TestBatcherCancellations(t *testing.T) {

@@ -3,7 +3,7 @@ package common
 import (
 	"strings"
 
-	"infra/appengine/cr-rev/config"
+	"go.chromium.org/infra/appengine/cr-rev/config"
 )
 
 // DefaultIncludeRefs is reference path that is indexed by default.

@@ -3,7 +3,7 @@ description: Reports long-term health problems in Chromium's CI builders
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cr_builder_health
+  - go.chromium.org/infra/cr_builder_health
 install_mode: copy
 root: ../../go/bin
 data:

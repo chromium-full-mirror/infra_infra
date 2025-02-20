@@ -13,9 +13,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 
-	"infra/cros/cmd/ctpv2-filters/pre_process_filter/interfaces"
-	"infra/cros/cmd/ctpv2-filters/pre_process_filter/policies"
-	"infra/cros/cmd/ctpv2-filters/pre_process_filter/structs"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/pre_process_filter/interfaces"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/pre_process_filter/policies"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/pre_process_filter/structs"
 )
 
 const (

@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/appengine/crosskylabadmin/api/fleet/v1/tracker.proto
+// source: go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1/tracker.proto
 
 package fleet
 
@@ -82,11 +82,11 @@ func (x DutState) String() string {
 }
 
 func (DutState) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes[0].Descriptor()
 }
 
 func (DutState) Type() protoreflect.EnumType {
-	return &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes[0]
 }
 
 func (x DutState) Number() protoreflect.EnumNumber {
@@ -95,7 +95,7 @@ func (x DutState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DutState.Descriptor instead.
 func (DutState) EnumDescriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{0}
 }
 
 type AuditTask int32
@@ -134,11 +134,11 @@ func (x AuditTask) String() string {
 }
 
 func (AuditTask) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes[1].Descriptor()
 }
 
 func (AuditTask) Type() protoreflect.EnumType {
-	return &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes[1]
 }
 
 func (x AuditTask) Number() protoreflect.EnumNumber {
@@ -147,7 +147,7 @@ func (x AuditTask) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AuditTask.Descriptor instead.
 func (AuditTask) EnumDescriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{1}
 }
 
 type PushBotsForAdminTasksRequest_SchedulingStrategy int32
@@ -182,11 +182,11 @@ func (x PushBotsForAdminTasksRequest_SchedulingStrategy) String() string {
 }
 
 func (PushBotsForAdminTasksRequest_SchedulingStrategy) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes[2].Descriptor()
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes[2].Descriptor()
 }
 
 func (PushBotsForAdminTasksRequest_SchedulingStrategy) Type() protoreflect.EnumType {
-	return &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes[2]
+	return &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes[2]
 }
 
 func (x PushBotsForAdminTasksRequest_SchedulingStrategy) Number() protoreflect.EnumNumber {
@@ -195,7 +195,7 @@ func (x PushBotsForAdminTasksRequest_SchedulingStrategy) Number() protoreflect.E
 
 // Deprecated: Use PushBotsForAdminTasksRequest_SchedulingStrategy.Descriptor instead.
 func (PushBotsForAdminTasksRequest_SchedulingStrategy) EnumDescriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{0, 0}
 }
 
 // PushBotsForAdminTasksRequest is used for an internal RPC that looks at the existing bots and determines which ones
@@ -213,7 +213,7 @@ type PushBotsForAdminTasksRequest struct {
 
 func (x *PushBotsForAdminTasksRequest) Reset() {
 	*x = PushBotsForAdminTasksRequest{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -225,7 +225,7 @@ func (x *PushBotsForAdminTasksRequest) String() string {
 func (*PushBotsForAdminTasksRequest) ProtoMessage() {}
 
 func (x *PushBotsForAdminTasksRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -238,7 +238,7 @@ func (x *PushBotsForAdminTasksRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PushBotsForAdminTasksRequest.ProtoReflect.Descriptor instead.
 func (*PushBotsForAdminTasksRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *PushBotsForAdminTasksRequest) GetTargetDutState() DutState {
@@ -263,7 +263,7 @@ type PushBotsForAdminTasksResponse struct {
 
 func (x *PushBotsForAdminTasksResponse) Reset() {
 	*x = PushBotsForAdminTasksResponse{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -275,7 +275,7 @@ func (x *PushBotsForAdminTasksResponse) String() string {
 func (*PushBotsForAdminTasksResponse) ProtoMessage() {}
 
 func (x *PushBotsForAdminTasksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -288,7 +288,7 @@ func (x *PushBotsForAdminTasksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PushBotsForAdminTasksResponse.ProtoReflect.Descriptor instead.
 func (*PushBotsForAdminTasksResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{1}
 }
 
 type PushRepairJobsForLabstationsRequest struct {
@@ -299,7 +299,7 @@ type PushRepairJobsForLabstationsRequest struct {
 
 func (x *PushRepairJobsForLabstationsRequest) Reset() {
 	*x = PushRepairJobsForLabstationsRequest{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -311,7 +311,7 @@ func (x *PushRepairJobsForLabstationsRequest) String() string {
 func (*PushRepairJobsForLabstationsRequest) ProtoMessage() {}
 
 func (x *PushRepairJobsForLabstationsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -324,7 +324,7 @@ func (x *PushRepairJobsForLabstationsRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use PushRepairJobsForLabstationsRequest.ProtoReflect.Descriptor instead.
 func (*PushRepairJobsForLabstationsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{2}
 }
 
 type PushRepairJobsForLabstationsResponse struct {
@@ -335,7 +335,7 @@ type PushRepairJobsForLabstationsResponse struct {
 
 func (x *PushRepairJobsForLabstationsResponse) Reset() {
 	*x = PushRepairJobsForLabstationsResponse{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -347,7 +347,7 @@ func (x *PushRepairJobsForLabstationsResponse) String() string {
 func (*PushRepairJobsForLabstationsResponse) ProtoMessage() {}
 
 func (x *PushRepairJobsForLabstationsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -360,7 +360,7 @@ func (x *PushRepairJobsForLabstationsResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use PushRepairJobsForLabstationsResponse.ProtoReflect.Descriptor instead.
 func (*PushRepairJobsForLabstationsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{3}
 }
 
 type ReportBotsRequest struct {
@@ -371,7 +371,7 @@ type ReportBotsRequest struct {
 
 func (x *ReportBotsRequest) Reset() {
 	*x = ReportBotsRequest{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -383,7 +383,7 @@ func (x *ReportBotsRequest) String() string {
 func (*ReportBotsRequest) ProtoMessage() {}
 
 func (x *ReportBotsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -396,7 +396,7 @@ func (x *ReportBotsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportBotsRequest.ProtoReflect.Descriptor instead.
 func (*ReportBotsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{4}
 }
 
 type ReportBotsResponse struct {
@@ -407,7 +407,7 @@ type ReportBotsResponse struct {
 
 func (x *ReportBotsResponse) Reset() {
 	*x = ReportBotsResponse{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -419,7 +419,7 @@ func (x *ReportBotsResponse) String() string {
 func (*ReportBotsResponse) ProtoMessage() {}
 
 func (x *ReportBotsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -432,7 +432,7 @@ func (x *ReportBotsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportBotsResponse.ProtoReflect.Descriptor instead.
 func (*ReportBotsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{5}
 }
 
 type PushBotsForAdminAuditTasksRequest struct {
@@ -444,7 +444,7 @@ type PushBotsForAdminAuditTasksRequest struct {
 
 func (x *PushBotsForAdminAuditTasksRequest) Reset() {
 	*x = PushBotsForAdminAuditTasksRequest{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -456,7 +456,7 @@ func (x *PushBotsForAdminAuditTasksRequest) String() string {
 func (*PushBotsForAdminAuditTasksRequest) ProtoMessage() {}
 
 func (x *PushBotsForAdminAuditTasksRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -469,7 +469,7 @@ func (x *PushBotsForAdminAuditTasksRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use PushBotsForAdminAuditTasksRequest.ProtoReflect.Descriptor instead.
 func (*PushBotsForAdminAuditTasksRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *PushBotsForAdminAuditTasksRequest) GetTask() AuditTask {
@@ -487,7 +487,7 @@ type PushBotsForAdminAuditTasksResponse struct {
 
 func (x *PushBotsForAdminAuditTasksResponse) Reset() {
 	*x = PushBotsForAdminAuditTasksResponse{}
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -499,7 +499,7 @@ func (x *PushBotsForAdminAuditTasksResponse) String() string {
 func (*PushBotsForAdminAuditTasksResponse) ProtoMessage() {}
 
 func (x *PushBotsForAdminAuditTasksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -512,13 +512,14 @@ func (x *PushBotsForAdminAuditTasksResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use PushBotsForAdminAuditTasksResponse.ProtoReflect.Descriptor instead.
 func (*PushBotsForAdminAuditTasksResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP(), []int{7}
 }
 
-var File_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto protoreflect.FileDescriptor
 
-var file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDesc = string([]byte{
-	0x0a, 0x3a, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
+var file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDesc = string([]byte{
+	0x0a, 0x4a, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
 	0x65, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x73, 0x6b, 0x79, 0x6c, 0x61, 0x62, 0x61, 0x64, 0x6d, 0x69,
 	0x6e, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x2f, 0x74,
 	0x72, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x15, 0x63, 0x72,
@@ -610,7 +611,8 @@ var file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDesc = st
 	0x72, 0x6f, 0x73, 0x73, 0x6b, 0x79, 0x6c, 0x61, 0x62, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2e, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2e, 0x50, 0x75, 0x73, 0x68, 0x42, 0x6f, 0x74, 0x73, 0x46, 0x6f, 0x72,
 	0x41, 0x64, 0x6d, 0x69, 0x6e, 0x41, 0x75, 0x64, 0x69, 0x74, 0x54, 0x61, 0x73, 0x6b, 0x73, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x34, 0x5a, 0x32, 0x69, 0x6e, 0x66, 0x72, 0x61,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x44, 0x5a, 0x42, 0x67, 0x6f, 0x2e, 0x63, 0x68,
+	0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61,
 	0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x73,
 	0x6b, 0x79, 0x6c, 0x61, 0x62, 0x61, 0x64, 0x6d, 0x69, 0x6e, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x76, 0x31, 0x3b, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x62, 0x06, 0x70,
@@ -618,20 +620,20 @@ var file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDesc = st
 })
 
 var (
-	file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescOnce sync.Once
-	file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescData []byte
+	file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescData []byte
 )
 
-func file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP() []byte {
-	file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescOnce.Do(func() {
-		file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDesc), len(file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDesc)))
+func file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDesc), len(file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDesc)))
 	})
-	return file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescData
+	return file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDescData
 }
 
-var file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
-var file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_goTypes = []any{
+var file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_goTypes = []any{
 	(DutState)(0),  // 0: crosskylabadmin.fleet.DutState
 	(AuditTask)(0), // 1: crosskylabadmin.fleet.AuditTask
 	(PushBotsForAdminTasksRequest_SchedulingStrategy)(0), // 2: crosskylabadmin.fleet.PushBotsForAdminTasksRequest.SchedulingStrategy
@@ -644,7 +646,7 @@ var file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_goTypes = []
 	(*PushBotsForAdminAuditTasksRequest)(nil),            // 9: crosskylabadmin.fleet.PushBotsForAdminAuditTasksRequest
 	(*PushBotsForAdminAuditTasksResponse)(nil),           // 10: crosskylabadmin.fleet.PushBotsForAdminAuditTasksResponse
 }
-var file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_depIdxs = []int32{
 	0,  // 0: crosskylabadmin.fleet.PushBotsForAdminTasksRequest.target_dut_state:type_name -> crosskylabadmin.fleet.DutState
 	2,  // 1: crosskylabadmin.fleet.PushBotsForAdminTasksRequest.scheduling_strategy:type_name -> crosskylabadmin.fleet.PushBotsForAdminTasksRequest.SchedulingStrategy
 	1,  // 2: crosskylabadmin.fleet.PushBotsForAdminAuditTasksRequest.task:type_name -> crosskylabadmin.fleet.AuditTask
@@ -663,29 +665,29 @@ var file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_depIdxs = []
 	0,  // [0:3] is the sub-list for field type_name
 }
 
-func init() { file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_init() }
-func file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_init() {
-	if File_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto != nil {
+func init() { file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_init() }
+func file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_init() {
+	if File_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDesc), len(file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDesc), len(file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_rawDesc)),
 			NumEnums:      3,
 			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_goTypes,
-		DependencyIndexes: file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_depIdxs,
-		EnumInfos:         file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes,
-		MessageInfos:      file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_msgTypes,
 	}.Build()
-	File_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto = out.File
-	file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_goTypes = nil
-	file_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_depIdxs = nil
+	File_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto = out.File
+	file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_goTypes = nil
+	file_go_chromium_org_infra_appengine_crosskylabadmin_api_fleet_v1_tracker_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -926,5 +928,5 @@ var _Tracker_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/appengine/crosskylabadmin/api/fleet/v1/tracker.proto",
+	Metadata: "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1/tracker.proto",
 }

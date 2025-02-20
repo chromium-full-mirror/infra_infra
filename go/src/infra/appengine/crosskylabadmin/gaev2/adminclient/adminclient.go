@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	"infra/appengine/crosskylabadmin/gaev2/adminclient/cmds"
-	"infra/appengine/crosskylabadmin/site"
+	"go.chromium.org/infra/appengine/crosskylabadmin/gaev2/adminclient/cmds"
+	"go.chromium.org/infra/appengine/crosskylabadmin/site"
 )
 
 // NewApplication returns an application object for the adminclient tool.

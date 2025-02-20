@@ -8,7 +8,7 @@ import (
 
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
 
-	"infra/libs/grpcclient"
+	"go.chromium.org/infra/libs/grpcclient"
 )
 
 // Options describes the client configuration for cloudtasks.

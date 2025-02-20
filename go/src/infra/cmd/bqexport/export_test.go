@@ -15,7 +15,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	bq "infra/cmd/bqexport/testing"
+	bq "go.chromium.org/infra/cmd/bqexport/testing"
 )
 
 var genFlag = flag.Bool("test.generate", false, "Instead of testing, regenerate the golden file.")

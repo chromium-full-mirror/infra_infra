@@ -7,8 +7,8 @@
 package attacheddevice
 
 import (
-	"infra/libs/skylab/inventory/swarming"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/libs/skylab/inventory/swarming"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // Convert converts attached device labels to Swarming dimensions.

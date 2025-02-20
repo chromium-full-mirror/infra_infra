@@ -10,7 +10,7 @@ import (
 	"strings"
 	"sync"
 
-	"infra/rts/filegraph"
+	"go.chromium.org/infra/rts/filegraph"
 )
 
 // Graph is a file graph based on the git history.

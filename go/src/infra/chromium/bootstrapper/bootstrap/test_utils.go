@@ -11,7 +11,7 @@ import (
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/luciexe/exe"
 
-	"infra/chromium/util"
+	"go.chromium.org/infra/chromium/util"
 )
 
 func jsonToStruct(json string) *structpb.Struct {

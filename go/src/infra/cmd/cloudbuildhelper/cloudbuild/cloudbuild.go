@@ -20,9 +20,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/cloudbuildhelper/docker"
-	"infra/cmd/cloudbuildhelper/manifest"
-	"infra/cmd/cloudbuildhelper/storage"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/docker"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/manifest"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/storage"
 )
 
 // Builder knows how to trigger Cloud Build builds and check their status.

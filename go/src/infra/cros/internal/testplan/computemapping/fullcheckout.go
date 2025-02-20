@@ -16,11 +16,11 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/sync/parallel"
 
-	"infra/cros/internal/git"
-	"infra/cros/internal/repo"
-	"infra/tools/dirmd"
-	"infra/tools/dirmd/cli/updater"
-	dirmdpb "infra/tools/dirmd/proto"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/repo"
+	"go.chromium.org/infra/tools/dirmd"
+	"go.chromium.org/infra/tools/dirmd/cli/updater"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
 )
 
 // ToDirBQRows computes a DirBQRow for every DIR_METADATA in manifest. All

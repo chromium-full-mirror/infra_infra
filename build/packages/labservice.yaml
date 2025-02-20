@@ -3,7 +3,7 @@ description: Chrome OS Lab Service
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/labservice
+  - go.chromium.org/infra/cros/cmd/labservice
 root: ../../go/bin
 data:
   - file: labservice${exe_suffix}

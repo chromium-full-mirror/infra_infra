@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/testing/typed"
 
-	"infra/cmd/cros_test_platform/internal/enumeration"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/enumeration"
 )
 
 func TestGetForTests(t *testing.T) {

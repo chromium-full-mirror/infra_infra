@@ -34,11 +34,11 @@ import (
 	"go.chromium.org/luci/lucictx"
 	resultpb "go.chromium.org/luci/resultdb/proto/v1"
 
-	"infra/cmd/cros_test_platform/internal/execution/types"
-	"infra/cmd/cros_test_platform/internal/execution/vmlab"
-	"infra/libs/skylab/request"
-	"infra/libs/skylab/swarming"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/types"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/vmlab"
+	"go.chromium.org/infra/libs/skylab/request"
+	"go.chromium.org/infra/libs/skylab/swarming"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // TaskReference is an implementation-independent way to identify test_runner tasks.

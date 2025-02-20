@@ -13,13 +13,13 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	shivasUtil "infra/cmd/shivas/utils"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/costserver/controller"
-	"infra/cros/fleetcost/internal/costserver/inventory/ufs"
-	"infra/cros/fleetcost/internal/utils"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsUtil "infra/unifiedfleet/app/util"
+	shivasUtil "go.chromium.org/infra/cmd/shivas/utils"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/controller"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/inventory/ufs"
+	"go.chromium.org/infra/cros/fleetcost/internal/utils"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // PersistToBigquery persists the current cost indicators to BigQuery.

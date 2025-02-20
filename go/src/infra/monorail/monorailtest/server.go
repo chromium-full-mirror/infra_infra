@@ -3,7 +3,7 @@ package monorailtest
 import (
 	"context"
 
-	"infra/monorail"
+	"go.chromium.org/infra/monorail"
 )
 
 // ServerMock delegates method implementations to function pointers.

@@ -7,7 +7,7 @@ package utils
 import (
 	"cloud.google.com/go/civil"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 )
 
 func NewDateOnly(year int32, month int32, day int32) *fleetconsolerpc.DateOnly {

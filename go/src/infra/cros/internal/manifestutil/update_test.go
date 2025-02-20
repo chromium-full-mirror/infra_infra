@@ -10,9 +10,9 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/osutils"
-	"infra/cros/internal/repo"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/osutils"
+	"go.chromium.org/infra/cros/internal/repo"
 )
 
 func TestGetSetDelAttr(t *testing.T) {

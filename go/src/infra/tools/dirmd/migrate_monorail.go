@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	dirmdpb "infra/tools/dirmd/proto"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
 )
 
 const MonorailMissingError string = "Monorail component is undefined."

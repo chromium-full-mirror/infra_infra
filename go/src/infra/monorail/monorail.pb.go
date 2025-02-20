@@ -12,7 +12,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/monorail/monorail.proto
+// source: go.chromium.org/infra/monorail/monorail.proto
 
 package monorail
 
@@ -82,11 +82,11 @@ func (x IssuesListRequest_CannedQuery) String() string {
 }
 
 func (IssuesListRequest_CannedQuery) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_monorail_monorail_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_monorail_monorail_proto_enumTypes[0].Descriptor()
 }
 
 func (IssuesListRequest_CannedQuery) Type() protoreflect.EnumType {
-	return &file_infra_monorail_monorail_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_monorail_monorail_proto_enumTypes[0]
 }
 
 func (x IssuesListRequest_CannedQuery) Number() protoreflect.EnumNumber {
@@ -95,7 +95,7 @@ func (x IssuesListRequest_CannedQuery) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use IssuesListRequest_CannedQuery.Descriptor instead.
 func (IssuesListRequest_CannedQuery) EnumDescriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{6, 0}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{6, 0}
 }
 
 // A monorail issue.
@@ -145,7 +145,7 @@ type Issue struct {
 
 func (x *Issue) Reset() {
 	*x = Issue{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -157,7 +157,7 @@ func (x *Issue) String() string {
 func (*Issue) ProtoMessage() {}
 
 func (x *Issue) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -170,7 +170,7 @@ func (x *Issue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Issue.ProtoReflect.Descriptor instead.
 func (*Issue) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Issue) GetAuthor() *AtomPerson {
@@ -270,7 +270,7 @@ type IssueRef struct {
 
 func (x *IssueRef) Reset() {
 	*x = IssueRef{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -282,7 +282,7 @@ func (x *IssueRef) String() string {
 func (*IssueRef) ProtoMessage() {}
 
 func (x *IssueRef) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -295,7 +295,7 @@ func (x *IssueRef) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IssueRef.ProtoReflect.Descriptor instead.
 func (*IssueRef) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *IssueRef) GetIssueId() int32 {
@@ -326,7 +326,7 @@ type InsertIssueRequest struct {
 
 func (x *InsertIssueRequest) Reset() {
 	*x = InsertIssueRequest{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -338,7 +338,7 @@ func (x *InsertIssueRequest) String() string {
 func (*InsertIssueRequest) ProtoMessage() {}
 
 func (x *InsertIssueRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -351,7 +351,7 @@ func (x *InsertIssueRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InsertIssueRequest.ProtoReflect.Descriptor instead.
 func (*InsertIssueRequest) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *InsertIssueRequest) GetIssue() *Issue {
@@ -379,7 +379,7 @@ type InsertIssueResponse struct {
 
 func (x *InsertIssueResponse) Reset() {
 	*x = InsertIssueResponse{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -391,7 +391,7 @@ func (x *InsertIssueResponse) String() string {
 func (*InsertIssueResponse) ProtoMessage() {}
 
 func (x *InsertIssueResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -404,7 +404,7 @@ func (x *InsertIssueResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InsertIssueResponse.ProtoReflect.Descriptor instead.
 func (*InsertIssueResponse) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *InsertIssueResponse) GetIssue() *Issue {
@@ -429,7 +429,7 @@ type InsertCommentRequest struct {
 
 func (x *InsertCommentRequest) Reset() {
 	*x = InsertCommentRequest{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -441,7 +441,7 @@ func (x *InsertCommentRequest) String() string {
 func (*InsertCommentRequest) ProtoMessage() {}
 
 func (x *InsertCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -454,7 +454,7 @@ func (x *InsertCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InsertCommentRequest.ProtoReflect.Descriptor instead.
 func (*InsertCommentRequest) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *InsertCommentRequest) GetComment() *InsertCommentRequest_Comment {
@@ -486,7 +486,7 @@ type InsertCommentResponse struct {
 
 func (x *InsertCommentResponse) Reset() {
 	*x = InsertCommentResponse{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -498,7 +498,7 @@ func (x *InsertCommentResponse) String() string {
 func (*InsertCommentResponse) ProtoMessage() {}
 
 func (x *InsertCommentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -511,7 +511,7 @@ func (x *InsertCommentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InsertCommentResponse.ProtoReflect.Descriptor instead.
 func (*InsertCommentResponse) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{5}
 }
 
 // Request for a list of Issues.
@@ -553,7 +553,7 @@ type IssuesListRequest struct {
 
 func (x *IssuesListRequest) Reset() {
 	*x = IssuesListRequest{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -565,7 +565,7 @@ func (x *IssuesListRequest) String() string {
 func (*IssuesListRequest) ProtoMessage() {}
 
 func (x *IssuesListRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -578,7 +578,7 @@ func (x *IssuesListRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IssuesListRequest.ProtoReflect.Descriptor instead.
 func (*IssuesListRequest) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *IssuesListRequest) GetProjectId() string {
@@ -690,7 +690,7 @@ type ErrorMessage struct {
 
 func (x *ErrorMessage) Reset() {
 	*x = ErrorMessage{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -702,7 +702,7 @@ func (x *ErrorMessage) String() string {
 func (*ErrorMessage) ProtoMessage() {}
 
 func (x *ErrorMessage) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -715,7 +715,7 @@ func (x *ErrorMessage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ErrorMessage.ProtoReflect.Descriptor instead.
 func (*ErrorMessage) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ErrorMessage) GetCode() int32 {
@@ -753,7 +753,7 @@ type IssuesListResponse struct {
 
 func (x *IssuesListResponse) Reset() {
 	*x = IssuesListResponse{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -765,7 +765,7 @@ func (x *IssuesListResponse) String() string {
 func (*IssuesListResponse) ProtoMessage() {}
 
 func (x *IssuesListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -778,7 +778,7 @@ func (x *IssuesListResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IssuesListResponse.ProtoReflect.Descriptor instead.
 func (*IssuesListResponse) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *IssuesListResponse) GetError() *ErrorMessage {
@@ -820,7 +820,7 @@ type Update struct {
 
 func (x *Update) Reset() {
 	*x = Update{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -832,7 +832,7 @@ func (x *Update) String() string {
 func (*Update) ProtoMessage() {}
 
 func (x *Update) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -845,7 +845,7 @@ func (x *Update) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Update.ProtoReflect.Descriptor instead.
 func (*Update) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *Update) GetStatus() string {
@@ -880,7 +880,7 @@ type AtomPerson struct {
 
 func (x *AtomPerson) Reset() {
 	*x = AtomPerson{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -892,7 +892,7 @@ func (x *AtomPerson) String() string {
 func (*AtomPerson) ProtoMessage() {}
 
 func (x *AtomPerson) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -905,7 +905,7 @@ func (x *AtomPerson) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AtomPerson.ProtoReflect.Descriptor instead.
 func (*AtomPerson) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *AtomPerson) GetName() string {
@@ -924,7 +924,7 @@ type GetIssueRequest struct {
 
 func (x *GetIssueRequest) Reset() {
 	*x = GetIssueRequest{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -936,7 +936,7 @@ func (x *GetIssueRequest) String() string {
 func (*GetIssueRequest) ProtoMessage() {}
 
 func (x *GetIssueRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -949,7 +949,7 @@ func (x *GetIssueRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetIssueRequest.ProtoReflect.Descriptor instead.
 func (*GetIssueRequest) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{11}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetIssueRequest) GetIssue() *IssueRef {
@@ -970,7 +970,7 @@ type ListCommentsRequest struct {
 
 func (x *ListCommentsRequest) Reset() {
 	*x = ListCommentsRequest{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -982,7 +982,7 @@ func (x *ListCommentsRequest) String() string {
 func (*ListCommentsRequest) ProtoMessage() {}
 
 func (x *ListCommentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -995,7 +995,7 @@ func (x *ListCommentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCommentsRequest.ProtoReflect.Descriptor instead.
 func (*ListCommentsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{12}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *ListCommentsRequest) GetIssue() *IssueRef {
@@ -1033,7 +1033,7 @@ type ListCommentsResponse struct {
 
 func (x *ListCommentsResponse) Reset() {
 	*x = ListCommentsResponse{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1045,7 +1045,7 @@ func (x *ListCommentsResponse) String() string {
 func (*ListCommentsResponse) ProtoMessage() {}
 
 func (x *ListCommentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1058,7 +1058,7 @@ func (x *ListCommentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCommentsResponse.ProtoReflect.Descriptor instead.
 func (*ListCommentsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{13}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *ListCommentsResponse) GetError() *ErrorMessage {
@@ -1107,7 +1107,7 @@ type Comment struct {
 
 func (x *Comment) Reset() {
 	*x = Comment{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1119,7 +1119,7 @@ func (x *Comment) String() string {
 func (*Comment) ProtoMessage() {}
 
 func (x *Comment) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1132,7 +1132,7 @@ func (x *Comment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Comment.ProtoReflect.Descriptor instead.
 func (*Comment) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{14}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *Comment) GetAuthor() *AtomPerson {
@@ -1198,7 +1198,7 @@ type InsertCommentRequest_Comment struct {
 
 func (x *InsertCommentRequest_Comment) Reset() {
 	*x = InsertCommentRequest_Comment{}
-	mi := &file_infra_monorail_monorail_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1210,7 +1210,7 @@ func (x *InsertCommentRequest_Comment) String() string {
 func (*InsertCommentRequest_Comment) ProtoMessage() {}
 
 func (x *InsertCommentRequest_Comment) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_monorail_monorail_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_monorail_monorail_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1223,7 +1223,7 @@ func (x *InsertCommentRequest_Comment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InsertCommentRequest_Comment.ProtoReflect.Descriptor instead.
 func (*InsertCommentRequest_Comment) Descriptor() ([]byte, []int) {
-	return file_infra_monorail_monorail_proto_rawDescGZIP(), []int{4, 0}
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP(), []int{4, 0}
 }
 
 func (x *InsertCommentRequest_Comment) GetAuthor() *AtomPerson {
@@ -1247,10 +1247,11 @@ func (x *InsertCommentRequest_Comment) GetUpdates() *Update {
 	return nil
 }
 
-var File_infra_monorail_monorail_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_monorail_monorail_proto protoreflect.FileDescriptor
 
-var file_infra_monorail_monorail_proto_rawDesc = string([]byte{
-	0x0a, 0x1d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x6d, 0x6f, 0x6e, 0x6f, 0x72, 0x61, 0x69, 0x6c,
+var file_go_chromium_org_infra_monorail_monorail_proto_rawDesc = string([]byte{
+	0x0a, 0x2d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x6d, 0x6f, 0x6e, 0x6f, 0x72, 0x61, 0x69, 0x6c,
 	0x2f, 0x6d, 0x6f, 0x6e, 0x6f, 0x72, 0x61, 0x69, 0x6c, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12,
 	0x08, 0x6d, 0x6f, 0x6e, 0x6f, 0x72, 0x61, 0x69, 0x6c, 0x22, 0x8d, 0x03, 0x0a, 0x05, 0x49, 0x73,
 	0x73, 0x75, 0x65, 0x12, 0x2c, 0x0a, 0x06, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x18, 0x01, 0x20,
@@ -1430,26 +1431,27 @@ var file_infra_monorail_monorail_proto_rawDesc = string([]byte{
 	0x69, 0x6c, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x52,
 	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1e, 0x2e, 0x6d, 0x6f, 0x6e, 0x6f, 0x72, 0x61, 0x69,
 	0x6c, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x43, 0x6f, 0x6d, 0x6d, 0x65, 0x6e, 0x74, 0x73, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x10, 0x5a, 0x0e, 0x69, 0x6e, 0x66, 0x72,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x20, 0x5a, 0x1e, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x6d, 0x6f, 0x6e, 0x6f, 0x72, 0x61, 0x69, 0x6c, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x33,
 })
 
 var (
-	file_infra_monorail_monorail_proto_rawDescOnce sync.Once
-	file_infra_monorail_monorail_proto_rawDescData []byte
+	file_go_chromium_org_infra_monorail_monorail_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_monorail_monorail_proto_rawDescData []byte
 )
 
-func file_infra_monorail_monorail_proto_rawDescGZIP() []byte {
-	file_infra_monorail_monorail_proto_rawDescOnce.Do(func() {
-		file_infra_monorail_monorail_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_monorail_monorail_proto_rawDesc), len(file_infra_monorail_monorail_proto_rawDesc)))
+func file_go_chromium_org_infra_monorail_monorail_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_monorail_monorail_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_monorail_monorail_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_monorail_monorail_proto_rawDesc), len(file_go_chromium_org_infra_monorail_monorail_proto_rawDesc)))
 	})
-	return file_infra_monorail_monorail_proto_rawDescData
+	return file_go_chromium_org_infra_monorail_monorail_proto_rawDescData
 }
 
-var file_infra_monorail_monorail_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_infra_monorail_monorail_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
-var file_infra_monorail_monorail_proto_goTypes = []any{
+var file_go_chromium_org_infra_monorail_monorail_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_go_chromium_org_infra_monorail_monorail_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_go_chromium_org_infra_monorail_monorail_proto_goTypes = []any{
 	(IssuesListRequest_CannedQuery)(0),   // 0: monorail.IssuesListRequest.CannedQuery
 	(*Issue)(nil),                        // 1: monorail.Issue
 	(*IssueRef)(nil),                     // 2: monorail.IssueRef
@@ -1468,7 +1470,7 @@ var file_infra_monorail_monorail_proto_goTypes = []any{
 	(*Comment)(nil),                      // 15: monorail.Comment
 	(*InsertCommentRequest_Comment)(nil), // 16: monorail.InsertCommentRequest.Comment
 }
-var file_infra_monorail_monorail_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_monorail_monorail_proto_depIdxs = []int32{
 	11, // 0: monorail.Issue.author:type_name -> monorail.AtomPerson
 	2,  // 1: monorail.Issue.blockedOn:type_name -> monorail.IssueRef
 	11, // 2: monorail.Issue.cc:type_name -> monorail.AtomPerson
@@ -1506,29 +1508,29 @@ var file_infra_monorail_monorail_proto_depIdxs = []int32{
 	0,  // [0:20] is the sub-list for field type_name
 }
 
-func init() { file_infra_monorail_monorail_proto_init() }
-func file_infra_monorail_monorail_proto_init() {
-	if File_infra_monorail_monorail_proto != nil {
+func init() { file_go_chromium_org_infra_monorail_monorail_proto_init() }
+func file_go_chromium_org_infra_monorail_monorail_proto_init() {
+	if File_go_chromium_org_infra_monorail_monorail_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_monorail_monorail_proto_rawDesc), len(file_infra_monorail_monorail_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_monorail_monorail_proto_rawDesc), len(file_go_chromium_org_infra_monorail_monorail_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_monorail_monorail_proto_goTypes,
-		DependencyIndexes: file_infra_monorail_monorail_proto_depIdxs,
-		EnumInfos:         file_infra_monorail_monorail_proto_enumTypes,
-		MessageInfos:      file_infra_monorail_monorail_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_monorail_monorail_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_monorail_monorail_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_monorail_monorail_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_monorail_monorail_proto_msgTypes,
 	}.Build()
-	File_infra_monorail_monorail_proto = out.File
-	file_infra_monorail_monorail_proto_goTypes = nil
-	file_infra_monorail_monorail_proto_depIdxs = nil
+	File_go_chromium_org_infra_monorail_monorail_proto = out.File
+	file_go_chromium_org_infra_monorail_monorail_proto_goTypes = nil
+	file_go_chromium_org_infra_monorail_monorail_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1814,5 +1816,5 @@ var _Monorail_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/monorail/monorail.proto",
+	Metadata: "go.chromium.org/infra/monorail/monorail.proto",
 }

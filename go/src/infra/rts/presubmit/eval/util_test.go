@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	evalpb "infra/rts/presubmit/eval/proto"
+	evalpb "go.chromium.org/infra/rts/presubmit/eval/proto"
 )
 
 func TestPSURL(t *testing.T) {

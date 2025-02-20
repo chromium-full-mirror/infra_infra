@@ -7,7 +7,7 @@ package data
 import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	"infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 )
 
 // LocalTestStateKeeper represents all the data local test execution flow requires.

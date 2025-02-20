@@ -26,7 +26,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"infra/cros/cmd/lucifer/internal/annotations"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/annotations"
 )
 
 // Logger defines the methods for writing LogDog logs.  The

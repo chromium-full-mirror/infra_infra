@@ -21,7 +21,7 @@ import (
 	"go.chromium.org/chromiumos/test/publish/cmd/common-utils/metadata"
 	"go.chromium.org/chromiumos/test/util/portdiscovery"
 
-	"infra/cros/cmd/cft/publish/ants-publish/service"
+	"go.chromium.org/infra/cros/cmd/cft/publish/ants-publish/service"
 )
 
 const (

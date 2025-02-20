@@ -18,16 +18,16 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/tsmon/distribution"
 
-	shivasUtil "infra/cmd/shivas/utils"
-	"infra/device_manager/internal/database"
-	"infra/device_manager/internal/external"
-	"infra/device_manager/internal/frontend"
-	"infra/device_manager/internal/metrics"
-	"infra/device_manager/internal/model"
-	"infra/libs/fleet/device"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	shivasUtil "go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/device_manager/internal/database"
+	"go.chromium.org/infra/device_manager/internal/external"
+	"go.chromium.org/infra/device_manager/internal/frontend"
+	"go.chromium.org/infra/device_manager/internal/metrics"
+	"go.chromium.org/infra/device_manager/internal/model"
+	"go.chromium.org/infra/libs/fleet/device"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // TODO: b/328662436 - Collect metrics and replace logging with metrics.

@@ -11,8 +11,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	admin "infra/tricium/api/admin/v1"
-	tricium "infra/tricium/api/v1"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
+	tricium "go.chromium.org/infra/tricium/api/v1"
 )
 
 // Generate generates a Tricium workflow based on the provided configs and

@@ -17,15 +17,15 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/cros/dutstate"
-	"infra/libs/fleet/device/attacheddevice"
-	"infra/libs/fleet/device/dut"
-	"infra/libs/fleet/device/schedulingunit"
-	"infra/libs/skylab/inventory/swarming"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	"infra/unifiedfleet/app/model/inventory"
-	"infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/libs/fleet/device/attacheddevice"
+	"go.chromium.org/infra/libs/fleet/device/dut"
+	"go.chromium.org/infra/libs/fleet/device/schedulingunit"
+	"go.chromium.org/infra/libs/skylab/inventory/swarming"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // CreateDeviceLabels creates a new DeviceLabel in datastore.

@@ -25,9 +25,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/filesystem"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
-	"infra/tools/vpython/legacy/vpython2.7/luci/spec"
-	"infra/tools/vpython/legacy/vpython2.7/luci/venv"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/spec"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/venv"
 )
 
 // TemplateFunc builds a set of template parameters to augment the default CIPD

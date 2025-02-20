@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 
-	"infra/cros/cmd/ctpv2-filters/test-finder/service"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/service"
 )
 
 var binName = "testFinder"

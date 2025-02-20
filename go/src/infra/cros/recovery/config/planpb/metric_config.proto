@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package chromeos.recovery;
 
-option go_package = "infra/cros/recovery/config;config";
+option go_package = "go.chromium.org/infra/cros/recovery/config;config";
 
 // MetricsConfig configures a single action.
 message MetricsConfig {

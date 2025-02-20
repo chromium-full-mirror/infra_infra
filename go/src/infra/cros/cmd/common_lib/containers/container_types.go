@@ -5,7 +5,7 @@
 // Package containers defines all container types.
 package containers
 
-import "infra/cros/cmd/common_lib/interfaces"
+import "go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 
 // All supported container types.
 const (

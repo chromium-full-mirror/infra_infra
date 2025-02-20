@@ -14,10 +14,10 @@ import (
 
 	lgerrit "go.chromium.org/luci/common/api/gerrit"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/repo"
-	rh "infra/cros/internal/repoharness"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/repo"
+	rh "go.chromium.org/infra/cros/internal/repoharness"
 )
 
 const (

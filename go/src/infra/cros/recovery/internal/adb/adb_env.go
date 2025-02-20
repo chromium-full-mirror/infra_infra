@@ -10,9 +10,9 @@ import (
 	"strconv"
 	"strings"
 
-	"infra/cros/recovery/ctr"
-	"infra/cros/recovery/internal/components/mh"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/ctr"
+	"go.chromium.org/infra/cros/recovery/internal/components/mh"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 var (

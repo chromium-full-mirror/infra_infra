@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	. "infra/cros/cmd/ctpv2-filters/provision-filter"
+	. "go.chromium.org/infra/cros/cmd/ctpv2-filters/provision-filter"
 )
 
 const (

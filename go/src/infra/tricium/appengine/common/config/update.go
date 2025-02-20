@@ -14,8 +14,8 @@ import (
 	"go.chromium.org/luci/common/sync/parallel"
 	luciConfig "go.chromium.org/luci/config"
 
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common"
 )
 
 // UpdateAllConfigs updates all configs.

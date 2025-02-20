@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
 )
 
 // matchStatefulWithOSExec validates that the stateful and OS are the correct pair that works.

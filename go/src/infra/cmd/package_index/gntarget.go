@@ -11,7 +11,7 @@ import (
 	"io/ioutil"
 	"sync"
 
-	kpb "infra/cmd/package_index/kythe/proto"
+	kpb "go.chromium.org/infra/cmd/package_index/kythe/proto"
 )
 
 // Error return by a target processor when a given target cannot be processed.

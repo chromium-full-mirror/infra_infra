@@ -8,7 +8,7 @@ package vmlab.api;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "infra/libs/vmlab/api";
+option go_package = "go.chromium.org/infra/libs/vmlab/api";
 
 
 // GceImage represents an existing GCE image.

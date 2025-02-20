@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package infra.tools.migrator;
 
-option go_package = "infra/tools/migrator/internal/migratorpb";
+option go_package = "go.chromium.org/infra/tools/migrator/internal/migratorpb";
 
 // Config is migrator's own config written as a text proto to default.cfg in
 // the migrator project directory.

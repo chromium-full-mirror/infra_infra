@@ -13,8 +13,8 @@ import (
 	"github.com/gliderlabs/ssh"
 	cssh "golang.org/x/crypto/ssh"
 
-	"infra/cros/satlab/satlabrpcserver/fake"
-	"infra/cros/satlab/satlabrpcserver/utils/constants"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/fake"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/utils/constants"
 )
 
 func TestSSHConnectionShouldWork(t *testing.T) {

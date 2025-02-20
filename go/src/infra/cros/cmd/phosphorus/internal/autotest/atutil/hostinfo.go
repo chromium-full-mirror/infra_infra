@@ -17,7 +17,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"infra/cros/cmd/phosphorus/internal/tls"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/tls"
 )
 
 const (

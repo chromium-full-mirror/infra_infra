@@ -19,12 +19,12 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/cmd/shivas/site"
-	"infra/cmd/shivas/utils"
-	"infra/cros/recovery/config"
-	schedulingapi "infra/libs/fleet/scheduling/api"
-	"infra/libs/skylab/buildbucket"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmd/shivas/utils"
+	"go.chromium.org/infra/cros/recovery/config"
+	schedulingapi "go.chromium.org/infra/libs/fleet/scheduling/api"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 type reserveDuts struct {

@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/testing/typed"
 
-	"infra/libs/skylab/inventory"
+	"go.chromium.org/infra/libs/skylab/inventory"
 )
 
 const fullTextProto = `

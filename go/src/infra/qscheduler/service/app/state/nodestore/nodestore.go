@@ -33,12 +33,12 @@ import (
 	"go.chromium.org/luci/common/sync/parallel"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/qscheduler/qslib/reconciler"
-	"infra/qscheduler/qslib/scheduler"
-	"infra/qscheduler/service/app/state/metrics"
-	"infra/qscheduler/service/app/state/nodestore/internal/blob"
-	"infra/qscheduler/service/app/state/types"
-	"infra/qscheduler/service/app/tracing"
+	"go.chromium.org/infra/qscheduler/qslib/reconciler"
+	"go.chromium.org/infra/qscheduler/qslib/scheduler"
+	"go.chromium.org/infra/qscheduler/service/app/state/metrics"
+	"go.chromium.org/infra/qscheduler/service/app/state/nodestore/internal/blob"
+	"go.chromium.org/infra/qscheduler/service/app/state/types"
+	"go.chromium.org/infra/qscheduler/service/app/tracing"
 )
 
 var errWrongGeneration = errors.New("wrong generation")

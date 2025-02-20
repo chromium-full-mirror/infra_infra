@@ -58,7 +58,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	ds "go.chromium.org/luci/gae/service/datastore"
 
-	tricium "infra/tricium/api/v1"
+	tricium "go.chromium.org/infra/tricium/api/v1"
 )
 
 // AnalyzeRequest represents one Tricium Analyze RPC request.

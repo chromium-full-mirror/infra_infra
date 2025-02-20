@@ -41,10 +41,10 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/luciexe/exe"
 
-	"infra/cmd/cros_test_platform/internal/execution"
-	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
-	"infra/libs/skylab/request"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution"
+	trservice "go.chromium.org/infra/cmd/cros_test_platform/internal/execution/testrunner/service"
+	"go.chromium.org/infra/libs/skylab/request"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 func TestLaunchAndWaitTest(t *testing.T) {

@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package crosskylabadmin.config;
 
-option go_package = "infra/appengine/crosskylabadmin/internal/app/config";
+option go_package = "go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config";
 
 // Note: docstrings use generated go style variable names.
 

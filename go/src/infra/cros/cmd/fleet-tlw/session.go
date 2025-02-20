@@ -18,7 +18,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"infra/cros/fleet/access"
+	"go.chromium.org/infra/cros/fleet/access"
 )
 
 // A sessionContext wraps a session struct with the cancellation context.

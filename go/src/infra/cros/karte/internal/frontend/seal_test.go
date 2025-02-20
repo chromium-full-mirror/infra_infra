@@ -15,10 +15,10 @@ import (
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 
-	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/identifiers"
-	"infra/cros/karte/internal/scalars"
-	"infra/cros/karte/internal/testsupport"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	"go.chromium.org/infra/cros/karte/internal/identifiers"
+	"go.chromium.org/infra/cros/karte/internal/scalars"
+	"go.chromium.org/infra/cros/karte/internal/testsupport"
 )
 
 // TestModifyingSealedActionShouldFail tests that updating a record after the seal time fails.

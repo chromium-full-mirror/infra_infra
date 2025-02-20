@@ -21,8 +21,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"google.golang.org/api/option"
 
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/misc"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/misc"
 )
 
 type Setup struct {

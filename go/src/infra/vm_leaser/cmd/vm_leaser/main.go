@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/openid"
 
-	"infra/vm_leaser/internal/acl"
-	"infra/vm_leaser/internal/frontend"
+	"go.chromium.org/infra/vm_leaser/internal/acl"
+	"go.chromium.org/infra/vm_leaser/internal/frontend"
 )
 
 // InstallServices takes a VM Leaser service server and exposes it to a

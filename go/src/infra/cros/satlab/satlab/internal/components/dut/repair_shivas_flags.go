@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/site"
 )
 
 // ShivasRepairDUT holds the repair DUT flags inherited from shivas.

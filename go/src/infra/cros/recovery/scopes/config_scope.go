@@ -7,7 +7,7 @@ package scopes
 import (
 	"context"
 
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // WithConfigScope inits map to create scope for a configuration variables.

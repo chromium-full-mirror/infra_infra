@@ -10,7 +10,7 @@ import (
 	testplans_pb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbproto "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/gerrit"
 )
 
 func makeBuilderConfig(name string, idType cros_pb.BuilderConfig_Id_Type, rwMode cros_pb.BuilderConfig_General_RunWhen_Mode, rwPatterns []string) *cros_pb.BuilderConfig {

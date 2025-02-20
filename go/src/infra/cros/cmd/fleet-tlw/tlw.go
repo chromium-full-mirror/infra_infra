@@ -27,11 +27,11 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/fleet-tlw/internal/cache"
-	"infra/libs/lro"
-	"infra/libs/sshpool"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/cmd/fleet-tlw/internal/cache"
+	"go.chromium.org/infra/libs/lro"
+	"go.chromium.org/infra/libs/sshpool"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 var (

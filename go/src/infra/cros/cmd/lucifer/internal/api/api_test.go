@@ -7,7 +7,7 @@ package api
 import (
 	"os"
 
-	"infra/cros/cmd/lucifer/internal/logdog"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/logdog"
 )
 
 func ExampleClient_step_tracking() {

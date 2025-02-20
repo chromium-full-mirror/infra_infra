@@ -15,8 +15,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	ufsModel "infra/unifiedfleet/api/v1/models"
-	ufsApi "infra/unifiedfleet/api/v1/rpc"
+	ufsModel "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsApi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // fakeUFSClient maintains a map of all MachineLSEs. Get/Update commands both

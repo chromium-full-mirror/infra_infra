@@ -8,7 +8,7 @@ import (
 	"context"
 	"regexp"
 
-	"infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/errors"
 )
 
 // ClearServoAccumulators clears underlying accumulators given the controls.

@@ -18,8 +18,8 @@ import (
 	"go.chromium.org/luci/server/auth/authtest"
 	"go.chromium.org/luci/server/router"
 
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common/triciumtest"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common/triciumtest"
 )
 
 func TestMainPageHandler(t *testing.T) {

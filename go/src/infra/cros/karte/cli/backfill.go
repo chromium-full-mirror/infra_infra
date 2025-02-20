@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cros/karte/internal/site"
+	"go.chromium.org/infra/cros/karte/internal/site"
 )
 
 // Backfill backfills a single swarming task to Karte.

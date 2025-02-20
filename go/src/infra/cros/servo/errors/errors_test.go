@@ -10,7 +10,7 @@ import (
 	"regexp"
 	"testing"
 
-	"infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/errors"
 )
 
 func check(t *testing.T, err error, msg string, traceRegexp *regexp.Regexp) {
@@ -28,7 +28,7 @@ func check(t *testing.T, err error, msg string, traceRegexp *regexp.Regexp) {
 func TestNew(t *testing.T) {
 	const msg = "meow"
 	traceRegexp := regexp.MustCompile(`^meow
-	at infra/cros/servo/errors_test\.TestNew \(errors_test.go:\d+\)`)
+	at go\.chromium\.org/infra/cros/servo/errors_test\.TestNew \(errors_test.go:\d+\)`)
 
 	err := errors.New(msg)
 
@@ -38,7 +38,7 @@ func TestNew(t *testing.T) {
 func TestErrorf(t *testing.T) {
 	const msg = "meow"
 	traceRegexp := regexp.MustCompile(`^meow
-	at infra/cros/servo/errors_test\.TestErrorf \(errors_test.go:\d+\)`)
+	at go\.chromium\.org/infra/cros/servo/errors_test\.TestErrorf \(errors_test.go:\d+\)`)
 
 	err := errors.Errorf("%sow", "me")
 
@@ -48,10 +48,10 @@ func TestErrorf(t *testing.T) {
 func TestWrap(t *testing.T) {
 	const msg = "meow: woof"
 	traceRegexp := regexp.MustCompile(`(?s)^meow
-	at infra/cros/servo/errors_test\.TestWrap \(errors_test.go:\d+\)
+	at go\.chromium\.org/infra/cros/servo/errors_test\.TestWrap \(errors_test.go:\d+\)
 .*
 woof
-	at infra/cros/servo/errors_test\.TestWrap \(errors_test.go:\d+\)`)
+	at go\.chromium\.org/infra/cros/servo/errors_test\.TestWrap \(errors_test.go:\d+\)`)
 
 	err := errors.Wrap(errors.New("woof"), "meow")
 
@@ -61,7 +61,7 @@ woof
 func TestWrapForeignError(t *testing.T) {
 	const msg = "meow: woof"
 	traceRegexp := regexp.MustCompile(`(?s)^meow
-	at infra/cros/servo/errors_test\.TestWrapForeignError \(errors_test.go:\d+\)
+	at go\.chromium\.org/infra/cros/servo/errors_test\.TestWrapForeignError \(errors_test.go:\d+\)
 .*
 woof
 	at \?\?\?$`)
@@ -75,7 +75,7 @@ woof
 func TestWrapNil(t *testing.T) {
 	const msg = "meow"
 	traceRegexp := regexp.MustCompile(`^meow
-	at infra/cros/servo/errors_test\.TestWrapNil \(errors_test.go:\d+\)`)
+	at go\.chromium\.org/infra/cros/servo/errors_test\.TestWrapNil \(errors_test.go:\d+\)`)
 
 	err := errors.Wrap(nil, "meow")
 
@@ -85,10 +85,10 @@ func TestWrapNil(t *testing.T) {
 func TestWrapf(t *testing.T) {
 	const msg = "meow: woof"
 	traceRegexp := regexp.MustCompile(`(?s)^meow
-	at infra/cros/servo/errors_test\.TestWrapf \(errors_test.go:\d+\)
+	at go\.chromium\.org/infra/cros/servo/errors_test\.TestWrapf \(errors_test.go:\d+\)
 .*
 woof
-	at infra/cros/servo/errors_test\.TestWrapf \(errors_test.go:\d+\)`)
+	at go\.chromium\.org/infra/cros/servo/errors_test\.TestWrapf \(errors_test.go:\d+\)`)
 
 	err := errors.Wrapf(errors.New("woof"), "%sow", "me")
 
@@ -102,10 +102,10 @@ type customError struct {
 func TestCustomError(t *testing.T) {
 	const msg = "meow: woof"
 	traceRegexp := regexp.MustCompile(`(?s)^meow
-	at infra/cros/servo/errors_test\.TestCustomError \(errors_test.go:\d+\)
+	at go\.chromium\.org/infra/cros/servo/errors_test\.TestCustomError \(errors_test.go:\d+\)
 .*
 woof
-	at infra/cros/servo/errors_test\.TestCustomError \(errors_test.go:\d+\)`)
+	at go\.chromium\.org/infra/cros/servo/errors_test\.TestCustomError \(errors_test.go:\d+\)`)
 
 	var err error = errors.Wrap(&customError{E: errors.New("woof")}, "meow")
 

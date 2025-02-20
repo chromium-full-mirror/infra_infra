@@ -13,10 +13,10 @@ import (
 	"go.chromium.org/luci/common/logging"
 	gitilespb "go.chromium.org/luci/common/proto/gitiles"
 
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/external"
-	"infra/unifiedfleet/app/model/configuration"
-	"infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/external"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // namespaceToRealmAssignerMap controls what namespaces are synced, and how realms are assigned

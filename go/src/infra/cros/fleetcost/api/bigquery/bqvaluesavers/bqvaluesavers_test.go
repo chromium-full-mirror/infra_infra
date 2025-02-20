@@ -17,8 +17,8 @@ import (
 
 	"go.chromium.org/luci/common/testing/typed"
 
-	bqpb "infra/cros/fleetcost/api/bigquery"
-	"infra/cros/fleetcost/api/bigquery/bqvaluesavers"
+	bqpb "go.chromium.org/infra/cros/fleetcost/api/bigquery"
+	"go.chromium.org/infra/cros/fleetcost/api/bigquery/bqvaluesavers"
 )
 
 // TestResultSaverSimple tests saving a ResultSaver.

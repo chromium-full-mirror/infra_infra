@@ -22,11 +22,11 @@ import (
 	"go.chromium.org/luci/common/cli"
 	luciflag "go.chromium.org/luci/common/flag"
 
-	"infra/cmd/crosfleet/internal/buildbucket"
-	"infra/cmd/crosfleet/internal/common"
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cmd/crosfleet/internal/ufs"
-	crosbb "infra/cros/lib/buildbucket"
+	"go.chromium.org/infra/cmd/crosfleet/internal/buildbucket"
+	"go.chromium.org/infra/cmd/crosfleet/internal/common"
+	"go.chromium.org/infra/cmd/crosfleet/internal/site"
+	"go.chromium.org/infra/cmd/crosfleet/internal/ufs"
+	crosbb "go.chromium.org/infra/cros/lib/buildbucket"
 )
 
 // suiteCmdName is the name of the `crosfleet run suite` command.

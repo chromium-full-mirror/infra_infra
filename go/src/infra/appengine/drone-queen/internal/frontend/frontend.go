@@ -15,8 +15,8 @@ import (
 
 	"go.chromium.org/luci/server/auth"
 
-	"infra/appengine/drone-queen/api"
-	"infra/appengine/drone-queen/internal/config"
+	"go.chromium.org/infra/appengine/drone-queen/api"
+	"go.chromium.org/infra/appengine/drone-queen/internal/config"
 )
 
 // RegisterServers registers RPC servers.

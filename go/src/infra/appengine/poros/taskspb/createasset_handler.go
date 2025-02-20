@@ -29,7 +29,7 @@ import (
 	"go.chromium.org/luci/server/mailer"
 	"go.chromium.org/luci/server/tq"
 
-	"infra/appengine/poros/api/entities"
+	"go.chromium.org/infra/appengine/poros/api/entities"
 )
 
 func CreateAssetHandler(ctx context.Context, payload protobuf.Message) error {
@@ -66,7 +66,7 @@ func CreateAssetHandler(ctx context.Context, payload protobuf.Message) error {
 		logging.Infof(ctx, "Failed to initialize CIPD client: %v", err)
 		return err
 	}
-	pin, err := cipdClient.ResolveVersion(ctx, "infra/celab/celab/linux-amd64", "dev")
+	pin, err := cipdClient.ResolveVersion(ctx, "go.chromium.org/infra/celab/celab/linux-amd64", "dev")
 	if err != nil {
 		logging.Infof(ctx, "Failed to collect latest ref: %v", err)
 		return err

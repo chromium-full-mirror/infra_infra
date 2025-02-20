@@ -12,8 +12,8 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/satlab/internal/support"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/satlab/internal/support"
 )
 
 // supportBase is a placeholder command for support command.

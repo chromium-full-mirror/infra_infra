@@ -16,9 +16,9 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/phosphorus/internal/cmd"
-	"infra/cros/cmd/phosphorus/internal/skylab_local_state/ufs"
-	ufsutil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/cmd"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/skylab_local_state/ufs"
+	ufsutil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // Save subcommand: Saves DUT state.

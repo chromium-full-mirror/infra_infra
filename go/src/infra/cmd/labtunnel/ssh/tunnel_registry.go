@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"strings"
 
-	"infra/cmd/labtunnel/log"
+	"go.chromium.org/infra/cmd/labtunnel/log"
 )
 
 // TunnelRegistry records mappings of remote hostnames to local hostnames that

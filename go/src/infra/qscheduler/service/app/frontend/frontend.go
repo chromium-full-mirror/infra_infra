@@ -26,8 +26,8 @@ import (
 	"go.chromium.org/luci/server/auth"
 	swarming "go.chromium.org/luci/swarming/proto/plugin"
 
-	qscheduler "infra/qscheduler/service/api/qscheduler/v1"
-	"infra/qscheduler/service/app/config"
+	qscheduler "go.chromium.org/infra/qscheduler/service/api/qscheduler/v1"
+	"go.chromium.org/infra/qscheduler/service/app/config"
 )
 
 // SkipAuthorization is set to true when running in dev server locally.

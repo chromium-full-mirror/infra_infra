@@ -5,7 +5,7 @@
 package devicesdb
 
 import (
-	"infra/fleetconsole/internal/database/queryutils"
+	"go.chromium.org/infra/fleetconsole/internal/database/queryutils"
 )
 
 var (

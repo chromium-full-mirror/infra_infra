@@ -13,8 +13,8 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/servo/errors"
-	"infra/cros/servo/logging"
+	"go.chromium.org/infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/logging"
 )
 
 // DialProxyCommand creates a new connection using the specified proxy command.

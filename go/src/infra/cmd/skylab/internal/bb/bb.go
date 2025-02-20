@@ -35,8 +35,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/cmd/skylab/internal/logutils"
-	"infra/cmd/skylab/internal/site"
+	"go.chromium.org/infra/cmd/skylab/internal/logutils"
+	"go.chromium.org/infra/cmd/skylab/internal/site"
 )
 
 const dutLeaseTaskPriority = 15

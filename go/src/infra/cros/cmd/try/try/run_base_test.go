@@ -6,7 +6,7 @@ package try
 import (
 	"testing"
 
-	"infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/assert"
 )
 
 func TestValidate_tryRunBase(t *testing.T) {

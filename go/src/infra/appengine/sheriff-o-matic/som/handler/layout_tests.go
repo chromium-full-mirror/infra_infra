@@ -11,7 +11,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/router"
 
-	te "infra/appengine/sheriff-o-matic/som/testexpectations"
+	te "go.chromium.org/infra/appengine/sheriff-o-matic/som/testexpectations"
 )
 
 type shortExp struct {

@@ -29,7 +29,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	"infra/cros/satlab/common/utils/term"
+	"go.chromium.org/infra/cros/satlab/common/utils/term"
 )
 
 // DefaultTimeout is the default Expect timeout.

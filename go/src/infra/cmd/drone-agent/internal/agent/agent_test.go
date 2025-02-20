@@ -16,9 +16,9 @@ import (
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 
-	"infra/appengine/drone-queen/api"
-	"infra/cmd/drone-agent/internal/bot"
-	"infra/cmd/drone-agent/internal/draining"
+	"go.chromium.org/infra/appengine/drone-queen/api"
+	"go.chromium.org/infra/cmd/drone-agent/internal/bot"
+	"go.chromium.org/infra/cmd/drone-agent/internal/draining"
 )
 
 func TestAgent_add_duts_and_drain_agent(t *testing.T) {

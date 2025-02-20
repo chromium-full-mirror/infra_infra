@@ -13,13 +13,13 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
-	"infra/cros/internal/env"
-	"infra/cros/recovery/dev"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/namespace"
-	"infra/cros/recovery/scopes"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"go.chromium.org/infra/cros/internal/env"
+	"go.chromium.org/infra/cros/recovery/dev"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/namespace"
+	"go.chromium.org/infra/cros/recovery/scopes"
 )
 
 const (

@@ -9,8 +9,8 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	api "infra/unifiedfleet/api/v1/rpc"
-	frontend "infra/unifiedfleet/app/frontend"
+	api "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	frontend "go.chromium.org/infra/unifiedfleet/app/frontend"
 )
 
 func importCrosNetwork(ctx context.Context) error {

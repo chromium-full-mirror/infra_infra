@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/scopes"
+	"go.chromium.org/infra/cros/recovery/scopes"
 )
 
 // EnrichWithTrackingIds enrich URL with Swarming and Buildbucket task ID.

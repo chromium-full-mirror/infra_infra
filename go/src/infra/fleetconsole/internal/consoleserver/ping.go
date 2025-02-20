@@ -7,7 +7,7 @@ package consoleserver
 import (
 	"context"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 )
 
 // Ping is the ping RPC. It responds with an empty response and never fails.

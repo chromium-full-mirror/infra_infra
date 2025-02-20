@@ -4,7 +4,7 @@ description: CTPv2 filter responsible for updating the
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/ctpv2-filters/ants-publish-filter
+  - go.chromium.org/infra/cros/cmd/ctpv2-filters/ants-publish-filter
 root: ../../go/bin
 data:
   - file: ants-publish-filter${exe_suffix}

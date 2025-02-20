@@ -7,7 +7,7 @@ package inputs
 import (
 	"fmt"
 
-	"infra/experimental/crderiveinputs/inputpb"
+	"go.chromium.org/infra/experimental/crderiveinputs/inputpb"
 )
 
 func Unresolved(requested string) *inputpb.ResolvableString {

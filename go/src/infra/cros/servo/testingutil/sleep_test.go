@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"infra/cros/servo/testingutil"
+	"go.chromium.org/infra/cros/servo/testingutil"
 )
 
 func TestSleep(t *testing.T) {

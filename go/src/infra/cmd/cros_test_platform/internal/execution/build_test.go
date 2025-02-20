@@ -30,9 +30,9 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/luciexe/exe"
 
-	"infra/cmd/cros_test_platform/internal/execution"
-	"infra/cmd/cros_test_platform/internal/execution/testrunner"
-	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/testrunner"
+	trservice "go.chromium.org/infra/cmd/cros_test_platform/internal/execution/testrunner/service"
 )
 
 func TestFinalBuildForSingleInvocation(t *testing.T) {

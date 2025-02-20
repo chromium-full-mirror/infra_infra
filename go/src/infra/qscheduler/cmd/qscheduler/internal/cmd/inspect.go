@@ -16,8 +16,8 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/qscheduler/cmd/qscheduler/internal/site"
-	qscheduler "infra/qscheduler/service/api/qscheduler/v1"
+	"go.chromium.org/infra/qscheduler/cmd/qscheduler/internal/site"
+	qscheduler "go.chromium.org/infra/qscheduler/service/api/qscheduler/v1"
 )
 
 // Inspect subcommand: Inspect a qscheduler pool.

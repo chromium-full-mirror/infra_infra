@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/cros-tool-runner/internal/common"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/common"
 )
 
 // CreateNetwork created network for docker.

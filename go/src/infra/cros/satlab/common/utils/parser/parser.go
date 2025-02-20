@@ -6,7 +6,7 @@ package parser
 import (
 	"regexp"
 
-	"infra/cros/satlab/common/utils/errors"
+	"go.chromium.org/infra/cros/satlab/common/utils/errors"
 )
 
 var deployRe = regexp.MustCompile(`Follow the deploy job at (?P<URL>(?:(?:https?):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+)`)

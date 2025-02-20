@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/tools/migrator"
+	"go.chromium.org/infra/tools/migrator"
 )
 
 // ExecuteStatusCheck implements "status" subcommand.

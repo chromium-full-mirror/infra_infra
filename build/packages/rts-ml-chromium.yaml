@@ -17,7 +17,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/rts/cmd/rts-ml-chromium
+  - go.chromium.org/infra/rts/cmd/rts-ml-chromium
 copies:
   - src: ../src/infra/rts/cmd/rts-ml-chromium/ml_cli_logit.py
     dst: ml_cli_logit.py

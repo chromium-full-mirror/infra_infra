@@ -11,9 +11,9 @@ import (
 
 	"go.chromium.org/luci/gae/service/datastore"
 
-	models "infra/cros/fleetcost/api/models"
-	"infra/cros/fleetcost/internal/costserver/controller"
-	"infra/cros/fleetcost/internal/costserver/testsupport"
+	models "go.chromium.org/infra/cros/fleetcost/api/models"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/controller"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/testsupport"
 )
 
 // TestStoreCachedCostResult tests the storing and retrieving a cached cost result.

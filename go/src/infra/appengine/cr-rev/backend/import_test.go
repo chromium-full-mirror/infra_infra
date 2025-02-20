@@ -15,10 +15,10 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/appengine/cr-rev/backend/gitiles"
-	"infra/appengine/cr-rev/backend/repoimport"
-	"infra/appengine/cr-rev/common"
-	"infra/appengine/cr-rev/config"
+	"go.chromium.org/infra/appengine/cr-rev/backend/gitiles"
+	"go.chromium.org/infra/appengine/cr-rev/backend/repoimport"
+	"go.chromium.org/infra/appengine/cr-rev/common"
+	"go.chromium.org/infra/appengine/cr-rev/config"
 )
 
 func TestInitialImport(t *testing.T) {

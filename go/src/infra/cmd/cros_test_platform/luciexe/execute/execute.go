@@ -22,9 +22,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/exe"
 
-	"infra/cmd/cros_test_platform/internal/execution"
-	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
-	"infra/cmd/cros_test_platform/luciexe/common"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution"
+	trservice "go.chromium.org/infra/cmd/cros_test_platform/internal/execution/testrunner/service"
+	"go.chromium.org/infra/cmd/cros_test_platform/luciexe/common"
 )
 
 // Args contains all the arguments necessary to Run() an execute step.

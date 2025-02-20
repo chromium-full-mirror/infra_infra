@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/mock"
 	moblabapipb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
-	"infra/cros/recovery/models"
+	"go.chromium.org/infra/cros/recovery/models"
 )
 
 // MockBuildService This object is only for testing

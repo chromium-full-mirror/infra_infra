@@ -13,7 +13,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"infra/cros/cmd/cft/execution/cros-test/internal/device"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/device"
 )
 
 // HostInfo struct is the attr/label struct used to write a mimicd host info file.

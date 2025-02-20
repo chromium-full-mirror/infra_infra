@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/karte/internal/scalars"
+	"go.chromium.org/infra/cros/karte/internal/scalars"
 )
 
 // Save takes in an action and produces a record to be inserted into bigquery and

@@ -10,7 +10,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	. "infra/cros/cmd/ctpv2/internal/commands"
+	. "go.chromium.org/infra/cros/cmd/ctpv2/internal/commands"
 )
 
 func TestSchedulingMatch(t *testing.T) {

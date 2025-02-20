@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/appengine/drone-queen/internal/entities"
+	"go.chromium.org/infra/appengine/drone-queen/internal/entities"
 )
 
 var (

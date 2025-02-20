@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/common/testing/typed"
 
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 func TestHmrCleanAndValidateFlags(t *testing.T) {

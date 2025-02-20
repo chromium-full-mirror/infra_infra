@@ -4,7 +4,7 @@
 
 package main
 
-import vpython "infra/tools/vpython/legacy/vpython2.7"
+import vpython "go.chromium.org/infra/tools/vpython/legacy/vpython2.7"
 
 func main() {
 	vpython.Main(false)

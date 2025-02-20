@@ -21,9 +21,9 @@ import (
 
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	"infra/qscheduler/qslib/protos"
-	qscheduler "infra/qscheduler/service/api/qscheduler/v1"
-	"infra/qscheduler/service/app/state/nodestore"
+	"go.chromium.org/infra/qscheduler/qslib/protos"
+	qscheduler "go.chromium.org/infra/qscheduler/service/api/qscheduler/v1"
+	"go.chromium.org/infra/qscheduler/service/app/state/nodestore"
 )
 
 // QSchedulerViewServerImpl implements QSchedulerViewServer.

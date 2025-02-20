@@ -22,9 +22,9 @@ import (
 	"go.chromium.org/luci/common/bq"
 	"go.chromium.org/luci/common/logging"
 
-	apibq "infra/appengine/cros/lab_inventory/api/bigquery"
-	ds "infra/cros/lab_inventory/datastore"
-	invprotos "infra/cros/lab_inventory/protos"
+	apibq "go.chromium.org/infra/appengine/cros/lab_inventory/api/bigquery"
+	ds "go.chromium.org/infra/cros/lab_inventory/datastore"
+	invprotos "go.chromium.org/infra/cros/lab_inventory/protos"
 )
 
 var project string = "cros-lab-inventory-dev"

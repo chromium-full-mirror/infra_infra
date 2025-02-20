@@ -13,8 +13,8 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmdsupport/cmdlib"
-	sw "infra/libs/skylab/swarming"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	sw "go.chromium.org/infra/libs/skylab/swarming"
 )
 
 const (

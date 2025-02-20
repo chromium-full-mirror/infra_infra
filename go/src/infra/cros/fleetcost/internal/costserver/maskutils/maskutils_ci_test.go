@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/common/testing/typed"
 
-	fleetcostpb "infra/cros/fleetcost/api/models"
+	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
 )
 
 // TestUpdateCostIndicatorProtoHappyPath tests the happy path where the two protos are compatible

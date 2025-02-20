@@ -11,9 +11,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	shivasUtil "infra/cmd/shivas/utils"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	shivasUtil "go.chromium.org/infra/cmd/shivas/utils"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // GetAllMachineLSEs gets all MachineLSEs.

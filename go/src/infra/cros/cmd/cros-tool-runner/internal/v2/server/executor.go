@@ -7,7 +7,7 @@ package server
 import (
 	"context"
 
-	"infra/cros/cmd/cros-tool-runner/internal/v2/commands"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 )
 
 // CommandExecutor proxies command execution to provide an abstraction layer for interception.

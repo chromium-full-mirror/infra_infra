@@ -14,10 +14,10 @@ import (
 
 	"go.chromium.org/luci/gae/service/datastore"
 
-	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/identifiers"
-	"infra/cros/karte/internal/scalars"
-	"infra/cros/karte/internal/testsupport"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	"go.chromium.org/infra/cros/karte/internal/identifiers"
+	"go.chromium.org/infra/cros/karte/internal/scalars"
+	"go.chromium.org/infra/cros/karte/internal/testsupport"
 )
 
 // TestPersistObservations tests persisting observations.

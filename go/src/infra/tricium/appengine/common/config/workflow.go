@@ -11,7 +11,7 @@ import (
 
 	ds "go.chromium.org/luci/gae/service/datastore"
 
-	"infra/tricium/api/admin/v1"
+	"go.chromium.org/infra/tricium/api/admin/v1"
 )
 
 // Workflow config entry for storing in datastore.

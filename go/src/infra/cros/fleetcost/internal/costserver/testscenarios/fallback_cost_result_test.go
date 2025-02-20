@@ -11,11 +11,11 @@ import (
 	"github.com/golang/mock/gomock"
 	"google.golang.org/genproto/googleapis/type/money"
 
-	fleetcostModels "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/costserver"
-	"infra/cros/fleetcost/internal/costserver/fakeufsdata"
-	"infra/cros/fleetcost/internal/costserver/testsupport"
+	fleetcostModels "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/fakeufsdata"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/testsupport"
 )
 
 // TestFallbackCostResult tests the flow where we fall back to the cost of a DUT.

@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/cros/fleetcost/api/rpc/service.proto
+// source: go.chromium.org/infra/cros/fleetcost/api/rpc/service.proto
 
 package fleetcostpb
 
@@ -14,6 +14,7 @@ import prpc "go.chromium.org/luci/grpc/prpc"
 
 import (
 	context "context"
+	models "go.chromium.org/infra/cros/fleetcost/api/models"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -22,7 +23,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
-	models "infra/cros/fleetcost/api/models"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -44,7 +44,7 @@ type PingRequest struct {
 
 func (x *PingRequest) Reset() {
 	*x = PingRequest{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -56,7 +56,7 @@ func (x *PingRequest) String() string {
 func (*PingRequest) ProtoMessage() {}
 
 func (x *PingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -69,7 +69,7 @@ func (x *PingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingRequest.ProtoReflect.Descriptor instead.
 func (*PingRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{0}
 }
 
 // PingResponse intentionally contains nothing.
@@ -81,7 +81,7 @@ type PingResponse struct {
 
 func (x *PingResponse) Reset() {
 	*x = PingResponse{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -93,7 +93,7 @@ func (x *PingResponse) String() string {
 func (*PingResponse) ProtoMessage() {}
 
 func (x *PingResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -106,7 +106,7 @@ func (x *PingResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingResponse.ProtoReflect.Descriptor instead.
 func (*PingResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{1}
 }
 
 // PingUFSRequest intentionally contains nothing.
@@ -118,7 +118,7 @@ type PingUFSRequest struct {
 
 func (x *PingUFSRequest) Reset() {
 	*x = PingUFSRequest{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -130,7 +130,7 @@ func (x *PingUFSRequest) String() string {
 func (*PingUFSRequest) ProtoMessage() {}
 
 func (x *PingUFSRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -143,7 +143,7 @@ func (x *PingUFSRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingUFSRequest.ProtoReflect.Descriptor instead.
 func (*PingUFSRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{2}
 }
 
 // PingUFSResponse contains information about the request sent to and returned from UFS.
@@ -165,7 +165,7 @@ type PingUFSResponse struct {
 
 func (x *PingUFSResponse) Reset() {
 	*x = PingUFSResponse{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -177,7 +177,7 @@ func (x *PingUFSResponse) String() string {
 func (*PingUFSResponse) ProtoMessage() {}
 
 func (x *PingUFSResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -190,7 +190,7 @@ func (x *PingUFSResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PingUFSResponse.ProtoReflect.Descriptor instead.
 func (*PingUFSResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *PingUFSResponse) GetUfsRequest() *anypb.Any {
@@ -231,7 +231,7 @@ type CreateCostIndicatorRequest struct {
 
 func (x *CreateCostIndicatorRequest) Reset() {
 	*x = CreateCostIndicatorRequest{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -243,7 +243,7 @@ func (x *CreateCostIndicatorRequest) String() string {
 func (*CreateCostIndicatorRequest) ProtoMessage() {}
 
 func (x *CreateCostIndicatorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -256,7 +256,7 @@ func (x *CreateCostIndicatorRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCostIndicatorRequest.ProtoReflect.Descriptor instead.
 func (*CreateCostIndicatorRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *CreateCostIndicatorRequest) GetCostIndicator() *models.CostIndicator {
@@ -276,7 +276,7 @@ type CreateCostIndicatorResponse struct {
 
 func (x *CreateCostIndicatorResponse) Reset() {
 	*x = CreateCostIndicatorResponse{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -288,7 +288,7 @@ func (x *CreateCostIndicatorResponse) String() string {
 func (*CreateCostIndicatorResponse) ProtoMessage() {}
 
 func (x *CreateCostIndicatorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -301,7 +301,7 @@ func (x *CreateCostIndicatorResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCostIndicatorResponse.ProtoReflect.Descriptor instead.
 func (*CreateCostIndicatorResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CreateCostIndicatorResponse) GetCostIndicator() *models.CostIndicator {
@@ -323,7 +323,7 @@ type ListCostIndicatorsRequest struct {
 
 func (x *ListCostIndicatorsRequest) Reset() {
 	*x = ListCostIndicatorsRequest{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -335,7 +335,7 @@ func (x *ListCostIndicatorsRequest) String() string {
 func (*ListCostIndicatorsRequest) ProtoMessage() {}
 
 func (x *ListCostIndicatorsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -348,7 +348,7 @@ func (x *ListCostIndicatorsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCostIndicatorsRequest.ProtoReflect.Descriptor instead.
 func (*ListCostIndicatorsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ListCostIndicatorsRequest) GetPageSize() int32 {
@@ -387,7 +387,7 @@ type ListCostIndicatorsFilter struct {
 
 func (x *ListCostIndicatorsFilter) Reset() {
 	*x = ListCostIndicatorsFilter{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -399,7 +399,7 @@ func (x *ListCostIndicatorsFilter) String() string {
 func (*ListCostIndicatorsFilter) ProtoMessage() {}
 
 func (x *ListCostIndicatorsFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -412,7 +412,7 @@ func (x *ListCostIndicatorsFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCostIndicatorsFilter.ProtoReflect.Descriptor instead.
 func (*ListCostIndicatorsFilter) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListCostIndicatorsFilter) GetPrimary() string {
@@ -460,7 +460,7 @@ type ListCostIndicatorsResponse struct {
 
 func (x *ListCostIndicatorsResponse) Reset() {
 	*x = ListCostIndicatorsResponse{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -472,7 +472,7 @@ func (x *ListCostIndicatorsResponse) String() string {
 func (*ListCostIndicatorsResponse) ProtoMessage() {}
 
 func (x *ListCostIndicatorsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -485,7 +485,7 @@ func (x *ListCostIndicatorsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCostIndicatorsResponse.ProtoReflect.Descriptor instead.
 func (*ListCostIndicatorsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListCostIndicatorsResponse) GetCostIndicator() []*models.CostIndicator {
@@ -507,7 +507,7 @@ type UpdateCostIndicatorRequest struct {
 
 func (x *UpdateCostIndicatorRequest) Reset() {
 	*x = UpdateCostIndicatorRequest{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -519,7 +519,7 @@ func (x *UpdateCostIndicatorRequest) String() string {
 func (*UpdateCostIndicatorRequest) ProtoMessage() {}
 
 func (x *UpdateCostIndicatorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -532,7 +532,7 @@ func (x *UpdateCostIndicatorRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCostIndicatorRequest.ProtoReflect.Descriptor instead.
 func (*UpdateCostIndicatorRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *UpdateCostIndicatorRequest) GetCostIndicator() *models.CostIndicator {
@@ -559,7 +559,7 @@ type UpdateCostIndicatorResponse struct {
 
 func (x *UpdateCostIndicatorResponse) Reset() {
 	*x = UpdateCostIndicatorResponse{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -571,7 +571,7 @@ func (x *UpdateCostIndicatorResponse) String() string {
 func (*UpdateCostIndicatorResponse) ProtoMessage() {}
 
 func (x *UpdateCostIndicatorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -584,7 +584,7 @@ func (x *UpdateCostIndicatorResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCostIndicatorResponse.ProtoReflect.Descriptor instead.
 func (*UpdateCostIndicatorResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *UpdateCostIndicatorResponse) GetCostIndicator() *models.CostIndicator {
@@ -619,7 +619,7 @@ type GetCostResultRequest struct {
 
 func (x *GetCostResultRequest) Reset() {
 	*x = GetCostResultRequest{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -631,7 +631,7 @@ func (x *GetCostResultRequest) String() string {
 func (*GetCostResultRequest) ProtoMessage() {}
 
 func (x *GetCostResultRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -644,7 +644,7 @@ func (x *GetCostResultRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCostResultRequest.ProtoReflect.Descriptor instead.
 func (*GetCostResultRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{11}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetCostResultRequest) GetDeviceId() string {
@@ -699,7 +699,7 @@ type DeleteCostIndicatorRequest struct {
 
 func (x *DeleteCostIndicatorRequest) Reset() {
 	*x = DeleteCostIndicatorRequest{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -711,7 +711,7 @@ func (x *DeleteCostIndicatorRequest) String() string {
 func (*DeleteCostIndicatorRequest) ProtoMessage() {}
 
 func (x *DeleteCostIndicatorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -724,7 +724,7 @@ func (x *DeleteCostIndicatorRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCostIndicatorRequest.ProtoReflect.Descriptor instead.
 func (*DeleteCostIndicatorRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{12}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *DeleteCostIndicatorRequest) GetCostIndicator() *models.CostIndicator {
@@ -744,7 +744,7 @@ type DeleteCostIndicatorResponse struct {
 
 func (x *DeleteCostIndicatorResponse) Reset() {
 	*x = DeleteCostIndicatorResponse{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -756,7 +756,7 @@ func (x *DeleteCostIndicatorResponse) String() string {
 func (*DeleteCostIndicatorResponse) ProtoMessage() {}
 
 func (x *DeleteCostIndicatorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -769,7 +769,7 @@ func (x *DeleteCostIndicatorResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCostIndicatorResponse.ProtoReflect.Descriptor instead.
 func (*DeleteCostIndicatorResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{13}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *DeleteCostIndicatorResponse) GetCostIndicator() *models.CostIndicator {
@@ -792,7 +792,7 @@ type PersistToBigqueryRequest struct {
 
 func (x *PersistToBigqueryRequest) Reset() {
 	*x = PersistToBigqueryRequest{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -804,7 +804,7 @@ func (x *PersistToBigqueryRequest) String() string {
 func (*PersistToBigqueryRequest) ProtoMessage() {}
 
 func (x *PersistToBigqueryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -817,7 +817,7 @@ func (x *PersistToBigqueryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PersistToBigqueryRequest.ProtoReflect.Descriptor instead.
 func (*PersistToBigqueryRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{14}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *PersistToBigqueryRequest) GetReadonly() bool {
@@ -839,7 +839,7 @@ type PersistToBigqueryResponse struct {
 
 func (x *PersistToBigqueryResponse) Reset() {
 	*x = PersistToBigqueryResponse{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -851,7 +851,7 @@ func (x *PersistToBigqueryResponse) String() string {
 func (*PersistToBigqueryResponse) ProtoMessage() {}
 
 func (x *PersistToBigqueryResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -864,7 +864,7 @@ func (x *PersistToBigqueryResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PersistToBigqueryResponse.ProtoReflect.Descriptor instead.
 func (*PersistToBigqueryResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{15}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *PersistToBigqueryResponse) GetPersistedRecords() int32 {
@@ -892,7 +892,7 @@ type RepopulateCacheRequest struct {
 
 func (x *RepopulateCacheRequest) Reset() {
 	*x = RepopulateCacheRequest{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -904,7 +904,7 @@ func (x *RepopulateCacheRequest) String() string {
 func (*RepopulateCacheRequest) ProtoMessage() {}
 
 func (x *RepopulateCacheRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -917,7 +917,7 @@ func (x *RepopulateCacheRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepopulateCacheRequest.ProtoReflect.Descriptor instead.
 func (*RepopulateCacheRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{16}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *RepopulateCacheRequest) GetForgiveMissingEntries() bool {
@@ -940,7 +940,7 @@ type RepopulateCacheResponse struct {
 
 func (x *RepopulateCacheResponse) Reset() {
 	*x = RepopulateCacheResponse{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -952,7 +952,7 @@ func (x *RepopulateCacheResponse) String() string {
 func (*RepopulateCacheResponse) ProtoMessage() {}
 
 func (x *RepopulateCacheResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -965,7 +965,7 @@ func (x *RepopulateCacheResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RepopulateCacheResponse.ProtoReflect.Descriptor instead.
 func (*RepopulateCacheResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{17}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *RepopulateCacheResponse) GetProcessedRecords() int32 {
@@ -992,7 +992,7 @@ type CreateVariableRequest struct {
 
 func (x *CreateVariableRequest) Reset() {
 	*x = CreateVariableRequest{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1004,7 +1004,7 @@ func (x *CreateVariableRequest) String() string {
 func (*CreateVariableRequest) ProtoMessage() {}
 
 func (x *CreateVariableRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1017,7 +1017,7 @@ func (x *CreateVariableRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateVariableRequest.ProtoReflect.Descriptor instead.
 func (*CreateVariableRequest) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{18}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *CreateVariableRequest) GetVariable() *models.Variable {
@@ -1037,7 +1037,7 @@ type CreateVariableResponse struct {
 
 func (x *CreateVariableResponse) Reset() {
 	*x = CreateVariableResponse{}
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[19]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1049,7 +1049,7 @@ func (x *CreateVariableResponse) String() string {
 func (*CreateVariableResponse) ProtoMessage() {}
 
 func (x *CreateVariableResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[19]
+	mi := &file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1062,7 +1062,7 @@ func (x *CreateVariableResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateVariableResponse.ProtoReflect.Descriptor instead.
 func (*CreateVariableResponse) Descriptor() ([]byte, []int) {
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{19}
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *CreateVariableResponse) GetVariable() *models.Variable {
@@ -1072,10 +1072,11 @@ func (x *CreateVariableResponse) GetVariable() *models.Variable {
 	return nil
 }
 
-var File_infra_cros_fleetcost_api_rpc_service_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto protoreflect.FileDescriptor
 
-var file_infra_cros_fleetcost_api_rpc_service_proto_rawDesc = string([]byte{
-	0x0a, 0x2a, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x66, 0x6c, 0x65,
+var file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDesc = string([]byte{
+	0x0a, 0x3a, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x66, 0x6c, 0x65,
 	0x65, 0x74, 0x63, 0x6f, 0x73, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x70, 0x63, 0x2f, 0x73,
 	0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x11, 0x66, 0x6c,
 	0x65, 0x65, 0x74, 0x63, 0x6f, 0x73, 0x74, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x72, 0x70, 0x63, 0x1a,
@@ -1086,13 +1087,16 @@ var file_infra_cros_fleetcost_api_rpc_service_proto_rawDesc = string([]byte{
 	0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f,
 	0x61, 0x6e, 0x79, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
 	0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x66, 0x69, 0x65, 0x6c, 0x64,
-	0x5f, 0x6d, 0x61, 0x73, 0x6b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2f, 0x69, 0x6e, 0x66,
+	0x5f, 0x6d, 0x61, 0x73, 0x6b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3f, 0x67, 0x6f, 0x2e,
+	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66,
 	0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x73,
 	0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x69, 0x6e, 0x64,
-	0x69, 0x63, 0x61, 0x74, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2c, 0x69, 0x6e,
+	0x69, 0x63, 0x61, 0x74, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3c, 0x67, 0x6f,
+	0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e,
 	0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f,
 	0x73, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x72, 0x65,
-	0x73, 0x75, 0x6c, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2e, 0x69, 0x6e, 0x66, 0x72,
+	0x73, 0x75, 0x6c, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3e, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x73, 0x74,
 	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x76, 0x61, 0x72, 0x69,
 	0x61, 0x62, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x0d, 0x0a, 0x0b, 0x50, 0x69,
@@ -1314,26 +1318,27 @@ var file_infra_cros_fleetcost_api_rpc_service_proto_rawDesc = string([]byte{
 	0x6c, 0x61, 0x74, 0x65, 0x43, 0x61, 0x63, 0x68, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
 	0x65, 0x22, 0x22, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1c, 0x22, 0x1a, 0x2f, 0x76, 0x31, 0x2f, 0x74,
 	0x61, 0x73, 0x6b, 0x73, 0x2f, 0x72, 0x65, 0x70, 0x6f, 0x70, 0x75, 0x6c, 0x61, 0x74, 0x65, 0x2d,
-	0x63, 0x61, 0x63, 0x68, 0x65, 0x42, 0x2a, 0x5a, 0x28, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63,
+	0x63, 0x61, 0x63, 0x68, 0x65, 0x42, 0x3a, 0x5a, 0x38, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f,
+	0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63,
 	0x72, 0x6f, 0x73, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x73, 0x74, 0x2f, 0x61, 0x70,
 	0x69, 0x2f, 0x72, 0x70, 0x63, 0x3b, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x63, 0x6f, 0x73, 0x74, 0x70,
 	0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_cros_fleetcost_api_rpc_service_proto_rawDescOnce sync.Once
-	file_infra_cros_fleetcost_api_rpc_service_proto_rawDescData []byte
+	file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescData []byte
 )
 
-func file_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP() []byte {
-	file_infra_cros_fleetcost_api_rpc_service_proto_rawDescOnce.Do(func() {
-		file_infra_cros_fleetcost_api_rpc_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_cros_fleetcost_api_rpc_service_proto_rawDesc), len(file_infra_cros_fleetcost_api_rpc_service_proto_rawDesc)))
+func file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDesc), len(file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDesc)))
 	})
-	return file_infra_cros_fleetcost_api_rpc_service_proto_rawDescData
+	return file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDescData
 }
 
-var file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
-var file_infra_cros_fleetcost_api_rpc_service_proto_goTypes = []any{
+var file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_goTypes = []any{
 	(*PingRequest)(nil),                 // 0: fleetcost.api.rpc.PingRequest
 	(*PingResponse)(nil),                // 1: fleetcost.api.rpc.PingResponse
 	(*PingUFSRequest)(nil),              // 2: fleetcost.api.rpc.PingUFSRequest
@@ -1360,7 +1365,7 @@ var file_infra_cros_fleetcost_api_rpc_service_proto_goTypes = []any{
 	(*models.Variable)(nil),             // 23: fleetcost.api.models.Variable
 	(*models.CostResult)(nil),           // 24: fleetcost.api.models.CostResult
 }
-var file_infra_cros_fleetcost_api_rpc_service_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_depIdxs = []int32{
 	20, // 0: fleetcost.api.rpc.PingUFSResponse.ufs_request:type_name -> google.protobuf.Any
 	20, // 1: fleetcost.api.rpc.PingUFSResponse.ufs_response:type_name -> google.protobuf.Any
 	21, // 2: fleetcost.api.rpc.CreateCostIndicatorRequest.cost_indicator:type_name -> fleetcost.api.models.CostIndicator
@@ -1401,28 +1406,28 @@ var file_infra_cros_fleetcost_api_rpc_service_proto_depIdxs = []int32{
 	0,  // [0:13] is the sub-list for field type_name
 }
 
-func init() { file_infra_cros_fleetcost_api_rpc_service_proto_init() }
-func file_infra_cros_fleetcost_api_rpc_service_proto_init() {
-	if File_infra_cros_fleetcost_api_rpc_service_proto != nil {
+func init() { file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_init() }
+func file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_init() {
+	if File_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_cros_fleetcost_api_rpc_service_proto_rawDesc), len(file_infra_cros_fleetcost_api_rpc_service_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDesc), len(file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_cros_fleetcost_api_rpc_service_proto_goTypes,
-		DependencyIndexes: file_infra_cros_fleetcost_api_rpc_service_proto_depIdxs,
-		MessageInfos:      file_infra_cros_fleetcost_api_rpc_service_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_msgTypes,
 	}.Build()
-	File_infra_cros_fleetcost_api_rpc_service_proto = out.File
-	file_infra_cros_fleetcost_api_rpc_service_proto_goTypes = nil
-	file_infra_cros_fleetcost_api_rpc_service_proto_depIdxs = nil
+	File_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto = out.File
+	file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_goTypes = nil
+	file_go_chromium_org_infra_cros_fleetcost_api_rpc_service_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1945,5 +1950,5 @@ var _FleetCost_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/cros/fleetcost/api/rpc/service.proto",
+	Metadata: "go.chromium.org/infra/cros/fleetcost/api/rpc/service.proto",
 }

@@ -9,11 +9,11 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/dutstate"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/execs/cros/battery"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/execs/cros/battery"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // auditBatteryExec confirms that it is able to audit battery info

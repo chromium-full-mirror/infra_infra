@@ -19,9 +19,9 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/phosphorus/internal/cmd"
-	"infra/cros/cmd/phosphorus/internal/tls"
-	"infra/libs/lro"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/cmd"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/tls"
+	"go.chromium.org/infra/libs/lro"
 )
 
 const (

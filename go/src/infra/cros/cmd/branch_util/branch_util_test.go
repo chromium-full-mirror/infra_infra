@@ -23,16 +23,16 @@ import (
 
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/cros/cmd/branch_util/test"
-	"infra/cros/internal/assert"
-	"infra/cros/internal/branch"
-	mv "infra/cros/internal/chromeosversion"
-	gerrit "infra/cros/internal/gerrit"
-	"infra/cros/internal/git"
-	"infra/cros/internal/gs"
-	"infra/cros/internal/repo"
-	rh "infra/cros/internal/repoharness"
-	"infra/cros/internal/testutil"
+	"go.chromium.org/infra/cros/cmd/branch_util/test"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/branch"
+	mv "go.chromium.org/infra/cros/internal/chromeosversion"
+	gerrit "go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/gs"
+	"go.chromium.org/infra/cros/internal/repo"
+	rh "go.chromium.org/infra/cros/internal/repoharness"
+	"go.chromium.org/infra/cros/internal/testutil"
 )
 
 const (

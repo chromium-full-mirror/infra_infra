@@ -15,11 +15,11 @@ import (
 	"go.chromium.org/luci/config"
 	"go.chromium.org/luci/config/impl/memory"
 
-	"infra/cros/botsregulator/internal/clients"
-	"infra/cros/botsregulator/internal/regulator"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cros/botsregulator/internal/clients"
+	"go.chromium.org/infra/cros/botsregulator/internal/regulator"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 func TestMigrate(t *testing.T) {

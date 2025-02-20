@@ -11,13 +11,13 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	fleetcostModels "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/costserver/entities"
-	"infra/cros/fleetcost/internal/fleetcosterror"
-	"infra/cros/fleetcost/internal/site"
-	"infra/cros/fleetcost/internal/utils"
-	"infra/cros/fleetcost/internal/validation"
+	fleetcostModels "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/entities"
+	"go.chromium.org/infra/cros/fleetcost/internal/fleetcosterror"
+	"go.chromium.org/infra/cros/fleetcost/internal/site"
+	"go.chromium.org/infra/cros/fleetcost/internal/utils"
+	"go.chromium.org/infra/cros/fleetcost/internal/validation"
 )
 
 // MustCreateCostIndicator is a helper function for tests that ergonomically creates a

@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	"infra/cros/cmd/ctpv2-filters/pre_process_filter/structs"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/pre_process_filter/structs"
 )
 
 // compareSlices compares two slices element by element

@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmd/shivas/site"
 )
 
 // AuditDutsCmd contains audit-duts command specification

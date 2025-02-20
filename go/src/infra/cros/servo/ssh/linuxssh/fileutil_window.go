@@ -14,8 +14,8 @@ import (
 	"context"
 	"os"
 
-	"infra/cros/servo/errors"
-	"infra/cros/servo/ssh"
+	"go.chromium.org/infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/ssh"
 )
 
 // SymlinkPolicy describes how symbolic links should be handled by PutFiles.

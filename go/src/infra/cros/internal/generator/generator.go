@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbproto "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/gerrit"
 )
 
 type buildID struct {

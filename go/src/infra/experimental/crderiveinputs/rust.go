@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/data/text/sequence"
 
-	"infra/experimental/crderiveinputs/inputpb"
+	"go.chromium.org/infra/experimental/crderiveinputs/inputpb"
 )
 
 type RustUpdate struct{}

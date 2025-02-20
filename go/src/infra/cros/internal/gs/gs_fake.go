@@ -13,8 +13,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/gcloud/gs"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 type FakeClient struct {

@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/convey"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/appengine/chrome-test-health/api"
+	"go.chromium.org/infra/appengine/chrome-test-health/api"
 )
 
 type clientMock struct {

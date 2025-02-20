@@ -10,8 +10,8 @@ import (
 	"log"
 	"net"
 
-	ufsmodels "infra/unifiedfleet/api/v1/models"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	ufsmodels "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // Environment is the runtime dependencies, e.g. networking, etc. of the

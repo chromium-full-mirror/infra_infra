@@ -15,13 +15,13 @@ import (
 	labApi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components/servo"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/internal/retry"
-	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/tlw"
-	"infra/cros/recovery/version"
+	"go.chromium.org/infra/cros/recovery/internal/components/servo"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/retry"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/version"
 )
 
 func servoUSBHasCROSStableImageExec(ctx context.Context, info *execs.ExecInfo) error {

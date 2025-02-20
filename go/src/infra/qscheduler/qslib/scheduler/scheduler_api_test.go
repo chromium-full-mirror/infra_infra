@@ -23,7 +23,7 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
-	"infra/qscheduler/qslib/scheduler"
+	"go.chromium.org/infra/qscheduler/qslib/scheduler"
 )
 
 type Priority = scheduler.Priority

@@ -14,8 +14,8 @@ import (
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 	"go.chromium.org/luci/server/tq"
 
-	"infra/appengine/rubber-stamper/internal/reviewer"
-	"infra/appengine/rubber-stamper/tasks/taskspb"
+	"go.chromium.org/infra/appengine/rubber-stamper/internal/reviewer"
+	"go.chromium.org/infra/appengine/rubber-stamper/tasks/taskspb"
 )
 
 func init() {

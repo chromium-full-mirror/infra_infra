@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/chromium/bootstrapper/clients/gerrit"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gerrit"
 )
 
 func TestFactory(t *testing.T) {

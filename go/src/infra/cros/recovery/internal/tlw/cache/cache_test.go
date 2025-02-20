@@ -13,7 +13,7 @@ import (
 	"strings"
 	"testing"
 
-	ufsModels "infra/unifiedfleet/api/v1/models"
+	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 type mockEnv struct {

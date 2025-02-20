@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/luci/common/testing/typed"
 
-	"infra/cros/fleetcost/internal/costserver/testsupport"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/testsupport"
 )
 
 // TestClockSmokeTest tests that grabbing the clock and advancing it one hour

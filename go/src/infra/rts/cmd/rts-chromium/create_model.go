@@ -22,9 +22,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/rts/filegraph/git"
-	"infra/rts/internal/chromium"
-	"infra/rts/presubmit/eval"
+	"go.chromium.org/infra/rts/filegraph/git"
+	"go.chromium.org/infra/rts/internal/chromium"
+	"go.chromium.org/infra/rts/presubmit/eval"
 )
 
 func cmdCreateModel(authOpt *auth.Options) *subcommands.Command {

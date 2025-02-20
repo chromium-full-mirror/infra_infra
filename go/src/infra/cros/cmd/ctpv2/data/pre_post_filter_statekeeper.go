@@ -12,8 +12,8 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/common_lib/tools/crostoolrunner"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/crostoolrunner"
 )
 
 // PrePostFilterStateKeeper represents all the data pre and post filter execution flow requires.

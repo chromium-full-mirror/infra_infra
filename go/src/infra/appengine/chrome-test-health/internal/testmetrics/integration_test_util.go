@@ -8,7 +8,7 @@ package testmetrics
 
 import (
 	"context"
-	"infra/appengine/chrome-test-health/api"
+	"go.chromium.org/infra/appengine/chrome-test-health/api"
 	"os"
 	"path/filepath"
 	"strings"

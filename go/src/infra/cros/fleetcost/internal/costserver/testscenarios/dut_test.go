@@ -12,11 +12,11 @@ import (
 	"github.com/golang/mock/gomock"
 	"google.golang.org/genproto/googleapis/type/money"
 
-	fleetcostpb "infra/cros/fleetcost/api/models"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/costserver/fakeufsdata"
-	"infra/cros/fleetcost/internal/costserver/testsupport"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/fakeufsdata"
+	"go.chromium.org/infra/cros/fleetcost/internal/costserver/testsupport"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // TestNonexistentDUT tests trying to get the cost of a DUT that doesn't exist.

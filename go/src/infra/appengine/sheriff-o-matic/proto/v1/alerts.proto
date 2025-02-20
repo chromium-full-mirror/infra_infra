@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package infra.appengine.som.v1;
 
-option go_package = "infra/appengine/sheriff-o-matic/proto/v1;sompb";
+option go_package = "go.chromium.org/infra/appengine/sheriff-o-matic/proto/v1;sompb";
 
 // Provides methods to retrieve alerts.
 //

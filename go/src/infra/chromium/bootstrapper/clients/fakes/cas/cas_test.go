@@ -16,8 +16,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 
-	bscas "infra/chromium/bootstrapper/clients/cas"
-	"infra/chromium/util"
+	bscas "go.chromium.org/infra/chromium/bootstrapper/clients/cas"
+	"go.chromium.org/infra/chromium/util"
 )
 
 func TestFactory(t *testing.T) {

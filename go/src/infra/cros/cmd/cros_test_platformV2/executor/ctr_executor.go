@@ -11,7 +11,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 
-	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
+	managers "go.chromium.org/infra/cros/cmd/cros_test_platformV2/docker_managers"
 )
 
 // CrosProvisionExecutor represents executor

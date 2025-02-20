@@ -7,7 +7,7 @@ package dirmd
 import (
 	"google.golang.org/protobuf/proto"
 
-	dirmdpb "infra/tools/dirmd/proto"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
 )
 
 // Mapping is a mapping from a directory to its metadata.

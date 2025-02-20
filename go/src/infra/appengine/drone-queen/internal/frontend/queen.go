@@ -19,15 +19,15 @@ import (
 	"go.chromium.org/luci/grpc/grpcutil"
 	apipb "go.chromium.org/luci/swarming/proto/api_v2"
 
-	"infra/appengine/drone-queen/api"
-	clients "infra/appengine/drone-queen/internal/clients"
-	"infra/appengine/drone-queen/internal/config"
-	"infra/appengine/drone-queen/internal/entities"
-	"infra/appengine/drone-queen/internal/queries"
+	"go.chromium.org/infra/appengine/drone-queen/api"
+	clients "go.chromium.org/infra/appengine/drone-queen/internal/clients"
+	"go.chromium.org/infra/appengine/drone-queen/internal/config"
+	"go.chromium.org/infra/appengine/drone-queen/internal/entities"
+	"go.chromium.org/infra/appengine/drone-queen/internal/queries"
 )
 
 // Name used for OpenTelemetry tracers.
-const tname = "infra/appengine/drone-queen/internal/frontend"
+const tname = "go.chromium.org/infra/appengine/drone-queen/internal/frontend"
 
 // Earliest supported version of drone agent.
 const earliestSupportedVersion = 0

@@ -19,17 +19,17 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/recovery/config"
-	"infra/cros/recovery/dev"
-	"infra/cros/recovery/internal/engine"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/localtlw/localproxy"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/logger"
-	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/scopes"
-	"infra/cros/recovery/tlw"
-	"infra/libs/skylab/buildbucket"
+	"go.chromium.org/infra/cros/recovery/config"
+	"go.chromium.org/infra/cros/recovery/dev"
+	"go.chromium.org/infra/cros/recovery/internal/engine"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw/localproxy"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/scopes"
+	"go.chromium.org/infra/cros/recovery/tlw"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
 )
 
 // Run runs the recovery tasks against the provided unit.

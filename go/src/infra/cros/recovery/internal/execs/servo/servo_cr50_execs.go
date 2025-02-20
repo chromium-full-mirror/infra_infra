@@ -11,10 +11,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	components_servo "infra/cros/recovery/internal/components/servo"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/tlw"
+	components_servo "go.chromium.org/infra/cros/recovery/internal/components/servo"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 const (

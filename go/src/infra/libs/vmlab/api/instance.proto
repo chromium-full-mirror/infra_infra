@@ -7,10 +7,10 @@ syntax = "proto3";
 package vmlab.api;
 
 import "google/protobuf/duration.proto";
-import "infra/libs/vmlab/api/image.proto";
+import "go.chromium.org/infra/libs/vmlab/api/image.proto";
 import "chromiumos/test/api/device_leasing.proto";
 
-option go_package = "infra/libs/vmlab/api";
+option go_package = "go.chromium.org/infra/libs/vmlab/api";
 
 // ProviderId is the ID of various VM service providers: GCloud, VM leaser
 // service etc.

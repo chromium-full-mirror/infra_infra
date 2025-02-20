@@ -8,7 +8,7 @@ import (
 	"os"
 	"os/signal"
 
-	"infra/chromeperf/pinpoint/fakelegacy"
+	"go.chromium.org/infra/chromeperf/pinpoint/fakelegacy"
 )
 
 var (

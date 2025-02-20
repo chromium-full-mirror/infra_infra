@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/router"
 
-	admin "infra/tricium/api/admin/v1"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
 )
 
 var tracker = &trackerServer{}

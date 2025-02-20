@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/tools/dirmd/cli"
+	"go.chromium.org/infra/tools/dirmd/cli"
 )
 
 func main() {

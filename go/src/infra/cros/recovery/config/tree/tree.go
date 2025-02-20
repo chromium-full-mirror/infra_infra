@@ -7,7 +7,7 @@ package tree
 import (
 	"fmt"
 
-	"infra/cros/recovery/config"
+	"go.chromium.org/infra/cros/recovery/config"
 )
 
 // Configuration provides the plans to be used by the recovery engine.

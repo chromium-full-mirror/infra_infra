@@ -10,11 +10,11 @@ import "google/api/annotations.proto";
 import "google/api/field_behavior.proto";
 import "google/protobuf/any.proto";
 import "google/protobuf/field_mask.proto";
-import "infra/cros/fleetcost/api/models/indicator.proto";
-import "infra/cros/fleetcost/api/models/result.proto";
-import "infra/cros/fleetcost/api/models/variable.proto";
+import "go.chromium.org/infra/cros/fleetcost/api/models/indicator.proto";
+import "go.chromium.org/infra/cros/fleetcost/api/models/result.proto";
+import "go.chromium.org/infra/cros/fleetcost/api/models/variable.proto";
 
-option go_package = "infra/cros/fleetcost/api/rpc;fleetcostpb";
+option go_package = "go.chromium.org/infra/cros/fleetcost/api/rpc;fleetcostpb";
 
 service FleetCost {
   // Ping does not send or receive any information. It just checks that the service is there.

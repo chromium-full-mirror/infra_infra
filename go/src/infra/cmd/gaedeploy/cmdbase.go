@@ -19,8 +19,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/signals"
 
-	"infra/cmd/gaedeploy/cache"
-	"infra/cmd/gaedeploy/source"
+	"go.chromium.org/infra/cmd/gaedeploy/cache"
+	"go.chromium.org/infra/cmd/gaedeploy/source"
 )
 
 // execCb a signature of a function that executes a subcommand.

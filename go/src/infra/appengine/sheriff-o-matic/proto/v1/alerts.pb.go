@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/appengine/sheriff-o-matic/proto/v1/alerts.proto
+// source: go.chromium.org/infra/appengine/sheriff-o-matic/proto/v1/alerts.proto
 
 package sompb
 
@@ -53,7 +53,7 @@ type ListAlertsRequest struct {
 
 func (x *ListAlertsRequest) Reset() {
 	*x = ListAlertsRequest{}
-	mi := &file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -65,7 +65,7 @@ func (x *ListAlertsRequest) String() string {
 func (*ListAlertsRequest) ProtoMessage() {}
 
 func (x *ListAlertsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -78,7 +78,7 @@ func (x *ListAlertsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAlertsRequest.ProtoReflect.Descriptor instead.
 func (*ListAlertsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *ListAlertsRequest) GetParent() string {
@@ -115,7 +115,7 @@ type ListAlertsResponse struct {
 
 func (x *ListAlertsResponse) Reset() {
 	*x = ListAlertsResponse{}
-	mi := &file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -127,7 +127,7 @@ func (x *ListAlertsResponse) String() string {
 func (*ListAlertsResponse) ProtoMessage() {}
 
 func (x *ListAlertsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -140,7 +140,7 @@ func (x *ListAlertsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAlertsResponse.ProtoReflect.Descriptor instead.
 func (*ListAlertsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ListAlertsResponse) GetAlerts() []*Alert {
@@ -175,7 +175,7 @@ type Alert struct {
 
 func (x *Alert) Reset() {
 	*x = Alert{}
-	mi := &file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -187,7 +187,7 @@ func (x *Alert) String() string {
 func (*Alert) ProtoMessage() {}
 
 func (x *Alert) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -200,7 +200,7 @@ func (x *Alert) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Alert.ProtoReflect.Descriptor instead.
 func (*Alert) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Alert) GetKey() string {
@@ -217,10 +217,11 @@ func (x *Alert) GetAlertJson() string {
 	return ""
 }
 
-var File_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto protoreflect.FileDescriptor
 
-var file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDesc = string([]byte{
-	0x0a, 0x35, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
+var file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDesc = string([]byte{
+	0x0a, 0x45, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
 	0x65, 0x2f, 0x73, 0x68, 0x65, 0x72, 0x69, 0x66, 0x66, 0x2d, 0x6f, 0x2d, 0x6d, 0x61, 0x74, 0x69,
 	0x63, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x76, 0x31, 0x2f, 0x61, 0x6c, 0x65, 0x72, 0x74,
 	0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x16, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2e, 0x61,
@@ -249,7 +250,8 @@ var file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDesc = string(
 	0x72, 0x74, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2a, 0x2e, 0x69, 0x6e, 0x66,
 	0x72, 0x61, 0x2e, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2e, 0x73, 0x6f, 0x6d,
 	0x2e, 0x76, 0x31, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x41, 0x6c, 0x65, 0x72, 0x74, 0x73, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x30, 0x5a, 0x2e, 0x69, 0x6e, 0x66, 0x72,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x40, 0x5a, 0x3e, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x73, 0x68, 0x65, 0x72,
 	0x69, 0x66, 0x66, 0x2d, 0x6f, 0x2d, 0x6d, 0x61, 0x74, 0x69, 0x63, 0x2f, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x2f, 0x76, 0x31, 0x3b, 0x73, 0x6f, 0x6d, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
@@ -257,24 +259,24 @@ var file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDesc = string(
 })
 
 var (
-	file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescOnce sync.Once
-	file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescData []byte
+	file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescData []byte
 )
 
-func file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescGZIP() []byte {
-	file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescOnce.Do(func() {
-		file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDesc), len(file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDesc)))
+func file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDesc), len(file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDesc)))
 	})
-	return file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescData
+	return file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDescData
 }
 
-var file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
-var file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_goTypes = []any{
+var file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_goTypes = []any{
 	(*ListAlertsRequest)(nil),  // 0: infra.appengine.som.v1.ListAlertsRequest
 	(*ListAlertsResponse)(nil), // 1: infra.appengine.som.v1.ListAlertsResponse
 	(*Alert)(nil),              // 2: infra.appengine.som.v1.Alert
 }
-var file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_depIdxs = []int32{
 	2, // 0: infra.appengine.som.v1.ListAlertsResponse.alerts:type_name -> infra.appengine.som.v1.Alert
 	0, // 1: infra.appengine.som.v1.Alerts.ListAlerts:input_type -> infra.appengine.som.v1.ListAlertsRequest
 	1, // 2: infra.appengine.som.v1.Alerts.ListAlerts:output_type -> infra.appengine.som.v1.ListAlertsResponse
@@ -285,28 +287,28 @@ var file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_depIdxs = []int32
 	0, // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_init() }
-func file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_init() {
-	if File_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto != nil {
+func init() { file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_init() }
+func file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_init() {
+	if File_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDesc), len(file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDesc), len(file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_goTypes,
-		DependencyIndexes: file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_depIdxs,
-		MessageInfos:      file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_msgTypes,
 	}.Build()
-	File_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto = out.File
-	file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_goTypes = nil
-	file_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_depIdxs = nil
+	File_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto = out.File
+	file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_goTypes = nil
+	file_go_chromium_org_infra_appengine_sheriff_o_matic_proto_v1_alerts_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -404,5 +406,5 @@ var _Alerts_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/appengine/sheriff-o-matic/proto/v1/alerts.proto",
+	Metadata: "go.chromium.org/infra/appengine/sheriff-o-matic/proto/v1/alerts.proto",
 }

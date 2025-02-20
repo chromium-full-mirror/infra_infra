@@ -13,12 +13,12 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/cmd/paris/internal/site"
-	"infra/cros/recovery"
-	"infra/cros/recovery/config/tree"
-	"infra/cros/recovery/tlw"
-	"infra/libs/skylab/buildbucket"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cros/cmd/paris/internal/site"
+	"go.chromium.org/infra/cros/recovery"
+	"go.chromium.org/infra/cros/recovery/config/tree"
+	"go.chromium.org/infra/cros/recovery/tlw"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
 )
 
 // RecoveryConfig subcommand: For now, print the config file content to terminal/file.

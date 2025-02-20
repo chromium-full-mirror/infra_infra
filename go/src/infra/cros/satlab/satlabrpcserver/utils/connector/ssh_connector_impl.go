@@ -10,8 +10,8 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"infra/cros/satlab/satlabrpcserver/utils"
-	"infra/cros/satlab/satlabrpcserver/utils/constants"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/utils"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/utils/constants"
 )
 
 type SSHConnector struct {

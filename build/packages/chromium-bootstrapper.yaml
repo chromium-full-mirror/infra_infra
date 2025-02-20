@@ -9,7 +9,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/chromium/bootstrapper
+  - go.chromium.org/infra/chromium/bootstrapper
 root: ../../go/bin
 data:
   - file: bootstrapper${exe_suffix}

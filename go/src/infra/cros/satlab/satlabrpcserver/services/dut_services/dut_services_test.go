@@ -21,12 +21,12 @@ import (
 
 	"go.chromium.org/luci/common/testing/localonly"
 
-	"infra/cros/satlab/common/enumeration"
-	"infra/cros/satlab/common/paths"
-	"infra/cros/satlab/common/utils/executor"
-	"infra/cros/satlab/satlabrpcserver/fake"
-	"infra/cros/satlab/satlabrpcserver/models"
-	"infra/cros/satlab/satlabrpcserver/utils/connector"
+	"go.chromium.org/infra/cros/satlab/common/enumeration"
+	"go.chromium.org/infra/cros/satlab/common/paths"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/fake"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/models"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/utils/connector"
 )
 
 func setupDUTServiceTest(t *testing.T, sshResp string, password string, executor executor.IExecCommander) DUTServicesImpl {

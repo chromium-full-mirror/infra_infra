@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufsds "infra/unifiedfleet/app/model/datastore"
+	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
 )
 
 const (

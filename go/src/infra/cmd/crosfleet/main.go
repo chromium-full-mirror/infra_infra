@@ -15,11 +15,11 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	"infra/cmd/crosfleet/internal/dut"
-	"infra/cmd/crosfleet/internal/meta"
-	"infra/cmd/crosfleet/internal/run"
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cmd/crosfleet/internal/vm"
+	"go.chromium.org/infra/cmd/crosfleet/internal/dut"
+	"go.chromium.org/infra/cmd/crosfleet/internal/meta"
+	"go.chromium.org/infra/cmd/crosfleet/internal/run"
+	"go.chromium.org/infra/cmd/crosfleet/internal/site"
+	"go.chromium.org/infra/cmd/crosfleet/internal/vm"
 )
 
 var application = &cli.Application{

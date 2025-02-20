@@ -4,7 +4,7 @@ update_latest_ref: true
 platforms:
   - linux-amd64
 go_packages:
-  - infra/tricium/functions/spacey
+  - go.chromium.org/infra/tricium/functions/spacey
 root: ../../go/bin
 data:
   - file: spacey${exe_suffix}

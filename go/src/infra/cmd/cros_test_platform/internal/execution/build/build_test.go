@@ -12,7 +12,7 @@ import (
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cmd/cros_test_platform/internal/execution/testrunner"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/testrunner"
 )
 
 var testSummaryData = []struct {

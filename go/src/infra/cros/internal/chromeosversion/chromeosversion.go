@@ -17,7 +17,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/git"
 )
 
 // VersionComponent is an individual component of a version.

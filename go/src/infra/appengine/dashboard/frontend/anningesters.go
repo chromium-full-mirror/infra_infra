@@ -5,8 +5,8 @@
 package main
 
 import (
-	dashpb "infra/appengine/dashboard/api/dashboard"
-	"infra/appengine/dashboard/backend"
+	dashpb "go.chromium.org/infra/appengine/dashboard/api/dashboard"
+	"go.chromium.org/infra/appengine/dashboard/backend"
 )
 
 // IngestPlatforms takes a slice of dashpb.Platforms and returns equivalent backend Platforms.

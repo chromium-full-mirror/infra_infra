@@ -21,7 +21,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 
-	"infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 // This files contains legacy functions that do not use a client.

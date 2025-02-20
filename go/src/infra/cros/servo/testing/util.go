@@ -8,7 +8,7 @@ import (
 	"context"
 	"time"
 
-	"infra/cros/servo/testingutil"
+	"go.chromium.org/infra/cros/servo/testingutil"
 )
 
 // PollOptions may be passed to Poll to configure its behavior.

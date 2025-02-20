@@ -6,8 +6,8 @@ package main
 import (
 	"log"
 
-	"infra/cros/support/internal/cli"
-	"infra/cros/support/internal/manifest"
+	"go.chromium.org/infra/cros/support/internal/cli"
+	"go.chromium.org/infra/cros/support/internal/manifest"
 )
 
 type Input struct {

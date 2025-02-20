@@ -16,8 +16,8 @@ import (
 	"go.chromium.org/luci/lucictx"
 	"go.chromium.org/luci/server/servertest"
 
-	"infra/fleetconsole/cmd/consoleadmin/clilib"
-	"infra/fleetconsole/cmd/fleetconsoleserver/serverlib"
+	"go.chromium.org/infra/fleetconsole/cmd/consoleadmin/clilib"
+	"go.chromium.org/infra/fleetconsole/cmd/fleetconsoleserver/serverlib"
 )
 
 // TestPing tests the ping RPC.

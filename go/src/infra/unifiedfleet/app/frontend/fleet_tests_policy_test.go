@@ -13,8 +13,8 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
-	api "infra/unifiedfleet/api/v1/rpc"
-	"infra/unifiedfleet/app/model/configuration"
+	api "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
 )
 
 func TestGetPublicChromiumTestStatus(t *testing.T) {

@@ -14,7 +14,7 @@ import (
 	lucipb "go.chromium.org/luci/common/proto"
 	"go.chromium.org/luci/config/cfgclient"
 
-	"infra/tools/migrator"
+	"go.chromium.org/infra/tools/migrator"
 )
 
 // remoteProject implements the migrator.Project interface for a remote LUCI

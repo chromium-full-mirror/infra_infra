@@ -6,26 +6,26 @@ syntax = "proto3";
 
 package unifiedfleet.api.v1.models.bigquery;
 
-option go_package = "infra/unifiedfleet/api/v1/models/bigquery;apibq";
+option go_package = "go.chromium.org/infra/unifiedfleet/api/v1/models/bigquery;apibq";
 
 import "google/protobuf/timestamp.proto";
-import "infra/unifiedfleet/api/v1/models/asset.proto";
-import "infra/unifiedfleet/api/v1/models/change_event.proto";
-import "infra/unifiedfleet/api/v1/models/chrome_platform.proto";
-import "infra/unifiedfleet/api/v1/models/caching_service.proto";
-import "infra/unifiedfleet/api/v1/models/hwid.proto";
-import "infra/unifiedfleet/api/v1/models/lse_prototype.proto";
-import "infra/unifiedfleet/api/v1/models/machine.proto";
-import "infra/unifiedfleet/api/v1/models/machine_lse.proto";
-import "infra/unifiedfleet/api/v1/models/machine_lse_deployment.proto";
-import "infra/unifiedfleet/api/v1/models/network.proto";
-import "infra/unifiedfleet/api/v1/models/peripherals.proto";
-import "infra/unifiedfleet/api/v1/models/rack.proto";
-import "infra/unifiedfleet/api/v1/models/rack_lse.proto";
-import "infra/unifiedfleet/api/v1/models/state.proto";
-import "infra/unifiedfleet/api/v1/models/scheduling_unit.proto";
-import "infra/unifiedfleet/api/v1/models/chromeos/device/config.proto";
-import "infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/asset.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/change_event.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chrome_platform.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/caching_service.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/hwid.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/lse_prototype.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/machine.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/machine_lse.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/machine_lse_deployment.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/network.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/peripherals.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/rack.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/rack_lse.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/state.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/scheduling_unit.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/device/config.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto";
 
 message ChangeEventRow {
     models.ChangeEvent change_event = 1;

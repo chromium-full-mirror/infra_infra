@@ -16,9 +16,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsds "infra/unifiedfleet/app/model/datastore"
-	"infra/unifiedfleet/app/model/registration"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
+	"go.chromium.org/infra/unifiedfleet/app/model/registration"
 )
 
 // CreateDefaultWifi creates a default wifi in the datastore.

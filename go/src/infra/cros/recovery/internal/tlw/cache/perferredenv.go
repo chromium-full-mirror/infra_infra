@@ -10,8 +10,8 @@ import (
 	"sort"
 	"strings"
 
-	"infra/cros/recovery/internal/log"
-	ufsModels "infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 // NewPreferredEnv creates a new preferred caching service environment.

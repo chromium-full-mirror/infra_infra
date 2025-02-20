@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/unifiedfleet/api/v1/models/chromeos/lab/siminfo.proto
+// source: go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/siminfo.proto
 
 package ufspb
 
@@ -116,11 +116,11 @@ func (x NetworkProvider) String() string {
 }
 
 func (NetworkProvider) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[0].Descriptor()
 }
 
 func (NetworkProvider) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[0]
 }
 
 func (x NetworkProvider) Number() protoreflect.EnumNumber {
@@ -129,7 +129,7 @@ func (x NetworkProvider) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use NetworkProvider.Descriptor instead.
 func (NetworkProvider) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescGZIP(), []int{0}
 }
 
 // Next Tag: 3
@@ -166,11 +166,11 @@ func (x SIMType) String() string {
 }
 
 func (SIMType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[1].Descriptor()
 }
 
 func (SIMType) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[1]
 }
 
 func (x SIMType) Number() protoreflect.EnumNumber {
@@ -179,7 +179,7 @@ func (x SIMType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SIMType.Descriptor instead.
 func (SIMType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescGZIP(), []int{1}
 }
 
 // Possible states of the SIM profile.
@@ -231,11 +231,11 @@ func (x SIMProfileInfo_State) String() string {
 }
 
 func (SIMProfileInfo_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[2].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[2].Descriptor()
 }
 
 func (SIMProfileInfo_State) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[2]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[2]
 }
 
 func (x SIMProfileInfo_State) Number() protoreflect.EnumNumber {
@@ -244,7 +244,7 @@ func (x SIMProfileInfo_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SIMProfileInfo_State.Descriptor instead.
 func (SIMProfileInfo_State) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescGZIP(), []int{1, 0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescGZIP(), []int{1, 0}
 }
 
 // Possible features that the SIM supports.
@@ -284,11 +284,11 @@ func (x SIMProfileInfo_Feature) String() string {
 }
 
 func (SIMProfileInfo_Feature) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[3].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[3].Descriptor()
 }
 
 func (SIMProfileInfo_Feature) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[3]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes[3]
 }
 
 func (x SIMProfileInfo_Feature) Number() protoreflect.EnumNumber {
@@ -297,7 +297,7 @@ func (x SIMProfileInfo_Feature) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SIMProfileInfo_Feature.Descriptor instead.
 func (SIMProfileInfo_Feature) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescGZIP(), []int{1, 1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescGZIP(), []int{1, 1}
 }
 
 // Next Tag: 6
@@ -314,7 +314,7 @@ type SIMInfo struct {
 
 func (x *SIMInfo) Reset() {
 	*x = SIMInfo{}
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -326,7 +326,7 @@ func (x *SIMInfo) String() string {
 func (*SIMInfo) ProtoMessage() {}
 
 func (x *SIMInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -339,7 +339,7 @@ func (x *SIMInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SIMInfo.ProtoReflect.Descriptor instead.
 func (*SIMInfo) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *SIMInfo) GetSlotId() int32 {
@@ -398,7 +398,7 @@ type SIMProfileInfo struct {
 
 func (x *SIMProfileInfo) Reset() {
 	*x = SIMProfileInfo{}
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -410,7 +410,7 @@ func (x *SIMProfileInfo) String() string {
 func (*SIMProfileInfo) ProtoMessage() {}
 
 func (x *SIMProfileInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -423,7 +423,7 @@ func (x *SIMProfileInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SIMProfileInfo.ProtoReflect.Descriptor instead.
 func (*SIMProfileInfo) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *SIMProfileInfo) GetIccid() string {
@@ -475,10 +475,11 @@ func (x *SIMProfileInfo) GetFeatures() []SIMProfileInfo_Feature {
 	return nil
 }
 
-var File_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto protoreflect.FileDescriptor
 
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDesc = string([]byte{
-	0x0a, 0x3b, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDesc = string([]byte{
+	0x0a, 0x4b, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x2f,
 	0x73, 0x69, 0x6d, 0x69, 0x6e, 0x66, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x27, 0x75,
@@ -567,7 +568,8 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDesc = s
 	0x54, 0x79, 0x70, 0x65, 0x12, 0x0f, 0x0a, 0x0b, 0x53, 0x49, 0x4d, 0x5f, 0x55, 0x4e, 0x4b, 0x4e,
 	0x4f, 0x57, 0x4e, 0x10, 0x00, 0x12, 0x10, 0x0a, 0x0c, 0x53, 0x49, 0x4d, 0x5f, 0x50, 0x48, 0x59,
 	0x53, 0x49, 0x43, 0x41, 0x4c, 0x10, 0x01, 0x12, 0x0f, 0x0a, 0x0b, 0x53, 0x49, 0x4d, 0x5f, 0x44,
-	0x49, 0x47, 0x49, 0x54, 0x41, 0x4c, 0x10, 0x02, 0x42, 0x35, 0x5a, 0x33, 0x69, 0x6e, 0x66, 0x72,
+	0x49, 0x47, 0x49, 0x54, 0x41, 0x4c, 0x10, 0x02, 0x42, 0x45, 0x5a, 0x43, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61,
 	0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72,
 	0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x3b, 0x75, 0x66, 0x73, 0x70, 0x62, 0x62,
@@ -575,20 +577,20 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDesc = s
 })
 
 var (
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescOnce sync.Once
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescData []byte
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescData []byte
 )
 
-func file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescGZIP() []byte {
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescOnce.Do(func() {
-		file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDesc)))
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDesc)))
 	})
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescData
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_goTypes = []any{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_goTypes = []any{
 	(NetworkProvider)(0),        // 0: unifiedfleet.api.v1.models.chromeos.lab.NetworkProvider
 	(SIMType)(0),                // 1: unifiedfleet.api.v1.models.chromeos.lab.SIMType
 	(SIMProfileInfo_State)(0),   // 2: unifiedfleet.api.v1.models.chromeos.lab.SIMProfileInfo.State
@@ -596,7 +598,7 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_goTypes = [
 	(*SIMInfo)(nil),             // 4: unifiedfleet.api.v1.models.chromeos.lab.SIMInfo
 	(*SIMProfileInfo)(nil),      // 5: unifiedfleet.api.v1.models.chromeos.lab.SIMProfileInfo
 }
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_depIdxs = []int32{
 	1, // 0: unifiedfleet.api.v1.models.chromeos.lab.SIMInfo.type:type_name -> unifiedfleet.api.v1.models.chromeos.lab.SIMType
 	5, // 1: unifiedfleet.api.v1.models.chromeos.lab.SIMInfo.profile_info:type_name -> unifiedfleet.api.v1.models.chromeos.lab.SIMProfileInfo
 	0, // 2: unifiedfleet.api.v1.models.chromeos.lab.SIMProfileInfo.carrier_name:type_name -> unifiedfleet.api.v1.models.chromeos.lab.NetworkProvider
@@ -609,27 +611,27 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_depIdxs = [
 	0, // [0:5] is the sub-list for field type_name
 }
 
-func init() { file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_init() }
-func file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_init() {
-	if File_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto != nil {
+func init() { file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_init() }
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_init() {
+	if File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_rawDesc)),
 			NumEnums:      4,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_goTypes,
-		DependencyIndexes: file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_depIdxs,
-		EnumInfos:         file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes,
-		MessageInfos:      file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_msgTypes,
 	}.Build()
-	File_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto = out.File
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_goTypes = nil
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_depIdxs = nil
+	File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto = out.File
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_goTypes = nil
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_siminfo_proto_depIdxs = nil
 }

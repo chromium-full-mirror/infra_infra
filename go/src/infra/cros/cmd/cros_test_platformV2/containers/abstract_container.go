@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/cmd/common_lib/common"
-	managers "infra/cros/cmd/cros_test_platformV2/docker_managers"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	managers "go.chromium.org/infra/cros/cmd/cros_test_platformV2/docker_managers"
 )
 
 // Container state types

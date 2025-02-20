@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"infra/cros/cmd/container_uprev/cli"
+	"go.chromium.org/infra/cros/cmd/container_uprev/cli"
 )
 
 func main() {

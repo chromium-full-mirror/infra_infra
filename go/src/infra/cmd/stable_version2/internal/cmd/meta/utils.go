@@ -13,7 +13,7 @@ import (
 	luciCipd "go.chromium.org/luci/cipd/client/cipd"
 	"go.chromium.org/luci/common/errors"
 
-	cipd "infra/libs/cipd"
+	cipd "go.chromium.org/infra/libs/cipd"
 )
 
 // findStableVersion2Package locates the CIPD package containing the current executable

@@ -10,7 +10,7 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/field_mask.proto";
 
-option go_package = "infra/cros/fleet/access";
+option go_package = "go.chromium.org/infra/cros/fleet/access";
 
 // These APIs are specific to the Fleet environment and are not
 // exposed to RTDs.

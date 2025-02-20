@@ -21,9 +21,9 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/try/try"
-	"infra/cros/internal/cmd"
-	bb "infra/cros/lib/buildbucket"
+	"go.chromium.org/infra/cros/cmd/try/try"
+	"go.chromium.org/infra/cros/internal/cmd"
+	bb "go.chromium.org/infra/cros/lib/buildbucket"
 )
 
 var (

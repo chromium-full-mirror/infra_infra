@@ -24,7 +24,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/exe"
 
-	"infra/cmd/cros_test_platform/luciexe/execute"
+	"go.chromium.org/infra/cmd/cros_test_platform/luciexe/execute"
 )
 
 func main() {

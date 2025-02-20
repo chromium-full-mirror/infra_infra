@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package chromeos.recovery;
 
-option go_package = "infra/cros/recovery/models;models";
+option go_package = "go.chromium.org/infra/cros/recovery/models;models";
 
 // RecoveryVersion represents stable version information to be used for repair
 message RecoveryVersion {

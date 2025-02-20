@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	bqpb "infra/cros/fleetcost/api/bigquery"
+	bqpb "go.chromium.org/infra/cros/fleetcost/api/bigquery"
 )
 
 // ResultSaver saves a cost result.

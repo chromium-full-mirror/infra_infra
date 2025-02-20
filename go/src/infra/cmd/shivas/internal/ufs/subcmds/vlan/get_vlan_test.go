@@ -9,7 +9,7 @@ import (
 
 	"github.com/maruel/subcommands"
 
-	"infra/libs/skylab/common/heuristics"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
 )
 
 // TestValidateGetVlanArgs tests how we parse and validate arguments to `shivas get vlan`.

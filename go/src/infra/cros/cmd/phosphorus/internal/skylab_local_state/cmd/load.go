@@ -22,14 +22,14 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/phosphorus/internal/botcache"
-	"infra/cros/cmd/phosphorus/internal/skylab_local_state/inv"
-	"infra/cros/cmd/phosphorus/internal/skylab_local_state/location"
-	"infra/cros/cmd/phosphorus/internal/skylab_local_state/ufs"
-	androidlbls "infra/libs/skylab/inventory/autotest/attached_device"
-	chromeoslbls "infra/libs/skylab/inventory/autotest/labels"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
-	ufsutil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/botcache"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/skylab_local_state/inv"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/skylab_local_state/location"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/skylab_local_state/ufs"
+	androidlbls "go.chromium.org/infra/libs/skylab/inventory/autotest/attached_device"
+	chromeoslbls "go.chromium.org/infra/libs/skylab/inventory/autotest/labels"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsutil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // Load subcommand: Gather DUT labels and attributes into a host info file.

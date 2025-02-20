@@ -10,9 +10,9 @@ import (
 	"context"
 	"time"
 
-	"infra/cmd/drone-agent/internal/bot"
-	"infra/cmd/drone-agent/internal/botman"
-	"infra/cmd/drone-agent/internal/delay"
+	"go.chromium.org/infra/cmd/drone-agent/internal/bot"
+	"go.chromium.org/infra/cmd/drone-agent/internal/botman"
+	"go.chromium.org/infra/cmd/drone-agent/internal/delay"
 )
 
 // State contains the agent state for the lifetime of one drone UUID

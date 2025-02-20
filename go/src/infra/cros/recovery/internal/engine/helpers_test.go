@@ -7,7 +7,7 @@ package engine
 import (
 	"context"
 
-	"infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
 )
 
 // FakeMetrics implementation that stores all actions.

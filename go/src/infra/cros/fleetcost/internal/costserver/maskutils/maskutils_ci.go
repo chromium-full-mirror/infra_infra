@@ -5,7 +5,7 @@
 package maskutils
 
 import (
-	fleetcostpb "infra/cros/fleetcost/api/models"
+	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
 )
 
 // UpdateCostIndicatorProto updates the cost indicator proto.

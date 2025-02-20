@@ -10,11 +10,11 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/env"
-	"infra/cros/recovery/internal/components/mh"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/namespace"
+	"go.chromium.org/infra/cros/internal/env"
+	"go.chromium.org/infra/cros/recovery/internal/components/mh"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/namespace"
 )
 
 func isCloudbotExec(ctx context.Context, info *execs.ExecInfo) error {

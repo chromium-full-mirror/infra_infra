@@ -23,7 +23,7 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
 
-	"infra/appengine/sheriff-o-matic/som/model/gen"
+	"go.chromium.org/infra/appengine/sheriff-o-matic/som/model/gen"
 )
 
 const (

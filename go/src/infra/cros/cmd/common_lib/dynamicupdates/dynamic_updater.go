@@ -9,9 +9,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/common_lib/dynamicupdates/finders"
-	"infra/cros/cmd/common_lib/dynamicupdates/resolver"
-	"infra/cros/cmd/common_lib/dynamicupdates/updaters"
+	"go.chromium.org/infra/cros/cmd/common_lib/dynamicupdates/finders"
+	"go.chromium.org/infra/cros/cmd/common_lib/dynamicupdates/resolver"
+	"go.chromium.org/infra/cros/cmd/common_lib/dynamicupdates/updaters"
 )
 
 // AddUserDefinedDynamicUpdates resolves placeholders and applies

@@ -14,10 +14,10 @@ import (
 	"go.chromium.org/luci/server/limiter"
 	"go.chromium.org/luci/server/module"
 
-	"infra/unifiedfleet/app/config"
-	"infra/unifiedfleet/app/dumper"
-	"infra/unifiedfleet/app/external"
-	"infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/dumper"
+	"go.chromium.org/infra/unifiedfleet/app/external"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 func main() {

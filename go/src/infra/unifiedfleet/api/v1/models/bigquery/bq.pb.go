@@ -6,17 +6,17 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/unifiedfleet/api/v1/models/bigquery/bq.proto
+// source: go.chromium.org/infra/unifiedfleet/api/v1/models/bigquery/bq.proto
 
 package apibq
 
 import (
+	models "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	device "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/device"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	models "infra/unifiedfleet/api/v1/models"
-	device "infra/unifiedfleet/api/v1/models/chromeos/device"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -38,7 +38,7 @@ type ChangeEventRow struct {
 
 func (x *ChangeEventRow) Reset() {
 	*x = ChangeEventRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -50,7 +50,7 @@ func (x *ChangeEventRow) String() string {
 func (*ChangeEventRow) ProtoMessage() {}
 
 func (x *ChangeEventRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -63,7 +63,7 @@ func (x *ChangeEventRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChangeEventRow.ProtoReflect.Descriptor instead.
 func (*ChangeEventRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *ChangeEventRow) GetChangeEvent() *models.ChangeEvent {
@@ -83,7 +83,7 @@ type ChromePlatformRow struct {
 
 func (x *ChromePlatformRow) Reset() {
 	*x = ChromePlatformRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -95,7 +95,7 @@ func (x *ChromePlatformRow) String() string {
 func (*ChromePlatformRow) ProtoMessage() {}
 
 func (x *ChromePlatformRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -108,7 +108,7 @@ func (x *ChromePlatformRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromePlatformRow.ProtoReflect.Descriptor instead.
 func (*ChromePlatformRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ChromePlatformRow) GetPlatform() *models.ChromePlatform {
@@ -135,7 +135,7 @@ type VlanRow struct {
 
 func (x *VlanRow) Reset() {
 	*x = VlanRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -147,7 +147,7 @@ func (x *VlanRow) String() string {
 func (*VlanRow) ProtoMessage() {}
 
 func (x *VlanRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -160,7 +160,7 @@ func (x *VlanRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VlanRow.ProtoReflect.Descriptor instead.
 func (*VlanRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *VlanRow) GetVlan() *models.Vlan {
@@ -187,7 +187,7 @@ type MachineRow struct {
 
 func (x *MachineRow) Reset() {
 	*x = MachineRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -199,7 +199,7 @@ func (x *MachineRow) String() string {
 func (*MachineRow) ProtoMessage() {}
 
 func (x *MachineRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -212,7 +212,7 @@ func (x *MachineRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MachineRow.ProtoReflect.Descriptor instead.
 func (*MachineRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *MachineRow) GetMachine() *models.Machine {
@@ -239,7 +239,7 @@ type RackRow struct {
 
 func (x *RackRow) Reset() {
 	*x = RackRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -251,7 +251,7 @@ func (x *RackRow) String() string {
 func (*RackRow) ProtoMessage() {}
 
 func (x *RackRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -264,7 +264,7 @@ func (x *RackRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RackRow.ProtoReflect.Descriptor instead.
 func (*RackRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *RackRow) GetRack() *models.Rack {
@@ -291,7 +291,7 @@ type AssetRow struct {
 
 func (x *AssetRow) Reset() {
 	*x = AssetRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -303,7 +303,7 @@ func (x *AssetRow) String() string {
 func (*AssetRow) ProtoMessage() {}
 
 func (x *AssetRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -316,7 +316,7 @@ func (x *AssetRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssetRow.ProtoReflect.Descriptor instead.
 func (*AssetRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *AssetRow) GetAsset() *models.Asset {
@@ -343,7 +343,7 @@ type RackLSEPrototypeRow struct {
 
 func (x *RackLSEPrototypeRow) Reset() {
 	*x = RackLSEPrototypeRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -355,7 +355,7 @@ func (x *RackLSEPrototypeRow) String() string {
 func (*RackLSEPrototypeRow) ProtoMessage() {}
 
 func (x *RackLSEPrototypeRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -368,7 +368,7 @@ func (x *RackLSEPrototypeRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RackLSEPrototypeRow.ProtoReflect.Descriptor instead.
 func (*RackLSEPrototypeRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *RackLSEPrototypeRow) GetRackLsePrototype() *models.RackLSEPrototype {
@@ -395,7 +395,7 @@ type MachineLSEPrototypeRow struct {
 
 func (x *MachineLSEPrototypeRow) Reset() {
 	*x = MachineLSEPrototypeRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -407,7 +407,7 @@ func (x *MachineLSEPrototypeRow) String() string {
 func (*MachineLSEPrototypeRow) ProtoMessage() {}
 
 func (x *MachineLSEPrototypeRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -420,7 +420,7 @@ func (x *MachineLSEPrototypeRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MachineLSEPrototypeRow.ProtoReflect.Descriptor instead.
 func (*MachineLSEPrototypeRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *MachineLSEPrototypeRow) GetMachineLsePrototype() *models.MachineLSEPrototype {
@@ -447,7 +447,7 @@ type MachineLSERow struct {
 
 func (x *MachineLSERow) Reset() {
 	*x = MachineLSERow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -459,7 +459,7 @@ func (x *MachineLSERow) String() string {
 func (*MachineLSERow) ProtoMessage() {}
 
 func (x *MachineLSERow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -472,7 +472,7 @@ func (x *MachineLSERow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MachineLSERow.ProtoReflect.Descriptor instead.
 func (*MachineLSERow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *MachineLSERow) GetMachineLse() *models.MachineLSE {
@@ -499,7 +499,7 @@ type VMRow struct {
 
 func (x *VMRow) Reset() {
 	*x = VMRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -511,7 +511,7 @@ func (x *VMRow) String() string {
 func (*VMRow) ProtoMessage() {}
 
 func (x *VMRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -524,7 +524,7 @@ func (x *VMRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VMRow.ProtoReflect.Descriptor instead.
 func (*VMRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *VMRow) GetVm() *models.VM {
@@ -551,7 +551,7 @@ type RackLSERow struct {
 
 func (x *RackLSERow) Reset() {
 	*x = RackLSERow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -563,7 +563,7 @@ func (x *RackLSERow) String() string {
 func (*RackLSERow) ProtoMessage() {}
 
 func (x *RackLSERow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -576,7 +576,7 @@ func (x *RackLSERow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RackLSERow.ProtoReflect.Descriptor instead.
 func (*RackLSERow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *RackLSERow) GetRackLse() *models.RackLSE {
@@ -603,7 +603,7 @@ type StateRecordRow struct {
 
 func (x *StateRecordRow) Reset() {
 	*x = StateRecordRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -615,7 +615,7 @@ func (x *StateRecordRow) String() string {
 func (*StateRecordRow) ProtoMessage() {}
 
 func (x *StateRecordRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -628,7 +628,7 @@ func (x *StateRecordRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StateRecordRow.ProtoReflect.Descriptor instead.
 func (*StateRecordRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{11}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *StateRecordRow) GetStateRecord() *models.StateRecord {
@@ -655,7 +655,7 @@ type KVMRow struct {
 
 func (x *KVMRow) Reset() {
 	*x = KVMRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -667,7 +667,7 @@ func (x *KVMRow) String() string {
 func (*KVMRow) ProtoMessage() {}
 
 func (x *KVMRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -680,7 +680,7 @@ func (x *KVMRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use KVMRow.ProtoReflect.Descriptor instead.
 func (*KVMRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{12}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *KVMRow) GetKvm() *models.KVM {
@@ -707,7 +707,7 @@ type RPMRow struct {
 
 func (x *RPMRow) Reset() {
 	*x = RPMRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -719,7 +719,7 @@ func (x *RPMRow) String() string {
 func (*RPMRow) ProtoMessage() {}
 
 func (x *RPMRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -732,7 +732,7 @@ func (x *RPMRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RPMRow.ProtoReflect.Descriptor instead.
 func (*RPMRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{13}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *RPMRow) GetRpm() *models.RPM {
@@ -759,7 +759,7 @@ type SwitchRow struct {
 
 func (x *SwitchRow) Reset() {
 	*x = SwitchRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -771,7 +771,7 @@ func (x *SwitchRow) String() string {
 func (*SwitchRow) ProtoMessage() {}
 
 func (x *SwitchRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -784,7 +784,7 @@ func (x *SwitchRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SwitchRow.ProtoReflect.Descriptor instead.
 func (*SwitchRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{14}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *SwitchRow) GetSwitch() *models.Switch {
@@ -811,7 +811,7 @@ type DracRow struct {
 
 func (x *DracRow) Reset() {
 	*x = DracRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -823,7 +823,7 @@ func (x *DracRow) String() string {
 func (*DracRow) ProtoMessage() {}
 
 func (x *DracRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -836,7 +836,7 @@ func (x *DracRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DracRow.ProtoReflect.Descriptor instead.
 func (*DracRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{15}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *DracRow) GetDrac() *models.Drac {
@@ -863,7 +863,7 @@ type NicRow struct {
 
 func (x *NicRow) Reset() {
 	*x = NicRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -875,7 +875,7 @@ func (x *NicRow) String() string {
 func (*NicRow) ProtoMessage() {}
 
 func (x *NicRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -888,7 +888,7 @@ func (x *NicRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NicRow.ProtoReflect.Descriptor instead.
 func (*NicRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{16}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *NicRow) GetNic() *models.Nic {
@@ -915,7 +915,7 @@ type DHCPConfigRow struct {
 
 func (x *DHCPConfigRow) Reset() {
 	*x = DHCPConfigRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -927,7 +927,7 @@ func (x *DHCPConfigRow) String() string {
 func (*DHCPConfigRow) ProtoMessage() {}
 
 func (x *DHCPConfigRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -940,7 +940,7 @@ func (x *DHCPConfigRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DHCPConfigRow.ProtoReflect.Descriptor instead.
 func (*DHCPConfigRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{17}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *DHCPConfigRow) GetDhcpConfig() *models.DHCPConfig {
@@ -966,7 +966,7 @@ type IPRow struct {
 
 func (x *IPRow) Reset() {
 	*x = IPRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -978,7 +978,7 @@ func (x *IPRow) String() string {
 func (*IPRow) ProtoMessage() {}
 
 func (x *IPRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -991,7 +991,7 @@ func (x *IPRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IPRow.ProtoReflect.Descriptor instead.
 func (*IPRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{18}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *IPRow) GetIp() *models.IP {
@@ -1010,7 +1010,7 @@ type DUTStateRecordRow struct {
 
 func (x *DUTStateRecordRow) Reset() {
 	*x = DUTStateRecordRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[19]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1022,7 +1022,7 @@ func (x *DUTStateRecordRow) String() string {
 func (*DUTStateRecordRow) ProtoMessage() {}
 
 func (x *DUTStateRecordRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[19]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1035,7 +1035,7 @@ func (x *DUTStateRecordRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DUTStateRecordRow.ProtoReflect.Descriptor instead.
 func (*DUTStateRecordRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{19}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *DUTStateRecordRow) GetState() *lab.DutState {
@@ -1055,7 +1055,7 @@ type CachingServiceRow struct {
 
 func (x *CachingServiceRow) Reset() {
 	*x = CachingServiceRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[20]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1067,7 +1067,7 @@ func (x *CachingServiceRow) String() string {
 func (*CachingServiceRow) ProtoMessage() {}
 
 func (x *CachingServiceRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[20]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1080,7 +1080,7 @@ func (x *CachingServiceRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CachingServiceRow.ProtoReflect.Descriptor instead.
 func (*CachingServiceRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{20}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *CachingServiceRow) GetCachingService() *models.CachingService {
@@ -1107,7 +1107,7 @@ type MachineLSEDeploymentRow struct {
 
 func (x *MachineLSEDeploymentRow) Reset() {
 	*x = MachineLSEDeploymentRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[21]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1119,7 +1119,7 @@ func (x *MachineLSEDeploymentRow) String() string {
 func (*MachineLSEDeploymentRow) ProtoMessage() {}
 
 func (x *MachineLSEDeploymentRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[21]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1132,7 +1132,7 @@ func (x *MachineLSEDeploymentRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MachineLSEDeploymentRow.ProtoReflect.Descriptor instead.
 func (*MachineLSEDeploymentRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{21}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *MachineLSEDeploymentRow) GetMachineLseDeployment() *models.MachineLSEDeployment {
@@ -1159,7 +1159,7 @@ type SchedulingUnitRow struct {
 
 func (x *SchedulingUnitRow) Reset() {
 	*x = SchedulingUnitRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[22]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1171,7 +1171,7 @@ func (x *SchedulingUnitRow) String() string {
 func (*SchedulingUnitRow) ProtoMessage() {}
 
 func (x *SchedulingUnitRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[22]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1184,7 +1184,7 @@ func (x *SchedulingUnitRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SchedulingUnitRow.ProtoReflect.Descriptor instead.
 func (*SchedulingUnitRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{22}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *SchedulingUnitRow) GetSchedulingUnit() *models.SchedulingUnit {
@@ -1212,7 +1212,7 @@ type HwidDataRow struct {
 
 func (x *HwidDataRow) Reset() {
 	*x = HwidDataRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[23]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1224,7 +1224,7 @@ func (x *HwidDataRow) String() string {
 func (*HwidDataRow) ProtoMessage() {}
 
 func (x *HwidDataRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[23]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1237,7 +1237,7 @@ func (x *HwidDataRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HwidDataRow.ProtoReflect.Descriptor instead.
 func (*HwidDataRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{23}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *HwidDataRow) GetHwidData() *models.HwidData {
@@ -1264,7 +1264,7 @@ type DeviceConfigRow struct {
 
 func (x *DeviceConfigRow) Reset() {
 	*x = DeviceConfigRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[24]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1276,7 +1276,7 @@ func (x *DeviceConfigRow) String() string {
 func (*DeviceConfigRow) ProtoMessage() {}
 
 func (x *DeviceConfigRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[24]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1289,7 +1289,7 @@ func (x *DeviceConfigRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceConfigRow.ProtoReflect.Descriptor instead.
 func (*DeviceConfigRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{24}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *DeviceConfigRow) GetDeviceConfig() *device.Config {
@@ -1345,7 +1345,7 @@ type LatestDutInfoRow struct {
 
 func (x *LatestDutInfoRow) Reset() {
 	*x = LatestDutInfoRow{}
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[25]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1357,7 +1357,7 @@ func (x *LatestDutInfoRow) String() string {
 func (*LatestDutInfoRow) ProtoMessage() {}
 
 func (x *LatestDutInfoRow) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[25]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1370,7 +1370,7 @@ func (x *LatestDutInfoRow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LatestDutInfoRow.ProtoReflect.Descriptor instead.
 func (*LatestDutInfoRow) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{25}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *LatestDutInfoRow) GetUpdateTimestamp() *timestamppb.Timestamp {
@@ -1618,69 +1618,87 @@ func (x *LatestDutInfoRow) GetOsVersion() string {
 	return ""
 }
 
-var File_infra_unifiedfleet_api_v1_models_bigquery_bq_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto protoreflect.FileDescriptor
 
-var file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDesc = string([]byte{
-	0x0a, 0x32, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDesc = string([]byte{
+	0x0a, 0x42, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2f, 0x62, 0x71, 0x2e, 0x70,
 	0x72, 0x6f, 0x74, 0x6f, 0x12, 0x23, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65,
 	0x65, 0x74, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73,
 	0x2e, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
 	0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73,
-	0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2c, 0x69, 0x6e, 0x66, 0x72,
+	0x74, 0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3c, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61,
 	0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x61, 0x73, 0x73,
-	0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x33, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
+	0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x43, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72,
+	0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
 	0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69,
 	0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x61, 0x6e, 0x67,
-	0x65, 0x5f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x36, 0x69,
+	0x65, 0x5f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x46, 0x67,
+	0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69,
 	0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65,
 	0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f,
 	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x5f, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x36, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x46, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69,
+	0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69,
 	0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31,
 	0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x61, 0x63, 0x68, 0x69, 0x6e, 0x67, 0x5f,
-	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2b, 0x69,
+	0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3b, 0x67,
+	0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69,
 	0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65,
 	0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f,
-	0x68, 0x77, 0x69, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x34, 0x69, 0x6e, 0x66, 0x72,
+	0x68, 0x77, 0x69, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x44, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61,
 	0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x6c, 0x73, 0x65,
 	0x5f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x74, 0x79, 0x70, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x1a, 0x2e, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+	0x1a, 0x3e, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x6d, 0x61, 0x63, 0x68, 0x69, 0x6e, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x1a, 0x32, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+	0x1a, 0x42, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x6d, 0x61, 0x63, 0x68, 0x69, 0x6e, 0x65, 0x5f, 0x6c, 0x73, 0x65, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66,
+	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x4d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75,
+	0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66,
 	0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f,
 	0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x6d, 0x61, 0x63, 0x68, 0x69, 0x6e, 0x65, 0x5f, 0x6c,
 	0x73, 0x65, 0x5f, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x6d, 0x65, 0x6e, 0x74, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x1a, 0x2e, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69,
+	0x6f, 0x74, 0x6f, 0x1a, 0x3e, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d,
+	0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69,
 	0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d,
 	0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x1a, 0x32, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69,
+	0x6f, 0x74, 0x6f, 0x1a, 0x42, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d,
+	0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69,
 	0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d,
 	0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x70, 0x65, 0x72, 0x69, 0x70, 0x68, 0x65, 0x72, 0x61, 0x6c,
-	0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2b, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75,
+	0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3b, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f,
+	0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75,
 	0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f,
 	0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x72, 0x61, 0x63, 0x6b, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66,
+	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3f, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75,
+	0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66,
 	0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f,
 	0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x72, 0x61, 0x63, 0x6b, 0x5f, 0x6c, 0x73, 0x65, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2c, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3c, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69,
+	0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69,
 	0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31,
 	0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x73, 0x74, 0x61, 0x74, 0x65, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x1a, 0x36, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69,
+	0x6f, 0x74, 0x6f, 0x1a, 0x46, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d,
+	0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69,
 	0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d,
 	0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x73, 0x63, 0x68, 0x65, 0x64, 0x75, 0x6c, 0x69, 0x6e, 0x67,
-	0x5f, 0x75, 0x6e, 0x69, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3d, 0x69, 0x6e, 0x66,
+	0x5f, 0x75, 0x6e, 0x69, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x4d, 0x67, 0x6f, 0x2e,
+	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66,
 	0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68,
 	0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x2f, 0x63, 0x6f,
-	0x6e, 0x66, 0x69, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3d, 0x69, 0x6e, 0x66, 0x72,
+	0x6e, 0x66, 0x69, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x4d, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61,
 	0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72,
 	0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x2f, 0x64, 0x75, 0x74, 0x5f, 0x73, 0x74,
@@ -1921,7 +1939,8 @@ var file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDesc = string([]b
 	0x74, 0x65, 0x12, 0x17, 0x0a, 0x07, 0x6f, 0x73, 0x5f, 0x74, 0x79, 0x70, 0x65, 0x18, 0x22, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x06, 0x6f, 0x73, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1d, 0x0a, 0x0a, 0x6f,
 	0x73, 0x5f, 0x76, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x23, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x09, 0x6f, 0x73, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x31, 0x5a, 0x2f, 0x69, 0x6e,
+	0x09, 0x6f, 0x73, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x41, 0x5a, 0x3f, 0x67, 0x6f,
+	0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e,
 	0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74,
 	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x62,
 	0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x3b, 0x61, 0x70, 0x69, 0x62, 0x71, 0x62, 0x06, 0x70,
@@ -1929,19 +1948,19 @@ var file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDesc = string([]b
 })
 
 var (
-	file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescOnce sync.Once
-	file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescData []byte
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescData []byte
 )
 
-func file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP() []byte {
-	file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescOnce.Do(func() {
-		file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDesc)))
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDesc)))
 	})
-	return file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescData
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
-var file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_goTypes = []any{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_goTypes = []any{
 	(*ChangeEventRow)(nil),              // 0: unifiedfleet.api.v1.models.bigquery.ChangeEventRow
 	(*ChromePlatformRow)(nil),           // 1: unifiedfleet.api.v1.models.bigquery.ChromePlatformRow
 	(*VlanRow)(nil),                     // 2: unifiedfleet.api.v1.models.bigquery.VlanRow
@@ -1995,7 +2014,7 @@ var file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_goTypes = []any{
 	(*device.Config)(nil),               // 50: unifiedfleet.api.v1.models.chromeos.device.Config
 	(*timestamppb.Timestamp)(nil),       // 51: google.protobuf.Timestamp
 }
-var file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_depIdxs = []int32{
 	26, // 0: unifiedfleet.api.v1.models.bigquery.ChangeEventRow.change_event:type_name -> unifiedfleet.api.v1.models.ChangeEvent
 	27, // 1: unifiedfleet.api.v1.models.bigquery.ChromePlatformRow.platform:type_name -> unifiedfleet.api.v1.models.ChromePlatform
 	28, // 2: unifiedfleet.api.v1.models.bigquery.VlanRow.vlan:type_name -> unifiedfleet.api.v1.models.Vlan
@@ -2029,26 +2048,26 @@ var file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_depIdxs = []int32{
 	0,  // [0:26] is the sub-list for field type_name
 }
 
-func init() { file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_init() }
-func file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_init() {
-	if File_infra_unifiedfleet_api_v1_models_bigquery_bq_proto != nil {
+func init() { file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_init() }
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_init() {
+	if File_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   26,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_goTypes,
-		DependencyIndexes: file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_depIdxs,
-		MessageInfos:      file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_msgTypes,
 	}.Build()
-	File_infra_unifiedfleet_api_v1_models_bigquery_bq_proto = out.File
-	file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_goTypes = nil
-	file_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_depIdxs = nil
+	File_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto = out.File
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_goTypes = nil
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_bigquery_bq_proto_depIdxs = nil
 }

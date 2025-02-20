@@ -20,7 +20,7 @@ import (
 	statuserrors "go.chromium.org/chromiumos/test/execution/errors"
 	"go.chromium.org/chromiumos/test/util/finder"
 
-	"infra/cros/cmd/cft/execution/cros-test/internal/driver"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/driver"
 )
 
 // driverToTestsMapping builds a map between test and its driver.

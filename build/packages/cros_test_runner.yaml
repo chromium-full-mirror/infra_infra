@@ -3,7 +3,7 @@ description: Program for running tests against a DUT and processing results.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/cros_test_runner
+  - go.chromium.org/infra/cros/cmd/cros_test_runner
 root: ../../go/bin
 data:
   - file: cros_test_runner${exe_suffix}

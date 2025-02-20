@@ -13,8 +13,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/cloudbuildhelper/dockerfile"
-	"infra/cmd/cloudbuildhelper/registry"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/dockerfile"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/registry"
 )
 
 var cmdPinsUpdate = &subcommands.Command{

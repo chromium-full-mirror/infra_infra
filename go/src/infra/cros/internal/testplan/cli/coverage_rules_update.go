@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/data/text"
 
-	"infra/cros/internal/testplan/coveragerules"
+	"go.chromium.org/infra/cros/internal/testplan/coveragerules"
 )
 
 func CmdChromeosCoverageRulesUpdateRun(authOpts auth.Options) *subcommands.Command {

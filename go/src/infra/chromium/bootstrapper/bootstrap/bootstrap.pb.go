@@ -8,7 +8,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/chromium/bootstrapper/bootstrap/bootstrap.proto
+// source: go.chromium.org/infra/chromium/bootstrapper/bootstrap/bootstrap.proto
 
 package bootstrap
 
@@ -42,7 +42,7 @@ type GitilesRepo struct {
 
 func (x *GitilesRepo) Reset() {
 	*x = GitilesRepo{}
-	mi := &file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -54,7 +54,7 @@ func (x *GitilesRepo) String() string {
 func (*GitilesRepo) ProtoMessage() {}
 
 func (x *GitilesRepo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -67,7 +67,7 @@ func (x *GitilesRepo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GitilesRepo.ProtoReflect.Descriptor instead.
 func (*GitilesRepo) Descriptor() ([]byte, []int) {
-	return file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *GitilesRepo) GetHost() string {
@@ -115,7 +115,7 @@ type BootstrapPropertiesProperties struct {
 
 func (x *BootstrapPropertiesProperties) Reset() {
 	*x = BootstrapPropertiesProperties{}
-	mi := &file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -127,7 +127,7 @@ func (x *BootstrapPropertiesProperties) String() string {
 func (*BootstrapPropertiesProperties) ProtoMessage() {}
 
 func (x *BootstrapPropertiesProperties) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -140,7 +140,7 @@ func (x *BootstrapPropertiesProperties) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BootstrapPropertiesProperties.ProtoReflect.Descriptor instead.
 func (*BootstrapPropertiesProperties) Descriptor() ([]byte, []int) {
-	return file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *BootstrapPropertiesProperties) GetConfigProject() isBootstrapPropertiesProperties_ConfigProject {
@@ -213,7 +213,7 @@ type BootstrapExeProperties struct {
 
 func (x *BootstrapExeProperties) Reset() {
 	*x = BootstrapExeProperties{}
-	mi := &file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -225,7 +225,7 @@ func (x *BootstrapExeProperties) String() string {
 func (*BootstrapExeProperties) ProtoMessage() {}
 
 func (x *BootstrapExeProperties) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -238,7 +238,7 @@ func (x *BootstrapExeProperties) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BootstrapExeProperties.ProtoReflect.Descriptor instead.
 func (*BootstrapExeProperties) Descriptor() ([]byte, []int) {
-	return file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *BootstrapExeProperties) GetExe() *proto.Executable {
@@ -271,7 +271,7 @@ type BootstrapTriggerProperties struct {
 
 func (x *BootstrapTriggerProperties) Reset() {
 	*x = BootstrapTriggerProperties{}
-	mi := &file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -283,7 +283,7 @@ func (x *BootstrapTriggerProperties) String() string {
 func (*BootstrapTriggerProperties) ProtoMessage() {}
 
 func (x *BootstrapTriggerProperties) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -296,7 +296,7 @@ func (x *BootstrapTriggerProperties) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BootstrapTriggerProperties.ProtoReflect.Descriptor instead.
 func (*BootstrapTriggerProperties) Descriptor() ([]byte, []int) {
-	return file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *BootstrapTriggerProperties) GetCommits() []*proto.GitilesCommit {
@@ -329,7 +329,7 @@ type BootstrapPropertiesProperties_TopLevelProject struct {
 
 func (x *BootstrapPropertiesProperties_TopLevelProject) Reset() {
 	*x = BootstrapPropertiesProperties_TopLevelProject{}
-	mi := &file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -341,7 +341,7 @@ func (x *BootstrapPropertiesProperties_TopLevelProject) String() string {
 func (*BootstrapPropertiesProperties_TopLevelProject) ProtoMessage() {}
 
 func (x *BootstrapPropertiesProperties_TopLevelProject) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -354,7 +354,7 @@ func (x *BootstrapPropertiesProperties_TopLevelProject) ProtoReflect() protorefl
 
 // Deprecated: Use BootstrapPropertiesProperties_TopLevelProject.ProtoReflect.Descriptor instead.
 func (*BootstrapPropertiesProperties_TopLevelProject) Descriptor() ([]byte, []int) {
-	return file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescGZIP(), []int{1, 0}
+	return file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescGZIP(), []int{1, 0}
 }
 
 func (x *BootstrapPropertiesProperties_TopLevelProject) GetRepo() *GitilesRepo {
@@ -405,7 +405,7 @@ type BootstrapPropertiesProperties_DependencyProject struct {
 
 func (x *BootstrapPropertiesProperties_DependencyProject) Reset() {
 	*x = BootstrapPropertiesProperties_DependencyProject{}
-	mi := &file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -417,7 +417,7 @@ func (x *BootstrapPropertiesProperties_DependencyProject) String() string {
 func (*BootstrapPropertiesProperties_DependencyProject) ProtoMessage() {}
 
 func (x *BootstrapPropertiesProperties_DependencyProject) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -430,7 +430,7 @@ func (x *BootstrapPropertiesProperties_DependencyProject) ProtoReflect() protore
 
 // Deprecated: Use BootstrapPropertiesProperties_DependencyProject.ProtoReflect.Descriptor instead.
 func (*BootstrapPropertiesProperties_DependencyProject) Descriptor() ([]byte, []int) {
-	return file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescGZIP(), []int{1, 1}
+	return file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescGZIP(), []int{1, 1}
 }
 
 func (x *BootstrapPropertiesProperties_DependencyProject) GetTopLevelRepo() *GitilesRepo {
@@ -501,10 +501,11 @@ func (*BootstrapPropertiesProperties_DependencyProject_ConfigRepoPath) isBootstr
 func (*BootstrapPropertiesProperties_DependencyProject_ConfigRepoSubmodulePath) isBootstrapPropertiesProperties_DependencyProject_ConfigRepoLocator() {
 }
 
-var File_infra_chromium_bootstrapper_bootstrap_bootstrap_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto protoreflect.FileDescriptor
 
-var file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDesc = string([]byte{
-	0x0a, 0x35, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d,
+var file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDesc = string([]byte{
+	0x0a, 0x45, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d,
 	0x2f, 0x62, 0x6f, 0x6f, 0x74, 0x73, 0x74, 0x72, 0x61, 0x70, 0x70, 0x65, 0x72, 0x2f, 0x62, 0x6f,
 	0x6f, 0x74, 0x73, 0x74, 0x72, 0x61, 0x70, 0x2f, 0x62, 0x6f, 0x6f, 0x74, 0x73, 0x74, 0x72, 0x61,
 	0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x1f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75,
@@ -582,26 +583,27 @@ var file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDesc = string(
 	0x07, 0x63, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1d,
 	0x2e, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x62, 0x75, 0x63, 0x6b, 0x65, 0x74, 0x2e, 0x76, 0x32, 0x2e,
 	0x47, 0x69, 0x74, 0x69, 0x6c, 0x65, 0x73, 0x43, 0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x52, 0x07, 0x63,
-	0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x73, 0x42, 0x27, 0x5a, 0x25, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
+	0x6f, 0x6d, 0x6d, 0x69, 0x74, 0x73, 0x42, 0x37, 0x5a, 0x35, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72,
+	0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
 	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2f, 0x62, 0x6f, 0x6f, 0x74, 0x73, 0x74, 0x72,
 	0x61, 0x70, 0x70, 0x65, 0x72, 0x2f, 0x62, 0x6f, 0x6f, 0x74, 0x73, 0x74, 0x72, 0x61, 0x70, 0x62,
 	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescOnce sync.Once
-	file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescData []byte
+	file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescData []byte
 )
 
-func file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescGZIP() []byte {
-	file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescOnce.Do(func() {
-		file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDesc), len(file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDesc)))
+func file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDesc), len(file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDesc)))
 	})
-	return file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescData
+	return file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDescData
 }
 
-var file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
-var file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_goTypes = []any{
+var file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_goTypes = []any{
 	(*GitilesRepo)(nil),                                     // 0: chromium.bootstrapper.bootstrap.GitilesRepo
 	(*BootstrapPropertiesProperties)(nil),                   // 1: chromium.bootstrapper.bootstrap.BootstrapPropertiesProperties
 	(*BootstrapExeProperties)(nil),                          // 2: chromium.bootstrapper.bootstrap.BootstrapExeProperties
@@ -611,7 +613,7 @@ var file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_goTypes = []any{
 	(*proto.Executable)(nil),                                // 6: buildbucket.v2.Executable
 	(*proto.GitilesCommit)(nil),                             // 7: buildbucket.v2.GitilesCommit
 }
-var file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_depIdxs = []int32{
 	4, // 0: chromium.bootstrapper.bootstrap.BootstrapPropertiesProperties.top_level_project:type_name -> chromium.bootstrapper.bootstrap.BootstrapPropertiesProperties.TopLevelProject
 	5, // 1: chromium.bootstrapper.bootstrap.BootstrapPropertiesProperties.dependency_project:type_name -> chromium.bootstrapper.bootstrap.BootstrapPropertiesProperties.DependencyProject
 	6, // 2: chromium.bootstrapper.bootstrap.BootstrapExeProperties.exe:type_name -> buildbucket.v2.Executable
@@ -626,16 +628,16 @@ var file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_depIdxs = []int32
 	0, // [0:7] is the sub-list for field type_name
 }
 
-func init() { file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_init() }
-func file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_init() {
-	if File_infra_chromium_bootstrapper_bootstrap_bootstrap_proto != nil {
+func init() { file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_init() }
+func file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_init() {
+	if File_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto != nil {
 		return
 	}
-	file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[1].OneofWrappers = []any{
+	file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[1].OneofWrappers = []any{
 		(*BootstrapPropertiesProperties_TopLevelProject_)(nil),
 		(*BootstrapPropertiesProperties_DependencyProject_)(nil),
 	}
-	file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[5].OneofWrappers = []any{
+	file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes[5].OneofWrappers = []any{
 		(*BootstrapPropertiesProperties_DependencyProject_ConfigRepoPath)(nil),
 		(*BootstrapPropertiesProperties_DependencyProject_ConfigRepoSubmodulePath)(nil),
 	}
@@ -643,17 +645,17 @@ func file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDesc), len(file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDesc), len(file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_goTypes,
-		DependencyIndexes: file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_depIdxs,
-		MessageInfos:      file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_msgTypes,
 	}.Build()
-	File_infra_chromium_bootstrapper_bootstrap_bootstrap_proto = out.File
-	file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_goTypes = nil
-	file_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_depIdxs = nil
+	File_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto = out.File
+	file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_goTypes = nil
+	file_go_chromium_org_infra_chromium_bootstrapper_bootstrap_bootstrap_proto_depIdxs = nil
 }

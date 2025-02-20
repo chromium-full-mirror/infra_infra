@@ -13,7 +13,7 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/maruel/subcommands"
 
-	"infra/cros/satlab/common/utils/misc"
+	"go.chromium.org/infra/cros/satlab/common/utils/misc"
 )
 
 const containerVolume = "default_cache"

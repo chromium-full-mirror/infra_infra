@@ -10,8 +10,8 @@ import (
 	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/misc"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/misc"
 )
 
 func (s *SatlabRpcServiceServer) StableVersion(ctx context.Context, in *pb.StableVersionRequest) (*pb.StableVersionResponse, error) {

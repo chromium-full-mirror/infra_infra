@@ -10,8 +10,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components/cros/amt"
-	"infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros/amt"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
 )
 
 // flexSetAMTPowerStateExec sets the specified power state.

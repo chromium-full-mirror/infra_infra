@@ -24,9 +24,9 @@ import (
 	"go.chromium.org/luci/common/data/strpair"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/libs/skylab/inventory"
-	swarming_inventory "infra/libs/skylab/inventory/swarming"
-	"infra/libs/skylab/worker"
+	"go.chromium.org/infra/libs/skylab/inventory"
+	swarming_inventory "go.chromium.org/infra/libs/skylab/inventory/swarming"
+	"go.chromium.org/infra/libs/skylab/worker"
 )
 
 // Args defines the set of arguments for creating a request.

@@ -9,10 +9,10 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/plan"
 
-	"infra/cros/internal/testplan/relevance"
-	"infra/tools/dirmd"
-	dirmdpb "infra/tools/dirmd/proto"
-	"infra/tools/dirmd/proto/chromeos"
+	"go.chromium.org/infra/cros/internal/testplan/relevance"
+	"go.chromium.org/infra/tools/dirmd"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
+	"go.chromium.org/infra/tools/dirmd/proto/chromeos"
 )
 
 // buildMapping is a convenience to reduce boilerplate building Mappings.

@@ -3,7 +3,7 @@ description: CTPv2 filter for injecting a pretest container before tests start.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/ctpv2-filters/pretest-container-filter
+  - go.chromium.org/infra/cros/cmd/ctpv2-filters/pretest-container-filter
 root: ../../go/bin
 data:
   - file: pretest-container-filter${exe_suffix}

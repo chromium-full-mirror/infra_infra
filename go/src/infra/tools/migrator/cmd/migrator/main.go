@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/tools/migrator/internal/plugsupport"
+	"go.chromium.org/infra/tools/migrator/internal/plugsupport"
 )
 
 const (

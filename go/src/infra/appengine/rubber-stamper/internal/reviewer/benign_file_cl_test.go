@@ -19,8 +19,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 
-	"infra/appengine/rubber-stamper/config"
-	"infra/appengine/rubber-stamper/tasks/taskspb"
+	"go.chromium.org/infra/appengine/rubber-stamper/config"
+	"go.chromium.org/infra/appengine/rubber-stamper/tasks/taskspb"
 )
 
 func TestReviewBenignFileChange(t *testing.T) {

@@ -9,8 +9,8 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	api "infra/unifiedfleet/api/v1/rpc"
-	"infra/unifiedfleet/app/controller"
+	api "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/unifiedfleet/app/controller"
 )
 
 // CheckFleetTestsPolicy returns whether the given the test parameters are for a valid test.

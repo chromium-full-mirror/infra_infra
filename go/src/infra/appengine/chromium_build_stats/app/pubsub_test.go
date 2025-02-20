@@ -17,7 +17,7 @@ import (
 	"github.com/googleapis/google-cloud-go-testing/storage/stiface"
 	"google.golang.org/api/option"
 
-	"infra/appengine/chromium_build_stats/ninjalog"
+	"go.chromium.org/infra/appengine/chromium_build_stats/ninjalog"
 )
 
 var (

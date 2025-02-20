@@ -8,7 +8,7 @@ syntax = "proto3";
 
 package config;
 
-option go_package = "infra/appengine/cr-rev/config";
+option go_package = "go.chromium.org/infra/appengine/cr-rev/config";
 
 message Repository {
   // The name of the repository, for example "chromium/src" or "v8/v8".

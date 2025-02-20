@@ -25,9 +25,9 @@ import (
 	"go.chromium.org/luci/grpc/grpcutil"
 	swarming "go.chromium.org/luci/swarming/proto/plugin"
 
-	"infra/qscheduler/service/app/state"
-	"infra/qscheduler/service/app/state/nodestore"
-	"infra/qscheduler/service/app/tracing"
+	"go.chromium.org/infra/qscheduler/service/app/state"
+	"go.chromium.org/infra/qscheduler/service/app/state/nodestore"
+	"go.chromium.org/infra/qscheduler/service/app/tracing"
 )
 
 // BatchedQSchedulerServer implements the QSchedulerServer interface.

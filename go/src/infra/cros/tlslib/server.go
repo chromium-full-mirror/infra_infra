@@ -33,10 +33,10 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/tls/dependencies/longrunning"
 	"go.chromium.org/luci/common/tsmon"
 
-	"infra/cros/internal/env"
-	"infra/cros/tlslib/internal/resource"
-	"infra/libs/lro"
-	"infra/libs/sshpool"
+	"go.chromium.org/infra/cros/internal/env"
+	"go.chromium.org/infra/cros/tlslib/internal/resource"
+	"go.chromium.org/infra/libs/lro"
+	"go.chromium.org/infra/libs/sshpool"
 )
 
 // A Server is an implementation of a common TLS server.

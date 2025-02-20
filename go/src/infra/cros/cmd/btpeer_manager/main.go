@@ -11,8 +11,8 @@ import (
 	"os"
 	"os/signal"
 
-	"infra/cros/cmd/btpeer_manager/cmd"
-	"infra/cros/cmd/btpeer_manager/log"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/cmd"
+	"go.chromium.org/infra/cros/cmd/btpeer_manager/log"
 )
 
 func main() {

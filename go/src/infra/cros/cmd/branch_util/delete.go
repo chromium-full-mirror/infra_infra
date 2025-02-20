@@ -11,8 +11,8 @@ import (
 
 	"go.chromium.org/luci/auth"
 
-	"infra/cros/internal/branch"
-	"infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/branch"
+	"go.chromium.org/infra/cros/internal/git"
 )
 
 func getCmdDeleteBranch(opts auth.Options) *subcommands.Command {

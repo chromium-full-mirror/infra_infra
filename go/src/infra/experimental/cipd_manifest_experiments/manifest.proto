@@ -7,7 +7,7 @@ syntax = "proto3";
 
 package cipd.manifest;
 
-option go_package = "infra/experimental/cipd_manifest_experiments;main";
+option go_package = "go.chromium.org/infra/experimental/cipd_manifest_experiments;main";
 
 import "google/protobuf/timestamp.proto";
 

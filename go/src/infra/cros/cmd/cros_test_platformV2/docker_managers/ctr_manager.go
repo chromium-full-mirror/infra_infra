@@ -21,8 +21,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/common"
-	crostoolrunner "infra/cros/cmd/cros_test_platformV2/tools/ctr"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	crostoolrunner "go.chromium.org/infra/cros/cmd/cros_test_platformV2/tools/ctr"
 )
 
 const (

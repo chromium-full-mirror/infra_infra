@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	ufsUtil "infra/unifiedfleet/app/util"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // Environment contains environment specific values.
@@ -302,7 +302,7 @@ func ProdDefaultPRPCOptions() *prpc.Options {
 }
 
 // CipdInstalledPath is the installed path for shivas package.
-var CipdInstalledPath = "infra/shivas/"
+var CipdInstalledPath = "go.chromium.org/infra/shivas/"
 
 // prpcOptionWithUserAgent create prpc option with custom UserAgent.
 //

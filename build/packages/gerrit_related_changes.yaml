@@ -3,7 +3,7 @@ description: Utility for finding related changes for a Gerrit CL.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/gerrit_related_changes
+  - go.chromium.org/infra/cros/cmd/gerrit_related_changes
 root: ../../go/bin
 data:
   - file: gerrit_related_changes${exe_suffix}

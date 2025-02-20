@@ -3,7 +3,7 @@ description: Skylab command line tool.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cmd/skylab
+  - go.chromium.org/infra/cmd/skylab
 root: ../../go/bin
 data:
   - file: skylab${exe_suffix}

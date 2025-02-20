@@ -24,7 +24,7 @@ import "kythe/proto/storage.proto";
 
 // go_package has been edited so all files in this directory have the same
 // go package.
-option go_package = "infra/cmd/package_index/kythe/proto";
+option go_package = "go.chromium.org/infra/cmd/package_index/kythe/proto";
 option java_package = "com.google.devtools.kythe.proto";
 option cc_enable_arenas = true;
 

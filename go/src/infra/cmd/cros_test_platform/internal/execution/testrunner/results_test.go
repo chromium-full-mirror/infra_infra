@@ -17,9 +17,9 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
-	"infra/libs/skylab/request"
-	"infra/libs/skylab/worker"
+	trservice "go.chromium.org/infra/cmd/cros_test_platform/internal/execution/testrunner/service"
+	"go.chromium.org/infra/libs/skylab/request"
+	"go.chromium.org/infra/libs/skylab/worker"
 )
 
 type fakeArgsGenerator struct {

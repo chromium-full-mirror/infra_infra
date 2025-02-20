@@ -10,7 +10,7 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cros/cmd/cros-tool-runner/internal/v2/server"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/v2/server"
 )
 
 type runServeCmd struct {

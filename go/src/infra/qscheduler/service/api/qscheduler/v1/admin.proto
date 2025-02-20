@@ -6,11 +6,11 @@ syntax = "proto3";
 
 package qscheduler;
 
-option go_package = "infra/qscheduler/service/api/qscheduler/v1;qscheduler";
+option go_package = "go.chromium.org/infra/qscheduler/service/api/qscheduler/v1;qscheduler";
 
 import "google/protobuf/wrappers.proto";
-import "infra/qscheduler/qslib/protos/config.proto";
-import "infra/qscheduler/qslib/protos/state.proto";
+import "go.chromium.org/infra/qscheduler/qslib/protos/config.proto";
+import "go.chromium.org/infra/qscheduler/qslib/protos/state.proto";
 
 // This API is under development and subject to compatibility-breaking changes.
 // Do not use for production.

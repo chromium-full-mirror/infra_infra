@@ -12,9 +12,9 @@ import (
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/server/cron"
 
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/libs/bqwrapper"
-	ufspb "infra/unifiedfleet/api/v1/rpc"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/libs/bqwrapper"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // NewFleetCostFrontend returns a new fleet cost frontend.

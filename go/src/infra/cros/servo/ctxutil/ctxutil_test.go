@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"infra/cros/servo/ctxutil"
+	"go.chromium.org/infra/cros/servo/ctxutil"
 )
 
 // runAndGetDeadline passes ctx and d to f (e.g. OptionalTimeout or Shorten) and returns

@@ -17,8 +17,8 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	tlw_server "infra/cros/recovery/internal/tlw"
-	"infra/cros/recovery/tlw"
+	tlw_server "go.chromium.org/infra/cros/recovery/internal/tlw"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 type provisionState struct {

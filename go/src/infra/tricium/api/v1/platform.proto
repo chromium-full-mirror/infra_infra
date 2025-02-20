@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package tricium;
 
-option go_package = "infra/tricium/api/v1;tricium";
+option go_package = "go.chromium.org/infra/tricium/api/v1;tricium";
 
 // Platforms supported by Tricium.
 message Platform {

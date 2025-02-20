@@ -24,14 +24,14 @@ import (
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	luciflag "go.chromium.org/luci/common/flag"
 
-	"infra/cmd/crosfleet/internal/buildbucket"
-	"infra/cmd/crosfleet/internal/common"
-	"infra/cmd/crosfleet/internal/flagx"
-	crosfleetpb "infra/cmd/crosfleet/internal/proto"
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cmd/crosfleet/internal/ufs"
-	"infra/cmdsupport/cmdlib"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cmd/crosfleet/internal/buildbucket"
+	"go.chromium.org/infra/cmd/crosfleet/internal/common"
+	"go.chromium.org/infra/cmd/crosfleet/internal/flagx"
+	crosfleetpb "go.chromium.org/infra/cmd/crosfleet/internal/proto"
+	"go.chromium.org/infra/cmd/crosfleet/internal/site"
+	"go.chromium.org/infra/cmd/crosfleet/internal/ufs"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 const (

@@ -19,11 +19,11 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/cmd/result_flow/internal/bb"
-	"infra/cros/cmd/result_flow/internal/bq"
-	"infra/cros/cmd/result_flow/internal/message"
-	"infra/cros/cmd/result_flow/internal/site"
-	"infra/cros/cmd/result_flow/internal/transform"
+	"go.chromium.org/infra/cros/cmd/result_flow/internal/bb"
+	"go.chromium.org/infra/cros/cmd/result_flow/internal/bq"
+	"go.chromium.org/infra/cros/cmd/result_flow/internal/message"
+	"go.chromium.org/infra/cros/cmd/result_flow/internal/site"
+	"go.chromium.org/infra/cros/cmd/result_flow/internal/transform"
 )
 
 // PipeCTPData subcommand pipelines CTP builds to analytics BQ table represented in the form

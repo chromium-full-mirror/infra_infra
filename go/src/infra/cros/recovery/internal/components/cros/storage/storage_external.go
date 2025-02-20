@@ -10,8 +10,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
 )
 
 // IsBootedFromExternalStorage verify that device has been booted from external storage.

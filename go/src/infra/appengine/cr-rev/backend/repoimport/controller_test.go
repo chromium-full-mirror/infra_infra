@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/testing/ftt"
 
-	"infra/appengine/cr-rev/common"
+	"go.chromium.org/infra/appengine/cr-rev/common"
 )
 
 func factoryFunc(m map[common.GitRepository]Importer) ImporterFactory {

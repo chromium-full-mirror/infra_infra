@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	luciproto "go.chromium.org/luci/common/proto"
 
-	"infra/libs/git"
+	"go.chromium.org/infra/libs/git"
 )
 
 type gitilesInfo struct {

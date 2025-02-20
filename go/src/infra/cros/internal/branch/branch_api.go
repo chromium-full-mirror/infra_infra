@@ -18,7 +18,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 const (

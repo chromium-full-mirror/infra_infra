@@ -12,7 +12,7 @@ import (
 	"context"
 	"time"
 
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // Access provides a single method for executing ssh commands on devices.

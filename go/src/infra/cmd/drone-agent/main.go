@@ -29,15 +29,15 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/appengine/drone-queen/api"
-	"infra/cmd/drone-agent/internal/agent"
-	"infra/cmd/drone-agent/internal/bot"
-	"infra/cmd/drone-agent/internal/draining"
-	"infra/cmd/drone-agent/internal/megadrone"
-	"infra/cmd/drone-agent/internal/metrics"
-	"infra/cmd/drone-agent/internal/tokman"
-	"infra/cmd/drone-agent/internal/tracing"
-	"infra/libs/otil"
+	"go.chromium.org/infra/appengine/drone-queen/api"
+	"go.chromium.org/infra/cmd/drone-agent/internal/agent"
+	"go.chromium.org/infra/cmd/drone-agent/internal/bot"
+	"go.chromium.org/infra/cmd/drone-agent/internal/draining"
+	"go.chromium.org/infra/cmd/drone-agent/internal/megadrone"
+	"go.chromium.org/infra/cmd/drone-agent/internal/metrics"
+	"go.chromium.org/infra/cmd/drone-agent/internal/tokman"
+	"go.chromium.org/infra/cmd/drone-agent/internal/tracing"
+	"go.chromium.org/infra/libs/otil"
 )
 
 const (

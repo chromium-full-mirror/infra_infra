@@ -34,7 +34,7 @@ import (
 )
 
 // Name used for OpenTelemetry tracers.
-const tname = "infra/libs/otil"
+const tname = "go.chromium.org/infra/libs/otil"
 
 // ValuesKey represents a slice of string values to attach to a span or event.
 // This can be the arguments to a function or values relevant to an event.

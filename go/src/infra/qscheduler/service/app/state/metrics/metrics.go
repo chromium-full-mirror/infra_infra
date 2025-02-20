@@ -23,9 +23,9 @@ import (
 	"go.chromium.org/luci/common/tsmon/metric"
 	"go.chromium.org/luci/common/tsmon/types"
 
-	"infra/qscheduler/qslib/protos/metrics"
-	"infra/qscheduler/qslib/scheduler"
-	"infra/qscheduler/service/app/eventlog"
+	"go.chromium.org/infra/qscheduler/qslib/protos/metrics"
+	"go.chromium.org/infra/qscheduler/qslib/scheduler"
+	"go.chromium.org/infra/qscheduler/service/app/eventlog"
 )
 
 var (

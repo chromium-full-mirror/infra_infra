@@ -13,8 +13,8 @@ import (
 	pb "go.chromium.org/chromiumos/infra/proto/go/chromiumos"
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cros/internal/assert"
-	bb "infra/cros/lib/buildbucket"
+	"go.chromium.org/infra/cros/internal/assert"
+	bb "go.chromium.org/infra/cros/lib/buildbucket"
 )
 
 func TestCollectState_MaxRetries(t *testing.T) {

@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/gerrit"
 )
 
 // TestParseEmailFromAuthInfo tests parseEmailFromAuthInfo.

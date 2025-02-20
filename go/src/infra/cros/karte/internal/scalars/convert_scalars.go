@@ -10,7 +10,7 @@ import (
 
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	kartepb "infra/cros/karte/api"
+	kartepb "go.chromium.org/infra/cros/karte/api"
 )
 
 // ConvertTimestampPtrToTime takes a pointer to a timestamp proto value and

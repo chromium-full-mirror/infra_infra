@@ -9,9 +9,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/common_lib/commoncommands"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/ctpv2/internal/commands"
+	"go.chromium.org/infra/cros/cmd/common_lib/commoncommands"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/ctpv2/internal/commands"
 )
 
 // CommandConfig represents command config.

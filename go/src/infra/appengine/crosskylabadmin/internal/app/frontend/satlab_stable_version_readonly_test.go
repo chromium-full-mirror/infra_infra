@@ -25,10 +25,10 @@ import (
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	dssv "infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/satlab"
-	"infra/libs/skylab/inventory"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	dssv "go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/satlab"
+	"go.chromium.org/infra/libs/skylab/inventory"
 )
 
 // TestGetStableVersionRPCForSatlabDeviceUsingBoardAndModel tests the happy path of extracting a satlab stable version using its board and model.

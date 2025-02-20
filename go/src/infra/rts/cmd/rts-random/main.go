@@ -9,7 +9,7 @@ import (
 	"math/rand"
 	"time"
 
-	"infra/rts/presubmit/eval"
+	"go.chromium.org/infra/rts/presubmit/eval"
 )
 
 func main() {

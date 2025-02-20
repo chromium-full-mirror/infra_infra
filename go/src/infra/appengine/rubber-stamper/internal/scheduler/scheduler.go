@@ -12,10 +12,10 @@ import (
 	"go.chromium.org/luci/common/logging"
 	gerritpb "go.chromium.org/luci/common/proto/gerrit"
 
-	"infra/appengine/rubber-stamper/config"
-	"infra/appengine/rubber-stamper/internal/gerrit"
-	"infra/appengine/rubber-stamper/internal/util"
-	"infra/appengine/rubber-stamper/tasks"
+	"go.chromium.org/infra/appengine/rubber-stamper/config"
+	"go.chromium.org/infra/appengine/rubber-stamper/internal/gerrit"
+	"go.chromium.org/infra/appengine/rubber-stamper/internal/util"
+	"go.chromium.org/infra/appengine/rubber-stamper/tasks"
 )
 
 // ScheduleReviews add tasks into Cloud Tasks queue, where each task handles

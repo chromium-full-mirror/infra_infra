@@ -11,7 +11,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/libs/skylab/autotest/dynamicsuite"
+	"go.chromium.org/infra/libs/skylab/autotest/dynamicsuite"
 )
 
 func TestRequest(t *testing.T) {

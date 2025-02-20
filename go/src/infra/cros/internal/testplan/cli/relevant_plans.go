@@ -24,9 +24,9 @@ import (
 	"go.chromium.org/luci/common/flag"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/shared"
-	"infra/cros/internal/testplan"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/internal/testplan"
 )
 
 // getChangeRevs parses each of rawCLURLs and returns a ChangeRev.

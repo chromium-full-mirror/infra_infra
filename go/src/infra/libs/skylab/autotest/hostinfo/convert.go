@@ -5,8 +5,8 @@
 package hostinfo
 
 import (
-	"infra/libs/skylab/inventory"
-	"infra/libs/skylab/inventory/autotest/labels"
+	"go.chromium.org/infra/libs/skylab/inventory"
+	"go.chromium.org/infra/libs/skylab/inventory/autotest/labels"
 )
 
 // ConvertDut converts the inventory DUT struct to Autotest hostinfo.

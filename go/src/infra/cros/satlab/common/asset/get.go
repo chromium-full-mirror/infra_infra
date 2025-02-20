@@ -13,12 +13,12 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/satlab/common/commands"
-	"infra/cros/satlab/common/paths"
-	"infra/cros/satlab/common/site"
-	e "infra/cros/satlab/common/utils/errors"
-	"infra/cros/satlab/common/utils/executor"
-	ufsModels "infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/cros/satlab/common/commands"
+	"go.chromium.org/infra/cros/satlab/common/paths"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	e "go.chromium.org/infra/cros/satlab/common/utils/errors"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
+	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 type Flagmap = map[string][]string

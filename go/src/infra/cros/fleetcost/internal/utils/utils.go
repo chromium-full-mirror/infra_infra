@@ -20,9 +20,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/cmdsupport/cmdlib"
-	fleetcostpb "infra/cros/fleetcost/api/models"
-	"infra/cros/fleetcost/internal/fleetcosterror"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	fleetcostpb "go.chromium.org/infra/cros/fleetcost/api/models"
+	"go.chromium.org/infra/cros/fleetcost/internal/fleetcosterror"
 )
 
 // ToIndicatorType converts a string to an indicator.

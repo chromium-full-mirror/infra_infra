@@ -9,9 +9,9 @@ import (
 
 	"google.golang.org/protobuf/types/known/anypb"
 
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/site"
-	ufspb "infra/unifiedfleet/api/v1/rpc"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/site"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // PingUFS takes a PingUFSRequest which is empty and pings UFS, returning a description of what it did.

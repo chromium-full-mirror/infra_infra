@@ -37,8 +37,8 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	lgs "go.chromium.org/luci/common/gcloud/gs"
 
-	"infra/cros/internal/gs"
-	"infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/internal/gs"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 const (

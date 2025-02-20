@@ -14,9 +14,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/git"
-	"infra/cros/internal/manifestutil"
-	"infra/cros/internal/repo"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/manifestutil"
+	"go.chromium.org/infra/cros/internal/repo"
 )
 
 type ManifestRepo struct {

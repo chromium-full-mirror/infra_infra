@@ -7,7 +7,7 @@ package builder
 import (
 	"context"
 
-	"infra/cmd/cloudbuildhelper/gitignore"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/gitignore"
 )
 
 // runCopyBuildStep executes manifest.CopyBuildStep.

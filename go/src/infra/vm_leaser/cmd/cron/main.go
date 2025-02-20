@@ -10,7 +10,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
 
-	"infra/vm_leaser/internal/cron"
+	"go.chromium.org/infra/vm_leaser/internal/cron"
 )
 
 // stringListFlags is binded as an array flag usable in command line

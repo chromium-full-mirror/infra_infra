@@ -14,9 +14,9 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/client"
-	"infra/cros/karte/internal/site"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	"go.chromium.org/infra/cros/karte/client"
+	"go.chromium.org/infra/cros/karte/internal/site"
 )
 
 // CreateAction is a CLI command that creates an action on the Karte server.

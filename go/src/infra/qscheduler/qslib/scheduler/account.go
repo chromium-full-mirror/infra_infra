@@ -15,7 +15,7 @@
 package scheduler
 
 import (
-	"infra/qscheduler/qslib/protos"
+	"go.chromium.org/infra/qscheduler/qslib/protos"
 )
 
 const (

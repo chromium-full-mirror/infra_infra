@@ -10,9 +10,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/scopes"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/scopes"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // ClientToScope puts cft container client to context scope.

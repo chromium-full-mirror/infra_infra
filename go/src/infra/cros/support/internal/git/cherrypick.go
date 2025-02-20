@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"strings"
 
-	sgerrit "infra/cros/support/internal/gerrit"
+	sgerrit "go.chromium.org/infra/cros/support/internal/gerrit"
 )
 
 // CheckCherryPick checks if the provided GerritChanges can be merged into

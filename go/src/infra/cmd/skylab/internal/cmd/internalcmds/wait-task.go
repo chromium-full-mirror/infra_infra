@@ -19,12 +19,12 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/skylab/internal/bb"
-	skycmdlib "infra/cmd/skylab/internal/cmd/cmdlib"
-	"infra/cmd/skylab/internal/site"
-	"infra/cmdsupport/cmdlib"
-	"infra/libs/skylab/common/errctx"
-	"infra/libs/skylab/jsonutil"
+	"go.chromium.org/infra/cmd/skylab/internal/bb"
+	skycmdlib "go.chromium.org/infra/cmd/skylab/internal/cmd/cmdlib"
+	"go.chromium.org/infra/cmd/skylab/internal/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/libs/skylab/common/errctx"
+	"go.chromium.org/infra/libs/skylab/jsonutil"
 )
 
 // WaitTask subcommand: wait for a task to finish.

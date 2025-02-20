@@ -7,7 +7,7 @@ package config
 import (
 	"context"
 
-	tricium "infra/tricium/api/v1"
+	tricium "go.chromium.org/infra/tricium/api/v1"
 )
 
 // ProviderAPI supplies Tricium service and project configs.

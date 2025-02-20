@@ -14,10 +14,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/shivas/site"
-	schedulingapi "infra/libs/fleet/scheduling/api"
-	"infra/libs/skylab/buildbucket"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cmd/shivas/site"
+	schedulingapi "go.chromium.org/infra/libs/fleet/scheduling/api"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // stubClient returns "safe" values and stores the params of the last labpack

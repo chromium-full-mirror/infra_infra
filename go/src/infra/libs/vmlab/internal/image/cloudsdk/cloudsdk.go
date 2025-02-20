@@ -22,7 +22,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"infra/libs/vmlab/api"
+	"go.chromium.org/infra/libs/vmlab/api"
 )
 
 const (

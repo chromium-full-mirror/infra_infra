@@ -35,9 +35,9 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/chromeperf/pinpoint"
-	"infra/chromeperf/pinpoint/assertions"
-	"infra/chromeperf/pinpoint/proto"
+	"go.chromium.org/infra/chromeperf/pinpoint"
+	"go.chromium.org/infra/chromeperf/pinpoint/assertions"
+	"go.chromium.org/infra/chromeperf/pinpoint/proto"
 )
 
 const bufSize = 1024 * 1024

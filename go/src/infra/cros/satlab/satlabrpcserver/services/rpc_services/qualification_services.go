@@ -10,9 +10,9 @@ import (
 
 	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 
-	"infra/cros/satlab/common/run"
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/misc"
+	"go.chromium.org/infra/cros/satlab/common/run"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/misc"
 )
 
 const dlmSkuIDDim = "label-dlm_sku_id"

@@ -9,7 +9,7 @@ import (
 
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
-	"infra/cros/cmd/kron/common"
+	"go.chromium.org/infra/cros/cmd/kron/common"
 )
 
 // FetchAllConfigs returns all configs.

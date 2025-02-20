@@ -15,7 +15,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/cros/luciexe/test_orchestrator
+  - go.chromium.org/infra/cros/luciexe/test_orchestrator
 root: ../../go/bin
 # Buildbucket expects luciexe executables to be named "luciexe". Create a copy
 # of the executable with this name and add it to the package.

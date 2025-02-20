@@ -14,13 +14,13 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/satlab/common/dns"
-	"infra/cros/satlab/common/dut/shivas"
-	"infra/cros/satlab/common/satlabcommands"
-	"infra/cros/satlab/common/services/build_service"
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/executor"
-	"infra/cros/satlab/common/utils/misc"
+	"go.chromium.org/infra/cros/satlab/common/dns"
+	"go.chromium.org/infra/cros/satlab/common/dut/shivas"
+	"go.chromium.org/infra/cros/satlab/common/satlabcommands"
+	"go.chromium.org/infra/cros/satlab/common/services/build_service"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/utils/misc"
 )
 
 type AddDUTResponse struct {

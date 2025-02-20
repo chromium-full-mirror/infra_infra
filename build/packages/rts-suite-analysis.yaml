@@ -16,7 +16,7 @@ platforms:
   - windows-386
   - windows-amd64
 go_packages:
-  - infra/rts/cmd/rts-suite-analysis
+  - go.chromium.org/infra/rts/cmd/rts-suite-analysis
 install_mode: copy
 root: ../../go/bin
 data:

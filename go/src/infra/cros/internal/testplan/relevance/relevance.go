@@ -8,8 +8,8 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/plan"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/tools/dirmd"
-	dirmdpb "infra/tools/dirmd/proto"
+	"go.chromium.org/infra/tools/dirmd"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
 )
 
 // matchesAnyPattern returns true if s matches any pattern in patterns.

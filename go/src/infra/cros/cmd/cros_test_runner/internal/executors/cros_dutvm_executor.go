@@ -14,11 +14,11 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/interfaces"
-	"infra/cros/cmd/cros_test_runner/internal/commands"
-	"infra/libs/vmlab"
-	vmlabapi "infra/libs/vmlab/api"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/internal/commands"
+	"go.chromium.org/infra/libs/vmlab"
+	vmlabapi "go.chromium.org/infra/libs/vmlab/api"
 )
 
 // CrosDutVmExecutor implements the execution of the steps defined in supported

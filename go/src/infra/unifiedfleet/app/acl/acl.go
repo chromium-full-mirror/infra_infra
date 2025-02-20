@@ -7,7 +7,7 @@ package acl
 import (
 	"regexp"
 
-	"infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/config"
 )
 
 // ACL contains a regular expression and mdb groups to map

@@ -11,11 +11,11 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/ctr"
-	"infra/cros/recovery/internal/components/cft"
-	"infra/cros/recovery/internal/components/cft/crosdut"
-	"infra/cros/recovery/internal/execs"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/ctr"
+	"go.chromium.org/infra/cros/recovery/internal/components/cft"
+	"go.chromium.org/infra/cros/recovery/internal/components/cft/crosdut"
+	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 func startCrosDutContainerExec(ctx context.Context, info *execs.ExecInfo) error {

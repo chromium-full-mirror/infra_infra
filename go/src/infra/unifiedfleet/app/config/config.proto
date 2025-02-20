@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package ufs.config;
 
-option go_package = "infra/unifiedfleet/app/config";
+option go_package = "go.chromium.org/infra/unifiedfleet/app/config";
 
 // Next Tag: 30
 // Config is the configuration data served by luci-config for this app.

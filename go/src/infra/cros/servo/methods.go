@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/servo/errors"
-	"infra/cros/servo/testing"
-	"infra/cros/servo/xmlrpc"
+	"go.chromium.org/infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/testing"
+	"go.chromium.org/infra/cros/servo/xmlrpc"
 )
 
 // A StringControl contains the name of a gettable/settable Control which takes a string value.

@@ -12,7 +12,7 @@ syntax = "proto3";
 
 package monorail;
 
-option go_package = "infra/monorail";
+option go_package = "go.chromium.org/infra/monorail";
 
 // Monorail service can manipulate issues.
 service Monorail {

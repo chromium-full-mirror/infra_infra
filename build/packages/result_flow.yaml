@@ -3,7 +3,7 @@ description: Tool for pipelining the test implementation result to Bigquery.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/result_flow
+  - go.chromium.org/infra/cros/cmd/result_flow
 root: ../../go/bin
 data:
   - file: result_flow${exe_suffix}

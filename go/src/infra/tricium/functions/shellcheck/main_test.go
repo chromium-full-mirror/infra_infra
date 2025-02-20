@@ -20,7 +20,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/tricium/functions/shellcheck/runner"
+	"go.chromium.org/infra/tricium/functions/shellcheck/runner"
 )
 
 const testInputDir = "testdata"

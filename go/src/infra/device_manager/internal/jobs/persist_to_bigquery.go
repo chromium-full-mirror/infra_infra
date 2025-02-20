@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/device_manager/internal/frontend"
+	"go.chromium.org/infra/device_manager/internal/frontend"
 )
 
 // PersistToBigQuery persists the current DM records to BigQuery.

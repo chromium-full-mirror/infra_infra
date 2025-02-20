@@ -21,10 +21,10 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/cros/cmd/result_flow/internal/bq"
+	"go.chromium.org/infra/cros/cmd/result_flow/internal/bq"
 )
 
-// Original TestRAMBufferedBQInserter was at "infra/qscheduler/service/app/eventlog/ram_test.go".
+// Original TestRAMBufferedBQInserter was at "go.chromium.org/infra/qscheduler/service/app/eventlog/ram_test.go".
 // Tests here verify that insert_id is propagated correctly because it is important for deduplication.
 
 func TestRamBufferedBQInserter(t *testing.T) {

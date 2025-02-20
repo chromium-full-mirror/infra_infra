@@ -13,14 +13,14 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmd/shivas/internal/experimental"
-	"infra/cmd/shivas/internal/meta"
-	queen_cmds "infra/cmd/shivas/internal/queen/cmds"
-	sw_cmds "infra/cmd/shivas/internal/swarming/cmds"
-	bot_cmds "infra/cmd/shivas/internal/ufs/cmds/bot"
-	"infra/cmd/shivas/internal/ufs/cmds/operations"
-	"infra/cmd/shivas/internal/ufs/cmds/state"
-	"infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmd/shivas/internal/experimental"
+	"go.chromium.org/infra/cmd/shivas/internal/meta"
+	queen_cmds "go.chromium.org/infra/cmd/shivas/internal/queen/cmds"
+	sw_cmds "go.chromium.org/infra/cmd/shivas/internal/swarming/cmds"
+	bot_cmds "go.chromium.org/infra/cmd/shivas/internal/ufs/cmds/bot"
+	"go.chromium.org/infra/cmd/shivas/internal/ufs/cmds/operations"
+	"go.chromium.org/infra/cmd/shivas/internal/ufs/cmds/state"
+	"go.chromium.org/infra/cmd/shivas/site"
 )
 
 func Application() *cli.Application {

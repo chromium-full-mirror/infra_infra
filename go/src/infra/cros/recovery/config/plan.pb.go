@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/cros/recovery/config/planpb/plan.proto
+// source: go.chromium.org/infra/cros/recovery/config/planpb/plan.proto
 
 package config
 
@@ -64,11 +64,11 @@ func (x RunControl) String() string {
 }
 
 func (RunControl) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_cros_recovery_config_planpb_plan_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_enumTypes[0].Descriptor()
 }
 
 func (RunControl) Type() protoreflect.EnumType {
-	return &file_infra_cros_recovery_config_planpb_plan_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_enumTypes[0]
 }
 
 func (x RunControl) Number() protoreflect.EnumNumber {
@@ -77,7 +77,7 @@ func (x RunControl) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use RunControl.Descriptor instead.
 func (RunControl) EnumDescriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_config_planpb_plan_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_rawDescGZIP(), []int{0}
 }
 
 // Configuration provides the plans to be used by the recovery engine.
@@ -93,7 +93,7 @@ type Configuration struct {
 
 func (x *Configuration) Reset() {
 	*x = Configuration{}
-	mi := &file_infra_cros_recovery_config_planpb_plan_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -105,7 +105,7 @@ func (x *Configuration) String() string {
 func (*Configuration) ProtoMessage() {}
 
 func (x *Configuration) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_config_planpb_plan_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -118,7 +118,7 @@ func (x *Configuration) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Configuration.ProtoReflect.Descriptor instead.
 func (*Configuration) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_config_planpb_plan_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Configuration) GetPlans() map[string]*Plan {
@@ -152,7 +152,7 @@ type Plan struct {
 
 func (x *Plan) Reset() {
 	*x = Plan{}
-	mi := &file_infra_cros_recovery_config_planpb_plan_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -164,7 +164,7 @@ func (x *Plan) String() string {
 func (*Plan) ProtoMessage() {}
 
 func (x *Plan) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_config_planpb_plan_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -177,7 +177,7 @@ func (x *Plan) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Plan.ProtoReflect.Descriptor instead.
 func (*Plan) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_config_planpb_plan_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Plan) GetCriticalActions() []string {
@@ -238,7 +238,7 @@ type Action struct {
 
 func (x *Action) Reset() {
 	*x = Action{}
-	mi := &file_infra_cros_recovery_config_planpb_plan_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -250,7 +250,7 @@ func (x *Action) String() string {
 func (*Action) ProtoMessage() {}
 
 func (x *Action) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_recovery_config_planpb_plan_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -263,7 +263,7 @@ func (x *Action) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Action.ProtoReflect.Descriptor instead.
 func (*Action) Descriptor() ([]byte, []int) {
-	return file_infra_cros_recovery_config_planpb_plan_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Action) GetConditions() []string {
@@ -336,16 +336,18 @@ func (x *Action) GetMetricsConfig() *MetricsConfig {
 	return nil
 }
 
-var File_infra_cros_recovery_config_planpb_plan_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto protoreflect.FileDescriptor
 
-var file_infra_cros_recovery_config_planpb_plan_proto_rawDesc = string([]byte{
-	0x0a, 0x2c, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65, 0x63,
+var file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_rawDesc = string([]byte{
+	0x0a, 0x3c, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65, 0x63,
 	0x6f, 0x76, 0x65, 0x72, 0x79, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2f, 0x70, 0x6c, 0x61,
 	0x6e, 0x70, 0x62, 0x2f, 0x70, 0x6c, 0x61, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x11,
 	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x72, 0x65, 0x63, 0x6f, 0x76, 0x65, 0x72,
 	0x79, 0x1a, 0x1e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62,
 	0x75, 0x66, 0x2f, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x1a, 0x35, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65,
+	0x6f, 0x1a, 0x45, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f,
+	0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x72, 0x65,
 	0x63, 0x6f, 0x76, 0x65, 0x72, 0x79, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2f, 0x70, 0x6c,
 	0x61, 0x6e, 0x70, 0x62, 0x2f, 0x6d, 0x65, 0x74, 0x72, 0x69, 0x63, 0x5f, 0x63, 0x6f, 0x6e, 0x66,
 	0x69, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xc4, 0x01, 0x0a, 0x0d, 0x43, 0x6f, 0x6e,
@@ -409,27 +411,28 @@ var file_infra_cros_recovery_config_planpb_plan_proto_rawDesc = string([]byte{
 	0x52, 0x45, 0x52, 0x55, 0x4e, 0x5f, 0x41, 0x46, 0x54, 0x45, 0x52, 0x5f, 0x52, 0x45, 0x43, 0x4f,
 	0x56, 0x45, 0x52, 0x59, 0x10, 0x00, 0x12, 0x0e, 0x0a, 0x0a, 0x41, 0x4c, 0x57, 0x41, 0x59, 0x53,
 	0x5f, 0x52, 0x55, 0x4e, 0x10, 0x01, 0x12, 0x0c, 0x0a, 0x08, 0x52, 0x55, 0x4e, 0x5f, 0x4f, 0x4e,
-	0x43, 0x45, 0x10, 0x02, 0x42, 0x23, 0x5a, 0x21, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72,
+	0x43, 0x45, 0x10, 0x02, 0x42, 0x33, 0x5a, 0x31, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d,
+	0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72,
 	0x6f, 0x73, 0x2f, 0x72, 0x65, 0x63, 0x6f, 0x76, 0x65, 0x72, 0x79, 0x2f, 0x63, 0x6f, 0x6e, 0x66,
 	0x69, 0x67, 0x3b, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x33,
 })
 
 var (
-	file_infra_cros_recovery_config_planpb_plan_proto_rawDescOnce sync.Once
-	file_infra_cros_recovery_config_planpb_plan_proto_rawDescData []byte
+	file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_rawDescData []byte
 )
 
-func file_infra_cros_recovery_config_planpb_plan_proto_rawDescGZIP() []byte {
-	file_infra_cros_recovery_config_planpb_plan_proto_rawDescOnce.Do(func() {
-		file_infra_cros_recovery_config_planpb_plan_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_cros_recovery_config_planpb_plan_proto_rawDesc), len(file_infra_cros_recovery_config_planpb_plan_proto_rawDesc)))
+func file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_rawDesc), len(file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_rawDesc)))
 	})
-	return file_infra_cros_recovery_config_planpb_plan_proto_rawDescData
+	return file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_rawDescData
 }
 
-var file_infra_cros_recovery_config_planpb_plan_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_infra_cros_recovery_config_planpb_plan_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
-var file_infra_cros_recovery_config_planpb_plan_proto_goTypes = []any{
+var file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_goTypes = []any{
 	(RunControl)(0),             // 0: chromeos.recovery.RunControl
 	(*Configuration)(nil),       // 1: chromeos.recovery.Configuration
 	(*Plan)(nil),                // 2: chromeos.recovery.Plan
@@ -439,7 +442,7 @@ var file_infra_cros_recovery_config_planpb_plan_proto_goTypes = []any{
 	(*durationpb.Duration)(nil), // 6: google.protobuf.Duration
 	(*MetricsConfig)(nil),       // 7: chromeos.recovery.MetricsConfig
 }
-var file_infra_cros_recovery_config_planpb_plan_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_depIdxs = []int32{
 	4, // 0: chromeos.recovery.Configuration.plans:type_name -> chromeos.recovery.Configuration.PlansEntry
 	5, // 1: chromeos.recovery.Plan.actions:type_name -> chromeos.recovery.Plan.ActionsEntry
 	6, // 2: chromeos.recovery.Action.exec_timeout:type_name -> google.protobuf.Duration
@@ -454,28 +457,28 @@ var file_infra_cros_recovery_config_planpb_plan_proto_depIdxs = []int32{
 	0, // [0:7] is the sub-list for field type_name
 }
 
-func init() { file_infra_cros_recovery_config_planpb_plan_proto_init() }
-func file_infra_cros_recovery_config_planpb_plan_proto_init() {
-	if File_infra_cros_recovery_config_planpb_plan_proto != nil {
+func init() { file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_init() }
+func file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_init() {
+	if File_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto != nil {
 		return
 	}
-	file_infra_cros_recovery_config_planpb_metric_config_proto_init()
+	file_go_chromium_org_infra_cros_recovery_config_planpb_metric_config_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_cros_recovery_config_planpb_plan_proto_rawDesc), len(file_infra_cros_recovery_config_planpb_plan_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_rawDesc), len(file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_cros_recovery_config_planpb_plan_proto_goTypes,
-		DependencyIndexes: file_infra_cros_recovery_config_planpb_plan_proto_depIdxs,
-		EnumInfos:         file_infra_cros_recovery_config_planpb_plan_proto_enumTypes,
-		MessageInfos:      file_infra_cros_recovery_config_planpb_plan_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_msgTypes,
 	}.Build()
-	File_infra_cros_recovery_config_planpb_plan_proto = out.File
-	file_infra_cros_recovery_config_planpb_plan_proto_goTypes = nil
-	file_infra_cros_recovery_config_planpb_plan_proto_depIdxs = nil
+	File_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto = out.File
+	file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_goTypes = nil
+	file_go_chromium_org_infra_cros_recovery_config_planpb_plan_proto_depIdxs = nil
 }

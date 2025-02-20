@@ -4,7 +4,7 @@
 package platform
 
 import (
-	"infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 )
 
 type Chromeos struct {

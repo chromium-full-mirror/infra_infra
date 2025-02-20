@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package unifiedfleet.api.v1.models.chromeos.manufacturing;
 
-option go_package = "infra/unifiedfleet/api/v1/models/chromeos/manufacturing;ufspb";
+option go_package = "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing;ufspb";
 
 message ConfigID {
   // The ID that uniquely identifies the hardware configuration of a Chrome OS device.

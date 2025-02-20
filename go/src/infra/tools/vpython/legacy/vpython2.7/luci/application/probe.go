@@ -26,8 +26,8 @@ import (
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/common/system/exitcode"
 
-	"infra/tools/vpython/legacy/vpython2.7/luci/application/internal/prober"
-	"infra/tools/vpython/legacy/vpython2.7/luci/python"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/application/internal/prober"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/python"
 )
 
 const (

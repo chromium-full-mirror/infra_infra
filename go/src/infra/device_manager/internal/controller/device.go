@@ -22,9 +22,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/device_manager/internal/database"
-	"infra/device_manager/internal/external"
-	"infra/device_manager/internal/model"
+	"go.chromium.org/infra/device_manager/internal/database"
+	"go.chromium.org/infra/device_manager/internal/external"
+	"go.chromium.org/infra/device_manager/internal/model"
 )
 
 // TODO: b/343293714 - Write unit tests and manually test this. Create a job that calls SendNotifications.

@@ -12,7 +12,7 @@ import (
 	"net"
 	"os"
 
-	ufsModels "infra/unifiedfleet/api/v1/models"
+	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 // Environment is the runtime dependencies, e.g. networking, etc. of the

@@ -4,7 +4,7 @@ description: CTPv2 filter responsible for defining firmware
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/ctpv2-filters/firmware-filter
+  - go.chromium.org/infra/cros/cmd/ctpv2-filters/firmware-filter
 root: ../../go/bin
 data:
   - file: firmware-filter${exe_suffix}

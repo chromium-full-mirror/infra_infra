@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/cros/karte/api/bigquery/observation.proto
+// source: go.chromium.org/infra/cros/karte/api/bigquery/observation.proto
 
 package kbqpb
 
@@ -56,7 +56,7 @@ type Observation struct {
 
 func (x *Observation) Reset() {
 	*x = Observation{}
-	mi := &file_infra_cros_karte_api_bigquery_observation_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -68,7 +68,7 @@ func (x *Observation) String() string {
 func (*Observation) ProtoMessage() {}
 
 func (x *Observation) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_cros_karte_api_bigquery_observation_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -81,7 +81,7 @@ func (x *Observation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Observation.ProtoReflect.Descriptor instead.
 func (*Observation) Descriptor() ([]byte, []int) {
-	return file_infra_cros_karte_api_bigquery_observation_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Observation) GetName() string {
@@ -126,10 +126,11 @@ func (x *Observation) GetValueNumber() float64 {
 	return 0
 }
 
-var File_infra_cros_karte_api_bigquery_observation_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto protoreflect.FileDescriptor
 
-var file_infra_cros_karte_api_bigquery_observation_proto_rawDesc = string([]byte{
-	0x0a, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x6b, 0x61, 0x72,
+var file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_rawDesc = string([]byte{
+	0x0a, 0x3f, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x6b, 0x61, 0x72,
 	0x74, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2f,
 	0x6f, 0x62, 0x73, 0x65, 0x72, 0x76, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x12, 0x17, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2e, 0x6b, 0x61, 0x72, 0x74,
@@ -145,29 +146,30 @@ var file_infra_cros_karte_api_bigquery_observation_proto_rawDesc = string([]byte
 	0x72, 0x69, 0x6e, 0x67, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x76, 0x61, 0x6c, 0x75,
 	0x65, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x12, 0x21, 0x0a, 0x0c, 0x76, 0x61, 0x6c, 0x75, 0x65,
 	0x5f, 0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x18, 0x06, 0x20, 0x01, 0x28, 0x01, 0x52, 0x0b, 0x76,
-	0x61, 0x6c, 0x75, 0x65, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x42, 0x25, 0x5a, 0x23, 0x69, 0x6e,
+	0x61, 0x6c, 0x75, 0x65, 0x4e, 0x75, 0x6d, 0x62, 0x65, 0x72, 0x42, 0x35, 0x5a, 0x33, 0x67, 0x6f,
+	0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e,
 	0x66, 0x72, 0x61, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x6b, 0x61, 0x72, 0x74, 0x65, 0x2f, 0x61,
 	0x70, 0x69, 0x2f, 0x62, 0x69, 0x67, 0x71, 0x75, 0x65, 0x72, 0x79, 0x3b, 0x6b, 0x62, 0x71, 0x70,
 	0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_cros_karte_api_bigquery_observation_proto_rawDescOnce sync.Once
-	file_infra_cros_karte_api_bigquery_observation_proto_rawDescData []byte
+	file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_rawDescData []byte
 )
 
-func file_infra_cros_karte_api_bigquery_observation_proto_rawDescGZIP() []byte {
-	file_infra_cros_karte_api_bigquery_observation_proto_rawDescOnce.Do(func() {
-		file_infra_cros_karte_api_bigquery_observation_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_cros_karte_api_bigquery_observation_proto_rawDesc), len(file_infra_cros_karte_api_bigquery_observation_proto_rawDesc)))
+func file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_rawDesc), len(file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_rawDesc)))
 	})
-	return file_infra_cros_karte_api_bigquery_observation_proto_rawDescData
+	return file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_rawDescData
 }
 
-var file_infra_cros_karte_api_bigquery_observation_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_infra_cros_karte_api_bigquery_observation_proto_goTypes = []any{
+var file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_goTypes = []any{
 	(*Observation)(nil), // 0: chromeos.karte.bigquery.Observation
 }
-var file_infra_cros_karte_api_bigquery_observation_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -175,26 +177,26 @@ var file_infra_cros_karte_api_bigquery_observation_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_infra_cros_karte_api_bigquery_observation_proto_init() }
-func file_infra_cros_karte_api_bigquery_observation_proto_init() {
-	if File_infra_cros_karte_api_bigquery_observation_proto != nil {
+func init() { file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_init() }
+func file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_init() {
+	if File_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_cros_karte_api_bigquery_observation_proto_rawDesc), len(file_infra_cros_karte_api_bigquery_observation_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_rawDesc), len(file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_cros_karte_api_bigquery_observation_proto_goTypes,
-		DependencyIndexes: file_infra_cros_karte_api_bigquery_observation_proto_depIdxs,
-		MessageInfos:      file_infra_cros_karte_api_bigquery_observation_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_msgTypes,
 	}.Build()
-	File_infra_cros_karte_api_bigquery_observation_proto = out.File
-	file_infra_cros_karte_api_bigquery_observation_proto_goTypes = nil
-	file_infra_cros_karte_api_bigquery_observation_proto_depIdxs = nil
+	File_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto = out.File
+	file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_goTypes = nil
+	file_go_chromium_org_infra_cros_karte_api_bigquery_observation_proto_depIdxs = nil
 }

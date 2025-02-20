@@ -16,7 +16,7 @@ import (
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/cros_test_platform/internal/execution/testrunner"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/testrunner"
 )
 
 // RequestStepUpdater provides methods to update a step corresponding to the

@@ -30,7 +30,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/monorail"
+	"go.chromium.org/infra/monorail"
 )
 
 var (

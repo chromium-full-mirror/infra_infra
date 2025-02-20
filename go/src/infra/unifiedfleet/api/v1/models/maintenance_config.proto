@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package unifiedfleet.api.v1.models;
 
-option go_package = "infra/unifiedfleet/api/v1/models;ufspb";
+option go_package = "go.chromium.org/infra/unifiedfleet/api/v1/models;ufspb";
 
 // Defines configurations – user defined or default – for a group of bots.
 // The configurations are used to create a dashboard for SLOs.

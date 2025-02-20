@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cros/satlab/common/utils/misc"
+	"go.chromium.org/infra/cros/satlab/common/utils/misc"
 )
 
 // SkipAutoUpdateEnvVar is the env var we look at to determine if we should not

@@ -8,7 +8,7 @@ syntax = "proto3";
 
 package chromium.bootstrapper.bootstrap;
 
-option go_package = "infra/chromium/bootstrapper/bootstrap";
+option go_package = "go.chromium.org/infra/chromium/bootstrapper/bootstrap";
 
 import "go.chromium.org/luci/buildbucket/proto/common.proto";
 

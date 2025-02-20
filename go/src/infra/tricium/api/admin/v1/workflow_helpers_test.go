@@ -11,7 +11,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	"infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/api/v1"
 )
 
 func TestGetNext(t *testing.T) {

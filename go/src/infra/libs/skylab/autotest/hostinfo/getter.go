@@ -12,9 +12,9 @@ import (
 
 	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	models "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	models "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // InventoryClient is a client that knows how to resolve a ChromeosDeviceDataRequest contains hostname

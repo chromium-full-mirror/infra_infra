@@ -3,7 +3,7 @@ description: CTPv2 filter responsible for test finding resolution.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/ctpv2-filters/test_finder_filter
+  - go.chromium.org/infra/cros/cmd/ctpv2-filters/test_finder_filter
 root: ../../go/bin
 data:
   - file: test_finder_filter${exe_suffix}

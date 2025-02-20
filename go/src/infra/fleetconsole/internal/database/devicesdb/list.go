@@ -13,8 +13,8 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
-	"infra/fleetconsole/internal/utils"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/internal/utils"
 )
 
 func List(ctx context.Context, dbConn *sql.DB, filter, orderby string, offset, pageSize int) ([]*fleetconsolerpc.Device, bool, error) {

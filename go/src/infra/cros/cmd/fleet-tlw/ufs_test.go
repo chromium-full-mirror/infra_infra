@@ -15,10 +15,10 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 	"go.chromium.org/luci/appengine/gaetesting"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufschromeoslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
-	ufsutil "infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufschromeoslab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsutil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // Fakes for UFS tests START

@@ -16,12 +16,12 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	kartepb "infra/cros/karte/api"
-	kbqpb "infra/cros/karte/api/bigquery"
-	"infra/cros/karte/internal/filterexp"
-	"infra/cros/karte/internal/identifiers"
-	"infra/cros/karte/internal/scalars"
-	"infra/libs/skylab/common/heuristics"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	kbqpb "go.chromium.org/infra/cros/karte/api/bigquery"
+	"go.chromium.org/infra/cros/karte/internal/filterexp"
+	"go.chromium.org/infra/cros/karte/internal/identifiers"
+	"go.chromium.org/infra/cros/karte/internal/scalars"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
 )
 
 // defaultBatchSize is the default size of a batch for a datastore query.

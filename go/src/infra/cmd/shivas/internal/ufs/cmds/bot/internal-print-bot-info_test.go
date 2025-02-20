@@ -7,7 +7,7 @@ package cmds
 import (
 	"testing"
 
-	ufsUtil "infra/unifiedfleet/app/util"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // TestGetNamespace tests the output of getNamespace to ensure the

@@ -13,8 +13,8 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 
-	"infra/cros/cmd/common_lib/common"
-	"infra/cros/cmd/common_lib/tools/suitelimits"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/common_lib/tools/suitelimits"
 )
 
 type TestResults struct {

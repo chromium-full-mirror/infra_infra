@@ -28,10 +28,10 @@ import (
 	"go.chromium.org/luci/server/limiter"
 	"go.chromium.org/luci/server/module"
 
-	"infra/qscheduler/service/app/config"
-	"infra/qscheduler/service/app/eventlog"
-	"infra/qscheduler/service/app/frontend"
-	"infra/qscheduler/service/app/state/nodestore"
+	"go.chromium.org/infra/qscheduler/service/app/config"
+	"go.chromium.org/infra/qscheduler/service/app/eventlog"
+	"go.chromium.org/infra/qscheduler/service/app/frontend"
+	"go.chromium.org/infra/qscheduler/service/app/state/nodestore"
 )
 
 func main() {

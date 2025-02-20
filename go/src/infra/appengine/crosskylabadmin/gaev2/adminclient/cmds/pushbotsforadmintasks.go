@@ -14,7 +14,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/appengine/crosskylabadmin/site"
+	"go.chromium.org/infra/appengine/crosskylabadmin/site"
 )
 
 var PushBotsForAdminTasks = &subcommands.Command{

@@ -22,8 +22,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/rts"
-	evalpb "infra/rts/presubmit/eval/proto"
+	"go.chromium.org/infra/rts"
+	evalpb "go.chromium.org/infra/rts/presubmit/eval/proto"
 )
 
 const defaultConcurrency = 100

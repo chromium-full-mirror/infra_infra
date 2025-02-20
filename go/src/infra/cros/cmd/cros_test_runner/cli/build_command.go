@@ -9,7 +9,7 @@ import (
 	"flag"
 	"log"
 
-	"infra/cros/cmd/cros_test_runner/executions"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/executions"
 )
 
 // Run as build. This is in place to support backward-compatibility with

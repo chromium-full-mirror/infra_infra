@@ -16,10 +16,10 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
-	"infra/fleetconsole/internal/database/devicesdb"
-	"infra/fleetconsole/internal/internalproto"
-	"infra/fleetconsole/internal/utils"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/internal/database/devicesdb"
+	"go.chromium.org/infra/fleetconsole/internal/internalproto"
+	"go.chromium.org/infra/fleetconsole/internal/utils"
 )
 
 const maxPageSize int = 50

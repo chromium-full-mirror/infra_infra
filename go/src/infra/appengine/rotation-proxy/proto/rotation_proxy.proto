@@ -7,7 +7,7 @@ syntax = "proto3";
 
 package rotationproxy;
 
-option go_package = "infra/appengine/rotation-proxy/proto;rotationproxy";
+option go_package = "go.chromium.org/infra/appengine/rotation-proxy/proto;rotationproxy";
 
 import "google/api/field_behavior.proto";
 import "google/protobuf/timestamp.proto";

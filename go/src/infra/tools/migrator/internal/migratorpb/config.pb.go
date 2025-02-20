@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/tools/migrator/internal/migratorpb/config.proto
+// source: go.chromium.org/infra/tools/migrator/internal/migratorpb/config.proto
 
 package migratorpb
 
@@ -47,7 +47,7 @@ type Config struct {
 
 func (x *Config) Reset() {
 	*x = Config{}
-	mi := &file_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -59,7 +59,7 @@ func (x *Config) String() string {
 func (*Config) ProtoMessage() {}
 
 func (x *Config) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -72,7 +72,7 @@ func (x *Config) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Config.ProtoReflect.Descriptor instead.
 func (*Config) Descriptor() ([]byte, []int) {
-	return file_infra_tools_migrator_internal_migratorpb_config_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Config) GetGit() *Config_Git {
@@ -110,7 +110,7 @@ type Config_Git struct {
 
 func (x *Config_Git) Reset() {
 	*x = Config_Git{}
-	mi := &file_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -122,7 +122,7 @@ func (x *Config_Git) String() string {
 func (*Config_Git) ProtoMessage() {}
 
 func (x *Config_Git) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -135,7 +135,7 @@ func (x *Config_Git) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Config_Git.ProtoReflect.Descriptor instead.
 func (*Config_Git) Descriptor() ([]byte, []int) {
-	return file_infra_tools_migrator_internal_migratorpb_config_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_rawDescGZIP(), []int{0, 0}
 }
 
 func (x *Config_Git) GetConfig() map[string]string {
@@ -167,7 +167,7 @@ type Config_ProjectTweaks struct {
 
 func (x *Config_ProjectTweaks) Reset() {
 	*x = Config_ProjectTweaks{}
-	mi := &file_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -179,7 +179,7 @@ func (x *Config_ProjectTweaks) String() string {
 func (*Config_ProjectTweaks) ProtoMessage() {}
 
 func (x *Config_ProjectTweaks) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -192,7 +192,7 @@ func (x *Config_ProjectTweaks) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Config_ProjectTweaks.ProtoReflect.Descriptor instead.
 func (*Config_ProjectTweaks) Descriptor() ([]byte, []int) {
-	return file_infra_tools_migrator_internal_migratorpb_config_proto_rawDescGZIP(), []int{0, 1}
+	return file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_rawDescGZIP(), []int{0, 1}
 }
 
 func (x *Config_ProjectTweaks) GetProjectsRe() []string {
@@ -216,10 +216,11 @@ func (x *Config_ProjectTweaks) GetCc() []string {
 	return nil
 }
 
-var File_infra_tools_migrator_internal_migratorpb_config_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto protoreflect.FileDescriptor
 
-var file_infra_tools_migrator_internal_migratorpb_config_proto_rawDesc = string([]byte{
-	0x0a, 0x35, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x6d, 0x69,
+var file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_rawDesc = string([]byte{
+	0x0a, 0x45, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x6d, 0x69,
 	0x67, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f,
 	0x6d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x70, 0x62, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69,
 	0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x14, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2e, 0x74,
@@ -248,32 +249,33 @@ var file_infra_tools_migrator_internal_migratorpb_config_proto_rawDesc = string(
 	0x52, 0x0a, 0x70, 0x72, 0x6f, 0x6a, 0x65, 0x63, 0x74, 0x73, 0x52, 0x65, 0x12, 0x1a, 0x0a, 0x08,
 	0x72, 0x65, 0x76, 0x69, 0x65, 0x77, 0x65, 0x72, 0x18, 0x02, 0x20, 0x03, 0x28, 0x09, 0x52, 0x08,
 	0x72, 0x65, 0x76, 0x69, 0x65, 0x77, 0x65, 0x72, 0x12, 0x0e, 0x0a, 0x02, 0x63, 0x63, 0x18, 0x03,
-	0x20, 0x03, 0x28, 0x09, 0x52, 0x02, 0x63, 0x63, 0x42, 0x2a, 0x5a, 0x28, 0x69, 0x6e, 0x66, 0x72,
+	0x20, 0x03, 0x28, 0x09, 0x52, 0x02, 0x63, 0x63, 0x42, 0x3a, 0x5a, 0x38, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x2f, 0x6d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x6f, 0x72,
 	0x2f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x6e, 0x61, 0x6c, 0x2f, 0x6d, 0x69, 0x67, 0x72, 0x61, 0x74,
 	0x6f, 0x72, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_tools_migrator_internal_migratorpb_config_proto_rawDescOnce sync.Once
-	file_infra_tools_migrator_internal_migratorpb_config_proto_rawDescData []byte
+	file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_rawDescData []byte
 )
 
-func file_infra_tools_migrator_internal_migratorpb_config_proto_rawDescGZIP() []byte {
-	file_infra_tools_migrator_internal_migratorpb_config_proto_rawDescOnce.Do(func() {
-		file_infra_tools_migrator_internal_migratorpb_config_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_tools_migrator_internal_migratorpb_config_proto_rawDesc), len(file_infra_tools_migrator_internal_migratorpb_config_proto_rawDesc)))
+func file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_rawDesc), len(file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_rawDesc)))
 	})
-	return file_infra_tools_migrator_internal_migratorpb_config_proto_rawDescData
+	return file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_rawDescData
 }
 
-var file_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_infra_tools_migrator_internal_migratorpb_config_proto_goTypes = []any{
+var file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_goTypes = []any{
 	(*Config)(nil),               // 0: infra.tools.migrator.Config
 	(*Config_Git)(nil),           // 1: infra.tools.migrator.Config.Git
 	(*Config_ProjectTweaks)(nil), // 2: infra.tools.migrator.Config.ProjectTweaks
 	nil,                          // 3: infra.tools.migrator.Config.Git.ConfigEntry
 }
-var file_infra_tools_migrator_internal_migratorpb_config_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_depIdxs = []int32{
 	1, // 0: infra.tools.migrator.Config.git:type_name -> infra.tools.migrator.Config.Git
 	2, // 1: infra.tools.migrator.Config.tweaks:type_name -> infra.tools.migrator.Config.ProjectTweaks
 	3, // 2: infra.tools.migrator.Config.Git.config:type_name -> infra.tools.migrator.Config.Git.ConfigEntry
@@ -284,26 +286,26 @@ var file_infra_tools_migrator_internal_migratorpb_config_proto_depIdxs = []int32
 	0, // [0:3] is the sub-list for field type_name
 }
 
-func init() { file_infra_tools_migrator_internal_migratorpb_config_proto_init() }
-func file_infra_tools_migrator_internal_migratorpb_config_proto_init() {
-	if File_infra_tools_migrator_internal_migratorpb_config_proto != nil {
+func init() { file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_init() }
+func file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_init() {
+	if File_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_tools_migrator_internal_migratorpb_config_proto_rawDesc), len(file_infra_tools_migrator_internal_migratorpb_config_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_rawDesc), len(file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_tools_migrator_internal_migratorpb_config_proto_goTypes,
-		DependencyIndexes: file_infra_tools_migrator_internal_migratorpb_config_proto_depIdxs,
-		MessageInfos:      file_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_msgTypes,
 	}.Build()
-	File_infra_tools_migrator_internal_migratorpb_config_proto = out.File
-	file_infra_tools_migrator_internal_migratorpb_config_proto_goTypes = nil
-	file_infra_tools_migrator_internal_migratorpb_config_proto_depIdxs = nil
+	File_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto = out.File
+	file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_goTypes = nil
+	file_go_chromium_org_infra_tools_migrator_internal_migratorpb_config_proto_depIdxs = nil
 }

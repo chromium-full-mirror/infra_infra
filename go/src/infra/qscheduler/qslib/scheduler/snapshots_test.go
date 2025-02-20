@@ -25,8 +25,8 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
-	"infra/qscheduler/qslib/protos/metrics"
-	"infra/qscheduler/qslib/tutils"
+	"go.chromium.org/infra/qscheduler/qslib/protos/metrics"
+	"go.chromium.org/infra/qscheduler/qslib/tutils"
 )
 
 // Use proto.Equal to compare protobufs message

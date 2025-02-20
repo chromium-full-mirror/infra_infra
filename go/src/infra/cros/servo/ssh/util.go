@@ -9,7 +9,7 @@ import (
 	"net"
 	"strconv"
 
-	"infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/errors"
 )
 
 func parseIPAddressAndPort(s string) (net.IP, int, error) {

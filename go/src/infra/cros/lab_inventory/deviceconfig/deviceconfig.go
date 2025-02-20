@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/luci/common/proto/gitiles"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/cros/lab_inventory/cfg2datastore"
-	"infra/libs/git"
+	"go.chromium.org/infra/cros/lab_inventory/cfg2datastore"
+	"go.chromium.org/infra/libs/git"
 )
 
 const entityKind = "DevConfig"

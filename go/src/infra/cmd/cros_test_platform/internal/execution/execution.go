@@ -23,9 +23,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/exe"
 
-	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
-	"infra/cmd/cros_test_platform/internal/execution/types"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	trservice "go.chromium.org/infra/cmd/cros_test_platform/internal/execution/testrunner/service"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/types"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // Args bundles together the arguments for an execution.

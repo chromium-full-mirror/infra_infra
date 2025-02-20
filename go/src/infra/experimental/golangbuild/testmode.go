@@ -31,8 +31,8 @@ import (
 	"go.chromium.org/luci/common/system/environ"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/experimental/golangbuild/golangbuildpb"
-	"infra/experimental/golangbuild/testweights"
+	"go.chromium.org/infra/experimental/golangbuild/golangbuildpb"
+	"go.chromium.org/infra/experimental/golangbuild/testweights"
 )
 
 // testRunner runs a non-strict subset of available tests. It requires a prebuilt

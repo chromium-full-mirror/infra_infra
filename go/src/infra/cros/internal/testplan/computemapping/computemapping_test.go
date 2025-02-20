@@ -14,14 +14,14 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/plan"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/git"
-	"infra/cros/internal/testplan/computemapping"
-	"infra/tools/dirmd"
-	dirmdpb "infra/tools/dirmd/proto"
-	"infra/tools/dirmd/proto/chromeos"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/testplan/computemapping"
+	"go.chromium.org/infra/tools/dirmd"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
+	"go.chromium.org/infra/tools/dirmd/proto/chromeos"
 )
 
 func TestComputeProjectMappingInfos(t *testing.T) {

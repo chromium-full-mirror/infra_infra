@@ -20,7 +20,7 @@ import (
 	"go.chromium.org/luci/common/sync/parallel"
 	"go.chromium.org/luci/config/cfgclient"
 
-	"infra/tools/migrator"
+	"go.chromium.org/infra/tools/migrator"
 )
 
 // ScanConfig is passed from the main migrator binary to the plugin process.
@@ -114,6 +114,7 @@ func checkoutID(r repoRef, projs []*scannedProject) string {
 	}
 	// Convert the repo name into an ID using some heuristic to make it less ugly.
 	id := strings.TrimPrefix(r.repo, "https://")
+	id = strings.ReplaceAll(id, "go.chromium.org/infra/config", "")
 	id = strings.ReplaceAll(id, "infra/config", "")
 	id = strings.ReplaceAll(id, ".googlesource.com", "")
 	id = strings.ReplaceAll(id, ".", "-")

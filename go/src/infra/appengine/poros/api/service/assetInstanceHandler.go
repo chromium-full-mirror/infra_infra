@@ -20,9 +20,9 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/tq"
 
-	. "infra/appengine/poros/api/entities"
-	proto "infra/appengine/poros/api/proto"
-	"infra/appengine/poros/taskspb"
+	. "go.chromium.org/infra/appengine/poros/api/entities"
+	proto "go.chromium.org/infra/appengine/poros/api/proto"
+	"go.chromium.org/infra/appengine/poros/taskspb"
 )
 
 type AssetInstanceHandler struct {

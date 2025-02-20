@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/appengine/chrome-test-health/api"
+	"go.chromium.org/infra/appengine/chrome-test-health/api"
 )
 
 // rowLoader provides a way of marshalling a BigQuery row.

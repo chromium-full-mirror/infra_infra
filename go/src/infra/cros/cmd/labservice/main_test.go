@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 
-	"infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // testServerStream stores all messages sent in a slice.

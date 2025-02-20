@@ -10,8 +10,8 @@ import (
 	"cloud.google.com/go/bigquery"
 	"github.com/golang/protobuf/proto"
 
-	"infra/cmd/bqexport/testing"
-	"infra/libs/bqschema/tabledef"
+	"go.chromium.org/infra/cmd/bqexport/testing"
+	"go.chromium.org/infra/libs/bqschema/tabledef"
 )
 
 func main() {

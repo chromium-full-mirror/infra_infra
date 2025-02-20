@@ -21,8 +21,8 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	lsapi "infra/cros/cmd/labservice/api"
-	"infra/unifiedfleet/app/util"
+	lsapi "go.chromium.org/infra/cros/cmd/labservice/api"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 func main() {

@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/luciexe/build"
 
-	builders "infra/cros/cmd/common_lib/commonbuilders"
+	builders "go.chromium.org/infra/cros/cmd/common_lib/commonbuilders"
 )
 
 func MockManifestFetcher(ctx context.Context, gcsPath string) (string, error) {

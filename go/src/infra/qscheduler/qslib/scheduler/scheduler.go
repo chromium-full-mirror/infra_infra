@@ -32,8 +32,8 @@ import (
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/qscheduler/qslib/protos"
-	"infra/qscheduler/qslib/protos/metrics"
+	"go.chromium.org/infra/qscheduler/qslib/protos"
+	"go.chromium.org/infra/qscheduler/qslib/protos/metrics"
 )
 
 // Scheduler encapsulates the state and configuration of a running

@@ -24,9 +24,9 @@ import (
 	"go.chromium.org/luci/appengine/gaetesting"
 	. "go.chromium.org/luci/common/testing/truth/convey/facade"
 
-	"infra/qscheduler/qslib/protos"
-	qscheduler "infra/qscheduler/service/api/qscheduler/v1"
-	"infra/qscheduler/service/app/frontend"
+	"go.chromium.org/infra/qscheduler/qslib/protos"
+	qscheduler "go.chromium.org/infra/qscheduler/service/api/qscheduler/v1"
+	"go.chromium.org/infra/qscheduler/service/app/frontend"
 )
 
 func TestCreateDeleteScheduler(t *testing.T) {

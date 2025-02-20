@@ -15,9 +15,9 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	"infra/cmd/mallet/internal/cmd/meta"
-	"infra/cmd/mallet/internal/cmd/tasks"
-	"infra/cmd/mallet/internal/site"
+	"go.chromium.org/infra/cmd/mallet/internal/cmd/meta"
+	"go.chromium.org/infra/cmd/mallet/internal/cmd/tasks"
+	"go.chromium.org/infra/cmd/mallet/internal/site"
 )
 
 func getApplication() *cli.Application {

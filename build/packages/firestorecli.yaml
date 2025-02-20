@@ -11,7 +11,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/cmd/firestore_cli
+  - go.chromium.org/infra/cmd/firestore_cli
 root: ../../go/bin
 data:
   - file: firestore_cli${exe_suffix}

@@ -28,8 +28,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/common/testing/typed"
 
-	"infra/libs/skylab/inventory"
-	"infra/libs/skylab/request"
+	"go.chromium.org/infra/libs/skylab/inventory"
+	"go.chromium.org/infra/libs/skylab/request"
 )
 
 func TestBuilderID(t *testing.T) {

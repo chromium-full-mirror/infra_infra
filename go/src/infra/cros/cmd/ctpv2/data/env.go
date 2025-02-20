@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/config"
 
-	"infra/libs/skylab/worker"
+	"go.chromium.org/infra/libs/skylab/worker"
 )
 
 // env implements the worker.Environment interface.

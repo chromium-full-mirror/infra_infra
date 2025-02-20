@@ -15,11 +15,11 @@ import (
 
 	"go.chromium.org/luci/gae/impl/memory"
 
-	dronequeenapi "infra/appengine/drone-queen/api"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	"infra/unifiedfleet/app/model/inventory"
-	"infra/unifiedfleet/app/util"
+	dronequeenapi "go.chromium.org/infra/appengine/drone-queen/api"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // testingContext sets up an environment in memory datastore

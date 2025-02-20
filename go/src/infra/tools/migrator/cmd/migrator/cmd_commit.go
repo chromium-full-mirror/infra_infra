@@ -9,7 +9,7 @@ import (
 
 	"github.com/maruel/subcommands"
 
-	"infra/tools/migrator/internal/plugsupport"
+	"go.chromium.org/infra/tools/migrator/internal/plugsupport"
 )
 
 func cmdCommit(opts cmdBaseOptions) *subcommands.Command {

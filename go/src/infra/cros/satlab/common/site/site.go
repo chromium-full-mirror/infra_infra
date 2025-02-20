@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	shivassite "infra/cmd/shivas/site"
+	shivassite "go.chromium.org/infra/cmd/shivas/site"
 )
 
 // AppPrefix is the prefix to use the satlab CLI.
@@ -447,7 +447,7 @@ var DefaultPRPCOptions = prpcOptionWithUserAgent(fmt.Sprintf("satlab/%s", Versio
 
 // CipdInstalledPath is the installed path for satlab package.
 // This is the path to the directory containing main.go relative to the repo root.
-var CipdInstalledPath = "infra/cros/satlab/satlab/"
+var CipdInstalledPath = "go.chromium.org/infra/cros/satlab/satlab/"
 
 // prpcOptionWithUserAgent create prpc option with custom UserAgent.
 //

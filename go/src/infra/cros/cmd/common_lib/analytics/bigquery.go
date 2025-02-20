@@ -23,7 +23,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/cros/cmd/ctpv2/data"
+	"go.chromium.org/infra/cros/cmd/ctpv2/data"
 )
 
 const dataset = "analytics"

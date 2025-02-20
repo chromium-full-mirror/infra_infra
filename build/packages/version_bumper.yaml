@@ -3,7 +3,7 @@ description: Program for bumping ChromeOS version.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/version_bumper
+  - go.chromium.org/infra/cros/cmd/version_bumper
 root: ../../go/bin
 data:
   - file: version_bumper${exe_suffix}

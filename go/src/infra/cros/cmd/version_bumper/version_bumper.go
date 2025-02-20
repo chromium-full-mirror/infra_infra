@@ -14,7 +14,7 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cros/internal/chromeosversion"
+	"go.chromium.org/infra/cros/internal/chromeosversion"
 )
 
 func cmdBumpVersion() *subcommands.Command {

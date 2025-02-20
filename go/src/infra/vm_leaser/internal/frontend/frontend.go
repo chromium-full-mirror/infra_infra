@@ -22,12 +22,12 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/libs/vmlab"
-	vmapi "infra/libs/vmlab/api"
-	"infra/vm_leaser/internal/constants"
-	"infra/vm_leaser/internal/controller"
-	"infra/vm_leaser/internal/validation"
-	"infra/vm_leaser/internal/zone_selector"
+	"go.chromium.org/infra/libs/vmlab"
+	vmapi "go.chromium.org/infra/libs/vmlab/api"
+	"go.chromium.org/infra/vm_leaser/internal/constants"
+	"go.chromium.org/infra/vm_leaser/internal/controller"
+	"go.chromium.org/infra/vm_leaser/internal/validation"
+	"go.chromium.org/infra/vm_leaser/internal/zone_selector"
 )
 
 // computeInstancesClient interfaces the GCE instance client API.

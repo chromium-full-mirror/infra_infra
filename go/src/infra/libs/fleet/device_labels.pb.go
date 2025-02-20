@@ -8,7 +8,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/libs/fleet/device_labels.proto
+// source: go.chromium.org/infra/libs/fleet/device_labels.proto
 
 package fleet
 
@@ -61,11 +61,11 @@ func (x ResourceType) String() string {
 }
 
 func (ResourceType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_fleet_device_labels_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_libs_fleet_device_labels_proto_enumTypes[0].Descriptor()
 }
 
 func (ResourceType) Type() protoreflect.EnumType {
-	return &file_infra_libs_fleet_device_labels_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_libs_fleet_device_labels_proto_enumTypes[0]
 }
 
 func (x ResourceType) Number() protoreflect.EnumNumber {
@@ -74,7 +74,7 @@ func (x ResourceType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ResourceType.Descriptor instead.
 func (ResourceType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_fleet_device_labels_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDescGZIP(), []int{0}
 }
 
 // NEXT TAG: 5
@@ -117,11 +117,11 @@ func (x DeviceLabel_SOURCE) String() string {
 }
 
 func (DeviceLabel_SOURCE) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_libs_fleet_device_labels_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_libs_fleet_device_labels_proto_enumTypes[1].Descriptor()
 }
 
 func (DeviceLabel_SOURCE) Type() protoreflect.EnumType {
-	return &file_infra_libs_fleet_device_labels_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_libs_fleet_device_labels_proto_enumTypes[1]
 }
 
 func (x DeviceLabel_SOURCE) Number() protoreflect.EnumNumber {
@@ -130,7 +130,7 @@ func (x DeviceLabel_SOURCE) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DeviceLabel_SOURCE.Descriptor instead.
 func (DeviceLabel_SOURCE) EnumDescriptor() ([]byte, []int) {
-	return file_infra_libs_fleet_device_labels_proto_rawDescGZIP(), []int{1, 0}
+	return file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDescGZIP(), []int{1, 0}
 }
 
 // NEXT TAG: 3
@@ -144,7 +144,7 @@ type Device struct {
 
 func (x *Device) Reset() {
 	*x = Device{}
-	mi := &file_infra_libs_fleet_device_labels_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_libs_fleet_device_labels_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -156,7 +156,7 @@ func (x *Device) String() string {
 func (*Device) ProtoMessage() {}
 
 func (x *Device) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_fleet_device_labels_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_libs_fleet_device_labels_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -169,7 +169,7 @@ func (x *Device) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Device.ProtoReflect.Descriptor instead.
 func (*Device) Descriptor() ([]byte, []int) {
-	return file_infra_libs_fleet_device_labels_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Device) GetDeviceLabels() []*DeviceLabel {
@@ -207,7 +207,7 @@ type DeviceLabel struct {
 
 func (x *DeviceLabel) Reset() {
 	*x = DeviceLabel{}
-	mi := &file_infra_libs_fleet_device_labels_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_libs_fleet_device_labels_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -219,7 +219,7 @@ func (x *DeviceLabel) String() string {
 func (*DeviceLabel) ProtoMessage() {}
 
 func (x *DeviceLabel) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_fleet_device_labels_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_libs_fleet_device_labels_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -232,7 +232,7 @@ func (x *DeviceLabel) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceLabel.ProtoReflect.Descriptor instead.
 func (*DeviceLabel) Descriptor() ([]byte, []int) {
-	return file_infra_libs_fleet_device_labels_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *DeviceLabel) GetKey() string {
@@ -287,7 +287,7 @@ type SchedulableValue struct {
 
 func (x *SchedulableValue) Reset() {
 	*x = SchedulableValue{}
-	mi := &file_infra_libs_fleet_device_labels_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_libs_fleet_device_labels_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -299,7 +299,7 @@ func (x *SchedulableValue) String() string {
 func (*SchedulableValue) ProtoMessage() {}
 
 func (x *SchedulableValue) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_libs_fleet_device_labels_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_libs_fleet_device_labels_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -312,7 +312,7 @@ func (x *SchedulableValue) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SchedulableValue.ProtoReflect.Descriptor instead.
 func (*SchedulableValue) Descriptor() ([]byte, []int) {
-	return file_infra_libs_fleet_device_labels_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *SchedulableValue) GetSwarmingLabels() []string {
@@ -322,10 +322,11 @@ func (x *SchedulableValue) GetSwarmingLabels() []string {
 	return nil
 }
 
-var File_infra_libs_fleet_device_labels_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_libs_fleet_device_labels_proto protoreflect.FileDescriptor
 
-var file_infra_libs_fleet_device_labels_proto_rawDesc = string([]byte{
-	0x0a, 0x24, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x6c, 0x69, 0x62, 0x73, 0x2f, 0x66, 0x6c, 0x65,
+var file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDesc = string([]byte{
+	0x0a, 0x34, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x6c, 0x69, 0x62, 0x73, 0x2f, 0x66, 0x6c, 0x65,
 	0x65, 0x74, 0x2f, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x73,
 	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x13, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x64, 0x65,
 	0x76, 0x69, 0x63, 0x65, 0x2e, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x73, 0x22, 0x97, 0x01, 0x0a, 0x06,
@@ -373,33 +374,34 @@ var file_infra_libs_fleet_device_labels_proto_rawDesc = string([]byte{
 	0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x15, 0x0a, 0x11, 0x52, 0x45, 0x53, 0x4f, 0x55, 0x52,
 	0x43, 0x45, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x43, 0x52, 0x4f, 0x53, 0x10, 0x01, 0x12, 0x18, 0x0a,
 	0x14, 0x52, 0x45, 0x53, 0x4f, 0x55, 0x52, 0x43, 0x45, 0x54, 0x59, 0x50, 0x45, 0x5f, 0x42, 0x52,
-	0x4f, 0x57, 0x53, 0x45, 0x52, 0x10, 0x02, 0x42, 0x13, 0x5a, 0x11, 0x69, 0x6e, 0x66, 0x72, 0x61,
+	0x4f, 0x57, 0x53, 0x45, 0x52, 0x10, 0x02, 0x42, 0x23, 0x5a, 0x21, 0x67, 0x6f, 0x2e, 0x63, 0x68,
+	0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61,
 	0x2f, 0x6c, 0x69, 0x62, 0x73, 0x2f, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x3b, 0x62, 0x06, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_libs_fleet_device_labels_proto_rawDescOnce sync.Once
-	file_infra_libs_fleet_device_labels_proto_rawDescData []byte
+	file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDescData []byte
 )
 
-func file_infra_libs_fleet_device_labels_proto_rawDescGZIP() []byte {
-	file_infra_libs_fleet_device_labels_proto_rawDescOnce.Do(func() {
-		file_infra_libs_fleet_device_labels_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_libs_fleet_device_labels_proto_rawDesc), len(file_infra_libs_fleet_device_labels_proto_rawDesc)))
+func file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDesc), len(file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDesc)))
 	})
-	return file_infra_libs_fleet_device_labels_proto_rawDescData
+	return file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDescData
 }
 
-var file_infra_libs_fleet_device_labels_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_infra_libs_fleet_device_labels_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
-var file_infra_libs_fleet_device_labels_proto_goTypes = []any{
+var file_go_chromium_org_infra_libs_fleet_device_labels_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_go_chromium_org_infra_libs_fleet_device_labels_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_go_chromium_org_infra_libs_fleet_device_labels_proto_goTypes = []any{
 	(ResourceType)(0),        // 0: fleet.device.labels.ResourceType
 	(DeviceLabel_SOURCE)(0),  // 1: fleet.device.labels.DeviceLabel.SOURCE
 	(*Device)(nil),           // 2: fleet.device.labels.Device
 	(*DeviceLabel)(nil),      // 3: fleet.device.labels.DeviceLabel
 	(*SchedulableValue)(nil), // 4: fleet.device.labels.SchedulableValue
 }
-var file_infra_libs_fleet_device_labels_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_libs_fleet_device_labels_proto_depIdxs = []int32{
 	3, // 0: fleet.device.labels.Device.device_labels:type_name -> fleet.device.labels.DeviceLabel
 	0, // 1: fleet.device.labels.Device.resource_type:type_name -> fleet.device.labels.ResourceType
 	4, // 2: fleet.device.labels.DeviceLabel.schedulable_value:type_name -> fleet.device.labels.SchedulableValue
@@ -411,27 +413,27 @@ var file_infra_libs_fleet_device_labels_proto_depIdxs = []int32{
 	0, // [0:4] is the sub-list for field type_name
 }
 
-func init() { file_infra_libs_fleet_device_labels_proto_init() }
-func file_infra_libs_fleet_device_labels_proto_init() {
-	if File_infra_libs_fleet_device_labels_proto != nil {
+func init() { file_go_chromium_org_infra_libs_fleet_device_labels_proto_init() }
+func file_go_chromium_org_infra_libs_fleet_device_labels_proto_init() {
+	if File_go_chromium_org_infra_libs_fleet_device_labels_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_libs_fleet_device_labels_proto_rawDesc), len(file_infra_libs_fleet_device_labels_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDesc), len(file_go_chromium_org_infra_libs_fleet_device_labels_proto_rawDesc)),
 			NumEnums:      2,
 			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_libs_fleet_device_labels_proto_goTypes,
-		DependencyIndexes: file_infra_libs_fleet_device_labels_proto_depIdxs,
-		EnumInfos:         file_infra_libs_fleet_device_labels_proto_enumTypes,
-		MessageInfos:      file_infra_libs_fleet_device_labels_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_libs_fleet_device_labels_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_libs_fleet_device_labels_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_libs_fleet_device_labels_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_libs_fleet_device_labels_proto_msgTypes,
 	}.Build()
-	File_infra_libs_fleet_device_labels_proto = out.File
-	file_infra_libs_fleet_device_labels_proto_goTypes = nil
-	file_infra_libs_fleet_device_labels_proto_depIdxs = nil
+	File_go_chromium_org_infra_libs_fleet_device_labels_proto = out.File
+	file_go_chromium_org_infra_libs_fleet_device_labels_proto_goTypes = nil
+	file_go_chromium_org_infra_libs_fleet_device_labels_proto_depIdxs = nil
 }

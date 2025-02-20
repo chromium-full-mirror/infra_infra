@@ -18,10 +18,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	ufsProto "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
-	"infra/unifiedfleet/app/util"
-	ufsUtil "infra/unifiedfleet/app/util"
+	ufsProto "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/unifiedfleet/app/util"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // State is an enum for host state.

@@ -8,7 +8,7 @@ import (
 	"context"
 	"testing"
 
-	"infra/cmd/shivas/site"
+	"go.chromium.org/infra/cmd/shivas/site"
 )
 
 // TestScheduleReserveBuilder tests that scheduling a repair builder produces the correct taskID.

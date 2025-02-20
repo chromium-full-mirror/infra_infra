@@ -9,7 +9,7 @@ import (
 
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmd/shivas/internal/ufs/subcmds/cron"
+	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/cron"
 )
 
 type admin struct {

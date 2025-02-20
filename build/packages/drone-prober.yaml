@@ -3,7 +3,7 @@ description: Skylab drone prober.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cmd/drone-prober
+  - go.chromium.org/infra/cmd/drone-prober
 root: ../../go/bin
 data:
   - file: drone-prober${exe_suffix}

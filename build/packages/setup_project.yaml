@@ -5,7 +5,7 @@ platforms:
   - mac-amd64
   - mac-arm64
 go_packages:
-  - infra/cros/cmd/setup_project
+  - go.chromium.org/infra/cros/cmd/setup_project
 root: ../../go/bin
 data:
   - file: setup_project${exe_suffix}

@@ -16,9 +16,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/models"
-	"infra/cros/satlab/common/services/build_service"
-	"infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/recovery/models"
+	"go.chromium.org/infra/cros/satlab/common/services/build_service"
+	"go.chromium.org/infra/cros/satlab/common/site"
 )
 
 func setupTempStableVersionDir(path string) error {

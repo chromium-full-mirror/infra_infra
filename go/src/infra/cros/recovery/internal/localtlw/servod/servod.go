@@ -14,11 +14,11 @@ import (
 	xmlrpc_value "go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/localtlw/ssh"
-	"infra/cros/recovery/internal/localtlw/xmlrpc"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw/ssh"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw/xmlrpc"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 const (

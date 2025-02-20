@@ -7,7 +7,7 @@ package metrics
 import (
 	"fmt"
 
-	"infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/logger"
 )
 
 // helpers_test.go contains utilities for creating fake versions of various

@@ -3,7 +3,7 @@ description: stable version command line tool
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cmd/stable_version2
+  - go.chromium.org/infra/cmd/stable_version2
 root: ../../go/bin
 data:
   - file: stable_version2${exe_suffix}

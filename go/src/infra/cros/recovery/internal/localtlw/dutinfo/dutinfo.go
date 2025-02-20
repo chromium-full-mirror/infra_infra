@@ -13,12 +13,12 @@ import (
 	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/dutstate"
-	"infra/cros/recovery/tlw"
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	ufsmake "infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/cros/recovery/tlw"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufslab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	ufsmake "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // ConvertDut converts USF data to local representation of Dut instance.

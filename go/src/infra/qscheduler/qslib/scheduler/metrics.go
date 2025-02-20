@@ -18,8 +18,8 @@ import (
 	"sort"
 	"time"
 
-	"infra/qscheduler/qslib/protos/metrics"
-	"infra/qscheduler/qslib/tutils"
+	"go.chromium.org/infra/qscheduler/qslib/protos/metrics"
+	"go.chromium.org/infra/qscheduler/qslib/tutils"
 )
 
 // EventSink defines the interface for a class that records scheduler

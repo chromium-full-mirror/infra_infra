@@ -14,9 +14,9 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/model/history"
-	"infra/unifiedfleet/app/model/inventory"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/model/history"
+	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
 )
 
 func mockMachineLSEDeployment(serialNumber string) *ufspb.MachineLSEDeployment {

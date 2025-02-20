@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"infra/cmd/cros_test_platform/internal/testutils"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/testutils"
 )
 
 func TestCreation(t *testing.T) {

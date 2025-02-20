@@ -14,11 +14,11 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	"infra/cmd/stable_version2/internal/cmd/dump"
-	"infra/cmd/stable_version2/internal/cmd/meta"
-	"infra/cmd/stable_version2/internal/cmd/omaha"
-	"infra/cmd/stable_version2/internal/cmd/validateconfig"
-	"infra/cmd/stable_version2/internal/site"
+	"go.chromium.org/infra/cmd/stable_version2/internal/cmd/dump"
+	"go.chromium.org/infra/cmd/stable_version2/internal/cmd/meta"
+	"go.chromium.org/infra/cmd/stable_version2/internal/cmd/omaha"
+	"go.chromium.org/infra/cmd/stable_version2/internal/cmd/validateconfig"
+	"go.chromium.org/infra/cmd/stable_version2/internal/site"
 )
 
 func getApplication() *cli.Application {

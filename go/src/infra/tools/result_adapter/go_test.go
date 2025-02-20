@@ -65,23 +65,23 @@ func TestGenerateTestResults(t *testing.T) {
 	ftt.Run(`parses output`, t, func(t *ftt.Test) {
 		trs, err := r.generateTestResults(context.Background(),
 			[]byte(`
-			{"Time":"2021-06-17T15:59:10.536701-07:00","Action":"start","Package":"infra/tools/result_adapter"}
-			{"Time":"2021-06-17T15:59:10.536706-07:00","Action":"run","Package":"infra/tools/result_adapter","Test":"TestEnsureArgsValid"}
-			{"Time":"2021-06-17T15:59:10.537037-07:00","Action":"output","Package":"infra/tools/result_adapter","Test":"TestEnsureArgsValid","Output":"=== RUN   TestEnsureArgsValid\n"}
-			{"Time":"2021-06-17T15:59:10.537058-07:00","Action":"output","Package":"infra/tools/result_adapter","Test":"TestEnsureArgsValid","Output":"=== PAUSE TestEnsureArgsValid\n"}
-			{"Time":"2021-06-17T15:59:10.537064-07:00","Action":"pause","Package":"infra/tools/result_adapter","Test":"TestEnsureArgsValid"}
-			{"Time":"2021-06-17T15:59:10.537178-07:00","Action":"cont","Package":"infra/tools/result_adapter","Test":"TestEnsureArgsValid"}
-			{"Time":"2021-06-17T15:59:10.537183-07:00","Action":"output","Package":"infra/tools/result_adapter","Test":"TestEnsureArgsValid","Output":"=== CONT  TestEnsureArgsValid\n"}
-			{"Time":"2021-06-17T15:59:10.537309-07:00","Action":"output","Package":"infra/tools/result_adapter","Test":"TestEnsureArgsValid","Output":"--- PASS: TestEnsureArgsValid (0.00s)\n"}
-			{"Time":"2021-06-17T15:59:10.537672-07:00","Action":"pass","Package":"infra/tools/result_adapter","Test":"TestEnsureArgsValid","Elapsed":0}
-			{"Time":"2021-06-17T15:59:10.540475-07:00","Action":"output","Package":"infra/tools/result_adapter","Output":"PASS\n"}
-			{"Time":"2021-06-17T15:59:10.541301-07:00","Action":"output","Package":"infra/tools/result_adapter","Output":"ok  \tinfra/tools/result_adapter\t0.143s\n"}
-			{"Time":"2021-06-17T15:59:10.541324-07:00","Action":"pass","Package":"infra/tools/result_adapter","Elapsed":0.143}`),
+			{"Time":"2021-06-17T15:59:10.536701-07:00","Action":"start","Package":"go.chromium.org/infra/tools/result_adapter"}
+			{"Time":"2021-06-17T15:59:10.536706-07:00","Action":"run","Package":"go.chromium.org/infra/tools/result_adapter","Test":"TestEnsureArgsValid"}
+			{"Time":"2021-06-17T15:59:10.537037-07:00","Action":"output","Package":"go.chromium.org/infra/tools/result_adapter","Test":"TestEnsureArgsValid","Output":"=== RUN   TestEnsureArgsValid\n"}
+			{"Time":"2021-06-17T15:59:10.537058-07:00","Action":"output","Package":"go.chromium.org/infra/tools/result_adapter","Test":"TestEnsureArgsValid","Output":"=== PAUSE TestEnsureArgsValid\n"}
+			{"Time":"2021-06-17T15:59:10.537064-07:00","Action":"pause","Package":"go.chromium.org/infra/tools/result_adapter","Test":"TestEnsureArgsValid"}
+			{"Time":"2021-06-17T15:59:10.537178-07:00","Action":"cont","Package":"go.chromium.org/infra/tools/result_adapter","Test":"TestEnsureArgsValid"}
+			{"Time":"2021-06-17T15:59:10.537183-07:00","Action":"output","Package":"go.chromium.org/infra/tools/result_adapter","Test":"TestEnsureArgsValid","Output":"=== CONT  TestEnsureArgsValid\n"}
+			{"Time":"2021-06-17T15:59:10.537309-07:00","Action":"output","Package":"go.chromium.org/infra/tools/result_adapter","Test":"TestEnsureArgsValid","Output":"--- PASS: TestEnsureArgsValid (0.00s)\n"}
+			{"Time":"2021-06-17T15:59:10.537672-07:00","Action":"pass","Package":"go.chromium.org/infra/tools/result_adapter","Test":"TestEnsureArgsValid","Elapsed":0}
+			{"Time":"2021-06-17T15:59:10.540475-07:00","Action":"output","Package":"go.chromium.org/infra/tools/result_adapter","Output":"PASS\n"}
+			{"Time":"2021-06-17T15:59:10.541301-07:00","Action":"output","Package":"go.chromium.org/infra/tools/result_adapter","Output":"ok  \tinfra/tools/result_adapter\t0.143s\n"}
+			{"Time":"2021-06-17T15:59:10.541324-07:00","Action":"pass","Package":"go.chromium.org/infra/tools/result_adapter","Elapsed":0.143}`),
 		)
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, trs, should.HaveLength(2))
 		assert.That(t, trs[0], should.Match(mustParseTestResult(
-			`test_id:  "infra/tools/result_adapter"
+			`test_id:  "go.chromium.org/infra/tools/result_adapter"
 			expected:  true
 			status:  PASS
 			summary_html:  "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
@@ -99,7 +99,7 @@ func TestGenerateTestResults(t *testing.T) {
 		  		}
 			}`)))
 		assert.That(t, trs[1], should.Match(mustParseTestResult(
-			`test_id:  "infra/tools/result_adapter.TestEnsureArgsValid"
+			`test_id:  "go.chromium.org/infra/tools/result_adapter.TestEnsureArgsValid"
 			expected:  true
 			status:  PASS
 			summary_html:  "<p><text-artifact artifact-id=\"output\"></p>"

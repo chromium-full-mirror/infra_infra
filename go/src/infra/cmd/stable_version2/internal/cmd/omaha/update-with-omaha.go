@@ -22,13 +22,13 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/stable_version2/internal/cmd"
-	"infra/cmd/stable_version2/internal/cmd/validateconfig/querygs"
-	gslib "infra/cmd/stable_version2/internal/gs"
-	"infra/cmd/stable_version2/internal/site"
-	"infra/cmd/stable_version2/internal/utils"
-	svlib "infra/cros/stableversion"
-	gitlib "infra/libs/git"
+	"go.chromium.org/infra/cmd/stable_version2/internal/cmd"
+	"go.chromium.org/infra/cmd/stable_version2/internal/cmd/validateconfig/querygs"
+	gslib "go.chromium.org/infra/cmd/stable_version2/internal/gs"
+	"go.chromium.org/infra/cmd/stable_version2/internal/site"
+	"go.chromium.org/infra/cmd/stable_version2/internal/utils"
+	svlib "go.chromium.org/infra/cros/stableversion"
+	gitlib "go.chromium.org/infra/libs/git"
 )
 
 // UpdateWithOmaha subcommand: read stable version in omaha json file in GS.

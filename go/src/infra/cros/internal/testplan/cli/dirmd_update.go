@@ -18,9 +18,9 @@ import (
 	"go.chromium.org/luci/common/data/text"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/internal/manifestutil"
-	"infra/cros/internal/testplan/computemapping"
-	"infra/tools/dirmd/cli/updater"
+	"go.chromium.org/infra/cros/internal/manifestutil"
+	"go.chromium.org/infra/cros/internal/testplan/computemapping"
+	"go.chromium.org/infra/tools/dirmd/cli/updater"
 )
 
 func CmdChromeosDirmdUpdateRun(authOpts auth.Options) *subcommands.Command {

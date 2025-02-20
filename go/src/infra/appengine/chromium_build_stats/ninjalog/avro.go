@@ -19,7 +19,7 @@ import (
 	goavro "github.com/linkedin/goavro/v2"
 	"sigs.k8s.io/yaml"
 
-	"infra/appengine/chromium_build_stats/ninjalog/assets"
+	"go.chromium.org/infra/appengine/chromium_build_stats/ninjalog/assets"
 )
 
 var yamlSchema []byte = assets.GetAsset("avro_schema.yaml")

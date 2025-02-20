@@ -19,9 +19,9 @@ import (
 	"go.chromium.org/luci/cipkg/core"
 	"go.chromium.org/luci/common/system/environ"
 
-	"infra/tools/pkgbuild/pkg/spec"
-	"infra/tools/pkgbuild/pkg/spec/source"
-	"infra/tools/pkgbuild/pkg/stdenv"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/spec"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/spec/source"
+	"go.chromium.org/infra/tools/pkgbuild/pkg/stdenv"
 )
 
 // A parser for Spec_Create spec. It converts the merged create section in the

@@ -11,7 +11,7 @@ import (
 	testplans_pb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	bbproto "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/gerrit"
 )
 
 var builderName = "amd64-generic-cq"

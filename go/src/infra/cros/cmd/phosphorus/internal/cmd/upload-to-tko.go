@@ -16,8 +16,8 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/phosphorus"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cros/cmd/phosphorus/internal/autotest"
-	"infra/cros/cmd/phosphorus/internal/autotest/atutil"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/autotest"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/autotest/atutil"
 )
 
 // UploadToTKO subcommand: Parse test results and upload them to TKO.

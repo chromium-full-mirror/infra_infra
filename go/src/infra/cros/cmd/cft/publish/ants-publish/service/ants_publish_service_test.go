@@ -24,9 +24,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	androidlib "infra/cros/cmd/common_lib/android_api"
-	mock_androidapi "infra/cros/cmd/common_lib/android_api/mocks"
-	atp "infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
+	androidlib "go.chromium.org/infra/cros/cmd/common_lib/android_api"
+	mock_androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api/mocks"
+	atp "go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 func TestAntsStatus(t *testing.T) {

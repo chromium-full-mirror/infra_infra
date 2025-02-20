@@ -7,10 +7,10 @@ syntax = "proto3";
 package crosfleet.crosfleetpb;
 
 import "go.chromium.org/luci/buildbucket/proto/build.proto";
-import "infra/unifiedfleet/api/v1/models/machine.proto";
-import "infra/unifiedfleet/api/v1/models/machine_lse.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/machine.proto";
+import "go.chromium.org/infra/unifiedfleet/api/v1/models/machine_lse.proto";
 
-option go_package = "infra/cmd/crosfleet/internal/proto;crosfleetpb";
+option go_package = "go.chromium.org/infra/cmd/crosfleet/internal/proto;crosfleetpb";
 
 // DUTInfo contains details about the physical lab setup and machine of a
 // particular DUT.

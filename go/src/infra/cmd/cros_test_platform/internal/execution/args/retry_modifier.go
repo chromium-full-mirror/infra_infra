@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 
-	"infra/libs/skylab/request"
+	"go.chromium.org/infra/libs/skylab/request"
 )
 
 // RetryModifier defines the inputs for modifying a retry attempt's arguments.

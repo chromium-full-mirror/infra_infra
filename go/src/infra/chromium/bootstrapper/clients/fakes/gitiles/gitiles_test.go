@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	"infra/chromium/bootstrapper/clients/gitiles"
+	"go.chromium.org/infra/chromium/bootstrapper/clients/gitiles"
 )
 
 func TestFactory(t *testing.T) {

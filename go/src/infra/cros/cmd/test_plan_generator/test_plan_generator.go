@@ -26,11 +26,11 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/generator"
-	igerrit "infra/cros/internal/gerrit"
-	"infra/cros/internal/manifestutil"
-	"infra/cros/internal/shared"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/generator"
+	igerrit "go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/manifestutil"
+	"go.chromium.org/infra/cros/internal/shared"
 )
 
 const (

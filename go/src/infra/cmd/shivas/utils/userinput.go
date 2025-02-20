@@ -20,10 +20,10 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	fleet "infra/unifiedfleet/api/v1/models"
-	chromeosLab "infra/unifiedfleet/api/v1/models/chromeos/lab"
-	UfleetAPI "infra/unifiedfleet/api/v1/rpc"
-	UfleetUtil "infra/unifiedfleet/app/util"
+	fleet "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
+	UfleetAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	UfleetUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // Interactive mode messages for user input

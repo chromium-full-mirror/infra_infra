@@ -21,10 +21,10 @@ import (
 
 	cryptossh "golang.org/x/crypto/ssh"
 
-	"infra/cros/servo/logging"
-	"infra/cros/servo/ssh"
-	"infra/cros/servo/sshtest"
-	"infra/cros/servo/testutil"
+	"go.chromium.org/infra/cros/servo/logging"
+	"go.chromium.org/infra/cros/servo/ssh"
+	"go.chromium.org/infra/cros/servo/sshtest"
+	"go.chromium.org/infra/cros/servo/testutil"
 )
 
 func TestRunCtx(t *testing.T) {

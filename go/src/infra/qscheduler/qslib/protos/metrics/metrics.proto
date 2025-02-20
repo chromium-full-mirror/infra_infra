@@ -14,7 +14,7 @@
 syntax = "proto3";
 package metrics;
 
-option go_package = "infra/qscheduler/qslib/protos/metrics";
+option go_package = "go.chromium.org/infra/qscheduler/qslib/protos/metrics";
 
 import "google/protobuf/timestamp.proto";
 

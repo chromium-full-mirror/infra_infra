@@ -45,7 +45,7 @@ import (
 	"io"
 	"strings"
 
-	"infra/cros/servo/errors/stack"
+	"go.chromium.org/infra/cros/servo/errors/stack"
 )
 
 // E is the error implementation used by this package.

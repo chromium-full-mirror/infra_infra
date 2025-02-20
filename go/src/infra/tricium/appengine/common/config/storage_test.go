@@ -11,8 +11,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common/triciumtest"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common/triciumtest"
 )
 
 func TestConfigStorage(t *testing.T) {

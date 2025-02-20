@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/appengine/depot_tools_metrics/schema/schema.proto
+// source: go.chromium.org/infra/appengine/depot_tools_metrics/schema/schema.proto
 
 package schema
 
@@ -62,11 +62,11 @@ func (x SyncStatus) String() string {
 }
 
 func (SyncStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_appengine_depot_tools_metrics_schema_schema_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_enumTypes[0].Descriptor()
 }
 
 func (SyncStatus) Type() protoreflect.EnumType {
-	return &file_infra_appengine_depot_tools_metrics_schema_schema_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_enumTypes[0]
 }
 
 func (x SyncStatus) Number() protoreflect.EnumNumber {
@@ -75,7 +75,7 @@ func (x SyncStatus) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SyncStatus.Descriptor instead.
 func (SyncStatus) EnumDescriptor() ([]byte, []int) {
-	return file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{0}
 }
 
 // HttpRequest stores information on the HTTP requests made by the command.
@@ -114,7 +114,7 @@ type HttpRequest struct {
 
 func (x *HttpRequest) Reset() {
 	*x = HttpRequest{}
-	mi := &file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -126,7 +126,7 @@ func (x *HttpRequest) String() string {
 func (*HttpRequest) ProtoMessage() {}
 
 func (x *HttpRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -139,7 +139,7 @@ func (x *HttpRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HttpRequest.ProtoReflect.Descriptor instead.
 func (*HttpRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *HttpRequest) GetHost() string {
@@ -204,7 +204,7 @@ type SubCommand struct {
 
 func (x *SubCommand) Reset() {
 	*x = SubCommand{}
-	mi := &file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -216,7 +216,7 @@ func (x *SubCommand) String() string {
 func (*SubCommand) ProtoMessage() {}
 
 func (x *SubCommand) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -229,7 +229,7 @@ func (x *SubCommand) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubCommand.ProtoReflect.Descriptor instead.
 func (*SubCommand) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *SubCommand) GetCommand() string {
@@ -280,7 +280,7 @@ type GitDependency struct {
 
 func (x *GitDependency) Reset() {
 	*x = GitDependency{}
-	mi := &file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -292,7 +292,7 @@ func (x *GitDependency) String() string {
 func (*GitDependency) ProtoMessage() {}
 
 func (x *GitDependency) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -305,7 +305,7 @@ func (x *GitDependency) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GitDependency.ProtoReflect.Descriptor instead.
 func (*GitDependency) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GitDependency) GetPath() string {
@@ -364,7 +364,7 @@ type Hook struct {
 
 func (x *Hook) Reset() {
 	*x = Hook{}
-	mi := &file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -376,7 +376,7 @@ func (x *Hook) String() string {
 func (*Hook) ProtoMessage() {}
 
 func (x *Hook) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -389,7 +389,7 @@ func (x *Hook) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Hook.ProtoReflect.Descriptor instead.
 func (*Hook) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *Hook) GetAction() string {
@@ -447,7 +447,7 @@ type EnvVar struct {
 
 func (x *EnvVar) Reset() {
 	*x = EnvVar{}
-	mi := &file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -459,7 +459,7 @@ func (x *EnvVar) String() string {
 func (*EnvVar) ProtoMessage() {}
 
 func (x *EnvVar) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -472,7 +472,7 @@ func (x *EnvVar) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EnvVar.ProtoReflect.Descriptor instead.
 func (*EnvVar) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *EnvVar) GetName() string {
@@ -503,7 +503,7 @@ type BotMetrics struct {
 
 func (x *BotMetrics) Reset() {
 	*x = BotMetrics{}
-	mi := &file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -515,7 +515,7 @@ func (x *BotMetrics) String() string {
 func (*BotMetrics) ProtoMessage() {}
 
 func (x *BotMetrics) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -528,7 +528,7 @@ func (x *BotMetrics) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BotMetrics.ProtoReflect.Descriptor instead.
 func (*BotMetrics) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *BotMetrics) GetBuildId() int64 {
@@ -597,7 +597,7 @@ type Metrics struct {
 	Hooks []*Hook `protobuf:"bytes,17,rep,name=hooks,proto3" json:"hooks,omitempty"`
 	// Deprecated.
 	//
-	// Deprecated: Marked as deprecated in infra/appengine/depot_tools_metrics/schema/schema.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/appengine/depot_tools_metrics/schema/schema.proto.
 	EnvVariables []string `protobuf:"bytes,18,rep,name=env_variables,json=envVariables,proto3" json:"env_variables,omitempty"`
 	// The environment variables that depot_tools cares about.
 	EnvVars       []*EnvVar `protobuf:"bytes,19,rep,name=env_vars,json=envVars,proto3" json:"env_vars,omitempty"`
@@ -607,7 +607,7 @@ type Metrics struct {
 
 func (x *Metrics) Reset() {
 	*x = Metrics{}
-	mi := &file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -619,7 +619,7 @@ func (x *Metrics) String() string {
 func (*Metrics) ProtoMessage() {}
 
 func (x *Metrics) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -632,7 +632,7 @@ func (x *Metrics) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Metrics.ProtoReflect.Descriptor instead.
 func (*Metrics) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Metrics) GetMetricsVersion() int64 {
@@ -754,7 +754,7 @@ func (x *Metrics) GetHooks() []*Hook {
 	return nil
 }
 
-// Deprecated: Marked as deprecated in infra/appengine/depot_tools_metrics/schema/schema.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/appengine/depot_tools_metrics/schema/schema.proto.
 func (x *Metrics) GetEnvVariables() []string {
 	if x != nil {
 		return x.EnvVariables
@@ -769,10 +769,11 @@ func (x *Metrics) GetEnvVars() []*EnvVar {
 	return nil
 }
 
-var File_infra_appengine_depot_tools_metrics_schema_schema_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto protoreflect.FileDescriptor
 
-var file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDesc = string([]byte{
-	0x0a, 0x37, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
+var file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDesc = string([]byte{
+	0x0a, 0x47, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
 	0x65, 0x2f, 0x64, 0x65, 0x70, 0x6f, 0x74, 0x5f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x5f, 0x6d, 0x65,
 	0x74, 0x72, 0x69, 0x63, 0x73, 0x2f, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x2f, 0x73, 0x63, 0x68,
 	0x65, 0x6d, 0x61, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x06, 0x73, 0x63, 0x68, 0x65, 0x6d,
@@ -883,27 +884,28 @@ var file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDesc = strin
 	0x17, 0x0a, 0x13, 0x53, 0x59, 0x4e, 0x43, 0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x53,
 	0x55, 0x43, 0x43, 0x45, 0x53, 0x53, 0x10, 0x02, 0x12, 0x15, 0x0a, 0x11, 0x53, 0x59, 0x4e, 0x43,
 	0x5f, 0x53, 0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x4e, 0x4f, 0x5f, 0x4f, 0x50, 0x10, 0x03, 0x42,
-	0x33, 0x5a, 0x31, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69,
+	0x43, 0x5a, 0x41, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f,
+	0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69,
 	0x6e, 0x65, 0x2f, 0x64, 0x65, 0x70, 0x6f, 0x74, 0x5f, 0x74, 0x6f, 0x6f, 0x6c, 0x73, 0x5f, 0x6d,
 	0x65, 0x74, 0x72, 0x69, 0x63, 0x73, 0x2f, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x3b, 0x73, 0x63,
 	0x68, 0x65, 0x6d, 0x61, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescOnce sync.Once
-	file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescData []byte
+	file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescData []byte
 )
 
-func file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP() []byte {
-	file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescOnce.Do(func() {
-		file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDesc), len(file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDesc)))
+func file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDesc), len(file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDesc)))
 	})
-	return file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescData
+	return file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDescData
 }
 
-var file_infra_appengine_depot_tools_metrics_schema_schema_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
-var file_infra_appengine_depot_tools_metrics_schema_schema_proto_goTypes = []any{
+var file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_goTypes = []any{
 	(SyncStatus)(0),         // 0: schema.SyncStatus
 	(*HttpRequest)(nil),     // 1: schema.HttpRequest
 	(*SubCommand)(nil),      // 2: schema.SubCommand
@@ -914,7 +916,7 @@ var file_infra_appengine_depot_tools_metrics_schema_schema_proto_goTypes = []any
 	(*Metrics)(nil),         // 7: schema.Metrics
 	(*proto.BuilderID)(nil), // 8: buildbucket.v2.BuilderID
 }
-var file_infra_appengine_depot_tools_metrics_schema_schema_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_depIdxs = []int32{
 	0, // 0: schema.GitDependency.sync_status:type_name -> schema.SyncStatus
 	8, // 1: schema.BotMetrics.builder:type_name -> buildbucket.v2.BuilderID
 	2, // 2: schema.Metrics.sub_commands:type_name -> schema.SubCommand
@@ -930,27 +932,27 @@ var file_infra_appengine_depot_tools_metrics_schema_schema_proto_depIdxs = []int
 	0, // [0:8] is the sub-list for field type_name
 }
 
-func init() { file_infra_appengine_depot_tools_metrics_schema_schema_proto_init() }
-func file_infra_appengine_depot_tools_metrics_schema_schema_proto_init() {
-	if File_infra_appengine_depot_tools_metrics_schema_schema_proto != nil {
+func init() { file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_init() }
+func file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_init() {
+	if File_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDesc), len(file_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDesc), len(file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_appengine_depot_tools_metrics_schema_schema_proto_goTypes,
-		DependencyIndexes: file_infra_appengine_depot_tools_metrics_schema_schema_proto_depIdxs,
-		EnumInfos:         file_infra_appengine_depot_tools_metrics_schema_schema_proto_enumTypes,
-		MessageInfos:      file_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_msgTypes,
 	}.Build()
-	File_infra_appengine_depot_tools_metrics_schema_schema_proto = out.File
-	file_infra_appengine_depot_tools_metrics_schema_schema_proto_goTypes = nil
-	file_infra_appengine_depot_tools_metrics_schema_schema_proto_depIdxs = nil
+	File_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto = out.File
+	file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_goTypes = nil
+	file_go_chromium_org_infra_appengine_depot_tools_metrics_schema_schema_proto_depIdxs = nil
 }

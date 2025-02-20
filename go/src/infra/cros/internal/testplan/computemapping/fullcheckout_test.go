@@ -14,12 +14,12 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/plan"
 	"go.chromium.org/luci/common/clock/testclock"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/git"
-	"infra/cros/internal/repo"
-	"infra/cros/internal/testplan/computemapping"
-	dirmdpb "infra/tools/dirmd/proto"
-	"infra/tools/dirmd/proto/chromeos"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/repo"
+	"go.chromium.org/infra/cros/internal/testplan/computemapping"
+	dirmdpb "go.chromium.org/infra/tools/dirmd/proto"
+	"go.chromium.org/infra/tools/dirmd/proto/chromeos"
 )
 
 func TestToDirBQRows(t *testing.T) {

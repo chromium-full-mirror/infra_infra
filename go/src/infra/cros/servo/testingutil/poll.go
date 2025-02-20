@@ -9,8 +9,8 @@ import (
 	"fmt"
 	"time"
 
-	"infra/cros/servo/ctxutil"
-	"infra/cros/servo/errors"
+	"go.chromium.org/infra/cros/servo/ctxutil"
+	"go.chromium.org/infra/cros/servo/errors"
 )
 
 const defaultPollInterval = 100 * time.Millisecond

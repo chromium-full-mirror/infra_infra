@@ -27,12 +27,12 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/authtest"
 
-	admin "infra/tricium/api/admin/v1"
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common"
-	gc "infra/tricium/appengine/common/gerrit"
-	"infra/tricium/appengine/common/track"
-	"infra/tricium/appengine/common/triciumtest"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common"
+	gc "go.chromium.org/infra/tricium/appengine/common/gerrit"
+	"go.chromium.org/infra/tricium/appengine/common/track"
+	"go.chromium.org/infra/tricium/appengine/common/triciumtest"
 )
 
 const (

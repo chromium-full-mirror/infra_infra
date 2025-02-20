@@ -17,9 +17,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/satlab/common/site"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cros/satlab/common/site"
 )
 
 // DeleteStableVersionCmd deletes a stable version entry.

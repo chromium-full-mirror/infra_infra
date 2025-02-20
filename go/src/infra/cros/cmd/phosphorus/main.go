@@ -19,10 +19,10 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	serverauth "go.chromium.org/luci/server/auth"
 
-	parser "infra/cros/cmd/phosphorus/internal/autotest_status_parser/cmd"
-	"infra/cros/cmd/phosphorus/internal/cmd"
-	"infra/cros/cmd/phosphorus/internal/parallels"
-	localstate "infra/cros/cmd/phosphorus/internal/skylab_local_state/cmd"
+	parser "go.chromium.org/infra/cros/cmd/phosphorus/internal/autotest_status_parser/cmd"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/cmd"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/parallels"
+	localstate "go.chromium.org/infra/cros/cmd/phosphorus/internal/skylab_local_state/cmd"
 )
 
 func getApplication(authOpts auth.Options) *cli.Application {

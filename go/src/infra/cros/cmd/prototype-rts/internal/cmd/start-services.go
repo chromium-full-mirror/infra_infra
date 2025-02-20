@@ -6,7 +6,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/cmd/prototype-rts/internal/service"
+	"go.chromium.org/infra/cros/cmd/prototype-rts/internal/service"
 )
 
 // StartServices starts the RTS gRPC services.

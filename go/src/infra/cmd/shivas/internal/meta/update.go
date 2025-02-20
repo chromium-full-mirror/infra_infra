@@ -11,8 +11,8 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cmd/shivas/site"
-	"infra/libs/cipd"
+	"go.chromium.org/infra/cmd/shivas/site"
+	"go.chromium.org/infra/libs/cipd"
 )
 
 // cipd reference tag for the dev version. Reference tag for prod version is prod.

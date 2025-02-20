@@ -16,11 +16,11 @@ import (
 	"github.com/google/subcommands"
 	"github.com/pkg/errors"
 
-	"infra/cros/cmd/lucifer/internal/abortsock"
-	"infra/cros/cmd/lucifer/internal/api"
-	"infra/cros/cmd/lucifer/internal/autotest"
-	"infra/cros/cmd/lucifer/internal/logdog"
-	"infra/cros/cmd/lucifer/internal/osutil"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/abortsock"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/api"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/autotest"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/logdog"
+	"go.chromium.org/infra/cros/cmd/lucifer/internal/osutil"
 )
 
 // exitError interface is for errors that can be returned from

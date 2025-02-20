@@ -19,8 +19,8 @@ import (
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/cmd/cros-tool-runner/internal/common"
-	"infra/cros/cmd/cros-tool-runner/internal/services"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/common"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/services"
 )
 
 const (

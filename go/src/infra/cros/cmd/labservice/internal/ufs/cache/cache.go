@@ -18,7 +18,7 @@ import (
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 func NewLocator() *Locator {

@@ -21,8 +21,8 @@ import (
 	"go.chromium.org/luci/server/router"
 	"go.chromium.org/luci/server/templates"
 
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common/config"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common/config"
 )
 
 func mainPageHandler(ctx *router.Context) {

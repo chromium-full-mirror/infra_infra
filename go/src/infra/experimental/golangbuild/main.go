@@ -162,7 +162,7 @@ import (
 
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/experimental/golangbuild/golangbuildpb"
+	"go.chromium.org/infra/experimental/golangbuild/golangbuildpb"
 )
 
 var ioProps = build.RegisterSplitProperty[*golangbuildpb.Inputs, *golangbuildpb.Outputs]("")

@@ -17,12 +17,12 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/misc"
-	"infra/cros/satlab/satlab/internal/components/run"
-	"infra/cros/satlab/satlab/internal/meta"
-	"infra/cros/satlab/satlab/internal/stableversion"
-	"infra/cros/satlab/satlab/internal/subcmds"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/misc"
+	"go.chromium.org/infra/cros/satlab/satlab/internal/components/run"
+	"go.chromium.org/infra/cros/satlab/satlab/internal/meta"
+	"go.chromium.org/infra/cros/satlab/satlab/internal/stableversion"
+	"go.chromium.org/infra/cros/satlab/satlab/internal/subcmds"
 )
 
 const StandaloneSatlabEnvVar = "STANDALONE_SATLAB"

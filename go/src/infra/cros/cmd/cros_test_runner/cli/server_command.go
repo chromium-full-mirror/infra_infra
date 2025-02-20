@@ -12,7 +12,7 @@ import (
 	"log"
 	"strings"
 
-	"infra/cros/cmd/cros_test_runner/service"
+	"go.chromium.org/infra/cros/cmd/cros_test_runner/service"
 )
 
 // ServerCommand executes as a server

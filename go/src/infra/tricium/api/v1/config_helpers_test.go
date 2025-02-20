@@ -33,7 +33,7 @@ func TestLookupRepoDetails(t *testing.T) {
 				Source: &RepoDetails_GerritProject{
 					GerritProject: &GerritProject{
 						Host:    "chromium.googlesource.com",
-						Project: "infra/infra",
+						Project: "go.chromium.org/infra/infra",
 						GitUrl:  "https://chromium.googlesource.com/infra/infra.git",
 					},
 				},

@@ -17,10 +17,10 @@ import (
 	"go.chromium.org/luci/common/clock"
 	"go.chromium.org/luci/common/clock/testclock"
 
-	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/identifiers"
-	"infra/cros/karte/internal/scalars"
-	"infra/cros/karte/internal/testsupport"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	"go.chromium.org/infra/cros/karte/internal/identifiers"
+	"go.chromium.org/infra/cros/karte/internal/scalars"
+	"go.chromium.org/infra/cros/karte/internal/testsupport"
 )
 
 const invalidProjectID = "invalid project ID -- 5509d052-1fec-4ff6-bb2f-bb4e98951520"

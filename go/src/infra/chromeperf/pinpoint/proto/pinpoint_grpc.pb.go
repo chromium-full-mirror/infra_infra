@@ -16,7 +16,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v5.29.3
-// source: infra/chromeperf/pinpoint/pinpoint.proto
+// source: go.chromium.org/infra/chromeperf/pinpoint/pinpoint.proto
 
 package proto
 
@@ -257,5 +257,5 @@ var Pinpoint_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/chromeperf/pinpoint/pinpoint.proto",
+	Metadata: "go.chromium.org/infra/chromeperf/pinpoint/pinpoint.proto",
 }

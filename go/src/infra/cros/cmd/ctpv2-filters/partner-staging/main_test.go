@@ -17,7 +17,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	"infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
 )
 
 type MockMoblabClient struct {

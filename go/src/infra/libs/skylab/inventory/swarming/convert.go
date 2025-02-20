@@ -6,7 +6,7 @@
 // Swarming dimensions.
 package swarming
 
-import "infra/libs/skylab/inventory"
+import "go.chromium.org/infra/libs/skylab/inventory"
 
 // Dimensions is the type for Swarming dimensions.
 type Dimensions map[string][]string

@@ -8,7 +8,7 @@ package chrome.rts.presubmit.eval;
 
 import "google/protobuf/duration.proto";
 
-option go_package = "infra/rts/presubmit/eval/proto;evalpb";
+option go_package = "go.chromium.org/infra/rts/presubmit/eval/proto;evalpb";
 
 // Results of evaluation.
 message Results {

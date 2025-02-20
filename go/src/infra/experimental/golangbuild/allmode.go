@@ -7,7 +7,7 @@ package main
 import (
 	"context"
 
-	"infra/experimental/golangbuild/golangbuildpb"
+	"go.chromium.org/infra/experimental/golangbuild/golangbuildpb"
 )
 
 // allRunner gets Go (building it if no prebuilt toolchain is available for the current

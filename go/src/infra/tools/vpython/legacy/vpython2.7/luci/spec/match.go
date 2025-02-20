@@ -15,7 +15,7 @@
 package spec
 
 import (
-	"infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/api/vpython"
 )
 
 // PackageMatches returns true if the package's match constraints are compatible

@@ -11,10 +11,10 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/plan"
 
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/git"
-	"infra/cros/internal/testplan"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/testplan"
 )
 
 func TestFindRelevantPlans(t *testing.T) {

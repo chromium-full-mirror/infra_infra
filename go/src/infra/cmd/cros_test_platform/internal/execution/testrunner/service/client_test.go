@@ -32,10 +32,10 @@ import (
 	"go.chromium.org/luci/lucictx"
 	resultpb "go.chromium.org/luci/resultdb/proto/v1"
 
-	"infra/cmd/cros_test_platform/internal/execution/types"
-	"infra/libs/skylab/inventory"
-	"infra/libs/skylab/request"
-	ufsapi "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/types"
+	"go.chromium.org/infra/libs/skylab/inventory"
+	"go.chromium.org/infra/libs/skylab/request"
+	ufsapi "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // fakeSwarming implements skylab_api.Swarming.

@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto
+// source: go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/dut_state.proto
 
 package ufspb
 
@@ -198,11 +198,11 @@ func (x PeripheralState) String() string {
 }
 
 func (PeripheralState) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[0].Descriptor()
 }
 
 func (PeripheralState) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[0]
 }
 
 func (x PeripheralState) Number() protoreflect.EnumNumber {
@@ -211,7 +211,7 @@ func (x PeripheralState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use PeripheralState.Descriptor instead.
 func (PeripheralState) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{0}
 }
 
 // The states are using for DUT storage and USB-drive on servo.
@@ -262,11 +262,11 @@ func (x HardwareState) String() string {
 }
 
 func (HardwareState) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[1].Descriptor()
 }
 
 func (HardwareState) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[1]
 }
 
 func (x HardwareState) Number() protoreflect.EnumNumber {
@@ -275,7 +275,7 @@ func (x HardwareState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use HardwareState.Descriptor instead.
 func (HardwareState) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{1}
 }
 
 // CR50-related configs by definition shouldn't be a state config, but a build
@@ -321,11 +321,11 @@ func (x DutState_CR50Phase) String() string {
 }
 
 func (DutState_CR50Phase) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[2].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[2].Descriptor()
 }
 
 func (DutState_CR50Phase) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[2]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[2]
 }
 
 func (x DutState_CR50Phase) Number() protoreflect.EnumNumber {
@@ -334,7 +334,7 @@ func (x DutState_CR50Phase) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DutState_CR50Phase.Descriptor instead.
 func (DutState_CR50Phase) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{0, 0}
 }
 
 // key env for cr50 RW version. Next Tag: 3
@@ -371,11 +371,11 @@ func (x DutState_CR50KeyEnv) String() string {
 }
 
 func (DutState_CR50KeyEnv) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[3].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[3].Descriptor()
 }
 
 func (DutState_CR50KeyEnv) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[3]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[3]
 }
 
 func (x DutState_CR50KeyEnv) Number() protoreflect.EnumNumber {
@@ -384,7 +384,7 @@ func (x DutState_CR50KeyEnv) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DutState_CR50KeyEnv.Descriptor instead.
 func (DutState_CR50KeyEnv) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{0, 1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{0, 1}
 }
 
 type DutState_RepairRequest int32
@@ -430,11 +430,11 @@ func (x DutState_RepairRequest) String() string {
 }
 
 func (DutState_RepairRequest) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[4].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[4].Descriptor()
 }
 
 func (DutState_RepairRequest) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[4]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[4]
 }
 
 func (x DutState_RepairRequest) Number() protoreflect.EnumNumber {
@@ -443,7 +443,7 @@ func (x DutState_RepairRequest) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DutState_RepairRequest.Descriptor instead.
 func (DutState_RepairRequest) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{0, 2}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{0, 2}
 }
 
 type VersionInfo_OsType int32
@@ -479,11 +479,11 @@ func (x VersionInfo_OsType) String() string {
 }
 
 func (VersionInfo_OsType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[5].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[5].Descriptor()
 }
 
 func (VersionInfo_OsType) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[5]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes[5]
 }
 
 func (x VersionInfo_OsType) Number() protoreflect.EnumNumber {
@@ -492,7 +492,7 @@ func (x VersionInfo_OsType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use VersionInfo_OsType.Descriptor instead.
 func (VersionInfo_OsType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{1, 0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{1, 0}
 }
 
 // This proto defines status labels in lab config of a DUT.
@@ -566,7 +566,7 @@ type DutState struct {
 
 func (x *DutState) Reset() {
 	*x = DutState{}
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -578,7 +578,7 @@ func (x *DutState) String() string {
 func (*DutState) ProtoMessage() {}
 
 func (x *DutState) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -591,7 +591,7 @@ func (x *DutState) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DutState.ProtoReflect.Descriptor instead.
 func (*DutState) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *DutState) GetId() *ChromeOSDeviceID {
@@ -853,7 +853,7 @@ type VersionInfo struct {
 
 func (x *VersionInfo) Reset() {
 	*x = VersionInfo{}
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -865,7 +865,7 @@ func (x *VersionInfo) String() string {
 func (*VersionInfo) ProtoMessage() {}
 
 func (x *VersionInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -878,7 +878,7 @@ func (x *VersionInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use VersionInfo.ProtoReflect.Descriptor instead.
 func (*VersionInfo) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *VersionInfo) GetOs() string {
@@ -909,10 +909,11 @@ func (x *VersionInfo) GetOsType() VersionInfo_OsType {
 	return VersionInfo_UNKNOWN
 }
 
-var File_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto protoreflect.FileDescriptor
 
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDesc = string([]byte{
-	0x0a, 0x3d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDesc = string([]byte{
+	0x0a, 0x4d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x2f,
 	0x64, 0x75, 0x74, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12,
@@ -922,7 +923,8 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDesc =
 	0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x74, 0x69, 0x6d, 0x65, 0x73, 0x74,
 	0x61, 0x6d, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
 	0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x5f, 0x62, 0x65, 0x68, 0x61,
-	0x76, 0x69, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x46, 0x69, 0x6e, 0x66, 0x72,
+	0x76, 0x69, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x56, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61,
 	0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72,
 	0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65,
@@ -1193,7 +1195,8 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDesc =
 	0x02, 0x12, 0x1d, 0x0a, 0x19, 0x48, 0x41, 0x52, 0x44, 0x57, 0x41, 0x52, 0x45, 0x5f, 0x4e, 0x45,
 	0x45, 0x44, 0x5f, 0x52, 0x45, 0x50, 0x4c, 0x41, 0x43, 0x45, 0x4d, 0x45, 0x4e, 0x54, 0x10, 0x03,
 	0x12, 0x19, 0x0a, 0x15, 0x48, 0x41, 0x52, 0x44, 0x57, 0x41, 0x52, 0x45, 0x5f, 0x4e, 0x4f, 0x54,
-	0x5f, 0x44, 0x45, 0x54, 0x45, 0x43, 0x54, 0x45, 0x44, 0x10, 0x04, 0x42, 0x35, 0x5a, 0x33, 0x69,
+	0x5f, 0x44, 0x45, 0x54, 0x45, 0x43, 0x54, 0x45, 0x44, 0x10, 0x04, 0x42, 0x45, 0x5a, 0x43, 0x67,
+	0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69,
 	0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65,
 	0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f,
 	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x3b, 0x75, 0x66, 0x73,
@@ -1201,20 +1204,20 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDesc =
 })
 
 var (
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescOnce sync.Once
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescData []byte
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescData []byte
 )
 
-func file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP() []byte {
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescOnce.Do(func() {
-		file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDesc)))
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDesc)))
 	})
-	return file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescData
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_goTypes = []any{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_goTypes = []any{
 	(PeripheralState)(0),          // 0: unifiedfleet.api.v1.models.chromeos.lab.PeripheralState
 	(HardwareState)(0),            // 1: unifiedfleet.api.v1.models.chromeos.lab.HardwareState
 	(DutState_CR50Phase)(0),       // 2: unifiedfleet.api.v1.models.chromeos.lab.DutState.CR50Phase
@@ -1226,7 +1229,7 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_goTypes =
 	(*ChromeOSDeviceID)(nil),      // 8: unifiedfleet.api.v1.models.chromeos.lab.ChromeOSDeviceID
 	(*timestamppb.Timestamp)(nil), // 9: google.protobuf.Timestamp
 }
-var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_depIdxs = []int32{
 	8,  // 0: unifiedfleet.api.v1.models.chromeos.lab.DutState.id:type_name -> unifiedfleet.api.v1.models.chromeos.lab.ChromeOSDeviceID
 	0,  // 1: unifiedfleet.api.v1.models.chromeos.lab.DutState.servo:type_name -> unifiedfleet.api.v1.models.chromeos.lab.PeripheralState
 	0,  // 2: unifiedfleet.api.v1.models.chromeos.lab.DutState.chameleon:type_name -> unifiedfleet.api.v1.models.chromeos.lab.PeripheralState
@@ -1259,28 +1262,30 @@ var file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_depIdxs =
 	0,  // [0:25] is the sub-list for field type_name
 }
 
-func init() { file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_init() }
-func file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_init() {
-	if File_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto != nil {
+func init() {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_init()
+}
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_init() {
+	if File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto != nil {
 		return
 	}
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_chromeos_device_id_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_chromeos_device_id_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_rawDesc)),
 			NumEnums:      6,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_goTypes,
-		DependencyIndexes: file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_depIdxs,
-		EnumInfos:         file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes,
-		MessageInfos:      file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_msgTypes,
 	}.Build()
-	File_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto = out.File
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_goTypes = nil
-	file_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_depIdxs = nil
+	File_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto = out.File
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_goTypes = nil
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chromeos_lab_dut_state_proto_depIdxs = nil
 }

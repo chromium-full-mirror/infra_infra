@@ -23,8 +23,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
-	"infra/libs/skylab/inventory"
+	trservice "go.chromium.org/infra/cmd/cros_test_platform/internal/execution/testrunner/service"
+	"go.chromium.org/infra/libs/skylab/inventory"
 )
 
 func TestRequestArguments(t *testing.T) {

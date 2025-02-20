@@ -9,11 +9,11 @@ import (
 	"regexp"
 	"testing"
 
-	"infra/cros/internal/assert"
-	mv "infra/cros/internal/chromeosversion"
-	"infra/cros/internal/cmd"
-	"infra/cros/internal/git"
-	"infra/cros/internal/repo"
+	"go.chromium.org/infra/cros/internal/assert"
+	mv "go.chromium.org/infra/cros/internal/chromeosversion"
+	"go.chromium.org/infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/repo"
 )
 
 var branchNameTestManifest = repo.Manifest{

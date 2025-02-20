@@ -17,9 +17,9 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/router"
 
-	"infra/appengine/crosskylabadmin/internal/app/config"
-	"infra/appengine/crosskylabadmin/internal/app/frontend"
-	"infra/appengine/crosskylabadmin/internal/ufs"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/ufs"
 )
 
 // InstallHandlers installs handlers for queue jobs that are part of this app.

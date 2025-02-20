@@ -29,7 +29,7 @@ import (
 	"go.chromium.org/luci/hardcoded/chromeinfra"
 	sauth "go.chromium.org/luci/server/auth"
 
-	"infra/experimental/golangbuild/golangbuildpb"
+	"go.chromium.org/infra/experimental/golangbuild/golangbuildpb"
 )
 
 // buildSpec specifies what a single build will begin doing.

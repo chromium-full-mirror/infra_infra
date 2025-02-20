@@ -3,7 +3,7 @@ description: A luciexe that pretends to do some work
 platforms:
   - linux-amd64
 go_packages:
-  - infra/experimental/swarming/fakebuild
+  - go.chromium.org/infra/experimental/swarming/fakebuild
 root: ../../go/bin
 data:
   - file: fakebuild${exe_suffix}

@@ -16,9 +16,9 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/build/api"
 
-	"infra/cros/cmd/phosphorus/internal/autotest"
-	"infra/cros/cmd/phosphorus/internal/autotest/atutil"
-	"infra/cros/internal/cmd"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/autotest"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/autotest/atutil"
+	"go.chromium.org/infra/cros/internal/cmd"
 )
 
 func TestRunAutoserv(t *testing.T) {

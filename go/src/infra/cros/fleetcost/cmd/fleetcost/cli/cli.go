@@ -14,8 +14,8 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	"infra/cros/fleetcost/internal/commands"
-	"infra/cros/fleetcost/internal/site"
+	"go.chromium.org/infra/cros/fleetcost/internal/commands"
+	"go.chromium.org/infra/cros/fleetcost/internal/site"
 )
 
 // GetApplication returns the fleetcost command line application.

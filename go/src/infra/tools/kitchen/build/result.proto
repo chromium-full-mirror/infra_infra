@@ -2,9 +2,9 @@ syntax = "proto3";
 
 package luci.build;
 
-option go_package = "infra/tools/kitchen/build;build";
+option go_package = "go.chromium.org/infra/tools/kitchen/build;build";
 
-import "infra/tools/kitchen/third_party/recipe_engine/result.proto";
+import "go.chromium.org/infra/tools/kitchen/third_party/recipe_engine/result.proto";
 import "go.chromium.org/luci/luciexe/legacy/annotee/proto/annotations.proto";
 
 

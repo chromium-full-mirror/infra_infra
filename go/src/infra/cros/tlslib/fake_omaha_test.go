@@ -25,7 +25,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 
-	"infra/cros/tlslib/internal/nebraska"
+	"go.chromium.org/infra/cros/tlslib/internal/nebraska"
 )
 
 // Flags needed for integration tests which depend on real DUTs and networking.

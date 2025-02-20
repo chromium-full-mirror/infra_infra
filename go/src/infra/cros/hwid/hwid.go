@@ -10,8 +10,8 @@ import (
 	"net/http"
 	"net/url"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	"infra/unifiedfleet/app/util"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 const hwidEndpoint = "chromeoshwid-pa.googleapis.com"

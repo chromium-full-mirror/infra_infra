@@ -11,7 +11,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
-	"infra/cros/cmd/ctpv2-filters/test-finder/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/common"
 )
 
 // intentionally commented out. Useful for debugging E2E on real artifacts, but not suited for a real unittest.

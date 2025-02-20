@@ -9,7 +9,7 @@ import (
 
 	"google.golang.org/protobuf/types/known/durationpb"
 
-	"infra/cros/recovery/internal/gbb"
+	"go.chromium.org/infra/cros/recovery/internal/gbb"
 )
 
 func crosRepairPlan() *Plan {

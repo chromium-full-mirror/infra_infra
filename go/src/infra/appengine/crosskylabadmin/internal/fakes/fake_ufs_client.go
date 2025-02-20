@@ -9,8 +9,8 @@ import (
 
 	"google.golang.org/grpc"
 
-	models "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	models "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 type UFSClient struct{}

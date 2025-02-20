@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/unifiedfleet/api/v1/rpc/fleet.proto
+// source: go.chromium.org/infra/unifiedfleet/api/v1/rpc/fleet.proto
 
 package ufspb
 
@@ -15,6 +15,8 @@ import prpc "go.chromium.org/luci/grpc/prpc"
 import (
 	context "context"
 	api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	models "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	lab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -24,8 +26,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
-	models "infra/unifiedfleet/api/v1/models"
-	lab "infra/unifiedfleet/api/v1/models/chromeos/lab"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -72,11 +72,11 @@ func (x UpdateDeviceRecoveryDataRequest_ResourceType) String() string {
 }
 
 func (UpdateDeviceRecoveryDataRequest_ResourceType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes[0].Descriptor()
 }
 
 func (UpdateDeviceRecoveryDataRequest_ResourceType) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes[0]
 }
 
 func (x UpdateDeviceRecoveryDataRequest_ResourceType) Number() protoreflect.EnumNumber {
@@ -85,7 +85,7 @@ func (x UpdateDeviceRecoveryDataRequest_ResourceType) Number() protoreflect.Enum
 
 // Deprecated: Use UpdateDeviceRecoveryDataRequest_ResourceType.Descriptor instead.
 func (UpdateDeviceRecoveryDataRequest_ResourceType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{118, 0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{118, 0}
 }
 
 type GetDeviceDataResponse_ResourceType int32
@@ -127,11 +127,11 @@ func (x GetDeviceDataResponse_ResourceType) String() string {
 }
 
 func (GetDeviceDataResponse_ResourceType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes[1].Descriptor()
 }
 
 func (GetDeviceDataResponse_ResourceType) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes[1]
 }
 
 func (x GetDeviceDataResponse_ResourceType) Number() protoreflect.EnumNumber {
@@ -140,7 +140,7 @@ func (x GetDeviceDataResponse_ResourceType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use GetDeviceDataResponse_ResourceType.Descriptor instead.
 func (GetDeviceDataResponse_ResourceType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{175, 0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{175, 0}
 }
 
 type TestStatus_Code int32
@@ -188,11 +188,11 @@ func (x TestStatus_Code) String() string {
 }
 
 func (TestStatus_Code) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes[2].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes[2].Descriptor()
 }
 
 func (TestStatus_Code) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes[2]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes[2]
 }
 
 func (x TestStatus_Code) Number() protoreflect.EnumNumber {
@@ -201,7 +201,7 @@ func (x TestStatus_Code) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TestStatus_Code.Descriptor instead.
 func (TestStatus_Code) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{179, 0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{179, 0}
 }
 
 type GetDUTsForLabstationRequest struct {
@@ -214,7 +214,7 @@ type GetDUTsForLabstationRequest struct {
 
 func (x *GetDUTsForLabstationRequest) Reset() {
 	*x = GetDUTsForLabstationRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -226,7 +226,7 @@ func (x *GetDUTsForLabstationRequest) String() string {
 func (*GetDUTsForLabstationRequest) ProtoMessage() {}
 
 func (x *GetDUTsForLabstationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -239,7 +239,7 @@ func (x *GetDUTsForLabstationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDUTsForLabstationRequest.ProtoReflect.Descriptor instead.
 func (*GetDUTsForLabstationRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *GetDUTsForLabstationRequest) GetHostname() []string {
@@ -258,7 +258,7 @@ type GetDUTsForLabstationResponse struct {
 
 func (x *GetDUTsForLabstationResponse) Reset() {
 	*x = GetDUTsForLabstationResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -270,7 +270,7 @@ func (x *GetDUTsForLabstationResponse) String() string {
 func (*GetDUTsForLabstationResponse) ProtoMessage() {}
 
 func (x *GetDUTsForLabstationResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -283,7 +283,7 @@ func (x *GetDUTsForLabstationResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDUTsForLabstationResponse.ProtoReflect.Descriptor instead.
 func (*GetDUTsForLabstationResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *GetDUTsForLabstationResponse) GetItems() []*GetDUTsForLabstationResponse_LabstationMapping {
@@ -305,7 +305,7 @@ type UpdateMachineLSEDeploymentRequest struct {
 
 func (x *UpdateMachineLSEDeploymentRequest) Reset() {
 	*x = UpdateMachineLSEDeploymentRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -317,7 +317,7 @@ func (x *UpdateMachineLSEDeploymentRequest) String() string {
 func (*UpdateMachineLSEDeploymentRequest) ProtoMessage() {}
 
 func (x *UpdateMachineLSEDeploymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -330,7 +330,7 @@ func (x *UpdateMachineLSEDeploymentRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use UpdateMachineLSEDeploymentRequest.ProtoReflect.Descriptor instead.
 func (*UpdateMachineLSEDeploymentRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *UpdateMachineLSEDeploymentRequest) GetMachineLseDeployment() *models.MachineLSEDeployment {
@@ -359,7 +359,7 @@ type BatchUpdateMachineLSEDeploymentRequest struct {
 
 func (x *BatchUpdateMachineLSEDeploymentRequest) Reset() {
 	*x = BatchUpdateMachineLSEDeploymentRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -371,7 +371,7 @@ func (x *BatchUpdateMachineLSEDeploymentRequest) String() string {
 func (*BatchUpdateMachineLSEDeploymentRequest) ProtoMessage() {}
 
 func (x *BatchUpdateMachineLSEDeploymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -384,7 +384,7 @@ func (x *BatchUpdateMachineLSEDeploymentRequest) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use BatchUpdateMachineLSEDeploymentRequest.ProtoReflect.Descriptor instead.
 func (*BatchUpdateMachineLSEDeploymentRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *BatchUpdateMachineLSEDeploymentRequest) GetParent() string {
@@ -411,7 +411,7 @@ type BatchUpdateMachineLSEDeploymentResponse struct {
 
 func (x *BatchUpdateMachineLSEDeploymentResponse) Reset() {
 	*x = BatchUpdateMachineLSEDeploymentResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -423,7 +423,7 @@ func (x *BatchUpdateMachineLSEDeploymentResponse) String() string {
 func (*BatchUpdateMachineLSEDeploymentResponse) ProtoMessage() {}
 
 func (x *BatchUpdateMachineLSEDeploymentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -436,7 +436,7 @@ func (x *BatchUpdateMachineLSEDeploymentResponse) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use BatchUpdateMachineLSEDeploymentResponse.ProtoReflect.Descriptor instead.
 func (*BatchUpdateMachineLSEDeploymentResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *BatchUpdateMachineLSEDeploymentResponse) GetMachineLseDeployments() []*models.MachineLSEDeployment {
@@ -456,7 +456,7 @@ type GetMachineLSEDeploymentRequest struct {
 
 func (x *GetMachineLSEDeploymentRequest) Reset() {
 	*x = GetMachineLSEDeploymentRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -468,7 +468,7 @@ func (x *GetMachineLSEDeploymentRequest) String() string {
 func (*GetMachineLSEDeploymentRequest) ProtoMessage() {}
 
 func (x *GetMachineLSEDeploymentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -481,7 +481,7 @@ func (x *GetMachineLSEDeploymentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMachineLSEDeploymentRequest.ProtoReflect.Descriptor instead.
 func (*GetMachineLSEDeploymentRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetMachineLSEDeploymentRequest) GetName() string {
@@ -504,7 +504,7 @@ type BatchGetMachineLSEDeploymentsRequest struct {
 
 func (x *BatchGetMachineLSEDeploymentsRequest) Reset() {
 	*x = BatchGetMachineLSEDeploymentsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -516,7 +516,7 @@ func (x *BatchGetMachineLSEDeploymentsRequest) String() string {
 func (*BatchGetMachineLSEDeploymentsRequest) ProtoMessage() {}
 
 func (x *BatchGetMachineLSEDeploymentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -529,7 +529,7 @@ func (x *BatchGetMachineLSEDeploymentsRequest) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use BatchGetMachineLSEDeploymentsRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetMachineLSEDeploymentsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *BatchGetMachineLSEDeploymentsRequest) GetParent() string {
@@ -556,7 +556,7 @@ type BatchGetMachineLSEDeploymentsResponse struct {
 
 func (x *BatchGetMachineLSEDeploymentsResponse) Reset() {
 	*x = BatchGetMachineLSEDeploymentsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -568,7 +568,7 @@ func (x *BatchGetMachineLSEDeploymentsResponse) String() string {
 func (*BatchGetMachineLSEDeploymentsResponse) ProtoMessage() {}
 
 func (x *BatchGetMachineLSEDeploymentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -581,7 +581,7 @@ func (x *BatchGetMachineLSEDeploymentsResponse) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use BatchGetMachineLSEDeploymentsResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetMachineLSEDeploymentsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *BatchGetMachineLSEDeploymentsResponse) GetMachineLseDeployments() []*models.MachineLSEDeployment {
@@ -615,7 +615,7 @@ type ListMachineLSEDeploymentsRequest struct {
 
 func (x *ListMachineLSEDeploymentsRequest) Reset() {
 	*x = ListMachineLSEDeploymentsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -627,7 +627,7 @@ func (x *ListMachineLSEDeploymentsRequest) String() string {
 func (*ListMachineLSEDeploymentsRequest) ProtoMessage() {}
 
 func (x *ListMachineLSEDeploymentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -640,7 +640,7 @@ func (x *ListMachineLSEDeploymentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMachineLSEDeploymentsRequest.ProtoReflect.Descriptor instead.
 func (*ListMachineLSEDeploymentsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ListMachineLSEDeploymentsRequest) GetPageSize() int32 {
@@ -684,7 +684,7 @@ type ListMachineLSEDeploymentsResponse struct {
 
 func (x *ListMachineLSEDeploymentsResponse) Reset() {
 	*x = ListMachineLSEDeploymentsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -696,7 +696,7 @@ func (x *ListMachineLSEDeploymentsResponse) String() string {
 func (*ListMachineLSEDeploymentsResponse) ProtoMessage() {}
 
 func (x *ListMachineLSEDeploymentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -709,7 +709,7 @@ func (x *ListMachineLSEDeploymentsResponse) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use ListMachineLSEDeploymentsResponse.ProtoReflect.Descriptor instead.
 func (*ListMachineLSEDeploymentsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ListMachineLSEDeploymentsResponse) GetMachineLseDeployments() []*models.MachineLSEDeployment {
@@ -737,7 +737,7 @@ type CreateVMRequest struct {
 
 func (x *CreateVMRequest) Reset() {
 	*x = CreateVMRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -749,7 +749,7 @@ func (x *CreateVMRequest) String() string {
 func (*CreateVMRequest) ProtoMessage() {}
 
 func (x *CreateVMRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -762,7 +762,7 @@ func (x *CreateVMRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateVMRequest.ProtoReflect.Descriptor instead.
 func (*CreateVMRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{10}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *CreateVMRequest) GetVm() *models.VM {
@@ -793,7 +793,7 @@ type UpdateVMRequest struct {
 
 func (x *UpdateVMRequest) Reset() {
 	*x = UpdateVMRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -805,7 +805,7 @@ func (x *UpdateVMRequest) String() string {
 func (*UpdateVMRequest) ProtoMessage() {}
 
 func (x *UpdateVMRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -818,7 +818,7 @@ func (x *UpdateVMRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateVMRequest.ProtoReflect.Descriptor instead.
 func (*UpdateVMRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{11}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *UpdateVMRequest) GetVm() *models.VM {
@@ -852,7 +852,7 @@ type GetVMRequest struct {
 
 func (x *GetVMRequest) Reset() {
 	*x = GetVMRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -864,7 +864,7 @@ func (x *GetVMRequest) String() string {
 func (*GetVMRequest) ProtoMessage() {}
 
 func (x *GetVMRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -877,7 +877,7 @@ func (x *GetVMRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetVMRequest.ProtoReflect.Descriptor instead.
 func (*GetVMRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{12}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetVMRequest) GetName() string {
@@ -897,7 +897,7 @@ type DeleteVMRequest struct {
 
 func (x *DeleteVMRequest) Reset() {
 	*x = DeleteVMRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -909,7 +909,7 @@ func (x *DeleteVMRequest) String() string {
 func (*DeleteVMRequest) ProtoMessage() {}
 
 func (x *DeleteVMRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -922,7 +922,7 @@ func (x *DeleteVMRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteVMRequest.ProtoReflect.Descriptor instead.
 func (*DeleteVMRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{13}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *DeleteVMRequest) GetName() string {
@@ -956,7 +956,7 @@ type ListVMsRequest struct {
 
 func (x *ListVMsRequest) Reset() {
 	*x = ListVMsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -968,7 +968,7 @@ func (x *ListVMsRequest) String() string {
 func (*ListVMsRequest) ProtoMessage() {}
 
 func (x *ListVMsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[14]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -981,7 +981,7 @@ func (x *ListVMsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListVMsRequest.ProtoReflect.Descriptor instead.
 func (*ListVMsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{14}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *ListVMsRequest) GetPageSize() int32 {
@@ -1025,7 +1025,7 @@ type ListVMsResponse struct {
 
 func (x *ListVMsResponse) Reset() {
 	*x = ListVMsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1037,7 +1037,7 @@ func (x *ListVMsResponse) String() string {
 func (*ListVMsResponse) ProtoMessage() {}
 
 func (x *ListVMsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[15]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1050,7 +1050,7 @@ func (x *ListVMsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListVMsResponse.ProtoReflect.Descriptor instead.
 func (*ListVMsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{15}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *ListVMsResponse) GetVms() []*models.VM {
@@ -1077,7 +1077,7 @@ type GetDHCPConfigRequest struct {
 
 func (x *GetDHCPConfigRequest) Reset() {
 	*x = GetDHCPConfigRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1089,7 +1089,7 @@ func (x *GetDHCPConfigRequest) String() string {
 func (*GetDHCPConfigRequest) ProtoMessage() {}
 
 func (x *GetDHCPConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[16]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1102,7 +1102,7 @@ func (x *GetDHCPConfigRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDHCPConfigRequest.ProtoReflect.Descriptor instead.
 func (*GetDHCPConfigRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{16}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *GetDHCPConfigRequest) GetHostname() string {
@@ -1130,7 +1130,7 @@ type CreateChromePlatformRequest struct {
 
 func (x *CreateChromePlatformRequest) Reset() {
 	*x = CreateChromePlatformRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1142,7 +1142,7 @@ func (x *CreateChromePlatformRequest) String() string {
 func (*CreateChromePlatformRequest) ProtoMessage() {}
 
 func (x *CreateChromePlatformRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[17]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1155,7 +1155,7 @@ func (x *CreateChromePlatformRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateChromePlatformRequest.ProtoReflect.Descriptor instead.
 func (*CreateChromePlatformRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{17}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *CreateChromePlatformRequest) GetChromePlatform() *models.ChromePlatform {
@@ -1184,7 +1184,7 @@ type UpdateChromePlatformRequest struct {
 
 func (x *UpdateChromePlatformRequest) Reset() {
 	*x = UpdateChromePlatformRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1196,7 +1196,7 @@ func (x *UpdateChromePlatformRequest) String() string {
 func (*UpdateChromePlatformRequest) ProtoMessage() {}
 
 func (x *UpdateChromePlatformRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[18]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1209,7 +1209,7 @@ func (x *UpdateChromePlatformRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateChromePlatformRequest.ProtoReflect.Descriptor instead.
 func (*UpdateChromePlatformRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{18}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *UpdateChromePlatformRequest) GetChromePlatform() *models.ChromePlatform {
@@ -1236,7 +1236,7 @@ type GetChromePlatformRequest struct {
 
 func (x *GetChromePlatformRequest) Reset() {
 	*x = GetChromePlatformRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[19]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1248,7 +1248,7 @@ func (x *GetChromePlatformRequest) String() string {
 func (*GetChromePlatformRequest) ProtoMessage() {}
 
 func (x *GetChromePlatformRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[19]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1261,7 +1261,7 @@ func (x *GetChromePlatformRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetChromePlatformRequest.ProtoReflect.Descriptor instead.
 func (*GetChromePlatformRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{19}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *GetChromePlatformRequest) GetName() string {
@@ -1295,7 +1295,7 @@ type ListChromePlatformsRequest struct {
 
 func (x *ListChromePlatformsRequest) Reset() {
 	*x = ListChromePlatformsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[20]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1307,7 +1307,7 @@ func (x *ListChromePlatformsRequest) String() string {
 func (*ListChromePlatformsRequest) ProtoMessage() {}
 
 func (x *ListChromePlatformsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[20]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1320,7 +1320,7 @@ func (x *ListChromePlatformsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListChromePlatformsRequest.ProtoReflect.Descriptor instead.
 func (*ListChromePlatformsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{20}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ListChromePlatformsRequest) GetPageSize() int32 {
@@ -1364,7 +1364,7 @@ type ListChromePlatformsResponse struct {
 
 func (x *ListChromePlatformsResponse) Reset() {
 	*x = ListChromePlatformsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[21]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1376,7 +1376,7 @@ func (x *ListChromePlatformsResponse) String() string {
 func (*ListChromePlatformsResponse) ProtoMessage() {}
 
 func (x *ListChromePlatformsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[21]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1389,7 +1389,7 @@ func (x *ListChromePlatformsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListChromePlatformsResponse.ProtoReflect.Descriptor instead.
 func (*ListChromePlatformsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{21}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ListChromePlatformsResponse) GetChromePlatforms() []*models.ChromePlatform {
@@ -1416,7 +1416,7 @@ type DeleteChromePlatformRequest struct {
 
 func (x *DeleteChromePlatformRequest) Reset() {
 	*x = DeleteChromePlatformRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[22]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1428,7 +1428,7 @@ func (x *DeleteChromePlatformRequest) String() string {
 func (*DeleteChromePlatformRequest) ProtoMessage() {}
 
 func (x *DeleteChromePlatformRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[22]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1441,7 +1441,7 @@ func (x *DeleteChromePlatformRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteChromePlatformRequest.ProtoReflect.Descriptor instead.
 func (*DeleteChromePlatformRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{22}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *DeleteChromePlatformRequest) GetName() string {
@@ -1461,7 +1461,7 @@ type ChromePlatformResult struct {
 
 func (x *ChromePlatformResult) Reset() {
 	*x = ChromePlatformResult{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[23]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1473,7 +1473,7 @@ func (x *ChromePlatformResult) String() string {
 func (*ChromePlatformResult) ProtoMessage() {}
 
 func (x *ChromePlatformResult) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[23]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1486,7 +1486,7 @@ func (x *ChromePlatformResult) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromePlatformResult.ProtoReflect.Descriptor instead.
 func (*ChromePlatformResult) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{23}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ChromePlatformResult) GetPlatform() *models.ChromePlatform {
@@ -1527,7 +1527,7 @@ type ListOSVersionsRequest struct {
 
 func (x *ListOSVersionsRequest) Reset() {
 	*x = ListOSVersionsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[24]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1539,7 +1539,7 @@ func (x *ListOSVersionsRequest) String() string {
 func (*ListOSVersionsRequest) ProtoMessage() {}
 
 func (x *ListOSVersionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[24]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1552,7 +1552,7 @@ func (x *ListOSVersionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListOSVersionsRequest.ProtoReflect.Descriptor instead.
 func (*ListOSVersionsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{24}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ListOSVersionsRequest) GetPageSize() int32 {
@@ -1596,7 +1596,7 @@ type ListOSVersionsResponse struct {
 
 func (x *ListOSVersionsResponse) Reset() {
 	*x = ListOSVersionsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[25]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1608,7 +1608,7 @@ func (x *ListOSVersionsResponse) String() string {
 func (*ListOSVersionsResponse) ProtoMessage() {}
 
 func (x *ListOSVersionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[25]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1621,7 +1621,7 @@ func (x *ListOSVersionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListOSVersionsResponse.ProtoReflect.Descriptor instead.
 func (*ListOSVersionsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{25}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *ListOSVersionsResponse) GetOsVersion() []*models.OSVersion {
@@ -1656,7 +1656,7 @@ type CreateMachineLSEPrototypeRequest struct {
 
 func (x *CreateMachineLSEPrototypeRequest) Reset() {
 	*x = CreateMachineLSEPrototypeRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[26]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1668,7 +1668,7 @@ func (x *CreateMachineLSEPrototypeRequest) String() string {
 func (*CreateMachineLSEPrototypeRequest) ProtoMessage() {}
 
 func (x *CreateMachineLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[26]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1681,7 +1681,7 @@ func (x *CreateMachineLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateMachineLSEPrototypeRequest.ProtoReflect.Descriptor instead.
 func (*CreateMachineLSEPrototypeRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{26}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *CreateMachineLSEPrototypeRequest) GetMachineLSEPrototype() *models.MachineLSEPrototype {
@@ -1710,7 +1710,7 @@ type UpdateMachineLSEPrototypeRequest struct {
 
 func (x *UpdateMachineLSEPrototypeRequest) Reset() {
 	*x = UpdateMachineLSEPrototypeRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[27]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1722,7 +1722,7 @@ func (x *UpdateMachineLSEPrototypeRequest) String() string {
 func (*UpdateMachineLSEPrototypeRequest) ProtoMessage() {}
 
 func (x *UpdateMachineLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[27]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1735,7 +1735,7 @@ func (x *UpdateMachineLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateMachineLSEPrototypeRequest.ProtoReflect.Descriptor instead.
 func (*UpdateMachineLSEPrototypeRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{27}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *UpdateMachineLSEPrototypeRequest) GetMachineLSEPrototype() *models.MachineLSEPrototype {
@@ -1762,7 +1762,7 @@ type GetMachineLSEPrototypeRequest struct {
 
 func (x *GetMachineLSEPrototypeRequest) Reset() {
 	*x = GetMachineLSEPrototypeRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[28]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1774,7 +1774,7 @@ func (x *GetMachineLSEPrototypeRequest) String() string {
 func (*GetMachineLSEPrototypeRequest) ProtoMessage() {}
 
 func (x *GetMachineLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[28]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1787,7 +1787,7 @@ func (x *GetMachineLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMachineLSEPrototypeRequest.ProtoReflect.Descriptor instead.
 func (*GetMachineLSEPrototypeRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{28}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *GetMachineLSEPrototypeRequest) GetName() string {
@@ -1821,7 +1821,7 @@ type ListMachineLSEPrototypesRequest struct {
 
 func (x *ListMachineLSEPrototypesRequest) Reset() {
 	*x = ListMachineLSEPrototypesRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[29]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1833,7 +1833,7 @@ func (x *ListMachineLSEPrototypesRequest) String() string {
 func (*ListMachineLSEPrototypesRequest) ProtoMessage() {}
 
 func (x *ListMachineLSEPrototypesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[29]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1846,7 +1846,7 @@ func (x *ListMachineLSEPrototypesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMachineLSEPrototypesRequest.ProtoReflect.Descriptor instead.
 func (*ListMachineLSEPrototypesRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{29}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *ListMachineLSEPrototypesRequest) GetPageSize() int32 {
@@ -1890,7 +1890,7 @@ type ListMachineLSEPrototypesResponse struct {
 
 func (x *ListMachineLSEPrototypesResponse) Reset() {
 	*x = ListMachineLSEPrototypesResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[30]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1902,7 +1902,7 @@ func (x *ListMachineLSEPrototypesResponse) String() string {
 func (*ListMachineLSEPrototypesResponse) ProtoMessage() {}
 
 func (x *ListMachineLSEPrototypesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[30]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1915,7 +1915,7 @@ func (x *ListMachineLSEPrototypesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMachineLSEPrototypesResponse.ProtoReflect.Descriptor instead.
 func (*ListMachineLSEPrototypesResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{30}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *ListMachineLSEPrototypesResponse) GetMachineLSEPrototypes() []*models.MachineLSEPrototype {
@@ -1942,7 +1942,7 @@ type DeleteMachineLSEPrototypeRequest struct {
 
 func (x *DeleteMachineLSEPrototypeRequest) Reset() {
 	*x = DeleteMachineLSEPrototypeRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[31]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1954,7 +1954,7 @@ func (x *DeleteMachineLSEPrototypeRequest) String() string {
 func (*DeleteMachineLSEPrototypeRequest) ProtoMessage() {}
 
 func (x *DeleteMachineLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[31]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1967,7 +1967,7 @@ func (x *DeleteMachineLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteMachineLSEPrototypeRequest.ProtoReflect.Descriptor instead.
 func (*DeleteMachineLSEPrototypeRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{31}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *DeleteMachineLSEPrototypeRequest) GetName() string {
@@ -1995,7 +1995,7 @@ type CreateRackLSEPrototypeRequest struct {
 
 func (x *CreateRackLSEPrototypeRequest) Reset() {
 	*x = CreateRackLSEPrototypeRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[32]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2007,7 +2007,7 @@ func (x *CreateRackLSEPrototypeRequest) String() string {
 func (*CreateRackLSEPrototypeRequest) ProtoMessage() {}
 
 func (x *CreateRackLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[32]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2020,7 +2020,7 @@ func (x *CreateRackLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRackLSEPrototypeRequest.ProtoReflect.Descriptor instead.
 func (*CreateRackLSEPrototypeRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{32}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *CreateRackLSEPrototypeRequest) GetRackLSEPrototype() *models.RackLSEPrototype {
@@ -2049,7 +2049,7 @@ type UpdateRackLSEPrototypeRequest struct {
 
 func (x *UpdateRackLSEPrototypeRequest) Reset() {
 	*x = UpdateRackLSEPrototypeRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[33]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2061,7 +2061,7 @@ func (x *UpdateRackLSEPrototypeRequest) String() string {
 func (*UpdateRackLSEPrototypeRequest) ProtoMessage() {}
 
 func (x *UpdateRackLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[33]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2074,7 +2074,7 @@ func (x *UpdateRackLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRackLSEPrototypeRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRackLSEPrototypeRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{33}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *UpdateRackLSEPrototypeRequest) GetRackLSEPrototype() *models.RackLSEPrototype {
@@ -2101,7 +2101,7 @@ type GetRackLSEPrototypeRequest struct {
 
 func (x *GetRackLSEPrototypeRequest) Reset() {
 	*x = GetRackLSEPrototypeRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[34]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2113,7 +2113,7 @@ func (x *GetRackLSEPrototypeRequest) String() string {
 func (*GetRackLSEPrototypeRequest) ProtoMessage() {}
 
 func (x *GetRackLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[34]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2126,7 +2126,7 @@ func (x *GetRackLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRackLSEPrototypeRequest.ProtoReflect.Descriptor instead.
 func (*GetRackLSEPrototypeRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{34}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *GetRackLSEPrototypeRequest) GetName() string {
@@ -2160,7 +2160,7 @@ type ListRackLSEPrototypesRequest struct {
 
 func (x *ListRackLSEPrototypesRequest) Reset() {
 	*x = ListRackLSEPrototypesRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[35]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2172,7 +2172,7 @@ func (x *ListRackLSEPrototypesRequest) String() string {
 func (*ListRackLSEPrototypesRequest) ProtoMessage() {}
 
 func (x *ListRackLSEPrototypesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[35]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2185,7 +2185,7 @@ func (x *ListRackLSEPrototypesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRackLSEPrototypesRequest.ProtoReflect.Descriptor instead.
 func (*ListRackLSEPrototypesRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{35}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *ListRackLSEPrototypesRequest) GetPageSize() int32 {
@@ -2229,7 +2229,7 @@ type ListRackLSEPrototypesResponse struct {
 
 func (x *ListRackLSEPrototypesResponse) Reset() {
 	*x = ListRackLSEPrototypesResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[36]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2241,7 +2241,7 @@ func (x *ListRackLSEPrototypesResponse) String() string {
 func (*ListRackLSEPrototypesResponse) ProtoMessage() {}
 
 func (x *ListRackLSEPrototypesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[36]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2254,7 +2254,7 @@ func (x *ListRackLSEPrototypesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRackLSEPrototypesResponse.ProtoReflect.Descriptor instead.
 func (*ListRackLSEPrototypesResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{36}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *ListRackLSEPrototypesResponse) GetRackLSEPrototypes() []*models.RackLSEPrototype {
@@ -2281,7 +2281,7 @@ type DeleteRackLSEPrototypeRequest struct {
 
 func (x *DeleteRackLSEPrototypeRequest) Reset() {
 	*x = DeleteRackLSEPrototypeRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[37]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2293,7 +2293,7 @@ func (x *DeleteRackLSEPrototypeRequest) String() string {
 func (*DeleteRackLSEPrototypeRequest) ProtoMessage() {}
 
 func (x *DeleteRackLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[37]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2306,7 +2306,7 @@ func (x *DeleteRackLSEPrototypeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRackLSEPrototypeRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRackLSEPrototypeRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{37}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *DeleteRackLSEPrototypeRequest) GetName() string {
@@ -2328,7 +2328,7 @@ type MachineRegistrationRequest struct {
 
 func (x *MachineRegistrationRequest) Reset() {
 	*x = MachineRegistrationRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[38]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2340,7 +2340,7 @@ func (x *MachineRegistrationRequest) String() string {
 func (*MachineRegistrationRequest) ProtoMessage() {}
 
 func (x *MachineRegistrationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[38]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2353,7 +2353,7 @@ func (x *MachineRegistrationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MachineRegistrationRequest.ProtoReflect.Descriptor instead.
 func (*MachineRegistrationRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{38}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *MachineRegistrationRequest) GetMachine() *models.Machine {
@@ -2375,7 +2375,7 @@ type UpdateMachineRequest struct {
 
 func (x *UpdateMachineRequest) Reset() {
 	*x = UpdateMachineRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[39]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2387,7 +2387,7 @@ func (x *UpdateMachineRequest) String() string {
 func (*UpdateMachineRequest) ProtoMessage() {}
 
 func (x *UpdateMachineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[39]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2400,7 +2400,7 @@ func (x *UpdateMachineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateMachineRequest.ProtoReflect.Descriptor instead.
 func (*UpdateMachineRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{39}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *UpdateMachineRequest) GetMachine() *models.Machine {
@@ -2427,7 +2427,7 @@ type GetMachineRequest struct {
 
 func (x *GetMachineRequest) Reset() {
 	*x = GetMachineRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[40]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2439,7 +2439,7 @@ func (x *GetMachineRequest) String() string {
 func (*GetMachineRequest) ProtoMessage() {}
 
 func (x *GetMachineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[40]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2452,7 +2452,7 @@ func (x *GetMachineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMachineRequest.ProtoReflect.Descriptor instead.
 func (*GetMachineRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{40}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *GetMachineRequest) GetName() string {
@@ -2490,7 +2490,7 @@ type ListMachinesRequest struct {
 
 func (x *ListMachinesRequest) Reset() {
 	*x = ListMachinesRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[41]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2502,7 +2502,7 @@ func (x *ListMachinesRequest) String() string {
 func (*ListMachinesRequest) ProtoMessage() {}
 
 func (x *ListMachinesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[41]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2515,7 +2515,7 @@ func (x *ListMachinesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMachinesRequest.ProtoReflect.Descriptor instead.
 func (*ListMachinesRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{41}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *ListMachinesRequest) GetPageSize() int32 {
@@ -2566,7 +2566,7 @@ type ListMachinesResponse struct {
 
 func (x *ListMachinesResponse) Reset() {
 	*x = ListMachinesResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[42]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2578,7 +2578,7 @@ func (x *ListMachinesResponse) String() string {
 func (*ListMachinesResponse) ProtoMessage() {}
 
 func (x *ListMachinesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[42]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2591,7 +2591,7 @@ func (x *ListMachinesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMachinesResponse.ProtoReflect.Descriptor instead.
 func (*ListMachinesResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{42}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *ListMachinesResponse) GetMachines() []*models.Machine {
@@ -2618,7 +2618,7 @@ type DeleteMachineRequest struct {
 
 func (x *DeleteMachineRequest) Reset() {
 	*x = DeleteMachineRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[43]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2630,7 +2630,7 @@ func (x *DeleteMachineRequest) String() string {
 func (*DeleteMachineRequest) ProtoMessage() {}
 
 func (x *DeleteMachineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[43]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2643,7 +2643,7 @@ func (x *DeleteMachineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteMachineRequest.ProtoReflect.Descriptor instead.
 func (*DeleteMachineRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{43}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *DeleteMachineRequest) GetName() string {
@@ -2665,7 +2665,7 @@ type RenameMachineRequest struct {
 
 func (x *RenameMachineRequest) Reset() {
 	*x = RenameMachineRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[44]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2677,7 +2677,7 @@ func (x *RenameMachineRequest) String() string {
 func (*RenameMachineRequest) ProtoMessage() {}
 
 func (x *RenameMachineRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[44]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2690,7 +2690,7 @@ func (x *RenameMachineRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RenameMachineRequest.ProtoReflect.Descriptor instead.
 func (*RenameMachineRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{44}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *RenameMachineRequest) GetName() string {
@@ -2716,7 +2716,7 @@ type MachineDBSource struct {
 
 func (x *MachineDBSource) Reset() {
 	*x = MachineDBSource{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[45]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2728,7 +2728,7 @@ func (x *MachineDBSource) String() string {
 func (*MachineDBSource) ProtoMessage() {}
 
 func (x *MachineDBSource) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[45]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2741,7 +2741,7 @@ func (x *MachineDBSource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MachineDBSource.ProtoReflect.Descriptor instead.
 func (*MachineDBSource) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{45}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *MachineDBSource) GetHost() string {
@@ -2762,7 +2762,7 @@ type ConfigSource struct {
 
 func (x *ConfigSource) Reset() {
 	*x = ConfigSource{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[46]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2774,7 +2774,7 @@ func (x *ConfigSource) String() string {
 func (*ConfigSource) ProtoMessage() {}
 
 func (x *ConfigSource) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[46]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2787,7 +2787,7 @@ func (x *ConfigSource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConfigSource.ProtoReflect.Descriptor instead.
 func (*ConfigSource) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{46}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *ConfigSource) GetConfigServiceName() string {
@@ -2822,7 +2822,7 @@ type CreateRackRequest struct {
 
 func (x *CreateRackRequest) Reset() {
 	*x = CreateRackRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[47]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2834,7 +2834,7 @@ func (x *CreateRackRequest) String() string {
 func (*CreateRackRequest) ProtoMessage() {}
 
 func (x *CreateRackRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[47]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2847,7 +2847,7 @@ func (x *CreateRackRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRackRequest.ProtoReflect.Descriptor instead.
 func (*CreateRackRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{47}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *CreateRackRequest) GetRack() *models.Rack {
@@ -2876,7 +2876,7 @@ type UpdateRackRequest struct {
 
 func (x *UpdateRackRequest) Reset() {
 	*x = UpdateRackRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[48]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2888,7 +2888,7 @@ func (x *UpdateRackRequest) String() string {
 func (*UpdateRackRequest) ProtoMessage() {}
 
 func (x *UpdateRackRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[48]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2901,7 +2901,7 @@ func (x *UpdateRackRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRackRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRackRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{48}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *UpdateRackRequest) GetRack() *models.Rack {
@@ -2928,7 +2928,7 @@ type GetRackRequest struct {
 
 func (x *GetRackRequest) Reset() {
 	*x = GetRackRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[49]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2940,7 +2940,7 @@ func (x *GetRackRequest) String() string {
 func (*GetRackRequest) ProtoMessage() {}
 
 func (x *GetRackRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[49]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2953,7 +2953,7 @@ func (x *GetRackRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRackRequest.ProtoReflect.Descriptor instead.
 func (*GetRackRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{49}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *GetRackRequest) GetName() string {
@@ -2991,7 +2991,7 @@ type ListRacksRequest struct {
 
 func (x *ListRacksRequest) Reset() {
 	*x = ListRacksRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[50]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3003,7 +3003,7 @@ func (x *ListRacksRequest) String() string {
 func (*ListRacksRequest) ProtoMessage() {}
 
 func (x *ListRacksRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[50]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3016,7 +3016,7 @@ func (x *ListRacksRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRacksRequest.ProtoReflect.Descriptor instead.
 func (*ListRacksRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{50}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *ListRacksRequest) GetPageSize() int32 {
@@ -3067,7 +3067,7 @@ type ListRacksResponse struct {
 
 func (x *ListRacksResponse) Reset() {
 	*x = ListRacksResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[51]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3079,7 +3079,7 @@ func (x *ListRacksResponse) String() string {
 func (*ListRacksResponse) ProtoMessage() {}
 
 func (x *ListRacksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[51]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3092,7 +3092,7 @@ func (x *ListRacksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRacksResponse.ProtoReflect.Descriptor instead.
 func (*ListRacksResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{51}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *ListRacksResponse) GetRacks() []*models.Rack {
@@ -3119,7 +3119,7 @@ type DeleteRackRequest struct {
 
 func (x *DeleteRackRequest) Reset() {
 	*x = DeleteRackRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[52]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3131,7 +3131,7 @@ func (x *DeleteRackRequest) String() string {
 func (*DeleteRackRequest) ProtoMessage() {}
 
 func (x *DeleteRackRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[52]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3144,7 +3144,7 @@ func (x *DeleteRackRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRackRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRackRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{52}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *DeleteRackRequest) GetName() string {
@@ -3166,7 +3166,7 @@ type RenameRackRequest struct {
 
 func (x *RenameRackRequest) Reset() {
 	*x = RenameRackRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[53]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3178,7 +3178,7 @@ func (x *RenameRackRequest) String() string {
 func (*RenameRackRequest) ProtoMessage() {}
 
 func (x *RenameRackRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[53]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3191,7 +3191,7 @@ func (x *RenameRackRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RenameRackRequest.ProtoReflect.Descriptor instead.
 func (*RenameRackRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{53}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *RenameRackRequest) GetName() string {
@@ -3227,7 +3227,7 @@ type CreateMachineLSERequest struct {
 
 func (x *CreateMachineLSERequest) Reset() {
 	*x = CreateMachineLSERequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[54]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3239,7 +3239,7 @@ func (x *CreateMachineLSERequest) String() string {
 func (*CreateMachineLSERequest) ProtoMessage() {}
 
 func (x *CreateMachineLSERequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[54]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3252,7 +3252,7 @@ func (x *CreateMachineLSERequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateMachineLSERequest.ProtoReflect.Descriptor instead.
 func (*CreateMachineLSERequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{54}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *CreateMachineLSERequest) GetMachineLSE() *models.MachineLSE {
@@ -3290,7 +3290,7 @@ type UpdateMachineLSERequest struct {
 
 func (x *UpdateMachineLSERequest) Reset() {
 	*x = UpdateMachineLSERequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[55]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3302,7 +3302,7 @@ func (x *UpdateMachineLSERequest) String() string {
 func (*UpdateMachineLSERequest) ProtoMessage() {}
 
 func (x *UpdateMachineLSERequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[55]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3315,7 +3315,7 @@ func (x *UpdateMachineLSERequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateMachineLSERequest.ProtoReflect.Descriptor instead.
 func (*UpdateMachineLSERequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{55}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *UpdateMachineLSERequest) GetMachineLSE() *models.MachineLSE {
@@ -3349,7 +3349,7 @@ type GetMachineLSERequest struct {
 
 func (x *GetMachineLSERequest) Reset() {
 	*x = GetMachineLSERequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[56]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3361,7 +3361,7 @@ func (x *GetMachineLSERequest) String() string {
 func (*GetMachineLSERequest) ProtoMessage() {}
 
 func (x *GetMachineLSERequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[56]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3374,7 +3374,7 @@ func (x *GetMachineLSERequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMachineLSERequest.ProtoReflect.Descriptor instead.
 func (*GetMachineLSERequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{56}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *GetMachineLSERequest) GetName() string {
@@ -3396,7 +3396,7 @@ type GetMachineLSEBySerialRequest struct {
 
 func (x *GetMachineLSEBySerialRequest) Reset() {
 	*x = GetMachineLSEBySerialRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[57]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3408,7 +3408,7 @@ func (x *GetMachineLSEBySerialRequest) String() string {
 func (*GetMachineLSEBySerialRequest) ProtoMessage() {}
 
 func (x *GetMachineLSEBySerialRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[57]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3421,7 +3421,7 @@ func (x *GetMachineLSEBySerialRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetMachineLSEBySerialRequest.ProtoReflect.Descriptor instead.
 func (*GetMachineLSEBySerialRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{57}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *GetMachineLSEBySerialRequest) GetSerial() string {
@@ -3450,7 +3450,7 @@ type GetHostDataRequest struct {
 
 func (x *GetHostDataRequest) Reset() {
 	*x = GetHostDataRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[58]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3462,7 +3462,7 @@ func (x *GetHostDataRequest) String() string {
 func (*GetHostDataRequest) ProtoMessage() {}
 
 func (x *GetHostDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[58]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3475,7 +3475,7 @@ func (x *GetHostDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHostDataRequest.ProtoReflect.Descriptor instead.
 func (*GetHostDataRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{58}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *GetHostDataRequest) GetSerial() string {
@@ -3504,7 +3504,7 @@ type GetHostDataResponse struct {
 
 func (x *GetHostDataResponse) Reset() {
 	*x = GetHostDataResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[59]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3516,7 +3516,7 @@ func (x *GetHostDataResponse) String() string {
 func (*GetHostDataResponse) ProtoMessage() {}
 
 func (x *GetHostDataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[59]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3529,7 +3529,7 @@ func (x *GetHostDataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHostDataResponse.ProtoReflect.Descriptor instead.
 func (*GetHostDataResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{59}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *GetHostDataResponse) GetHost() *models.MachineLSE {
@@ -3574,7 +3574,7 @@ type ListMachineLSEsRequest struct {
 
 func (x *ListMachineLSEsRequest) Reset() {
 	*x = ListMachineLSEsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[60]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3586,7 +3586,7 @@ func (x *ListMachineLSEsRequest) String() string {
 func (*ListMachineLSEsRequest) ProtoMessage() {}
 
 func (x *ListMachineLSEsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[60]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3599,7 +3599,7 @@ func (x *ListMachineLSEsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMachineLSEsRequest.ProtoReflect.Descriptor instead.
 func (*ListMachineLSEsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{60}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *ListMachineLSEsRequest) GetPageSize() int32 {
@@ -3650,7 +3650,7 @@ type ListMachineLSEsResponse struct {
 
 func (x *ListMachineLSEsResponse) Reset() {
 	*x = ListMachineLSEsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[61]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3662,7 +3662,7 @@ func (x *ListMachineLSEsResponse) String() string {
 func (*ListMachineLSEsResponse) ProtoMessage() {}
 
 func (x *ListMachineLSEsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[61]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3675,7 +3675,7 @@ func (x *ListMachineLSEsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListMachineLSEsResponse.ProtoReflect.Descriptor instead.
 func (*ListMachineLSEsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{61}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *ListMachineLSEsResponse) GetMachineLSEs() []*models.MachineLSE {
@@ -3702,7 +3702,7 @@ type DeleteMachineLSERequest struct {
 
 func (x *DeleteMachineLSERequest) Reset() {
 	*x = DeleteMachineLSERequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[62]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3714,7 +3714,7 @@ func (x *DeleteMachineLSERequest) String() string {
 func (*DeleteMachineLSERequest) ProtoMessage() {}
 
 func (x *DeleteMachineLSERequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[62]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3727,7 +3727,7 @@ func (x *DeleteMachineLSERequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteMachineLSERequest.ProtoReflect.Descriptor instead.
 func (*DeleteMachineLSERequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{62}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *DeleteMachineLSERequest) GetName() string {
@@ -3749,7 +3749,7 @@ type RenameMachineLSERequest struct {
 
 func (x *RenameMachineLSERequest) Reset() {
 	*x = RenameMachineLSERequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[63]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3761,7 +3761,7 @@ func (x *RenameMachineLSERequest) String() string {
 func (*RenameMachineLSERequest) ProtoMessage() {}
 
 func (x *RenameMachineLSERequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[63]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3774,7 +3774,7 @@ func (x *RenameMachineLSERequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RenameMachineLSERequest.ProtoReflect.Descriptor instead.
 func (*RenameMachineLSERequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{63}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *RenameMachineLSERequest) GetName() string {
@@ -3809,7 +3809,7 @@ type CreateRackLSERequest struct {
 
 func (x *CreateRackLSERequest) Reset() {
 	*x = CreateRackLSERequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[64]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3821,7 +3821,7 @@ func (x *CreateRackLSERequest) String() string {
 func (*CreateRackLSERequest) ProtoMessage() {}
 
 func (x *CreateRackLSERequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[64]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3834,7 +3834,7 @@ func (x *CreateRackLSERequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRackLSERequest.ProtoReflect.Descriptor instead.
 func (*CreateRackLSERequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{64}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *CreateRackLSERequest) GetRackLSE() *models.RackLSE {
@@ -3863,7 +3863,7 @@ type UpdateRackLSERequest struct {
 
 func (x *UpdateRackLSERequest) Reset() {
 	*x = UpdateRackLSERequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[65]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3875,7 +3875,7 @@ func (x *UpdateRackLSERequest) String() string {
 func (*UpdateRackLSERequest) ProtoMessage() {}
 
 func (x *UpdateRackLSERequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[65]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3888,7 +3888,7 @@ func (x *UpdateRackLSERequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRackLSERequest.ProtoReflect.Descriptor instead.
 func (*UpdateRackLSERequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{65}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *UpdateRackLSERequest) GetRackLSE() *models.RackLSE {
@@ -3915,7 +3915,7 @@ type GetRackLSERequest struct {
 
 func (x *GetRackLSERequest) Reset() {
 	*x = GetRackLSERequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[66]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3927,7 +3927,7 @@ func (x *GetRackLSERequest) String() string {
 func (*GetRackLSERequest) ProtoMessage() {}
 
 func (x *GetRackLSERequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[66]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3940,7 +3940,7 @@ func (x *GetRackLSERequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRackLSERequest.ProtoReflect.Descriptor instead.
 func (*GetRackLSERequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{66}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *GetRackLSERequest) GetName() string {
@@ -3974,7 +3974,7 @@ type ListRackLSEsRequest struct {
 
 func (x *ListRackLSEsRequest) Reset() {
 	*x = ListRackLSEsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[67]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3986,7 +3986,7 @@ func (x *ListRackLSEsRequest) String() string {
 func (*ListRackLSEsRequest) ProtoMessage() {}
 
 func (x *ListRackLSEsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[67]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3999,7 +3999,7 @@ func (x *ListRackLSEsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRackLSEsRequest.ProtoReflect.Descriptor instead.
 func (*ListRackLSEsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{67}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *ListRackLSEsRequest) GetPageSize() int32 {
@@ -4043,7 +4043,7 @@ type ListRackLSEsResponse struct {
 
 func (x *ListRackLSEsResponse) Reset() {
 	*x = ListRackLSEsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[68]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4055,7 +4055,7 @@ func (x *ListRackLSEsResponse) String() string {
 func (*ListRackLSEsResponse) ProtoMessage() {}
 
 func (x *ListRackLSEsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[68]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4068,7 +4068,7 @@ func (x *ListRackLSEsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRackLSEsResponse.ProtoReflect.Descriptor instead.
 func (*ListRackLSEsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{68}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *ListRackLSEsResponse) GetRackLSEs() []*models.RackLSE {
@@ -4095,7 +4095,7 @@ type DeleteRackLSERequest struct {
 
 func (x *DeleteRackLSERequest) Reset() {
 	*x = DeleteRackLSERequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[69]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4107,7 +4107,7 @@ func (x *DeleteRackLSERequest) String() string {
 func (*DeleteRackLSERequest) ProtoMessage() {}
 
 func (x *DeleteRackLSERequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[69]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4120,7 +4120,7 @@ func (x *DeleteRackLSERequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRackLSERequest.ProtoReflect.Descriptor instead.
 func (*DeleteRackLSERequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{69}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *DeleteRackLSERequest) GetName() string {
@@ -4148,7 +4148,7 @@ type CreateNicRequest struct {
 
 func (x *CreateNicRequest) Reset() {
 	*x = CreateNicRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[70]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4160,7 +4160,7 @@ func (x *CreateNicRequest) String() string {
 func (*CreateNicRequest) ProtoMessage() {}
 
 func (x *CreateNicRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[70]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4173,7 +4173,7 @@ func (x *CreateNicRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateNicRequest.ProtoReflect.Descriptor instead.
 func (*CreateNicRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{70}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *CreateNicRequest) GetNic() *models.Nic {
@@ -4202,7 +4202,7 @@ type UpdateNicRequest struct {
 
 func (x *UpdateNicRequest) Reset() {
 	*x = UpdateNicRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[71]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4214,7 +4214,7 @@ func (x *UpdateNicRequest) String() string {
 func (*UpdateNicRequest) ProtoMessage() {}
 
 func (x *UpdateNicRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[71]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4227,7 +4227,7 @@ func (x *UpdateNicRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateNicRequest.ProtoReflect.Descriptor instead.
 func (*UpdateNicRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{71}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *UpdateNicRequest) GetNic() *models.Nic {
@@ -4254,7 +4254,7 @@ type GetNicRequest struct {
 
 func (x *GetNicRequest) Reset() {
 	*x = GetNicRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[72]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4266,7 +4266,7 @@ func (x *GetNicRequest) String() string {
 func (*GetNicRequest) ProtoMessage() {}
 
 func (x *GetNicRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[72]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4279,7 +4279,7 @@ func (x *GetNicRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetNicRequest.ProtoReflect.Descriptor instead.
 func (*GetNicRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{72}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *GetNicRequest) GetName() string {
@@ -4313,7 +4313,7 @@ type ListNicsRequest struct {
 
 func (x *ListNicsRequest) Reset() {
 	*x = ListNicsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[73]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4325,7 +4325,7 @@ func (x *ListNicsRequest) String() string {
 func (*ListNicsRequest) ProtoMessage() {}
 
 func (x *ListNicsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[73]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4338,7 +4338,7 @@ func (x *ListNicsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListNicsRequest.ProtoReflect.Descriptor instead.
 func (*ListNicsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{73}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *ListNicsRequest) GetPageSize() int32 {
@@ -4382,7 +4382,7 @@ type ListNicsResponse struct {
 
 func (x *ListNicsResponse) Reset() {
 	*x = ListNicsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[74]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4394,7 +4394,7 @@ func (x *ListNicsResponse) String() string {
 func (*ListNicsResponse) ProtoMessage() {}
 
 func (x *ListNicsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[74]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4407,7 +4407,7 @@ func (x *ListNicsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListNicsResponse.ProtoReflect.Descriptor instead.
 func (*ListNicsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{74}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *ListNicsResponse) GetNics() []*models.Nic {
@@ -4434,7 +4434,7 @@ type DeleteNicRequest struct {
 
 func (x *DeleteNicRequest) Reset() {
 	*x = DeleteNicRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[75]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4446,7 +4446,7 @@ func (x *DeleteNicRequest) String() string {
 func (*DeleteNicRequest) ProtoMessage() {}
 
 func (x *DeleteNicRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[75]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4459,7 +4459,7 @@ func (x *DeleteNicRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteNicRequest.ProtoReflect.Descriptor instead.
 func (*DeleteNicRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{75}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *DeleteNicRequest) GetName() string {
@@ -4481,7 +4481,7 @@ type RenameNicRequest struct {
 
 func (x *RenameNicRequest) Reset() {
 	*x = RenameNicRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[76]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4493,7 +4493,7 @@ func (x *RenameNicRequest) String() string {
 func (*RenameNicRequest) ProtoMessage() {}
 
 func (x *RenameNicRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[76]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4506,7 +4506,7 @@ func (x *RenameNicRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RenameNicRequest.ProtoReflect.Descriptor instead.
 func (*RenameNicRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{76}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *RenameNicRequest) GetName() string {
@@ -4535,7 +4535,7 @@ type RenameSwitchRequest struct {
 
 func (x *RenameSwitchRequest) Reset() {
 	*x = RenameSwitchRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[77]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4547,7 +4547,7 @@ func (x *RenameSwitchRequest) String() string {
 func (*RenameSwitchRequest) ProtoMessage() {}
 
 func (x *RenameSwitchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[77]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4560,7 +4560,7 @@ func (x *RenameSwitchRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RenameSwitchRequest.ProtoReflect.Descriptor instead.
 func (*RenameSwitchRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{77}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{77}
 }
 
 func (x *RenameSwitchRequest) GetName() string {
@@ -4595,7 +4595,7 @@ type CreateKVMRequest struct {
 
 func (x *CreateKVMRequest) Reset() {
 	*x = CreateKVMRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[78]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4607,7 +4607,7 @@ func (x *CreateKVMRequest) String() string {
 func (*CreateKVMRequest) ProtoMessage() {}
 
 func (x *CreateKVMRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[78]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4620,7 +4620,7 @@ func (x *CreateKVMRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateKVMRequest.ProtoReflect.Descriptor instead.
 func (*CreateKVMRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{78}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{78}
 }
 
 func (x *CreateKVMRequest) GetKVM() *models.KVM {
@@ -4650,7 +4650,7 @@ type UpdateKVMRequest struct {
 
 func (x *UpdateKVMRequest) Reset() {
 	*x = UpdateKVMRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[79]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4662,7 +4662,7 @@ func (x *UpdateKVMRequest) String() string {
 func (*UpdateKVMRequest) ProtoMessage() {}
 
 func (x *UpdateKVMRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[79]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4675,7 +4675,7 @@ func (x *UpdateKVMRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateKVMRequest.ProtoReflect.Descriptor instead.
 func (*UpdateKVMRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{79}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{79}
 }
 
 func (x *UpdateKVMRequest) GetKVM() *models.KVM {
@@ -4709,7 +4709,7 @@ type GetKVMRequest struct {
 
 func (x *GetKVMRequest) Reset() {
 	*x = GetKVMRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[80]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4721,7 +4721,7 @@ func (x *GetKVMRequest) String() string {
 func (*GetKVMRequest) ProtoMessage() {}
 
 func (x *GetKVMRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[80]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4734,7 +4734,7 @@ func (x *GetKVMRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetKVMRequest.ProtoReflect.Descriptor instead.
 func (*GetKVMRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{80}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{80}
 }
 
 func (x *GetKVMRequest) GetName() string {
@@ -4768,7 +4768,7 @@ type ListKVMsRequest struct {
 
 func (x *ListKVMsRequest) Reset() {
 	*x = ListKVMsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[81]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4780,7 +4780,7 @@ func (x *ListKVMsRequest) String() string {
 func (*ListKVMsRequest) ProtoMessage() {}
 
 func (x *ListKVMsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[81]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4793,7 +4793,7 @@ func (x *ListKVMsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListKVMsRequest.ProtoReflect.Descriptor instead.
 func (*ListKVMsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{81}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{81}
 }
 
 func (x *ListKVMsRequest) GetPageSize() int32 {
@@ -4837,7 +4837,7 @@ type ListKVMsResponse struct {
 
 func (x *ListKVMsResponse) Reset() {
 	*x = ListKVMsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[82]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4849,7 +4849,7 @@ func (x *ListKVMsResponse) String() string {
 func (*ListKVMsResponse) ProtoMessage() {}
 
 func (x *ListKVMsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[82]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4862,7 +4862,7 @@ func (x *ListKVMsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListKVMsResponse.ProtoReflect.Descriptor instead.
 func (*ListKVMsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{82}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{82}
 }
 
 func (x *ListKVMsResponse) GetKVMs() []*models.KVM {
@@ -4889,7 +4889,7 @@ type DeleteKVMRequest struct {
 
 func (x *DeleteKVMRequest) Reset() {
 	*x = DeleteKVMRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[83]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4901,7 +4901,7 @@ func (x *DeleteKVMRequest) String() string {
 func (*DeleteKVMRequest) ProtoMessage() {}
 
 func (x *DeleteKVMRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[83]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4914,7 +4914,7 @@ func (x *DeleteKVMRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteKVMRequest.ProtoReflect.Descriptor instead.
 func (*DeleteKVMRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{83}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{83}
 }
 
 func (x *DeleteKVMRequest) GetName() string {
@@ -4942,7 +4942,7 @@ type CreateRPMRequest struct {
 
 func (x *CreateRPMRequest) Reset() {
 	*x = CreateRPMRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[84]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4954,7 +4954,7 @@ func (x *CreateRPMRequest) String() string {
 func (*CreateRPMRequest) ProtoMessage() {}
 
 func (x *CreateRPMRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[84]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4967,7 +4967,7 @@ func (x *CreateRPMRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRPMRequest.ProtoReflect.Descriptor instead.
 func (*CreateRPMRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{84}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{84}
 }
 
 func (x *CreateRPMRequest) GetRPM() *models.RPM {
@@ -4997,7 +4997,7 @@ type UpdateRPMRequest struct {
 
 func (x *UpdateRPMRequest) Reset() {
 	*x = UpdateRPMRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[85]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5009,7 +5009,7 @@ func (x *UpdateRPMRequest) String() string {
 func (*UpdateRPMRequest) ProtoMessage() {}
 
 func (x *UpdateRPMRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[85]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5022,7 +5022,7 @@ func (x *UpdateRPMRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRPMRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRPMRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{85}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{85}
 }
 
 func (x *UpdateRPMRequest) GetRPM() *models.RPM {
@@ -5056,7 +5056,7 @@ type GetRPMRequest struct {
 
 func (x *GetRPMRequest) Reset() {
 	*x = GetRPMRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[86]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5068,7 +5068,7 @@ func (x *GetRPMRequest) String() string {
 func (*GetRPMRequest) ProtoMessage() {}
 
 func (x *GetRPMRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[86]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5081,7 +5081,7 @@ func (x *GetRPMRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRPMRequest.ProtoReflect.Descriptor instead.
 func (*GetRPMRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{86}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{86}
 }
 
 func (x *GetRPMRequest) GetName() string {
@@ -5115,7 +5115,7 @@ type ListRPMsRequest struct {
 
 func (x *ListRPMsRequest) Reset() {
 	*x = ListRPMsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[87]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5127,7 +5127,7 @@ func (x *ListRPMsRequest) String() string {
 func (*ListRPMsRequest) ProtoMessage() {}
 
 func (x *ListRPMsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[87]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5140,7 +5140,7 @@ func (x *ListRPMsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRPMsRequest.ProtoReflect.Descriptor instead.
 func (*ListRPMsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{87}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{87}
 }
 
 func (x *ListRPMsRequest) GetPageSize() int32 {
@@ -5184,7 +5184,7 @@ type ListRPMsResponse struct {
 
 func (x *ListRPMsResponse) Reset() {
 	*x = ListRPMsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[88]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[88]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5196,7 +5196,7 @@ func (x *ListRPMsResponse) String() string {
 func (*ListRPMsResponse) ProtoMessage() {}
 
 func (x *ListRPMsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[88]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[88]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5209,7 +5209,7 @@ func (x *ListRPMsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRPMsResponse.ProtoReflect.Descriptor instead.
 func (*ListRPMsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{88}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{88}
 }
 
 func (x *ListRPMsResponse) GetRPMs() []*models.RPM {
@@ -5236,7 +5236,7 @@ type DeleteRPMRequest struct {
 
 func (x *DeleteRPMRequest) Reset() {
 	*x = DeleteRPMRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[89]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5248,7 +5248,7 @@ func (x *DeleteRPMRequest) String() string {
 func (*DeleteRPMRequest) ProtoMessage() {}
 
 func (x *DeleteRPMRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[89]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5261,7 +5261,7 @@ func (x *DeleteRPMRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRPMRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRPMRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{89}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{89}
 }
 
 func (x *DeleteRPMRequest) GetName() string {
@@ -5290,7 +5290,7 @@ type CreateDracRequest struct {
 
 func (x *CreateDracRequest) Reset() {
 	*x = CreateDracRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[90]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5302,7 +5302,7 @@ func (x *CreateDracRequest) String() string {
 func (*CreateDracRequest) ProtoMessage() {}
 
 func (x *CreateDracRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[90]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5315,7 +5315,7 @@ func (x *CreateDracRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDracRequest.ProtoReflect.Descriptor instead.
 func (*CreateDracRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{90}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{90}
 }
 
 func (x *CreateDracRequest) GetDrac() *models.Drac {
@@ -5352,7 +5352,7 @@ type UpdateDracRequest struct {
 
 func (x *UpdateDracRequest) Reset() {
 	*x = UpdateDracRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[91]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[91]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5364,7 +5364,7 @@ func (x *UpdateDracRequest) String() string {
 func (*UpdateDracRequest) ProtoMessage() {}
 
 func (x *UpdateDracRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[91]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[91]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5377,7 +5377,7 @@ func (x *UpdateDracRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDracRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDracRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{91}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{91}
 }
 
 func (x *UpdateDracRequest) GetDrac() *models.Drac {
@@ -5411,7 +5411,7 @@ type GetDracRequest struct {
 
 func (x *GetDracRequest) Reset() {
 	*x = GetDracRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[92]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[92]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5423,7 +5423,7 @@ func (x *GetDracRequest) String() string {
 func (*GetDracRequest) ProtoMessage() {}
 
 func (x *GetDracRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[92]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[92]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5436,7 +5436,7 @@ func (x *GetDracRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDracRequest.ProtoReflect.Descriptor instead.
 func (*GetDracRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{92}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{92}
 }
 
 func (x *GetDracRequest) GetName() string {
@@ -5470,7 +5470,7 @@ type ListDracsRequest struct {
 
 func (x *ListDracsRequest) Reset() {
 	*x = ListDracsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[93]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5482,7 +5482,7 @@ func (x *ListDracsRequest) String() string {
 func (*ListDracsRequest) ProtoMessage() {}
 
 func (x *ListDracsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[93]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5495,7 +5495,7 @@ func (x *ListDracsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDracsRequest.ProtoReflect.Descriptor instead.
 func (*ListDracsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{93}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{93}
 }
 
 func (x *ListDracsRequest) GetPageSize() int32 {
@@ -5539,7 +5539,7 @@ type ListDracsResponse struct {
 
 func (x *ListDracsResponse) Reset() {
 	*x = ListDracsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[94]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[94]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5551,7 +5551,7 @@ func (x *ListDracsResponse) String() string {
 func (*ListDracsResponse) ProtoMessage() {}
 
 func (x *ListDracsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[94]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[94]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5564,7 +5564,7 @@ func (x *ListDracsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDracsResponse.ProtoReflect.Descriptor instead.
 func (*ListDracsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{94}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{94}
 }
 
 func (x *ListDracsResponse) GetDracs() []*models.Drac {
@@ -5591,7 +5591,7 @@ type DeleteDracRequest struct {
 
 func (x *DeleteDracRequest) Reset() {
 	*x = DeleteDracRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[95]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[95]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5603,7 +5603,7 @@ func (x *DeleteDracRequest) String() string {
 func (*DeleteDracRequest) ProtoMessage() {}
 
 func (x *DeleteDracRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[95]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[95]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5616,7 +5616,7 @@ func (x *DeleteDracRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDracRequest.ProtoReflect.Descriptor instead.
 func (*DeleteDracRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{95}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{95}
 }
 
 func (x *DeleteDracRequest) GetName() string {
@@ -5644,7 +5644,7 @@ type CreateSwitchRequest struct {
 
 func (x *CreateSwitchRequest) Reset() {
 	*x = CreateSwitchRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[96]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[96]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5656,7 +5656,7 @@ func (x *CreateSwitchRequest) String() string {
 func (*CreateSwitchRequest) ProtoMessage() {}
 
 func (x *CreateSwitchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[96]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[96]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5669,7 +5669,7 @@ func (x *CreateSwitchRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateSwitchRequest.ProtoReflect.Descriptor instead.
 func (*CreateSwitchRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{96}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{96}
 }
 
 func (x *CreateSwitchRequest) GetSwitch() *models.Switch {
@@ -5698,7 +5698,7 @@ type UpdateSwitchRequest struct {
 
 func (x *UpdateSwitchRequest) Reset() {
 	*x = UpdateSwitchRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[97]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[97]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5710,7 +5710,7 @@ func (x *UpdateSwitchRequest) String() string {
 func (*UpdateSwitchRequest) ProtoMessage() {}
 
 func (x *UpdateSwitchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[97]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[97]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5723,7 +5723,7 @@ func (x *UpdateSwitchRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateSwitchRequest.ProtoReflect.Descriptor instead.
 func (*UpdateSwitchRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{97}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{97}
 }
 
 func (x *UpdateSwitchRequest) GetSwitch() *models.Switch {
@@ -5750,7 +5750,7 @@ type GetSwitchRequest struct {
 
 func (x *GetSwitchRequest) Reset() {
 	*x = GetSwitchRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[98]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[98]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5762,7 +5762,7 @@ func (x *GetSwitchRequest) String() string {
 func (*GetSwitchRequest) ProtoMessage() {}
 
 func (x *GetSwitchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[98]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[98]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5775,7 +5775,7 @@ func (x *GetSwitchRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSwitchRequest.ProtoReflect.Descriptor instead.
 func (*GetSwitchRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{98}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{98}
 }
 
 func (x *GetSwitchRequest) GetName() string {
@@ -5809,7 +5809,7 @@ type ListSwitchesRequest struct {
 
 func (x *ListSwitchesRequest) Reset() {
 	*x = ListSwitchesRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[99]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[99]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5821,7 +5821,7 @@ func (x *ListSwitchesRequest) String() string {
 func (*ListSwitchesRequest) ProtoMessage() {}
 
 func (x *ListSwitchesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[99]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[99]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5834,7 +5834,7 @@ func (x *ListSwitchesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListSwitchesRequest.ProtoReflect.Descriptor instead.
 func (*ListSwitchesRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{99}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{99}
 }
 
 func (x *ListSwitchesRequest) GetPageSize() int32 {
@@ -5878,7 +5878,7 @@ type ListSwitchesResponse struct {
 
 func (x *ListSwitchesResponse) Reset() {
 	*x = ListSwitchesResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[100]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[100]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5890,7 +5890,7 @@ func (x *ListSwitchesResponse) String() string {
 func (*ListSwitchesResponse) ProtoMessage() {}
 
 func (x *ListSwitchesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[100]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[100]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5903,7 +5903,7 @@ func (x *ListSwitchesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListSwitchesResponse.ProtoReflect.Descriptor instead.
 func (*ListSwitchesResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{100}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{100}
 }
 
 func (x *ListSwitchesResponse) GetSwitches() []*models.Switch {
@@ -5930,7 +5930,7 @@ type DeleteSwitchRequest struct {
 
 func (x *DeleteSwitchRequest) Reset() {
 	*x = DeleteSwitchRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[101]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[101]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5942,7 +5942,7 @@ func (x *DeleteSwitchRequest) String() string {
 func (*DeleteSwitchRequest) ProtoMessage() {}
 
 func (x *DeleteSwitchRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[101]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[101]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5955,7 +5955,7 @@ func (x *DeleteSwitchRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSwitchRequest.ProtoReflect.Descriptor instead.
 func (*DeleteSwitchRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{101}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{101}
 }
 
 func (x *DeleteSwitchRequest) GetName() string {
@@ -5983,7 +5983,7 @@ type CreateVlanRequest struct {
 
 func (x *CreateVlanRequest) Reset() {
 	*x = CreateVlanRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[102]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[102]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5995,7 +5995,7 @@ func (x *CreateVlanRequest) String() string {
 func (*CreateVlanRequest) ProtoMessage() {}
 
 func (x *CreateVlanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[102]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[102]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6008,7 +6008,7 @@ func (x *CreateVlanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateVlanRequest.ProtoReflect.Descriptor instead.
 func (*CreateVlanRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{102}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{102}
 }
 
 func (x *CreateVlanRequest) GetVlan() *models.Vlan {
@@ -6037,7 +6037,7 @@ type UpdateVlanRequest struct {
 
 func (x *UpdateVlanRequest) Reset() {
 	*x = UpdateVlanRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[103]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[103]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6049,7 +6049,7 @@ func (x *UpdateVlanRequest) String() string {
 func (*UpdateVlanRequest) ProtoMessage() {}
 
 func (x *UpdateVlanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[103]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[103]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6062,7 +6062,7 @@ func (x *UpdateVlanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateVlanRequest.ProtoReflect.Descriptor instead.
 func (*UpdateVlanRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{103}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{103}
 }
 
 func (x *UpdateVlanRequest) GetVlan() *models.Vlan {
@@ -6089,7 +6089,7 @@ type GetVlanRequest struct {
 
 func (x *GetVlanRequest) Reset() {
 	*x = GetVlanRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[104]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[104]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6101,7 +6101,7 @@ func (x *GetVlanRequest) String() string {
 func (*GetVlanRequest) ProtoMessage() {}
 
 func (x *GetVlanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[104]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[104]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6114,7 +6114,7 @@ func (x *GetVlanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetVlanRequest.ProtoReflect.Descriptor instead.
 func (*GetVlanRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{104}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{104}
 }
 
 func (x *GetVlanRequest) GetName() string {
@@ -6148,7 +6148,7 @@ type ListIPsRequest struct {
 
 func (x *ListIPsRequest) Reset() {
 	*x = ListIPsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[105]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[105]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6160,7 +6160,7 @@ func (x *ListIPsRequest) String() string {
 func (*ListIPsRequest) ProtoMessage() {}
 
 func (x *ListIPsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[105]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[105]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6173,7 +6173,7 @@ func (x *ListIPsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIPsRequest.ProtoReflect.Descriptor instead.
 func (*ListIPsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{105}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{105}
 }
 
 func (x *ListIPsRequest) GetPageSize() int32 {
@@ -6228,7 +6228,7 @@ type ListVlansRequest struct {
 
 func (x *ListVlansRequest) Reset() {
 	*x = ListVlansRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[106]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[106]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6240,7 +6240,7 @@ func (x *ListVlansRequest) String() string {
 func (*ListVlansRequest) ProtoMessage() {}
 
 func (x *ListVlansRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[106]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[106]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6253,7 +6253,7 @@ func (x *ListVlansRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListVlansRequest.ProtoReflect.Descriptor instead.
 func (*ListVlansRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{106}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{106}
 }
 
 func (x *ListVlansRequest) GetPageSize() int32 {
@@ -6296,7 +6296,7 @@ type ListIPsResponse struct {
 
 func (x *ListIPsResponse) Reset() {
 	*x = ListIPsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[107]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[107]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6308,7 +6308,7 @@ func (x *ListIPsResponse) String() string {
 func (*ListIPsResponse) ProtoMessage() {}
 
 func (x *ListIPsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[107]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[107]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6321,7 +6321,7 @@ func (x *ListIPsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIPsResponse.ProtoReflect.Descriptor instead.
 func (*ListIPsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{107}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{107}
 }
 
 func (x *ListIPsResponse) GetIps() []*models.IP {
@@ -6351,7 +6351,7 @@ type ListVlansResponse struct {
 
 func (x *ListVlansResponse) Reset() {
 	*x = ListVlansResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[108]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[108]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6363,7 +6363,7 @@ func (x *ListVlansResponse) String() string {
 func (*ListVlansResponse) ProtoMessage() {}
 
 func (x *ListVlansResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[108]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[108]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6376,7 +6376,7 @@ func (x *ListVlansResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListVlansResponse.ProtoReflect.Descriptor instead.
 func (*ListVlansResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{108}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{108}
 }
 
 func (x *ListVlansResponse) GetVlans() []*models.Vlan {
@@ -6403,7 +6403,7 @@ type DeleteVlanRequest struct {
 
 func (x *DeleteVlanRequest) Reset() {
 	*x = DeleteVlanRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[109]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[109]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6415,7 +6415,7 @@ func (x *DeleteVlanRequest) String() string {
 func (*DeleteVlanRequest) ProtoMessage() {}
 
 func (x *DeleteVlanRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[109]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[109]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6428,7 +6428,7 @@ func (x *DeleteVlanRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteVlanRequest.ProtoReflect.Descriptor instead.
 func (*DeleteVlanRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{109}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{109}
 }
 
 func (x *DeleteVlanRequest) GetName() string {
@@ -6451,7 +6451,7 @@ type ImportOSVlansRequest struct {
 
 func (x *ImportOSVlansRequest) Reset() {
 	*x = ImportOSVlansRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[110]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[110]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6463,7 +6463,7 @@ func (x *ImportOSVlansRequest) String() string {
 func (*ImportOSVlansRequest) ProtoMessage() {}
 
 func (x *ImportOSVlansRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[110]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[110]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6476,7 +6476,7 @@ func (x *ImportOSVlansRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ImportOSVlansRequest.ProtoReflect.Descriptor instead.
 func (*ImportOSVlansRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{110}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{110}
 }
 
 func (x *ImportOSVlansRequest) GetSource() isImportOSVlansRequest_Source {
@@ -6530,7 +6530,7 @@ type GetStateRequest struct {
 
 func (x *GetStateRequest) Reset() {
 	*x = GetStateRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[111]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[111]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6542,7 +6542,7 @@ func (x *GetStateRequest) String() string {
 func (*GetStateRequest) ProtoMessage() {}
 
 func (x *GetStateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[111]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[111]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6555,7 +6555,7 @@ func (x *GetStateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetStateRequest.ProtoReflect.Descriptor instead.
 func (*GetStateRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{111}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{111}
 }
 
 func (x *GetStateRequest) GetResourceName() string {
@@ -6577,7 +6577,7 @@ type GetDutStateRequest struct {
 
 func (x *GetDutStateRequest) Reset() {
 	*x = GetDutStateRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[112]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[112]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6589,7 +6589,7 @@ func (x *GetDutStateRequest) String() string {
 func (*GetDutStateRequest) ProtoMessage() {}
 
 func (x *GetDutStateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[112]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[112]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6602,7 +6602,7 @@ func (x *GetDutStateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDutStateRequest.ProtoReflect.Descriptor instead.
 func (*GetDutStateRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{112}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{112}
 }
 
 func (x *GetDutStateRequest) GetChromeosDeviceId() string {
@@ -6643,7 +6643,7 @@ type ListDutStatesRequest struct {
 
 func (x *ListDutStatesRequest) Reset() {
 	*x = ListDutStatesRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[113]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[113]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6655,7 +6655,7 @@ func (x *ListDutStatesRequest) String() string {
 func (*ListDutStatesRequest) ProtoMessage() {}
 
 func (x *ListDutStatesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[113]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[113]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6668,7 +6668,7 @@ func (x *ListDutStatesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDutStatesRequest.ProtoReflect.Descriptor instead.
 func (*ListDutStatesRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{113}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{113}
 }
 
 func (x *ListDutStatesRequest) GetPageSize() int32 {
@@ -6712,7 +6712,7 @@ type ListDutStatesResponse struct {
 
 func (x *ListDutStatesResponse) Reset() {
 	*x = ListDutStatesResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[114]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[114]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6724,7 +6724,7 @@ func (x *ListDutStatesResponse) String() string {
 func (*ListDutStatesResponse) ProtoMessage() {}
 
 func (x *ListDutStatesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[114]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[114]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6737,7 +6737,7 @@ func (x *ListDutStatesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDutStatesResponse.ProtoReflect.Descriptor instead.
 func (*ListDutStatesResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{114}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{114}
 }
 
 func (x *ListDutStatesResponse) GetDutStates() []*lab.DutState {
@@ -6766,7 +6766,7 @@ type UpdateStateRequest struct {
 
 func (x *UpdateStateRequest) Reset() {
 	*x = UpdateStateRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[115]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[115]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6778,7 +6778,7 @@ func (x *UpdateStateRequest) String() string {
 func (*UpdateStateRequest) ProtoMessage() {}
 
 func (x *UpdateStateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[115]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[115]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6791,7 +6791,7 @@ func (x *UpdateStateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateStateRequest.ProtoReflect.Descriptor instead.
 func (*UpdateStateRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{115}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{115}
 }
 
 func (x *UpdateStateRequest) GetState() *models.StateRecord {
@@ -6812,13 +6812,13 @@ type UpdateDutStateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Deprecated Fields
 	//
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/rpc/fleet.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/rpc/fleet.proto.
 	DutState *lab.DutState `protobuf:"bytes,1,opt,name=dut_state,json=dutState,proto3" json:"dut_state,omitempty"`
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/rpc/fleet.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/rpc/fleet.proto.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/rpc/fleet.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/rpc/fleet.proto.
 	DutMeta *models.DutMeta `protobuf:"bytes,3,opt,name=dut_meta,json=dutMeta,proto3" json:"dut_meta,omitempty"`
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/rpc/fleet.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/rpc/fleet.proto.
 	LabMeta       *models.LabMeta `protobuf:"bytes,4,opt,name=lab_meta,json=labMeta,proto3" json:"lab_meta,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -6826,7 +6826,7 @@ type UpdateDutStateRequest struct {
 
 func (x *UpdateDutStateRequest) Reset() {
 	*x = UpdateDutStateRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[116]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[116]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6838,7 +6838,7 @@ func (x *UpdateDutStateRequest) String() string {
 func (*UpdateDutStateRequest) ProtoMessage() {}
 
 func (x *UpdateDutStateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[116]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[116]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6851,10 +6851,10 @@ func (x *UpdateDutStateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDutStateRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDutStateRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{116}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{116}
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/rpc/fleet.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/rpc/fleet.proto.
 func (x *UpdateDutStateRequest) GetDutState() *lab.DutState {
 	if x != nil {
 		return x.DutState
@@ -6862,7 +6862,7 @@ func (x *UpdateDutStateRequest) GetDutState() *lab.DutState {
 	return nil
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/rpc/fleet.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/rpc/fleet.proto.
 func (x *UpdateDutStateRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	if x != nil {
 		return x.UpdateMask
@@ -6870,7 +6870,7 @@ func (x *UpdateDutStateRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/rpc/fleet.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/rpc/fleet.proto.
 func (x *UpdateDutStateRequest) GetDutMeta() *models.DutMeta {
 	if x != nil {
 		return x.DutMeta
@@ -6878,7 +6878,7 @@ func (x *UpdateDutStateRequest) GetDutMeta() *models.DutMeta {
 	return nil
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/rpc/fleet.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/rpc/fleet.proto.
 func (x *UpdateDutStateRequest) GetLabMeta() *models.LabMeta {
 	if x != nil {
 		return x.LabMeta
@@ -6903,7 +6903,7 @@ type ChromeOsRecoveryData struct {
 
 func (x *ChromeOsRecoveryData) Reset() {
 	*x = ChromeOsRecoveryData{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[117]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[117]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6915,7 +6915,7 @@ func (x *ChromeOsRecoveryData) String() string {
 func (*ChromeOsRecoveryData) ProtoMessage() {}
 
 func (x *ChromeOsRecoveryData) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[117]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[117]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6928,7 +6928,7 @@ func (x *ChromeOsRecoveryData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromeOsRecoveryData.ProtoReflect.Descriptor instead.
 func (*ChromeOsRecoveryData) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{117}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{117}
 }
 
 func (x *ChromeOsRecoveryData) GetDutState() *lab.DutState {
@@ -6974,7 +6974,7 @@ type UpdateDeviceRecoveryDataRequest struct {
 
 func (x *UpdateDeviceRecoveryDataRequest) Reset() {
 	*x = UpdateDeviceRecoveryDataRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[118]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[118]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6986,7 +6986,7 @@ func (x *UpdateDeviceRecoveryDataRequest) String() string {
 func (*UpdateDeviceRecoveryDataRequest) ProtoMessage() {}
 
 func (x *UpdateDeviceRecoveryDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[118]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[118]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6999,7 +6999,7 @@ func (x *UpdateDeviceRecoveryDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDeviceRecoveryDataRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDeviceRecoveryDataRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{118}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{118}
 }
 
 func (x *UpdateDeviceRecoveryDataRequest) GetDeviceId() string {
@@ -7065,7 +7065,7 @@ type UpdateDeviceRecoveryDataResponse struct {
 
 func (x *UpdateDeviceRecoveryDataResponse) Reset() {
 	*x = UpdateDeviceRecoveryDataResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[119]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[119]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7077,7 +7077,7 @@ func (x *UpdateDeviceRecoveryDataResponse) String() string {
 func (*UpdateDeviceRecoveryDataResponse) ProtoMessage() {}
 
 func (x *UpdateDeviceRecoveryDataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[119]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[119]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7090,7 +7090,7 @@ func (x *UpdateDeviceRecoveryDataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDeviceRecoveryDataResponse.ProtoReflect.Descriptor instead.
 func (*UpdateDeviceRecoveryDataResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{119}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{119}
 }
 
 type UpdateTestDataRequest struct {
@@ -7113,7 +7113,7 @@ type UpdateTestDataRequest struct {
 
 func (x *UpdateTestDataRequest) Reset() {
 	*x = UpdateTestDataRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[120]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[120]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7125,7 +7125,7 @@ func (x *UpdateTestDataRequest) String() string {
 func (*UpdateTestDataRequest) ProtoMessage() {}
 
 func (x *UpdateTestDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[120]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[120]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7138,7 +7138,7 @@ func (x *UpdateTestDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateTestDataRequest.ProtoReflect.Descriptor instead.
 func (*UpdateTestDataRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{120}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{120}
 }
 
 func (x *UpdateTestDataRequest) GetDeviceId() string {
@@ -7218,7 +7218,7 @@ type UpdateTestDataResponse struct {
 
 func (x *UpdateTestDataResponse) Reset() {
 	*x = UpdateTestDataResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[121]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[121]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7230,7 +7230,7 @@ func (x *UpdateTestDataResponse) String() string {
 func (*UpdateTestDataResponse) ProtoMessage() {}
 
 func (x *UpdateTestDataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[121]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[121]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7243,7 +7243,7 @@ func (x *UpdateTestDataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateTestDataResponse.ProtoReflect.Descriptor instead.
 func (*UpdateTestDataResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{121}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{121}
 }
 
 type RackRegistrationRequest struct {
@@ -7256,7 +7256,7 @@ type RackRegistrationRequest struct {
 
 func (x *RackRegistrationRequest) Reset() {
 	*x = RackRegistrationRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[122]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[122]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7268,7 +7268,7 @@ func (x *RackRegistrationRequest) String() string {
 func (*RackRegistrationRequest) ProtoMessage() {}
 
 func (x *RackRegistrationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[122]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[122]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7281,7 +7281,7 @@ func (x *RackRegistrationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RackRegistrationRequest.ProtoReflect.Descriptor instead.
 func (*RackRegistrationRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{122}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{122}
 }
 
 func (x *RackRegistrationRequest) GetRack() *models.Rack {
@@ -7307,7 +7307,7 @@ type NetworkOption struct {
 
 func (x *NetworkOption) Reset() {
 	*x = NetworkOption{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[123]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[123]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7319,7 +7319,7 @@ func (x *NetworkOption) String() string {
 func (*NetworkOption) ProtoMessage() {}
 
 func (x *NetworkOption) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[123]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[123]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7332,7 +7332,7 @@ func (x *NetworkOption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NetworkOption.ProtoReflect.Descriptor instead.
 func (*NetworkOption) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{123}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{123}
 }
 
 func (x *NetworkOption) GetVlan() string {
@@ -7373,7 +7373,7 @@ type CreateAssetRequest struct {
 
 func (x *CreateAssetRequest) Reset() {
 	*x = CreateAssetRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[124]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[124]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7385,7 +7385,7 @@ func (x *CreateAssetRequest) String() string {
 func (*CreateAssetRequest) ProtoMessage() {}
 
 func (x *CreateAssetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[124]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[124]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7398,7 +7398,7 @@ func (x *CreateAssetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAssetRequest.ProtoReflect.Descriptor instead.
 func (*CreateAssetRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{124}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{124}
 }
 
 func (x *CreateAssetRequest) GetAsset() *models.Asset {
@@ -7420,7 +7420,7 @@ type UpdateAssetRequest struct {
 
 func (x *UpdateAssetRequest) Reset() {
 	*x = UpdateAssetRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[125]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[125]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7432,7 +7432,7 @@ func (x *UpdateAssetRequest) String() string {
 func (*UpdateAssetRequest) ProtoMessage() {}
 
 func (x *UpdateAssetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[125]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[125]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7445,7 +7445,7 @@ func (x *UpdateAssetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAssetRequest.ProtoReflect.Descriptor instead.
 func (*UpdateAssetRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{125}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{125}
 }
 
 func (x *UpdateAssetRequest) GetAsset() *models.Asset {
@@ -7472,7 +7472,7 @@ type GetAssetRequest struct {
 
 func (x *GetAssetRequest) Reset() {
 	*x = GetAssetRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[126]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[126]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7484,7 +7484,7 @@ func (x *GetAssetRequest) String() string {
 func (*GetAssetRequest) ProtoMessage() {}
 
 func (x *GetAssetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[126]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[126]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7497,7 +7497,7 @@ func (x *GetAssetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAssetRequest.ProtoReflect.Descriptor instead.
 func (*GetAssetRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{126}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{126}
 }
 
 func (x *GetAssetRequest) GetName() string {
@@ -7531,7 +7531,7 @@ type ListAssetsRequest struct {
 
 func (x *ListAssetsRequest) Reset() {
 	*x = ListAssetsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[127]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[127]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7543,7 +7543,7 @@ func (x *ListAssetsRequest) String() string {
 func (*ListAssetsRequest) ProtoMessage() {}
 
 func (x *ListAssetsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[127]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[127]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7556,7 +7556,7 @@ func (x *ListAssetsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAssetsRequest.ProtoReflect.Descriptor instead.
 func (*ListAssetsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{127}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{127}
 }
 
 func (x *ListAssetsRequest) GetPageSize() int32 {
@@ -7600,7 +7600,7 @@ type ListAssetsResponse struct {
 
 func (x *ListAssetsResponse) Reset() {
 	*x = ListAssetsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[128]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[128]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7612,7 +7612,7 @@ func (x *ListAssetsResponse) String() string {
 func (*ListAssetsResponse) ProtoMessage() {}
 
 func (x *ListAssetsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[128]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[128]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7625,7 +7625,7 @@ func (x *ListAssetsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAssetsResponse.ProtoReflect.Descriptor instead.
 func (*ListAssetsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{128}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{128}
 }
 
 func (x *ListAssetsResponse) GetAssets() []*models.Asset {
@@ -7652,7 +7652,7 @@ type DeleteAssetRequest struct {
 
 func (x *DeleteAssetRequest) Reset() {
 	*x = DeleteAssetRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[129]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[129]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7664,7 +7664,7 @@ func (x *DeleteAssetRequest) String() string {
 func (*DeleteAssetRequest) ProtoMessage() {}
 
 func (x *DeleteAssetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[129]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[129]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7677,7 +7677,7 @@ func (x *DeleteAssetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAssetRequest.ProtoReflect.Descriptor instead.
 func (*DeleteAssetRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{129}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{129}
 }
 
 func (x *DeleteAssetRequest) GetName() string {
@@ -7699,7 +7699,7 @@ type RenameAssetRequest struct {
 
 func (x *RenameAssetRequest) Reset() {
 	*x = RenameAssetRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[130]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[130]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7711,7 +7711,7 @@ func (x *RenameAssetRequest) String() string {
 func (*RenameAssetRequest) ProtoMessage() {}
 
 func (x *RenameAssetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[130]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[130]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7724,7 +7724,7 @@ func (x *RenameAssetRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RenameAssetRequest.ProtoReflect.Descriptor instead.
 func (*RenameAssetRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{130}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{130}
 }
 
 func (x *RenameAssetRequest) GetName() string {
@@ -7754,7 +7754,7 @@ type BatchGetKVMsRequest struct {
 
 func (x *BatchGetKVMsRequest) Reset() {
 	*x = BatchGetKVMsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[131]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[131]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7766,7 +7766,7 @@ func (x *BatchGetKVMsRequest) String() string {
 func (*BatchGetKVMsRequest) ProtoMessage() {}
 
 func (x *BatchGetKVMsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[131]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[131]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7779,7 +7779,7 @@ func (x *BatchGetKVMsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetKVMsRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetKVMsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{131}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{131}
 }
 
 func (x *BatchGetKVMsRequest) GetParent() string {
@@ -7806,7 +7806,7 @@ type BatchGetKVMsResponse struct {
 
 func (x *BatchGetKVMsResponse) Reset() {
 	*x = BatchGetKVMsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[132]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[132]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7818,7 +7818,7 @@ func (x *BatchGetKVMsResponse) String() string {
 func (*BatchGetKVMsResponse) ProtoMessage() {}
 
 func (x *BatchGetKVMsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[132]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[132]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7831,7 +7831,7 @@ func (x *BatchGetKVMsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetKVMsResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetKVMsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{132}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{132}
 }
 
 func (x *BatchGetKVMsResponse) GetKVMs() []*models.KVM {
@@ -7853,7 +7853,7 @@ type BatchGetDHCPConfigsRequest struct {
 
 func (x *BatchGetDHCPConfigsRequest) Reset() {
 	*x = BatchGetDHCPConfigsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[133]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[133]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7865,7 +7865,7 @@ func (x *BatchGetDHCPConfigsRequest) String() string {
 func (*BatchGetDHCPConfigsRequest) ProtoMessage() {}
 
 func (x *BatchGetDHCPConfigsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[133]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[133]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7878,7 +7878,7 @@ func (x *BatchGetDHCPConfigsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetDHCPConfigsRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetDHCPConfigsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{133}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{133}
 }
 
 func (x *BatchGetDHCPConfigsRequest) GetParent() string {
@@ -7905,7 +7905,7 @@ type BatchGetDHCPConfigsResponse struct {
 
 func (x *BatchGetDHCPConfigsResponse) Reset() {
 	*x = BatchGetDHCPConfigsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[134]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[134]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7917,7 +7917,7 @@ func (x *BatchGetDHCPConfigsResponse) String() string {
 func (*BatchGetDHCPConfigsResponse) ProtoMessage() {}
 
 func (x *BatchGetDHCPConfigsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[134]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[134]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7930,7 +7930,7 @@ func (x *BatchGetDHCPConfigsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetDHCPConfigsResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetDHCPConfigsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{134}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{134}
 }
 
 func (x *BatchGetDHCPConfigsResponse) GetDhcpConfigs() []*models.DHCPConfig {
@@ -7953,7 +7953,7 @@ type BatchGetMachineLSEsRequest struct {
 
 func (x *BatchGetMachineLSEsRequest) Reset() {
 	*x = BatchGetMachineLSEsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[135]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[135]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7965,7 +7965,7 @@ func (x *BatchGetMachineLSEsRequest) String() string {
 func (*BatchGetMachineLSEsRequest) ProtoMessage() {}
 
 func (x *BatchGetMachineLSEsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[135]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[135]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7978,7 +7978,7 @@ func (x *BatchGetMachineLSEsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetMachineLSEsRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetMachineLSEsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{135}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{135}
 }
 
 func (x *BatchGetMachineLSEsRequest) GetParent() string {
@@ -8005,7 +8005,7 @@ type BatchGetMachineLSEsResponse struct {
 
 func (x *BatchGetMachineLSEsResponse) Reset() {
 	*x = BatchGetMachineLSEsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[136]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[136]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8017,7 +8017,7 @@ func (x *BatchGetMachineLSEsResponse) String() string {
 func (*BatchGetMachineLSEsResponse) ProtoMessage() {}
 
 func (x *BatchGetMachineLSEsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[136]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[136]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8030,7 +8030,7 @@ func (x *BatchGetMachineLSEsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetMachineLSEsResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetMachineLSEsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{136}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{136}
 }
 
 func (x *BatchGetMachineLSEsResponse) GetMachineLses() []*models.MachineLSE {
@@ -8053,7 +8053,7 @@ type BatchGetMachinesRequest struct {
 
 func (x *BatchGetMachinesRequest) Reset() {
 	*x = BatchGetMachinesRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[137]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[137]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8065,7 +8065,7 @@ func (x *BatchGetMachinesRequest) String() string {
 func (*BatchGetMachinesRequest) ProtoMessage() {}
 
 func (x *BatchGetMachinesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[137]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[137]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8078,7 +8078,7 @@ func (x *BatchGetMachinesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetMachinesRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetMachinesRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{137}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{137}
 }
 
 func (x *BatchGetMachinesRequest) GetParent() string {
@@ -8105,7 +8105,7 @@ type BatchGetMachinesResponse struct {
 
 func (x *BatchGetMachinesResponse) Reset() {
 	*x = BatchGetMachinesResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[138]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[138]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8117,7 +8117,7 @@ func (x *BatchGetMachinesResponse) String() string {
 func (*BatchGetMachinesResponse) ProtoMessage() {}
 
 func (x *BatchGetMachinesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[138]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[138]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8130,7 +8130,7 @@ func (x *BatchGetMachinesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetMachinesResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetMachinesResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{138}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{138}
 }
 
 func (x *BatchGetMachinesResponse) GetMachines() []*models.Machine {
@@ -8153,7 +8153,7 @@ type BatchGetSwitchesRequest struct {
 
 func (x *BatchGetSwitchesRequest) Reset() {
 	*x = BatchGetSwitchesRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[139]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[139]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8165,7 +8165,7 @@ func (x *BatchGetSwitchesRequest) String() string {
 func (*BatchGetSwitchesRequest) ProtoMessage() {}
 
 func (x *BatchGetSwitchesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[139]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[139]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8178,7 +8178,7 @@ func (x *BatchGetSwitchesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetSwitchesRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetSwitchesRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{139}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{139}
 }
 
 func (x *BatchGetSwitchesRequest) GetParent() string {
@@ -8205,7 +8205,7 @@ type BatchGetSwitchesResponse struct {
 
 func (x *BatchGetSwitchesResponse) Reset() {
 	*x = BatchGetSwitchesResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[140]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[140]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8217,7 +8217,7 @@ func (x *BatchGetSwitchesResponse) String() string {
 func (*BatchGetSwitchesResponse) ProtoMessage() {}
 
 func (x *BatchGetSwitchesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[140]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[140]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8230,7 +8230,7 @@ func (x *BatchGetSwitchesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetSwitchesResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetSwitchesResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{140}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{140}
 }
 
 func (x *BatchGetSwitchesResponse) GetSwitches() []*models.Switch {
@@ -8253,7 +8253,7 @@ type BatchGetRPMsRequest struct {
 
 func (x *BatchGetRPMsRequest) Reset() {
 	*x = BatchGetRPMsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[141]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[141]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8265,7 +8265,7 @@ func (x *BatchGetRPMsRequest) String() string {
 func (*BatchGetRPMsRequest) ProtoMessage() {}
 
 func (x *BatchGetRPMsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[141]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[141]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8278,7 +8278,7 @@ func (x *BatchGetRPMsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetRPMsRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetRPMsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{141}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{141}
 }
 
 func (x *BatchGetRPMsRequest) GetParent() string {
@@ -8305,7 +8305,7 @@ type BatchGetRPMsResponse struct {
 
 func (x *BatchGetRPMsResponse) Reset() {
 	*x = BatchGetRPMsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[142]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[142]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8317,7 +8317,7 @@ func (x *BatchGetRPMsResponse) String() string {
 func (*BatchGetRPMsResponse) ProtoMessage() {}
 
 func (x *BatchGetRPMsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[142]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[142]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8330,7 +8330,7 @@ func (x *BatchGetRPMsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetRPMsResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetRPMsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{142}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{142}
 }
 
 func (x *BatchGetRPMsResponse) GetRpms() []*models.RPM {
@@ -8353,7 +8353,7 @@ type BatchGetDracsRequest struct {
 
 func (x *BatchGetDracsRequest) Reset() {
 	*x = BatchGetDracsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[143]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[143]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8365,7 +8365,7 @@ func (x *BatchGetDracsRequest) String() string {
 func (*BatchGetDracsRequest) ProtoMessage() {}
 
 func (x *BatchGetDracsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[143]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[143]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8378,7 +8378,7 @@ func (x *BatchGetDracsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetDracsRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetDracsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{143}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{143}
 }
 
 func (x *BatchGetDracsRequest) GetParent() string {
@@ -8405,7 +8405,7 @@ type BatchGetDracsResponse struct {
 
 func (x *BatchGetDracsResponse) Reset() {
 	*x = BatchGetDracsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[144]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[144]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8417,7 +8417,7 @@ func (x *BatchGetDracsResponse) String() string {
 func (*BatchGetDracsResponse) ProtoMessage() {}
 
 func (x *BatchGetDracsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[144]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[144]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8430,7 +8430,7 @@ func (x *BatchGetDracsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetDracsResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetDracsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{144}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{144}
 }
 
 func (x *BatchGetDracsResponse) GetDracs() []*models.Drac {
@@ -8453,7 +8453,7 @@ type BatchGetNicsRequest struct {
 
 func (x *BatchGetNicsRequest) Reset() {
 	*x = BatchGetNicsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[145]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[145]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8465,7 +8465,7 @@ func (x *BatchGetNicsRequest) String() string {
 func (*BatchGetNicsRequest) ProtoMessage() {}
 
 func (x *BatchGetNicsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[145]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[145]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8478,7 +8478,7 @@ func (x *BatchGetNicsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetNicsRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetNicsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{145}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{145}
 }
 
 func (x *BatchGetNicsRequest) GetParent() string {
@@ -8505,7 +8505,7 @@ type BatchGetNicsResponse struct {
 
 func (x *BatchGetNicsResponse) Reset() {
 	*x = BatchGetNicsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[146]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[146]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8517,7 +8517,7 @@ func (x *BatchGetNicsResponse) String() string {
 func (*BatchGetNicsResponse) ProtoMessage() {}
 
 func (x *BatchGetNicsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[146]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[146]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8530,7 +8530,7 @@ func (x *BatchGetNicsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetNicsResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetNicsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{146}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{146}
 }
 
 func (x *BatchGetNicsResponse) GetNics() []*models.Nic {
@@ -8553,7 +8553,7 @@ type BatchGetVMsRequest struct {
 
 func (x *BatchGetVMsRequest) Reset() {
 	*x = BatchGetVMsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[147]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[147]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8565,7 +8565,7 @@ func (x *BatchGetVMsRequest) String() string {
 func (*BatchGetVMsRequest) ProtoMessage() {}
 
 func (x *BatchGetVMsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[147]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[147]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8578,7 +8578,7 @@ func (x *BatchGetVMsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetVMsRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetVMsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{147}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{147}
 }
 
 func (x *BatchGetVMsRequest) GetParent() string {
@@ -8605,7 +8605,7 @@ type BatchGetVMsResponse struct {
 
 func (x *BatchGetVMsResponse) Reset() {
 	*x = BatchGetVMsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[148]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[148]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8617,7 +8617,7 @@ func (x *BatchGetVMsResponse) String() string {
 func (*BatchGetVMsResponse) ProtoMessage() {}
 
 func (x *BatchGetVMsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[148]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[148]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8630,7 +8630,7 @@ func (x *BatchGetVMsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetVMsResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetVMsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{148}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{148}
 }
 
 func (x *BatchGetVMsResponse) GetVms() []*models.VM {
@@ -8653,7 +8653,7 @@ type BatchGetVlansRequest struct {
 
 func (x *BatchGetVlansRequest) Reset() {
 	*x = BatchGetVlansRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[149]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[149]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8665,7 +8665,7 @@ func (x *BatchGetVlansRequest) String() string {
 func (*BatchGetVlansRequest) ProtoMessage() {}
 
 func (x *BatchGetVlansRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[149]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[149]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8678,7 +8678,7 @@ func (x *BatchGetVlansRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetVlansRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetVlansRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{149}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{149}
 }
 
 func (x *BatchGetVlansRequest) GetParent() string {
@@ -8705,7 +8705,7 @@ type BatchGetVlansResponse struct {
 
 func (x *BatchGetVlansResponse) Reset() {
 	*x = BatchGetVlansResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[150]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[150]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8717,7 +8717,7 @@ func (x *BatchGetVlansResponse) String() string {
 func (*BatchGetVlansResponse) ProtoMessage() {}
 
 func (x *BatchGetVlansResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[150]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[150]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8730,7 +8730,7 @@ func (x *BatchGetVlansResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetVlansResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetVlansResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{150}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{150}
 }
 
 func (x *BatchGetVlansResponse) GetVlans() []*models.Vlan {
@@ -8753,7 +8753,7 @@ type BatchGetRacksRequest struct {
 
 func (x *BatchGetRacksRequest) Reset() {
 	*x = BatchGetRacksRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[151]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[151]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8765,7 +8765,7 @@ func (x *BatchGetRacksRequest) String() string {
 func (*BatchGetRacksRequest) ProtoMessage() {}
 
 func (x *BatchGetRacksRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[151]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[151]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8778,7 +8778,7 @@ func (x *BatchGetRacksRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetRacksRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetRacksRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{151}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{151}
 }
 
 func (x *BatchGetRacksRequest) GetParent() string {
@@ -8805,7 +8805,7 @@ type BatchGetRacksResponse struct {
 
 func (x *BatchGetRacksResponse) Reset() {
 	*x = BatchGetRacksResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[152]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[152]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8817,7 +8817,7 @@ func (x *BatchGetRacksResponse) String() string {
 func (*BatchGetRacksResponse) ProtoMessage() {}
 
 func (x *BatchGetRacksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[152]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[152]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8830,7 +8830,7 @@ func (x *BatchGetRacksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetRacksResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetRacksResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{152}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{152}
 }
 
 func (x *BatchGetRacksResponse) GetRacks() []*models.Rack {
@@ -8853,7 +8853,7 @@ type BatchGetChromePlatformsRequest struct {
 
 func (x *BatchGetChromePlatformsRequest) Reset() {
 	*x = BatchGetChromePlatformsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[153]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[153]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8865,7 +8865,7 @@ func (x *BatchGetChromePlatformsRequest) String() string {
 func (*BatchGetChromePlatformsRequest) ProtoMessage() {}
 
 func (x *BatchGetChromePlatformsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[153]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[153]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8878,7 +8878,7 @@ func (x *BatchGetChromePlatformsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetChromePlatformsRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetChromePlatformsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{153}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{153}
 }
 
 func (x *BatchGetChromePlatformsRequest) GetParent() string {
@@ -8905,7 +8905,7 @@ type BatchGetChromePlatformsResponse struct {
 
 func (x *BatchGetChromePlatformsResponse) Reset() {
 	*x = BatchGetChromePlatformsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[154]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[154]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8917,7 +8917,7 @@ func (x *BatchGetChromePlatformsResponse) String() string {
 func (*BatchGetChromePlatformsResponse) ProtoMessage() {}
 
 func (x *BatchGetChromePlatformsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[154]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[154]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8930,7 +8930,7 @@ func (x *BatchGetChromePlatformsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetChromePlatformsResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetChromePlatformsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{154}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{154}
 }
 
 func (x *BatchGetChromePlatformsResponse) GetChromePlatforms() []*models.ChromePlatform {
@@ -8953,7 +8953,7 @@ type BatchGetMachineLSEPrototypesRequest struct {
 
 func (x *BatchGetMachineLSEPrototypesRequest) Reset() {
 	*x = BatchGetMachineLSEPrototypesRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[155]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[155]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -8965,7 +8965,7 @@ func (x *BatchGetMachineLSEPrototypesRequest) String() string {
 func (*BatchGetMachineLSEPrototypesRequest) ProtoMessage() {}
 
 func (x *BatchGetMachineLSEPrototypesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[155]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[155]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -8978,7 +8978,7 @@ func (x *BatchGetMachineLSEPrototypesRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use BatchGetMachineLSEPrototypesRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetMachineLSEPrototypesRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{155}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{155}
 }
 
 func (x *BatchGetMachineLSEPrototypesRequest) GetParent() string {
@@ -9005,7 +9005,7 @@ type BatchGetMachineLSEPrototypesResponse struct {
 
 func (x *BatchGetMachineLSEPrototypesResponse) Reset() {
 	*x = BatchGetMachineLSEPrototypesResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[156]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[156]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9017,7 +9017,7 @@ func (x *BatchGetMachineLSEPrototypesResponse) String() string {
 func (*BatchGetMachineLSEPrototypesResponse) ProtoMessage() {}
 
 func (x *BatchGetMachineLSEPrototypesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[156]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[156]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9030,7 +9030,7 @@ func (x *BatchGetMachineLSEPrototypesResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use BatchGetMachineLSEPrototypesResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetMachineLSEPrototypesResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{156}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{156}
 }
 
 func (x *BatchGetMachineLSEPrototypesResponse) GetMachineLsePrototypes() []*models.MachineLSEPrototype {
@@ -9053,7 +9053,7 @@ type BatchGetRackLSEPrototypesRequest struct {
 
 func (x *BatchGetRackLSEPrototypesRequest) Reset() {
 	*x = BatchGetRackLSEPrototypesRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[157]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[157]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9065,7 +9065,7 @@ func (x *BatchGetRackLSEPrototypesRequest) String() string {
 func (*BatchGetRackLSEPrototypesRequest) ProtoMessage() {}
 
 func (x *BatchGetRackLSEPrototypesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[157]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[157]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9078,7 +9078,7 @@ func (x *BatchGetRackLSEPrototypesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchGetRackLSEPrototypesRequest.ProtoReflect.Descriptor instead.
 func (*BatchGetRackLSEPrototypesRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{157}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{157}
 }
 
 func (x *BatchGetRackLSEPrototypesRequest) GetParent() string {
@@ -9105,7 +9105,7 @@ type BatchGetRackLSEPrototypesResponse struct {
 
 func (x *BatchGetRackLSEPrototypesResponse) Reset() {
 	*x = BatchGetRackLSEPrototypesResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[158]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[158]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9117,7 +9117,7 @@ func (x *BatchGetRackLSEPrototypesResponse) String() string {
 func (*BatchGetRackLSEPrototypesResponse) ProtoMessage() {}
 
 func (x *BatchGetRackLSEPrototypesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[158]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[158]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9130,7 +9130,7 @@ func (x *BatchGetRackLSEPrototypesResponse) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use BatchGetRackLSEPrototypesResponse.ProtoReflect.Descriptor instead.
 func (*BatchGetRackLSEPrototypesResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{158}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{158}
 }
 
 func (x *BatchGetRackLSEPrototypesResponse) GetRackLsePrototypes() []*models.RackLSEPrototype {
@@ -9152,7 +9152,7 @@ type GetChromeOSDeviceDataRequest struct {
 
 func (x *GetChromeOSDeviceDataRequest) Reset() {
 	*x = GetChromeOSDeviceDataRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[159]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[159]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9164,7 +9164,7 @@ func (x *GetChromeOSDeviceDataRequest) String() string {
 func (*GetChromeOSDeviceDataRequest) ProtoMessage() {}
 
 func (x *GetChromeOSDeviceDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[159]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[159]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9177,7 +9177,7 @@ func (x *GetChromeOSDeviceDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetChromeOSDeviceDataRequest.ProtoReflect.Descriptor instead.
 func (*GetChromeOSDeviceDataRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{159}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{159}
 }
 
 func (x *GetChromeOSDeviceDataRequest) GetChromeosDeviceId() string {
@@ -9211,7 +9211,7 @@ type CreateCachingServiceRequest struct {
 
 func (x *CreateCachingServiceRequest) Reset() {
 	*x = CreateCachingServiceRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[160]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[160]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9223,7 +9223,7 @@ func (x *CreateCachingServiceRequest) String() string {
 func (*CreateCachingServiceRequest) ProtoMessage() {}
 
 func (x *CreateCachingServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[160]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[160]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9236,7 +9236,7 @@ func (x *CreateCachingServiceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCachingServiceRequest.ProtoReflect.Descriptor instead.
 func (*CreateCachingServiceRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{160}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{160}
 }
 
 func (x *CreateCachingServiceRequest) GetCachingService() *models.CachingService {
@@ -9265,7 +9265,7 @@ type UpdateCachingServiceRequest struct {
 
 func (x *UpdateCachingServiceRequest) Reset() {
 	*x = UpdateCachingServiceRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[161]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[161]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9277,7 +9277,7 @@ func (x *UpdateCachingServiceRequest) String() string {
 func (*UpdateCachingServiceRequest) ProtoMessage() {}
 
 func (x *UpdateCachingServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[161]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[161]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9290,7 +9290,7 @@ func (x *UpdateCachingServiceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCachingServiceRequest.ProtoReflect.Descriptor instead.
 func (*UpdateCachingServiceRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{161}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{161}
 }
 
 func (x *UpdateCachingServiceRequest) GetCachingService() *models.CachingService {
@@ -9318,7 +9318,7 @@ type GetCachingServiceRequest struct {
 
 func (x *GetCachingServiceRequest) Reset() {
 	*x = GetCachingServiceRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[162]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[162]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9330,7 +9330,7 @@ func (x *GetCachingServiceRequest) String() string {
 func (*GetCachingServiceRequest) ProtoMessage() {}
 
 func (x *GetCachingServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[162]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[162]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9343,7 +9343,7 @@ func (x *GetCachingServiceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCachingServiceRequest.ProtoReflect.Descriptor instead.
 func (*GetCachingServiceRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{162}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{162}
 }
 
 func (x *GetCachingServiceRequest) GetName() string {
@@ -9377,7 +9377,7 @@ type ListCachingServicesRequest struct {
 
 func (x *ListCachingServicesRequest) Reset() {
 	*x = ListCachingServicesRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[163]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[163]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9389,7 +9389,7 @@ func (x *ListCachingServicesRequest) String() string {
 func (*ListCachingServicesRequest) ProtoMessage() {}
 
 func (x *ListCachingServicesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[163]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[163]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9402,7 +9402,7 @@ func (x *ListCachingServicesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCachingServicesRequest.ProtoReflect.Descriptor instead.
 func (*ListCachingServicesRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{163}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{163}
 }
 
 func (x *ListCachingServicesRequest) GetPageSize() int32 {
@@ -9446,7 +9446,7 @@ type ListCachingServicesResponse struct {
 
 func (x *ListCachingServicesResponse) Reset() {
 	*x = ListCachingServicesResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[164]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[164]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9458,7 +9458,7 @@ func (x *ListCachingServicesResponse) String() string {
 func (*ListCachingServicesResponse) ProtoMessage() {}
 
 func (x *ListCachingServicesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[164]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[164]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9471,7 +9471,7 @@ func (x *ListCachingServicesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCachingServicesResponse.ProtoReflect.Descriptor instead.
 func (*ListCachingServicesResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{164}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{164}
 }
 
 func (x *ListCachingServicesResponse) GetCachingServices() []*models.CachingService {
@@ -9499,7 +9499,7 @@ type DeleteCachingServiceRequest struct {
 
 func (x *DeleteCachingServiceRequest) Reset() {
 	*x = DeleteCachingServiceRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[165]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[165]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9511,7 +9511,7 @@ func (x *DeleteCachingServiceRequest) String() string {
 func (*DeleteCachingServiceRequest) ProtoMessage() {}
 
 func (x *DeleteCachingServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[165]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[165]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9524,7 +9524,7 @@ func (x *DeleteCachingServiceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCachingServiceRequest.ProtoReflect.Descriptor instead.
 func (*DeleteCachingServiceRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{165}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{165}
 }
 
 func (x *DeleteCachingServiceRequest) GetName() string {
@@ -9552,7 +9552,7 @@ type CreateSchedulingUnitRequest struct {
 
 func (x *CreateSchedulingUnitRequest) Reset() {
 	*x = CreateSchedulingUnitRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[166]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[166]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9564,7 +9564,7 @@ func (x *CreateSchedulingUnitRequest) String() string {
 func (*CreateSchedulingUnitRequest) ProtoMessage() {}
 
 func (x *CreateSchedulingUnitRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[166]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[166]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9577,7 +9577,7 @@ func (x *CreateSchedulingUnitRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateSchedulingUnitRequest.ProtoReflect.Descriptor instead.
 func (*CreateSchedulingUnitRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{166}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{166}
 }
 
 func (x *CreateSchedulingUnitRequest) GetSchedulingUnit() *models.SchedulingUnit {
@@ -9606,7 +9606,7 @@ type UpdateSchedulingUnitRequest struct {
 
 func (x *UpdateSchedulingUnitRequest) Reset() {
 	*x = UpdateSchedulingUnitRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[167]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[167]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9618,7 +9618,7 @@ func (x *UpdateSchedulingUnitRequest) String() string {
 func (*UpdateSchedulingUnitRequest) ProtoMessage() {}
 
 func (x *UpdateSchedulingUnitRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[167]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[167]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9631,7 +9631,7 @@ func (x *UpdateSchedulingUnitRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateSchedulingUnitRequest.ProtoReflect.Descriptor instead.
 func (*UpdateSchedulingUnitRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{167}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{167}
 }
 
 func (x *UpdateSchedulingUnitRequest) GetSchedulingUnit() *models.SchedulingUnit {
@@ -9659,7 +9659,7 @@ type GetSchedulingUnitRequest struct {
 
 func (x *GetSchedulingUnitRequest) Reset() {
 	*x = GetSchedulingUnitRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[168]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[168]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9671,7 +9671,7 @@ func (x *GetSchedulingUnitRequest) String() string {
 func (*GetSchedulingUnitRequest) ProtoMessage() {}
 
 func (x *GetSchedulingUnitRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[168]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[168]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9684,7 +9684,7 @@ func (x *GetSchedulingUnitRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSchedulingUnitRequest.ProtoReflect.Descriptor instead.
 func (*GetSchedulingUnitRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{168}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{168}
 }
 
 func (x *GetSchedulingUnitRequest) GetName() string {
@@ -9718,7 +9718,7 @@ type ListSchedulingUnitsRequest struct {
 
 func (x *ListSchedulingUnitsRequest) Reset() {
 	*x = ListSchedulingUnitsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[169]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[169]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9730,7 +9730,7 @@ func (x *ListSchedulingUnitsRequest) String() string {
 func (*ListSchedulingUnitsRequest) ProtoMessage() {}
 
 func (x *ListSchedulingUnitsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[169]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[169]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9743,7 +9743,7 @@ func (x *ListSchedulingUnitsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListSchedulingUnitsRequest.ProtoReflect.Descriptor instead.
 func (*ListSchedulingUnitsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{169}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{169}
 }
 
 func (x *ListSchedulingUnitsRequest) GetPageSize() int32 {
@@ -9787,7 +9787,7 @@ type ListSchedulingUnitsResponse struct {
 
 func (x *ListSchedulingUnitsResponse) Reset() {
 	*x = ListSchedulingUnitsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[170]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[170]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9799,7 +9799,7 @@ func (x *ListSchedulingUnitsResponse) String() string {
 func (*ListSchedulingUnitsResponse) ProtoMessage() {}
 
 func (x *ListSchedulingUnitsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[170]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[170]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9812,7 +9812,7 @@ func (x *ListSchedulingUnitsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListSchedulingUnitsResponse.ProtoReflect.Descriptor instead.
 func (*ListSchedulingUnitsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{170}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{170}
 }
 
 func (x *ListSchedulingUnitsResponse) GetSchedulingUnits() []*models.SchedulingUnit {
@@ -9840,7 +9840,7 @@ type DeleteSchedulingUnitRequest struct {
 
 func (x *DeleteSchedulingUnitRequest) Reset() {
 	*x = DeleteSchedulingUnitRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[171]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[171]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9852,7 +9852,7 @@ func (x *DeleteSchedulingUnitRequest) String() string {
 func (*DeleteSchedulingUnitRequest) ProtoMessage() {}
 
 func (x *DeleteSchedulingUnitRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[171]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[171]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9865,7 +9865,7 @@ func (x *DeleteSchedulingUnitRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSchedulingUnitRequest.ProtoReflect.Descriptor instead.
 func (*DeleteSchedulingUnitRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{171}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{171}
 }
 
 func (x *DeleteSchedulingUnitRequest) GetName() string {
@@ -9896,7 +9896,7 @@ type UpdateConfigBundleRequest struct {
 
 func (x *UpdateConfigBundleRequest) Reset() {
 	*x = UpdateConfigBundleRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[172]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[172]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9908,7 +9908,7 @@ func (x *UpdateConfigBundleRequest) String() string {
 func (*UpdateConfigBundleRequest) ProtoMessage() {}
 
 func (x *UpdateConfigBundleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[172]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[172]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9921,7 +9921,7 @@ func (x *UpdateConfigBundleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateConfigBundleRequest.ProtoReflect.Descriptor instead.
 func (*UpdateConfigBundleRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{172}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{172}
 }
 
 func (x *UpdateConfigBundleRequest) GetConfigBundle() []byte {
@@ -9959,7 +9959,7 @@ type UpdateConfigBundleResponse struct {
 
 func (x *UpdateConfigBundleResponse) Reset() {
 	*x = UpdateConfigBundleResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[173]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[173]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -9971,7 +9971,7 @@ func (x *UpdateConfigBundleResponse) String() string {
 func (*UpdateConfigBundleResponse) ProtoMessage() {}
 
 func (x *UpdateConfigBundleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[173]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[173]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -9984,7 +9984,7 @@ func (x *UpdateConfigBundleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateConfigBundleResponse.ProtoReflect.Descriptor instead.
 func (*UpdateConfigBundleResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{173}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{173}
 }
 
 func (x *UpdateConfigBundleResponse) GetConfigBundle() []byte {
@@ -10006,7 +10006,7 @@ type GetDeviceDataRequest struct {
 
 func (x *GetDeviceDataRequest) Reset() {
 	*x = GetDeviceDataRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[174]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[174]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10018,7 +10018,7 @@ func (x *GetDeviceDataRequest) String() string {
 func (*GetDeviceDataRequest) ProtoMessage() {}
 
 func (x *GetDeviceDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[174]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[174]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10031,7 +10031,7 @@ func (x *GetDeviceDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeviceDataRequest.ProtoReflect.Descriptor instead.
 func (*GetDeviceDataRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{174}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{174}
 }
 
 func (x *GetDeviceDataRequest) GetDeviceId() string {
@@ -10064,7 +10064,7 @@ type GetDeviceDataResponse struct {
 
 func (x *GetDeviceDataResponse) Reset() {
 	*x = GetDeviceDataResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[175]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[175]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10076,7 +10076,7 @@ func (x *GetDeviceDataResponse) String() string {
 func (*GetDeviceDataResponse) ProtoMessage() {}
 
 func (x *GetDeviceDataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[175]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[175]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10089,7 +10089,7 @@ func (x *GetDeviceDataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeviceDataResponse.ProtoReflect.Descriptor instead.
 func (*GetDeviceDataResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{175}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{175}
 }
 
 func (x *GetDeviceDataResponse) GetResource() isGetDeviceDataResponse_Resource {
@@ -10182,7 +10182,7 @@ type AttachedDeviceData struct {
 
 func (x *AttachedDeviceData) Reset() {
 	*x = AttachedDeviceData{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[176]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[176]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10194,7 +10194,7 @@ func (x *AttachedDeviceData) String() string {
 func (*AttachedDeviceData) ProtoMessage() {}
 
 func (x *AttachedDeviceData) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[176]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[176]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10207,7 +10207,7 @@ func (x *AttachedDeviceData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AttachedDeviceData.ProtoReflect.Descriptor instead.
 func (*AttachedDeviceData) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{176}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{176}
 }
 
 func (x *AttachedDeviceData) GetLabConfig() *models.MachineLSE {
@@ -10242,7 +10242,7 @@ type BrowserDeviceData struct {
 
 func (x *BrowserDeviceData) Reset() {
 	*x = BrowserDeviceData{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[177]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[177]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10254,7 +10254,7 @@ func (x *BrowserDeviceData) String() string {
 func (*BrowserDeviceData) ProtoMessage() {}
 
 func (x *BrowserDeviceData) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[177]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[177]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10267,7 +10267,7 @@ func (x *BrowserDeviceData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BrowserDeviceData.ProtoReflect.Descriptor instead.
 func (*BrowserDeviceData) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{177}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{177}
 }
 
 func (x *BrowserDeviceData) GetHost() *models.MachineLSE {
@@ -10302,7 +10302,7 @@ type CheckFleetTestsPolicyRequest struct {
 
 func (x *CheckFleetTestsPolicyRequest) Reset() {
 	*x = CheckFleetTestsPolicyRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[178]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[178]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10314,7 +10314,7 @@ func (x *CheckFleetTestsPolicyRequest) String() string {
 func (*CheckFleetTestsPolicyRequest) ProtoMessage() {}
 
 func (x *CheckFleetTestsPolicyRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[178]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[178]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10327,7 +10327,7 @@ func (x *CheckFleetTestsPolicyRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckFleetTestsPolicyRequest.ProtoReflect.Descriptor instead.
 func (*CheckFleetTestsPolicyRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{178}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{178}
 }
 
 func (x *CheckFleetTestsPolicyRequest) GetTestName() string {
@@ -10384,7 +10384,7 @@ type TestStatus struct {
 
 func (x *TestStatus) Reset() {
 	*x = TestStatus{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[179]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[179]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10396,7 +10396,7 @@ func (x *TestStatus) String() string {
 func (*TestStatus) ProtoMessage() {}
 
 func (x *TestStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[179]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[179]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10409,7 +10409,7 @@ func (x *TestStatus) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TestStatus.ProtoReflect.Descriptor instead.
 func (*TestStatus) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{179}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{179}
 }
 
 func (x *TestStatus) GetCode() TestStatus_Code {
@@ -10430,7 +10430,7 @@ type CheckFleetTestsPolicyResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Indicates whether the test parameters are valid for a test.
 	//
-	// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/rpc/fleet.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/rpc/fleet.proto.
 	IsTestValid bool `protobuf:"varint,1,opt,name=is_test_valid,json=isTestValid,proto3" json:"is_test_valid,omitempty"`
 	// Status of the test with a code and an optional message
 	TestStatus    *TestStatus `protobuf:"bytes,2,opt,name=testStatus,proto3" json:"testStatus,omitempty"`
@@ -10440,7 +10440,7 @@ type CheckFleetTestsPolicyResponse struct {
 
 func (x *CheckFleetTestsPolicyResponse) Reset() {
 	*x = CheckFleetTestsPolicyResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[180]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[180]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10452,7 +10452,7 @@ func (x *CheckFleetTestsPolicyResponse) String() string {
 func (*CheckFleetTestsPolicyResponse) ProtoMessage() {}
 
 func (x *CheckFleetTestsPolicyResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[180]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[180]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10465,10 +10465,10 @@ func (x *CheckFleetTestsPolicyResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CheckFleetTestsPolicyResponse.ProtoReflect.Descriptor instead.
 func (*CheckFleetTestsPolicyResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{180}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{180}
 }
 
-// Deprecated: Marked as deprecated in infra/unifiedfleet/api/v1/rpc/fleet.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/unifiedfleet/api/v1/rpc/fleet.proto.
 func (x *CheckFleetTestsPolicyResponse) GetIsTestValid() bool {
 	if x != nil {
 		return x.IsTestValid
@@ -10494,7 +10494,7 @@ type GetOwnershipDataRequest struct {
 
 func (x *GetOwnershipDataRequest) Reset() {
 	*x = GetOwnershipDataRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[181]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[181]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10506,7 +10506,7 @@ func (x *GetOwnershipDataRequest) String() string {
 func (*GetOwnershipDataRequest) ProtoMessage() {}
 
 func (x *GetOwnershipDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[181]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[181]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10519,7 +10519,7 @@ func (x *GetOwnershipDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetOwnershipDataRequest.ProtoReflect.Descriptor instead.
 func (*GetOwnershipDataRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{181}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{181}
 }
 
 func (x *GetOwnershipDataRequest) GetHostname() string {
@@ -10554,7 +10554,7 @@ type ListOwnershipDataRequest struct {
 
 func (x *ListOwnershipDataRequest) Reset() {
 	*x = ListOwnershipDataRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[182]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[182]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10566,7 +10566,7 @@ func (x *ListOwnershipDataRequest) String() string {
 func (*ListOwnershipDataRequest) ProtoMessage() {}
 
 func (x *ListOwnershipDataRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[182]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[182]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10579,7 +10579,7 @@ func (x *ListOwnershipDataRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListOwnershipDataRequest.ProtoReflect.Descriptor instead.
 func (*ListOwnershipDataRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{182}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{182}
 }
 
 func (x *ListOwnershipDataRequest) GetPageSize() int32 {
@@ -10623,7 +10623,7 @@ type OwnershipByHost struct {
 
 func (x *OwnershipByHost) Reset() {
 	*x = OwnershipByHost{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[183]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[183]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10635,7 +10635,7 @@ func (x *OwnershipByHost) String() string {
 func (*OwnershipByHost) ProtoMessage() {}
 
 func (x *OwnershipByHost) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[183]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[183]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10648,7 +10648,7 @@ func (x *OwnershipByHost) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OwnershipByHost.ProtoReflect.Descriptor instead.
 func (*OwnershipByHost) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{183}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{183}
 }
 
 func (x *OwnershipByHost) GetHostname() string {
@@ -10679,7 +10679,7 @@ type ListOwnershipDataResponse struct {
 
 func (x *ListOwnershipDataResponse) Reset() {
 	*x = ListOwnershipDataResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[184]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[184]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10691,7 +10691,7 @@ func (x *ListOwnershipDataResponse) String() string {
 func (*ListOwnershipDataResponse) ProtoMessage() {}
 
 func (x *ListOwnershipDataResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[184]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[184]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10704,7 +10704,7 @@ func (x *ListOwnershipDataResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListOwnershipDataResponse.ProtoReflect.Descriptor instead.
 func (*ListOwnershipDataResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{184}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{184}
 }
 
 func (x *ListOwnershipDataResponse) GetOwnershipData() []*OwnershipByHost {
@@ -10732,7 +10732,7 @@ type GetDefaultWifiRequest struct {
 
 func (x *GetDefaultWifiRequest) Reset() {
 	*x = GetDefaultWifiRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[185]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[185]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10744,7 +10744,7 @@ func (x *GetDefaultWifiRequest) String() string {
 func (*GetDefaultWifiRequest) ProtoMessage() {}
 
 func (x *GetDefaultWifiRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[185]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[185]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10757,7 +10757,7 @@ func (x *GetDefaultWifiRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDefaultWifiRequest.ProtoReflect.Descriptor instead.
 func (*GetDefaultWifiRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{185}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{185}
 }
 
 func (x *GetDefaultWifiRequest) GetName() string {
@@ -10791,7 +10791,7 @@ type ListDefaultWifisRequest struct {
 
 func (x *ListDefaultWifisRequest) Reset() {
 	*x = ListDefaultWifisRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[186]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[186]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10803,7 +10803,7 @@ func (x *ListDefaultWifisRequest) String() string {
 func (*ListDefaultWifisRequest) ProtoMessage() {}
 
 func (x *ListDefaultWifisRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[186]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[186]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10816,7 +10816,7 @@ func (x *ListDefaultWifisRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDefaultWifisRequest.ProtoReflect.Descriptor instead.
 func (*ListDefaultWifisRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{186}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{186}
 }
 
 func (x *ListDefaultWifisRequest) GetPageSize() int32 {
@@ -10860,7 +10860,7 @@ type ListDefaultWifisResponse struct {
 
 func (x *ListDefaultWifisResponse) Reset() {
 	*x = ListDefaultWifisResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[187]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[187]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10872,7 +10872,7 @@ func (x *ListDefaultWifisResponse) String() string {
 func (*ListDefaultWifisResponse) ProtoMessage() {}
 
 func (x *ListDefaultWifisResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[187]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[187]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10885,7 +10885,7 @@ func (x *ListDefaultWifisResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDefaultWifisResponse.ProtoReflect.Descriptor instead.
 func (*ListDefaultWifisResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{187}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{187}
 }
 
 func (x *ListDefaultWifisResponse) GetDefaultWifis() []*models.DefaultWifi {
@@ -10918,7 +10918,7 @@ type CreateDefaultWifiRequest struct {
 
 func (x *CreateDefaultWifiRequest) Reset() {
 	*x = CreateDefaultWifiRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[188]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[188]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10930,7 +10930,7 @@ func (x *CreateDefaultWifiRequest) String() string {
 func (*CreateDefaultWifiRequest) ProtoMessage() {}
 
 func (x *CreateDefaultWifiRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[188]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[188]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -10943,7 +10943,7 @@ func (x *CreateDefaultWifiRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateDefaultWifiRequest.ProtoReflect.Descriptor instead.
 func (*CreateDefaultWifiRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{188}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{188}
 }
 
 func (x *CreateDefaultWifiRequest) GetDefaultWifiId() string {
@@ -10975,7 +10975,7 @@ type UpdateDefaultWifiRequest struct {
 
 func (x *UpdateDefaultWifiRequest) Reset() {
 	*x = UpdateDefaultWifiRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[189]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[189]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -10987,7 +10987,7 @@ func (x *UpdateDefaultWifiRequest) String() string {
 func (*UpdateDefaultWifiRequest) ProtoMessage() {}
 
 func (x *UpdateDefaultWifiRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[189]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[189]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11000,7 +11000,7 @@ func (x *UpdateDefaultWifiRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateDefaultWifiRequest.ProtoReflect.Descriptor instead.
 func (*UpdateDefaultWifiRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{189}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{189}
 }
 
 func (x *UpdateDefaultWifiRequest) GetDefaultWifi() *models.DefaultWifi {
@@ -11028,7 +11028,7 @@ type DeleteDefaultWifiRequest struct {
 
 func (x *DeleteDefaultWifiRequest) Reset() {
 	*x = DeleteDefaultWifiRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[190]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[190]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11040,7 +11040,7 @@ func (x *DeleteDefaultWifiRequest) String() string {
 func (*DeleteDefaultWifiRequest) ProtoMessage() {}
 
 func (x *DeleteDefaultWifiRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[190]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[190]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11053,7 +11053,7 @@ func (x *DeleteDefaultWifiRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteDefaultWifiRequest.ProtoReflect.Descriptor instead.
 func (*DeleteDefaultWifiRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{190}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{190}
 }
 
 func (x *DeleteDefaultWifiRequest) GetName() string {
@@ -11074,7 +11074,7 @@ type GetDeviceLabelsRequest struct {
 
 func (x *GetDeviceLabelsRequest) Reset() {
 	*x = GetDeviceLabelsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[191]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[191]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11086,7 +11086,7 @@ func (x *GetDeviceLabelsRequest) String() string {
 func (*GetDeviceLabelsRequest) ProtoMessage() {}
 
 func (x *GetDeviceLabelsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[191]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[191]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11099,7 +11099,7 @@ func (x *GetDeviceLabelsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeviceLabelsRequest.ProtoReflect.Descriptor instead.
 func (*GetDeviceLabelsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{191}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{191}
 }
 
 func (x *GetDeviceLabelsRequest) GetHostname() string {
@@ -11121,7 +11121,7 @@ type GetDeviceLabelsResponse struct {
 
 func (x *GetDeviceLabelsResponse) Reset() {
 	*x = GetDeviceLabelsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[192]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[192]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11133,7 +11133,7 @@ func (x *GetDeviceLabelsResponse) String() string {
 func (*GetDeviceLabelsResponse) ProtoMessage() {}
 
 func (x *GetDeviceLabelsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[192]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[192]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11146,7 +11146,7 @@ func (x *GetDeviceLabelsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDeviceLabelsResponse.ProtoReflect.Descriptor instead.
 func (*GetDeviceLabelsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{192}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{192}
 }
 
 func (x *GetDeviceLabelsResponse) GetDeviceLabels() *DeviceLabels {
@@ -11185,7 +11185,7 @@ type ListDeviceLabelsRequest struct {
 
 func (x *ListDeviceLabelsRequest) Reset() {
 	*x = ListDeviceLabelsRequest{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[193]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[193]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11197,7 +11197,7 @@ func (x *ListDeviceLabelsRequest) String() string {
 func (*ListDeviceLabelsRequest) ProtoMessage() {}
 
 func (x *ListDeviceLabelsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[193]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[193]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11210,7 +11210,7 @@ func (x *ListDeviceLabelsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDeviceLabelsRequest.ProtoReflect.Descriptor instead.
 func (*ListDeviceLabelsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{193}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{193}
 }
 
 func (x *ListDeviceLabelsRequest) GetPageSize() int32 {
@@ -11249,7 +11249,7 @@ type ListDeviceLabelsResponse struct {
 
 func (x *ListDeviceLabelsResponse) Reset() {
 	*x = ListDeviceLabelsResponse{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[194]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[194]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11261,7 +11261,7 @@ func (x *ListDeviceLabelsResponse) String() string {
 func (*ListDeviceLabelsResponse) ProtoMessage() {}
 
 func (x *ListDeviceLabelsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[194]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[194]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11274,7 +11274,7 @@ func (x *ListDeviceLabelsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDeviceLabelsResponse.ProtoReflect.Descriptor instead.
 func (*ListDeviceLabelsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{194}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{194}
 }
 
 func (x *ListDeviceLabelsResponse) GetDevicesLabels() []*DeviceLabels {
@@ -11309,7 +11309,7 @@ type DeviceLabels struct {
 
 func (x *DeviceLabels) Reset() {
 	*x = DeviceLabels{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[195]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[195]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11321,7 +11321,7 @@ func (x *DeviceLabels) String() string {
 func (*DeviceLabels) ProtoMessage() {}
 
 func (x *DeviceLabels) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[195]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[195]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11334,7 +11334,7 @@ func (x *DeviceLabels) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeviceLabels.ProtoReflect.Descriptor instead.
 func (*DeviceLabels) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{195}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{195}
 }
 
 func (x *DeviceLabels) GetHostname() string {
@@ -11361,7 +11361,7 @@ type LabelValues struct {
 
 func (x *LabelValues) Reset() {
 	*x = LabelValues{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[196]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[196]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11373,7 +11373,7 @@ func (x *LabelValues) String() string {
 func (*LabelValues) ProtoMessage() {}
 
 func (x *LabelValues) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[196]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[196]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11386,7 +11386,7 @@ func (x *LabelValues) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LabelValues.ProtoReflect.Descriptor instead.
 func (*LabelValues) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{196}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{196}
 }
 
 func (x *LabelValues) GetValue() []string {
@@ -11409,7 +11409,7 @@ type GetDUTsForLabstationResponse_LabstationMapping struct {
 
 func (x *GetDUTsForLabstationResponse_LabstationMapping) Reset() {
 	*x = GetDUTsForLabstationResponse_LabstationMapping{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[197]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[197]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11421,7 +11421,7 @@ func (x *GetDUTsForLabstationResponse_LabstationMapping) String() string {
 func (*GetDUTsForLabstationResponse_LabstationMapping) ProtoMessage() {}
 
 func (x *GetDUTsForLabstationResponse_LabstationMapping) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[197]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[197]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11434,7 +11434,7 @@ func (x *GetDUTsForLabstationResponse_LabstationMapping) ProtoReflect() protoref
 
 // Deprecated: Use GetDUTsForLabstationResponse_LabstationMapping.ProtoReflect.Descriptor instead.
 func (*GetDUTsForLabstationResponse_LabstationMapping) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{1, 0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{1, 0}
 }
 
 func (x *GetDUTsForLabstationResponse_LabstationMapping) GetHostname() string {
@@ -11463,7 +11463,7 @@ type ChromeOsRecoveryData_DutData struct {
 
 func (x *ChromeOsRecoveryData_DutData) Reset() {
 	*x = ChromeOsRecoveryData_DutData{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[199]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[199]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11475,7 +11475,7 @@ func (x *ChromeOsRecoveryData_DutData) String() string {
 func (*ChromeOsRecoveryData_DutData) ProtoMessage() {}
 
 func (x *ChromeOsRecoveryData_DutData) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[199]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[199]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11488,7 +11488,7 @@ func (x *ChromeOsRecoveryData_DutData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromeOsRecoveryData_DutData.ProtoReflect.Descriptor instead.
 func (*ChromeOsRecoveryData_DutData) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{117, 0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{117, 0}
 }
 
 func (x *ChromeOsRecoveryData_DutData) GetSerialNumber() string {
@@ -11535,7 +11535,7 @@ type ChromeOsRecoveryData_WifiRouter struct {
 
 func (x *ChromeOsRecoveryData_WifiRouter) Reset() {
 	*x = ChromeOsRecoveryData_WifiRouter{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[200]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[200]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11547,7 +11547,7 @@ func (x *ChromeOsRecoveryData_WifiRouter) String() string {
 func (*ChromeOsRecoveryData_WifiRouter) ProtoMessage() {}
 
 func (x *ChromeOsRecoveryData_WifiRouter) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[200]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[200]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11560,7 +11560,7 @@ func (x *ChromeOsRecoveryData_WifiRouter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromeOsRecoveryData_WifiRouter.ProtoReflect.Descriptor instead.
 func (*ChromeOsRecoveryData_WifiRouter) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{117, 1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{117, 1}
 }
 
 func (x *ChromeOsRecoveryData_WifiRouter) GetHostname() string {
@@ -11608,7 +11608,7 @@ type ChromeOsRecoveryData_BluetoothPeer struct {
 
 func (x *ChromeOsRecoveryData_BluetoothPeer) Reset() {
 	*x = ChromeOsRecoveryData_BluetoothPeer{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[201]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[201]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11620,7 +11620,7 @@ func (x *ChromeOsRecoveryData_BluetoothPeer) String() string {
 func (*ChromeOsRecoveryData_BluetoothPeer) ProtoMessage() {}
 
 func (x *ChromeOsRecoveryData_BluetoothPeer) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[201]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[201]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11633,7 +11633,7 @@ func (x *ChromeOsRecoveryData_BluetoothPeer) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ChromeOsRecoveryData_BluetoothPeer.ProtoReflect.Descriptor instead.
 func (*ChromeOsRecoveryData_BluetoothPeer) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{117, 2}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{117, 2}
 }
 
 func (x *ChromeOsRecoveryData_BluetoothPeer) GetHostname() string {
@@ -11660,7 +11660,7 @@ type ChromeOsRecoveryData_Dolos struct {
 
 func (x *ChromeOsRecoveryData_Dolos) Reset() {
 	*x = ChromeOsRecoveryData_Dolos{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[202]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[202]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11672,7 +11672,7 @@ func (x *ChromeOsRecoveryData_Dolos) String() string {
 func (*ChromeOsRecoveryData_Dolos) ProtoMessage() {}
 
 func (x *ChromeOsRecoveryData_Dolos) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[202]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[202]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11685,7 +11685,7 @@ func (x *ChromeOsRecoveryData_Dolos) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromeOsRecoveryData_Dolos.ProtoReflect.Descriptor instead.
 func (*ChromeOsRecoveryData_Dolos) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{117, 3}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{117, 3}
 }
 
 func (x *ChromeOsRecoveryData_Dolos) GetSerialUsb() string {
@@ -11716,7 +11716,7 @@ type ChromeOsRecoveryData_ModemInfo struct {
 
 func (x *ChromeOsRecoveryData_ModemInfo) Reset() {
 	*x = ChromeOsRecoveryData_ModemInfo{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[203]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[203]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11728,7 +11728,7 @@ func (x *ChromeOsRecoveryData_ModemInfo) String() string {
 func (*ChromeOsRecoveryData_ModemInfo) ProtoMessage() {}
 
 func (x *ChromeOsRecoveryData_ModemInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[203]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[203]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11741,7 +11741,7 @@ func (x *ChromeOsRecoveryData_ModemInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromeOsRecoveryData_ModemInfo.ProtoReflect.Descriptor instead.
 func (*ChromeOsRecoveryData_ModemInfo) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{117, 4}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{117, 4}
 }
 
 func (x *ChromeOsRecoveryData_ModemInfo) GetModelVariant() string {
@@ -11795,7 +11795,7 @@ type ChromeOsRecoveryData_LabData struct {
 
 func (x *ChromeOsRecoveryData_LabData) Reset() {
 	*x = ChromeOsRecoveryData_LabData{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[204]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[204]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11807,7 +11807,7 @@ func (x *ChromeOsRecoveryData_LabData) String() string {
 func (*ChromeOsRecoveryData_LabData) ProtoMessage() {}
 
 func (x *ChromeOsRecoveryData_LabData) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[204]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[204]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11820,7 +11820,7 @@ func (x *ChromeOsRecoveryData_LabData) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromeOsRecoveryData_LabData.ProtoReflect.Descriptor instead.
 func (*ChromeOsRecoveryData_LabData) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{117, 5}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{117, 5}
 }
 
 func (x *ChromeOsRecoveryData_LabData) GetServoType() string {
@@ -11939,7 +11939,7 @@ type UpdateTestDataRequest_ChromeOs struct {
 
 func (x *UpdateTestDataRequest_ChromeOs) Reset() {
 	*x = UpdateTestDataRequest_ChromeOs{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[206]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[206]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11951,7 +11951,7 @@ func (x *UpdateTestDataRequest_ChromeOs) String() string {
 func (*UpdateTestDataRequest_ChromeOs) ProtoMessage() {}
 
 func (x *UpdateTestDataRequest_ChromeOs) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[206]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[206]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -11964,7 +11964,7 @@ func (x *UpdateTestDataRequest_ChromeOs) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateTestDataRequest_ChromeOs.ProtoReflect.Descriptor instead.
 func (*UpdateTestDataRequest_ChromeOs) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{120, 0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{120, 0}
 }
 
 func (x *UpdateTestDataRequest_ChromeOs) GetDutState() *lab.DutState {
@@ -11982,7 +11982,7 @@ type UpdateTestDataRequest_Android struct {
 
 func (x *UpdateTestDataRequest_Android) Reset() {
 	*x = UpdateTestDataRequest_Android{}
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[207]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[207]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -11994,7 +11994,7 @@ func (x *UpdateTestDataRequest_Android) String() string {
 func (*UpdateTestDataRequest_Android) ProtoMessage() {}
 
 func (x *UpdateTestDataRequest_Android) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[207]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[207]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12007,13 +12007,14 @@ func (x *UpdateTestDataRequest_Android) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateTestDataRequest_Android.ProtoReflect.Descriptor instead.
 func (*UpdateTestDataRequest_Android) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{120, 1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP(), []int{120, 1}
 }
 
-var File_infra_unifiedfleet_api_v1_rpc_fleet_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto protoreflect.FileDescriptor
 
-var file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDesc = string([]byte{
-	0x0a, 0x29, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+var file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDesc = string([]byte{
+	0x0a, 0x39, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x72, 0x70, 0x63, 0x2f,
 	0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x17, 0x75, 0x6e, 0x69,
 	0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31,
@@ -12026,71 +12027,91 @@ var file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDesc = string([]byte{
 	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69,
 	0x2f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
 	0x17, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x72, 0x70, 0x63, 0x2f, 0x73, 0x74, 0x61, 0x74,
-	0x75, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2c, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
+	0x75, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3c, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72,
+	0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
 	0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69,
 	0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x61, 0x73, 0x73, 0x65, 0x74,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2e, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3e, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d,
+	0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e,
 	0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76,
 	0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x6d, 0x61, 0x63, 0x68, 0x69, 0x6e, 0x65,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x36, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x46, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d,
+	0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e,
 	0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76,
 	0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x61, 0x63, 0x68, 0x69, 0x6e, 0x67,
-	0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2b,
+	0x5f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3b,
+	0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f,
 	0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65,
 	0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73,
-	0x2f, 0x72, 0x61, 0x63, 0x6b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x36, 0x69, 0x6e, 0x66,
+	0x2f, 0x72, 0x61, 0x63, 0x6b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x46, 0x67, 0x6f, 0x2e,
+	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66,
 	0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68,
 	0x72, 0x6f, 0x6d, 0x65, 0x5f, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x1a, 0x32, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69,
+	0x6f, 0x74, 0x6f, 0x1a, 0x42, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d,
+	0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69,
 	0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d,
 	0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x6d, 0x61, 0x63, 0x68, 0x69, 0x6e, 0x65, 0x5f, 0x6c, 0x73,
-	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75,
+	0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3f, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f,
+	0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75,
 	0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f,
 	0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x72, 0x61, 0x63, 0x6b, 0x5f, 0x6c,
-	0x73, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2e, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
+	0x73, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3e, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72,
+	0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
 	0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69,
 	0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x6e, 0x65, 0x74, 0x77, 0x6f,
-	0x72, 0x6b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x32, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
+	0x72, 0x6b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x42, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72,
+	0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
 	0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69,
 	0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x70, 0x65, 0x72, 0x69, 0x70,
-	0x68, 0x65, 0x72, 0x61, 0x6c, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x34, 0x69, 0x6e,
+	0x68, 0x65, 0x72, 0x61, 0x6c, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x44, 0x67, 0x6f,
+	0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e,
 	0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74,
 	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x6c,
 	0x73, 0x65, 0x5f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x74, 0x79, 0x70, 0x65, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x1a, 0x2d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65,
+	0x74, 0x6f, 0x1a, 0x3d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e,
+	0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65,
 	0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f,
 	0x64, 0x65, 0x6c, 0x73, 0x2f, 0x73, 0x65, 0x63, 0x72, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x1a, 0x2c, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64,
+	0x6f, 0x1a, 0x3c, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f,
+	0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64,
 	0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64,
 	0x65, 0x6c, 0x73, 0x2f, 0x73, 0x74, 0x61, 0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
-	0x34, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c,
+	0x44, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67,
+	0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c,
 	0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c,
 	0x73, 0x2f, 0x64, 0x65, 0x76, 0x69, 0x63, 0x65, 0x5f, 0x6c, 0x61, 0x62, 0x65, 0x6c, 0x73, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x4d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69,
+	0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69,
 	0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31,
 	0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73,
 	0x2f, 0x6c, 0x61, 0x62, 0x2f, 0x63, 0x68, 0x61, 0x6d, 0x65, 0x6c, 0x65, 0x6f, 0x6e, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66,
+	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x4d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75,
+	0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66,
 	0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f,
 	0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f,
 	0x6c, 0x61, 0x62, 0x2f, 0x64, 0x75, 0x74, 0x5f, 0x73, 0x74, 0x61, 0x74, 0x65, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x1a, 0x39, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69,
+	0x6f, 0x74, 0x6f, 0x1a, 0x49, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d,
+	0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69,
 	0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d,
 	0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c,
-	0x61, 0x62, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3d,
+	0x61, 0x62, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x4d,
+	0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f,
 	0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65,
 	0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73,
 	0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x2f, 0x6d, 0x6f,
-	0x64, 0x65, 0x6d, 0x69, 0x6e, 0x66, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3b, 0x69,
+	0x64, 0x65, 0x6d, 0x69, 0x6e, 0x66, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x4b, 0x67,
+	0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69,
 	0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65,
 	0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f,
 	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x65, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x2f, 0x73, 0x69, 0x6d,
-	0x69, 0x6e, 0x66, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3d, 0x69, 0x6e, 0x66, 0x72,
+	0x69, 0x6e, 0x66, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x4d, 0x67, 0x6f, 0x2e, 0x63,
+	0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72,
 	0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61,
 	0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x6d, 0x61, 0x63,
 	0x68, 0x69, 0x6e, 0x65, 0x5f, 0x6c, 0x73, 0x65, 0x5f, 0x64, 0x65, 0x70, 0x6c, 0x6f, 0x79, 0x6d,
-	0x65, 0x6e, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x36, 0x69, 0x6e, 0x66, 0x72, 0x61,
+	0x65, 0x6e, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x46, 0x67, 0x6f, 0x2e, 0x63, 0x68,
+	0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61,
 	0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70,
 	0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x73, 0x63, 0x68, 0x65,
 	0x64, 0x75, 0x6c, 0x69, 0x6e, 0x67, 0x5f, 0x75, 0x6e, 0x69, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74,
@@ -12098,7 +12119,8 @@ var file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDesc = string([]byte{
 	0x72, 0x67, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f,
 	0x6e, 0x66, 0x69, 0x67, 0x2f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x63, 0x68, 0x72, 0x6f, 0x6d,
 	0x69, 0x75, 0x6d, 0x6f, 0x73, 0x2f, 0x74, 0x65, 0x73, 0x74, 0x2f, 0x6c, 0x61, 0x62, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x63, 0x62, 0x69, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x30, 0x69, 0x6e,
+	0x70, 0x69, 0x2f, 0x63, 0x62, 0x69, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x40, 0x67, 0x6f,
+	0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e,
 	0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74,
 	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x6f,
 	0x77, 0x6e, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x4f,
@@ -14825,27 +14847,28 @@ var file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDesc = string([]byte{
 	0x6c, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x31, 0x2e, 0x75, 0x6e, 0x69, 0x66,
 	0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x61, 0x70, 0x69, 0x2e, 0x76, 0x31, 0x2e,
 	0x72, 0x70, 0x63, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x4c, 0x61,
-	0x62, 0x65, 0x6c, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x25, 0x5a, 0x23,
+	0x62, 0x65, 0x6c, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x35, 0x5a, 0x33,
+	0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f,
 	0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65,
 	0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x72, 0x70, 0x63, 0x3b, 0x75, 0x66,
 	0x73, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescOnce sync.Once
-	file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescData []byte
+	file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescData []byte
 )
 
-func file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP() []byte {
-	file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescOnce.Do(func() {
-		file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDesc)))
+func file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDesc)))
 	})
-	return file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescData
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes = make([]protoimpl.MessageInfo, 209)
-var file_infra_unifiedfleet_api_v1_rpc_fleet_proto_goTypes = []any{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes = make([]protoimpl.MessageInfo, 209)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_goTypes = []any{
 	(UpdateDeviceRecoveryDataRequest_ResourceType)(0),      // 0: unifiedfleet.api.v1.rpc.UpdateDeviceRecoveryDataRequest.ResourceType
 	(GetDeviceDataResponse_ResourceType)(0),                // 1: unifiedfleet.api.v1.rpc.GetDeviceDataResponse.ResourceType
 	(TestStatus_Code)(0),                                   // 2: unifiedfleet.api.v1.rpc.TestStatus.Code
@@ -15101,7 +15124,7 @@ var file_infra_unifiedfleet_api_v1_rpc_fleet_proto_goTypes = []any{
 	(*emptypb.Empty)(nil),                      // 252: google.protobuf.Empty
 	(*status.Status)(nil),                      // 253: google.rpc.Status
 }
-var file_infra_unifiedfleet_api_v1_rpc_fleet_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_depIdxs = []int32{
 	200, // 0: unifiedfleet.api.v1.rpc.GetDUTsForLabstationResponse.items:type_name -> unifiedfleet.api.v1.rpc.GetDUTsForLabstationResponse.LabstationMapping
 	212, // 1: unifiedfleet.api.v1.rpc.UpdateMachineLSEDeploymentRequest.machine_lse_deployment:type_name -> unifiedfleet.api.v1.models.MachineLSEDeployment
 	213, // 2: unifiedfleet.api.v1.rpc.UpdateMachineLSEDeploymentRequest.update_mask:type_name -> google.protobuf.FieldMask
@@ -15548,23 +15571,23 @@ var file_infra_unifiedfleet_api_v1_rpc_fleet_proto_depIdxs = []int32{
 	0,   // [0:165] is the sub-list for field type_name
 }
 
-func init() { file_infra_unifiedfleet_api_v1_rpc_fleet_proto_init() }
-func file_infra_unifiedfleet_api_v1_rpc_fleet_proto_init() {
-	if File_infra_unifiedfleet_api_v1_rpc_fleet_proto != nil {
+func init() { file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_init() }
+func file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_init() {
+	if File_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto != nil {
 		return
 	}
-	file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[110].OneofWrappers = []any{
+	file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[110].OneofWrappers = []any{
 		(*ImportOSVlansRequest_MachineDbSource)(nil),
 		(*ImportOSVlansRequest_ConfigSource)(nil),
 	}
-	file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[118].OneofWrappers = []any{
+	file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[118].OneofWrappers = []any{
 		(*UpdateDeviceRecoveryDataRequest_Chromeos)(nil),
 	}
-	file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[120].OneofWrappers = []any{
+	file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[120].OneofWrappers = []any{
 		(*UpdateTestDataRequest_ChromeosData)(nil),
 		(*UpdateTestDataRequest_AndroidData)(nil),
 	}
-	file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[175].OneofWrappers = []any{
+	file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes[175].OneofWrappers = []any{
 		(*GetDeviceDataResponse_SchedulingUnit)(nil),
 		(*GetDeviceDataResponse_ChromeOsDeviceData)(nil),
 		(*GetDeviceDataResponse_AttachedDeviceData)(nil),
@@ -15574,20 +15597,20 @@ func file_infra_unifiedfleet_api_v1_rpc_fleet_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_rawDesc)),
 			NumEnums:      3,
 			NumMessages:   209,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_infra_unifiedfleet_api_v1_rpc_fleet_proto_goTypes,
-		DependencyIndexes: file_infra_unifiedfleet_api_v1_rpc_fleet_proto_depIdxs,
-		EnumInfos:         file_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes,
-		MessageInfos:      file_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_msgTypes,
 	}.Build()
-	File_infra_unifiedfleet_api_v1_rpc_fleet_proto = out.File
-	file_infra_unifiedfleet_api_v1_rpc_fleet_proto_goTypes = nil
-	file_infra_unifiedfleet_api_v1_rpc_fleet_proto_depIdxs = nil
+	File_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto = out.File
+	file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_goTypes = nil
+	file_go_chromium_org_infra_unifiedfleet_api_v1_rpc_fleet_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -22083,5 +22106,5 @@ var _Fleet_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/unifiedfleet/api/v1/rpc/fleet.proto",
+	Metadata: "go.chromium.org/infra/unifiedfleet/api/v1/rpc/fleet.proto",
 }

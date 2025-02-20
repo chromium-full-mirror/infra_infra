@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/appengine/drone-queen/api/service.proto
+// source: go.chromium.org/infra/appengine/drone-queen/api/service.proto
 
 package api
 
@@ -69,11 +69,11 @@ func (x ReportDroneResponse_Status) String() string {
 }
 
 func (ReportDroneResponse_Status) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_appengine_drone_queen_api_service_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_enumTypes[0].Descriptor()
 }
 
 func (ReportDroneResponse_Status) Type() protoreflect.EnumType {
-	return &file_infra_appengine_drone_queen_api_service_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_enumTypes[0]
 }
 
 func (x ReportDroneResponse_Status) Number() protoreflect.EnumNumber {
@@ -82,7 +82,7 @@ func (x ReportDroneResponse_Status) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ReportDroneResponse_Status.Descriptor instead.
 func (ReportDroneResponse_Status) EnumDescriptor() ([]byte, []int) {
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{1, 0}
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{1, 0}
 }
 
 type ReportDroneRequest struct {
@@ -103,7 +103,7 @@ type ReportDroneRequest struct {
 
 func (x *ReportDroneRequest) Reset() {
 	*x = ReportDroneRequest{}
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -115,7 +115,7 @@ func (x *ReportDroneRequest) String() string {
 func (*ReportDroneRequest) ProtoMessage() {}
 
 func (x *ReportDroneRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -128,7 +128,7 @@ func (x *ReportDroneRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportDroneRequest.ProtoReflect.Descriptor instead.
 func (*ReportDroneRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *ReportDroneRequest) GetDroneUuid() string {
@@ -181,7 +181,7 @@ type ReportDroneResponse struct {
 
 func (x *ReportDroneResponse) Reset() {
 	*x = ReportDroneResponse{}
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -193,7 +193,7 @@ func (x *ReportDroneResponse) String() string {
 func (*ReportDroneResponse) ProtoMessage() {}
 
 func (x *ReportDroneResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -206,7 +206,7 @@ func (x *ReportDroneResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportDroneResponse.ProtoReflect.Descriptor instead.
 func (*ReportDroneResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ReportDroneResponse) GetStatus() ReportDroneResponse_Status {
@@ -257,7 +257,7 @@ type ReleaseDutsRequest struct {
 
 func (x *ReleaseDutsRequest) Reset() {
 	*x = ReleaseDutsRequest{}
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -269,7 +269,7 @@ func (x *ReleaseDutsRequest) String() string {
 func (*ReleaseDutsRequest) ProtoMessage() {}
 
 func (x *ReleaseDutsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -282,7 +282,7 @@ func (x *ReleaseDutsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReleaseDutsRequest.ProtoReflect.Descriptor instead.
 func (*ReleaseDutsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ReleaseDutsRequest) GetDroneUuid() string {
@@ -307,7 +307,7 @@ type ReleaseDutsResponse struct {
 
 func (x *ReleaseDutsResponse) Reset() {
 	*x = ReleaseDutsResponse{}
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -319,7 +319,7 @@ func (x *ReleaseDutsResponse) String() string {
 func (*ReleaseDutsResponse) ProtoMessage() {}
 
 func (x *ReleaseDutsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -332,7 +332,7 @@ func (x *ReleaseDutsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReleaseDutsResponse.ProtoReflect.Descriptor instead.
 func (*ReleaseDutsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{3}
 }
 
 type DeclareDutsRequest struct {
@@ -347,7 +347,7 @@ type DeclareDutsRequest struct {
 
 func (x *DeclareDutsRequest) Reset() {
 	*x = DeclareDutsRequest{}
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -359,7 +359,7 @@ func (x *DeclareDutsRequest) String() string {
 func (*DeclareDutsRequest) ProtoMessage() {}
 
 func (x *DeclareDutsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -372,7 +372,7 @@ func (x *DeclareDutsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeclareDutsRequest.ProtoReflect.Descriptor instead.
 func (*DeclareDutsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *DeclareDutsRequest) GetAvailableDuts() []*DeclareDutsRequest_Dut {
@@ -390,7 +390,7 @@ type DeclareDutsResponse struct {
 
 func (x *DeclareDutsResponse) Reset() {
 	*x = DeclareDutsResponse{}
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -402,7 +402,7 @@ func (x *DeclareDutsResponse) String() string {
 func (*DeclareDutsResponse) ProtoMessage() {}
 
 func (x *DeclareDutsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -415,7 +415,7 @@ func (x *DeclareDutsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeclareDutsResponse.ProtoReflect.Descriptor instead.
 func (*DeclareDutsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{5}
 }
 
 type ListDronesRequest struct {
@@ -426,7 +426,7 @@ type ListDronesRequest struct {
 
 func (x *ListDronesRequest) Reset() {
 	*x = ListDronesRequest{}
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -438,7 +438,7 @@ func (x *ListDronesRequest) String() string {
 func (*ListDronesRequest) ProtoMessage() {}
 
 func (x *ListDronesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -451,7 +451,7 @@ func (x *ListDronesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDronesRequest.ProtoReflect.Descriptor instead.
 func (*ListDronesRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{6}
 }
 
 type ListDronesResponse struct {
@@ -463,7 +463,7 @@ type ListDronesResponse struct {
 
 func (x *ListDronesResponse) Reset() {
 	*x = ListDronesResponse{}
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -475,7 +475,7 @@ func (x *ListDronesResponse) String() string {
 func (*ListDronesResponse) ProtoMessage() {}
 
 func (x *ListDronesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -488,7 +488,7 @@ func (x *ListDronesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDronesResponse.ProtoReflect.Descriptor instead.
 func (*ListDronesResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListDronesResponse) GetDrones() []*ListDronesResponse_Drone {
@@ -506,7 +506,7 @@ type ListDutsRequest struct {
 
 func (x *ListDutsRequest) Reset() {
 	*x = ListDutsRequest{}
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -518,7 +518,7 @@ func (x *ListDutsRequest) String() string {
 func (*ListDutsRequest) ProtoMessage() {}
 
 func (x *ListDutsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -531,7 +531,7 @@ func (x *ListDutsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDutsRequest.ProtoReflect.Descriptor instead.
 func (*ListDutsRequest) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{8}
 }
 
 type ListDutsResponse struct {
@@ -543,7 +543,7 @@ type ListDutsResponse struct {
 
 func (x *ListDutsResponse) Reset() {
 	*x = ListDutsResponse{}
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -555,7 +555,7 @@ func (x *ListDutsResponse) String() string {
 func (*ListDutsResponse) ProtoMessage() {}
 
 func (x *ListDutsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[9]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -568,7 +568,7 @@ func (x *ListDutsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDutsResponse.ProtoReflect.Descriptor instead.
 func (*ListDutsResponse) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{9}
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ListDutsResponse) GetDuts() []*ListDutsResponse_Dut {
@@ -589,7 +589,7 @@ type ReportDroneRequest_LoadIndicators struct {
 
 func (x *ReportDroneRequest_LoadIndicators) Reset() {
 	*x = ReportDroneRequest_LoadIndicators{}
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -601,7 +601,7 @@ func (x *ReportDroneRequest_LoadIndicators) String() string {
 func (*ReportDroneRequest_LoadIndicators) ProtoMessage() {}
 
 func (x *ReportDroneRequest_LoadIndicators) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[10]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -614,7 +614,7 @@ func (x *ReportDroneRequest_LoadIndicators) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use ReportDroneRequest_LoadIndicators.ProtoReflect.Descriptor instead.
 func (*ReportDroneRequest_LoadIndicators) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{0, 0}
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{0, 0}
 }
 
 func (x *ReportDroneRequest_LoadIndicators) GetDutCapacity() uint32 {
@@ -637,7 +637,7 @@ type DeclareDutsRequest_Dut struct {
 
 func (x *DeclareDutsRequest_Dut) Reset() {
 	*x = DeclareDutsRequest_Dut{}
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -649,7 +649,7 @@ func (x *DeclareDutsRequest_Dut) String() string {
 func (*DeclareDutsRequest_Dut) ProtoMessage() {}
 
 func (x *DeclareDutsRequest_Dut) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[11]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -662,7 +662,7 @@ func (x *DeclareDutsRequest_Dut) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeclareDutsRequest_Dut.ProtoReflect.Descriptor instead.
 func (*DeclareDutsRequest_Dut) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{4, 0}
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{4, 0}
 }
 
 func (x *DeclareDutsRequest_Dut) GetName() string {
@@ -691,7 +691,7 @@ type ListDronesResponse_Drone struct {
 
 func (x *ListDronesResponse_Drone) Reset() {
 	*x = ListDronesResponse_Drone{}
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -703,7 +703,7 @@ func (x *ListDronesResponse_Drone) String() string {
 func (*ListDronesResponse_Drone) ProtoMessage() {}
 
 func (x *ListDronesResponse_Drone) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[12]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -716,7 +716,7 @@ func (x *ListDronesResponse_Drone) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDronesResponse_Drone.ProtoReflect.Descriptor instead.
 func (*ListDronesResponse_Drone) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{7, 0}
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{7, 0}
 }
 
 func (x *ListDronesResponse_Drone) GetId() string {
@@ -759,7 +759,7 @@ type ListDutsResponse_Dut struct {
 
 func (x *ListDutsResponse_Dut) Reset() {
 	*x = ListDutsResponse_Dut{}
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -771,7 +771,7 @@ func (x *ListDutsResponse_Dut) String() string {
 func (*ListDutsResponse_Dut) ProtoMessage() {}
 
 func (x *ListDutsResponse_Dut) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_drone_queen_api_service_proto_msgTypes[13]
+	mi := &file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -784,7 +784,7 @@ func (x *ListDutsResponse_Dut) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListDutsResponse_Dut.ProtoReflect.Descriptor instead.
 func (*ListDutsResponse_Dut) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{9, 0}
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP(), []int{9, 0}
 }
 
 func (x *ListDutsResponse_Dut) GetId() string {
@@ -815,10 +815,11 @@ func (x *ListDutsResponse_Dut) GetHive() string {
 	return ""
 }
 
-var File_infra_appengine_drone_queen_api_service_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_appengine_drone_queen_api_service_proto protoreflect.FileDescriptor
 
-var file_infra_appengine_drone_queen_api_service_proto_rawDesc = string([]byte{
-	0x0a, 0x2d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
+var file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDesc = string([]byte{
+	0x0a, 0x3d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
 	0x65, 0x2f, 0x64, 0x72, 0x6f, 0x6e, 0x65, 0x2d, 0x71, 0x75, 0x65, 0x65, 0x6e, 0x2f, 0x61, 0x70,
 	0x69, 0x2f, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12,
 	0x0b, 0x64, 0x72, 0x6f, 0x6e, 0x65, 0x5f, 0x71, 0x75, 0x65, 0x65, 0x6e, 0x1a, 0x1f, 0x67, 0x6f,
@@ -934,27 +935,28 @@ var file_infra_appengine_drone_queen_api_service_proto_rawDesc = string([]byte{
 	0x65, 0x5f, 0x71, 0x75, 0x65, 0x65, 0x6e, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x75, 0x74, 0x73,
 	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x64, 0x72, 0x6f, 0x6e, 0x65, 0x5f,
 	0x71, 0x75, 0x65, 0x65, 0x6e, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x44, 0x75, 0x74, 0x73, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x21, 0x5a, 0x1f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x42, 0x31, 0x5a, 0x2f, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72,
+	0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f,
 	0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x64, 0x72, 0x6f, 0x6e, 0x65, 0x2d,
 	0x71, 0x75, 0x65, 0x65, 0x6e, 0x2f, 0x61, 0x70, 0x69, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x33,
 })
 
 var (
-	file_infra_appengine_drone_queen_api_service_proto_rawDescOnce sync.Once
-	file_infra_appengine_drone_queen_api_service_proto_rawDescData []byte
+	file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescData []byte
 )
 
-func file_infra_appengine_drone_queen_api_service_proto_rawDescGZIP() []byte {
-	file_infra_appengine_drone_queen_api_service_proto_rawDescOnce.Do(func() {
-		file_infra_appengine_drone_queen_api_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_appengine_drone_queen_api_service_proto_rawDesc), len(file_infra_appengine_drone_queen_api_service_proto_rawDesc)))
+func file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDesc), len(file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDesc)))
 	})
-	return file_infra_appengine_drone_queen_api_service_proto_rawDescData
+	return file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDescData
 }
 
-var file_infra_appengine_drone_queen_api_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_infra_appengine_drone_queen_api_service_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
-var file_infra_appengine_drone_queen_api_service_proto_goTypes = []any{
+var file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_goTypes = []any{
 	(ReportDroneResponse_Status)(0),           // 0: drone_queen.ReportDroneResponse.Status
 	(*ReportDroneRequest)(nil),                // 1: drone_queen.ReportDroneRequest
 	(*ReportDroneResponse)(nil),               // 2: drone_queen.ReportDroneResponse
@@ -972,7 +974,7 @@ var file_infra_appengine_drone_queen_api_service_proto_goTypes = []any{
 	(*ListDutsResponse_Dut)(nil),              // 14: drone_queen.ListDutsResponse.Dut
 	(*timestamppb.Timestamp)(nil),             // 15: google.protobuf.Timestamp
 }
-var file_infra_appengine_drone_queen_api_service_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_depIdxs = []int32{
 	11, // 0: drone_queen.ReportDroneRequest.load_indicators:type_name -> drone_queen.ReportDroneRequest.LoadIndicators
 	0,  // 1: drone_queen.ReportDroneResponse.status:type_name -> drone_queen.ReportDroneResponse.Status
 	15, // 2: drone_queen.ReportDroneResponse.expiration_time:type_name -> google.protobuf.Timestamp
@@ -997,29 +999,29 @@ var file_infra_appengine_drone_queen_api_service_proto_depIdxs = []int32{
 	0,  // [0:7] is the sub-list for field type_name
 }
 
-func init() { file_infra_appengine_drone_queen_api_service_proto_init() }
-func file_infra_appengine_drone_queen_api_service_proto_init() {
-	if File_infra_appengine_drone_queen_api_service_proto != nil {
+func init() { file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_init() }
+func file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_init() {
+	if File_go_chromium_org_infra_appengine_drone_queen_api_service_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_appengine_drone_queen_api_service_proto_rawDesc), len(file_infra_appengine_drone_queen_api_service_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDesc), len(file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   3,
 		},
-		GoTypes:           file_infra_appengine_drone_queen_api_service_proto_goTypes,
-		DependencyIndexes: file_infra_appengine_drone_queen_api_service_proto_depIdxs,
-		EnumInfos:         file_infra_appengine_drone_queen_api_service_proto_enumTypes,
-		MessageInfos:      file_infra_appengine_drone_queen_api_service_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_msgTypes,
 	}.Build()
-	File_infra_appengine_drone_queen_api_service_proto = out.File
-	file_infra_appengine_drone_queen_api_service_proto_goTypes = nil
-	file_infra_appengine_drone_queen_api_service_proto_depIdxs = nil
+	File_go_chromium_org_infra_appengine_drone_queen_api_service_proto = out.File
+	file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_goTypes = nil
+	file_go_chromium_org_infra_appengine_drone_queen_api_service_proto_depIdxs = nil
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1172,7 +1174,7 @@ var _Drone_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/appengine/drone-queen/api/service.proto",
+	Metadata: "go.chromium.org/infra/appengine/drone-queen/api/service.proto",
 }
 
 // InventoryProviderClient is the client API for InventoryProvider service.
@@ -1264,7 +1266,7 @@ var _InventoryProvider_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/appengine/drone-queen/api/service.proto",
+	Metadata: "go.chromium.org/infra/appengine/drone-queen/api/service.proto",
 }
 
 // InspectClient is the client API for Inspect service.
@@ -1397,5 +1399,5 @@ var _Inspect_serviceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "infra/appengine/drone-queen/api/service.proto",
+	Metadata: "go.chromium.org/infra/appengine/drone-queen/api/service.proto",
 }

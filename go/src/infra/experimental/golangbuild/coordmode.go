@@ -21,7 +21,7 @@ import (
 	"go.chromium.org/luci/luciexe/build"
 	resultdbpb "go.chromium.org/luci/resultdb/proto/v1"
 
-	"infra/experimental/golangbuild/golangbuildpb"
+	"go.chromium.org/infra/experimental/golangbuild/golangbuildpb"
 )
 
 // coordRunner ensures a prebuilt Go toolchain exists (launching a build to build one if

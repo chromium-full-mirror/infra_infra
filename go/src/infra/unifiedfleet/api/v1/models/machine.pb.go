@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/unifiedfleet/api/v1/models/machine.proto
+// source: go.chromium.org/infra/unifiedfleet/api/v1/models/machine.proto
 
 package ufspb
 
@@ -65,11 +65,11 @@ func (x ChromeOSDeviceType) String() string {
 }
 
 func (ChromeOSDeviceType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_machine_proto_enumTypes[0].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_enumTypes[0].Descriptor()
 }
 
 func (ChromeOSDeviceType) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_machine_proto_enumTypes[0]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_enumTypes[0]
 }
 
 func (x ChromeOSDeviceType) Number() protoreflect.EnumNumber {
@@ -78,7 +78,7 @@ func (x ChromeOSDeviceType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ChromeOSDeviceType.Descriptor instead.
 func (ChromeOSDeviceType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{0}
 }
 
 // AttachedDeviceType refers to the different types of device/machine in the
@@ -130,11 +130,11 @@ func (x AttachedDeviceType) String() string {
 }
 
 func (AttachedDeviceType) Descriptor() protoreflect.EnumDescriptor {
-	return file_infra_unifiedfleet_api_v1_models_machine_proto_enumTypes[1].Descriptor()
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_enumTypes[1].Descriptor()
 }
 
 func (AttachedDeviceType) Type() protoreflect.EnumType {
-	return &file_infra_unifiedfleet_api_v1_models_machine_proto_enumTypes[1]
+	return &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_enumTypes[1]
 }
 
 func (x AttachedDeviceType) Number() protoreflect.EnumNumber {
@@ -143,7 +143,7 @@ func (x AttachedDeviceType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AttachedDeviceType.Descriptor instead.
 func (AttachedDeviceType) EnumDescriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{1}
 }
 
 // Machine refers to the devices or bare metal servers
@@ -189,7 +189,7 @@ type Machine struct {
 
 func (x *Machine) Reset() {
 	*x = Machine{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -201,7 +201,7 @@ func (x *Machine) String() string {
 func (*Machine) ProtoMessage() {}
 
 func (x *Machine) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -214,7 +214,7 @@ func (x *Machine) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Machine.ProtoReflect.Descriptor instead.
 func (*Machine) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Machine) GetName() string {
@@ -379,7 +379,7 @@ type ChromeBrowserMachine struct {
 
 func (x *ChromeBrowserMachine) Reset() {
 	*x = ChromeBrowserMachine{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -391,7 +391,7 @@ func (x *ChromeBrowserMachine) String() string {
 func (*ChromeBrowserMachine) ProtoMessage() {}
 
 func (x *ChromeBrowserMachine) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -404,7 +404,7 @@ func (x *ChromeBrowserMachine) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromeBrowserMachine.ProtoReflect.Descriptor instead.
 func (*ChromeBrowserMachine) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ChromeBrowserMachine) GetDisplayName() string {
@@ -510,7 +510,7 @@ type ChromeOSMachine struct {
 
 func (x *ChromeOSMachine) Reset() {
 	*x = ChromeOSMachine{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -522,7 +522,7 @@ func (x *ChromeOSMachine) String() string {
 func (*ChromeOSMachine) ProtoMessage() {}
 
 func (x *ChromeOSMachine) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -535,7 +535,7 @@ func (x *ChromeOSMachine) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ChromeOSMachine.ProtoReflect.Descriptor instead.
 func (*ChromeOSMachine) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ChromeOSMachine) GetReferenceBoard() string {
@@ -683,7 +683,7 @@ type AttachedDevice struct {
 
 func (x *AttachedDevice) Reset() {
 	*x = AttachedDevice{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -695,7 +695,7 @@ func (x *AttachedDevice) String() string {
 func (*AttachedDevice) ProtoMessage() {}
 
 func (x *AttachedDevice) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -708,7 +708,7 @@ func (x *AttachedDevice) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AttachedDevice.ProtoReflect.Descriptor instead.
 func (*AttachedDevice) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *AttachedDevice) GetManufacturer() string {
@@ -756,7 +756,7 @@ type Devboard struct {
 
 func (x *Devboard) Reset() {
 	*x = Devboard{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -768,7 +768,7 @@ func (x *Devboard) String() string {
 func (*Devboard) ProtoMessage() {}
 
 func (x *Devboard) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -781,7 +781,7 @@ func (x *Devboard) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Devboard.ProtoReflect.Descriptor instead.
 func (*Devboard) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Devboard) GetBoard() isDevboard_Board {
@@ -854,7 +854,7 @@ type Andreiboard struct {
 
 func (x *Andreiboard) Reset() {
 	*x = Andreiboard{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -866,7 +866,7 @@ func (x *Andreiboard) String() string {
 func (*Andreiboard) ProtoMessage() {}
 
 func (x *Andreiboard) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -879,7 +879,7 @@ func (x *Andreiboard) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Andreiboard.ProtoReflect.Descriptor instead.
 func (*Andreiboard) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Andreiboard) GetUltradebugSerial() string {
@@ -902,7 +902,7 @@ type Icetower struct {
 
 func (x *Icetower) Reset() {
 	*x = Icetower{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -914,7 +914,7 @@ func (x *Icetower) String() string {
 func (*Icetower) ProtoMessage() {}
 
 func (x *Icetower) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -927,7 +927,7 @@ func (x *Icetower) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Icetower.ProtoReflect.Descriptor instead.
 func (*Icetower) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *Icetower) GetFingerprintId() string {
@@ -950,7 +950,7 @@ type Dragonclaw struct {
 
 func (x *Dragonclaw) Reset() {
 	*x = Dragonclaw{}
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -962,7 +962,7 @@ func (x *Dragonclaw) String() string {
 func (*Dragonclaw) ProtoMessage() {}
 
 func (x *Dragonclaw) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -975,7 +975,7 @@ func (x *Dragonclaw) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Dragonclaw.ProtoReflect.Descriptor instead.
 func (*Dragonclaw) Descriptor() ([]byte, []int) {
-	return file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *Dragonclaw) GetFingerprintId() string {
@@ -985,10 +985,11 @@ func (x *Dragonclaw) GetFingerprintId() string {
 	return ""
 }
 
-var File_infra_unifiedfleet_api_v1_models_machine_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto protoreflect.FileDescriptor
 
-var file_infra_unifiedfleet_api_v1_models_machine_proto_rawDesc = string([]byte{
-	0x0a, 0x2e, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDesc = string([]byte{
+	0x0a, 0x3e, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x6d, 0x61, 0x63, 0x68, 0x69, 0x6e, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x12, 0x1a, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2e, 0x61,
@@ -998,22 +999,28 @@ var file_infra_unifiedfleet_api_v1_models_machine_proto_rawDesc = string([]byte{
 	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72,
 	0x63, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1f, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
 	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x66, 0x69, 0x65, 0x6c, 0x64, 0x5f, 0x62, 0x65, 0x68, 0x61, 0x76,
-	0x69, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x30, 0x69, 0x6e, 0x66, 0x72, 0x61,
+	0x69, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x40, 0x67, 0x6f, 0x2e, 0x63, 0x68,
+	0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61,
 	0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70,
 	0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x63, 0x68, 0x61, 0x73,
-	0x73, 0x69, 0x73, 0x5f, 0x78, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2f, 0x69, 0x6e, 0x66,
+	0x73, 0x69, 0x73, 0x5f, 0x78, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x3f, 0x67, 0x6f, 0x2e,
+	0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66,
 	0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f,
 	0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x6c, 0x6f,
-	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x32, 0x69, 0x6e,
+	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x42, 0x67, 0x6f,
+	0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e,
 	0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65, 0x65, 0x74,
 	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73, 0x2f, 0x70,
 	0x65, 0x72, 0x69, 0x70, 0x68, 0x65, 0x72, 0x61, 0x6c, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x1a, 0x2e, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+	0x1a, 0x3e, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
 	0x6c, 0x73, 0x2f, 0x6e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x1a, 0x2c, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
+	0x1a, 0x3c, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66,
 	0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65,
-	0x6c, 0x73, 0x2f, 0x73, 0x74, 0x61, 0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x30,
+	0x6c, 0x73, 0x2f, 0x73, 0x74, 0x61, 0x74, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x40,
+	0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f,
 	0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65, 0x64, 0x66, 0x6c, 0x65,
 	0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f, 0x64, 0x65, 0x6c, 0x73,
 	0x2f, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
@@ -1216,27 +1223,28 @@ var file_infra_unifiedfleet_api_v1_models_machine_proto_rawDesc = string([]byte{
 	0x45, 0x5f, 0x44, 0x45, 0x56, 0x42, 0x4f, 0x41, 0x52, 0x44, 0x10, 0x05, 0x12, 0x22, 0x0a, 0x1e,
 	0x41, 0x54, 0x54, 0x41, 0x43, 0x48, 0x45, 0x44, 0x5f, 0x44, 0x45, 0x56, 0x49, 0x43, 0x45, 0x5f,
 	0x54, 0x59, 0x50, 0x45, 0x5f, 0x4a, 0x45, 0x54, 0x53, 0x54, 0x52, 0x45, 0x41, 0x4d, 0x10, 0x06,
-	0x42, 0x28, 0x5a, 0x26, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65,
+	0x42, 0x38, 0x5a, 0x36, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e,
+	0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x75, 0x6e, 0x69, 0x66, 0x69, 0x65,
 	0x64, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x6f,
 	0x64, 0x65, 0x6c, 0x73, 0x3b, 0x75, 0x66, 0x73, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x33,
 })
 
 var (
-	file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescOnce sync.Once
-	file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescData []byte
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescData []byte
 )
 
-func file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP() []byte {
-	file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescOnce.Do(func() {
-		file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_machine_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_machine_proto_rawDesc)))
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDesc)))
 	})
-	return file_infra_unifiedfleet_api_v1_models_machine_proto_rawDescData
+	return file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDescData
 }
 
-var file_infra_unifiedfleet_api_v1_models_machine_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
-var file_infra_unifiedfleet_api_v1_models_machine_proto_goTypes = []any{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_goTypes = []any{
 	(ChromeOSDeviceType)(0),       // 0: unifiedfleet.api.v1.models.ChromeOSDeviceType
 	(AttachedDeviceType)(0),       // 1: unifiedfleet.api.v1.models.AttachedDeviceType
 	(*Machine)(nil),               // 2: unifiedfleet.api.v1.models.Machine
@@ -1257,7 +1265,7 @@ var file_infra_unifiedfleet_api_v1_models_machine_proto_goTypes = []any{
 	(*Drac)(nil),                  // 17: unifiedfleet.api.v1.models.Drac
 	(ChassisXBrandType)(0),        // 18: unifiedfleet.api.v1.models.ChassisXBrandType
 }
-var file_infra_unifiedfleet_api_v1_models_machine_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_depIdxs = []int32{
 	10, // 0: unifiedfleet.api.v1.models.Machine.location:type_name -> unifiedfleet.api.v1.models.Location
 	3,  // 1: unifiedfleet.api.v1.models.Machine.chrome_browser_machine:type_name -> unifiedfleet.api.v1.models.ChromeBrowserMachine
 	4,  // 2: unifiedfleet.api.v1.models.Machine.chromeos_machine:type_name -> unifiedfleet.api.v1.models.ChromeOSMachine
@@ -1283,24 +1291,24 @@ var file_infra_unifiedfleet_api_v1_models_machine_proto_depIdxs = []int32{
 	0,  // [0:18] is the sub-list for field type_name
 }
 
-func init() { file_infra_unifiedfleet_api_v1_models_machine_proto_init() }
-func file_infra_unifiedfleet_api_v1_models_machine_proto_init() {
-	if File_infra_unifiedfleet_api_v1_models_machine_proto != nil {
+func init() { file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_init() }
+func file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_init() {
+	if File_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto != nil {
 		return
 	}
-	file_infra_unifiedfleet_api_v1_models_chassis_x_proto_init()
-	file_infra_unifiedfleet_api_v1_models_location_proto_init()
-	file_infra_unifiedfleet_api_v1_models_peripherals_proto_init()
-	file_infra_unifiedfleet_api_v1_models_network_proto_init()
-	file_infra_unifiedfleet_api_v1_models_state_proto_init()
-	file_infra_unifiedfleet_api_v1_models_ownership_proto_init()
-	file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[0].OneofWrappers = []any{
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_chassis_x_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_location_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_peripherals_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_network_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_state_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_ownership_proto_init()
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[0].OneofWrappers = []any{
 		(*Machine_ChromeBrowserMachine)(nil),
 		(*Machine_ChromeosMachine)(nil),
 		(*Machine_AttachedDevice)(nil),
 		(*Machine_Devboard)(nil),
 	}
-	file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[4].OneofWrappers = []any{
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes[4].OneofWrappers = []any{
 		(*Devboard_Andreiboard)(nil),
 		(*Devboard_Icetower)(nil),
 		(*Devboard_Dragonclaw)(nil),
@@ -1309,18 +1317,18 @@ func file_infra_unifiedfleet_api_v1_models_machine_proto_init() {
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_unifiedfleet_api_v1_models_machine_proto_rawDesc), len(file_infra_unifiedfleet_api_v1_models_machine_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDesc), len(file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_rawDesc)),
 			NumEnums:      2,
 			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_unifiedfleet_api_v1_models_machine_proto_goTypes,
-		DependencyIndexes: file_infra_unifiedfleet_api_v1_models_machine_proto_depIdxs,
-		EnumInfos:         file_infra_unifiedfleet_api_v1_models_machine_proto_enumTypes,
-		MessageInfos:      file_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_depIdxs,
+		EnumInfos:         file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_enumTypes,
+		MessageInfos:      file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_msgTypes,
 	}.Build()
-	File_infra_unifiedfleet_api_v1_models_machine_proto = out.File
-	file_infra_unifiedfleet_api_v1_models_machine_proto_goTypes = nil
-	file_infra_unifiedfleet_api_v1_models_machine_proto_depIdxs = nil
+	File_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto = out.File
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_goTypes = nil
+	file_go_chromium_org_infra_unifiedfleet_api_v1_models_machine_proto_depIdxs = nil
 }

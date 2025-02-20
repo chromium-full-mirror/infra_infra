@@ -8,7 +8,7 @@ import (
 	"context"
 	"testing"
 
-	"infra/cros/karte/internal/testsupport"
+	"go.chromium.org/infra/cros/karte/internal/testsupport"
 )
 
 // TestListActionsWithFilter tests listing actions with a simple filter.

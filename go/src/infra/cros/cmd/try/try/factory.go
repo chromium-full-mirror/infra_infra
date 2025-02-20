@@ -16,8 +16,8 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/cmd"
-	bb "infra/cros/lib/buildbucket"
+	"go.chromium.org/infra/cros/internal/cmd"
+	bb "go.chromium.org/infra/cros/lib/buildbucket"
 )
 
 func GetCmdFactory(authOpts auth.Options) *subcommands.Command {

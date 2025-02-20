@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"infra/cros/servo/logging"
+	"go.chromium.org/infra/cros/servo/logging"
 )
 
 // Logger is a logging.Logger that accumulates logs to an in-memory buffer,

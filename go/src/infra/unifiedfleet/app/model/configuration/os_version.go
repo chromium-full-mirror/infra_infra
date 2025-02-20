@@ -15,8 +15,8 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	ufsds "infra/unifiedfleet/app/model/datastore"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsds "go.chromium.org/infra/unifiedfleet/app/model/datastore"
 )
 
 // OSVersionKind is the datastore entity kind for chrome os_version.

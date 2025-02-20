@@ -18,12 +18,12 @@ import (
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cros/cmd/kron/builds"
-	"infra/cros/cmd/kron/common"
-	"infra/cros/cmd/kron/configparser"
-	"infra/cros/cmd/kron/metrics"
-	"infra/cros/cmd/kron/pubsub"
-	"infra/cros/cmd/kron/totmanager"
+	"go.chromium.org/infra/cros/cmd/kron/builds"
+	"go.chromium.org/infra/cros/cmd/kron/common"
+	"go.chromium.org/infra/cros/cmd/kron/configparser"
+	"go.chromium.org/infra/cros/cmd/kron/metrics"
+	"go.chromium.org/infra/cros/cmd/kron/pubsub"
+	"go.chromium.org/infra/cros/cmd/kron/totmanager"
 )
 
 const noBuildUUID = ""

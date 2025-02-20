@@ -19,8 +19,8 @@ import (
 	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/impl/memory"
 
-	admin "infra/tricium/api/admin/v1"
-	tricium "infra/tricium/api/v1"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
+	tricium "go.chromium.org/infra/tricium/api/v1"
 )
 
 func TestTrigger(t *testing.T) {

@@ -16,8 +16,8 @@ import (
 	pb "go.chromium.org/chromiumos/infra/proto/go/satlabrpcserver"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cros/satlab/common/dut"
-	"infra/cros/satlab/satlabrpcserver/models"
+	"go.chromium.org/infra/cros/satlab/common/dut"
+	"go.chromium.org/infra/cros/satlab/satlabrpcserver/models"
 )
 
 type Streaming struct {

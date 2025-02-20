@@ -19,11 +19,11 @@ import (
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	admin "infra/tricium/api/admin/v1"
-	tricium "infra/tricium/api/v1"
-	"infra/tricium/appengine/common"
-	"infra/tricium/appengine/common/config"
-	"infra/tricium/appengine/common/track"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
+	tricium "go.chromium.org/infra/tricium/api/v1"
+	"go.chromium.org/infra/tricium/appengine/common"
+	"go.chromium.org/infra/tricium/appengine/common/config"
+	"go.chromium.org/infra/tricium/appengine/common/track"
 )
 
 // TriciumServer represents the Tricium pRPC server.

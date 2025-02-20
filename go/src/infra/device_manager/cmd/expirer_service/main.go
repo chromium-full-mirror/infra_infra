@@ -15,9 +15,9 @@ import (
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/secrets"
 
-	"infra/device_manager/internal/controller"
-	"infra/device_manager/internal/database"
-	"infra/device_manager/internal/frontend"
+	"go.chromium.org/infra/device_manager/internal/controller"
+	"go.chromium.org/infra/device_manager/internal/database"
+	"go.chromium.org/infra/device_manager/internal/frontend"
 )
 
 func main() {

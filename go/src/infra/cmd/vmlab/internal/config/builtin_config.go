@@ -5,7 +5,7 @@
 package config
 
 import (
-	"infra/libs/vmlab/api"
+	"go.chromium.org/infra/libs/vmlab/api"
 )
 
 type BuiltinConfig struct {

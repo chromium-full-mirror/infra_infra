@@ -3,7 +3,7 @@ description: The paris uploader uploads a directory to Google Storage for Paris 
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/paris-uploader
+  - go.chromium.org/infra/cros/cmd/paris-uploader
 root: ../../go/bin
 data:
   - file: paris-uploader${exe_suffix}

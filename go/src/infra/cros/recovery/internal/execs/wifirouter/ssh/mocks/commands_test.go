@@ -10,8 +10,8 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	"infra/cros/recovery/internal/execs/wifirouter/ssh"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/internal/execs/wifirouter/ssh"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // TestWgetURL tests the ssh.WgetURL function.

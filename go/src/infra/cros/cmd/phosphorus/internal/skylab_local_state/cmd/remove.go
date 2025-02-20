@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cros/cmd/phosphorus/internal/skylab_local_state/location"
+	"go.chromium.org/infra/cros/cmd/phosphorus/internal/skylab_local_state/location"
 )
 
 // Remove subcommand: Remove the results parent directory.

@@ -14,11 +14,11 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/flag"
 
-	"infra/cmd/shivas/cmdhelp"
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/satlab/common/dut"
-	"infra/cros/satlab/common/site"
-	"infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cmd/shivas/cmdhelp"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cros/satlab/common/dut"
+	"go.chromium.org/infra/cros/satlab/common/site"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 )
 
 // GetDUTCmd is the implementation of "satlab get dut ...".

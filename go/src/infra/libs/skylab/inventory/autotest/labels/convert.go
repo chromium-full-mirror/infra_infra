@@ -6,7 +6,7 @@
 // Autotest labels.
 package labels
 
-import "infra/libs/skylab/inventory"
+import "go.chromium.org/infra/libs/skylab/inventory"
 
 // Convert converts DUT inventory labels to Autotest labels.
 func Convert(ls *inventory.SchedulableLabels) []string {

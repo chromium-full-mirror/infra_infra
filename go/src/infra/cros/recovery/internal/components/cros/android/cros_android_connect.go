@@ -13,12 +13,12 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 
-	adbTool "infra/cros/recovery/internal/adb"
-	"infra/cros/recovery/internal/components/cft"
-	"infra/cros/recovery/internal/components/cft/adb"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/internal/retry"
-	"infra/cros/recovery/tlw"
+	adbTool "go.chromium.org/infra/cros/recovery/internal/adb"
+	"go.chromium.org/infra/cros/recovery/internal/components/cft"
+	"go.chromium.org/infra/cros/recovery/internal/components/cft/adb"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/retry"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // ADBConnect connect DUT by ADB.

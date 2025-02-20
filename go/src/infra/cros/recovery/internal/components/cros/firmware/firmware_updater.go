@@ -11,8 +11,8 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/logger"
 )
 
 // FirmwareUpdaterRequest holds request data for running firmware updater.

@@ -16,9 +16,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	prpc "go.chromium.org/luci/grpc/prpc"
 
-	"infra/cmdsupport/cmdlib"
-	fleetcostAPI "infra/cros/fleetcost/api/rpc"
-	"infra/cros/fleetcost/internal/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	fleetcostAPI "go.chromium.org/infra/cros/fleetcost/api/rpc"
+	"go.chromium.org/infra/cros/fleetcost/internal/site"
 )
 
 // PersistToBigqueryCommand persists to BigQuery.

@@ -7,8 +7,8 @@ package regulator
 import (
 	"flag"
 
-	"infra/cros/botsregulator/internal/clients"
-	ufsUtil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cros/botsregulator/internal/clients"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // RegulatorOptions refers to the flag options needed

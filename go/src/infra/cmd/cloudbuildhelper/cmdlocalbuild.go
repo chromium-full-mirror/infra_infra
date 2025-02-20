@@ -16,8 +16,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/cloudbuildhelper/docker"
-	"infra/cmd/cloudbuildhelper/fileset"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/docker"
+	"go.chromium.org/infra/cmd/cloudbuildhelper/fileset"
 )
 
 var cmdLocalBuild = &subcommands.Command{

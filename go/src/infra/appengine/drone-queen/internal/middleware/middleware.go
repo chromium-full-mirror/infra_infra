@@ -16,7 +16,7 @@ import (
 )
 
 // Name used for OpenTelemetry tracers.
-const tname = "infra/appengine/drone-queen/internal/middleware"
+const tname = "go.chromium.org/infra/appengine/drone-queen/internal/middleware"
 
 // A CronWrapper is a function that wraps a cron handler to provide
 // middleware functionality.

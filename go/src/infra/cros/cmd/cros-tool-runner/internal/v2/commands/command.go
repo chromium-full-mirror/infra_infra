@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"infra/cros/cmd/cros-tool-runner/internal/common"
+	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/common"
 )
 
 const (

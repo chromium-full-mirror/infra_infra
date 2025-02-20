@@ -12,8 +12,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	prpc "go.chromium.org/luci/grpc/prpc"
 
-	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/site"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	"go.chromium.org/infra/cros/karte/internal/site"
 )
 
 // Option is a configuration option. For example `UserAgent(...)` would be

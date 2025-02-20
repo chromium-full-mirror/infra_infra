@@ -26,7 +26,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	libsv "infra/cros/stableversion"
+	libsv "go.chromium.org/infra/cros/stableversion"
 )
 
 const (

@@ -3,7 +3,7 @@ description: PARIS (auto-repair/deploy) cli runs task locally to recover DUTs an
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/paris
+  - go.chromium.org/infra/cros/cmd/paris
 root: ../../go/bin
 data:
   - file: paris${exe_suffix}

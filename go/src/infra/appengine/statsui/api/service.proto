@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package statsui;
 
-option go_package = "infra/appengine/statsui/api";
+option go_package = "go.chromium.org/infra/appengine/statsui/api";
 
 service Stats {
   // FetchMetrics is called by the frontend to fetch metrics from the database.

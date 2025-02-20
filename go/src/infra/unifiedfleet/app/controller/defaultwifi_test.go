@@ -12,9 +12,9 @@ import (
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
-	ufspb "infra/unifiedfleet/api/v1/models"
-	. "infra/unifiedfleet/app/model/datastore"
-	"infra/unifiedfleet/app/model/history"
+	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	. "go.chromium.org/infra/unifiedfleet/app/model/datastore"
+	"go.chromium.org/infra/unifiedfleet/app/model/history"
 )
 
 func TestCreateDefaultWifi(t *testing.T) {

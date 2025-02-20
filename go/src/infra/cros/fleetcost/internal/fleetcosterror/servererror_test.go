@@ -13,7 +13,7 @@ import (
 
 	"go.chromium.org/luci/common/testing/typed"
 
-	"infra/cros/fleetcost/internal/fleetcosterror"
+	"go.chromium.org/infra/cros/fleetcost/internal/fleetcosterror"
 )
 
 func TestWithDefaultCode(t *testing.T) {

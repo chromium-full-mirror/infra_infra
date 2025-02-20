@@ -3,7 +3,7 @@ description: LEGACY vpython 2.7 package. Do not depend on this without talking t
 platforms:
   - linux-amd64
 go_packages:
-  - infra/tools/vpython/legacy/vpython2.7/cmd/vpython2.7
+  - go.chromium.org/infra/tools/vpython/legacy/vpython2.7/cmd/vpython2.7
 install_mode: copy
 root: ../../go/bin
 # We have the vpython2.7 package create a binary called 'vpython2.7' so that

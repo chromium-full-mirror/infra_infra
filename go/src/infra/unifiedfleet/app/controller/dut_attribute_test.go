@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/unifiedfleet/app/model/configuration"
+	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
 )
 
 func mockDutAttribute(id string, field_path string) *api.DutAttribute {

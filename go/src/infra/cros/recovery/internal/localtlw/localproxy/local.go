@@ -8,8 +8,8 @@ import (
 	"context"
 	"fmt"
 
-	"infra/cros/recovery/internal/localtlw/ssh"
-	"infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw/ssh"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 var (

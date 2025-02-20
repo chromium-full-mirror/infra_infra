@@ -6,7 +6,7 @@ package mocks
 
 import (
 	context "context"
-	components "infra/cros/recovery/internal/components"
+	components "go.chromium.org/infra/cros/recovery/internal/components"
 	reflect "reflect"
 	time "time"
 

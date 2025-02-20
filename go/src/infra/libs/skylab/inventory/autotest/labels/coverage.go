@@ -5,7 +5,7 @@
 package labels
 
 import (
-	"infra/libs/skylab/inventory"
+	"go.chromium.org/infra/libs/skylab/inventory"
 )
 
 func init() {

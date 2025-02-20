@@ -12,7 +12,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/libs/skylab/common/heuristics"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
 )
 
 // SwarmingBotProvider is the host that runs a swarming bot, e.g. GCE or Drone.

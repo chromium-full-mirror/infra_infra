@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/luciexe/build"
 
-	"infra/libs/git"
+	"go.chromium.org/infra/libs/git"
 )
 
 type SrcConfig struct {
@@ -80,7 +80,7 @@ func getSrcConfig(buildCtx context.Context, gerritHost string, repoHost string, 
 		return nil, errors.Annotate(err, "Initializing Gitiles client").Err()
 	}
 
-	srcConfigString, err := client.GetFile(ctx, "infra/config/generated/health-specs/health-specs.json")
+	srcConfigString, err := client.GetFile(ctx, "go.chromium.org/infra/config/generated/health-specs/health-specs.json")
 	if err != nil {
 		step.SetSummaryMarkdown("Error in Downloading src config")
 		return nil, errors.Annotate(err, "Downloading src config").Err()

@@ -9,7 +9,7 @@ import (
 	"flag"
 	"log"
 
-	"infra/cros/cmd/ctpv2/executions"
+	"go.chromium.org/infra/cros/cmd/ctpv2/executions"
 )
 
 // BuildCommand holds the necessary values to build the CLI. Run as build. This

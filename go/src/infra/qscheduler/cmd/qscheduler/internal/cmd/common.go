@@ -18,8 +18,8 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"infra/qscheduler/cmd/qscheduler/internal/site"
-	qscheduler "infra/qscheduler/service/api/qscheduler/v1"
+	"go.chromium.org/infra/qscheduler/cmd/qscheduler/internal/site"
+	qscheduler "go.chromium.org/infra/qscheduler/service/api/qscheduler/v1"
 )
 
 const progName = "qscheduler"

@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/luci/gae/impl/memory"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/cros/karte/internal/identifiers"
+	"go.chromium.org/infra/cros/karte/internal/identifiers"
 )
 
 // NewTestingContext creates a new testing context for Karte tetsing.

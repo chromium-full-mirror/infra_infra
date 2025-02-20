@@ -14,8 +14,8 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/protobuf/testing/protocmp"
 
-	"infra/cmd/vmlab/internal/config"
-	"infra/libs/vmlab/api"
+	"go.chromium.org/infra/cmd/vmlab/internal/config"
+	"go.chromium.org/infra/libs/vmlab/api"
 )
 
 type mockInstanceApi struct {

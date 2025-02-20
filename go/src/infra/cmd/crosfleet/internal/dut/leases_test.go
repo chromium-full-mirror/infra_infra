@@ -15,9 +15,9 @@ import (
 
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
-	"infra/cmd/crosfleet/internal/buildbucket"
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cmd/crosfleet/internal/buildbucket"
+	"go.chromium.org/infra/cmd/crosfleet/internal/site"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 var testLeaseInfoAsBashVariablesData = []struct {

@@ -7,8 +7,8 @@ package dutinfo
 import (
 	"testing"
 
-	"infra/cros/recovery/tlw"
-	ufslab "infra/unifiedfleet/api/v1/models/chromeos/lab"
+	"go.chromium.org/infra/cros/recovery/tlw"
+	ufslab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 )
 
 // TestTrancateString tests trancateString function.

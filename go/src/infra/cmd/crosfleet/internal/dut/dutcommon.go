@@ -15,9 +15,9 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 	swarmingapi "go.chromium.org/luci/swarming/proto/api_v2"
 
-	"infra/cmd/crosfleet/internal/site"
-	"infra/cmdsupport/cmdlib"
-	ufsutil "infra/unifiedfleet/app/util"
+	"go.chromium.org/infra/cmd/crosfleet/internal/site"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	ufsutil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // newSwarmingBotClient returns a new bot client service to interact with.

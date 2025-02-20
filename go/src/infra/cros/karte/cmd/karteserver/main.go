@@ -22,10 +22,10 @@ import (
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 
-	"infra/cros/karte/internal/externalclients"
-	"infra/cros/karte/internal/frontend"
-	"infra/cros/karte/internal/identifiers"
-	"infra/libs/bqwrapper"
+	"go.chromium.org/infra/cros/karte/internal/externalclients"
+	"go.chromium.org/infra/cros/karte/internal/frontend"
+	"go.chromium.org/infra/cros/karte/internal/identifiers"
+	"go.chromium.org/infra/libs/bqwrapper"
 )
 
 // Transfer control to the LUCI server

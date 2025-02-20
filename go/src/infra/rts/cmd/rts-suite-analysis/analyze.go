@@ -18,8 +18,8 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/rts"
-	"infra/rts/presubmit/eval"
+	"go.chromium.org/infra/rts"
+	"go.chromium.org/infra/rts/presubmit/eval"
 )
 
 type analyzeCommandRun struct {

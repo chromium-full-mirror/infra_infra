@@ -12,8 +12,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"infra/cros/internal/assert"
-	"infra/cros/internal/git"
+	"go.chromium.org/infra/cros/internal/assert"
+	"go.chromium.org/infra/cros/internal/git"
 )
 
 // createFooBarBaz creates foo bar baz file structure, the greatest file structure on earth

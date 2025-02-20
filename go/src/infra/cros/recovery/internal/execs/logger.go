@@ -7,8 +7,8 @@ package execs
 import (
 	"context"
 
-	"infra/cros/recovery/logger"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // NewLogger returns logger.

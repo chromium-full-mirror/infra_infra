@@ -7,9 +7,9 @@ package vmlab
 import (
 	"fmt"
 
-	"infra/libs/vmlab/api"
-	"infra/libs/vmlab/internal/instance/gcloud"
-	vmleaser "infra/libs/vmlab/internal/instance/vm_leaser"
+	"go.chromium.org/infra/libs/vmlab/api"
+	"go.chromium.org/infra/libs/vmlab/internal/instance/gcloud"
+	vmleaser "go.chromium.org/infra/libs/vmlab/internal/instance/vm_leaser"
 )
 
 // NewInstanceApi serves as the entry point to the vmlab library by returning an

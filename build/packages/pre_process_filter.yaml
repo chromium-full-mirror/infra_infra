@@ -3,7 +3,7 @@ description: CTPv2 filter responsible for removing flaky tests from execution
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cros/cmd/ctpv2-filters/pre_process_filter
+  - go.chromium.org/infra/cros/cmd/ctpv2-filters/pre_process_filter
 root: ../../go/bin
 data:
   - file: pre_process_filter${exe_suffix}

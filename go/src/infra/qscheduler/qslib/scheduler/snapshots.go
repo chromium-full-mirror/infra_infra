@@ -17,8 +17,8 @@ package scheduler
 import (
 	"sort"
 
-	"infra/qscheduler/qslib/protos/metrics"
-	"infra/qscheduler/qslib/tutils"
+	"go.chromium.org/infra/qscheduler/qslib/protos/metrics"
+	"go.chromium.org/infra/qscheduler/qslib/tutils"
 )
 
 // Snapshot represents the scheduler state at a specified timestamp.

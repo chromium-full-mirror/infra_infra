@@ -15,18 +15,18 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/env"
-	"infra/cros/recovery/docker"
-	"infra/cros/recovery/internal/localtlw/localproxy"
-	"infra/cros/recovery/internal/localtlw/ssh"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/internal/rpm"
-	"infra/cros/recovery/internal/tls"
-	tlw_server "infra/cros/recovery/internal/tlw"
-	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/tlw"
-	ufsModels "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	"go.chromium.org/infra/cros/internal/env"
+	"go.chromium.org/infra/cros/recovery/docker"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw/localproxy"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw/ssh"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/rpm"
+	"go.chromium.org/infra/cros/recovery/internal/tls"
+	tlw_server "go.chromium.org/infra/cros/recovery/internal/tlw"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/tlw"
+	ufsModels "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 // UFSClient is a client that knows how to work with UFS RPC methods.

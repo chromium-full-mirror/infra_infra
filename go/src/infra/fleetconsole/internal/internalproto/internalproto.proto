@@ -6,7 +6,7 @@ syntax = "proto3";
 
 package fleetconsole;
 
-option go_package = "infra/fleetconsole/internal/internalproto;internalproto";
+option go_package = "go.chromium.org/infra/fleetconsole/internal/internalproto;internalproto";
 
 // The message represents ListDevices pagination token.
 message ListDevicesPaginationToken {

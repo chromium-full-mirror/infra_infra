@@ -7,8 +7,8 @@ package vmlab
 import (
 	"fmt"
 
-	"infra/libs/vmlab/api"
-	"infra/libs/vmlab/internal/image/cloudsdk"
+	"go.chromium.org/infra/libs/vmlab/api"
+	"go.chromium.org/infra/libs/vmlab/internal/image/cloudsdk"
 )
 
 // NewImageApi serves as the entry point to the vmlab library for api.ImageApi

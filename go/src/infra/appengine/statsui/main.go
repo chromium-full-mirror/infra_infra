@@ -17,8 +17,8 @@ import (
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 
-	"infra/appengine/statsui/api"
-	"infra/appengine/statsui/internal/datasources"
+	"go.chromium.org/infra/appengine/statsui/api"
+	"go.chromium.org/infra/appengine/statsui/internal/datasources"
 )
 
 func main() {

@@ -16,8 +16,8 @@ import (
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/server/cron"
 
-	kartepb "infra/cros/karte/api"
-	"infra/cros/karte/internal/scalars"
+	kartepb "go.chromium.org/infra/cros/karte/api"
+	"go.chromium.org/infra/cros/karte/internal/scalars"
 )
 
 // karteFrontend is the implementation of kartepb.KarteServer

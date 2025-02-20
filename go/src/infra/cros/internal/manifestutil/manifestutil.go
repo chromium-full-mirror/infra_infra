@@ -13,8 +13,8 @@ import (
 	bbproto "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/internal/gerrit"
-	"infra/cros/internal/repo"
+	"go.chromium.org/infra/cros/internal/gerrit"
+	"go.chromium.org/infra/cros/internal/repo"
 )
 
 const (

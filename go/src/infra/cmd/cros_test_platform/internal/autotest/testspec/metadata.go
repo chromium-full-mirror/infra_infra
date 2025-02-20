@@ -12,7 +12,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/chromite/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cmd/cros_test_platform/internal/utils"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/utils"
 )
 
 // Get computes metadata for all test and suite control files

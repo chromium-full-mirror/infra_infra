@@ -17,10 +17,10 @@ import (
 	"go.chromium.org/luci/appengine/gaetesting"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"infra/appengine/drone-queen/api"
-	"infra/appengine/drone-queen/internal/config"
-	"infra/appengine/drone-queen/internal/entities"
-	"infra/appengine/drone-queen/internal/testlogger"
+	"go.chromium.org/infra/appengine/drone-queen/api"
+	"go.chromium.org/infra/appengine/drone-queen/internal/config"
+	"go.chromium.org/infra/appengine/drone-queen/internal/entities"
+	"go.chromium.org/infra/appengine/drone-queen/internal/testlogger"
 )
 
 func TestCreateNewDrone(t *testing.T) {

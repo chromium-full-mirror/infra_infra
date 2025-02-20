@@ -15,11 +15,11 @@ import (
 
 	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/cros/stableversion/keys"
-	"infra/libs/skylab/inventory"
-	models "infra/unifiedfleet/api/v1/models"
-	ufsAPI "infra/unifiedfleet/api/v1/rpc"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/cros/stableversion/keys"
+	"go.chromium.org/infra/libs/skylab/inventory"
+	models "go.chromium.org/infra/unifiedfleet/api/v1/models"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 )
 
 const fullResponse = `{

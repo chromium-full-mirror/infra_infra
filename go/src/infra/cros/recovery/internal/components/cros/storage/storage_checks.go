@@ -14,11 +14,11 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/dutstate"
-	"infra/cros/recovery/internal/components"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/logger/metrics"
-	"infra/cros/recovery/tlw"
+	"go.chromium.org/infra/cros/dutstate"
+	"go.chromium.org/infra/cros/recovery/internal/components"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // StorageState is a description of the DUT's storage state given the type of the DUT storage.

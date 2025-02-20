@@ -2,7 +2,7 @@
 
 package main
 
-import pb "infra/libs/bqschema/tabledef"
+import pb "go.chromium.org/infra/libs/bqschema/tabledef"
 import civil "cloud.google.com/go/civil"
 
 // TestSchemaTable is the TableDef for the

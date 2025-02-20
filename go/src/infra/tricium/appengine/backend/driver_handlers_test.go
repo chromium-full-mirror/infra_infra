@@ -18,9 +18,9 @@ import (
 	ds "go.chromium.org/luci/gae/service/datastore"
 	tq "go.chromium.org/luci/gae/service/taskqueue"
 
-	admin "infra/tricium/api/admin/v1"
-	"infra/tricium/appengine/common"
-	"infra/tricium/appengine/common/triciumtest"
+	admin "go.chromium.org/infra/tricium/api/admin/v1"
+	"go.chromium.org/infra/tricium/appengine/common"
+	"go.chromium.org/infra/tricium/appengine/common/triciumtest"
 )
 
 var (

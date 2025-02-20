@@ -6,7 +6,7 @@
 // versions:
 // 	protoc-gen-go v1.36.5
 // 	protoc        v5.29.3
-// source: infra/appengine/cros/lab_inventory/app/config/config.proto
+// source: go.chromium.org/infra/appengine/cros/lab_inventory/app/config/config.proto
 
 package config
 
@@ -34,7 +34,7 @@ type LuciAuthGroup struct {
 
 func (x *LuciAuthGroup) Reset() {
 	*x = LuciAuthGroup{}
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -46,7 +46,7 @@ func (x *LuciAuthGroup) String() string {
 func (*LuciAuthGroup) ProtoMessage() {}
 
 func (x *LuciAuthGroup) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[0]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -59,7 +59,7 @@ func (x *LuciAuthGroup) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LuciAuthGroup.ProtoReflect.Descriptor instead.
 func (*LuciAuthGroup) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{0}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *LuciAuthGroup) GetValue() string {
@@ -109,7 +109,7 @@ type Config struct {
 
 func (x *Config) Reset() {
 	*x = Config{}
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -121,7 +121,7 @@ func (x *Config) String() string {
 func (*Config) ProtoMessage() {}
 
 func (x *Config) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[1]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -134,7 +134,7 @@ func (x *Config) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Config.ProtoReflect.Descriptor instead.
 func (*Config) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{1}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Config) GetAdminService() *AdminService {
@@ -284,7 +284,7 @@ type ProjectConfigLocation struct {
 
 func (x *ProjectConfigLocation) Reset() {
 	*x = ProjectConfigLocation{}
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -296,7 +296,7 @@ func (x *ProjectConfigLocation) String() string {
 func (*ProjectConfigLocation) ProtoMessage() {}
 
 func (x *ProjectConfigLocation) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[2]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -309,7 +309,7 @@ func (x *ProjectConfigLocation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProjectConfigLocation.ProtoReflect.Descriptor instead.
 func (*ProjectConfigLocation) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{2}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *ProjectConfigLocation) GetProgramConfigsGsPath() string {
@@ -364,7 +364,7 @@ type AdminService struct {
 
 func (x *AdminService) Reset() {
 	*x = AdminService{}
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -376,7 +376,7 @@ func (x *AdminService) String() string {
 func (*AdminService) ProtoMessage() {}
 
 func (x *AdminService) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[3]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -389,7 +389,7 @@ func (x *AdminService) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AdminService.ProtoReflect.Descriptor instead.
 func (*AdminService) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{3}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *AdminService) GetHost() string {
@@ -415,7 +415,7 @@ type Gitiles struct {
 
 func (x *Gitiles) Reset() {
 	*x = Gitiles{}
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -427,7 +427,7 @@ func (x *Gitiles) String() string {
 func (*Gitiles) ProtoMessage() {}
 
 func (x *Gitiles) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[4]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -440,7 +440,7 @@ func (x *Gitiles) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Gitiles.ProtoReflect.Descriptor instead.
 func (*Gitiles) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{4}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *Gitiles) GetHost() string {
@@ -485,7 +485,7 @@ type InventoryV1Repo struct {
 
 func (x *InventoryV1Repo) Reset() {
 	*x = InventoryV1Repo{}
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -497,7 +497,7 @@ func (x *InventoryV1Repo) String() string {
 func (*InventoryV1Repo) ProtoMessage() {}
 
 func (x *InventoryV1Repo) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[5]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -510,7 +510,7 @@ func (x *InventoryV1Repo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use InventoryV1Repo.ProtoReflect.Descriptor instead.
 func (*InventoryV1Repo) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{5}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *InventoryV1Repo) GetHost() string {
@@ -566,7 +566,7 @@ type HaRT struct {
 
 func (x *HaRT) Reset() {
 	*x = HaRT{}
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -578,7 +578,7 @@ func (x *HaRT) String() string {
 func (*HaRT) ProtoMessage() {}
 
 func (x *HaRT) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[6]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -591,7 +591,7 @@ func (x *HaRT) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HaRT.ProtoReflect.Descriptor instead.
 func (*HaRT) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{6}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *HaRT) GetProject() string {
@@ -631,7 +631,7 @@ type AssetTagBackfill struct {
 
 func (x *AssetTagBackfill) Reset() {
 	*x = AssetTagBackfill{}
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -643,7 +643,7 @@ func (x *AssetTagBackfill) String() string {
 func (*AssetTagBackfill) ProtoMessage() {}
 
 func (x *AssetTagBackfill) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[7]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -656,7 +656,7 @@ func (x *AssetTagBackfill) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AssetTagBackfill.ProtoReflect.Descriptor instead.
 func (*AssetTagBackfill) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{7}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *AssetTagBackfill) GetEnable() bool {
@@ -706,7 +706,7 @@ type UfsRouting struct {
 	// cron job for dronequeen push.
 	// As UFS migration is over, this is no longer used.
 	//
-	// Deprecated: Marked as deprecated in infra/appengine/cros/lab_inventory/app/config/config.proto.
+	// Deprecated: Marked as deprecated in go.chromium.org/infra/appengine/cros/lab_inventory/app/config/config.proto.
 	DisableDronequeenPush bool `protobuf:"varint,12,opt,name=disable_dronequeen_push,json=disableDronequeenPush,proto3" json:"disable_dronequeen_push,omitempty"`
 	// cron job for BQ Device/Dutstate dump.
 	DumpDevicesBq bool `protobuf:"varint,13,opt,name=dump_devices_bq,json=dumpDevicesBq,proto3" json:"dump_devices_bq,omitempty"`
@@ -718,7 +718,7 @@ type UfsRouting struct {
 
 func (x *UfsRouting) Reset() {
 	*x = UfsRouting{}
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -730,7 +730,7 @@ func (x *UfsRouting) String() string {
 func (*UfsRouting) ProtoMessage() {}
 
 func (x *UfsRouting) ProtoReflect() protoreflect.Message {
-	mi := &file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[8]
+	mi := &file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -743,7 +743,7 @@ func (x *UfsRouting) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UfsRouting.ProtoReflect.Descriptor instead.
 func (*UfsRouting) Descriptor() ([]byte, []int) {
-	return file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{8}
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *UfsRouting) GetAddCrosDevices() bool {
@@ -823,7 +823,7 @@ func (x *UfsRouting) GetUpdateAssets() bool {
 	return false
 }
 
-// Deprecated: Marked as deprecated in infra/appengine/cros/lab_inventory/app/config/config.proto.
+// Deprecated: Marked as deprecated in go.chromium.org/infra/appengine/cros/lab_inventory/app/config/config.proto.
 func (x *UfsRouting) GetDisableDronequeenPush() bool {
 	if x != nil {
 		return x.DisableDronequeenPush
@@ -845,10 +845,11 @@ func (x *UfsRouting) GetDumpAssetsBq() bool {
 	return false
 }
 
-var File_infra_appengine_cros_lab_inventory_app_config_config_proto protoreflect.FileDescriptor
+var File_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto protoreflect.FileDescriptor
 
-var file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDesc = string([]byte{
-	0x0a, 0x3a, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
+var file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDesc = string([]byte{
+	0x0a, 0x4a, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75, 0x6d, 0x2e, 0x6f, 0x72,
+	0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65, 0x6e, 0x67, 0x69, 0x6e,
 	0x65, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x5f, 0x69, 0x6e, 0x76, 0x65, 0x6e,
 	0x74, 0x6f, 0x72, 0x79, 0x2f, 0x61, 0x70, 0x70, 0x2f, 0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2f,
 	0x63, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x14, 0x6c, 0x61,
@@ -1021,26 +1022,27 @@ var file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDesc = st
 	0x75, 0x6d, 0x70, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65, 0x73, 0x42, 0x71, 0x12, 0x24, 0x0a, 0x0e,
 	0x64, 0x75, 0x6d, 0x70, 0x5f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x73, 0x5f, 0x62, 0x71, 0x18, 0x0e,
 	0x20, 0x01, 0x28, 0x08, 0x52, 0x0c, 0x64, 0x75, 0x6d, 0x70, 0x41, 0x73, 0x73, 0x65, 0x74, 0x73,
-	0x42, 0x71, 0x42, 0x2f, 0x5a, 0x2d, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65,
+	0x42, 0x71, 0x42, 0x3f, 0x5a, 0x3d, 0x67, 0x6f, 0x2e, 0x63, 0x68, 0x72, 0x6f, 0x6d, 0x69, 0x75,
+	0x6d, 0x2e, 0x6f, 0x72, 0x67, 0x2f, 0x69, 0x6e, 0x66, 0x72, 0x61, 0x2f, 0x61, 0x70, 0x70, 0x65,
 	0x6e, 0x67, 0x69, 0x6e, 0x65, 0x2f, 0x63, 0x72, 0x6f, 0x73, 0x2f, 0x6c, 0x61, 0x62, 0x5f, 0x69,
 	0x6e, 0x76, 0x65, 0x6e, 0x74, 0x6f, 0x72, 0x79, 0x2f, 0x61, 0x70, 0x70, 0x2f, 0x63, 0x6f, 0x6e,
 	0x66, 0x69, 0x67, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 })
 
 var (
-	file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescOnce sync.Once
-	file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescData []byte
+	file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescOnce sync.Once
+	file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescData []byte
 )
 
-func file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP() []byte {
-	file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescOnce.Do(func() {
-		file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDesc), len(file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDesc)))
+func file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescGZIP() []byte {
+	file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescOnce.Do(func() {
+		file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDesc), len(file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDesc)))
 	})
-	return file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescData
+	return file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDescData
 }
 
-var file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
-var file_infra_appengine_cros_lab_inventory_app_config_config_proto_goTypes = []any{
+var file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_goTypes = []any{
 	(*LuciAuthGroup)(nil),         // 0: lab_inventory.config.LuciAuthGroup
 	(*Config)(nil),                // 1: lab_inventory.config.Config
 	(*ProjectConfigLocation)(nil), // 2: lab_inventory.config.ProjectConfigLocation
@@ -1051,7 +1053,7 @@ var file_infra_appengine_cros_lab_inventory_app_config_config_proto_goTypes = []
 	(*AssetTagBackfill)(nil),      // 7: lab_inventory.config.AssetTagBackfill
 	(*UfsRouting)(nil),            // 8: lab_inventory.config.UfsRouting
 }
-var file_infra_appengine_cros_lab_inventory_app_config_config_proto_depIdxs = []int32{
+var file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_depIdxs = []int32{
 	3,  // 0: lab_inventory.config.Config.admin_service:type_name -> lab_inventory.config.AdminService
 	0,  // 1: lab_inventory.config.Config.readers:type_name -> lab_inventory.config.LuciAuthGroup
 	0,  // 2: lab_inventory.config.Config.status_writers:type_name -> lab_inventory.config.LuciAuthGroup
@@ -1072,26 +1074,26 @@ var file_infra_appengine_cros_lab_inventory_app_config_config_proto_depIdxs = []
 	0,  // [0:13] is the sub-list for field type_name
 }
 
-func init() { file_infra_appengine_cros_lab_inventory_app_config_config_proto_init() }
-func file_infra_appengine_cros_lab_inventory_app_config_config_proto_init() {
-	if File_infra_appengine_cros_lab_inventory_app_config_config_proto != nil {
+func init() { file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_init() }
+func file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_init() {
+	if File_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDesc), len(file_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDesc), len(file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_infra_appengine_cros_lab_inventory_app_config_config_proto_goTypes,
-		DependencyIndexes: file_infra_appengine_cros_lab_inventory_app_config_config_proto_depIdxs,
-		MessageInfos:      file_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes,
+		GoTypes:           file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_goTypes,
+		DependencyIndexes: file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_depIdxs,
+		MessageInfos:      file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_msgTypes,
 	}.Build()
-	File_infra_appengine_cros_lab_inventory_app_config_config_proto = out.File
-	file_infra_appengine_cros_lab_inventory_app_config_config_proto_goTypes = nil
-	file_infra_appengine_cros_lab_inventory_app_config_config_proto_depIdxs = nil
+	File_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto = out.File
+	file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_goTypes = nil
+	file_go_chromium_org_infra_appengine_cros_lab_inventory_app_config_config_proto_depIdxs = nil
 }

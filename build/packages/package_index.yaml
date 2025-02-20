@@ -7,7 +7,7 @@ platforms:
   - mac-amd64
   - mac-arm64
 go_packages:
-  - infra/cmd/package_index
+  - go.chromium.org/infra/cmd/package_index
 root: ../../go/bin
 data:
   - file: package_index${exe_suffix}

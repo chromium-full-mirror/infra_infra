@@ -20,11 +20,11 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"infra/appengine/drone-queen/api"
-	"infra/cmd/drone-agent/internal/agent/state"
-	"infra/cmd/drone-agent/internal/bot"
-	"infra/cmd/drone-agent/internal/draining"
-	"infra/libs/otil"
+	"go.chromium.org/infra/appengine/drone-queen/api"
+	"go.chromium.org/infra/cmd/drone-agent/internal/agent/state"
+	"go.chromium.org/infra/cmd/drone-agent/internal/bot"
+	"go.chromium.org/infra/cmd/drone-agent/internal/draining"
+	"go.chromium.org/infra/libs/otil"
 )
 
 // Agent talks to a drone queen service and manages Swarming bots.

@@ -3,7 +3,7 @@ syntax = "proto3";
 package main;
 
 // The `;main` defines the package specified in the generated `pb.go`
-option go_package = "infra/experimental/buildwheel;main";
+option go_package = "go.chromium.org/infra/experimental/buildwheel;main";
 
 // Proto message which reflects the input properties of the build_wheels recipe.
 // See more detailed description for each field there.

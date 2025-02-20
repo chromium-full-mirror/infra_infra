@@ -11,9 +11,9 @@ import (
 
 	"go.chromium.org/luci/auth/client/authcli"
 
-	"infra/cmdsupport/cmdlib"
-	"infra/cros/satlab/common/dut"
-	"infra/cros/satlab/common/utils/executor"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	"go.chromium.org/infra/cros/satlab/common/dut"
+	"go.chromium.org/infra/cros/satlab/common/utils/executor"
 )
 
 // UpdateDUTCmd is the command that updates fields for a satlab DUT.

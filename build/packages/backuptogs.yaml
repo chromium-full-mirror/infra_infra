@@ -11,7 +11,7 @@ platforms:
   - windows-amd64
   - windows-arm64
 go_packages:
-  - infra/tools/backuptogs
+  - go.chromium.org/infra/tools/backuptogs
 root: ../../go/bin
 data:
   - file: backuptogs${exe_suffix}

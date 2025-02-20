@@ -3,8 +3,8 @@ description: Binary steps implementations for cros_test_platform recipe.
 platforms:
   - linux-amd64
 go_packages:
-  - infra/cmd/cros_test_platform
-  - infra/cmd/cros_test_platform/luciexe
+  - go.chromium.org/infra/cmd/cros_test_platform
+  - go.chromium.org/infra/cmd/cros_test_platform/luciexe
 root: ../../go/bin
 data:
   - file: cros_test_platform${exe_suffix}

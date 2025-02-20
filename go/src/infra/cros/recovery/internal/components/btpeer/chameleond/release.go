@@ -17,12 +17,12 @@ import (
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
-	"infra/cros/recovery/internal/components/cache"
-	"infra/cros/recovery/internal/components/cros"
-	"infra/cros/recovery/internal/components/linux"
-	"infra/cros/recovery/internal/execs/wifirouter/ssh"
-	"infra/cros/recovery/internal/log"
-	"infra/cros/recovery/internal/retry"
+	"go.chromium.org/infra/cros/recovery/internal/components/cache"
+	"go.chromium.org/infra/cros/recovery/internal/components/cros"
+	"go.chromium.org/infra/cros/recovery/internal/components/linux"
+	"go.chromium.org/infra/cros/recovery/internal/execs/wifirouter/ssh"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/internal/retry"
 )
 
 const (

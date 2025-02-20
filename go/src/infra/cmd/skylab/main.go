@@ -15,10 +15,10 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	"infra/cmd/skylab/internal/cmd/internalcmds"
-	"infra/cmd/skylab/internal/cmd/meta"
-	"infra/cmd/skylab/internal/cmd/tasks"
-	"infra/cmd/skylab/internal/site"
+	"go.chromium.org/infra/cmd/skylab/internal/cmd/internalcmds"
+	"go.chromium.org/infra/cmd/skylab/internal/cmd/meta"
+	"go.chromium.org/infra/cmd/skylab/internal/cmd/tasks"
+	"go.chromium.org/infra/cmd/skylab/internal/site"
 )
 
 func getApplication() *cli.Application {

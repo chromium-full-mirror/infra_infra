@@ -20,7 +20,7 @@ import (
 	"context"
 	"google.golang.org/api/iterator"
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
-	"infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
 	"testing"
 )
 

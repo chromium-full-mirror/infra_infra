@@ -13,9 +13,9 @@ import (
 
 	"go.chromium.org/luci/common/logging"
 
-	"infra/fleetconsole/api/fleetconsolerpc"
-	"infra/fleetconsole/internal/database/queryutils"
-	"infra/fleetconsole/internal/utils"
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/internal/database/queryutils"
+	"go.chromium.org/infra/fleetconsole/internal/utils"
 )
 
 // GetLabels gets all the dynamic labels and their possible values

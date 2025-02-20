@@ -17,12 +17,12 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/cli"
 
-	"infra/cmd/crosfleet/internal/common"
-	"infra/cmdsupport/cmdlib"
-	croscommon "infra/cros/cmd/common_lib/common"
-	"infra/libs/vmlab"
-	vmapi "infra/libs/vmlab/api"
-	"infra/vm_leaser/client"
+	"go.chromium.org/infra/cmd/crosfleet/internal/common"
+	"go.chromium.org/infra/cmdsupport/cmdlib"
+	croscommon "go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/libs/vmlab"
+	vmapi "go.chromium.org/infra/libs/vmlab/api"
+	"go.chromium.org/infra/vm_leaser/client"
 )
 
 const (

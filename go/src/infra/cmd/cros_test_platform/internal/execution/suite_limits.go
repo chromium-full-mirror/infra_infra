@@ -13,9 +13,9 @@ import (
 	buildbucket "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging"
 
-	"infra/cmd/cros_test_platform/internal/execution/build"
-	trservice "infra/cmd/cros_test_platform/internal/execution/testrunner/service"
-	"infra/cmd/cros_test_platform/internal/execution/types"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/build"
+	trservice "go.chromium.org/infra/cmd/cros_test_platform/internal/execution/testrunner/service"
+	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/types"
 )
 
 const (

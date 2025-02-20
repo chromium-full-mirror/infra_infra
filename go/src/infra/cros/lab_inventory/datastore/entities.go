@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	inv "infra/cros/lab_inventory/protos"
+	inv "go.chromium.org/infra/cros/lab_inventory/protos"
 )
 
 // DeviceEntityID represents the ID of a device. We prefer use asset id as the id.

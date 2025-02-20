@@ -5,7 +5,7 @@ platforms:
   - linux-arm64
   - linux-armv6l
 go_packages:
-  - infra/isolation/nsjail_wrapper
+  - go.chromium.org/infra/isolation/nsjail_wrapper
 root: ../../go/bin
 install_mode: copy
 data:

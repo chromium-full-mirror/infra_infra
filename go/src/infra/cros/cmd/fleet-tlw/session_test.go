@@ -18,9 +18,9 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/api/test/tls"
 
-	"infra/cros/cmd/fleet-tlw/internal/cache"
-	"infra/cros/fleet/access"
-	ufsmodels "infra/unifiedfleet/api/v1/models"
+	"go.chromium.org/infra/cros/cmd/fleet-tlw/internal/cache"
+	"go.chromium.org/infra/cros/fleet/access"
+	ufsmodels "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 type fakeTLWServer struct{}

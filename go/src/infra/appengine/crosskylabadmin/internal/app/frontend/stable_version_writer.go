@@ -14,9 +14,9 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/grpc/grpcutil"
 
-	fleet "infra/appengine/crosskylabadmin/api/fleet/v1"
-	"infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/satlab"
-	"infra/cros/stableversion"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend/datastore/stableversion/satlab"
+	"go.chromium.org/infra/cros/stableversion"
 )
 
 // SetSatlabStableVersion replaces a satlab stable version with a new entry.
