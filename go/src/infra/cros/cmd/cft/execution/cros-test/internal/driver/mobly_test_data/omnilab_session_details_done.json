@@ -1,0 +1,894 @@
+{
+  "sessionDetail": {
+    "jobDetail": [
+      {
+        "jobSummary": {
+          "createTimeMs": "1702067611334",
+          "endTimeMs": "1702067781387",
+          "genFileWithLength": [
+            {
+              "length": "4148",
+              "path": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/genfiles/job_output.txt"
+            },
+            {
+              "length": "111100",
+              "path": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/genfiles/job.log"
+            }
+          ],
+          "id": "ce103571-bf18-4aab-b835-e4d123e660dd",
+          "log": "Talking to master: gslb::20:PROD2023-12-08 12:33:32:843 PST I Loaded internal plugin: com.google.userplatform.accountprovider.mobileharness.TestAccountProviderClientPlugin\n2023-12-08 12:33:32:846 PST I Loaded internal plugin: com.google.devtools.mobileharness.infra.client.api.plugin.oxygen.OxygenJobValidator\n2023-12-08 12:33:32:846 PST I Loaded internal plugin: com.google.devtools.mobileharness.infra.client.api.plugin.utp.UtpCommandHistoryRenderer\n2023-12-08 12:33:32:847 PST I Loaded internal plugin: com.google.devtools.mobileharness.infra.client.api.plugin.utp.UserUtpConfigValidator\n2023-12-08 12:33:32:847 PST I Loaded API plugin: com.google.devtools.mobileharness.service.gateway.controller.SessionRunnerImpl\n2023-12-08 12:33:32:847 PST I Started job ce103571-bf18-4aab-b835-e4d123e660dd\n2023-12-08 12:33:32:848 PST I TIMELINE:PRE_RUN_JOB:START:ce103571-bf18-4aab-b835-e4d123e660dd Job started\n2023-12-08 12:33:32:850 PST I TIMELINE:FILE_RESOLVE:START:ce103571-bf18-4aab-b835-e4d123e660dd File resolve started\n2023-12-08 12:33:32:853 PST I Successfully resolved test_lib_par:hello_world_test_adhoc_testbed_mobly__host_hack.par with [/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/run/google3/testing/mobly/platforms/cros/examples/hello_world_test_adhoc_testbed_mobly__host_hack.par]\n2023-12-08 12:33:32:853 PST I TIMELINE:FILE_RESOLVE:END:ce103571-bf18-4aab-b835-e4d123e660dd File resolve finished\n2023-12-08 12:33:32:853 PST I Loading client jar plugins for job ce103571-bf18-4aab-b835-e4d123e660dd\n2023-12-08 12:33:32:854 PST I Fetching hybrid UTP mode config: /google_src/files/head/depot/google3/devtools/mobileharness/infra/controller/test/local/utp/config/config.textproto\n2023-12-08 12:33:32:867 PST I Add job ce103571-bf18-4aab-b835-e4d123e660dd to Moss\n2023-12-08 12:33:32:940 PST I TIMELINE:PRE_RUN_JOB:END:ce103571-bf18-4aab-b835-e4d123e660dd Pre run job finished\n2023-12-08 12:33:32:940 PST I Job detail: \nID:\tce103571-bf18-4aab-b835-e4d123e660dd\nNAME:\thello_world_test_adhoc_testbed\n\nDIMENSIONS:\n- label=jonfan_codelab\n\nPARAMETERS:\n- test_case_selector=all\n- build_cl=589211658\n- gen_file_upload_path=/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d\n- tags=external, guitar, local, manual, notap, mobile-test\n\nFILES:\n- test_lib_par=[/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/run/google3/testing/mobly/platforms/cros/examples/hello_world_test_adhoc_testbed_mobly__host_hack.par]\n- mh_hybrid_utp_mode_config=[/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/run/hybrid_utp_mode/config.textproto]\n\nTESTS:\n- hello_world_test_adhoc_testbed\n\n2023-12-08 12:33:32:940 PST I Request allocation for test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c from master gslb::20:PROD\n2023-12-08 12:33:33:646 PST I TIMELINE:DEVICE_ALLOCATION:START:3dc2835b-5697-4a7b-ad51-c35fb6dd512c Device allocation started\n2023-12-08 12:33:34:555 PST I 1 tests waiting for device allocation\n2023-12-08 12:33:54:979 PST I Allocation received for test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c from master gslb::20:PROD\n2023-12-08 12:33:54:979 PST I Get 1 allocation from master gslb::20:PROD\n2023-12-08 12:33:54:981 PST I TIMELINE:DEVICE_ALLOCATION:END:3dc2835b-5697-4a7b-ad51-c35fb6dd512c Device allocation finished\n2023-12-08 12:33:54:982 PST I Allocated devices [jonfan-desktop.mtv.corp.google.com:172.16.243.178@100.113.92.85/jonfan-desktop.mtv.corp.google.com] for test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c\n2023-12-08 12:36:18:975 PST I End test hello_world_test_adhoc_testbed on devices(s) [jonfan-desktop.mtv.corp.google.com:172.16.243.178@100.113.92.85/jonfan-desktop.mtv.corp.google.com]\n2023-12-08 12:36:19:791 PST I Job done\n2023-12-08 12:36:20:688 PST I The job hello_world_test_adhoc_testbed PASS!\nPassed tests(1) {\n  hello_world_test_adhoc_testbed: PASS\n}\nPASS!\nTests run: 1, Passed: 1   \n\n2023-12-08 12:36:20:688 PST I GenFileHandler started to ack JobEndEvent.\n2023-12-08 12:36:20:688 PST I GenFileHandler finished to ack JobEndEvent.\n2023-12-08 12:36:20:688 PST I Start to upload TestDiagnostics data to Sponge.\n2023-12-08 12:36:20:858 PST I Finish uploading TestDiagnostics data to Sponge.\n2023-12-08 12:36:20:858 PST I Start uploading job data to GoogleAnalytics.\n2023-12-08 12:36:20:861 PST I Finished uploading job data to GoogleAnalytics.\n2023-12-08 12:36:21:387 PST I Update all remote uploaded files from /tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/gen to /cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/genfiles of job ce103571-bf18-4aab-b835-e4d123e660dd\n2023-12-08 12:36:21:387 PST I Start to upload job information to Moss when job ends.\n",
+          "name": "hello_world_test_adhoc_testbed",
+          "property": [
+            {
+              "name": "first_test_allocation_time_sec",
+              "value": "22"
+            },
+            {
+              "name": "trace_id",
+              "value": "0c2bc15443bb5682"
+            },
+            {
+              "name": "sponge_labels",
+              "value": ""
+            },
+            {
+              "name": "stack_driver_trace_link",
+              "value": "https://pantheon.corp.google.com/traces/details/00000000000000000c2bc15443bb5682?project=mobile-harness-moss&organizationId=433637338589#TIMELINE"
+            },
+            {
+              "name": "pre_run_job_time_ms",
+              "value": "5"
+            },
+            {
+              "name": "session_id",
+              "value": "ad598777-03a3-446e-9dc7-85c3932df26d"
+            },
+            {
+              "name": "cl",
+              "value": "589211658"
+            },
+            {
+              "name": "job_link_in_mhfe",
+              "value": "http://mobileharness-fe/jobdetailview/ce103571-bf18-4aab-b835-e4d123e660dd"
+            },
+            {
+              "name": "run_as",
+              "value": "jonfan"
+            },
+            {
+              "name": "client_type",
+              "value": "gateway_native_executor"
+            },
+            {
+              "name": "exec_mode",
+              "value": "remote"
+            },
+            {
+              "name": "actual_user",
+              "value": "mobileharness-gateway"
+            },
+            {
+              "name": "master_spec",
+              "value": "gslb::20:PROD"
+            },
+            {
+              "name": "_contains_utp_test_traces",
+              "value": "true"
+            },
+            {
+              "name": "job_log",
+              "value": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/genfiles/job.log"
+            },
+            {
+              "name": "session_log",
+              "value": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/session.log"
+            },
+            {
+              "name": "client_hostname",
+              "value": "c383855bb772b545-356affab99a.borgtask.google.com"
+            },
+            {
+              "name": "sponge_link_of_build_//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed",
+              "value": "http://sponge2/1741039a-7fe6-4bbb-9b2f-0cc82ac7abf4"
+            },
+            {
+              "name": "sponge_link_of_test",
+              "value": "http://sponge2/ad598777-03a3-446e-9dc7-85c3932df26d"
+            },
+            {
+              "name": "gateway_client_name",
+              "value": "chromeos-mobly-rtd"
+            },
+            {
+              "name": "blaze_target",
+              "value": "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed"
+            },
+            {
+              "name": "client_version",
+              "value": "4.30.4"
+            }
+          ],
+          "result": "PASS",
+          "retry": {
+            "testAttempts": 1
+          },
+          "startTimeMs": "1702067612848",
+          "status": "DONE",
+          "totalTestCount": 1,
+          "type": {
+            "device": "CrosDevice",
+            "driver": "MoblyTest"
+          }
+        },
+        "testDetail": [
+          {
+            "deviceSerial": [
+              "jonfan-desktop.mtv.corp.google.com:172.16.243.178"
+            ],
+            "durationTimeMs": "141237",
+            "endTimeMs": "1702067776220",
+            "genFileWithLength": [
+              {
+                "length": "107095",
+                "path": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/test_output.txt"
+              },
+              {
+                "length": "2547",
+                "path": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/mobly_logs/test_log.INFO"
+              },
+              {
+                "length": "75607",
+                "path": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/mobly_command_output.log"
+              },
+              {
+                "length": "1605",
+                "path": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/test.xml"
+              },
+              {
+                "length": "6198",
+                "path": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/config.yaml"
+              },
+              {
+                "length": "414",
+                "path": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/test_components/component_8f1a1371-d649-4ec7-b0c1-3c6628d43cb4.pb"
+              },
+              {
+                "length": "1579",
+                "path": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/mobly_logs/test_summary.yaml"
+              },
+              {
+                "length": "1041",
+                "path": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/command_history.txt"
+              },
+              {
+                "length": "19219",
+                "path": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/mobly_logs/test_log.DEBUG"
+              },
+              {
+                "length": "1020",
+                "path": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/test_components/component_74b4fd1e-a8a4-42b5-bf72-14a092cb11be.pb"
+              }
+            ],
+            "id": "3dc2835b-5697-4a7b-ad51-c35fb6dd512c",
+            "jobId": "ce103571-bf18-4aab-b835-e4d123e660dd",
+            "lab": {
+              "hostName": "jonfan-desktop.mtv.corp.google.com",
+              "ip": "100.113.92.85",
+              "port": [
+                {
+                  "num": 9999,
+                  "type": "LAB_SERVER_RPC"
+                },
+                {
+                  "num": 9998,
+                  "type": "LAB_SERVER_SOCKET"
+                }
+              ]
+            },
+            "log": "2023-12-08 12:33:54:986 PST I TIMELINE:PRE_RUN_TEST:START:client Start pre-running test hello_world_test_adhoc_testbed on device(s) [jonfan-desktop.mtv.corp.google.com:172.16.243.178@100.113.92.85/jonfan-desktop.mtv.corp.google.com]\n2023-12-08 12:33:54:986 PST I ========= Client: InitializeTest (3dc2835b-5697-4a7b-ad51-c35fb6dd512c) =========\n2023-12-08 12:33:56:091 PST I ========= Client: CheckDevice (3dc2835b-5697-4a7b-ad51-c35fb6dd512c) =========\n2023-12-08 12:33:56:954 PST I Post TestStartingEvent to test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c@ce103571-bf18-4aab-b835-e4d123e660dd\n2023-12-08 12:33:56:957 PST I Add test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c to Moss\n2023-12-08 12:33:56:957 PST I ========= Client: PreRunTest (3dc2835b-5697-4a7b-ad51-c35fb6dd512c) =========\n2023-12-08 12:33:56:966 PST I TIMELINE:SEND_FILE:START: Send file started\n2023-12-08 12:35:19:145 PST I TIMELINE:SEND_FILE:END: Send file finished\n2023-12-08 12:35:19:145 PST I Post TestStartedEvent to test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c@ce103571-bf18-4aab-b835-e4d123e660dd\n2023-12-08 12:35:20:873 PST I TIMELINE:PRE_RUN_TEST:END:client Pre-run test hello_world_test_adhoc_testbed finished\n2023-12-08 12:35:20:873 PST I TIMELINE:RUN_TEST:START:client Start running test hello_world_test_adhoc_testbed on device(s) [jonfan-desktop.mtv.corp.google.com:172.16.243.178@100.113.92.85/jonfan-desktop.mtv.corp.google.com]\n2023-12-08 12:35:20:874 PST I ========= Client: RunTest (3dc2835b-5697-4a7b-ad51-c35fb6dd512c) =========\n2023-12-08 12:35:22:070 PST I Test kicked off at lab side\n2023-12-08 12:35:21:994 PST I TIMELINE:PRE_RUN_TEST:START:lab Start pre-running test hello_world_test_adhoc_testbed on device(s) [172.16.243.178]\n2023-12-08 12:35:21:996 PST I Start to handling cached job/test files\n2023-12-08 12:35:21:997 PST F Handle job/test file: job_file_unit { job_locator { id: \"ce103571-bf18-4aab-b835-e4d123e660dd\" } tag: \"mh_hybrid_utp_mode_config\" local_path: \"/usr/local/google/mobileharness/mh_lab_tmp/mh_lab_run_files/ce103571-bf18-4aab-b835-e4d123e660dd/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/run/hybrid_utp_mode/config.textproto\" original_path: \"/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/run/hybrid_utp_mode/config.textproto\" }\n2023-12-08 12:35:21:997 PST F Handle job/test file: job_file_unit { job_locator { id: \"ce103571-bf18-4aab-b835-e4d123e660dd\" } tag: \"test_lib_par\" local_path: \"/usr/local/google/mobileharness/mh_lab_tmp/mh_lab_run_files/ce103571-bf18-4aab-b835-e4d123e660dd/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/run/google3/testing/mobly/platforms/cros/examples/hello_world_test_adhoc_testbed_mobly__host_hack.par\" original_path: \"/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/run/google3/testing/mobly/platforms/cros/examples/hello_world_test_adhoc_testbed_mobly__host_hack.par\" }\n2023-12-08 12:35:21:997 PST F Add job/test file: job_file_unit { job_locator { id: \"ce103571-bf18-4aab-b835-e4d123e660dd\" } tag: \"mh_hybrid_utp_mode_config\" local_path: \"/usr/local/google/mobileharness/mh_lab_tmp/mh_lab_run_files/ce103571-bf18-4aab-b835-e4d123e660dd/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/run/hybrid_utp_mode/config.textproto\" original_path: \"/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/run/hybrid_utp_mode/config.textproto\" }\n2023-12-08 12:35:21:998 PST F Add job/test file: job_file_unit { job_locator { id: \"ce103571-bf18-4aab-b835-e4d123e660dd\" } tag: \"test_lib_par\" local_path: \"/usr/local/google/mobileharness/mh_lab_tmp/mh_lab_run_files/ce103571-bf18-4aab-b835-e4d123e660dd/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/run/google3/testing/mobly/platforms/cros/examples/hello_world_test_adhoc_testbed_mobly__host_hack.par\" original_path: \"/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/run/google3/testing/mobly/platforms/cros/examples/hello_world_test_adhoc_testbed_mobly__host_hack.par\" }\n2023-12-08 12:35:21:999 PST I Loading lab plugins for test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c\n2023-12-08 12:35:22:003 PST I Post TestStartingEvent to test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c@ce103571-bf18-4aab-b835-e4d123e660dd\n2023-12-08 12:35:22:004 PST I --------- Device: PreRunTest (3dc2835b-5697-4a7b-ad51-c35fb6dd512c) ---------\n2023-12-08 12:35:22:006 PST I Pre-run test of device [172.16.243.178]\n2023-12-08 12:35:22:007 PST I Pre-run test of device [172.16.243.178] finished\n2023-12-08 12:35:22:011 PST I Device type CrosDevice uses MH classic mode\n2023-12-08 12:35:22:012 PST I Driver MoblyTest uses MH classic mode\n2023-12-08 12:35:22:013 PST I Run test in MH classic mode\n2023-12-08 12:35:22:031 PST I Start test [hello_world_test_adhoc_testbed] on device(s) [172.16.243.178]:\n + Test Name: hello_world_test_adhoc_testbed\n + Test ID: 3dc2835b-5697-4a7b-ad51-c35fb6dd512c\n + Job Name: hello_world_test_adhoc_testbed\n + Job ID: ce103571-bf18-4aab-b835-e4d123e660dd\n + Device Information:\n   + Device: 172.16.243.178\n       - control_id = 172.16.243.178\n       - uuid_volatile = false\n       - supports_adhoc = true\n       - lab_location = mtv\n       - uuid = jonfan-desktop.mtv.corp.google.com:172.16.243.178\n       - devicetype = CHROMEBOOK\n       - chromeos_release_build_number = 15633\n       - chromeos_release_branch_number = 37\n       - host_total_memory = 196603728 KB\n       - host_os_version = 6.5.6-1rodete4-amd64\n       - host_version = 4.254.0\n       - model = drobit\n       - id = 172.16.243.178\n       - chromeos_release_board = volteer\n       - chromeos_release_chrome_milestone = 119\n       - host_ip = 100.113.92.85\n       - host_os = Linux\n       - chromeos_arc_version = 11051073\n       - chromeos_arc_android_sdk_version = 33\n       - label = jonfan_codelab\n       - location_type = not_in_china\n       - supports_gmscore = false\n       - lab_supports_container = true\n       - host_free_memory = 39912796 KB\n       - chromeos_release_track = testimage-channel\n       - lab_supports_sandbox = true\n       - host_name = jonfan-desktop.mtv.corp.google.com\n2023-12-08 12:35:22:032 PST I Adding common dimensions [host_version, host_name] shared among testbed to test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c\n2023-12-08 12:35:22:034 PST I Post TestStartedEvent to test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c@ce103571-bf18-4aab-b835-e4d123e660dd\n2023-12-08 12:35:22:035 PST I TIMELINE:PRE_RUN_TEST:END:lab Pre-run test hello_world_test_adhoc_testbed finished\n2023-12-08 12:35:22:035 PST I TIMELINE:RUN_TEST:START:lab Start running test hello_world_test_adhoc_testbed on device(s) [172.16.243.178]\n2023-12-08 12:35:22:036 PST I --------- Device: RunTest (3dc2835b-5697-4a7b-ad51-c35fb6dd512c) ---------\n2023-12-08 12:35:22:036 PST I TIMELINE:RUN_TEST:MARK_POINT:MoblyTest:lab Starting driver [MoblyTest] of test hello_world_test_adhoc_testbed\n2023-12-08 12:35:22:036 PST I MoblyTest is starting\n2023-12-08 12:35:22:046 PST I Selected test cases: all\n2023-12-08 12:35:22:046 PST I Running command: JAVA_RUNFILES= JAVA_BIN=/usr/local/buildtools/java/jdk/bin/java PYTHON_RUNFILES= PATH=/usr/local/google/mobileharness/mh_res_files/devtools/mobileharness/platform/android/sdktool/binary/platform-tools:/usr/local/google/mobileharness/mh_res_files/android/android_sdk_linux/platform-tools:/usr/sbin:/usr/bin:/sbin:/bin TMPDIR=/tmp/09921-0 TEST_UNDECLARED_OUTPUTS_DIR=/var/www/mh_lab_gen_files/ce103571-bf18-4aab-b835-e4d123e660dd/test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c TEST_UNDECLARED_OUTPUTS_ANNOTATIONS_DIR=/var/www/mh_lab_gen_files/ce103571-bf18-4aab-b835-e4d123e660dd/test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/annotations TEST_DIAGNOSTICS_OUTPUT_DIR=/tmp/08713-0 TEST_COMPONENTS_DIR=/tmp/03568-0 XML_OUTPUT_FILE=/var/www/mh_lab_gen_files/ce103571-bf18-4aab-b835-e4d123e660dd/test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/test.xml MOBLY_LOGPATH=/var/www/mh_lab_gen_files/ce103571-bf18-4aab-b835-e4d123e660dd/test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/raw_mobly_logs /usr/local/google/mobileharness/mh_lab_tmp/mh_lab_run_files/ce103571-bf18-4aab-b835-e4d123e660dd/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/run/google3/testing/mobly/platforms/cros/examples/hello_world_test_adhoc_testbed_mobly__host_hack.par --blog_dir=/var/www/mh_lab_gen_files/ce103571-bf18-4aab-b835-e4d123e660dd/test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/raw_mobly_logs --rpc_log_full_messages=all --uid= --gid= --loas_pwd_fallback_in_corp --alsologtostderr --undefok=blog_dir,rpc_log_full_messages,alsologtostderr,uid,gid,loas_pwd_fallback_in_corp --convert_results_to_sponge --sponge_root_directory=/var/www/mh_lab_gen_files/ce103571-bf18-4aab-b835-e4d123e660dd -- --config=/var/www/mh_lab_gen_files/ce103571-bf18-4aab-b835-e4d123e660dd/test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/config.yaml --test_bed=testbed_172.16.243.178; output of stdout/stderr is saved in file mobly_command_output.log\n2023-12-08 12:35:39:394 PST I [Mobly] WARNING: Logging before InitGoogle() is written to STDERR\n2023-12-08 12:35:39:395 PST I [Mobly] E0000 00:00:1702067738.571608  221384 port.cc:268] tensorflow::port::MaxParallelism() must be called after InitGoogle() is called. Make sure your TensorFlow application is calling tensorflow::port::InitMain()\n2023-12-08 12:35:39:396 PST I [Mobly] E0000 00:00:1702067738.580084  221384 port.cc:817] tensorflow::port::GetMemoryInfo() must be called after InitGoogle() is called. Make sure your TensorFlow application is calling tensorflow::port::InitMain()\n2023-12-08 12:35:39:837 PST I [Mobly] I1208 12:35:39.829034  221384 flag_default_overrides.cc:45] Changing default for rpc_binarylog to false.\n2023-12-08 12:35:39:838 PST I [Mobly] I1208 12:35:39.829642  221384 flag_default_overrides.cc:45] Changing default for ecatcher_demangle_stacktrace to false.\n2023-12-08 12:35:39:839 PST I [Mobly] I1208 12:35:39.829651  221384 flag_default_overrides.cc:45] Changing default for eventmanager_alarmlist_type to hybrid.\n2023-12-08 12:35:39:839 PST I [Mobly] I1208 12:35:39.829656  221384 flag_default_overrides.cc:45] Changing default for census_log2_tagging_capacity to 16.\n2023-12-08 12:35:39:840 PST I [Mobly] I1208 12:35:39.831845  221384 python_stack_size.cc:45] EventManager thread stack size increased to 245760 for non-test Python use.\n2023-12-08 12:35:39:840 PST I [Mobly] I1208 12:35:39.831963  221384 python_stack_size.cc:45] EventManager thread stack size increased to 245760 for non-test Python use.\n2023-12-08 12:35:39:841 PST I [Mobly] I1208 12:35:39.832717  221384 census_logger.cc:91] CENSUS_LOG(INFO) at [stats/census/internal/cpu-monitor.cc:55]: Failed getting Machine CPU Usage through cgroup: Couldn't find mount for subsystem: cpu\n2023-12-08 12:35:39:841 PST I [Mobly] I1208 12:35:39.835646  221384 census-init.cc:383] Census enabled\n2023-12-08 12:35:39:868 PST I [Mobly] I1208 12:35:39.837143  221384 memofs_file_factory.cc:510] MemoFS File handler registered for /memofs/\n2023-12-08 12:35:39:869 PST I [Mobly] I1208 12:35:39.837890  221384 global_forkclient.cc:162] RAW: Starting global forkserver\n2023-12-08 12:35:39:870 PST I [Mobly] W1208 12:35:39.866935  221384 file_factory.cc:559] RegisterFactoryPrefix() invoked with unterminated path = '/sibfile'\n2023-12-08 12:35:39:870 PST I [Mobly] I1208 12:35:39.867772  221384 add_ptoken_logwriter.cc:77] Registering AddPTokenLogWriter factory\n2023-12-08 12:35:39:871 PST I [Mobly] I1208 12:35:39.868069  221384 migration_state_tracking.cc:23] Migration not enabled - not starting notification watcher.\n2023-12-08 12:35:39:871 PST I [Mobly] I1208 12:35:39.868102  221384 builtin.cc:17] Registering prefix: /memfile/cluster_region_map_memfile\n2023-12-08 12:35:39:872 PST I [Mobly] I1208 12:35:39.868113  221384 builtin.cc:17] Registering prefix: /memfile/focus_gaia_id_obf_key_cc_embed\n2023-12-08 12:35:39:872 PST I [Mobly] I1208 12:35:39.868119  221384 builtin.cc:17] Registering prefix: /memfile/metro_region_map_memfile\n2023-12-08 12:35:39:873 PST I [Mobly] I1208 12:35:39.868125  221384 builtin.cc:17] Registering prefix: /memfile/scaffolding_introspection_archive_embed\n2023-12-08 12:35:39:873 PST I [Mobly] I1208 12:35:39.868150  221384 builtin.cc:17] Registering prefix: /memfile/splanner_cluster_region_map_memfile\n2023-12-08 12:35:39:874 PST I [Mobly] I1208 12:35:39.868465  221384 cp_file.cc:730] Not initializing /cp/ file factory because no user-run proxy flags have been specified.\n2023-12-08 12:35:39:874 PST I [Mobly] I1208 12:35:39.868475  221384 factory_manager.h:103] Registering factory for implementation 'strong_chubby' for consensus::config::BasicConfigReader\n2023-12-08 12:35:39:875 PST I [Mobly] I1208 12:35:39.868480  221384 factory_manager.h:103] Registering factory for implementation 'super_strong_chubby' for consensus::config::BasicConfigReader\n2023-12-08 12:35:39:875 PST I [Mobly] I1208 12:35:39.868484  221384 factory_manager.h:103] Registering factory for implementation 'eventual_chubby' for consensus::config::BasicConfigReader\n2023-12-08 12:35:39:876 PST I [Mobly] I1208 12:35:39.868603  221384 coredump_hook.cc:751] Remote crash gathering hook installed.\n2023-12-08 12:35:39:876 PST I [Mobly] I1208 12:35:39.868819  221384 logfile.cc:627] Registered /logfs/\n2023-12-08 12:35:39:877 PST I [Mobly] I1208 12:35:39.868836  221384 factory.cc:262] Registered filename prefix /blockcache/\n2023-12-08 12:35:39:877 PST I [Mobly] I1208 12:35:39.868854  221384 url_protocol_factory.cc:56] Registering [file] in URLProtocolFactory\n2023-12-08 12:35:39:878 PST I [Mobly] I1208 12:35:39.870845  221384 url_protocol_factory.cc:56] Registering [iobuffer] in URLProtocolFactory\n2023-12-08 12:35:39:879 PST I [Mobly] I1208 12:35:39.871199  221384 lamon.cc:155] Assuming running on corp, analytics enabled.\n2023-12-08 12:35:39:879 PST I [Mobly] I1208 12:35:39.871225  221384 init-domain.cc:111] Fiber init: default domain = futex, concurrency = 79, prefix = futex-default\n2023-12-08 12:35:39:880 PST I [Mobly] I1208 12:35:39.872030  221384 chubby_util.cc:202] LOCKSERVICE_LOCALITY env: \n2023-12-08 12:35:39:880 PST I [Mobly] lockservice_locality flag: \n2023-12-08 12:35:39:880 PST I [Mobly] machine locality: corp\n2023-12-08 12:35:39:881 PST I [Mobly] BORG_PHYSICAL_CELL env: \n2023-12-08 12:35:39:881 PST I [Mobly] I1208 12:35:39.872117  221384 python_stack_size.cc:45] ThreadPool thread stack size increased to 245760 for non-test Python use.\n2023-12-08 12:35:39:881 PST I [Mobly] I1208 12:35:39.872295  221384 lockservice_accurate_time.cc:36] Not using TrueTime, fall back to regular impl.\n2023-12-08 12:35:39:882 PST I [Mobly] I1208 12:35:39.872517  221384 mod_predicate.cc:190] Pubsub mod filtering loaded ...\n2023-12-08 12:35:39:882 PST I [Mobly] I1208 12:35:39.872591  221384 net_uid.cc:50] GOOGLE_BW_UID not available: Protocol not available [92]\n2023-12-08 12:35:39:882 PST I [Mobly] I1208 12:35:39.873791  221384 lockservice_accurate_time.cc:59] AccurateTime was already initialized.\n2023-12-08 12:35:39:883 PST I [Mobly] I1208 12:35:39.874275  221384 config_parser.cc:122] Parsing Network Predicates (unknown version)\n2023-12-08 12:35:39:895 PST I [Mobly] I1208 12:35:39.874286  221384 api.cc:182] Network Predicates loading 0 good zones.\n2023-12-08 12:35:39:896 PST I [Mobly] I1208 12:35:39.874445  221384 privacy_context_defaults.cc:1323] PrivacyContext default attribute configuration initialization.\n2023-12-08 12:35:39:896 PST I [Mobly] I1208 12:35:39.874453  221384 privacy_context_defaults.cc:1377] PrivacyContext default attribute configuration module initialization complete.\n2023-12-08 12:35:39:897 PST I [Mobly] I1208 12:35:39.875429  221384 serializer_init.cc:10] Configuring serialization as V1 CT.\n2023-12-08 12:35:39:897 PST I [Mobly] I1208 12:35:39.876187  221384 url_protocol_factory.cc:56] Registering [string] in URLProtocolFactory\n2023-12-08 12:35:39:898 PST I [Mobly] I1208 12:35:39.877154  221384 logwriter_uls_init.cc:59] No Envelope. Disabled initialization of LogWriterULS. LogWriter prefixes /sawmill{,-transitional,-dual-logging,-localhost,-dryrun,-devnull,-forwarding-proxy,-lite-test} will be interpreted as Google3 File paths instead of LogWriter implementations, so /sawmill will not use ULS.\n2023-12-08 12:35:39:898 PST I [Mobly] I1208 12:35:39.895581  221384 outgoing_rpc_interceptor.cc:21] Adding RPC interception hooks by: scaffolding\n2023-12-08 12:35:39:899 PST I [Mobly] I1208 12:35:39.895590  221384 outgoing_rpc_interceptor.cc:37] Adding bidi stream interception hooks by: scaffolding streaming\n2023-12-08 12:35:39:899 PST I [Mobly] I1208 12:35:39.896287  221886 lamon.cc:301] Starting the 'FlushCountersToMonarch' thread.\n2023-12-08 12:35:39:900 PST I [Mobly] I1208 12:35:39.896774  221384 app.py:360] C++ logging enabled; logging.debug will only be visible when --verbosity/-v are 1 or higher\n2023-12-08 12:35:39:900 PST I [Mobly] I1208 12:35:39.897094  221384 app.py:272] Process id 221384\n2023-12-08 12:35:39:901 PST I [Mobly] I1208 12:35:39.897221  221384 app.py:274] Current working directory /usr/local/google/udcluster\n2023-12-08 12:35:39:901 PST I [Mobly] I1208 12:35:39.897464  221384 app.py:277] Built on Wed Dec 31 15:59:59 1969 (-1)\n2023-12-08 12:35:39:902 PST I [Mobly] Built by \n2023-12-08 12:35:39:902 PST I [Mobly] Built as \n2023-12-08 12:35:39:903 PST I [Mobly] Build platform: \n2023-12-08 12:35:39:904 PST I [Mobly] Currently running under Python 3.11.6: embedded.\n2023-12-08 12:35:39:904 PST I [Mobly] I1208 12:35:39.897496  221384 app.py:280] Command line arguments:\n2023-12-08 12:35:39:905 PST I [Mobly] I1208 12:35:39.897525  221384 app.py:282] argv[0]: '/usr/local/google/mobileharness/mh_lab_tmp/mh_lab_run_files/ce103571-bf18-4aab-b835-e4d123e660dd/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/run/google3/testing/mobly/platforms/cros/examples/hello_world_test_adhoc_testbed_mobly__host_hack.par'\n2023-12-08 12:35:39:905 PST I [Mobly] I1208 12:35:39.897551  221384 app.py:282] argv[1]: '--blog_dir=/var/www/mh_lab_gen_files/ce103571-bf18-4aab-b835-e4d123e660dd/test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/raw_mobly_logs'\n2023-12-08 12:35:39:906 PST I [Mobly] I1208 12:35:39.897595  221384 app.py:282] argv[2]: '--rpc_log_full_messages=all'\n2023-12-08 12:35:39:906 PST I [Mobly] I1208 12:35:39.897618  221384 app.py:282] argv[3]: '--uid='\n2023-12-08 12:35:39:907 PST I [Mobly] I1208 12:35:39.897638  221384 app.py:282] argv[4]: '--gid='\n2023-12-08 12:35:39:907 PST I [Mobly] I1208 12:35:39.897656  221384 app.py:282] argv[5]: '--loas_pwd_fallback_in_corp'\n2023-12-08 12:35:39:908 PST I [Mobly] I1208 12:35:39.897675  221384 app.py:282] argv[6]: '--alsologtostderr'\n2023-12-08 12:35:39:908 PST I [Mobly] I1208 12:35:39.897694  221384 app.py:282] argv[7]: '--undefok=blog_dir,rpc_log_full_messages,alsologtostderr,uid,gid,loas_pwd_fallback_in_corp'\n2023-12-08 12:35:39:909 PST I [Mobly] I1208 12:35:39.897712  221384 app.py:282] argv[8]: '--convert_results_to_sponge'\n2023-12-08 12:35:39:909 PST I [Mobly] I1208 12:35:39.897729  221384 app.py:282] argv[9]: '--sponge_root_directory=/var/www/mh_lab_gen_files/ce103571-bf18-4aab-b835-e4d123e660dd'\n2023-12-08 12:35:39:910 PST I [Mobly] I1208 12:35:39.897746  221384 app.py:282] argv[10]: '--'\n2023-12-08 12:35:39:958 PST I [Mobly] I1208 12:35:39.897764  221384 app.py:282] argv[11]: '--config=/var/www/mh_lab_gen_files/ce103571-bf18-4aab-b835-e4d123e660dd/test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/config.yaml'\n2023-12-08 12:35:39:959 PST I [Mobly] I1208 12:35:39.897782  221384 app.py:282] argv[12]: '--test_bed=testbed_172.16.243.178'\n2023-12-08 12:35:39:960 PST I [Mobly] I1208 12:35:39.956706  221886 flat_file_reader.cc:139] Loaded new RealmGroupMapping from disk: /etc/security-realms/realm_groups.binarypb, version: 947\n2023-12-08 12:35:39:960 PST I [Mobly] E1208 12:35:39.958132  221886 loas_util.cc:528] NOT_FOUND: No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:39:961 PST I [Mobly] === Source Location Trace: ===\n2023-12-08 12:35:39:961 PST I [Mobly] security/loas/l2/internal/creds/core/corp_credentials_file_reader.cc:121\n2023-12-08 12:35:39:962 PST I [Mobly] security/loas/l2/internal/handshaker/credentials_store_manager.cc:215\n2023-12-08 12:35:39:962 PST I [Mobly] security/loas/l2/internal/lib/loas_util_loas2_common.cc:54\n2023-12-08 12:35:39:963 PST I [Mobly] security/loas/l2/internal/lib/loas_util_loas2_impl.cc:112\n2023-12-08 12:35:39:990 PST I [Mobly] E1208 12:35:39.958756  221886 loas_util.cc:528] NOT_FOUND: No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:39:991 PST I [Mobly] === Source Location Trace: ===\n2023-12-08 12:35:39:991 PST I [Mobly] security/loas/l2/internal/creds/core/corp_credentials_file_reader.cc:121\n2023-12-08 12:35:39:992 PST I [Mobly] security/loas/l2/internal/handshaker/credentials_store_manager.cc:215\n2023-12-08 12:35:39:993 PST I [Mobly] security/loas/l2/internal/lib/loas_util_loas2_common.cc:54\n2023-12-08 12:35:39:993 PST I [Mobly] security/loas/l2/internal/lib/loas_util_loas2_impl.cc:112\n2023-12-08 12:35:39:994 PST I [Mobly] I1208 12:35:39.981076  221901 client_instance.cc:268] [corp] new waiter thread: waiters_id: /lbns/chubby/any/svelte;svelte-tasks.corp.ls.google.com.:6297;corp.svelte.global.ls.google.com.:6297, corp, 5719\n2023-12-08 12:35:39:994 PST I [Mobly] I1208 12:35:39.986401  221904 waiter_thread.cc:747] [corp] contacting svelte server at [2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 (e37d1fde1a6275e2-54406dc8881.borgtask.google.com:6297), discovery_type: 7 svelte_cell: null good_server: true\n2023-12-08 12:35:39:995 PST I [Mobly] I1208 12:35:39.989620  221904 rpc-internals-version.cc:158] RPC_VERSION: Saw use of RPC version 2 client\n2023-12-08 12:35:40:227 PST I [Mobly] W1208 12:35:39.990360  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:40:228 PST I [Mobly] I1208 12:35:39.990944  221900 psp_machine.cc:607] Local IPs detected: {10.0.3.1, 100.113.92.85, 127.0.0.1, 172.16.243.1, 192.168.9.1, ::1, 2620:15c:9d:6:11b7:9e0c:a678:c27b, 2620:15c:9d:6:14e7:58d6:8c74:85b7, 2620:15c:9d:6:3b3a:47a1:8d5a:b64d, 2620:15c:9d:6:3c55:cb80:763e:8bde, 2620:15c:9d:6:627b:a61a:d844:2fe4, 2620:15c:9d:6:878d:87d1:4106:c3d8, 2620:15c:9d:6:c44b:caf9:4c66:2d2a, 2620:15c:9d:6:fe2f:4238:6172:a0ce}; netns: false\n2023-12-08 12:35:40:229 PST I [Mobly] I1208 12:35:39.991830  221900 internal_iptos.cc:575] TCP_RECVD_TOS not supported by kernel: Protocol not available [92]\n2023-12-08 12:35:40:229 PST I [Mobly] I1208 12:35:40.217819  221900 client_task_runtime_attributes.cc:27] Failed to fetch ClientTaskRuntimeAttributes for the current Borg job\n2023-12-08 12:35:40:230 PST I [Mobly] I1208 12:35:40.226531  221900 chubby_name_type.cc:271] Loaded Server Authorization local ACLs file [/etc/google/chubby-server-authorization-acls/local_acls_file.binaryproto]\n2023-12-08 12:35:40:231 PST I [Mobly] I1208 12:35:40.227486  221900 loas2_securewrapper.cc:576] INTERNAL: No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file. [type.googleapis.com/util.MessageSetPayload='[security_loas_l2.HandshakeError] { handshake_error_code: NEW_CLIENT_HANDSHAKER_ERROR securewrapper_error_code: 10 }']\n2023-12-08 12:35:40:231 PST I [Mobly] === Source Location Trace: ===\n2023-12-08 12:35:40:232 PST I [Mobly] security/loas/l2/internal/securewrapper/handshake_error_utils.h:20\n2023-12-08 12:35:40:232 PST I [Mobly] I1208 12:35:40.227669  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=0 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:40:239 PST I [Mobly] W1208 12:35:40.227683  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:40:240 PST I [Mobly] W1208 12:35:40.227700  221900 clientchannel.cc:1742] Channel negotiation with [2002:a98:5283:0:b0:53e:ec89:7fd4]:6297([2002:a98:5283:0:b0:53e:ec89:7fd4]:6297) failed because authentication failed Failed to authenticate channel [client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:40:241 PST I [Mobly] W1208 12:35:40.238917  221937 waiter_thread.cc:1890] [corp] ModifyWaitSet failed with UNREACHABLE Failed to authenticate channel [client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:40:241 PST I [Mobly] I1208 12:35:40.239320  221959 schedulinglatency.cc:158] GetKernelCPUSchedulingLatency: Couldn't find cpu subsystem in /proc/self/cgroup\n2023-12-08 12:35:40:242 PST I [Mobly] E1208 12:35:40.239601  221937 loas_util.cc:528] NOT_FOUND: No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:40:242 PST I [Mobly] === Source Location Trace: ===\n2023-12-08 12:35:40:243 PST I [Mobly] security/loas/l2/internal/creds/core/corp_credentials_file_reader.cc:121\n2023-12-08 12:35:40:243 PST I [Mobly] security/loas/l2/internal/handshaker/credentials_store_manager.cc:215\n2023-12-08 12:35:40:244 PST I [Mobly] security/loas/l2/internal/lib/loas_util_loas2_common.cc:54\n2023-12-08 12:35:40:244 PST I [Mobly] security/loas/l2/internal/lib/loas_util_loas2_impl.cc:112\n2023-12-08 12:35:40:245 PST I [Mobly] W1208 12:35:40.239647  221937 lockservice_loas.cc:62] Unable to get username from LOASUtil\n2023-12-08 12:35:40:245 PST I [Mobly] W1208 12:35:40.239816  221937 lockservice_loas.cc:68] Unable to get security realms from LOASUtil: FAILED_PRECONDITION: No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.; Realms info is not available in Loas identity\n2023-12-08 12:35:40:246 PST I [Mobly] === Source Location Trace: ===\n2023-12-08 12:35:40:247 PST I [Mobly] security/loas/l2/internal/creds/core/corp_credentials_file_reader.cc:121\n2023-12-08 12:35:40:247 PST I [Mobly] security/loas/l2/internal/handshaker/credentials_store_manager.cc:215\n2023-12-08 12:35:40:248 PST I [Mobly] security/loas/l2/internal/lib/loas_util_loas2_common.cc:54\n2023-12-08 12:35:40:368 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:39.909 INFO ==========> HelloWorldTest <==========\n2023-12-08 12:35:40:370 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:39.911 INFO [Test] test_ssh_execute_command\n2023-12-08 12:35:40:371 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:39.911 INFO [SSHProxy|172.16.243.178:22] Connecting to 172.16.243.178:22\n2023-12-08 12:35:40:371 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.028 INFO [SSHProxy|172.16.243.178:22] Command to execute on remote machine: ls\n2023-12-08 12:35:40:372 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.078 INFO [CrosDevice|172.16.243.178:22] ls result: bytes-rootfs-prod\n2023-12-08 12:35:40:372 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.079 INFO [Test] test_ssh_execute_command PASS\n2023-12-08 12:35:40:373 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.082 INFO [SSHProxy|172.16.243.178:22] Command to execute on remote machine: cros_config / name\n2023-12-08 12:35:40:373 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.175 INFO [SSHProxy|172.16.243.178:22] Command to execute on remote machine: cat \"/etc/lsb-release\"\n2023-12-08 12:35:40:374 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.272 INFO [SSHProxy|172.16.243.178:22] Command to execute on remote machine: uname -p\n2023-12-08 12:35:40:815 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.368 INFO [SSHProxy|172.16.243.178:22] Command to execute on remote machine: cat \"/proc/meminfo\"\n2023-12-08 12:35:40:816 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.380 INFO [SSHProxy|172.16.243.178:22] Command to execute on remote machine: ls /sys/devices/system/cpu/cpu*/cpufreq/cpuinfo_max_freq | xargs cat\n2023-12-08 12:35:40:816 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.474 INFO [SSHProxy|172.16.243.178:22] Command to execute on remote machine: cros_config / name\n2023-12-08 12:35:40:817 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.526 INFO [SSHProxy|172.16.243.178:22] Command to execute on remote machine: crossystem fwid\n2023-12-08 12:35:40:817 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.618 INFO [SSHProxy|172.16.243.178:22] Command to execute on remote machine: crossystem hwid\n2023-12-08 12:35:40:818 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.671 INFO [SSHProxy|172.16.243.178:22] Command to execute on remote machine: mosys platform version\n2023-12-08 12:35:40:818 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.762 INFO [SSHProxy|172.16.243.178:22] Command to execute on remote machine: uname -r\n2023-12-08 12:35:40:934 PST I [Mobly] security/loas/l2/internal/lib/loas_util_loas2_common.cc:134\n2023-12-08 12:35:40:935 PST I [Mobly] security/loas/l2/internal/lib/loas_util_loas2_impl.cc:138\n2023-12-08 12:35:40:935 PST I [Mobly] W1208 12:35:40.470790  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:40:936 PST I [Mobly] I1208 12:35:40.686737  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=1 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:40:937 PST I [Mobly] W1208 12:35:40.686781  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=1]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:41:243 PST I [Mobly] INFO:root:Generating Sponge tree.\n2023-12-08 12:35:41:244 PST I [Mobly] DEBUG:root:Creating test component for device: 172.16.243.178:22\n2023-12-08 12:35:41:244 PST I [Mobly] DEBUG:root:Writing component 172_16_243_178_22 to /tmp/03568-0/component_74b4fd1e-a8a4-42b5-bf72-14a092cb11be.pb\n2023-12-08 12:35:41:245 PST I [Mobly] DEBUG:root:Writing component jonfan-desktop_mtv_corp_google_com to /tmp/03568-0/component_8f1a1371-d649-4ec7-b0c1-3c6628d43cb4.pb\n2023-12-08 12:35:41:245 PST I [Mobly] W1208 12:35:41.019740  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:41:246 PST I [Mobly] I1208 12:35:41.243021  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=2 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:41:747 PST I [Mobly] W1208 12:35:41.243054  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=2]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:41:748 PST I [Mobly] I1208 12:35:41.513219  221904 waiter_thread.cc:747] [corp] contacting svelte server at [2002:a72:4789:0:b0:2:4496:2585]:6297 (6cfc5b9c4e2b1e5d-4cbf6ca5894.borgtask.google.com:6297), discovery_type: 7 svelte_cell: null good_server: true\n2023-12-08 12:35:41:749 PST I [Mobly] W1208 12:35:41.513713  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:41:750 PST I [Mobly] I1208 12:35:41.747611  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=0 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:41:819 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.814 INFO [SSHProxy|172.16.243.178:22] Command to execute on remote machine: for f in /sys/class/drm/*/*/modes; do head -1 $f; done\n2023-12-08 12:35:41:820 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.914 INFO [SSHProxy|172.16.243.178:22] Disconnecting from 172.16.243.178\n2023-12-08 12:35:41:820 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.915 INFO Summary for test class HelloWorldTest: Error 0, Executed 1, Failed 0, Passed 1, Requested 1, Skipped 0\n2023-12-08 12:35:41:820 PST I [Mobly] [testbed_172.16.243.178] 12-08 12:35:40.916 INFO Summary for test run testbed_172.16.243.178@12-08-2023_12-35-39-907:\n2023-12-08 12:35:41:820 PST I [Mobly] Total time elapsed 1.0085852269548923s\n2023-12-08 12:35:41:821 PST I [Mobly] Artifacts are saved in \"/var/www/mh_lab_gen_files/ce103571-bf18-4aab-b835-e4d123e660dd/test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/raw_mobly_logs/testbed_172.16.243.178/12-08-2023_12-35-39-907\"\n2023-12-08 12:35:41:821 PST I [Mobly] Test summary saved in \"/var/www/mh_lab_gen_files/ce103571-bf18-4aab-b835-e4d123e660dd/test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/raw_mobly_logs/testbed_172.16.243.178/12-08-2023_12-35-39-907/test_summary.yaml\"\n2023-12-08 12:35:41:821 PST I [Mobly] Test results: Error 0, Executed 1, Failed 0, Passed 1, Requested 1, Skipped 0\n2023-12-08 12:35:41:920 PST I [Mobly] W1208 12:35:41.747648  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:41:922 PST I [Mobly] W1208 12:35:41.748012  221937 waiter_thread.cc:1890] [corp] ModifyWaitSet failed with UNREACHABLE Failed to authenticate channel [client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:41:922 PST I [Mobly] W1208 12:35:41.899883  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:42:150 PST I [Mobly] W1208 12:35:41.920662  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:42:151 PST I [Mobly] I1208 12:35:42.126187  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=3 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:42:152 PST I [Mobly] W1208 12:35:42.126217  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=3]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:42:454 PST I [Mobly] I1208 12:35:42.150136  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=1 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:42:455 PST I [Mobly] W1208 12:35:42.150169  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=1]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:42:455 PST I [Mobly] I1208 12:35:42.441674  221384 metrics_exporter.cc:517] Attempting to connect to Monarch: blade:monarch-auto-streamz\n2023-12-08 12:35:42:456 PST I [Mobly] I1208 12:35:42.443247  221384 rollout.cc:29] Using lock free WeightedRoundRobin instead of LeastLoaded in go/backends stubs that have not specified an explicit load balancing policy (go/better-lb:rollout)\n2023-12-08 12:35:42:456 PST I [Mobly] I1208 12:35:42.443987  221384 gslb-loadbalancing-channel-impl3.cc:550] Creating GSLBLoadBalancingChannel - butterknife version namespace blade service monarch-auto-streamz\n2023-12-08 12:35:42:457 PST I [Mobly] I1208 12:35:42.453675  221384 utils.cc:318] No machine locality data for host IP 100.113.92.85 and kind IP_SATELLITE. NOT_FOUND: Key not found (li2): 100.113.92.85 (kind IP_SATELLITE)\n2023-12-08 12:35:42:717 PST I [Mobly] === Source Location Trace: ===\n2023-12-08 12:35:42:718 PST I [Mobly] production/machine_locality/lib/client.cc:403\n2023-12-08 12:35:42:718 PST I [Mobly] I1208 12:35:42.454362  221384 channel-utils.cc:184] CreateBalancerChannel to balancers: /mbns/local/loadbalancer/servers/butterknife-prod/balancers.corp,/mbns/local/loadbalancer/servers/butterknife-prod/balancers\n2023-12-08 12:35:42:719 PST I [Mobly] I1208 12:35:42.454378  221384 gslb-loadbalancing-channel-impl3.cc:380] Fallback channel MBNS target for service blade:monarch-auto-streamz was read from /mbns/local/loadbalancer/fallback/623/blade_monarch-auto-streamz\n2023-12-08 12:35:42:719 PST I [Mobly] I1208 12:35:42.454528  221384 dsc-loadbalancing-policy.cc:259] Service blade:monarch-auto-streamz: Client ID for subsetting was not specified. 0 will be used.\n2023-12-08 12:35:42:720 PST I [Mobly] W1208 12:35:42.486938  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:43:566 PST I [Mobly] I1208 12:35:42.716757  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=2 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:43:567 PST I [Mobly] W1208 12:35:42.716776  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=2]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:43:568 PST I [Mobly] I1208 12:35:43.372579  221904 waiter_thread.cc:747] [corp] contacting svelte server at [2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 (17cf202142615eb1-7d986474fb0.borgtask.google.com:6297), discovery_type: 7 svelte_cell: null good_server: true\n2023-12-08 12:35:43:569 PST I [Mobly] W1208 12:35:43.373032  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:43:632 PST I [Mobly] I1208 12:35:43.566280  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=0 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:43:633 PST I [Mobly] W1208 12:35:43.566302  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:43:633 PST I [Mobly] W1208 12:35:43.566554  221937 waiter_thread.cc:1890] [corp] ModifyWaitSet failed with UNREACHABLE Failed to authenticate channel [client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:43:867 PST I [Mobly] W1208 12:35:43.631923  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:43:868 PST I [Mobly] W1208 12:35:43.698700  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:43:868 PST I [Mobly] W1208 12:35:43.782475  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:43:869 PST I [Mobly] I1208 12:35:43.867071  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=3 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:43:973 PST I [Mobly] W1208 12:35:43.867101  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=3]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:43:974 PST I [Mobly] I1208 12:35:43.924127  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=4 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:43:974 PST I [Mobly] W1208 12:35:43.924155  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=4]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:44:522 PST I [Mobly] I1208 12:35:43.973090  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=1 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:44:522 PST I [Mobly] W1208 12:35:43.973119  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=1]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:44:523 PST I [Mobly] W1208 12:35:44.322111  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:45:377 PST I [Mobly] I1208 12:35:44.521867  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=2 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:45:377 PST I [Mobly] W1208 12:35:44.521898  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=2]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:45:378 PST I [Mobly] W1208 12:35:45.182189  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:45:379 PST I [Mobly] I1208 12:35:45.376845  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=3 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:45:752 PST I [Mobly] W1208 12:35:45.376874  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=3]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:45:753 PST I [Mobly] W1208 12:35:45.516743  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:45:753 PST I [Mobly] I1208 12:35:45.752327  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=4 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:46:754 PST I [Mobly] W1208 12:35:45.752352  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=4]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:47:009 PST I [Mobly] W1208 12:35:46.810439  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:47:010 PST I [Mobly] I1208 12:35:46.955683  222036 dsc-loadbalancing-policy.cc:935] Service blade:monarch-auto-streamz: RPC to Stubby Balancer <uninitialized SocketAddress> failed with DEADLINE_EXCEEDED:  [type.googleapis.com/util.ErrorSpacePayload='RPC::DEADLINE_EXCEEDED'], see go/butterknife-balancer-rpc-failure for more details.\n2023-12-08 12:35:47:010 PST I [Mobly] W1208 12:35:46.985392  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:47:212 PST I [Mobly] I1208 12:35:47.008948  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=4 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:47:212 PST I [Mobly] W1208 12:35:47.008974  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=4]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:47:213 PST I [Mobly] I1208 12:35:47.211799  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=5 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:48:214 PST I [Mobly] W1208 12:35:47.211823  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=5]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:49:215 PST I [Mobly] W1208 12:35:49.066867  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:50:006 PST I [Mobly] I1208 12:35:49.306096  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=5 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:50:007 PST I [Mobly] W1208 12:35:49.306130  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=5]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:50:008 PST I [Mobly] W1208 12:35:49.805234  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:50:826 PST I [Mobly] I1208 12:35:50.006599  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=5 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:50:827 PST I [Mobly] W1208 12:35:50.006631  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=5]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:50:827 PST I [Mobly] I1208 12:35:50.590848  221904 waiter_thread.cc:747] [corp] contacting svelte server at [2002:ab3:958a:0:b0:51e:9b95:e135]:6297 (cec10e2e81c3198c-5284f5fe7ad.borgtask.google.com:6297), discovery_type: 7 svelte_cell: null good_server: true\n2023-12-08 12:35:50:828 PST I [Mobly] W1208 12:35:50.591351  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:50:880 PST I [Mobly] I1208 12:35:50.826083  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ab3:958a:0:b0:51e:9b95:e135]:6297 id=0 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:50:881 PST I [Mobly] W1208 12:35:50.826110  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ab3:958a:0:b0:51e:9b95:e135]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:50:882 PST I [Mobly] W1208 12:35:50.826394  221937 waiter_thread.cc:1890] [corp] ModifyWaitSet failed with UNREACHABLE Failed to authenticate channel [client-auth:peer=[2002:ab3:958a:0:b0:51e:9b95:e135]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:50:882 PST I [Mobly] I1208 12:35:50.826573  221902 client_sharding_config.cc:104] Client sharding config update: 303\n2023-12-08 12:35:51:021 PST I [Mobly] W1208 12:35:50.880619  221892 sharded_client.cc:1583] (ganpati-team) Marking Chubby as unreachable (service unavailable)\n2023-12-08 12:35:51:021 PST I [Mobly] W1208 12:35:50.880928  221886 sharded_client.cc:1412] Calling synchronous Check() for new group mdb/deepmind-ftes took 10.984373252s to initialize GroupWatcher and fetch the list of members. This can cause user request timeouts, and in general may waste time initializing each ACL group sequentially. To improve latency for the first call, please call ACLRep::ExpectAclNames() early during server startup with the set of all Ganpati ACL group names to be consulted.\n2023-12-08 12:35:51:022 PST I [Mobly] I1208 12:35:50.881705  221886 rollout.cc:104] Using lock free WeightedRoundRobin instead of WeightedRoundRobin (go/better-lb:rollout)\n2023-12-08 12:35:51:022 PST I [Mobly] I1208 12:35:50.882922  222485 backoff.cc:120] Using --util_time_backoff_seed=-1326028786\n2023-12-08 12:35:51:814 PST I [Mobly] W1208 12:35:51.020910  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:51:815 PST I [Mobly] I1208 12:35:51.255780  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ab3:958a:0:b0:51e:9b95:e135]:6297 id=1 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:51:815 PST I [Mobly] W1208 12:35:51.255809  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ab3:958a:0:b0:51e:9b95:e135]:6297 id=1]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:51:816 PST I [Mobly] W1208 12:35:51.579725  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:52:075 PST I [Mobly] I1208 12:35:51.814114  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ab3:958a:0:b0:51e:9b95:e135]:6297 id=2 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:52:075 PST I [Mobly] W1208 12:35:51.814144  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ab3:958a:0:b0:51e:9b95:e135]:6297 id=2]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:52:076 PST I [Mobly] I1208 12:35:51.956637  222036 dsc-loadbalancing-policy.cc:935] Service blade:monarch-auto-streamz: RPC to Stubby Balancer <uninitialized SocketAddress> failed with DEADLINE_EXCEEDED:  [type.googleapis.com/util.ErrorSpacePayload='RPC::DEADLINE_EXCEEDED'], see go/butterknife-balancer-rpc-failure for more details.\n2023-12-08 12:35:52:302 PST I [Mobly] I1208 12:35:52.074757  221904 waiter_thread.cc:747] [corp] contacting svelte server at [2002:ac8:dad3:0:b0:20:3f32:9567]:6297 (6cfc5b9c4e2b1e5d-4d0cba4defd.borgtask.google.com:6297), discovery_type: 7 svelte_cell: null good_server: true\n2023-12-08 12:35:52:303 PST I [Mobly] W1208 12:35:52.075226  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:52:304 PST I [Mobly] I1208 12:35:52.302006  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ac8:dad3:0:b0:20:3f32:9567]:6297 id=0 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:52:304 PST I [Mobly] W1208 12:35:52.302036  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ac8:dad3:0:b0:20:3f32:9567]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:52:529 PST I [Mobly] W1208 12:35:52.302402  221937 waiter_thread.cc:1890] [corp] ModifyWaitSet failed with UNREACHABLE Failed to authenticate channel [client-auth:peer=[2002:ac8:dad3:0:b0:20:3f32:9567]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:52:530 PST I [Mobly] I1208 12:35:52.454751  221384 smart-channel-impl.cc:380] SmartChannel: Constructed channel is still empty within specified time, SmartService: target: \"monarch-auto-streamz\"\n2023-12-08 12:35:52:530 PST I [Mobly] client_channel_options {\n2023-12-08 12:35:52:531 PST I [Mobly]   idle_shutdown_delay: 1.7976931348623157e+308\n2023-12-08 12:35:52:531 PST I [Mobly]   start_reachable: false\n2023-12-08 12:35:52:532 PST I [Mobly]   can_use_udp: false\n2023-12-08 12:35:52:532 PST I [Mobly]   load_balancing_policy: \"BackendsDefault\"\n2023-12-08 12:35:52:533 PST I [Mobly]   backend_subset: true\n2023-12-08 12:35:52:533 PST I [Mobly]   subset_size: 5\n2023-12-08 12:35:52:534 PST I [Mobly]   channel_type: BNS_CHANNEL\n2023-12-08 12:35:52:534 PST I [Mobly] }\n2023-12-08 12:35:52:535 PST I [Mobly] gslb_channel_options {\n2023-12-08 12:35:52:535 PST I [Mobly]   use_gslb_fallback_channel: true\n2023-12-08 12:35:52:536 PST I [Mobly] }\n2023-12-08 12:35:52:536 PST I [Mobly] wait_sec: 10\n2023-12-08 12:35:52:537 PST I [Mobly] load_balancing_policy_options {\n2023-12-08 12:35:52:537 PST I [Mobly]   slicer_target_suffix: \"\"\n2023-12-08 12:35:52:538 PST I [Mobly]   slicer_fallback_policy: \"\"\n2023-12-08 12:35:52:539 PST I [Mobly]   slicer_env_override: \"\"\n2023-12-08 12:35:52:539 PST I [Mobly] }\n2023-12-08 12:35:52:540 PST I [Mobly] check_channel: CHECK_CHANNEL_DISABLED\n2023-12-08 12:35:52:540 PST I [Mobly] I1208 12:35:52.454906  221384 metrics_exporter.cc:544] Connected to Monarch.\n2023-12-08 12:35:52:761 PST I [Mobly] W1208 12:35:52.528915  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:52:762 PST I [Mobly] W1208 12:35:52.602651  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:52:762 PST I [Mobly] I1208 12:35:52.761316  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ac8:dad3:0:b0:20:3f32:9567]:6297 id=1 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:53:410 PST I [Mobly] W1208 12:35:52.761342  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ac8:dad3:0:b0:20:3f32:9567]:6297 id=1]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:53:410 PST I [Mobly] I1208 12:35:52.826312  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ab3:958a:0:b0:51e:9b95:e135]:6297 id=3 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:53:411 PST I [Mobly] W1208 12:35:52.826347  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ab3:958a:0:b0:51e:9b95:e135]:6297 id=3]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:53:412 PST I [Mobly] W1208 12:35:53.174240  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:53:840 PST I [Mobly] I1208 12:35:53.409839  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ac8:dad3:0:b0:20:3f32:9567]:6297 id=2 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:53:841 PST I [Mobly] W1208 12:35:53.409867  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ac8:dad3:0:b0:20:3f32:9567]:6297 id=2]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:53:842 PST I [Mobly] W1208 12:35:53.626669  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:54:286 PST I [Mobly] I1208 12:35:53.840632  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=6 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:54:286 PST I [Mobly] W1208 12:35:53.840660  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=6]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:54:287 PST I [Mobly] W1208 12:35:54.064407  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:54:288 PST I [Mobly] I1208 12:35:54.285948  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ac8:dad3:0:b0:20:3f32:9567]:6297 id=3 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:54:734 PST I [Mobly] W1208 12:35:54.285974  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ac8:dad3:0:b0:20:3f32:9567]:6297 id=3]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:54:735 PST I [Mobly] W1208 12:35:54.503829  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:54:735 PST I [Mobly] I1208 12:35:54.733835  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ab3:958a:0:b0:51e:9b95:e135]:6297 id=4 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:55:736 PST I [Mobly] W1208 12:35:54.733865  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ab3:958a:0:b0:51e:9b95:e135]:6297 id=4]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:55:737 PST I [Mobly] W1208 12:35:55.410847  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:55:737 PST I [Mobly] I1208 12:35:55.605701  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=6 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:55:738 PST I [Mobly] W1208 12:35:55.605732  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=6]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:56:159 PST I [Mobly] W1208 12:35:55.764416  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:56:160 PST I [Mobly] I1208 12:35:55.984453  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=6 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:56:160 PST I [Mobly] W1208 12:35:55.984481  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=6]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:56:956 PST I [Mobly] W1208 12:35:56.159217  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:56:957 PST I [Mobly] I1208 12:35:56.381586  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ac8:dad3:0:b0:20:3f32:9567]:6297 id=4 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:56:958 PST I [Mobly] W1208 12:35:56.381614  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ac8:dad3:0:b0:20:3f32:9567]:6297 id=4]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:57:959 PST I [Mobly] I1208 12:35:56.956724  222066 dsc-loadbalancing-policy.cc:935] Service blade:monarch-auto-streamz: RPC to Stubby Balancer <uninitialized SocketAddress> failed with DEADLINE_EXCEEDED:  [type.googleapis.com/util.ErrorSpacePayload='RPC::DEADLINE_EXCEEDED'], see go/butterknife-balancer-rpc-failure for more details.\n2023-12-08 12:35:58:960 PST I [Mobly] W1208 12:35:58.167549  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:58:961 PST I [Mobly] I1208 12:35:58.400114  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ab3:958a:0:b0:51e:9b95:e135]:6297 id=5 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:58:962 PST I [Mobly] W1208 12:35:58.400144  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ab3:958a:0:b0:51e:9b95:e135]:6297 id=5]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:59:963 PST I [Mobly] W1208 12:35:59.237730  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:59:964 PST I [Mobly] I1208 12:35:59.461847  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ac8:dad3:0:b0:20:3f32:9567]:6297 id=5 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:35:59:965 PST I [Mobly] W1208 12:35:59.461878  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ac8:dad3:0:b0:20:3f32:9567]:6297 id=5]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:01:966 PST I [Mobly] I1208 12:36:01.883771  221904 waiter_thread.cc:747] [corp] contacting svelte server at [2002:a57:e60a:0:b0:d4:3454:bd26]:6297 (f9e838f19fd96724-22975969ef0.borgtask.google.com:6297), discovery_type: 7 svelte_cell: null good_server: true\n2023-12-08 12:36:01:966 PST I [Mobly] W1208 12:36:01.884650  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:01:967 PST I [Mobly] I1208 12:36:01.956874  222036 dsc-loadbalancing-policy.cc:935] Service blade:monarch-auto-streamz: RPC to Stubby Balancer <uninitialized SocketAddress> failed with DEADLINE_EXCEEDED:  [type.googleapis.com/util.ErrorSpacePayload='RPC::DEADLINE_EXCEEDED'], see go/butterknife-balancer-rpc-failure for more details.\n2023-12-08 12:36:02:351 PST I [Mobly] I1208 12:36:02.126781  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a57:e60a:0:b0:d4:3454:bd26]:6297 id=0 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:02:352 PST I [Mobly] W1208 12:36:02.126806  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a57:e60a:0:b0:d4:3454:bd26]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:02:353 PST I [Mobly] W1208 12:36:02.127113  221937 waiter_thread.cc:1890] [corp] ModifyWaitSet failed with UNREACHABLE Failed to authenticate channel [client-auth:peer=[2002:a57:e60a:0:b0:d4:3454:bd26]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:02:814 PST I [Mobly] W1208 12:36:02.351674  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:02:815 PST I [Mobly] I1208 12:36:02.583243  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a57:e60a:0:b0:d4:3454:bd26]:6297 id=1 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:02:816 PST I [Mobly] W1208 12:36:02.583272  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a57:e60a:0:b0:d4:3454:bd26]:6297 id=1]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:03:038 PST I [Mobly] I1208 12:36:02.814367  221904 waiter_thread.cc:747] [corp] contacting svelte server at [2002:ab3:f5c1:0:b0:51e:9a4a:7508]:6297 (cec10e2e81c3198c-5284fcecd13.borgtask.google.com:6297), discovery_type: 7 svelte_cell: null good_server: true\n2023-12-08 12:36:03:039 PST I [Mobly] W1208 12:36:02.814843  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:03:039 PST I [Mobly] W1208 12:36:02.974711  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:03:040 PST I [Mobly] I1208 12:36:03.037914  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ab3:f5c1:0:b0:51e:9a4a:7508]:6297 id=0 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:03:211 PST I [Mobly] W1208 12:36:03.037939  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ab3:f5c1:0:b0:51e:9a4a:7508]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:03:212 PST I [Mobly] W1208 12:36:03.038238  221937 waiter_thread.cc:1890] [corp] ModifyWaitSet failed with UNREACHABLE Failed to authenticate channel [client-auth:peer=[2002:ab3:f5c1:0:b0:51e:9a4a:7508]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:03:213 PST I [Mobly] I1208 12:36:03.211689  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a57:e60a:0:b0:d4:3454:bd26]:6297 id=2 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:03:819 PST I [Mobly] W1208 12:36:03.211715  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a57:e60a:0:b0:d4:3454:bd26]:6297 id=2]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:03:820 PST I [Mobly] W1208 12:36:03.238303  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:03:821 PST I [Mobly] I1208 12:36:03.469365  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ab3:f5c1:0:b0:51e:9a4a:7508]:6297 id=1 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:03:821 PST I [Mobly] W1208 12:36:03.469399  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ab3:f5c1:0:b0:51e:9a4a:7508]:6297 id=1]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:04:127 PST I [Mobly] W1208 12:36:03.819353  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:04:128 PST I [Mobly] I1208 12:36:04.045422  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ab3:f5c1:0:b0:51e:9a4a:7508]:6297 id=2 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:04:128 PST I [Mobly] W1208 12:36:04.045453  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ab3:f5c1:0:b0:51e:9a4a:7508]:6297 id=2]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:04:359 PST I [Mobly] W1208 12:36:04.127094  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:04:360 PST I [Mobly] I1208 12:36:04.170500  221904 waiter_thread.cc:747] [corp] contacting svelte server at [2002:a57:c716:0:b0:13d:7833:2581]:6297 (f9e838f19fd96724-22975d04893.borgtask.google.com:6297), discovery_type: 7 svelte_cell: null good_server: true\n2023-12-08 12:36:04:360 PST I [Mobly] W1208 12:36:04.170938  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:04:361 PST I [Mobly] I1208 12:36:04.359258  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a57:e60a:0:b0:d4:3454:bd26]:6297 id=3 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:04:399 PST I [Mobly] W1208 12:36:04.359283  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a57:e60a:0:b0:d4:3454:bd26]:6297 id=3]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:04:400 PST I [Mobly] I1208 12:36:04.399002  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a57:c716:0:b0:13d:7833:2581]:6297 id=0 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:04:400 PST I [Mobly] W1208 12:36:04.399025  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a57:c716:0:b0:13d:7833:2581]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:04:805 PST I [Mobly] W1208 12:36:04.399330  221937 waiter_thread.cc:1890] [corp] ModifyWaitSet failed with UNREACHABLE Failed to authenticate channel [client-auth:peer=[2002:a57:c716:0:b0:13d:7833:2581]:6297 id=0]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:04:806 PST I [Mobly] W1208 12:36:04.563803  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:04:806 PST I [Mobly] W1208 12:36:04.780625  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:04:807 PST I [Mobly] I1208 12:36:04.805322  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a57:c716:0:b0:13d:7833:2581]:6297 id=1 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:05:049 PST I [Mobly] W1208 12:36:04.805348  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a57:c716:0:b0:13d:7833:2581]:6297 id=1]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:05:049 PST I [Mobly] I1208 12:36:05.003109  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ab3:f5c1:0:b0:51e:9a4a:7508]:6297 id=3 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:05:050 PST I [Mobly] W1208 12:36:05.003134  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ab3:f5c1:0:b0:51e:9a4a:7508]:6297 id=3]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:05:388 PST I [Mobly] W1208 12:36:05.048720  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:05:388 PST I [Mobly] W1208 12:36:05.156405  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:05:389 PST I [Mobly] I1208 12:36:05.289999  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ab3:958a:0:b0:51e:9b95:e135]:6297 id=6 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:05:389 PST I [Mobly] W1208 12:36:05.290029  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ab3:958a:0:b0:51e:9b95:e135]:6297 id=6]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:05:748 PST I [Mobly] I1208 12:36:05.387706  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a57:c716:0:b0:13d:7833:2581]:6297 id=2 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:05:749 PST I [Mobly] W1208 12:36:05.387729  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a57:c716:0:b0:13d:7833:2581]:6297 id=2]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:05:749 PST I [Mobly] W1208 12:36:05.529426  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:06:357 PST I [Mobly] I1208 12:36:05.747849  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=7 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:06:358 PST I [Mobly] W1208 12:36:05.747876  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a98:5283:0:b0:53e:ec89:7fd4]:6297 id=7]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:06:359 PST I [Mobly] W1208 12:36:06.124261  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:06:360 PST I [Mobly] W1208 12:36:06.185023  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:06:418 PST I [Mobly] I1208 12:36:06.357603  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a57:e60a:0:b0:d4:3454:bd26]:6297 id=4 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:06:419 PST I [Mobly] W1208 12:36:06.357633  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a57:e60a:0:b0:d4:3454:bd26]:6297 id=4]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:06:419 PST I [Mobly] I1208 12:36:06.418415  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a57:c716:0:b0:13d:7833:2581]:6297 id=3 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:06:883 PST I [Mobly] W1208 12:36:06.418439  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a57:c716:0:b0:13d:7833:2581]:6297 id=3]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:06:884 PST I [Mobly] W1208 12:36:06.664281  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:06:884 PST I [Mobly] W1208 12:36:06.771047  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:06:885 PST I [Mobly] I1208 12:36:06.882916  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ab3:f5c1:0:b0:51e:9a4a:7508]:6297 id=4 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:07:004 PST I [Mobly] W1208 12:36:06.882963  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ab3:f5c1:0:b0:51e:9a4a:7508]:6297 id=4]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:07:005 PST I [Mobly] I1208 12:36:06.955655  222036 dsc-loadbalancing-policy.cc:935] Service blade:monarch-auto-streamz: RPC to Stubby Balancer <uninitialized SocketAddress> failed with DEADLINE_EXCEEDED:  [type.googleapis.com/util.ErrorSpacePayload='RPC::DEADLINE_EXCEEDED'], see go/butterknife-balancer-rpc-failure for more details.\n2023-12-08 12:36:07:006 PST I [Mobly] W1208 12:36:06.955681  222036 dsc-loadbalancing-policy.cc:899] Service blade:monarch-auto-streamz: Balancer has returned 5 consecutive invalid DSC responses.\n2023-12-08 12:36:07:926 PST I [Mobly] I1208 12:36:07.004601  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ac8:dad3:0:b0:20:3f32:9567]:6297 id=6 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:07:927 PST I [Mobly] W1208 12:36:07.004625  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ac8:dad3:0:b0:20:3f32:9567]:6297 id=6]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:07:928 PST I [Mobly] W1208 12:36:07.699933  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:07:928 PST I [Mobly] W1208 12:36:07.761789  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:07:945 PST I [Mobly] I1208 12:36:07.926163  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a57:c716:0:b0:13d:7833:2581]:6297 id=4 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:07:946 PST I [Mobly] W1208 12:36:07.926201  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a57:c716:0:b0:13d:7833:2581]:6297 id=4]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:07:946 PST I [Mobly] I1208 12:36:07.945370  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=7 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:08:947 PST I [Mobly] W1208 12:36:07.945394  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a05:6838:9124:b0:773:a67c:cc9e]:6297 id=7]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:09:948 PST I [Mobly] W1208 12:36:09.617186  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:09:949 PST I [Mobly] I1208 12:36:09.852665  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a57:e60a:0:b0:d4:3454:bd26]:6297 id=5 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:09:950 PST I [Mobly] W1208 12:36:09.852698  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a57:e60a:0:b0:d4:3454:bd26]:6297 id=5]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:10:189 PST I [Mobly] W1208 12:36:09.968374  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:10:190 PST I [Mobly] W1208 12:36:10.011128  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:10:191 PST I [Mobly] I1208 12:36:10.189081  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:ab3:f5c1:0:b0:51e:9a4a:7508]:6297 id=5 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:10:780 PST I [Mobly] W1208 12:36:10.189110  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:ab3:f5c1:0:b0:51e:9a4a:7508]:6297 id=5]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:10:781 PST I [Mobly] I1208 12:36:10.234369  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=7 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:10:781 PST I [Mobly] W1208 12:36:10.234393  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a72:4789:0:b0:2:4496:2585]:6297 id=7]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:10:782 PST I [Mobly] W1208 12:36:10.543277  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:11:783 PST I [Mobly] I1208 12:36:10.780035  221900 internals-authprotocolparser.cc:823]  failed to authenticate channel client-auth:peer=[2002:a57:c716:0:b0:13d:7833:2581]:6297 id=5 due to: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:11:784 PST I [Mobly] W1208 12:36:10.780064  221900 internals-authprotocolparser.cc:467] Failed to authenticate channel [client-auth:peer=[2002:a57:c716:0:b0:13d:7833:2581]:6297 id=5]: AUTH_FAIL - No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:12:460 PST I [Mobly] I1208 12:36:11.956739  222036 dsc-loadbalancing-policy.cc:935] Service blade:monarch-auto-streamz: RPC to Stubby Balancer <uninitialized SocketAddress> failed with DEADLINE_EXCEEDED:  [type.googleapis.com/util.ErrorSpacePayload='RPC::DEADLINE_EXCEEDED'], see go/butterknife-balancer-rpc-failure for more details.\n2023-12-08 12:36:12:461 PST I [Mobly] I1208 12:36:12.458371  221384 metrics_exporter.cc:436] Metrics are flushed.\n2023-12-08 12:36:12:462 PST I [Mobly] I1208 12:36:12.458414  221384 waiter_thread.cc:2651] [corp] EndSession for client id 0 (server f9e838f19fd96724-22975d04893.borgtask.google.com:6297)\n2023-12-08 12:36:12:462 PST I [Mobly] I1208 12:36:12.459594  221904 waiter_thread.cc:747] [corp] contacting svelte server at [2002:a98:4083:0:b0:53e:edf9:55dc]:6297 (e37d1fde1a6275e2-54406abbff2.borgtask.google.com:6297), discovery_type: 7 svelte_cell: null good_server: true\n2023-12-08 12:36:12:613 PST I [Mobly] W1208 12:36:12.460458  221900 securewrapper_utils.cc:319] Could not get the default role (maybe need to run gcert in corp?): No user creds available. isu: , user: /run/credentials-cache/loas-mobileharness/cookies/mobileharness.loas2credentials: No such file.\n2023-12-08 12:36:12:614 PST I Finished running Mobly test. Success: true\n2023-12-08 12:36:12:620 PST I MoblyTest has ended\n2023-12-08 12:36:12:621 PST I TIMELINE:RUN_TEST:MARK_POINT::lab Driver [MoblyTest] of test hello_world_test_adhoc_testbed ended\n2023-12-08 12:36:12:623 PST I TIMELINE:RUN_TEST:END:lab Run test hello_world_test_adhoc_testbed finished\n2023-12-08 12:36:12:623 PST I TIMELINE:POST_RUN_TEST:START:lab Start post-run test hello_world_test_adhoc_testbed on device(s) [172.16.243.178]\n2023-12-08 12:36:12:624 PST I Post TestEndingEvent to test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c@ce103571-bf18-4aab-b835-e4d123e660dd\n2023-12-08 12:36:12:625 PST I Saving test command history...\n2023-12-08 12:36:12:645 PST I --------- Device: PostRunTest (3dc2835b-5697-4a7b-ad51-c35fb6dd512c) ---------\n2023-12-08 12:36:12:646 PST I Post-run test of device [172.16.243.178]\n2023-12-08 12:36:12:647 PST I Post-run test of device [172.16.243.178] finished, result=NONE\n2023-12-08 12:36:12:648 PST I Adding common dimensions [host_version, host_name] shared among testbed to test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c\n2023-12-08 12:36:12:649 PST I Post TestEndedEvent to test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c@ce103571-bf18-4aab-b835-e4d123e660dd\n2023-12-08 12:36:12:649 PST I TIMELINE:POST_RUN_TEST:END:lab Post-run test hello_world_test_adhoc_testbed finished\n2023-12-08 12:36:14:032 PST I TIMELINE:RUN_TEST:END:client Run test hello_world_test_adhoc_testbed finished\n2023-12-08 12:36:14:032 PST I TIMELINE:POST_RUN_TEST:START:client Start post-run test hello_world_test_adhoc_testbed on device(s) [jonfan-desktop.mtv.corp.google.com:172.16.243.178@100.113.92.85/jonfan-desktop.mtv.corp.google.com]\n2023-12-08 12:36:14:033 PST I Post TestEndingEvent to test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c@ce103571-bf18-4aab-b835-e4d123e660dd\n2023-12-08 12:36:14:033 PST I ========= Client: PostRunTest (3dc2835b-5697-4a7b-ad51-c35fb6dd512c) =========\n2023-12-08 12:36:14:230 PST I Generated properties:\n- _is_run_in_dm = false\n- _test_engine_locator = enable_cloud_rpc: true\ncloud_rpc_locator {\n  proxy_metadata {\n    endpoint: \"lab_server_endpoint\"\n    shard: \"jonfan-desktop.mtv.corp.google.com\"\n  }\n  file_transfer_proxy_metadata {\n    endpoint: \"lab_cloud_file_transfer_endpoint\"\n    shard: \"jonfan-desktop.mtv.corp.google.com\"\n  }\n}\nstubby_locator {\n  ip: \"100.113.92.85\"\n  host_name: \"jonfan-desktop.mtv.corp.google.com\"\n  port: 9999\n}\nenable_stubby: true\n\n- allocated_devices_lst_signin_support = not_supported\n- allocated_quota_pool = mobileharness-satellite-lab-pool\n- allocation_received_epoch_ms = 1702067634979\n- allocation_requested_epoch_ms = 1702067612940\n- allocation_time_ms = 22041\n- allocation_time_sec = 22\n- container_mode = false\n- device_done_epoch_ms = 1702067772624\n- device_id_list = 172.16.243.178\n- dimension_chromeos_arc_android_sdk_version = 33\n- dimension_chromeos_arc_version = 11051073\n- dimension_chromeos_release_board = volteer\n- dimension_chromeos_release_branch_number = 37\n- dimension_chromeos_release_build_number = 15633\n- dimension_chromeos_release_chrome_milestone = 119\n- dimension_chromeos_release_track = testimage-channel\n- dimension_control_id = 172.16.243.178\n- dimension_devicetype = CHROMEBOOK\n- dimension_host_free_memory = 39912796 KB\n- dimension_host_ip = 100.113.92.85\n- dimension_host_name = jonfan-desktop.mtv.corp.google.com\n- dimension_host_os = Linux\n- dimension_host_os_version = 6.5.6-1rodete4-amd64\n- dimension_host_total_memory = 196603728 KB\n- dimension_host_version = 4.254.0\n- dimension_id = 172.16.243.178\n- dimension_lab_location = mtv\n- dimension_lab_supports_container = true\n- dimension_lab_supports_sandbox = true\n- dimension_label = jonfan_codelab\n- dimension_location_type = not_in_china\n- dimension_model = drobit\n- dimension_supports_adhoc = true\n- dimension_supports_gmscore = false\n- dimension_uuid = jonfan-desktop.mtv.corp.google.com:172.16.243.178\n- dimension_uuid_volatile = false\n- environment = PROD\n- hybrid_utp_detailed_incompatible_reason_CrosDevice = no_converter\n- hybrid_utp_detailed_incompatible_reason_MoblyTest = no_converter\n- hybrid_utp_summary_incompatible_reason = no_converter(CrosDevice);no_converter(MoblyTest)\n- lab_test_gen_file_dir = /var/www/mh_lab_gen_files/ce103571-bf18-4aab-b835-e4d123e660dd/test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c\n- master_central_suspended_duration_sec = 0\n- master_scheduler_latency_sec = 17\n- master_scheduler_latency_type = DEVICE_WAIT_FOR_TEST\n- sandbox_mode = false\n- start_delay_ms = 4\n2023-12-08 12:36:14:230 PST I No test warnings on Lab Server side\n2023-12-08 12:36:14:230 PST I Downloading 9 test generated file(s) for :\n- test.xml\n- command_history.txt\n- mobly_command_output.log\n- config.yaml\n- test_components/component_8f1a1371-d649-4ec7-b0c1-3c6628d43cb4.pb\n- test_components/component_74b4fd1e-a8a4-42b5-bf72-14a092cb11be.pb\n- mobly_logs/test_summary.yaml\n- mobly_logs/test_log.DEBUG\n- mobly_logs/test_log.INFO\n2023-12-08 12:36:14:230 PST I TIMELINE:DOWNLOAD_FILES:START: Starting download test generated file directory\n2023-12-08 12:36:15:006 PST I TIMELINE:DOWNLOAD_FILES:END: Downloaded genfile directory /tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/gen/test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c (size: 21.4KB)\n2023-12-08 12:36:15:007 PST I Generated properties for sub_test MoblyTest(65dcdbfe-cb9f-4af1-9d8d-84dcf3daa626):\n- errors = 0\n- failures = 0\n- test_output0 = test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/mobly_logs/test_summary.yaml\n- test_output1 = test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/mobly_logs/test_log.DEBUG\n- test_output2 = test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/mobly_logs/test_log.INFO\n- tests = 1\n- time = 0\n2023-12-08 12:36:15:007 PST I No test warnings on Lab Server side for sub_test MoblyTest(65dcdbfe-cb9f-4af1-9d8d-84dcf3daa626)\n2023-12-08 12:36:15:007 PST I No test generated file for sub_test MoblyTest(65dcdbfe-cb9f-4af1-9d8d-84dcf3daa626)\n2023-12-08 12:36:15:007 PST I Generated properties for sub_test HelloWorldTest(a8c58617-59d9-4b2c-86d8-7a1c64c6565c):\n- errors = 0\n- failures = 0\n- mobly_test_class = HelloWorldTest\n- test_type = mobly_class\n- tests = 1\n- time = 0\n2023-12-08 12:36:15:007 PST I No test warnings on Lab Server side for sub_test HelloWorldTest(a8c58617-59d9-4b2c-86d8-7a1c64c6565c)\n2023-12-08 12:36:15:007 PST I No test generated file for sub_test HelloWorldTest(a8c58617-59d9-4b2c-86d8-7a1c64c6565c)\n2023-12-08 12:36:15:008 PST I Generated properties for sub_test HelloWorldTest#test_ssh_execute_command(843839bb-4241-43a3-bde1-fc49e11c56e5):\n- classname = HelloWorldTest\n- mobly_begin_time = 1702067739912\n- mobly_end_time = 1702067740079\n- mobly_signature = test_ssh_execute_command-1702067739912\n- mobly_test_class = HelloWorldTest\n- result = completed\n- status = run\n- test_fission = http://fission.corp.google.com/spongechip?invocationId={{invocationId}}&target={{targetId}}&configurationId={{configurationId}}&testCase=MoblyTest%23HelloWorldTest%23test_ssh_execute_command-1702067739912&action={{actionId}}\n- test_type = mobly_test\n- time = 167\n- timestamp = 2023-12-08T20:35:39Z\n- using_python_sponge_converter = true\n2023-12-08 12:36:15:008 PST I No test warnings on Lab Server side for sub_test HelloWorldTest#test_ssh_execute_command(843839bb-4241-43a3-bde1-fc49e11c56e5)\n2023-12-08 12:36:15:008 PST I No test generated file for sub_test HelloWorldTest#test_ssh_execute_command(843839bb-4241-43a3-bde1-fc49e11c56e5)\n2023-12-08 12:36:15:008 PST I \nFileTransfer report:\n  send 2 files; total size: 1.93GB; total time: PT1M23.679504S; speed: 24432663.41 B/s\n  get 1 files; total size: 21.4KB; total time: PT0.774757S; speed: 12345.92 B/s\n2023-12-08 12:36:16:126 PST I Post TestEndedEvent to test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c@ce103571-bf18-4aab-b835-e4d123e660dd\n2023-12-08 12:36:16:221 PST I No UTP command history\n2023-12-08 12:36:16:221 PST I Start uploading test generated files\n2023-12-08 12:36:16:222 PST I Saved the test log to /tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/gen/test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/test_output.txt\n2023-12-08 12:36:16:222 PST I No external_storage_path specified, skip copying test generated files to CNS.\n2023-12-08 12:36:16:222 PST I Start uploading test data to GoogleAnalytics\n2023-12-08 12:36:16:228 PST I Finished uploading test data to GoogleAnalytics\n2023-12-08 12:36:18:697 PST I Update all remote uploaded files to remoteGenFiles of test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c\n",
+            "name": "hello_world_test_adhoc_testbed",
+            "property": [
+              {
+                "name": "test_link_in_mhfe",
+                "value": "http://mobileharness-fe/testdetailview/ce103571-bf18-4aab-b835-e4d123e660dd/3dc2835b-5697-4a7b-ad51-c35fb6dd512c"
+              },
+              {
+                "name": "dimension_lab_location",
+                "value": "mtv"
+              },
+              {
+                "name": "mh_ft_get_time_without_cache",
+                "value": "1"
+              },
+              {
+                "name": "hybrid_utp_detailed_incompatible_reason_MoblyTest",
+                "value": "no_converter"
+              },
+              {
+                "name": "device_done_epoch_ms",
+                "value": "1702067772624"
+              },
+              {
+                "name": "dimension_chromeos_release_chrome_milestone",
+                "value": "119"
+              },
+              {
+                "name": "dimension_host_ip",
+                "value": "100.113.92.85"
+              },
+              {
+                "name": "allocation_requested_epoch_ms",
+                "value": "1702067612940"
+              },
+              {
+                "name": "mh_ft_get_file_size_total",
+                "value": "21911"
+              },
+              {
+                "name": "mh_ft_get_file_size_without_cache",
+                "value": "21911"
+              },
+              {
+                "name": "dimension_host_free_memory",
+                "value": "39912796 KB"
+              },
+              {
+                "name": "mh_ft_get_file_num_without_cache",
+                "value": "1"
+              },
+              {
+                "name": "dimension_chromeos_release_branch_number",
+                "value": "37"
+              },
+              {
+                "name": "dimension_uuid",
+                "value": "jonfan-desktop.mtv.corp.google.com:172.16.243.178"
+              },
+              {
+                "name": "dimension_chromeos_arc_android_sdk_version",
+                "value": "33"
+              },
+              {
+                "name": "remote_start_delay_ms",
+                "value": "3"
+              },
+              {
+                "name": "sponge_link_of_test",
+                "value": "http://sponge2/ad598777-03a3-446e-9dc7-85c3932df26d"
+              },
+              {
+                "name": "dimension_host_name",
+                "value": "jonfan-desktop.mtv.corp.google.com"
+              },
+              {
+                "name": "dimension_devicetype",
+                "value": "CHROMEBOOK"
+              },
+              {
+                "name": "_hats_trigger_id_for_mh",
+                "value": "v7fyRAaKM0iXoKhPGdD0X94YVmFW"
+              },
+              {
+                "name": "dimension_lab_supports_sandbox",
+                "value": "true"
+              },
+              {
+                "name": "device_id_list",
+                "value": "172.16.243.178"
+              },
+              {
+                "name": "hybrid_utp_detailed_incompatible_reason_CrosDevice",
+                "value": "no_converter"
+              },
+              {
+                "name": "is_final_attempt",
+                "value": "true"
+              },
+              {
+                "name": "_test_engine_locator",
+                "value": "enable_cloud_rpc: true\ncloud_rpc_locator {\n  proxy_metadata {\n    endpoint: \"lab_server_endpoint\"\n    shard: \"jonfan-desktop.mtv.corp.google.com\"\n  }\n  file_transfer_proxy_metadata {\n    endpoint: \"lab_cloud_file_transfer_endpoint\"\n    shard: \"jonfan-desktop.mtv.corp.google.com\"\n  }\n}\nstubby_locator {\n  ip: \"100.113.92.85\"\n  host_name: \"jonfan-desktop.mtv.corp.google.com\"\n  port: 9999\n}\nenable_stubby: true\n"
+              },
+              {
+                "name": "mh_ft_send_file_num",
+                "value": "2"
+              },
+              {
+                "name": "dimension_host_os_version",
+                "value": "6.5.6-1rodete4-amd64"
+              },
+              {
+                "name": "mh_ft_send_time_total",
+                "value": "84"
+              },
+              {
+                "name": "allocation_time_ms",
+                "value": "22041"
+              },
+              {
+                "name": "allocation_time_sec",
+                "value": "22"
+              },
+              {
+                "name": "dimension_supports_adhoc",
+                "value": "true"
+              },
+              {
+                "name": "dimension_host_version",
+                "value": "4.254.0"
+              },
+              {
+                "name": "actual_user",
+                "value": "mobileharness-gateway"
+              },
+              {
+                "name": "hybrid_utp_summary_incompatible_reason",
+                "value": "no_converter(CrosDevice);no_converter(MoblyTest)"
+              },
+              {
+                "name": "dimension_id",
+                "value": "172.16.243.178"
+              },
+              {
+                "name": "dimension_location_type",
+                "value": "not_in_china"
+              },
+              {
+                "name": "master_scheduler_latency_sec",
+                "value": "17"
+              },
+              {
+                "name": "mh_ft_send_file_size_without_cache",
+                "value": "2068945819"
+              },
+              {
+                "name": "dimension_chromeos_release_track",
+                "value": "testimage-channel"
+              },
+              {
+                "name": "dimension_lab_supports_container",
+                "value": "true"
+              },
+              {
+                "name": "dimension_supports_gmscore",
+                "value": "false"
+              },
+              {
+                "name": "gen_file_in_cns_0",
+                "value": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/test_output.txt"
+              },
+              {
+                "name": "dimension_control_id",
+                "value": "172.16.243.178"
+              },
+              {
+                "name": "gen_file_in_cns_3",
+                "value": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/command_history.txt"
+              },
+              {
+                "name": "gen_file_in_cns_4",
+                "value": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/config.yaml"
+              },
+              {
+                "name": "allocated_devices_lst_signin_support",
+                "value": "not_supported"
+              },
+              {
+                "name": "gen_file_in_cns_1",
+                "value": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/test.xml"
+              },
+              {
+                "name": "gen_file_in_cns_2",
+                "value": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/mobly_command_output.log"
+              },
+              {
+                "name": "gen_file_in_cns_7",
+                "value": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/mobly_logs/test_summary.yaml"
+              },
+              {
+                "name": "mh_ft_send_time_without_cache",
+                "value": "84"
+              },
+              {
+                "name": "gen_file_in_cns_8",
+                "value": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/mobly_logs/test_log.DEBUG"
+              },
+              {
+                "name": "mh_ft_get_time_total",
+                "value": "1"
+              },
+              {
+                "name": "gen_file_in_cns_5",
+                "value": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/test_components/component_74b4fd1e-a8a4-42b5-bf72-14a092cb11be.pb"
+              },
+              {
+                "name": "run_as",
+                "value": "jonfan"
+              },
+              {
+                "name": "dimension_chromeos_arc_version",
+                "value": "11051073"
+              },
+              {
+                "name": "gen_file_in_cns_6",
+                "value": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/test_components/component_8f1a1371-d649-4ec7-b0c1-3c6628d43cb4.pb"
+              },
+              {
+                "name": "dimension_host_os",
+                "value": "Linux"
+              },
+              {
+                "name": "master_central_suspended_duration_sec",
+                "value": "0"
+              },
+              {
+                "name": "gen_file_in_cns_9",
+                "value": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/t_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/mobly_logs/test_log.INFO"
+              },
+              {
+                "name": "mh_ft_sent_file_num_without_cache",
+                "value": "2"
+              },
+              {
+                "name": "dimension_model",
+                "value": "drobit"
+              },
+              {
+                "name": "dimension_chromeos_release_build_number",
+                "value": "15633"
+              },
+              {
+                "name": "dimension_chromeos_release_board",
+                "value": "volteer"
+              },
+              {
+                "name": "_is_run_in_dm",
+                "value": "false"
+              },
+              {
+                "name": "dimension_uuid_volatile",
+                "value": "false"
+              },
+              {
+                "name": "dimension_host_total_memory",
+                "value": "196603728 KB"
+              },
+              {
+                "name": "container_mode",
+                "value": "false"
+              },
+              {
+                "name": "file_transfer_client",
+                "value": "CloudFileTransferClient"
+              },
+              {
+                "name": "sandbox_mode",
+                "value": "false"
+              },
+              {
+                "name": "_hats_survey_id_for_mh",
+                "value": "4nHy36U93YzWa1wBUpMn6v"
+              },
+              {
+                "name": "mh_ft_get_file_num",
+                "value": "1"
+              },
+              {
+                "name": "remote_execution_time_ms",
+                "value": "140024"
+              },
+              {
+                "name": "start_delay_ms",
+                "value": "4"
+              },
+              {
+                "name": "mh_ft_send_file_size_total",
+                "value": "2068945819"
+              },
+              {
+                "name": "remote_test_engine_setup_time_ms",
+                "value": "0"
+              },
+              {
+                "name": "environment",
+                "value": "PROD"
+              },
+              {
+                "name": "master_scheduler_latency_type",
+                "value": "DEVICE_WAIT_FOR_TEST"
+              },
+              {
+                "name": "lab_test_gen_file_dir",
+                "value": "/var/www/mh_lab_gen_files/ce103571-bf18-4aab-b835-e4d123e660dd/test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c"
+              },
+              {
+                "name": "dimension_label",
+                "value": "jonfan_codelab"
+              },
+              {
+                "name": "allocated_quota_pool",
+                "value": "mobileharness-satellite-lab-pool"
+              },
+              {
+                "name": "allocation_received_epoch_ms",
+                "value": "1702067634979"
+              }
+            ],
+            "result": "PASS",
+            "startTimeMs": "1702067634982",
+            "status": "DONE",
+            "testDetail": [
+              {
+                "deviceSerial": [
+                  "jonfan-desktop.mtv.corp.google.com:172.16.243.178"
+                ],
+                "durationTimeMs": "975",
+                "endTimeMs": "1702067775007",
+                "id": "65dcdbfe-cb9f-4af1-9d8d-84dcf3daa626",
+                "jobId": "ce103571-bf18-4aab-b835-e4d123e660dd",
+                "lab": {
+                  "hostName": "jonfan-desktop.mtv.corp.google.com",
+                  "ip": "100.113.92.85",
+                  "port": [
+                    {
+                      "num": 9999,
+                      "type": "LAB_SERVER_RPC"
+                    },
+                    {
+                      "num": 9998,
+                      "type": "LAB_SERVER_SOCKET"
+                    }
+                  ]
+                },
+                "name": "MoblyTest",
+                "property": [
+                  {
+                    "name": "failures",
+                    "value": "0"
+                  },
+                  {
+                    "name": "tests",
+                    "value": "1"
+                  },
+                  {
+                    "name": "test_output1",
+                    "value": "test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/mobly_logs/test_log.DEBUG"
+                  },
+                  {
+                    "name": "test_output0",
+                    "value": "test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/mobly_logs/test_summary.yaml"
+                  },
+                  {
+                    "name": "time",
+                    "value": "0"
+                  },
+                  {
+                    "name": "errors",
+                    "value": "0"
+                  },
+                  {
+                    "name": "test_output2",
+                    "value": "test_3dc2835b-5697-4a7b-ad51-c35fb6dd512c/mobly_logs/test_log.INFO"
+                  }
+                ],
+                "result": "PASS",
+                "status": "NEW",
+                "testDetail": [
+                  {
+                    "deviceSerial": [
+                      "jonfan-desktop.mtv.corp.google.com:172.16.243.178"
+                    ],
+                    "durationTimeMs": "976",
+                    "endTimeMs": "1702067775007",
+                    "id": "a8c58617-59d9-4b2c-86d8-7a1c64c6565c",
+                    "jobId": "ce103571-bf18-4aab-b835-e4d123e660dd",
+                    "lab": {
+                      "hostName": "jonfan-desktop.mtv.corp.google.com",
+                      "ip": "100.113.92.85",
+                      "port": [
+                        {
+                          "num": 9999,
+                          "type": "LAB_SERVER_RPC"
+                        },
+                        {
+                          "num": 9998,
+                          "type": "LAB_SERVER_SOCKET"
+                        }
+                      ]
+                    },
+                    "name": "HelloWorldTest",
+                    "property": [
+                      {
+                        "name": "failures",
+                        "value": "0"
+                      },
+                      {
+                        "name": "tests",
+                        "value": "1"
+                      },
+                      {
+                        "name": "mobly_test_class",
+                        "value": "HelloWorldTest"
+                      },
+                      {
+                        "name": "time",
+                        "value": "0"
+                      },
+                      {
+                        "name": "errors",
+                        "value": "0"
+                      },
+                      {
+                        "name": "test_type",
+                        "value": "mobly_class"
+                      }
+                    ],
+                    "result": "PASS",
+                    "status": "NEW",
+                    "testDetail": [
+                      {
+                        "deviceSerial": [
+                          "jonfan-desktop.mtv.corp.google.com:172.16.243.178"
+                        ],
+                        "durationTimeMs": "976",
+                        "endTimeMs": "1702067775008",
+                        "id": "843839bb-4241-43a3-bde1-fc49e11c56e5",
+                        "jobId": "ce103571-bf18-4aab-b835-e4d123e660dd",
+                        "lab": {
+                          "hostName": "jonfan-desktop.mtv.corp.google.com",
+                          "ip": "100.113.92.85",
+                          "port": [
+                            {
+                              "num": 9999,
+                              "type": "LAB_SERVER_RPC"
+                            },
+                            {
+                              "num": 9998,
+                              "type": "LAB_SERVER_SOCKET"
+                            }
+                          ]
+                        },
+                        "name": "HelloWorldTest#test_ssh_execute_command",
+                        "property": [
+                          {
+                            "name": "mobly_signature",
+                            "value": "test_ssh_execute_command-1702067739912"
+                          },
+                          {
+                            "name": "test_fission",
+                            "value": "http://fission.corp.google.com/spongechip?invocationId={{invocationId}}&target={{targetId}}&configurationId={{configurationId}}&testCase=MoblyTest%23HelloWorldTest%23test_ssh_execute_command-1702067739912&action={{actionId}}"
+                          },
+                          {
+                            "name": "test_type",
+                            "value": "mobly_test"
+                          },
+                          {
+                            "name": "result",
+                            "value": "completed"
+                          },
+                          {
+                            "name": "mobly_end_time",
+                            "value": "1702067740079"
+                          },
+                          {
+                            "name": "classname",
+                            "value": "HelloWorldTest"
+                          },
+                          {
+                            "name": "using_python_sponge_converter",
+                            "value": "true"
+                          },
+                          {
+                            "name": "mobly_test_class",
+                            "value": "HelloWorldTest"
+                          },
+                          {
+                            "name": "mobly_begin_time",
+                            "value": "1702067739912"
+                          },
+                          {
+                            "name": "time",
+                            "value": "167"
+                          },
+                          {
+                            "name": "status",
+                            "value": "run"
+                          },
+                          {
+                            "name": "timestamp",
+                            "value": "2023-12-08T20:35:39Z"
+                          }
+                        ],
+                        "result": "PASS",
+                        "status": "NEW"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "sessionSummary": {
+      "client": "chromeos-mobly-rtd",
+      "createTimeMs": "1702067481396",
+      "customConfig": {},
+      "endTimeMs": "1702067789263",
+      "executorSpec": "/bns/wn/borg/wn/bns/mobileharness-gateway/mobileharness-gateway.server/0",
+      "executorVersion": "4.192.0",
+      "genFileWithLength": [
+        {
+          "length": "181618",
+          "path": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/session.log"
+        }
+      ],
+      "id": "ad598777-03a3-446e-9dc7-85c3932df26d",
+      "jobResults": [
+        "PASS"
+      ],
+      "originalSessionConfig": {
+        "blazeTarget": [
+          {
+            "targetName": "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed",
+            "testFlags": "--notest_loasd --test_arg=--dimension_label=jonfan_codelab --test_arg=--run_as=jonfan"
+          }
+        ],
+        "client": "chromeos-mobly-rtd",
+        "user": "mobileharness-gateway"
+      },
+      "property": [
+        {
+          "name": "sponge",
+          "value": "http://sponge2/ad598777-03a3-446e-9dc7-85c3932df26d"
+        },
+        {
+          "name": "session_log",
+          "value": "/cns/eh-d/home/mobileharness/gateway/20231208/s_ad598777-03a3-446e-9dc7-85c3932df26d/session.log"
+        }
+      ],
+      "result": "PASS",
+      "sessionConfig": {
+        "blazeTarget": [
+          {
+            "targetName": "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed",
+            "testFlags": "--notest_loasd --test_arg='--dimension_label=jonfan_codelab' --test_arg='--run_as=jonfan' --test_arg='--param_build_cl=589211658'"
+          }
+        ],
+        "client": "chromeos-mobly-rtd",
+        "jobConfig": [
+          {
+            "dimension": [
+              {
+                "name": "label",
+                "value": "jonfan_codelab"
+              }
+            ],
+            "file": [
+              {
+                "name": "test_lib_par",
+                "value": "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed_mobly__host_hack.par"
+              }
+            ],
+            "jobConfigFromTarget": {
+              "genDirPath": "/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d",
+              "mhJobConfig": {
+                "blazeTarget": "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed",
+                "device": {
+                  "subDeviceSpec": [
+                    {
+                      "decorators": {},
+                      "dimensions": {
+                        "content": {
+                          "label": "mobly_codelab"
+                        }
+                      },
+                      "type": "CrosDevice"
+                    }
+                  ]
+                },
+                "driver": {
+                  "name": "MoblyTest"
+                },
+                "files": {
+                  "content": [
+                    {
+                      "path": [
+                        "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed_mobly__host_hack.par"
+                      ],
+                      "tag": "test_lib_par"
+                    }
+                  ]
+                },
+                "name": "hello_world_test_adhoc_testbed",
+                "needCheckBuiltFiles": true,
+                "paramStats": {
+                  "content": {
+                    "legacy_device": "testing/mobly/platforms/cros/examples",
+                    "marg_test_attempts": "",
+                    "visibility": ""
+                  }
+                },
+                "params": {
+                  "content": {
+                    "test_case_selector": "all"
+                  }
+                },
+                "specFiles": {},
+                "tags": {
+                  "content": [
+                    "external",
+                    "guitar",
+                    "local",
+                    "manual",
+                    "notap",
+                    "mobile-test"
+                  ]
+                },
+                "targetLocations": {
+                  "content": {
+                    "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed_job_configs_json": "testing/mobly/platforms/cros/examples/hello_world_test_adhoc_testbed_job_configs_json",
+                    "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed_mobly__host_hack.par": "testing/mobly/platforms/cros/examples/hello_world_test_adhoc_testbed_mobly__host_hack.par"
+                  }
+                },
+                "tests": {
+                  "content": [
+                    "hello_world_test_adhoc_testbed"
+                  ]
+                }
+              },
+              "nonstandardFlag": [
+                "--dimension_label=jonfan_codelab",
+                "--param_build_cl=589211658"
+              ]
+            },
+            "masterSpec": "PROD",
+            "name": "hello_world_test_adhoc_testbed",
+            "param": [
+              {
+                "name": "test_case_selector",
+                "value": "all"
+              },
+              {
+                "name": "build_cl",
+                "value": "589211658"
+              }
+            ],
+            "property": [
+              {
+                "name": "cl",
+                "value": "589211658"
+              },
+              {
+                "name": "sponge_link_of_build_//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed",
+                "value": "http://sponge2/1741039a-7fe6-4bbb-9b2f-0cc82ac7abf4"
+              },
+              {
+                "name": "sponge_labels",
+                "value": ""
+              }
+            ],
+            "repeat": {},
+            "retry": {
+              "testAttempts": 1
+            },
+            "test": [
+              "hello_world_test_adhoc_testbed"
+            ],
+            "timeout": {},
+            "type": {
+              "device": "CrosDevice",
+              "driver": "MoblyTest"
+            },
+            "user": "jonfan"
+          }
+        ],
+        "maxConcurrentRunningJobsPerSession": 20,
+        "user": "mobileharness-gateway"
+      },
+      "startTimeMs": "1702067483673",
+      "status": "DONE",
+      "user": "mobileharness-gateway"
+    }
+  }
+}

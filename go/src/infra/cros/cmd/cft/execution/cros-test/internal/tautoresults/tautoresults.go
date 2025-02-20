@@ -1,0 +1,229 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Package tautoresults provides test results for Tauto.
+package tautoresults
+
+import (
+	"encoding/json"
+	"fmt"
+	"log"
+	"os"
+	"path/filepath"
+	"strconv"
+	"strings"
+	"time"
+
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
+
+	_go "go.chromium.org/chromiumos/config/go"
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/test/execution/errors"
+)
+
+// Report TODO: probably need to eventually move tauto over from results parsing.
+type Report struct {
+	tests           []string              // Tests to be run.
+	testCaseResults []*api.TestCaseResult // Reported test results.
+	testResultsDir  string                // Parent directory for all test results.N
+	reportedTests   map[string]struct{}   // Tests that have received results.
+	testNamesToIds  map[string]string     // Mapping between test names and test ids.
+	RawResults      results
+}
+
+// results TODO: Temp structs to support testing autotest result parsing/reporting.
+type results struct {
+	Tests []test `json:"tests"`
+}
+
+// Test mirrors of the test_results.json example.
+type test struct {
+	Verdict     string `json:"verdict"`
+	Testname    string `json:"testname"`
+	Errmsg      string `json:"errmsg"`
+	Resultspath string `json:"resultspath"`
+	StartTime   string `json:"starttime"`
+	EndTime     string `json:"endtime"`
+}
+
+// loadJSON unmarshals the json into the Report.RawResults struct.
+func (r *Report) loadJSON(resultsDir string) error {
+	plan, _ := os.ReadFile(filepath.Join(resultsDir, "results.json"))
+	err := json.Unmarshal(plan, &r.RawResults)
+	if err != nil {
+		return errors.NewStatusError(errors.UnmarshalError,
+			fmt.Errorf("failed to unmarshal results: %w From: %v", err, resultsDir))
+	}
+	return nil
+}
+
+func getTime(givenTime string) time.Time {
+	start, err := strconv.ParseInt(givenTime, 10, 64)
+	if err != nil {
+		// If we can't convert return nil I guess.
+		return time.Unix(0, 0)
+	}
+	unixTime := time.Unix(start, 0)
+	return unixTime
+}
+
+// GetDuration gets the duration from the start/end time of a test.
+func GetDuration(test test) time.Duration {
+	start, err := strconv.Atoi(test.StartTime)
+	if err != nil {
+		return time.Duration(0)
+	}
+	end, err := strconv.Atoi(test.EndTime)
+	if err != nil {
+		return time.Duration(0)
+	}
+	diff := end - start
+	durationDiff := time.Second * time.Duration(diff)
+	return durationDiff
+}
+
+// GenerateReport gets a report request from tast and passes on to progress sink.
+func GenerateReport(test test, testID string, resultsDir string, testCaseMetadata *api.TestCaseMetadata) *api.TestCaseResult {
+	// For now, assume results will be in $results_dir/"test_results.json"
+	// Mark the result as found.
+	// r.reportedTests[test] = struct{}{}
+
+	// If we cannot validate the status name, we will default to Crash.
+	testResult := api.TestCaseResult{
+		TestCaseId: &api.TestCase_Id{Value: testID},
+		ResultDirPath: &_go.StoragePath{
+			HostType: _go.StoragePath_LOCAL,
+			Path:     filepath.Join(test.Resultspath),
+		},
+		Verdict: &api.TestCaseResult_Crash_{Crash: &api.TestCaseResult_Crash{}},
+		TestHarness: &api.TestHarness{
+			TestHarnessType: &api.TestHarness_Tauto_{
+				Tauto: &api.TestHarness_Tauto{},
+			},
+		},
+		Reason:           "Result status indicator unknown, defaulting to CRASH",
+		TestCaseMetadata: testCaseMetadata,
+	}
+
+	// If there is an errmsg, append it for clarity.
+	if test.Errmsg != "" {
+		testResult.Reason = fmt.Sprintf("%s: %s", testResult.Reason, test.Errmsg)
+
+	}
+
+	// Overwrite the tauto harness in the test was a tast subtest.
+	if strings.HasPrefix(testID, "tast.") {
+		testResult.TestHarness = &api.TestHarness{TestHarnessType: &api.TestHarness_Tast_{Tast: &api.TestHarness_Tast{}}}
+	}
+	startTime := getTime(test.StartTime)
+	if startTime != time.Unix(0, 0) {
+		startProtoTime := timestamppb.New(startTime)
+		durationProtoTime := durationpb.New(GetDuration(test))
+		testResult.StartTime = startProtoTime
+		testResult.Duration = durationProtoTime
+	}
+
+	// Change result to fail/err as needed.
+	if test.Verdict == "Fail" {
+		testResult.Verdict = &api.TestCaseResult_Fail_{Fail: &api.TestCaseResult_Fail{}}
+		testResult.Reason = test.Errmsg
+		if test.Errmsg == "" {
+			testResult.Reason = "Test failed"
+		}
+	} else if test.Verdict == "Error" {
+		// ToDo: b/199940635 -- Update RawResult not to use "Error"
+		testResult.Verdict = &api.TestCaseResult_Crash_{Crash: &api.TestCaseResult_Crash{}}
+		testResult.Reason = test.Errmsg
+		if test.Errmsg == "" {
+			testResult.Reason = "Test did not finish"
+		}
+	} else if test.Verdict == "Abort" {
+		testResult.Verdict = &api.TestCaseResult_Abort_{Abort: &api.TestCaseResult_Abort{}}
+		testResult.Reason = test.Errmsg
+		if test.Errmsg == "" {
+			testResult.Reason = "Test Aborted."
+		}
+	} else if test.Verdict == "Pass" {
+		testResult.Verdict = &api.TestCaseResult_Pass_{Pass: &api.TestCaseResult_Pass{}}
+		testResult.Reason = ""
+	} else if test.Verdict == "Warn" {
+		testResult.Verdict = &api.TestCaseResult_Pass_{Pass: &api.TestCaseResult_Pass{}}
+		testResult.Reason = test.Errmsg
+		if test.Errmsg == "" {
+			testResult.Reason = "Test had warnings."
+		}
+	} else if test.Verdict == "Not Run" {
+		testResult.Verdict = &api.TestCaseResult_Skip_{Skip: &api.TestCaseResult_Skip{}}
+		testResult.Reason = test.Errmsg
+		if test.Errmsg == "" {
+			testResult.Reason = "Test ended with Not Run state."
+		}
+	}
+
+	// r.testCaseResults = append(r.testCaseResults, &testResult)
+	return &testResult
+}
+
+// MissingTestsReports returns tests not found in the resultsdir, marked as err.
+func (r *Report) MissingTestsReports(reason string, testNamesToMetadata map[string]*api.TestCaseMetadata) []*api.TestCaseResult {
+	var missingTestResults []*api.TestCaseResult
+	for _, t := range r.tests {
+		if _, ok := r.reportedTests[t]; ok {
+			continue
+		}
+		testID, ok := r.testNamesToIds[t]
+		if !ok {
+			continue
+		}
+		testMetadata, ok := testNamesToMetadata[t]
+		if !ok {
+			testMetadata = nil
+			log.Printf("failed to find test case metadata for missing test: %v.", t)
+		}
+		missingTestResults = append(missingTestResults, &api.TestCaseResult{
+			TestCaseId: &api.TestCase_Id{Value: testID},
+			Verdict:    &api.TestCaseResult_NotRun_{NotRun: &api.TestCaseResult_NotRun{}},
+			Reason:     reason,
+			TestHarness: &api.TestHarness{
+				TestHarnessType: &api.TestHarness_Tauto_{
+					Tauto: &api.TestHarness_Tauto{},
+				},
+			},
+			TestCaseMetadata: testMetadata,
+		})
+	}
+	return missingTestResults
+}
+
+// TestsReports returns results to all tests.
+func TestsReports(resultsDir string, tests []string, testNamesToIds map[string]string, testNamesToMetadata map[string]*api.TestCaseMetadata, missingReason string) ([]*api.TestCaseResult, error) {
+	report := Report{
+		reportedTests:  make(map[string]struct{}),
+		tests:          tests,
+		testResultsDir: resultsDir,
+		testNamesToIds: testNamesToIds,
+	}
+
+	err := report.loadJSON(resultsDir)
+	if err != nil {
+		return append(report.testCaseResults, report.MissingTestsReports(missingReason, testNamesToMetadata)...), err
+	}
+	for _, test := range report.RawResults.Tests {
+		var testID string
+		testID, ok := testNamesToIds[test.Testname]
+		if !ok {
+			testID = test.Testname
+			log.Printf("failed to find test id for test: %v, will default to this name.", test.Testname)
+		}
+		testMetadata, ok := testNamesToMetadata[test.Testname]
+		if !ok {
+			testMetadata = nil
+			log.Printf("failed to find test case metadata for test: %v.", test.Testname)
+		}
+		report.reportedTests[test.Testname] = struct{}{}
+		report.testCaseResults = append(report.testCaseResults, GenerateReport(test, testID, resultsDir, testMetadata))
+	}
+	return append(report.testCaseResults, report.MissingTestsReports(missingReason, testNamesToMetadata)...), nil
+}

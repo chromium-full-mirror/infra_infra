@@ -96,6 +96,8 @@ go/src/infra/cmd/skylab/internal/cmd/tasks 1 1
 go/src/infra/cmd/skylab/internal/legacyinventory 1 1
 go/src/infra/cros/cmd/branch_util 2 1
 go/src/infra/cros/cmd/branch_util/test 4 1
+go/src/infra/cros/cmd/cft/execution/cros-test/internal/driver/mobly_test_data 3 3
+go/src/infra/cros/cmd/cft/execution/cros-test/internal/driver 1 1
 go/src/infra/cros/cmd/fleet-tlw 1 1
 go/src/infra/cros/cmd/k8s-management/app-roller 1 1
 go/src/infra/cros/cmd/k8s-management/metrics 1 1

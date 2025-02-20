@@ -1,0 +1,85 @@
+{
+  "tr": [
+    {
+      "duration": 6.418,
+      "expected": true,
+      "result_name": "x86_64 DesktopChromeTestCases##2025-01-06T23:57:37.155198962Z",
+      "status": "PASS",
+      "tags": [
+        {
+          "key": "test_name",
+          "value": "com.android.chrome.desktop.integration.ChromeWindowTests#testSingleWindow"
+        },
+        {
+          "key": "raw_status",
+          "value": "PASSED"
+        }
+      ],
+      "testId": "com.android.chrome.desktop.integration.ChromeWindowTests#testSingleWindow",
+      "testMetadata": {
+        "name": "com.android.chrome.desktop.integration.ChromeWindowTests#testSingleWindow"
+      }
+    },
+    {
+      "duration": 24.418,
+      "expected": true,
+      "result_name": "x86_64 DesktopChromeTestCases##2025-01-06T23:57:37.155198962Z",
+      "status": "PASS",
+      "tags": [
+        {
+          "key": "test_name",
+          "value": "com.android.chrome.desktop.integration.ChromeWindowTests#testSingleWindow"
+        },
+        {
+          "key": "raw_status",
+          "value": "PASSED"
+        }
+      ],
+      "testId": "com.android.chrome.desktop.integration.ChromeWindowTests#testSingleWindow",
+      "testMetadata": {
+        "name": "com.android.chrome.desktop.integration.ChromeWindowTests#testSingleWindow"
+      }
+    },
+    {
+      "duration": 16.77,
+      "expected": false,
+      "failureReason": "null: java.lang.AssertionError: windows expected: 5, found: 4",
+      "result_name": "x86_64 DesktopChromeTestCases##2025-01-06T23:57:37.155405472Z",
+      "status": "FAIL",
+      "tags": [
+        {
+          "key": "test_name",
+          "value": "com.android.chrome.desktop.integration.ChromeWindowTests#testMultiWindowsLimitFail"
+        },
+        {
+          "key": "raw_status",
+          "value": "FAILURE"
+        }
+      ],
+      "testId": "com.android.chrome.desktop.integration.ChromeWindowTests#testMultiWindowsLimitFail",
+      "testMetadata": {
+        "name": "com.android.chrome.desktop.integration.ChromeWindowTests#testMultiWindowsLimitFail"
+      }
+    },
+    {
+      "duration": 19.88,
+      "expected": true,
+      "result_name": "arm64-v8a DesktopChromeTestCases##2025-01-06T23:57:37.155437272Z",
+      "status": "PASS",
+      "tags": [
+        {
+          "key": "test_name",
+          "value": "com.android.chrome.desktop.integration.ChromeWindowTests2#testMultiWindowsLimit2"
+        },
+        {
+          "key": "raw_status",
+          "value": "PASSED"
+        }
+      ],
+      "testId": "com.android.chrome.desktop.integration.ChromeWindowTests2#testMultiWindowsLimit2",
+      "testMetadata": {
+        "name": "com.android.chrome.desktop.integration.ChromeWindowTests2#testMultiWindowsLimit2"
+      }
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Package common provide command utilities and variables for all components in
+// cros-test to use.
+package common
+
+// Constants for different components to use.
+const (
+	TestExecServerRoot  = "/tmp/test/cros-test"
+	TestRequestJSONFile = "request.json"
+	TestResultJSONFile  = "result.json"
+	TestResultDir       = "/tmp/test/results"
+	TestMetadataDir     = "/tmp/test/metadata"
+	AutotestDir         = "/usr/local/autotest/"
+)

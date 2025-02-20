@@ -1,0 +1,326 @@
+{
+  "sessionDetail": {
+    "jobDetail": [
+      {
+        "jobSummary": {
+          "createTimeMs": "1702067611334",
+          "endTimeMs": "1702067612863",
+          "id": "ce103571-bf18-4aab-b835-e4d123e660dd",
+          "log": "Talking to master: gslb::20:PROD2023-12-08 12:33:32:843 PST I Loaded internal plugin: com.google.userplatform.accountprovider.mobileharness.TestAccountProviderClientPlugin\n2023-12-08 12:33:32:846 PST I Loaded internal plugin: com.google.devtools.mobileharness.infra.client.api.plugin.oxygen.OxygenJobValidator\n2023-12-08 12:33:32:846 PST I Loaded internal plugin: com.google.devtools.mobileharness.infra.client.api.plugin.utp.UtpCommandHistoryRenderer\n2023-12-08 12:33:32:847 PST I Loaded internal plugin: com.google.devtools.mobileharness.infra.client.api.plugin.utp.UserUtpConfigValidator\n2023-12-08 12:33:32:847 PST I Loaded API plugin: com.google.devtools.mobileharness.service.gateway.controller.SessionRunnerImpl\n2023-12-08 12:33:32:847 PST I Started job ce103571-bf18-4aab-b835-e4d123e660dd\n2023-12-08 12:33:32:848 PST I TIMELINE:PRE_RUN_JOB:START:ce103571-bf18-4aab-b835-e4d123e660dd Job started\n2023-12-08 12:33:32:850 PST I TIMELINE:FILE_RESOLVE:START:ce103571-bf18-4aab-b835-e4d123e660dd File resolve started\n2023-12-08 12:33:32:853 PST I Successfully resolved test_lib_par:hello_world_test_adhoc_testbed_mobly__host_hack.par with [/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d/j_ce103571-bf18-4aab-b835-e4d123e660dd/run/google3/testing/mobly/platforms/cros/examples/hello_world_test_adhoc_testbed_mobly__host_hack.par]\n2023-12-08 12:33:32:853 PST I TIMELINE:FILE_RESOLVE:END:ce103571-bf18-4aab-b835-e4d123e660dd File resolve finished\n2023-12-08 12:33:32:853 PST I Loading client jar plugins for job ce103571-bf18-4aab-b835-e4d123e660dd\n2023-12-08 12:33:32:854 PST I Fetching hybrid UTP mode config: /google_src/files/head/depot/google3/devtools/mobileharness/infra/controller/test/local/utp/config/config.textproto\n",
+          "name": "hello_world_test_adhoc_testbed",
+          "property": [
+            {
+              "name": "trace_id",
+              "value": "0c2bc15443bb5682"
+            },
+            {
+              "name": "sponge_labels",
+              "value": ""
+            },
+            {
+              "name": "stack_driver_trace_link",
+              "value": "https://pantheon.corp.google.com/traces/details/00000000000000000c2bc15443bb5682?project=mobile-harness-moss&organizationId=433637338589#TIMELINE"
+            },
+            {
+              "name": "pre_run_job_time_ms",
+              "value": "5"
+            },
+            {
+              "name": "session_id",
+              "value": "ad598777-03a3-446e-9dc7-85c3932df26d"
+            },
+            {
+              "name": "cl",
+              "value": "589211658"
+            },
+            {
+              "name": "exec_mode",
+              "value": "remote"
+            },
+            {
+              "name": "master_spec",
+              "value": "gslb::20:PROD"
+            },
+            {
+              "name": "_contains_utp_test_traces",
+              "value": "true"
+            },
+            {
+              "name": "client_hostname",
+              "value": "c383855bb772b545-356affab99a.borgtask.google.com"
+            },
+            {
+              "name": "sponge_link_of_build_//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed",
+              "value": "http://sponge2/1741039a-7fe6-4bbb-9b2f-0cc82ac7abf4"
+            },
+            {
+              "name": "sponge_link_of_test",
+              "value": "http://sponge2/ad598777-03a3-446e-9dc7-85c3932df26d"
+            },
+            {
+              "name": "blaze_target",
+              "value": "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed"
+            },
+            {
+              "name": "client_version",
+              "value": "4.30.4"
+            }
+          ],
+          "result": "UNKNOWN",
+          "retry": {
+            "testAttempts": 1
+          },
+          "startTimeMs": "1702067612848",
+          "status": "RUNNING",
+          "totalTestCount": 1,
+          "type": {
+            "device": "CrosDevice",
+            "driver": "MoblyTest"
+          }
+        },
+        "testDetail": [
+          {
+            "deviceSerial": [
+              "jonfan-desktop.mtv.corp.google.com:172.16.243.178"
+            ],
+            "durationTimeMs": "1972",
+            "endTimeMs": "1702067636955",
+            "id": "3dc2835b-5697-4a7b-ad51-c35fb6dd512c",
+            "jobId": "ce103571-bf18-4aab-b835-e4d123e660dd",
+            "lab": {
+              "hostName": "jonfan-desktop.mtv.corp.google.com",
+              "ip": "100.113.92.85",
+              "port": [
+                {
+                  "num": 9999,
+                  "type": "LAB_SERVER_RPC"
+                },
+                {
+                  "num": 9998,
+                  "type": "LAB_SERVER_SOCKET"
+                }
+              ]
+            },
+            "log": "2023-12-08 12:33:54:986 PST I TIMELINE:PRE_RUN_TEST:START:client Start pre-running test hello_world_test_adhoc_testbed on device(s) [jonfan-desktop.mtv.corp.google.com:172.16.243.178@100.113.92.85/jonfan-desktop.mtv.corp.google.com]\n2023-12-08 12:33:54:986 PST I ========= Client: InitializeTest (3dc2835b-5697-4a7b-ad51-c35fb6dd512c) =========\n2023-12-08 12:33:56:091 PST I ========= Client: CheckDevice (3dc2835b-5697-4a7b-ad51-c35fb6dd512c) =========\n2023-12-08 12:33:56:954 PST I Post TestStartingEvent to test 3dc2835b-5697-4a7b-ad51-c35fb6dd512c@ce103571-bf18-4aab-b835-e4d123e660dd\n",
+            "name": "hello_world_test_adhoc_testbed",
+            "property": [
+              {
+                "name": "sandbox_mode",
+                "value": "false"
+              },
+              {
+                "name": "environment",
+                "value": "PROD"
+              },
+              {
+                "name": "master_scheduler_latency_type",
+                "value": "DEVICE_WAIT_FOR_TEST"
+              },
+              {
+                "name": "master_scheduler_latency_sec",
+                "value": "17"
+              },
+              {
+                "name": "allocated_quota_pool",
+                "value": "mobileharness-satellite-lab-pool"
+              },
+              {
+                "name": "allocation_received_epoch_ms",
+                "value": "1702067634979"
+              },
+              {
+                "name": "allocation_time_ms",
+                "value": "22041"
+              },
+              {
+                "name": "allocation_requested_epoch_ms",
+                "value": "1702067612940"
+              },
+              {
+                "name": "allocation_time_sec",
+                "value": "22"
+              },
+              {
+                "name": "container_mode",
+                "value": "false"
+              },
+              {
+                "name": "master_central_suspended_duration_sec",
+                "value": "0"
+              }
+            ],
+            "result": "UNKNOWN",
+            "startTimeMs": "1702067634982",
+            "status": "RUNNING"
+          }
+        ]
+      }
+    ],
+    "sessionSummary": {
+      "client": "chromeos-mobly-rtd",
+      "createTimeMs": "1702067481396",
+      "customConfig": {},
+      "executorSpec": "/bns/wn/borg/wn/bns/mobileharness-gateway/mobileharness-gateway.server/0",
+      "executorVersion": "4.192.0",
+      "id": "ad598777-03a3-446e-9dc7-85c3932df26d",
+      "originalSessionConfig": {
+        "blazeTarget": [
+          {
+            "targetName": "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed",
+            "testFlags": "--notest_loasd --test_arg=--dimension_label=jonfan_codelab --test_arg=--run_as=jonfan"
+          }
+        ],
+        "client": "chromeos-mobly-rtd",
+        "user": "mobileharness-gateway"
+      },
+      "property": [
+        {
+          "name": "sponge",
+          "value": "http://sponge2/ad598777-03a3-446e-9dc7-85c3932df26d"
+        }
+      ],
+      "result": "UNKNOWN",
+      "sessionConfig": {
+        "blazeTarget": [
+          {
+            "targetName": "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed",
+            "testFlags": "--notest_loasd --test_arg='--dimension_label=jonfan_codelab' --test_arg='--run_as=jonfan' --test_arg='--param_build_cl=589211658'"
+          }
+        ],
+        "client": "chromeos-mobly-rtd",
+        "jobConfig": [
+          {
+            "dimension": [
+              {
+                "name": "label",
+                "value": "jonfan_codelab"
+              }
+            ],
+            "file": [
+              {
+                "name": "test_lib_par",
+                "value": "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed_mobly__host_hack.par"
+              }
+            ],
+            "jobConfigFromTarget": {
+              "genDirPath": "/tmp/mobileharness-gateway/tmp/mh_gateway/session_tmp/s_ad598777-03a3-446e-9dc7-85c3932df26d",
+              "mhJobConfig": {
+                "blazeTarget": "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed",
+                "device": {
+                  "subDeviceSpec": [
+                    {
+                      "decorators": {},
+                      "dimensions": {
+                        "content": {
+                          "label": "mobly_codelab"
+                        }
+                      },
+                      "type": "CrosDevice"
+                    }
+                  ]
+                },
+                "driver": {
+                  "name": "MoblyTest"
+                },
+                "files": {
+                  "content": [
+                    {
+                      "path": [
+                        "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed_mobly__host_hack.par"
+                      ],
+                      "tag": "test_lib_par"
+                    }
+                  ]
+                },
+                "name": "hello_world_test_adhoc_testbed",
+                "needCheckBuiltFiles": true,
+                "paramStats": {
+                  "content": {
+                    "legacy_device": "testing/mobly/platforms/cros/examples",
+                    "marg_test_attempts": "",
+                    "visibility": ""
+                  }
+                },
+                "params": {
+                  "content": {
+                    "test_case_selector": "all"
+                  }
+                },
+                "specFiles": {},
+                "tags": {
+                  "content": [
+                    "external",
+                    "guitar",
+                    "local",
+                    "manual",
+                    "notap",
+                    "mobile-test"
+                  ]
+                },
+                "targetLocations": {
+                  "content": {
+                    "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed_job_configs_json": "testing/mobly/platforms/cros/examples/hello_world_test_adhoc_testbed_job_configs_json",
+                    "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed_mobly__host_hack.par": "testing/mobly/platforms/cros/examples/hello_world_test_adhoc_testbed_mobly__host_hack.par"
+                  }
+                },
+                "tests": {
+                  "content": [
+                    "hello_world_test_adhoc_testbed"
+                  ]
+                }
+              },
+              "nonstandardFlag": [
+                "--dimension_label=jonfan_codelab",
+                "--param_build_cl=589211658"
+              ]
+            },
+            "masterSpec": "PROD",
+            "name": "hello_world_test_adhoc_testbed",
+            "param": [
+              {
+                "name": "test_case_selector",
+                "value": "all"
+              },
+              {
+                "name": "build_cl",
+                "value": "589211658"
+              }
+            ],
+            "property": [
+              {
+                "name": "cl",
+                "value": "589211658"
+              },
+              {
+                "name": "sponge_link_of_build_//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed",
+                "value": "http://sponge2/1741039a-7fe6-4bbb-9b2f-0cc82ac7abf4"
+              },
+              {
+                "name": "sponge_labels",
+                "value": ""
+              }
+            ],
+            "repeat": {},
+            "retry": {
+              "testAttempts": 1
+            },
+            "test": [
+              "hello_world_test_adhoc_testbed"
+            ],
+            "timeout": {},
+            "type": {
+              "device": "CrosDevice",
+              "driver": "MoblyTest"
+            },
+            "user": "jonfan"
+          }
+        ],
+        "maxConcurrentRunningJobsPerSession": 20,
+        "user": "mobileharness-gateway"
+      },
+      "startTimeMs": "1702067483673",
+      "status": "RUNNING",
+      "user": "mobileharness-gateway"
+    }
+  }
+}

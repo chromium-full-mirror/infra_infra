@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no' ?><?xml-stylesheet type="text/xsl" href="compatibility_result.xsl"?>
+<Result start="1731283945384" end="1731284093481" start_display="Mon Nov 11 00:12:25 UTC 2024" end_display="Mon Nov 11 00:14:53 UTC 2024" command_line_args="" suite_name="CTS" suite_variant="CTS" suite_version="15_r1" suite_plan="cts" suite_build_number="12563681" report_version="5.0" devices="0.0.0.0:5555" host_name="abergman-p620-linux-sp-2.syd.corp.google.com" os_name="Linux" os_version="6.9.10-1rodete5-amd64" os_arch="amd64" java_vendor="N/A" java_version="21.0.1">
+  <Build invocation-id="1" command_line_args="cts --include-filter CtsJvmtiRunTest1976HostTestCases --include-filter CtsJdwpTestCases.jar"  />
+  <Summary pass="0" failed="0" modules_done="0" modules_total="1" />
+  <Module name="CtsWrapWrapNoDebugTestCases" abi="x86_64" runtime="0" done="false" pass="0" total_tests="0">
+    <Reason message="There were 4 failures;" error_name="APK_INSTALLATION_FAILED" error_code="520001" />
+  </Module>
+</Result>

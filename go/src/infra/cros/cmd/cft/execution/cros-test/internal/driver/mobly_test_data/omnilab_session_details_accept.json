@@ -1,0 +1,42 @@
+{
+  "sessionDetail": {
+    "sessionSummary": {
+      "client": "chromeos-mobly-rtd",
+      "createTimeMs": "1702067481396",
+      "customConfig": {},
+      "executorSpec": "/bns/wn/borg/wn/bns/mobileharness-gateway/mobileharness-gateway.server/0",
+      "executorVersion": "4.192.0",
+      "id": "ad598777-03a3-446e-9dc7-85c3932df26d",
+      "originalSessionConfig": {
+        "blazeTarget": [
+          {
+            "targetName": "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed",
+            "testFlags": "--notest_loasd --test_arg=--dimension_label=chromeos-engprod-demo --test_arg=--run_as=chromeos-engprod"
+          }
+        ],
+        "client": "chromeos-mobly-rtd",
+        "user": "mobileharness-gateway"
+      },
+      "property": [
+        {
+          "name": "sponge",
+          "value": "http://sponge2/ad598777-03a3-446e-9dc7-85c3932df26d"
+        }
+      ],
+      "result": "UNKNOWN",
+      "sessionConfig": {
+        "blazeTarget": [
+          {
+            "targetName": "//testing/mobly/platforms/cros/examples:hello_world_test_adhoc_testbed",
+            "testFlags": "--notest_loasd --test_arg=--dimension_label=chromeos-engprod-demo --test_arg=--run_as=chromeos-engprod"
+          }
+        ],
+        "client": "chromeos-mobly-rtd",
+        "user": "mobileharness-gateway"
+      },
+      "startTimeMs": "1702067483673",
+      "status": "ASSIGNED",
+      "user": "mobileharness-gateway"
+    }
+  }
+}

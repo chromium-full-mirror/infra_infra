@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no' ?><?xml-stylesheet type="text/xsl" href="compatibility_result.xsl"?>
+<Result start="1724450705582" end="1724450783748" start_display="Fri Aug 23 22:05:05 UTC 2024" end_display="Fri Aug 23 22:06:23 UTC 2024" command_line_args="cts --include-filter CtsJvmtiRunTest1976HostTestCases --include-filter CtsJvmtiRunTest1977HostTestCases --include-filter CtsJvmtiRunTest1978HostTestCases --include-filter CtsJvmtiRunTest1979HostTestCases --include-filter CtsJvmtiRunTest1981HostTestCases --logcat-on-failure -s satlab-0wgatfqi22088039-host3:5555" suite_name="CTS" suite_variant="CTS" suite_version="14_r4" suite_plan="cts" suite_build_number="11801623" report_version="5.0" devices="satlab-0wgatfqi22088039-host3:5555" host_name="0ed35a7e333f" os_name="Linux" os_version="5.15.103-17409-g07029265d738" os_arch="amd64" java_vendor="N/A" java_version="17.0.4.1">
+  <Build invocation-id="1" command_line_args="cts --include-filter CtsJvmtiRunTest1976HostTestCases --include-filter CtsJdwpTestCases.jar"  />
+  <Summary pass="3" failed="2" modules_done="1" modules_total="1" />
+  <Module name="CtsJvmtiRunTest1976HostTestCases" abi="x86_64" runtime="6254" done="true" pass="3" total_tests="0">
+  </Module>
+</Result>

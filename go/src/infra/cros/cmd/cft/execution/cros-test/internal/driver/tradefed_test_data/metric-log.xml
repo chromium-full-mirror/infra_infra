@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<testsuite name="cts-test-module-x86" tests="6" failures="0" time="178403" timestamp="2024-09-21T22:30:57">
+  <runmetric name="run-isolated" value="FULLY_ISOLATED" />
+  <runmetric name="MODULE_TEST_COUNT" value="1" />
+  <runmetric name="TEARDOWN_TIME" value="1620" />
+  <runmetric name="MODULE_RETRY_SUCCESS" value="0" />
+  <runmetric name="PREP_TIME" value="4450" />
+  <runmetric name="TEST_TIME" value="94688" />
+  <runmetric name="MODULE_RETRY_FAILED" value="0" />
+  <runmetric name="MODULE_RETRY_TIME" value="0" />
+  <testcase testname="rarPerfTest" classname="com.android.desktop.rarperf.dts.RarPerfTestHostWrapper" time="94522">
+    <testmetric name="extractionSpeedMbS" value="100.41961688264334" />
+    <testmetric name="archivalSpeedMbS" value="15.09687980374252" />
+  </testcase>
+  <runmetric name="MODULE_TEST_COUNT" value="9" />
+  <runmetric name="TEARDOWN_TIME" value="1204" />
+  <runmetric name="MODULE_RETRY_SUCCESS" value="0" />
+  <runmetric name="PREP_TIME" value="1115" />
+  <runmetric name="TEST_TIME" value="21386" />
+  <runmetric name="MODULE_RETRY_FAILED" value="0" />
+  <runmetric name="MODULE_RETRY_TIME" value="0" />
+  <testcase testname="testCollectDeviceInfo" classname="com.android.desktop.sample.dts.SampleHostDeviceInfo" time="1788" />
+  <testcase testname="testRunDeviceTestsFailsInstant" classname="com.android.desktop.sample.dts.SampleHostJUnit4DeviceTest" time="2627" />
+  <testcase testname="testRunDeviceTestsAssumeFailsInstant" classname="com.android.desktop.sample.dts.SampleHostJUnit4DeviceTest" time="2684">
+    <ASSUMPTION_FAILURE>org.junit.AssumptionViolatedException: org.junit.AssumptionViolatedException:
+</ASSUMPTION_FAILURE>
+  </testcase>
+  <testcase testname="testRunDeviceTestsAssumeFailsFull" classname="com.android.desktop.sample.dts.SampleHostJUnit4DeviceTest" time="2858">
+    <ASSUMPTION_FAILURE>org.junit.AssumptionViolatedException: org.junit.AssumptionViolatedException:
+</ASSUMPTION_FAILURE>
+  </testcase>
+  <testcase testname="testMetrics" classname="com.android.desktop.sample.dts.SampleHostJUnit4Test" time="144">
+    <testmetric name="somekey" value="some_values" />
+  </testcase>
+</testsuite>

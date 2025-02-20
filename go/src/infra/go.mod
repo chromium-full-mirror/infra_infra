@@ -104,6 +104,7 @@ require (
 	go.chromium.org/chromiumos/lro v0.0.0-00010101000000-000000000000
 	go.chromium.org/chromiumos/test v0.0.0-00010101000000-000000000000
 	go.chromium.org/luci v0.0.0-20240531181147-0c7c729b2fcf
+	go.chromium.org/tast v0.0.0-00010101000000-000000000000
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/httptrace/otelhttptrace v0.58.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.59.0
@@ -294,7 +295,6 @@ require (
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	github.com/zeebo/bencode v1.0.0 // indirect
 	github.com/zeebo/xxh3 v1.0.2 // indirect
-	go.chromium.org/tast v0.0.0-00010101000000-000000000000 // indirect
 	go.einride.tech/aip v0.68.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/contrib/detectors/gcp v1.34.0 // indirect
