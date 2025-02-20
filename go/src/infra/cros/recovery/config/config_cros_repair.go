@@ -102,6 +102,7 @@ func crosRepairActions() map[string]*Action {
 				"Audit storage (SMART only)",
 				"Audit wifi",
 				"Audit bluetooth",
+				"Audit camera",
 				"Audit cellular",
 				"Audit cellular modem on non-cellular pools",
 				"Stop if DUT needs replacement",
