@@ -16,6 +16,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/localonly"
 
 	"infra/cros/cmd/cft/execution/cros-test/internal/device"
 )
@@ -441,6 +442,7 @@ func TestGenArgListWithDevboard(t *testing.T) {
 
 // TestgenHostInfoYAML tests memes.
 func TestGenHostInfoYAML(t *testing.T) {
+	localonly.Because(t, "b/397939428")
 	primary := &device.DutInfo{
 		Addr:  "foo",
 		Phase: "aphase",
