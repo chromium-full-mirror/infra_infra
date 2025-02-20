@@ -11,7 +11,7 @@ import (
 	"infra/fleetconsole/internal/utils"
 )
 
-func buildListDevicesQuery(offset int, pageSize int, filter string, orderby string) (*queryutils.Query, error) {
+func buildListDevicesQuery(offset, pageSize int, filter, orderby string) (*queryutils.Query, error) {
 	q, err := queryutils.NewQueryBuilder(DevicesTable).WithSelectAllClause().WithFromClause().WithOffsetPagination(offset, pageSize).WithWhereClause(filter)
 	if err != nil {
 		return nil, utils.InvalidFilterError(err)
@@ -32,4 +32,20 @@ func buildListDevicesQuery(offset int, pageSize int, filter string, orderby stri
 
 func buildGetColumnQuery(distinct bool, column *queryutils.Column) *queryutils.Query {
 	return queryutils.NewQueryBuilder(DevicesTable).WithSelectClause(distinct, column).WithFromClause().Build()
+}
+
+func buildCountDevicesQuery(filter string) (*queryutils.Query, error) {
+	q, err := queryutils.NewQueryBuilder(DevicesTable).WithCustomSelectClause(`SELECT
+		COUNT(*) AS total,
+		COUNT(CASE WHEN state = 'DEVICE_STATE_LEASED' THEN 1 ELSE 0 END) AS leased,
+		COUNT(CASE WHEN state = 'DEVICE_STATE_AVAILABLE' THEN 1 ELSE 0 END) AS available,
+		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'ready' THEN 1 ELSE 0 END) AS ready,
+		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'needs_manual_repair' THEN 1 ELSE 0 END) AS needs_manual_repair,
+		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'needs_repair' THEN 1 ELSE 0 END) AS needs_repair,
+		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'repair_failed' THEN 1 ELSE 0 END) AS repair_failed`).WithFromClause().WithWhereClause(filter)
+	if err != nil {
+		return nil, utils.InvalidFilterError(err)
+	}
+
+	return q.Build(), nil
 }

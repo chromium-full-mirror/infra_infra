@@ -7,24 +7,20 @@ package consoleserver
 import (
 	"context"
 
+	"go.chromium.org/luci/grpc/grpcutil"
+
 	"infra/fleetconsole/api/fleetconsolerpc"
+	"infra/fleetconsole/internal/database/devicesdb"
 )
 
-func (frontend *FleetConsoleFrontend) CountDevices(ctx context.Context, req *fleetconsolerpc.CountDevicesRequest) (*fleetconsolerpc.CountDevicesResponse, error) {
-	// For now I am mocking the data, in a future cl we will grab this data
-	// with a call to UFS
-	return &fleetconsolerpc.CountDevicesResponse{
-		Total: 440,
-		TaskState: &fleetconsolerpc.TaskStateCounts{
-			Busy: 401,
-			Idle: 40,
-		},
-		DeviceState: &fleetconsolerpc.DeviceStateCounts{
-			Ready:            40,
-			NeedManualRepair: 40,
-			NeedRepair:       40,
-			RepairFailed:     40,
-		},
-	}, nil
+func (frontend *FleetConsoleFrontend) CountDevices(ctx context.Context, req *fleetconsolerpc.CountDevicesRequest) (_ *fleetconsolerpc.CountDevicesResponse, err error) {
+	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
+
+	result, err := devicesdb.CountDevices(ctx, frontend.dbConnection, req.GetFilter())
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
 
 }

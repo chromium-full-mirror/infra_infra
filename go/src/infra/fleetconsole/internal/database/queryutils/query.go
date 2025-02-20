@@ -65,6 +65,12 @@ func (q *QueryBuilder) WithSelectClause(distinct bool, columns ...*Column) *Quer
 	return q
 }
 
+// WithCustomSelectClause adds a custom select clause to the query.
+func (q *QueryBuilder) WithCustomSelectClause(selectClause string) *QueryBuilder {
+	q.selectClause = selectClause
+	return q
+}
+
 // WithFromClause adds a from clause to the query.
 func (q *QueryBuilder) WithFromClause() *QueryBuilder {
 	q.fromClause = fmt.Sprintf("FROM \"%s\"", q.table.name)
