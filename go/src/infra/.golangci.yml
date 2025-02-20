@@ -10,6 +10,10 @@ linters:
     - stylecheck
 
 linters-settings:
+  # TODO(gregorynisbet): Use default config here.
+  errorlint:
+    errorf: false
+
   # https://golangci-lint.run/usage/linters/#gci
   gci:
     # Section configuration to compare against.
