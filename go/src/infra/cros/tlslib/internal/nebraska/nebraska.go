@@ -73,7 +73,7 @@ type Server struct {
 func NewServer(ctx context.Context, env Environment, gsPathPrefix string, payloads []*tls.FakeOmaha_Payload, updatePayloadsAddress string) (*Server, error) {
 	n := &Server{env: env, updatePayloadsAddress: updatePayloadsAddress}
 	if err := n.start(ctx, gsPathPrefix, payloads); err != nil {
-		return nil, fmt.Errorf("new Nebraska: %s", err)
+		return nil, fmt.Errorf("new Nebraska: %w", err)
 	}
 	return n, nil
 }
@@ -88,18 +88,18 @@ type Config struct {
 func (n *Server) UpdateConfig(c Config) error {
 	j, err := json.Marshal(c)
 	if err != nil {
-		return fmt.Errorf("update Nebraska config: %s", err)
+		return fmt.Errorf("update Nebraska config: %w", err)
 	}
 	url := fmt.Sprintf("http://127.0.0.1:%d/update_config", n.port)
 	rsp, err := http.Post(url, "application/json", bytes.NewReader(j))
 	if err != nil {
-		return fmt.Errorf("update Nebraska config: %s", err)
+		return fmt.Errorf("update Nebraska config: %w", err)
 	}
 	defer rsp.Body.Close()
 	if rsp.StatusCode != http.StatusOK {
 		msg, err := ioutil.ReadAll(rsp.Body)
 		if err != nil {
-			return fmt.Errorf("update Nebraska config: %s", err)
+			return fmt.Errorf("update Nebraska config: %w", err)
 		}
 		return fmt.Errorf("update Nebraska config: %s", msg)
 	}
@@ -130,25 +130,25 @@ func (n *Server) start(ctx context.Context, gsPathPrefix string, payloads []*tls
 	}
 	rootTmpDir, err := createRootTempDir()
 	if err != nil {
-		return fmt.Errorf("start Nebraska: %s", err)
+		return fmt.Errorf("start Nebraska: %w", err)
 	}
 	n.metadataDir, err = n.env.DownloadMetadata(ctx, gsPathPrefix, payloads, rootTmpDir)
 	if err != nil {
-		return fmt.Errorf("start Nebraska: %s", err)
+		return fmt.Errorf("start Nebraska: %w", err)
 	}
 	n.runtimeRoot, err = ioutil.TempDir(rootTmpDir, "nebraska_runtime_")
 	if err != nil {
-		return fmt.Errorf("start Nebraska: create runtime root: %s", err)
+		return fmt.Errorf("start Nebraska: create runtime root: %w", err)
 	}
 
 	n.proc, err = n.env.StartNebraska(n.cmdline())
 	if err != nil {
-		return fmt.Errorf("start Nebraska: %s", err)
+		return fmt.Errorf("start Nebraska: %w", err)
 	}
 	log.Printf("%s started", n.proc)
 	if err := n.checkPort(ctx); err != nil {
 		n.Close()
-		return fmt.Errorf("start Nebraska: %s", err)
+		return fmt.Errorf("start Nebraska: %w", err)
 	}
 	log.Printf("Nebraska is listening on %d", n.port)
 	return nil
@@ -163,7 +163,7 @@ func (n *Server) start(ctx context.Context, gsPathPrefix string, payloads []*tls
 func createRootTempDir() (string, error) {
 	dir := path.Join(os.TempDir(), "fake_omaha")
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
-		return "", fmt.Errorf("create root temp dir: %s", err)
+		return "", fmt.Errorf("create root temp dir: %w", err)
 	}
 	return dir, nil
 }
@@ -213,11 +213,11 @@ func (n *Server) checkPort(ctx context.Context) error {
 	defer cancel()
 	sPort, err := readFileOrTimeout(ctx, filepath)
 	if err != nil {
-		return fmt.Errorf("check port: %s", err)
+		return fmt.Errorf("check port: %w", err)
 	}
 	p, err := strconv.Atoi(sPort)
 	if err != nil {
-		return fmt.Errorf("check port: %s", err)
+		return fmt.Errorf("check port: %w", err)
 	}
 	n.port = p
 	return nil
@@ -239,7 +239,7 @@ func readFileOrTimeout(ctx context.Context, filepath string) (string, error) {
 				return string(cnt), nil
 			}
 		case <-ctx.Done():
-			return "", fmt.Errorf("read file %q: %s", filepath, ctx.Err())
+			return "", fmt.Errorf("read file %q: %w", filepath, ctx.Err())
 		}
 	}
 }
@@ -253,7 +253,7 @@ func (e env) DownloadMetadata(ctx context.Context, gsPathPrefix string, payloads
 	log.Printf("New Nebraska: metadata to download: %#v", paths)
 	metadataDir, err := ioutil.TempDir(dir, "AU_metadata_")
 	if err != nil {
-		return "", fmt.Errorf("download metadata: %s", err)
+		return "", fmt.Errorf("download metadata: %w", err)
 	}
 
 	// Download Autoupdate metadata from Google Storage.
@@ -261,7 +261,7 @@ func (e env) DownloadMetadata(ctx context.Context, gsPathPrefix string, payloads
 	cmd := []string{"gsutil", "cp", strings.Join(paths, " "), metadataDir}
 	if err := e.runCmd(ctx, cmd[0], cmd[1:]...).Run(); err != nil {
 		os.RemoveAll(metadataDir)
-		return "", fmt.Errorf("download metadata: cmd: %s: %s", strings.Join(cmd, " "), err)
+		return "", fmt.Errorf("download metadata: cmd: %s: %w", strings.Join(cmd, " "), err)
 	}
 	log.Printf("Start Nebraska: metadata downloaded to %q", metadataDir)
 	return metadataDir, nil
@@ -274,7 +274,7 @@ func (e env) StartNebraska(cmdline []string) (Process, error) {
 	cmd.Stderr = &buf
 	cmd.Stdout = &buf
 	if err := cmd.Start(); err != nil {
-		return nil, fmt.Errorf("start Nebraska: %s", err)
+		return nil, fmt.Errorf("start Nebraska: %w", err)
 	}
 	p := &proc{cmd: cmd, terminated: make(chan struct{})}
 	go func() {
@@ -293,14 +293,14 @@ type proc struct {
 func (p proc) Stop() error {
 	pid := p.cmd.Process.Pid
 	if err := unix.Kill(pid, syscall.SIGTERM); err != nil {
-		return fmt.Errorf("stop %s: %s", p, err)
+		return fmt.Errorf("stop %s: %w", p, err)
 	}
 	select {
 	case <-p.terminated:
 		log.Printf("%s was exited", p)
 	case <-time.After(2 * time.Second):
 		if err := p.cmd.Process.Kill(); err != nil {
-			return fmt.Errorf("kill %s: %s", p, err)
+			return fmt.Errorf("kill %s: %w", p, err)
 		}
 		log.Printf("%s was killed", p)
 	}

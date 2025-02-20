@@ -27,13 +27,13 @@ const (
 func gceMetadataEnvVars() []string {
 	// Get GCE Metadata Server env vars
 	envVars := []string{}
-	if host, present := os.LookupEnv(gceMetadataHost); present == true {
+	if host, present := os.LookupEnv(gceMetadataHost); present {
 		envVars = append(envVars, fmt.Sprintf("%s=%s", gceMetadataHost, host))
 	}
-	if ip, present := os.LookupEnv(gceMetadataIP); present == true {
+	if ip, present := os.LookupEnv(gceMetadataIP); present {
 		envVars = append(envVars, fmt.Sprintf("%s=%s", gceMetadataIP, ip))
 	}
-	if root, present := os.LookupEnv(gceMetadataRoot); present == true {
+	if root, present := os.LookupEnv(gceMetadataRoot); present {
 		envVars = append(envVars, fmt.Sprintf("%s=%s", gceMetadataRoot, root))
 	}
 	return envVars

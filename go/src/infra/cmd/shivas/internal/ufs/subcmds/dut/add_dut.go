@@ -286,8 +286,7 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 
 	// Created client to update UFS when required.
-	var ic ufsAPI.FleetClient
-	ic = ufsAPI.NewFleetPRPCClient(&prpc.Client{
+	var ic ufsAPI.FleetClient = ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
 		Options: site.DefaultPRPCOptions(c.envFlags),
@@ -609,7 +608,7 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 		if recMap["servo_port"] != "" {
 			port, err := strconv.ParseInt(recMap["servo_port"], 10, 32)
 			if err != nil {
-				return nil, fmt.Errorf("failed to parse servo port %s. %s", recMap["servo_port"], err)
+				return nil, fmt.Errorf("failed to parse servo port %s. %w", recMap["servo_port"], err)
 			}
 			servoPort = int32(port)
 		}

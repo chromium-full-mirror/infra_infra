@@ -180,7 +180,7 @@ func getRemainingMins(build *buildbucketpb.Build) int64 {
 		return int64(leaseLengthMins)
 	case buildbucketpb.Status_STARTED:
 		// Lease has started; subtract elapsed time from lease length.
-		minsElapsed := time.Now().Sub(build.GetStartTime().AsTime()).Minutes()
+		minsElapsed := time.Since(build.GetStartTime().AsTime()).Minutes()
 		return int64(leaseLengthMins - minsElapsed)
 	default:
 		// Lease is finished; no time remains.

@@ -129,7 +129,7 @@ func (c *updateHost) innerRun(a subcommands.Application, args []string, env subc
 			return err
 		}
 		if machinelse.GetMachines() == nil || len(machinelse.GetMachines()) <= 0 {
-			return errors.New(fmt.Sprintf("machines field is empty in json. It is a required parameter for json input."))
+			return errors.New("machines field is empty in json. It is a required parameter for json input.")
 		}
 	} else {
 		c.parseArgs(machinelse)

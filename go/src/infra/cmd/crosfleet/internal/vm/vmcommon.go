@@ -54,7 +54,7 @@ func printVMList(vms []*api.VM, w io.Writer) {
 		remainTime := ""
 		if vm.GetExpirationTime() != nil {
 			expiry := vm.GetExpirationTime().AsTime()
-			remainTime = expiry.Sub(time.Now()).Round(time.Second).String()
+			remainTime = time.Until(expiry).Round(time.Second).String()
 		}
 		fmt.Fprintf(tw, "%s\t%s\t%s\t%d\t%s\t\n", vm.GetId(), vm.GetGceRegion(), vm.GetAddress().GetHost(), vm.GetAddress().GetPort(), remainTime)
 	}

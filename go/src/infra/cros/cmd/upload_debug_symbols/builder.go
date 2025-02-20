@@ -1133,7 +1133,7 @@ func (b *uploadDebugSymbols) validate() error {
 	}
 
 	if errStr != "" {
-		return fmt.Errorf(errStr)
+		return errors.New(errStr)
 	}
 	return nil
 }

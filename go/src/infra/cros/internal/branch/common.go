@@ -118,7 +118,7 @@ func getProjectCheckoutFromURL(projectURL string, opts *CheckoutOptions) (string
 	} else {
 		remoteBranch, err := git.ResolveRemoteSymbolicRef(checkoutDir, "origin", "HEAD")
 		if err != nil {
-			return "", fmt.Errorf("unable to resolve %s HEAD: %s", projectURL, err)
+			return "", fmt.Errorf("unable to resolve %s HEAD: %w", projectURL, err)
 		}
 		parts := strings.Split(remoteBranch, "/")
 		checkoutBranch = parts[len(parts)-1]

@@ -59,7 +59,7 @@ func (cmd *GenericPublishCmd) instantiateWithHwTestStateKeeper(
 	if err := commoncommands.InstantiatePopFromQueue(sk.PublishQueue, func(element any) {
 		cmd.PublishRequest = element.(*api.PublishTask)
 	}); err != nil {
-		return fmt.Errorf("cmd %s missing dependency: PublishRequest, %s", cmd.GetCommandType(), err)
+		return fmt.Errorf("cmd %s missing dependency: PublishRequest, %w", cmd.GetCommandType(), err)
 	}
 
 	return nil

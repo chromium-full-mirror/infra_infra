@@ -155,7 +155,7 @@ func (t *tryRunBase) promptYes() (bool, error) {
 	b := bufio.NewReader(os.Stdin)
 	i, err := b.ReadString('\n')
 	if err != nil {
-		return false, fmt.Errorf("error getting prompt response: %s", err)
+		return false, fmt.Errorf("error getting prompt response: %w", err)
 	}
 	switch strings.TrimSpace(strings.ToLower(i)) {
 	case "y", "yes":

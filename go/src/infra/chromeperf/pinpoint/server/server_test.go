@@ -74,7 +74,7 @@ type requestRecorder struct {
 // returned function must be called in order to clean up.
 func (rr *requestRecorder) startRecord() (done func() []*url.URL) {
 	if rr.recording {
-		panic(fmt.Sprintf("Invalid state: startRecorder called before prior recording was finished"))
+		panic("Invalid state: startRecorder called before prior recording was finished")
 	}
 	rr.recording = true
 	rr.urls = nil

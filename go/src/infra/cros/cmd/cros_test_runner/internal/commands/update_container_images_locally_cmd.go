@@ -96,7 +96,7 @@ func (cmd *UpdateContainerImagesLocallyCmd) Execute(ctx context.Context) error {
 
 		imageBase := fmt.Sprintf("%s/%s/%s:%s", container.Repository.Hostname, container.Repository.Project, container.Name, container.Tags[0])
 		if err := UpdateContainer(ctx, cmd.Chroot, imageBase, containerKey); err != nil {
-			err = fmt.Errorf("Container '%s' failed to update locally, %s", containerKey, err)
+			err = fmt.Errorf("Container '%s' failed to update locally, %w", containerKey, err)
 			return err
 		}
 		container.Tags[0] = container.Tags[0] + "_localchange"
@@ -174,13 +174,13 @@ func updateBinary(ctx context.Context, chroot, service string) error {
 	workon := exec.Command("cros_sdk", "cros-workon", "--host", "start", service)
 	workon.Dir = chroot
 	if err := workon.Run(); err != nil {
-		return fmt.Errorf("Workon failed, %s", err)
+		return fmt.Errorf("Workon failed, %w", err)
 	}
 
 	emerge := exec.Command("cros_sdk", "sudo", "emerge", service)
 	emerge.Dir = chroot
 	if err := emerge.Run(); err != nil {
-		return fmt.Errorf("Emerge failed. %s", err)
+		return fmt.Errorf("Emerge failed. %w", err)
 	}
 	return nil
 }
@@ -199,7 +199,7 @@ func createCleanedImage(ctx context.Context, image, tempName string, targets []*
 	logging.Infof(ctx, "Running: docker %s", args)
 	create := exec.Command("docker", args...)
 	if err := create.Run(); err != nil {
-		return fmt.Errorf("docker run failed for %s, %s", image, err)
+		return fmt.Errorf("docker run failed for %s, %w", image, err)
 	}
 
 	return nil
@@ -218,7 +218,7 @@ func updateImage(ctx context.Context, image string, targets []*containerTarget, 
 				return err
 			}
 			if err := copyIntoDocker(ctx, target, timeName); err != nil {
-				return fmt.Errorf("Failed to copy twice, %s", err)
+				return fmt.Errorf("Failed to copy twice, %w", err)
 			}
 		}
 	}
@@ -227,7 +227,7 @@ func updateImage(ctx context.Context, image string, targets []*containerTarget, 
 	args := []string{"commit", timeName, image + "_localchange"}
 	commit := exec.Command("docker", args...)
 	if err := commit.Run(); err != nil {
-		return fmt.Errorf("Failed to commit, %s", err)
+		return fmt.Errorf("Failed to commit, %w", err)
 	}
 
 	return nil
@@ -241,7 +241,7 @@ func copyIntoDocker(ctx context.Context, target *containerTarget, tempName strin
 		logging.Infof(ctx, "docker cp failed, retrying, %s, %s", err, string(out))
 		cp = exec.Command("docker", args...)
 		if out2, err := cp.Output(); err != nil {
-			return fmt.Errorf("docker cp 2nd try failed, %s, %s", err, string(out2))
+			return fmt.Errorf("docker cp 2nd try failed, %w, %s", err, string(out2))
 		}
 	}
 
@@ -254,13 +254,13 @@ func respinImage(ctx context.Context, target *containerTarget, tempName string) 
 	commit := exec.Command("docker", args...)
 	sha, err := commit.Output()
 	if err != nil {
-		return "", fmt.Errorf("Respin failed, docker commit failed, %s", err)
+		return "", fmt.Errorf("Respin failed, docker commit failed, %w", err)
 	}
 	timeName := fmt.Sprint(time.Now().UnixNano())
 	newArgs := []string{"run", "-d", "--name", timeName, string(sha), "sudo", "rm", "-r", target.DelDst}
 	respin := exec.Command("docker", newArgs...)
 	if err := respin.Run(); err != nil {
-		return "", fmt.Errorf("Failed to respin, %s", err)
+		return "", fmt.Errorf("Failed to respin, %w", err)
 	}
 
 	return timeName, nil

@@ -244,7 +244,7 @@ func (c *addCachingService) parseMCSV() ([]*ufspb.CachingService, error) {
 			case "zones":
 				zs, err := parseZones(strings.Fields(value))
 				if err != nil {
-					return nil, fmt.Errorf("Error in line %d.\n%s. %s", i, err, cmdhelp.ZoneFilterHelpText)
+					return nil, fmt.Errorf("Error in line %d.\n%w. %s", i, err, cmdhelp.ZoneFilterHelpText)
 				}
 				cs.Zones = zs
 			case "primary":

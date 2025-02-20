@@ -223,7 +223,7 @@ func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) 
 	bRange, err := parseRange(r.Header.Get("Range"))
 	if err != nil {
 		errStr := fmt.Sprintf("%s parseRange error: %s", id, err)
-		log.Printf(errStr)
+		log.Print(errStr)
 		http.Error(w, errStr, http.StatusBadRequest)
 		md.status = http.StatusBadRequest
 		return
@@ -240,7 +240,7 @@ func (c *archiveServer) downloadHandler(w http.ResponseWriter, r *http.Request) 
 	default:
 		errStr := fmt.Sprintf("%s unsupported method", id)
 		http.Error(w, errStr, http.StatusBadRequest)
-		log.Printf(errStr)
+		log.Print(errStr)
 		md.status = http.StatusBadRequest
 	}
 }
@@ -254,7 +254,7 @@ func handleDownloadHEAD(ctx context.Context, w http.ResponseWriter, r *http.Requ
 	if err != nil {
 		err := fmt.Errorf("%s parseURL error: %w", reqID, err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return nil, metricData{status: http.StatusBadRequest}, err
 	}
 
@@ -265,7 +265,7 @@ func handleDownloadHEAD(ctx context.Context, w http.ResponseWriter, r *http.Requ
 		status := deriveHTTPStatusFromError(err)
 		err := fmt.Errorf("%s Obj %q: %w", reqID, objectName.path, err)
 		http.Error(w, err.Error(), status)
-		log.Printf(err.Error())
+		log.Print(err.Error())
 		return nil, metricData{status: status}, err
 	}
 
@@ -426,7 +426,7 @@ func (c *archiveServer) extractHandler(w http.ResponseWriter, r *http.Request) {
 		errStr := fmt.Sprintf("%s unsupported method", id)
 		http.Error(w, errStr, http.StatusBadRequest)
 		md.status = http.StatusBadRequest
-		log.Printf(errStr)
+		log.Print(errStr)
 	}
 }
 
@@ -440,7 +440,7 @@ func handleExtract(ctx context.Context, c *http.Client, w http.ResponseWriter, r
 	if err != nil {
 		errStr := fmt.Sprintf("%s parseURL error: %s", reqID, err)
 		http.Error(w, errStr, http.StatusBadRequest)
-		log.Printf(errStr)
+		log.Print(errStr)
 		return metricData{status: http.StatusBadRequest}
 	}
 
@@ -448,7 +448,7 @@ func handleExtract(ctx context.Context, c *http.Client, w http.ResponseWriter, r
 	if queryFile == "" {
 		errStr := fmt.Sprintf("%s extract file query not specified from %s", reqID, objectName.path)
 		http.Error(w, errStr, http.StatusBadRequest)
-		log.Printf(errStr)
+		log.Print(errStr)
 		return metricData{status: http.StatusBadRequest}
 	}
 
@@ -468,7 +468,7 @@ func handleExtract(ctx context.Context, c *http.Client, w http.ResponseWriter, r
 
 	tarReader, status, err := extractTarAndWriteHeader(ctx, res.Body, queryFile, w)
 	if err != nil {
-		log.Printf(fmt.Sprintf("%s extractTarAndWriteHeader failed: %s", reqID, err))
+		log.Print(fmt.Sprintf("%s extractTarAndWriteHeader failed: %s", reqID, err))
 		return metricData{status: status}
 	}
 
@@ -491,7 +491,7 @@ func downloadURL(ctx context.Context, c *http.Client, w http.ResponseWriter, req
 	if err != nil {
 		errStr := fmt.Sprintf("%s download request %q: %s", reqID, reqURL, err)
 		http.Error(w, errStr, http.StatusInternalServerError)
-		log.Printf(errStr)
+		log.Print(errStr)
 		return nil
 	}
 
@@ -504,7 +504,7 @@ func downloadURL(ctx context.Context, c *http.Client, w http.ResponseWriter, req
 	if err != nil {
 		errStr := fmt.Sprintf("%s download request %q: %s", reqID, reqURL, err)
 		http.Error(w, errStr, http.StatusInternalServerError)
-		log.Printf(errStr)
+		log.Print(errStr)
 		return nil
 	}
 
@@ -516,7 +516,7 @@ func downloadURL(ctx context.Context, c *http.Client, w http.ResponseWriter, req
 			errStr = fmt.Sprintf("%s failed to read upstream %v response of %q: %s", reqID, res.StatusCode, reqURL, err)
 		}
 		http.Error(w, errStr, res.StatusCode)
-		log.Printf(errStr)
+		log.Print(errStr)
 	}
 	return res
 }
@@ -578,7 +578,7 @@ func (c *archiveServer) decompressHandler(w http.ResponseWriter, r *http.Request
 		errStr := fmt.Sprintf("%s unsupported method", id)
 		http.Error(w, errStr, http.StatusBadRequest)
 		md.status = http.StatusBadRequest
-		log.Printf(errStr)
+		log.Print(errStr)
 	}
 }
 
@@ -616,7 +616,7 @@ func handleDecompressGET(ctx context.Context, c *http.Client, w http.ResponseWri
 	if err != nil {
 		errStr := fmt.Sprintf("%s parseURL error: %s", reqID, err)
 		http.Error(w, errStr, http.StatusBadRequest)
-		log.Printf(errStr)
+		log.Print(errStr)
 		return metricData{status: http.StatusBadRequest}
 	}
 
@@ -625,7 +625,7 @@ func handleDecompressGET(ctx context.Context, c *http.Client, w http.ResponseWri
 	if !ok {
 		errStr := fmt.Sprintf("%s decompress does not support %s extension", reqID, fileExt)
 		http.Error(w, errStr, http.StatusBadRequest)
-		log.Printf(errStr)
+		log.Print(errStr)
 		return metricData{status: http.StatusBadRequest}
 	}
 
@@ -643,7 +643,7 @@ func handleDecompressGET(ctx context.Context, c *http.Client, w http.ResponseWri
 	if err != nil {
 		errStr := fmt.Sprintf("%s newReader error: %s", reqID, err)
 		http.Error(w, errStr, http.StatusInternalServerError)
-		log.Printf(errStr)
+		log.Print(errStr)
 		return metricData{status: http.StatusInternalServerError}
 	}
 	defer dReader.Close()
@@ -652,7 +652,7 @@ func handleDecompressGET(ctx context.Context, c *http.Client, w http.ResponseWri
 	if err != nil {
 		errStr := fmt.Sprintf("%s ReadAll failed after %v bytes: %s", reqID, len(rMem), err)
 		http.Error(w, errStr, http.StatusInternalServerError)
-		log.Printf(errStr)
+		log.Print(errStr)
 		return metricData{status: http.StatusInternalServerError}
 	}
 

@@ -313,14 +313,7 @@ func packageRuntimeAndXcode(ctx context.Context, args PackageRuntimeAndXcodeArgs
 		}
 	}
 
-	packageXcodeArgs := PackageXcodeArgs{
-		xcodeAppPath:       args.xcodeAppPath,
-		cipdPackagePrefix:  args.cipdPackagePrefix,
-		serviceAccountJSON: args.serviceAccountJSON,
-		outputDir:          args.outputDir,
-		skipRefTag:         args.skipRefTag,
-		legacyIOSPackage:   args.legacyIOSPackage,
-	}
+	packageXcodeArgs := PackageXcodeArgs(args)
 	if err := packageXcode(ctx, packageXcodeArgs); err != nil {
 		return errors.Annotate(err, "Error when packaging rest of Xcode.").Err()
 	}

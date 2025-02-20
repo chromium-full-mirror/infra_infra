@@ -68,8 +68,7 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 	log.Printf("Preparing for provisioning of %q, with: %s", dutName, device.GetProvisionState())
 
 	// Use the host network.
-	var networkName string
-	networkName = "host"
+	var networkName string = "host"
 
 	parentTempDir := ""
 	if _, err := os.Stat(tempDirPath); err == nil {
@@ -94,7 +93,7 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 	if err != nil {
 		res.Err = errors.Annotate(err, "run provision").Err()
 		var reason = api.InstallFailure_REASON_DOCKER_UNABLE_TO_START
-		if dutService.Started == true {
+		if dutService.Started {
 			// If the err is nil, and the service is started (noted by the log.txt existing),
 			// its extremely likely we are failing to connect to the dut. So for now this is the best err to use.
 			reason = api.InstallFailure_REASON_DUT_UNREACHABLE_PRE_PROVISION

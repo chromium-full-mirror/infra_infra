@@ -413,7 +413,7 @@ func (b *projectBuildspec) CreateProjectBuildspecs(projects map[string]projectBu
 			// TODO(b/184153693): Remove 96-specific logic once 96 branches and
 			// is no longer ToT.
 			if strings.HasPrefix(branch, fmt.Sprintf("refs/heads/release-R%d-", milestone-1)) ||
-				(milestone == 96 && strings.HasPrefix(branch, fmt.Sprintf("refs/heads/release-R94-"))) {
+				(milestone == 96 && strings.HasPrefix(branch, "refs/heads/release-R94-")) {
 				hasPreviousMilestone = true
 			}
 		}
@@ -483,10 +483,10 @@ func (b *projectBuildspec) CreateProjectBuildspecs(projects map[string]projectBu
 
 				// Create the project/program-specific buildspec.
 				if err := manifestutil.PinManifestFromManifest(localManifest, buildspecManifest); err != nil {
-					switch err.(type) {
+					switch err := err.(type) {
 					case manifestutil.MissingProjectsError:
 						LogOut("%smissing projects in reference manifest, leaving unpinned: %s", config.logPrefix,
-							err.(manifestutil.MissingProjectsError).MissingProjects)
+							err.MissingProjects)
 					default:
 						return err
 					}

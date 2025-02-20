@@ -107,13 +107,13 @@ func (c *planRun) innerRun(a subcommands.Application, args []string, env subcomm
 func readTestPlan(path string) (*test_platform.Request_TestPlan, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("error reading test plan: %v", err)
+		return nil, fmt.Errorf("error reading test plan: %w", err)
 	}
 	defer file.Close()
 
 	testPlan := &test_platform.Request_TestPlan{}
 	if err := common.JSONPBUnmarshaler.Unmarshal(file, testPlan); err != nil {
-		return nil, fmt.Errorf("error reading test plan: %v", err)
+		return nil, fmt.Errorf("error reading test plan: %w", err)
 	}
 	return testPlan, nil
 }

@@ -167,7 +167,7 @@ func TestInspectBuffer(t *testing.T) {
 			_, e := InspectBuffer([]byte(tt.in))
 			if !errorStartsWithDWIM(e, tt.out) {
 				msg := fmt.Sprintf("uuid (%s): name (%s): got: (%q), want: (%q)", tt.uuid, tt.name, e.Error(), tt.out)
-				t.Errorf(msg)
+				t.Error(msg)
 			}
 		})
 	}
@@ -196,7 +196,7 @@ func TestIsValidJSON(t *testing.T) {
 		t.Run(tt.in, func(t *testing.T) {
 			if res := isValidJSON([]byte(tt.in)); res != tt.out {
 				msg := fmt.Sprintf("item (%s): got: (%v), want: (%v)", tt.in, res, tt.out)
-				t.Errorf(msg)
+				t.Error(msg)
 			}
 		})
 	}
@@ -226,7 +226,7 @@ func TestShallowValidateCrosVersions(t *testing.T) {
 			res := errorWithDefault(shallowValidateCrosVersions(sv), "")
 			if res != tt.out {
 				msg := fmt.Sprintf("uuid (%s): got: (%v), want: (%v)", tt.uuid, res, tt.out)
-				t.Errorf(msg)
+				t.Error(msg)
 			}
 		})
 	}
@@ -256,7 +256,7 @@ func TestShallowValidateFirmwareVersions(t *testing.T) {
 			res := errorWithDefault(shallowValidateFirmwareVersions(sv), "")
 			if res != tt.out {
 				msg := fmt.Sprintf("uuid (%s): got: (%v), want: (%v)", tt.uuid, res, tt.out)
-				t.Errorf(msg)
+				t.Error(msg)
 			}
 		})
 	}
@@ -286,7 +286,7 @@ func TestShallowValidateFaftVersions(t *testing.T) {
 			res := errorWithDefault(shallowValidateFaftVersions(sv), "")
 			if res != tt.out {
 				msg := fmt.Sprintf("uuid (%s): got: (%v), want: (%v)", tt.uuid, res, tt.out)
-				t.Errorf(msg)
+				t.Error(msg)
 			}
 		})
 	}

@@ -91,14 +91,14 @@ func (s DroneStarter) shareCIPDCacheWithBot(botDir string) error {
 	agentCIPDCache := filepath.Join(s.WorkingDir, "cipd_cache")
 	botCIPDCache := filepath.Join(botDir, "cipd_cache")
 	if err := os.MkdirAll(agentCIPDCache, 0777); err != nil && !os.IsExist(err) {
-		return fmt.Errorf("setup bot CIPD cache: cannot create common CIPD cache dir %q: %s", agentCIPDCache, err)
+		return fmt.Errorf("setup bot CIPD cache: cannot create common CIPD cache dir %q: %w", agentCIPDCache, err)
 	}
 	if err := os.MkdirAll(botCIPDCache, 0777); err != nil && !os.IsExist(err) {
-		return fmt.Errorf("setup bot CIPD cache: cannot create bot CIPD cache dir %q: %s", botCIPDCache, err)
+		return fmt.Errorf("setup bot CIPD cache: cannot create bot CIPD cache dir %q: %w", botCIPDCache, err)
 	}
 	cacheDir := filepath.Join(botCIPDCache, "cache")
 	if err := os.Symlink(agentCIPDCache, cacheDir); err != nil {
-		return fmt.Errorf("setup bot CIPD cache %q: %s", cacheDir, err)
+		return fmt.Errorf("setup bot CIPD cache %q: %w", cacheDir, err)
 	}
 	return nil
 }

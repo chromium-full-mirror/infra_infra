@@ -63,7 +63,7 @@ func (cmd *GenericProvisionCmd) instantiateWithHwTestStateKeeper(
 	if err := commoncommands.InstantiatePopFromQueue(sk.ProvisionQueue, func(element any) {
 		cmd.ProvisionRequest = element.(*api.ProvisionTask)
 	}); err != nil {
-		return fmt.Errorf("cmd %s missing dependency: ProvisionRequest, %s", cmd.GetCommandType(), err)
+		return fmt.Errorf("cmd %s missing dependency: ProvisionRequest, %w", cmd.GetCommandType(), err)
 	}
 	pool := []string{""}
 	if keyvals := sk.CrosTestRunnerRequest.GetParams().GetKeyvals(); keyvals != nil {

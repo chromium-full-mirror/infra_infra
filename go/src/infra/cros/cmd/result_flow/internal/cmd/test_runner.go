@@ -64,7 +64,7 @@ type pipeTestRunnerDataRun struct {
 
 func (c *pipeTestRunnerDataRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	if err := c.innerRun(a, args, env); err != nil {
-		fmt.Fprintf(a.GetErr(), err.Error())
+		fmt.Fprint(a.GetErr(), err.Error())
 		return 1
 	}
 	return 0

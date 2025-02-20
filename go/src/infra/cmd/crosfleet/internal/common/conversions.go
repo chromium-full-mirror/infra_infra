@@ -40,7 +40,7 @@ func MapToStruct(m map[string]interface{}) (*structpb.Struct, error) {
 		case protoreflect.ProtoMessage:
 			newStructVal, err = ProtoToStructVal(val)
 			if err != nil {
-				return nil, fmt.Errorf("error converting proto %v to *structpb.Value: %s", val, err)
+				return nil, fmt.Errorf("error converting proto %v to *structpb.Value: %w", val, err)
 			}
 		case map[string]interface{}:
 			// Recursively call MapToStruct. The default case of
@@ -55,7 +55,7 @@ func MapToStruct(m map[string]interface{}) (*structpb.Struct, error) {
 		default:
 			newStructVal, err = structbuilder.NewValue(val)
 			if err != nil {
-				return nil, fmt.Errorf("error callling structbuilder.NewValue(%v): %s", val, err)
+				return nil, fmt.Errorf("error callling structbuilder.NewValue(%v): %w", val, err)
 			}
 		}
 		s.Fields[key] = newStructVal

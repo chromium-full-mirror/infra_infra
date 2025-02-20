@@ -194,22 +194,22 @@ func (c *getTestPlanRun) readInput() (*testplans.GenerateTestPlanRequest, error)
 	if len(c.inputBinaryPb) > 0 {
 		inputPb, err := ioutil.ReadFile(c.inputBinaryPb)
 		if err != nil {
-			return nil, fmt.Errorf("Failed reason input_binary_pb\n%v", err)
+			return nil, fmt.Errorf("Failed reason input_binary_pb\n%w", err)
 		}
 		req := &testplans.GenerateTestPlanRequest{}
 		if err := proto.Unmarshal(inputPb, req); err != nil {
-			return nil, fmt.Errorf("Failed parsing input_binary_pb as proto\n%v", err)
+			return nil, fmt.Errorf("Failed parsing input_binary_pb as proto\n%w", err)
 		}
 		return req, nil
 		// otherwise use input_json
 	}
 	inputBytes, err := ioutil.ReadFile(c.inputJSON)
 	if err != nil {
-		return nil, fmt.Errorf("Failed reading input_json\n%v", err)
+		return nil, fmt.Errorf("Failed reading input_json\n%w", err)
 	}
 	req := &testplans.GenerateTestPlanRequest{}
 	if err := unmarshaler.Unmarshal(bytes.NewReader(inputBytes), req); err != nil {
-		return nil, fmt.Errorf("Couldn't decode %s as a GenerateTestPlanRequest\n%v", c.inputJSON, err)
+		return nil, fmt.Errorf("Couldn't decode %s as a GenerateTestPlanRequest\n%w", c.inputJSON, err)
 	}
 	return req, nil
 }
@@ -243,15 +243,15 @@ func (c *getTestPlanRun) fetchConfigFromGitiles() (*testplans.BoardPriorityList,
 
 	boardPriorityList := &testplans.BoardPriorityList{}
 	if err := proto.Unmarshal([]byte((*m)[c.boardPriorityConfigPath]), boardPriorityList); err != nil {
-		return nil, nil, nil, fmt.Errorf("Couldn't decode %s as a BoardPriorityList\n%v", (*m)[c.boardPriorityConfigPath], err)
+		return nil, nil, nil, fmt.Errorf("Couldn't decode %s as a BoardPriorityList\n%w", (*m)[c.boardPriorityConfigPath], err)
 	}
 	sourceTreeConfig := &testplans.SourceTreeTestCfg{}
 	if err := proto.Unmarshal([]byte((*m)[c.sourceTreeTestConfigPath]), sourceTreeConfig); err != nil {
-		return nil, nil, nil, fmt.Errorf("Couldn't decode %s as a SourceTreeTestCfg\n%v", (*m)[c.sourceTreeTestConfigPath], err)
+		return nil, nil, nil, fmt.Errorf("Couldn't decode %s as a SourceTreeTestCfg\n%w", (*m)[c.sourceTreeTestConfigPath], err)
 	}
 	testReqsConfig := &testplans.TargetTestRequirementsCfg{}
 	if err := proto.Unmarshal([]byte((*m)[c.targetTestRequirementsPath]), testReqsConfig); err != nil {
-		return nil, nil, nil, fmt.Errorf("Couldn't decode %s as a TargetTestRequirementsCfg\n%v", (*m)[c.targetTestRequirementsPath], err)
+		return nil, nil, nil, fmt.Errorf("Couldn't decode %s as a TargetTestRequirementsCfg\n%w", (*m)[c.targetTestRequirementsPath], err)
 	}
 	log.Printf("Fetched config from Gitiles:\n%s\n\n%s\n\n%s", proto.MarshalTextString(boardPriorityList),
 		proto.MarshalTextString(sourceTreeConfig), proto.MarshalTextString(testReqsConfig))
@@ -266,29 +266,29 @@ func (c *getTestPlanRun) readLocalConfigFiles() (*testplans.BoardPriorityList, *
 
 	bplBytes, err := ioutil.ReadFile(path.Join(c.localConfigDir, c.boardPriorityConfigPath))
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("couldn't read BoardPriorityList file: %v", err)
+		return nil, nil, nil, fmt.Errorf("couldn't read BoardPriorityList file: %w", err)
 	}
 	boardPriorityList := &testplans.BoardPriorityList{}
 	if err := proto.Unmarshal(bplBytes, boardPriorityList); err != nil {
-		return nil, nil, nil, fmt.Errorf("couldn't decode file as BoardPriorityList: %v", err)
+		return nil, nil, nil, fmt.Errorf("couldn't decode file as BoardPriorityList: %w", err)
 	}
 
 	stcBytes, err := ioutil.ReadFile(path.Join(c.localConfigDir, c.sourceTreeTestConfigPath))
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("couldn't read SourceTreeTestCfg file: %v", err)
+		return nil, nil, nil, fmt.Errorf("couldn't read SourceTreeTestCfg file: %w", err)
 	}
 	sourceTreeConfig := &testplans.SourceTreeTestCfg{}
 	if err := proto.Unmarshal(stcBytes, sourceTreeConfig); err != nil {
-		return nil, nil, nil, fmt.Errorf("couldn't decode file as SourceTreeTestCfg: %v", err)
+		return nil, nil, nil, fmt.Errorf("couldn't decode file as SourceTreeTestCfg: %w", err)
 	}
 
 	ttrBytes, err := ioutil.ReadFile(path.Join(c.localConfigDir, c.targetTestRequirementsPath))
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("couldn't read TargetTestRequirementsCfg file: %v", err)
+		return nil, nil, nil, fmt.Errorf("couldn't read TargetTestRequirementsCfg file: %w", err)
 	}
 	testReqsConfig := &testplans.TargetTestRequirementsCfg{}
 	if err := proto.Unmarshal(ttrBytes, testReqsConfig); err != nil {
-		return nil, nil, nil, fmt.Errorf("couldn't decode file as TargetTestRequirementsCfg: %v", err)
+		return nil, nil, nil, fmt.Errorf("couldn't decode file as TargetTestRequirementsCfg: %w", err)
 	}
 	log.Printf("Read local config:\n%s\n\n%s\n\n%s", proto.MarshalTextString(boardPriorityList),
 		proto.MarshalTextString(sourceTreeConfig), proto.MarshalTextString(testReqsConfig))
@@ -334,7 +334,7 @@ func (c *getTestPlanRun) genTargetTestRequirements(builderNames []string) (*test
 		return nil, fmt.Errorf("error running ./board_config/generate_test_config: %s", stderrBuf.String())
 	}
 	if err := unmarshaler.Unmarshal(bytes.NewReader(stdoutBuf.Bytes()), testReqsConfig); err != nil {
-		return nil, fmt.Errorf("couldn't decode file as TargetTestRequirementsCfg: %v", err)
+		return nil, fmt.Errorf("couldn't decode file as TargetTestRequirementsCfg: %w", err)
 	}
 	log.Printf("Overriding target test config with directly generated config:\n%s", proto.MarshalTextString(testReqsConfig))
 	return testReqsConfig, nil
@@ -345,7 +345,7 @@ func readBuildbucketBuilds(bbBuildsBytes []*testplans.ProtoBytes) ([]*bbproto.Bu
 	for _, bbBuildBytes := range bbBuildsBytes {
 		bbBuild := &bbproto.Build{}
 		if err := proto.Unmarshal(bbBuildBytes.SerializedProto, bbBuild); err != nil {
-			return bbBuilds, fmt.Errorf("Couldn't decode %s as a Buildbucket Build\n%v", bbBuildBytes.String(), err)
+			return bbBuilds, fmt.Errorf("Couldn't decode %s as a Buildbucket Build\n%w", bbBuildBytes.String(), err)
 		}
 		bbBuilds = append(bbBuilds, bbBuild)
 	}
@@ -360,7 +360,7 @@ func readGerritChanges(changesBytes []*testplans.ProtoBytes) ([]*bbproto.GerritC
 	for _, changeBytes := range changesBytes {
 		change := &bbproto.GerritChange{}
 		if err := proto.Unmarshal(changeBytes.SerializedProto, change); err != nil {
-			return changes, fmt.Errorf("Couldn't decode %s as a GerritChange\n%v", changeBytes.String(), err)
+			return changes, fmt.Errorf("Couldn't decode %s as a GerritChange\n%w", changeBytes.String(), err)
 		}
 		changes = append(changes, change)
 	}
@@ -396,7 +396,7 @@ func (c *getTestPlanRun) fetchGerritData(changes []*bbproto.GerritChange) (*iger
 func readGitilesCommit(gitilesBytes *testplans.ProtoBytes) (*bbproto.GitilesCommit, error) {
 	gc := &bbproto.GitilesCommit{}
 	if err := proto.Unmarshal(gitilesBytes.SerializedProto, gc); err != nil {
-		return nil, fmt.Errorf("Couldn't decode %s as a GitilesCommit\n%v", gitilesBytes.String(), err)
+		return nil, fmt.Errorf("Couldn't decode %s as a GitilesCommit\n%w", gitilesBytes.String(), err)
 	}
 	log.Printf("Got GitilesCommit proto:\n%s", proto.MarshalTextString(gc))
 	return gc, nil
@@ -422,7 +422,7 @@ func (c *getTestPlanRun) getRepoToSourceRoot(gc *bbproto.GitilesCommit) (*map[st
 	}
 	repoToRemoteBranchToSrcRoot, err := manifestutil.GetRepoToRemoteBranchToSourceRootFromGitiles(ctx, gerritClient, gc)
 	if err != nil {
-		return nil, fmt.Errorf("Error with repo tool call\n%v", err)
+		return nil, fmt.Errorf("Error with repo tool call\n%w", err)
 	}
 	return &repoToRemoteBranchToSrcRoot, nil
 }
@@ -431,10 +431,10 @@ func (c *getTestPlanRun) writeOutput(tp *testplans.GenerateTestPlanResponse) err
 		marshal := &jsonpb.Marshaler{EmitDefaults: true, Indent: "  "}
 		jsonOutput, err := marshal.MarshalToString(tp)
 		if err != nil {
-			return fmt.Errorf("Failed to marshal JSON %v\n%v", tp, err)
+			return fmt.Errorf("Failed to marshal JSON %v\n%w", tp, err)
 		}
 		if err = ioutil.WriteFile(c.outputJSON, []byte(jsonOutput), 0644); err != nil {
-			return fmt.Errorf("Failed to write output JSON!\n%v", err)
+			return fmt.Errorf("Failed to write output JSON!\n%w", err)
 		}
 		log.Printf("Wrote output JSON to %s", c.outputJSON)
 	}
@@ -442,10 +442,10 @@ func (c *getTestPlanRun) writeOutput(tp *testplans.GenerateTestPlanResponse) err
 	if len(c.outputBinaryPb) > 0 {
 		binaryOutput, err := proto.Marshal(tp)
 		if err != nil {
-			return fmt.Errorf("Failed to marshal binaryproto %v\n%v", tp, err)
+			return fmt.Errorf("Failed to marshal binaryproto %v\n%w", tp, err)
 		}
 		if err = ioutil.WriteFile(c.outputBinaryPb, binaryOutput, 0644); err != nil {
-			return fmt.Errorf("Failed to write output binary proto!\n%v", err)
+			return fmt.Errorf("Failed to write output binary proto!\n%w", err)
 		}
 		log.Printf("Wrote output binary proto to %s", c.outputBinaryPb)
 	}

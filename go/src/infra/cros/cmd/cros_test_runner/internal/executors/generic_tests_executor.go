@@ -76,7 +76,7 @@ func (ex *GenericTestsExecutor) genericTestsHandler(
 
 	client, err := ex.ConnectToService(ctx, cmd.TestRequest.GetServiceAddress())
 	if err != nil {
-		err = fmt.Errorf("error connecting to test execution service, %s", err)
+		err = fmt.Errorf("error connecting to test execution service, %w", err)
 		return
 	}
 

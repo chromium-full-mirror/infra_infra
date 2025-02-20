@@ -228,7 +228,7 @@ func renderVars(m map[string]interface{}, appID string, decl varsDecl, vals map[
 	}
 
 	// Values of variables as specified in `decl` for the given appID (if any).
-	baseline, _ := decl[appID]
+	baseline := decl[appID]
 
 	// We'll keep track of what vars were actually used.
 	consumed := stringset.New(len(vals))

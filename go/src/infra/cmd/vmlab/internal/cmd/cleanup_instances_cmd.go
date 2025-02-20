@@ -140,11 +140,11 @@ func cleanupInstances(ctx context.Context, insApi api.InstanceApi, config *confi
 
 	req, err := generateListVmRequest(config, swarmingBotName)
 	if err != nil {
-		return result, fmt.Errorf("Cannot generate list request: %v", err)
+		return result, fmt.Errorf("Cannot generate list request: %w", err)
 	}
 	instances, err := insApi.List(ctx, req)
 	if err != nil {
-		return result, fmt.Errorf("Failed to list instances: %v", err)
+		return result, fmt.Errorf("Failed to list instances: %w", err)
 	}
 	result.Total = len(instances)
 

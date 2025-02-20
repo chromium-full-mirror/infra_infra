@@ -39,8 +39,8 @@ const (
 	maxTasksPerBoard = 0
 
 	boardLease    primaryLeaseDimensionType = "board"
-	modelLease                              = "model"
-	hostnameLease                           = "hostname"
+	modelLease    primaryLeaseDimensionType = "model"
+	hostnameLease primaryLeaseDimensionType = "hostname"
 )
 
 // LeaseDut subcommand: Lease a DUT for debugging.

@@ -53,7 +53,7 @@ func getPromptResponse() (string, error) {
 	b := bufio.NewReader(os.Stdin)
 	i, err := b.ReadString('\n')
 	if err != nil {
-		return "", fmt.Errorf("error getting prompt response: %s", err)
+		return "", fmt.Errorf("error getting prompt response: %w", err)
 	}
 	return strings.Trim(strings.ToLower(i), " \n\t"), nil
 }

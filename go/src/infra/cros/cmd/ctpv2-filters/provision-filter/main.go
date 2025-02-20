@@ -165,7 +165,7 @@ func getBuildsForMilestone(log *log.Logger, milestone int64) (string, []string, 
 	log.Println("in parent check")
 	bqIter, err := queryForBuilds(log)
 	if err != nil {
-		return "", nil, fmt.Errorf("unable to determine stabily: %s", err)
+		return "", nil, fmt.Errorf("unable to determine stabily: %w", err)
 	}
 
 	data := iterThroughData(bqIter, log)

@@ -57,7 +57,7 @@ func isDLCVerified(c *ssh.Client, spec *tls.ProvisionDutRequest_DLCSpec, slot dl
 	dlcID := spec.GetId()
 	verified, err := pathExists(c, path.Join(dlcLibDir, dlcID, string(slot), dlcVerified))
 	if err != nil {
-		return false, fmt.Errorf("is DLC verfied: failed to check if DLC %s is verified, %s", dlcID, err)
+		return false, fmt.Errorf("is DLC verfied: failed to check if DLC %s is verified, %w", dlcID, err)
 	}
 	return verified, nil
 }
@@ -77,7 +77,7 @@ func clearInactiveDLCVerifiedMarks(c *ssh.Client, r rootDev) error {
 	inactiveSlot := getInactiveDLCSlot(r)
 	err := runCmd(c, fmt.Sprintf("rm -f %s", path.Join(dlcCacheDir, "*", "*", string(inactiveSlot), dlcVerified)))
 	if err != nil {
-		return fmt.Errorf("clear inactive verified DLC marks: failed remove inactive verified DLCs, %s", err)
+		return fmt.Errorf("clear inactive verified DLC marks: failed remove inactive verified DLCs, %w", err)
 	}
 
 	return nil

@@ -92,7 +92,7 @@ func createLogFile(logPath string) (*os.File, error) {
 	t := time.Now()
 	fullPath := filepath.Join(logPath, t.Format("20060102-150405"))
 	if err := os.MkdirAll(fullPath, 0755); err != nil {
-		return nil, fmt.Errorf("failed to create directory %v: %v", fullPath, err)
+		return nil, fmt.Errorf("failed to create directory %v: %w", fullPath, err)
 	}
 
 	logFullPathName := filepath.Join(fullPath, "log.txt")
@@ -100,7 +100,7 @@ func createLogFile(logPath string) (*os.File, error) {
 	// Log the full output of the command to disk.
 	logFile, err := os.Create(logFullPathName)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create file %v: %v", fullPath, err)
+		return nil, fmt.Errorf("failed to create file %v: %w", fullPath, err)
 	}
 	return logFile, nil
 }

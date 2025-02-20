@@ -59,7 +59,7 @@ func buildConfig(configTmpl string, configData interface{}) (string, error) {
 	var buf bytes.Buffer
 	tmpl := template.Must(template.New("base").Parse(configTmpl))
 	if err := tmpl.Execute(&buf, configData); err != nil {
-		return "", fmt.Errorf("error while executing template: %s", err)
+		return "", fmt.Errorf("error while executing template: %w", err)
 	}
 	return buf.String(), nil
 }
@@ -86,7 +86,7 @@ func nodeVirtualIP(service *models.CachingService) (string, error) {
 	name := splitName[len(splitName)-1]
 	vip, err := lookupHost(name)
 	if err != nil {
-		return "", fmt.Errorf("get node virtual IP of %q: %s", name, err)
+		return "", fmt.Errorf("get node virtual IP of %q: %w", name, err)
 	}
 	return vip, nil
 }
@@ -96,7 +96,7 @@ func nodeVirtualIP(service *models.CachingService) (string, error) {
 func lookupHost(hostname string) (string, error) {
 	addrs, err := net.LookupHost(hostname)
 	if err != nil {
-		return "", fmt.Errorf("lookup IP of %q: %s", hostname, err)
+		return "", fmt.Errorf("lookup IP of %q: %w", hostname, err)
 	}
 	if len(addrs) == 0 {
 		return "", fmt.Errorf("lookup IP of %q: No addresses found", hostname)

@@ -178,6 +178,6 @@ func wrapRunError(r osutil.RunResult, err error) error {
 	case err == nil:
 		return reason
 	default:
-		return fmt.Errorf("%s: %s", reason, err)
+		return fmt.Errorf("%w: %w", reason, err)
 	}
 }

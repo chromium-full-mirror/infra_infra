@@ -147,7 +147,7 @@ func runTask(ctx context.Context, ac *api.Client, m *atutil.MainJob, t *atutil.A
 	// Ignore autoserv failures for certain states so they don't
 	// count as Swarming task failures.
 	if err != nil && !dutstate.IsSuccessState(e) {
-		return fmt.Errorf("task %s failed: %s", t.Type, err)
+		return fmt.Errorf("task %s failed: %w", t.Type, err)
 	}
 	return nil
 }

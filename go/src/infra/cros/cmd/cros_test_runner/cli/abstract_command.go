@@ -46,7 +46,7 @@ func ParseInputs() (AbstractCommand, error) {
 		options = append(options, cmd.Name())
 		if cmd.Is(subcommand) {
 			if err := cmd.Init(os.Args[2:]); err != nil {
-				return nil, fmt.Errorf("failed to initialize %s command, %s", cmd.Name(), err)
+				return nil, fmt.Errorf("failed to initialize %s command, %w", cmd.Name(), err)
 			}
 			return cmd, nil
 		}

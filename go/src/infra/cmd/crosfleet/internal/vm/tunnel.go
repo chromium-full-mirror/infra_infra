@@ -196,7 +196,7 @@ func (c *tunnelRun) startSSHProxy(address string, port int) error {
 func (c *tunnelRun) createSSHConfig() (*ssh.ClientConfig, error) {
 	user, err := user.Current()
 	if err != nil {
-		return nil, fmt.Errorf("Unable to get current user: %v", err)
+		return nil, fmt.Errorf("Unable to get current user: %w", err)
 	}
 
 	var sshUser string

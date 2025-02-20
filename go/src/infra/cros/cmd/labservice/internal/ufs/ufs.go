@@ -174,7 +174,7 @@ func (inv *Inventory) makeChromeOsDutProto(di *deviceInfo) (*labapi.Dut, error) 
 	}
 	cs, err := inv.cacheLocator.FindCacheServer(hostname, inv.client)
 	if err != nil {
-		return nil, fmt.Errorf("make chromeos dut proto: %s", err)
+		return nil, fmt.Errorf("make chromeos dut proto: %w", err)
 	}
 	croslse := lse.GetChromeosMachineLse()
 	if croslse == nil {
@@ -252,7 +252,7 @@ func (inv *Inventory) makeChromeOsDevboardProto(di *deviceInfo) (*labapi.Dut, er
 	}
 	cs, err := inv.cacheLocator.FindCacheServer(hostname, inv.client)
 	if err != nil {
-		return nil, fmt.Errorf("make chromeos dut proto: %s", err)
+		return nil, fmt.Errorf("make chromeos dut proto: %w", err)
 	}
 	ret := &labapi.Dut{
 		Id: &labapi.Dut_Id{Value: hostname},

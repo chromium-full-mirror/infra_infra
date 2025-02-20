@@ -200,9 +200,7 @@ func (p protoTarget) getFiles() ([]string, error) {
 				continue
 			}
 			allFiles.Add(pth)
-			for _, imp := range findImports(p.ctx, protoImportRe, pth, p.protoPaths) {
-				paths = append(paths, imp)
-			}
+			paths = append(paths, findImports(p.ctx, protoImportRe, pth, p.protoPaths)...)
 		}
 
 		// Include metadata files.

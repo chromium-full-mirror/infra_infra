@@ -26,14 +26,14 @@ func queryForBuilds(log *log.Logger) (*bigquery.RowIterator, error) {
 	defer c.Close()
 
 	if err != nil {
-		return nil, fmt.Errorf("unable to make bq client %s", err)
+		return nil, fmt.Errorf("unable to make bq client %w", err)
 	}
 
 	b, err := os.ReadFile("/usr/bin/q.txt")
 	if err != nil {
 		b, err = os.ReadFile("q.txt")
 		if err != nil {
-			return nil, fmt.Errorf("unable to read file: %s", err)
+			return nil, fmt.Errorf("unable to read file: %w", err)
 
 		}
 	}
@@ -43,7 +43,7 @@ func queryForBuilds(log *log.Logger) (*bigquery.RowIterator, error) {
 
 	iter, err := bqQ.Read(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("unable to make Bigquery call: %s", err)
+		return nil, fmt.Errorf("unable to make Bigquery call: %w", err)
 	}
 
 	return iter, nil

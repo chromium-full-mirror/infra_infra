@@ -88,7 +88,7 @@ func (c *dumpNlyte) innerRun(a subcommands.Application, args []string, env subco
 
 	var assetAndHosts ufspb.AssetAndHosts
 	if err := utils.ParseJSONFile(c.updatedEntryFile, &assetAndHosts); err != nil {
-		return fmt.Errorf("Failed to dump asset from Nlyte: %s", err)
+		return fmt.Errorf("Failed to dump asset from Nlyte: %w", err)
 	}
 
 	failedAssets := []string{}

@@ -53,7 +53,7 @@ func (c *Client) createRemoteBranch(authedClient *http.Client, b GerritProjectBr
 	}
 	agClient, err := gerritapi.NewClient(b.GerritURL, authedClient)
 	if err != nil {
-		return fmt.Errorf("failed to create Gerrit client: %v", err)
+		return fmt.Errorf("failed to create Gerrit client: %w", err)
 	}
 	bi, resp, err := agClient.Projects.CreateBranch(b.Project, b.Branch, &gerritapi.BranchInput{Revision: b.SrcRef})
 	defer resp.Body.Close()
@@ -152,7 +152,7 @@ func (c *Client) CreateRemoteBranchesAPI(authedClient *http.Client, branches []G
 func CheckSelfGroupMembership(authedClient *http.Client, gerritURL, expectedGroup string) (bool, error) {
 	agClient, err := gerritapi.NewClient(gerritURL, authedClient)
 	if err != nil {
-		return false, fmt.Errorf("failed to create Gerrit client: %v", err)
+		return false, fmt.Errorf("failed to create Gerrit client: %w", err)
 	}
 	groups, resp, err := agClient.Accounts.ListGroups("self")
 	defer resp.Body.Close()

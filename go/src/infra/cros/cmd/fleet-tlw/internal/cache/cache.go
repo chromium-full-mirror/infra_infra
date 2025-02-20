@@ -54,7 +54,7 @@ func NewEnv(preferredCachingServices string, ufsClient ufsapi.FleetClient) (Envi
 	log.Printf("new cache env: no preferred services specified, try to load from UFS")
 	env, err = NewUFSEnv(ufsClient)
 	if err != nil {
-		return nil, fmt.Errorf("new env: %s", err)
+		return nil, fmt.Errorf("new env: %w", err)
 	}
 	return env, nil
 }
@@ -89,7 +89,7 @@ func (f *Frontend) AssignBackend(dutName, filename string) (string, error) {
 func (f *Frontend) assignBackendByZone(dutName, filename string) (string, error) {
 	z, err := f.env.GetZoneForDUT(dutName)
 	if err != nil {
-		return "", fmt.Errorf("assign backend by zone for %q: %s", dutName, err)
+		return "", fmt.Errorf("assign backend by zone for %q: %w", dutName, err)
 	}
 	cs, ok := f.env.CacheZones()[z]
 	if !ok {
@@ -107,7 +107,7 @@ func (f *Frontend) assignBackendByZone(dutName, filename string) (string, error)
 func (f *Frontend) assignBackendBySubnet(dutName, filename string) (string, error) {
 	dutAddr, err := lookupHost(dutName)
 	if err != nil {
-		return "", fmt.Errorf("assign backend to %q: %s", dutName, err)
+		return "", fmt.Errorf("assign backend to %q: %w", dutName, err)
 	}
 	// Get cache backends serving the DUT subnet.
 	subnet, ok := f.findSubnet(net.ParseIP(dutAddr))

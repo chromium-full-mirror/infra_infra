@@ -156,12 +156,12 @@ func validateFile(ctx context.Context, a subcommands.Application, t http.RoundTr
 	// validate config before committing it
 	var r querygs.Reader
 	if err := r.Init(ctx, t, utils.Unmarshaller, "validate-config"); err != nil {
-		return fmt.Errorf("initializing Google Storage client: %s", err)
+		return fmt.Errorf("initializing Google Storage client: %w", err)
 	}
 
 	res, err := r.ValidateConfig(ctx, newSV)
 	if err != nil {
-		return fmt.Errorf("valdating config using Google Storage: %s", err)
+		return fmt.Errorf("valdating config using Google Storage: %w", err)
 	}
 	msg, err := json.MarshalIndent(res, "", "    ")
 	if err != nil {

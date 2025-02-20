@@ -119,12 +119,12 @@ func (s *ServodService) startServodOnSatlab(servodDockerContainerName string) er
 	s.logger.Println("Starting servod container on Satlab.")
 	conn, err := grpc.Dial(SatlabRPCServer, grpc.WithInsecure())
 	if err != nil {
-		return fmt.Errorf("failed to initiate communication to satlab RPC %v Error %v", err, SatlabRPCServer)
+		return fmt.Errorf("failed to initiate communication to satlab RPC %w Error %v", err, SatlabRPCServer)
 	}
 	satlabClient := satlabrpcserver.NewSatlabRpcServiceClient(conn)
 	req := &api.StartServodRequest{ServodDockerContainerName: servodDockerContainerName}
 	if _, err := satlabClient.StartServod(context.Background(), req); err != nil {
-		return fmt.Errorf("SatlabRPCServer's startServo failed: %v", err)
+		return fmt.Errorf("SatlabRPCServer's startServo failed: %w", err)
 	}
 	_, err = s.getSatlabServodContainerIP(context.Background(), servodDockerContainerName)
 	if err != nil {

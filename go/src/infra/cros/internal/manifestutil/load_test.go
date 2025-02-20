@@ -113,7 +113,7 @@ func TestLoadManifestTreeFromFile_success(t *testing.T) {
 	res, err := LoadManifestTreeFromFile("test_data/foo.xml")
 	assert.NilError(t, err)
 	if err = ManifestMapEq(expectedResults, res); err != nil {
-		t.Errorf(err.Error())
+		t.Error(err.Error())
 	}
 }
 

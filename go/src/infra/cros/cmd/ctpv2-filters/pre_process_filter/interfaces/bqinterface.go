@@ -31,7 +31,7 @@ func QueryForResults(variant string, milestone string, log *log.Logger) (*bigque
 	c, err := bigquery.NewClient(ctx, saProject,
 		option.WithCredentialsFile(saFile))
 	if err != nil {
-		return nil, fmt.Errorf("unable to make bq client %s", err)
+		return nil, fmt.Errorf("unable to make bq client %w", err)
 	}
 	defer c.Close()
 

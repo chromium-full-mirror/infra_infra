@@ -138,8 +138,7 @@ func (cont *AbstractContainer) StopContainer(ctx context.Context) error {
 		return fmt.Errorf("Container name not found while trying to get the container!")
 	}
 
-	var err error
-	err = cont.ctr.StopContainer(ctx, cont.Name)
+	var err error = cont.ctr.StopContainer(ctx, cont.Name)
 	if err != nil {
 		return errors.Annotate(err, "error getting container %s", cont.Name).Err()
 	}

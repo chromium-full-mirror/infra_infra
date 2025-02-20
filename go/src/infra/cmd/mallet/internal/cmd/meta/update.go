@@ -132,7 +132,7 @@ func cipdEnsureLatest(a subcommands.Application, dir string) error {
 	// We unconditionally run `sudo` on all OS's, however, we expect it to fail on Windows.
 	fmt.Fprintf(a.GetErr(), "Retrying as root. Updating mallet through cipd.\n")
 	if err := asRootUnix.Run(); err != nil {
-		return fmt.Errorf("updating cipd as root: %s", err)
+		return fmt.Errorf("updating cipd as root: %w", err)
 	}
 	return nil
 }

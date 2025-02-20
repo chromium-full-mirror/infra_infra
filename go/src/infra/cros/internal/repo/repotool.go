@@ -89,10 +89,10 @@ func GetRepoToSourceRoot(chromiumosCheckout, repoToolPath string) (map[string]st
 	repoToSrcRoot := make(map[string]string)
 	wd, err := os.Getwd()
 	if err != nil {
-		return repoToSrcRoot, fmt.Errorf("could not get working dir, %v", err)
+		return repoToSrcRoot, fmt.Errorf("could not get working dir, %w", err)
 	}
 	if err := os.Chdir(chromiumosCheckout); err != nil {
-		return repoToSrcRoot, fmt.Errorf("failed changing dir, %v", err)
+		return repoToSrcRoot, fmt.Errorf("failed changing dir, %w", err)
 	}
 	defer func() {
 		if err := os.Chdir(wd); err != nil {

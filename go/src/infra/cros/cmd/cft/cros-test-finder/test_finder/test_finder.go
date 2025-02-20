@@ -73,12 +73,12 @@ func readInput(fileName string) (*api.CrosTestFinderRequest, error) {
 	f, err := os.ReadFile(fileName)
 	if err != nil {
 		return nil, errors.NewStatusError(errors.IOAccessError,
-			fmt.Errorf("fail to read file %v: %v", fileName, err))
+			fmt.Errorf("fail to read file %v: %w", fileName, err))
 	}
 	req := api.CrosTestFinderRequest{}
 	if err := protojson.Unmarshal(f, &req); err != nil {
 		return nil, errors.NewStatusError(errors.UnmarshalError,
-			fmt.Errorf("fail to unmarshal file %v: %v", fileName, err))
+			fmt.Errorf("fail to unmarshal file %v: %w", fileName, err))
 	}
 	return &req, nil
 }
@@ -88,11 +88,11 @@ func writeOutput(output string, resp *api.CrosTestFinderResponse) error {
 	f, err := os.Create(output)
 	if err != nil {
 		return errors.NewStatusError(errors.IOCreateError,
-			fmt.Errorf("fail to create file %v: %v", output, err))
+			fmt.Errorf("fail to create file %v: %w", output, err))
 	}
 	if json, err := protojson.Marshal(resp); err != nil {
 		return errors.NewStatusError(errors.MarshalError,
-			fmt.Errorf("failed to marshall response to file %v: %v", output, err))
+			fmt.Errorf("failed to marshall response to file %v: %w", output, err))
 	} else {
 		_, _ = f.Write(json)
 	}

@@ -70,12 +70,12 @@ func (s *SatlabRpcServiceServer) OpenCCD(req *pb.OpenCCDRequest, stream pb.Satla
 
 func (s *SatlabRpcServiceServer) SendMessageToCCDSession(ctx context.Context, req *pb.SendMessageToCCDSessionRequest) (*pb.SendMessageToCCDSessionResponse, error) {
 	session, found := s.ccdSession[req.ServoSerial]
-	if found == false {
-		return nil, errors.New(fmt.Sprintf("can't find the session by %s", req.ServoSerial))
+	if !found {
+		return nil, fmt.Errorf("can't find the session by %s", req.ServoSerial)
 	}
 
 	if err := session.Send(req.Message); err != nil {
-		return nil, errors.New(fmt.Sprintf("can't send a message to session. Reason: %v", err))
+		return nil, fmt.Errorf("can't send a message to session. Reason: %v", err)
 	}
 
 	return &pb.SendMessageToCCDSessionResponse{}, nil

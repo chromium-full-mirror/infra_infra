@@ -182,7 +182,7 @@ func (r *chromiumOSSDKRun) runBuilder(ctx context.Context) error {
 // BranchPolicy, SendToCqPolicy, and Reviewer are all proto messages defined in infra/recipes/recipes/generator.proto.
 func createBranchPolicy(cqPolicy, reviewerEmail string) map[string]interface{} {
 	// Values pulled from the SendToCqPolicy enum in generator.proto.
-	var sendToCQPolicy int = map[string]int{
+	var sendToCQPolicy = map[string]int{
 		"do-nothing": 1,
 		"dry-run":    2,
 		"full-run":   3,

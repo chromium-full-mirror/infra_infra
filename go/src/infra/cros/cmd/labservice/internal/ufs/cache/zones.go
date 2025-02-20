@@ -58,7 +58,7 @@ func (f *zonesFinder) refreshCacheZones(client ufsapi.FleetClient) error {
 
 	z, err := f.fetchCacheZones(client)
 	if err != nil {
-		return fmt.Errorf("refresh cache zones: %s", err)
+		return fmt.Errorf("refresh cache zones: %w", err)
 	}
 	f.cacheZones = z
 	return nil
@@ -70,13 +70,13 @@ func (f *zonesFinder) refreshCacheZones(client ufsapi.FleetClient) error {
 func (f *zonesFinder) fetchCacheZones(client ufsapi.FleetClient) (map[ufspb.Zone][]address, error) {
 	cacheServices, err := fetchCachingServicesFromUFS(client)
 	if err != nil {
-		return nil, fmt.Errorf("fetch cache zones: %s", err)
+		return nil, fmt.Errorf("fetch cache zones: %w", err)
 	}
 	result := make(map[ufspb.Zone][]address)
 	for _, s := range cacheServices {
 		svc, err := cachingServiceAddr(s)
 		if err != nil {
-			return nil, fmt.Errorf("fetch cache zones: %s", err)
+			return nil, fmt.Errorf("fetch cache zones: %w", err)
 		}
 		if len(s.GetServingSubnets()) > 0 {
 			// Skip as the server still use the subnet based selection.
@@ -95,7 +95,7 @@ func (f *zonesFinder) fetchCacheZones(client ufsapi.FleetClient) (map[ufspb.Zone
 		node := s.GetSecondaryNode()
 		z, err := f.getZoneForServer(node, client)
 		if err != nil {
-			return nil, fmt.Errorf("get cache zones of %v (using node %q): %s", svc, node, err)
+			return nil, fmt.Errorf("get cache zones of %v (using node %q): %w", svc, node, err)
 		}
 		result[z] = append(result[z], *svc)
 	}
@@ -127,7 +127,7 @@ func (f *zonesFinder) getZoneForServer(name string, client ufsapi.FleetClient) (
 		Name: ufsutil.AddPrefix(ufsutil.MachineCollection, name),
 	})
 	if err != nil {
-		return ufspb.Zone_ZONE_UNSPECIFIED, fmt.Errorf("get zone from name %q: %s", name, err)
+		return ufspb.Zone_ZONE_UNSPECIFIED, fmt.Errorf("get zone from name %q: %w", name, err)
 	}
 	f.machineToZone[name] = m.GetLocation().GetZone()
 	return f.machineToZone[name], nil
@@ -152,7 +152,7 @@ func (f *zonesFinder) getZoneForSU(name string, client ufsapi.FleetClient) (ufsp
 		Name: ufsutil.AddPrefix(ufsutil.MachineLSECollection, name),
 	})
 	if err != nil {
-		return ufspb.Zone_ZONE_UNSPECIFIED, fmt.Errorf("get zone from name %q: %s", name, err)
+		return ufspb.Zone_ZONE_UNSPECIFIED, fmt.Errorf("get zone from name %q: %w", name, err)
 	}
 	f.machineToZone[name] = ufspb.Zone(ufspb.Zone_value[lse.GetZone()])
 	return f.machineToZone[name], nil

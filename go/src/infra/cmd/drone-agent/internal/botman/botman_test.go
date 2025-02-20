@@ -278,7 +278,7 @@ func assertDontHang(t *testing.T, f func(), msg string) {
 	select {
 	case <-done:
 	case <-time.After(time.Second):
-		t.Fatalf(msg)
+		t.Fatal(msg)
 	}
 }
 

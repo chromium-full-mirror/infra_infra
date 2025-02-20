@@ -108,7 +108,7 @@ func (c *addNic) innerRun(a subcommands.Application, args []string, env subcomma
 				return err
 			}
 			if nic.GetMachine() == "" {
-				return errors.New(fmt.Sprintf("machine field is empty in json. It is a required parameter for json input."))
+				return errors.New("machine field is empty in json. It is a required parameter for json input.")
 			}
 		} else {
 			c.parseArgs(&nic)

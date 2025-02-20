@@ -25,12 +25,12 @@ type Cgroup cgroups.Cgroup
 func addToCgroup(botID string, pid uint64, resources *specs.LinuxResources) (Cgroup, error) {
 	control, err := cgroups.New(cgroups.V1, cgroups.NestedPath(botID), resources)
 	if err != nil {
-		return nil, fmt.Errorf("add bot to cgroup: %s", err)
+		return nil, fmt.Errorf("add bot to cgroup: %w", err)
 	}
 
 	if err := control.AddProc(pid); err != nil {
 		control.Delete()
-		return nil, fmt.Errorf("add bot to cgroup: %s", err)
+		return nil, fmt.Errorf("add bot to cgroup: %w", err)
 	}
 	return control, nil
 }

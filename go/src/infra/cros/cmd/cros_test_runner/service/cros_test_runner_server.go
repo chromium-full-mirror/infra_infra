@@ -107,7 +107,7 @@ func (server *CrosTestRunnerServer) Execute(ctx context.Context, req *skylab_tes
 	service, err := NewCrosTestRunnerService(req, server.sk)
 	if err != nil {
 		log.Printf("failed to create new cros-test-runner service: %s", err)
-		return out, fmt.Errorf("failed to create new cros-test-runner service: %s", err)
+		return out, fmt.Errorf("failed to create new cros-test-runner service: %w", err)
 	}
 
 	logPath := path.Join(server.metadata.LogPath, req.ArtifactsPath)
@@ -115,7 +115,7 @@ func (server *CrosTestRunnerServer) Execute(ctx context.Context, req *skylab_tes
 	out, err = service.Execute(ctx, logPath, server.metadata.NoSudo)
 	if err != nil {
 		log.Printf("execution failed: %s", err)
-		return out, fmt.Errorf("execution failed: %s", err)
+		return out, fmt.Errorf("execution failed: %w", err)
 	}
 
 	log.Println("Execution finished successfully!")
@@ -134,12 +134,12 @@ func ParseServerStartReq(path string) (*skylab_test_runner.CrosTestRunnerServerS
 	in := &skylab_test_runner.CrosTestRunnerServerStartRequest{}
 	r, err := os.Open(path)
 	if err != nil {
-		return nil, fmt.Errorf("error while opening file at %s: %s", path, err)
+		return nil, fmt.Errorf("error while opening file at %s: %w", path, err)
 	}
 
 	data, err := os.ReadFile(r.Name())
 	if err != nil {
-		return nil, fmt.Errorf("error while reading file %s: %s", r.Name(), err)
+		return nil, fmt.Errorf("error while reading file %s: %w", r.Name(), err)
 	}
 
 	umrsh := protojson.UnmarshalOptions{
@@ -147,7 +147,7 @@ func ParseServerStartReq(path string) (*skylab_test_runner.CrosTestRunnerServerS
 	}
 	err = umrsh.Unmarshal(data, in)
 	if err != nil {
-		return nil, fmt.Errorf("err while unmarshalling: %s", err)
+		return nil, fmt.Errorf("err while unmarshalling: %w", err)
 	}
 
 	return in, nil
@@ -179,7 +179,7 @@ func exportMetadata(address net.Listener, exportTo string) error {
 	_, err = f.WriteString(content)
 	if err != nil {
 		log.Printf("error: cannot write to metadata file %v", err)
-		return fmt.Errorf("cannot write to metadata file %v", err)
+		return fmt.Errorf("cannot write to metadata file %w", err)
 	}
 
 	log.Printf("service metadata has been exported to %v", metaFile)

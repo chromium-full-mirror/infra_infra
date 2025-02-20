@@ -54,9 +54,7 @@ func (s *workflowTemplatesServer) ListWorkflowTemplates(ctx context.Context, req
 		return nil, status.Errorf(codes.Internal, "Failed unmarshaling config; err: %v", err)
 	}
 	resp := &workflows.ListWorkflowTemplatesResponse{}
-	for _, t := range c.Templates {
-		resp.WorkflowTemplates = append(resp.WorkflowTemplates, t)
-	}
+	resp.WorkflowTemplates = append(resp.WorkflowTemplates, c.Templates...)
 	return resp, nil
 }
 

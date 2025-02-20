@@ -164,7 +164,7 @@ func (ex *SshTunnelExecutor) sshStartReverseTunnelExecution(
 
 func waitForConnection(port uint16) error {
 	var err error
-	for st := time.Now(); time.Now().Sub(st) < time.Second*10; time.Sleep(time.Millisecond * 250) {
+	for st := time.Now(); time.Since(st) < time.Second*10; time.Sleep(time.Millisecond * 250) {
 		conn, innerErr := net.Dial("tcp", fmt.Sprintf("localhost:%d", port))
 		err = innerErr
 		if err == nil {

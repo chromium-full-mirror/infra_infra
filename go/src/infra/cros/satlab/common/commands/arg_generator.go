@@ -30,9 +30,7 @@ func (c *CommandWithFlags) ToCommand() []string {
 		return nil
 	}
 	var out []string
-	for _, s := range c.Commands {
-		out = append(out, s)
-	}
+	out = append(out, c.Commands...)
 	if c.AuthRequired {
 		a := auth.NewAuthenticator(context.Background(), auth.SilentLogin, site.DefaultAuthOptions)
 		if err := a.CheckLoginRequired(); err != nil {
@@ -56,8 +54,6 @@ func (c *CommandWithFlags) ToCommand() []string {
 			out = append(out, item)
 		}
 	}
-	for _, s := range c.PositionalArgs {
-		out = append(out, s)
-	}
+	out = append(out, c.PositionalArgs...)
 	return out
 }

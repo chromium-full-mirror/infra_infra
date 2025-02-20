@@ -143,7 +143,7 @@ func (c *addAttachedDeviceHost) printRes(ctx context.Context, ic ufsAPI.FleetCli
 
 func (c *addAttachedDeviceHost) validateAttachedDeviceLse(ctx context.Context, ic ufsAPI.FleetClient, machinelse *ufspb.MachineLSE) error {
 	if machinelse.GetMachines() == nil || len(machinelse.GetMachines()) <= 0 {
-		return errors.New(fmt.Sprintf("machines field is empty in json. It is a required parameter for json input."))
+		return errors.New("machines field is empty in json. It is a required parameter for json input.")
 	}
 
 	machine, err := ic.GetMachine(ctx, &ufsAPI.GetMachineRequest{Name: ufsUtil.AddPrefix(ufsUtil.MachineCollection, machinelse.GetMachines()[0])})

@@ -31,7 +31,7 @@ const (
 func PublishBuild(ctx context.Context, attr map[string]string, conf *result_flow.PubSubConfig, opts ...option.ClientOption) error {
 	c, err := pubsub.NewPublisherClient(ctx, opts...)
 	if err != nil {
-		return fmt.Errorf("failed to create publisher client: %v", err)
+		return fmt.Errorf("failed to create publisher client: %w", err)
 	}
 	defer c.Close()
 

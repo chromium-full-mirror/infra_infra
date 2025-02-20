@@ -130,10 +130,10 @@ func buildAndWriteConfig(name string, templ string, data interface{}, path strin
 	log.Printf("Configuring %q and writing to %q ...", name, path)
 	d, err := buildConfig(templ, data)
 	if err != nil {
-		return fmt.Errorf("build and write config of %q: %s", name, err)
+		return fmt.Errorf("build and write config of %q: %w", name, err)
 	}
 	if err := ioutil.WriteFile(path, []byte(d), 0644); err != nil {
-		return fmt.Errorf("build and write config of %q: %s", name, err)
+		return fmt.Errorf("build and write config of %q: %w", name, err)
 	}
 	return nil
 }
@@ -150,7 +150,7 @@ func getCachingServices() ([]*models.CachingService, error) {
 	a := auth.NewAuthenticator(ctx, auth.SilentLogin, o)
 	hc, err := a.Client()
 	if err != nil {
-		return nil, fmt.Errorf("could not establish HTTP client: %s", err)
+		return nil, fmt.Errorf("could not establish HTTP client: %w", err)
 	}
 	ic := ufsapi.NewFleetPRPCClient(&prpc.Client{
 		C:    hc,
@@ -161,7 +161,7 @@ func getCachingServices() ([]*models.CachingService, error) {
 	})
 	res, err := ic.ListCachingServices(ctx, &ufsapi.ListCachingServicesRequest{})
 	if err != nil {
-		return nil, fmt.Errorf("query to UFS failed: %s", err)
+		return nil, fmt.Errorf("query to UFS failed: %w", err)
 	}
 	return res.GetCachingServices(), nil
 }

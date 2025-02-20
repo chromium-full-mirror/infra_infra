@@ -72,7 +72,7 @@ type Reader struct {
 func (r *Reader) Init(ctx context.Context, t http.RoundTripper, unmarshaler jsonpb.Unmarshaler, tempPrefix string) error {
 	var gsc gslib.Client
 	if err := gsc.Init(ctx, t, unmarshaler); err != nil {
-		return fmt.Errorf("Reader::Init: %s", err)
+		return fmt.Errorf("Reader::Init: %w", err)
 	}
 	r.dld = func(remotePath gs.Path) ([]byte, error) {
 		dir, err := ioutil.TempDir("", tempPrefix)

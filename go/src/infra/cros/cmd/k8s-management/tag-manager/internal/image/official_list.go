@@ -68,7 +68,7 @@ func (o *OfficialList) NewestTag() (string, bool) {
 // PutTag puts the tag to the image identified by 'target'.
 func (o *OfficialList) PutTag(tag, target string) error {
 	if err := o.RawImages.PutTag(tag, target); err != nil {
-		return fmt.Errorf("official list put tag: %s", err)
+		return fmt.Errorf("official list put tag: %w", err)
 	}
 	return nil
 }
@@ -92,7 +92,7 @@ func (o *OfficialList) MoveTag(tag string, steps int) error {
 		// is -1.
 		if steps < 0 {
 			if err := o.PutTag(tag, lastTag); err != nil {
-				return false, fmt.Errorf("move tag %q of %q: %s", tag, o, err)
+				return false, fmt.Errorf("move tag %q of %q: %w", tag, o, err)
 			}
 			log.Printf("%q: Tag moved locally: %q->%q", o, tag, lastTag)
 			return true, nil
@@ -100,11 +100,11 @@ func (o *OfficialList) MoveTag(tag string, steps int) error {
 		return false, nil
 	})
 	if err != nil {
-		return fmt.Errorf("move tag %q of %q: %s", tag, o, err)
+		return fmt.Errorf("move tag %q of %q: %w", tag, o, err)
 	}
 	if !ok {
 		if err := o.RawImages.DeleteTag(tag); err != nil {
-			return fmt.Errorf("move tag %q of %q: %s", tag, o, err)
+			return fmt.Errorf("move tag %q of %q: %w", tag, o, err)
 		}
 		log.Printf("%q: Tag moved locally %q", o, tag)
 		return nil
@@ -122,7 +122,7 @@ func (o *OfficialList) Distance(tag1, tag2 string) (int, error) {
 	// newer direction to reach tag1.
 	newer, err := o.RawImages.NewerThan(tag1, tag2)
 	if err != nil {
-		return 0, fmt.Errorf("distance %q (%s<->%s): %s", o, tag1, tag2, err)
+		return 0, fmt.Errorf("distance %q (%s<->%s): %w", o, tag1, tag2, err)
 	}
 	traverse := o.RawImages.TraverseToOlder
 	if newer {
@@ -142,7 +142,7 @@ func (o *OfficialList) Distance(tag1, tag2 string) (int, error) {
 		return false, nil
 	})
 	if err != nil {
-		return 0, fmt.Errorf("distance %q (%s<->%s): %s", o, tag1, tag2, err)
+		return 0, fmt.Errorf("distance %q (%s<->%s): %w", o, tag1, tag2, err)
 	}
 	if !ok {
 		return 0, fmt.Errorf("this shouldn't happen")
@@ -169,19 +169,19 @@ func (o *OfficialList) Align(tag string) (bool, error) {
 		if !ok {
 			log.Printf("%q: Cannot align %q: no newest official tag found", o, tag)
 			if err := o.RawImages.DeleteTag(tag); err != nil {
-				return false, fmt.Errorf("align %q on official: %s", tag, err)
+				return false, fmt.Errorf("align %q on official: %w", tag, err)
 			}
 			return false, nil
 		}
 		if err := o.PutTag(tag, t); err != nil {
-			return false, fmt.Errorf("align %q on official: %s", tag, err)
+			return false, fmt.Errorf("align %q on official: %w", tag, err)
 		}
 		return true, nil
 	}
 	ok, err := o.RawImages.TraverseToOlder(tag, func(m *google.ManifestInfo) (bool, error) {
 		if t, ok := o.officialTagForManifest(m); ok {
 			if err := o.PutTag(tag, t); err != nil {
-				return false, fmt.Errorf("align %q on official: %s", tag, err)
+				return false, fmt.Errorf("align %q on official: %w", tag, err)
 			}
 			log.Printf("%q: Tag moved locally: %q->%q", o, tag, t)
 			return true, nil
@@ -189,12 +189,12 @@ func (o *OfficialList) Align(tag string) (bool, error) {
 		return false, nil
 	})
 	if err != nil {
-		return false, fmt.Errorf("align %q on official: %s", tag, err)
+		return false, fmt.Errorf("align %q on official: %w", tag, err)
 	}
 	if !ok {
 		log.Printf("%q: No more official images available. Will remove %q", o, tag)
 		if err := o.RawImages.DeleteTag(tag); err != nil {
-			return false, fmt.Errorf("align %q on official: %s", tag, err)
+			return false, fmt.Errorf("align %q on official: %w", tag, err)
 		}
 		return false, nil
 	}

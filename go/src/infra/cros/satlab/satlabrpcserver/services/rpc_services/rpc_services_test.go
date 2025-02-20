@@ -1149,7 +1149,7 @@ func shivasTestHelper(hasData bool) executor.IExecCommander {
 				return []byte("192.168.231.222	satlab-0wgatfqi21498062-jeff137-c"), nil
 			}
 
-			return nil, errors.New(fmt.Sprintf("handle command: %v", in.Path))
+			return nil, fmt.Errorf("handle command: %v", in.Path)
 		},
 	}
 
@@ -1621,7 +1621,7 @@ func TestDeleteDutsShouldSuccess(t *testing.T) {
 			if c.Path == paths.GetHostIdentifierScript {
 				return []byte("0wgtfqin1846803b"), nil
 			} else {
-				return nil, errors.New(fmt.Sprintf("execute a command %v\n", c.Path))
+				return nil, fmt.Errorf("execute a command %v\n", c.Path)
 			}
 		},
 	}
@@ -1670,7 +1670,7 @@ func TestFullDeleteDutsShouldSuccess(t *testing.T) {
 			if c.Path == paths.GetHostIdentifierScript {
 				return []byte("0wgtfqin1846803b"), nil
 			} else {
-				return nil, errors.New(fmt.Sprintf("execute a command %v\n", c.Path))
+				return nil, fmt.Errorf("execute a command %v\n", c.Path)
 			}
 		},
 	}
@@ -1756,7 +1756,7 @@ func TestGetNetworkInfoShouldSuccess(t *testing.T) {
 				return []byte(expected.Hostname), nil
 			} else if cmd == fmt.Sprintf("%s exec dhcp cat %s", paths.DockerPath, fmt.Sprintf(paths.NetInfoPathTemplate, "eth0")) {
 				return []byte(expected.MacAddress), nil
-			} else if cmd == fmt.Sprintf(fmt.Sprintf("%s exec dhcp ip route show", paths.DockerPath)) {
+			} else if cmd == fmt.Sprint(fmt.Sprintf("%s exec dhcp ip route show", paths.DockerPath)) {
 				return []byte(
 					fmt.Sprintf("%v/24 dev eth0 scope link  src %v", expected.Hostname, expected.Hostname),
 				), nil
@@ -1765,7 +1765,7 @@ func TestGetNetworkInfoShouldSuccess(t *testing.T) {
 			} else if in.Path == paths.GetHostMACScript {
 				return []byte(expected.MacAddress), nil
 			}
-			return nil, errors.New(fmt.Sprintf("handle command: %v", in.Path))
+			return nil, fmt.Errorf("handle command: %v", in.Path)
 		},
 		CmdOutput: fmt.Sprintf("%v/24 dev eth0 scope link  src %v", expected.Hostname, expected.Hostname),
 	}
@@ -1930,7 +1930,7 @@ func Test_Reboot(t *testing.T) {
 			if c.Path == paths.Reboot {
 				return []byte(""), nil
 			}
-			return nil, errors.New(fmt.Sprintf("unknow command %v", c))
+			return nil, fmt.Errorf("unknow command %v", c)
 		},
 	}
 
@@ -1990,7 +1990,7 @@ Task Link: https://chromeos-swarming.appspot.com/1`), nil
 			} else if c.Args[0] == paths.ShivasCLI && c.Args[1] == "repair-duts" && c.Args[len(c.Args)-1] == "satlab-satlab-id-dut2" {
 				return nil, errors.New("Not found")
 			}
-			return nil, errors.New(fmt.Sprintf("unknow command %v", c))
+			return nil, fmt.Errorf("unknow command %v", c)
 		},
 	}
 
@@ -2428,10 +2428,10 @@ func Test_removeAllPoolShouldSuccess(t *testing.T) {
 
 				return []byte(fmt.Sprintf("[%v]", strings.Join(marshalled, ","))), nil
 			} else {
-				return nil, errors.New(fmt.Sprintf("Un-support command: %v", c.Args))
+				return nil, fmt.Errorf("Un-support command: %v", c.Args)
 			}
 		}
-		return nil, errors.New(fmt.Sprintf("Un-support command: %v", c.Args))
+		return nil, fmt.Errorf("Un-support command: %v", c.Args)
 	}}
 
 	err := removeAllPoolsFromDUT(ctx, s.commandExecutor, satlabID, hostname)
@@ -2457,10 +2457,10 @@ func Test_removeAllPoolShouldFailWhenGettingBotInfoFailed(t *testing.T) {
 			} else if c.Args[1] == "get" {
 				return nil, errors.New("execute the command failed")
 			} else {
-				return nil, errors.New(fmt.Sprintf("Un-support command: %v", c.Args))
+				return nil, fmt.Errorf("Un-support command: %v", c.Args)
 			}
 		}
-		return nil, errors.New(fmt.Sprintf("Un-support command: %v", c.Args))
+		return nil, fmt.Errorf("Un-support command: %v", c.Args)
 	}}
 
 	err := removeAllPoolsFromDUT(ctx, s.commandExecutor, satlabID, hostname)
@@ -2486,12 +2486,12 @@ func Test_removeAllPoolShouldSuccessWhenCommandSuccess(t *testing.T) {
 			} else if c.Args[1] == "get" {
 				return nil, errors.New("should not reach here")
 			} else {
-				return nil, errors.New(fmt.Sprintf("Un-support command: %v", c.Args))
+				return nil, fmt.Errorf("Un-support command: %v", c.Args)
 			}
 		} else if c.Args[0] == paths.GetHostIdentifierScript {
 			return []byte(satlabID), nil
 		}
-		return nil, errors.New(fmt.Sprintf("Un-support command: %v", c.Args))
+		return nil, fmt.Errorf("Un-support command: %v", c.Args)
 	}}
 
 	err := removeAllPoolsFromDUT(ctx, s.commandExecutor, satlabID, hostname)

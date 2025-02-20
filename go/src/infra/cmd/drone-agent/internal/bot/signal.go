@@ -29,7 +29,7 @@ func (b realBot) TerminateOrKill() error {
 	}()
 	err := b.cmd.Process.Signal(unix.SIGTERM)
 	if err != nil {
-		return fmt.Errorf("SIGTERM bot %s: %s", b.config.BotID, err)
+		return fmt.Errorf("SIGTERM bot %s: %w", b.config.BotID, err)
 	}
 
 	killTimer := time.NewTimer(GraceInterval)
@@ -45,7 +45,7 @@ func (b realBot) TerminateOrKill() error {
 		log.Printf("Wait for SIGTERM expired so try killing bot %q and its descendants", b.config.BotID)
 		p, err := process.NewProcess(int32(b.cmd.Process.Pid))
 		if err != nil {
-			return fmt.Errorf("Failed to create process object for %s: %s", b.config.BotID, err)
+			return fmt.Errorf("Failed to create process object for %s: %w", b.config.BotID, err)
 		}
 		tryKillProcessTree(p)
 	}

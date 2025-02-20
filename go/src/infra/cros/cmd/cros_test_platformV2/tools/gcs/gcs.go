@@ -55,7 +55,7 @@ func FetchImageData(ctx context.Context, board string, template string) (map[str
 	// unmarshaler := protojson.Unmarshaler{}
 	err = protojson.Unmarshal(catOut, metadata)
 	if err != nil {
-		return nil, fmt.Errorf("unable to unmarshal metadata: %s", err)
+		return nil, fmt.Errorf("unable to unmarshal metadata: %w", err)
 	}
 
 	images := metadata.Containers[board].Images

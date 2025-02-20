@@ -103,7 +103,7 @@ func (c *leaseRun) innerRun(a subcommands.Application, env subcommands.Env) erro
 	defer vmLeaser.Close()
 
 	if _, err = mail.ParseAddress(vmLeaser.Email); err != nil {
-		return fmt.Errorf("Failed to validate email of current user: %v", err)
+		return fmt.Errorf("Failed to validate email of current user: %w", err)
 	}
 
 	var image string

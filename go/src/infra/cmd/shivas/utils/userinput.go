@@ -2264,7 +2264,7 @@ func GetNextPage(pageToken string) (bool, error) {
 func getBoolInput(value string, input *Input) (bool, bool) {
 	value = strings.ToLower(value)
 	if value != "y" && value != "n" {
-		input.Desc = fmt.Sprintf("%s", WrongInput)
+		input.Desc = WrongInput
 		return false, false
 	}
 	// User has entered some valid input so we can go to the next input field
@@ -2277,7 +2277,7 @@ func getBoolInput(value string, input *Input) (bool, bool) {
 func getIntInput(value string, input *Input) int32 {
 	i, err := strconv.ParseInt(value, 10, 32)
 	if err != nil {
-		input.Desc = fmt.Sprintf("%s", WrongInput)
+		input.Desc = WrongInput
 		return -1
 	}
 	return int32(i)

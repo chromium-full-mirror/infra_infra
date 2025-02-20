@@ -600,7 +600,7 @@ func unmarshalString(s string, m proto.Message) error {
 	u := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	err := u.Unmarshal(strings.NewReader(s), m)
 	if err != nil {
-		return fmt.Errorf("%s: %q", err, s)
+		return fmt.Errorf("%w: %q", err, s)
 	}
 	return nil
 }

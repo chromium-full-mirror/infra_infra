@@ -249,7 +249,7 @@ func TestSet(t *testing.T) {
 			_, err = io.Copy(&body, tr)
 			assert.Loosely(c, err, should.BeNil)
 
-			f := memFile(hdr.Name, string(body.Bytes()))
+			f := memFile(hdr.Name, body.String())
 			if runtime.GOOS != "windows" {
 				f.Writable = (hdr.Mode & 0222) != 0
 				f.Executable = (hdr.Mode & 0111) != 0

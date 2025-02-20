@@ -152,7 +152,7 @@ func defaultDiscoverPort(cmdExecutor cmdExecutor, request *api.StartTemplatedCon
 	} else {
 		containerIP, err := getContainerIP(cmdExecutor, request.Name)
 		if err != nil {
-			return nil, fmt.Errorf("failed to retrieve container IP address: %s", err)
+			return nil, fmt.Errorf("failed to retrieve container IP address: %w", err)
 		}
 		portBinding.HostIp = containerIP
 	}
@@ -168,7 +168,7 @@ func getContainerIP(cmdExecutor cmdExecutor, containerName string) (string, erro
 	}
 	stdout, stderr, err := cmdExecutor.Execute(context.Background(), cmd)
 	if err != nil {
-		return "", fmt.Errorf("%v with stderr: %s", err, stderr)
+		return "", fmt.Errorf("%w with stderr: %s", err, stderr)
 	}
 	containerIP := strings.Trim(strings.TrimSpace(stdout), "'")
 	return containerIP, nil

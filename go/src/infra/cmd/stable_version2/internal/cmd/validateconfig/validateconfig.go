@@ -74,7 +74,7 @@ func (c *command) innerRun(a subcommands.Application, args []string, env subcomm
 		}
 		contents, err = fetchGitPath(ctx, cmd.StableVersionConfigPath, &c.authFlags)
 		if err != nil {
-			return fmt.Errorf("getting remote file contents: %s", err)
+			return fmt.Errorf("getting remote file contents: %w", err)
 		}
 	} else {
 		var err error
@@ -86,27 +86,27 @@ func (c *command) innerRun(a subcommands.Application, args []string, env subcomm
 		}
 		contents, err = ioutil.ReadFile(args[0])
 		if err != nil {
-			return fmt.Errorf("reading local file: %s", err)
+			return fmt.Errorf("reading local file: %w", err)
 		}
 	}
 
 	sv, err := vc.InspectBuffer(contents)
 	if err != nil {
-		return fmt.Errorf("inspecting file: %s", err)
+		return fmt.Errorf("inspecting file: %w", err)
 	}
 
 	t, err := cmd.NewAuthenticatedTransport(ctx, &c.authFlags)
 	if err != nil {
-		return fmt.Errorf("creating authenticated transport: %s", err)
+		return fmt.Errorf("creating authenticated transport: %w", err)
 	}
 	var r querygs.Reader
 	if err := r.Init(ctx, t, utils.Unmarshaller, "validate-config"); err != nil {
-		return fmt.Errorf("initializing Google Storage client: %s", err)
+		return fmt.Errorf("initializing Google Storage client: %w", err)
 	}
 
 	res, err := r.ValidateConfig(ctx, sv)
 	if err != nil {
-		return fmt.Errorf("valdating config using Google Storage: %s", err)
+		return fmt.Errorf("valdating config using Google Storage: %w", err)
 	}
 	msg, err := json.MarshalIndent(res, "", "    ")
 	if err != nil {

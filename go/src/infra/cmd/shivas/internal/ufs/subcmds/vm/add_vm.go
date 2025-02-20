@@ -124,7 +124,7 @@ func (c *addVM) innerRun(a subcommands.Application, args []string, env subcomman
 			return err
 		}
 		if vm.GetMachineLseId() == "" {
-			return errors.New(fmt.Sprintf("machineLseId field is empty in json. It is a required parameter for json input."))
+			return errors.New("machineLseId field is empty in json. It is a required parameter for json input.")
 		}
 	} else {
 		c.parseArgs(&vm)

@@ -56,7 +56,7 @@ func (sc *ServerCommand) Init(args []string) error {
 
 	sc.metadata.InputProto, err = service.ParseServerStartReq(sc.inputFile)
 	if err != nil {
-		return fmt.Errorf("unable to parse CrosTestRunnerServerStartRequest proto: %s", err)
+		return fmt.Errorf("unable to parse CrosTestRunnerServerStartRequest proto: %w", err)
 	}
 
 	return nil

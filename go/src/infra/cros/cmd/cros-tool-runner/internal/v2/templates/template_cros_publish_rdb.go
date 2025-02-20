@@ -60,7 +60,7 @@ func (p *crosRdbPublishProcessor) Process(request *api.StartTemplatedContainerRe
 
 	volumes = append(volumes, fmt.Sprintf("%s:%s", request.GetArtifactDir(), p.dockerArtifactDirName))
 	// Set LUCI_CONTEXT inside container
-	if luciContextLoc, present := os.LookupEnv(LuciContext); present == true {
+	if luciContextLoc, present := os.LookupEnv(LuciContext); present {
 		luciContextParentDir := filepath.Dir(luciContextLoc)
 		luciContextBase := filepath.Base(luciContextLoc)
 		envVars = append(envVars, fmt.Sprintf("%s=%s", LuciContext, filepath.Join(p.dockerPublishLuciDirName, luciContextBase)))

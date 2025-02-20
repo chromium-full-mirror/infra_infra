@@ -203,7 +203,7 @@ func getConnectIPsHelper() executor.IExecCommander {
 			if c.Path == paths.Fping {
 				return []byte("127.0.0.1"), nil
 			}
-			return nil, errors.New(fmt.Sprintf("path: %v", c.Path))
+			return nil, fmt.Errorf("path: %v", c.Path)
 		},
 	}
 }

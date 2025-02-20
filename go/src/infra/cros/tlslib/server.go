@@ -146,7 +146,7 @@ func (s *Server) cacheForDut(ctx context.Context, url, dutName string) (string, 
 
 	op, err = lro.Wait(ctx, longrunning.NewOperationsClient(s.wiringConn), op.Name)
 	if err != nil {
-		return "", fmt.Errorf("cacheForDut: failed to wait for CacheForDut, %s", err)
+		return "", fmt.Errorf("cacheForDut: failed to wait for CacheForDut, %w", err)
 	}
 
 	if s := op.GetError(); s != nil {
@@ -166,7 +166,7 @@ func (s *Server) cacheForDut(ctx context.Context, url, dutName string) (string, 
 	// TLS side, wrap in Swarming and BBID.
 	u, err := net_url.Parse(resp.GetUrl())
 	if err != nil {
-		return "", fmt.Errorf("cacheForDut: failed to parse url=%s, %s", resp.GetUrl(), err)
+		return "", fmt.Errorf("cacheForDut: failed to parse url=%s, %w", resp.GetUrl(), err)
 	}
 
 	u_stid := "swarming/"
@@ -470,11 +470,11 @@ func (s *Server) wiringClient() tls.WiringClient {
 func authMethodFromKeyFile(keyfile string) (ssh.Signer, error) {
 	key, err := ioutil.ReadFile(keyfile)
 	if err != nil {
-		return nil, fmt.Errorf("auth ssh from key file: %s", err)
+		return nil, fmt.Errorf("auth ssh from key file: %w", err)
 	}
 	signer, err := ssh.ParsePrivateKey(key)
 	if err != nil {
-		return nil, fmt.Errorf("auth ssh from key file: %s", err)
+		return nil, fmt.Errorf("auth ssh from key file: %w", err)
 	}
 	return signer, nil
 }

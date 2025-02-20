@@ -85,7 +85,7 @@ func generateUseFlagDict(ctx context.Context, req *api.InternalTestplan, log *lo
 
 	buildTargetGSMap, err := createBuildTargetGSMap(req)
 	if err != nil {
-		return nil, fmt.Errorf("Error generating board-gcsPath map: %s", err)
+		return nil, fmt.Errorf("Error generating board-gcsPath map: %w", err)
 	}
 
 	gsClient, err := storage.NewGSClient(ctx, "")
@@ -95,7 +95,7 @@ func generateUseFlagDict(ctx context.Context, req *api.InternalTestplan, log *lo
 
 	useFlagsDir, err := createDirectory(log)
 	if err != nil {
-		return nil, fmt.Errorf("Error setting up parent directory for downloading files from gs: %s", err)
+		return nil, fmt.Errorf("Error setting up parent directory for downloading files from gs: %w", err)
 	}
 
 	// useFlagDict will look like below, after collecting use flags for all buildTarget in suite info.
@@ -144,7 +144,7 @@ func createBuildTargetGSMap(req *api.InternalTestplan) (map[string]string, error
 				// retrieve build target values "board+variant" for each schduling unit for a test
 				buildTargetGSKey, err := retrieveBuildTargetKey(schedulingUnit.GetPrimaryTarget().GetSwarmingDef())
 				if err != nil {
-					return nil, fmt.Errorf("Error retrieving build target key from hwDef: %s", err)
+					return nil, fmt.Errorf("Error retrieving build target key from hwDef: %w", err)
 				}
 
 				// Check if buildTargetGSKey is not empty and "installPath" exists in the lookup table
@@ -289,7 +289,7 @@ func updateTestCases(req *api.InternalTestplan, useFlagDict map[string]map[strin
 			log.Printf("Pruning scheduling units for test : %s", testCase.GetName())
 			filteredSchedulingUnitOptions, err := filterSchedulingUnitOptionsBasedOnUseFlag(testCase.GetSchedulingUnitOptions(), useFlagDict, testCase.GetMetadata().GetTestCase().GetBuildDependencies(), log)
 			if err != nil {
-				return fmt.Errorf("Error while pruning scheduling unit options: %s", err)
+				return fmt.Errorf("Error while pruning scheduling unit options: %w", err)
 			}
 			testCase.SchedulingUnitOptions = filteredSchedulingUnitOptions
 		} else {
@@ -314,13 +314,13 @@ func executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.C
 	// parses the request and generates the use flag set for each board+variant
 	useFlagDict, err := generateUseFlagDict(ctx, req, log)
 	if err != nil {
-		return nil, fmt.Errorf("Error generating board-use flags map: %s", err)
+		return nil, fmt.Errorf("Error generating board-use flags map: %w", err)
 	}
 
 	// iterates each test case and removes the scheduling unit as per build dependencies and use flag set of the scheduling unit
 	err = updateTestCases(req, useFlagDict, log)
 	if err != nil {
-		return nil, fmt.Errorf("Error during use flag based test cases pruning: %s", err)
+		return nil, fmt.Errorf("Error during use flag based test cases pruning: %w", err)
 	}
 
 	return req, nil

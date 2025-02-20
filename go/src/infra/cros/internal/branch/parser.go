@@ -92,7 +92,7 @@ func ParseBuildspec(buildspec string) (*cv.VersionInfo, error) {
 func releaseBranches(branchList []string, minMilestone int) ([]string, error) {
 	branches := []string{}
 	for _, branch := range branchList {
-		if strings.HasPrefix(branch, fmt.Sprintf("release-R")) {
+		if strings.HasPrefix(branch, "release-R") {
 			match := milestoneRegexp.FindStringSubmatch(branch)
 			if match == nil || len(match) < 2 {
 				return nil, fmt.Errorf("malformatted release branch: %s", branch)

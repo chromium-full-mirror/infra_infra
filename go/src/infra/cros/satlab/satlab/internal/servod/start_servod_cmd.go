@@ -243,7 +243,7 @@ func (c *startServodRun) validate(dhbSatlabID string, positionalArgs []string) e
 
 	// Ensures the host or required field is provided.
 	if c.host == "" && (c.board == "" || c.servoSerial == "" || c.servodContainerName == "") {
-		return errors.Reason(fmt.Sprintf("-host <hostname> is required")).Err()
+		return errors.Reason("-host <hostname> is required").Err()
 	}
 
 	c.host = site.GetFullyQualifiedHostname(c.commonFlags.SatlabID, dhbSatlabID, site.Satlab, c.host)

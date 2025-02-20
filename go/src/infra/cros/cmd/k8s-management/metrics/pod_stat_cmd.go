@@ -45,16 +45,16 @@ func (c *podStatCmd) Execute(_ context.Context, _ *flag.FlagSet, _ ...interface{
 func (c *podStatCmd) startPodStat() error {
 	inserter, err := c.commonOpts.BqInserter()
 	if err != nil {
-		return fmt.Errorf("start pod perf metrics: %s", err)
+		return fmt.Errorf("start pod perf metrics: %w", err)
 	}
 
 	clientset, err := getK8sClientSet()
 	if err != nil {
-		return fmt.Errorf("new metric client: %s", err)
+		return fmt.Errorf("new metric client: %w", err)
 	}
 	cn, err := getClusterName(clientset)
 	if err != nil {
-		return fmt.Errorf("new metric client: %s", err)
+		return fmt.Errorf("new metric client: %w", err)
 	}
 	log.Printf("Cluster name: %q", cn)
 

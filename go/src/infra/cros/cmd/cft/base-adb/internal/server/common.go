@@ -91,13 +91,13 @@ func (s *adbService) Run(ctx context.Context) error {
 // createLogFile creates a file and its parent directory for logging purpose.
 func createLogFile(dir string) (*os.File, error) {
 	if err := os.MkdirAll(dir, 0755); err != nil {
-		return nil, fmt.Errorf("failed to create directory %s: %s", dir, err)
+		return nil, fmt.Errorf("failed to create directory %s: %w", dir, err)
 	}
 	logFilePath := filepath.Join(dir, "log.txt")
 	// Log the full output of the command to disk.
 	logFile, err := os.Create(logFilePath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to create file %s: %s", logFilePath, err)
+		return nil, fmt.Errorf("failed to create file %s: %w", logFilePath, err)
 	}
 	return logFile, nil
 }

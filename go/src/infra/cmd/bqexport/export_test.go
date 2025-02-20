@@ -90,7 +90,7 @@ func TestBQExport(t *testing.T) {
 		t.Fatalf("failed to read golden file: %s", err)
 	}
 
-	if bytes.Compare(golden, gen) != 0 {
+	if !bytes.Equal(golden, gen) {
 		t.Fatalf("generated file does not match golden file")
 	}
 }

@@ -186,7 +186,7 @@ func (b *BuildServiceImpl) FindMostStableBuild(ctx context.Context, board string
 
 	milestone, err := parser.ExtractMilestoneFrom(resp.GetMilestone())
 	if err != nil {
-		return "", errors.New(fmt.Sprintf("milestone pattern doesn't match %v\n", resp.GetMilestone()))
+		return "", fmt.Errorf("milestone pattern doesn't match %v\n", resp.GetMilestone())
 	}
 
 	return buildToOS(milestone, resp.GetBuildVersion()), nil

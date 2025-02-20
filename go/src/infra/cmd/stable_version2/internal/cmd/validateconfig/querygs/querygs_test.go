@@ -53,12 +53,12 @@ func TestVerifyCrosImageExists(t *testing.T) {
 			e := r.verifyCrosImageExists(context.Background(), tt.buildTarget, DONTCARE, tt.crosVersion)
 			if e != nil {
 				msg := fmt.Sprintf("uuid (%s): unexpected error (%s)", tt.uuid, e.Error())
-				t.Errorf(msg)
+				t.Error(msg)
 			}
 			diff := cmp.Diff(tt.out, r.cache)
 			if diff != "" {
 				msg := fmt.Sprintf("uuid (%s): unexpected diff (%s)", tt.uuid, diff)
-				t.Errorf(msg)
+				t.Error(msg)
 			}
 		})
 	}
@@ -222,12 +222,12 @@ func TestValidateConfig(t *testing.T) {
 			expected := parseResultsOrPanic(tt.out)
 			result, e := r.ValidateConfig(bg, sv)
 			if err := validateErrorContainsSubstring(e, tt.errorFragment); err != nil {
-				t.Errorf(err.Error())
+				t.Error(err.Error())
 			}
 			diff := cmp.Diff(expected, result)
 			if diff != "" {
 				msg := fmt.Sprintf("name (%s): uuid (%s): unexpected diff (%s)", tt.name, tt.uuid, diff)
-				t.Errorf(msg)
+				t.Error(msg)
 			}
 		})
 	}

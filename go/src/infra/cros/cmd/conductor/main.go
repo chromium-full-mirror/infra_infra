@@ -95,11 +95,11 @@ func (c *collectRun) validate() error {
 func (c *collectRun) readInput() (*pb.CollectConfig, error) {
 	inputBytes, err := ioutil.ReadFile(c.inputJSON)
 	if err != nil {
-		return nil, fmt.Errorf("Failed reading input_json\n%v", err)
+		return nil, fmt.Errorf("Failed reading input_json\n%w", err)
 	}
 	req := &pb.CollectConfig{}
 	if err := unmarshaler.Unmarshal(bytes.NewReader(inputBytes), req); err != nil {
-		return nil, fmt.Errorf("Couldn't decode %s as a CollectConfig\n%v", c.inputJSON, err)
+		return nil, fmt.Errorf("Couldn't decode %s as a CollectConfig\n%w", c.inputJSON, err)
 	}
 	return req, nil
 }

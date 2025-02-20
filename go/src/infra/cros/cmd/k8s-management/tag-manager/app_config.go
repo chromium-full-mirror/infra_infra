@@ -52,7 +52,7 @@ func (a *appConfig) apply(repo ImageRepo) error {
 	defer cancel()
 	t, err := repo.List(ctx)
 	if err != nil {
-		return fmt.Errorf("apply %q: %s", repo.Name(), err)
+		return fmt.Errorf("apply %q: %w", repo.Name(), err)
 	}
 	img := image.NewList(repo.Name(), t.Manifests)
 	oImg := &image.OfficialList{
@@ -66,11 +66,11 @@ func (a *appConfig) apply(repo ImageRepo) error {
 
 		aligned, err := oImg.Align(t)
 		if err != nil {
-			return fmt.Errorf("apply %q: %s", p, err)
+			return fmt.Errorf("apply %q: %w", p, err)
 		}
 		if aligned {
 			if err := p.apply(oImg); err != nil {
-				return fmt.Errorf("apply policy %q to %q: %s", p, repo.Name(), err)
+				return fmt.Errorf("apply policy %q to %q: %w", p, repo.Name(), err)
 			}
 		} else {
 			log.Printf("%q: applying %q: remove the tag %q due to no official images to align", repo.Name(), p, t)
@@ -79,7 +79,7 @@ func (a *appConfig) apply(repo ImageRepo) error {
 		// Update remote if applies.
 		if newDigest := img.TagToDigest[t]; newDigest != oldDigest {
 			if err := updateRemoteRepo(ctx, repo, t, oImg); err != nil {
-				return fmt.Errorf("apply policy %q to %q: %s", p, repo.Name(), err)
+				return fmt.Errorf("apply policy %q to %q: %w", p, repo.Name(), err)
 			}
 		} else {
 			log.Printf("%q: Skip updating %q (no changes)", repo.Name(), t)
@@ -92,11 +92,11 @@ func (a *appConfig) apply(repo ImageRepo) error {
 func updateRemoteRepo(ctx context.Context, repo ImageRepo, tag string, oImg *image.OfficialList) error {
 	if newTag, ok := oImg.GetOfficialTag(tag); ok {
 		if err := repo.Tag(ctx, tag, newTag); err != nil {
-			return fmt.Errorf("update remote repo %q:%q: %s", repo.Name(), tag, err)
+			return fmt.Errorf("update remote repo %q:%q: %w", repo.Name(), tag, err)
 		}
 	} else {
 		if err := repo.Untag(ctx, tag); err != nil {
-			return fmt.Errorf("update remote repo %q:%q: %s", repo.Name(), tag, err)
+			return fmt.Errorf("update remote repo %q:%q: %w", repo.Name(), tag, err)
 		}
 	}
 	return nil

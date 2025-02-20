@@ -151,7 +151,7 @@ func (ex *CtrManager) startCTRServer(ctx context.Context) (err error) {
 // already created temp dir.
 func (ex *CtrManager) startCTRServerlower(ctx context.Context) error {
 	var err error
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Start cros-tool-runner server"))
+	step, ctx := build.StartStep(ctx, "CrosToolRunner: Start cros-tool-runner server")
 	defer func() { step.End(err) }()
 
 	// Initialize if not already initialized.
@@ -198,7 +198,7 @@ func (ex *CtrManager) getServerAddressFromServiceMetadata(ctx context.Context) (
 	}
 
 	var err error
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Retrieve service metadata"))
+	step, ctx := build.StartStep(ctx, "CrosToolRunner: Retrieve service metadata")
 	defer func() { step.End(err) }()
 
 	metaFilePath := path.Join(ex.CtrTempDirLoc, common.CftServiceMetadataFileName)
@@ -217,7 +217,7 @@ func (ex *CtrManager) connectToCTRServer(
 	ctx context.Context,
 	serverAddress string) (testapi.CrosToolRunnerContainerServiceClient, error) {
 	var err error
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Connect to cros-tool-runner server"))
+	step, ctx := build.StartStep(ctx, "CrosToolRunner: Connect to cros-tool-runner server")
 	defer func() { step.End(err) }()
 
 	if serverAddress == "" {
@@ -252,7 +252,7 @@ func (ex *CtrManager) connectToCTRServer(
 // StopCTRServer stops currently running CTR server.
 func (ctr *CtrManager) StopManager(ctx context.Context, foo string) error {
 	var err error
-	step, ctx := build.StartStep(ctx, fmt.Sprintf("CrosToolRunner: Stop cros-tool-runner server"))
+	step, ctx := build.StartStep(ctx, "CrosToolRunner: Stop cros-tool-runner server")
 	defer func() { step.End(err) }()
 
 	if !ctr.isServerRunning {

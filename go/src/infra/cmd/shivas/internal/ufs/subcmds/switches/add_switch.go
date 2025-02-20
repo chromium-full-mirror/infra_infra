@@ -121,7 +121,7 @@ func (c *addSwitch) innerRun(a subcommands.Application, args []string, env subco
 				return err
 			}
 			if s.GetRack() == "" {
-				return errors.New(fmt.Sprintf("rack field is empty in json. It is a required parameter for json input."))
+				return errors.New("rack field is empty in json. It is a required parameter for json input.")
 			}
 		}
 	} else {

@@ -30,27 +30,27 @@ import (
 func k8sApply(ctx context.Context, content string) (*change, error) {
 	cfg, err := rest.InClusterConfig()
 	if err != nil {
-		return nil, fmt.Errorf("apply to k8s: %s", err)
+		return nil, fmt.Errorf("apply to k8s: %w", err)
 	}
 	dc, err := discovery.NewDiscoveryClientForConfig(cfg)
 	if err != nil {
-		return nil, fmt.Errorf("apply to k8s: %s", err)
+		return nil, fmt.Errorf("apply to k8s: %w", err)
 	}
 	mapper := restmapper.NewDeferredDiscoveryRESTMapper(memory.NewMemCacheClient(dc))
 	dyn, err := dynamic.NewForConfig(cfg)
 	if err != nil {
-		return nil, fmt.Errorf("apply to k8s: %s", err)
+		return nil, fmt.Errorf("apply to k8s: %w", err)
 	}
 	obj := &unstructured.Unstructured{}
 	decUnstructured := yaml.NewDecodingSerializer(unstructured.UnstructuredJSONScheme)
 	_, gvk, err := decUnstructured.Decode([]byte(content), nil, obj)
 	if err != nil {
-		return nil, fmt.Errorf("apply to k8s: %s", err)
+		return nil, fmt.Errorf("apply to k8s: %w", err)
 	}
 
 	mapping, err := mapper.RESTMapping(gvk.GroupKind(), gvk.Version)
 	if err != nil {
-		return nil, fmt.Errorf("apply to k8s: %s", err)
+		return nil, fmt.Errorf("apply to k8s: %w", err)
 	}
 
 	var dr dynamic.ResourceInterface
@@ -62,7 +62,7 @@ func k8sApply(ctx context.Context, content string) (*change, error) {
 
 	c, err := putResource(ctx, dr, obj)
 	if err != nil {
-		return nil, fmt.Errorf("apply to k8s: %s", err)
+		return nil, fmt.Errorf("apply to k8s: %w", err)
 	}
 	return c, nil
 }
@@ -84,23 +84,23 @@ func putResource(ctx context.Context, dr dynamic.ResourceInterface, obj *unstruc
 		// there's no race condition.
 		after, err := dr.Create(ctx, obj, metav1.CreateOptions{})
 		if err != nil {
-			return nil, fmt.Errorf("put resource: create %q: %s", name, err)
+			return nil, fmt.Errorf("put resource: create %q: %w", name, err)
 		}
 		c, err := diffResource(nil, after)
 		if err != nil {
-			return nil, fmt.Errorf("put resource %q: %s", name, err)
+			return nil, fmt.Errorf("put resource %q: %w", name, err)
 		}
 		return c, nil
 	}
 
 	data, err := json.Marshal(obj)
 	if err != nil {
-		return nil, fmt.Errorf("put resource %q: %s", name, err)
+		return nil, fmt.Errorf("put resource %q: %w", name, err)
 	}
 	// Dry run that patch to check if there's change.
 	c, err := patchResource(ctx, name, dr, before, data, true)
 	if err != nil {
-		return nil, fmt.Errorf("put resource %q: %s", name, err)
+		return nil, fmt.Errorf("put resource %q: %w", name, err)
 	}
 	if c == nil {
 		return nil, nil
@@ -108,7 +108,7 @@ func putResource(ctx context.Context, dr dynamic.ResourceInterface, obj *unstruc
 	// Really patch the resource.
 	c, err = patchResource(ctx, name, dr, before, data, false)
 	if err != nil {
-		return nil, fmt.Errorf("put resource %q: %s", name, err)
+		return nil, fmt.Errorf("put resource %q: %w", name, err)
 	}
 	return c, nil
 }
@@ -124,11 +124,11 @@ func patchResource(ctx context.Context, name string, dr dynamic.ResourceInterfac
 	}
 	after, err := dr.Patch(ctx, name, types.ApplyPatchType, data, po)
 	if err != nil {
-		return nil, fmt.Errorf("patchResource (dry run: %v): %s", dryRun, err)
+		return nil, fmt.Errorf("patchResource (dry run: %v): %w", dryRun, err)
 	}
 	c, err := diffResource(before, after)
 	if err != nil {
-		return nil, fmt.Errorf("patchResource (dry run: %v): %s", dryRun, err)
+		return nil, fmt.Errorf("patchResource (dry run: %v): %w", dryRun, err)
 	}
 	return c, nil
 }
@@ -140,11 +140,11 @@ func diffResource(before, after *unstructured.Unstructured) (*change, error) {
 
 	js0, err := json.Marshal(before)
 	if err != nil {
-		return nil, fmt.Errorf("get changes (before) %s", err)
+		return nil, fmt.Errorf("get changes (before) %w", err)
 	}
 	js1, err := json.Marshal(after)
 	if err != nil {
-		return nil, fmt.Errorf("get changes (after) %s", err)
+		return nil, fmt.Errorf("get changes (after) %w", err)
 	}
 
 	kn := after.GetKind() + "/" + after.GetName()

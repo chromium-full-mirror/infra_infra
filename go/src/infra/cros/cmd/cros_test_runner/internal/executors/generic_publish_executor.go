@@ -70,7 +70,7 @@ func (ex *GenericPublishExecutor) genericPublishHandler(
 
 	client, err := ex.ConnectToService(ctx, cmd.PublishRequest.GetServiceAddress())
 	if err != nil {
-		err = fmt.Errorf("error connecting to publish service, %s", err)
+		err = fmt.Errorf("error connecting to publish service, %w", err)
 		return
 	}
 

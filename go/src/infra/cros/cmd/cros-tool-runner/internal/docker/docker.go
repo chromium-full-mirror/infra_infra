@@ -271,7 +271,7 @@ func (d *Docker) runDockerImage(ctx context.Context, block bool, netbind bool, s
 	}
 
 	// give access to net_raw so things like `ping` can work in the container.
-	if netbind == true {
+	if netbind {
 		args = append(args, "--cap-add=NET_RAW")
 	}
 
@@ -476,7 +476,7 @@ func maybeFindToken(forceNewAuth bool) (string, error) {
 		return readToken(authFileDir)
 	}
 	if err != nil {
-		log.Printf(err.Error())
+		log.Print(err.Error())
 	}
 	return "", err
 }
@@ -514,7 +514,7 @@ func GCloudToken(ctx context.Context, keyfile string, forceNewAuth bool) (string
 func gcloudAuth(ctx context.Context, keyfile string) (string, error) {
 	err := activateAccount(ctx, keyfile)
 	if err != nil {
-		return "", fmt.Errorf("could not activate account: %s", err)
+		return "", fmt.Errorf("could not activate account: %w", err)
 	}
 
 	cmd := exec.Command("gcloud", "auth", "print-access-token")
@@ -542,7 +542,7 @@ func configureDockerToGcloudAuth(ctx context.Context) error {
 // runGcloudConfigList logs the gcloud config on the bot. This will help understand why sometimes bot fails to generate token
 func runGcloudConfigList(ctx context.Context) error {
 	cmd := exec.Command("gcloud", "config", "list")
-	logStr := fmt.Sprintf("gcloud config list")
+	logStr := "gcloud config list"
 	stdout, stderr, err := common.RunWithTimeoutSpecialLog(ctx, cmd, 1*time.Minute, true, logStr)
 	common.PrintToLog("gcloud config list", stdout, stderr)
 	if err != nil {
@@ -556,7 +556,7 @@ func listAllSAOnBot(ctx context.Context) error {
 	// Prepare the 'ls -l' command with the provided directory
 	cmd := exec.Command("ls", "-l", "/creds/service_accounts")
 
-	logStr := fmt.Sprintf("ls -l /creds/service_accounts")
+	logStr := "ls -l /creds/service_accounts"
 	stdout, stderr, err := common.RunWithTimeoutSpecialLog(ctx, cmd, 1*time.Minute, true, logStr)
 	common.PrintToLog("ls -l /creds/service_accounts", stdout, stderr)
 	if err != nil {
@@ -577,7 +577,7 @@ func authFile(forceNewAuth bool) (error, string) {
 		log.Printf("Checking for authfile: %s\n", dir)
 		if f, err := os.Stat(dir); err == nil {
 			modifiedTime := f.ModTime()
-			if time.Now().Sub(modifiedTime).Hours() >= 24 {
+			if time.Since(modifiedTime).Hours() >= 24 {
 				log.Println("Auth Token is more than 24 hours old, forcing a refresh.")
 				return nil, ""
 			}

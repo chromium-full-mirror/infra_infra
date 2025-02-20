@@ -67,7 +67,7 @@ func StageImageToBucket(ctx context.Context, moblabClient MoblabClient, stageIma
 
 	var stageStatus *moblabpb.CheckBuildStageStatusResponse
 	var err error
-	var delay time.Duration = 1 * time.Second
+	var delay = 1 * time.Second
 	maxDelay := 10 * time.Second
 	totalElapsedTime := time.Duration(0)
 

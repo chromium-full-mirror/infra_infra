@@ -318,7 +318,7 @@ func readInput(r io.Reader, insertIDBase string, jsonList bool, overrides map[st
 		if line = bytes.TrimSpace(line); len(line) != 0 {
 			row, err := parseRow(line, fmt.Sprintf("%s:%d", insertIDBase, len(rows)))
 			if err != nil {
-				return nil, fmt.Errorf("bad input line %d: %s", lineNo, err)
+				return nil, fmt.Errorf("bad input line %d: %w", lineNo, err)
 			}
 			row.data = overrideColumns(row.data, overrides)
 			rows = append(rows, row)
@@ -337,7 +337,7 @@ func parseRow(data []byte, insertID string) (*tableRow, error) {
 	d := json.NewDecoder(bytes.NewReader(data))
 	d.UseNumber()
 	if err := d.Decode(&row); err != nil {
-		return nil, fmt.Errorf("bad JSON - %s", err)
+		return nil, fmt.Errorf("bad JSON - %w", err)
 	}
 	return &tableRow{row, insertID}, nil
 }

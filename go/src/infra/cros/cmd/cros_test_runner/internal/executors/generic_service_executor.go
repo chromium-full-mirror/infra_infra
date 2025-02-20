@@ -61,28 +61,28 @@ func (ex *GenericServiceExecutor) GenericServiceHandler(
 
 	client, err := ex.ConnectToService(ctx, cmd.GenericRequest.GetServiceAddress())
 	if err != nil {
-		err = fmt.Errorf("error connecting to generic service, %s", err)
+		err = fmt.Errorf("error connecting to generic service, %w", err)
 		return
 	}
 
 	startResp, err := ex.Start(ctx, client, cmd.GenericRequest.StartRequest)
 	cmd.StartResp = startResp
 	if err != nil {
-		err = fmt.Errorf("error in generic service for 'Start', %s", err)
+		err = fmt.Errorf("error in generic service for 'Start', %w", err)
 		return
 	}
 
 	runResp, err := ex.Run(ctx, client, cmd.GenericRequest.RunRequest)
 	cmd.RunResp = runResp
 	if err != nil {
-		err = fmt.Errorf("error in generic service for 'Run', %s", err)
+		err = fmt.Errorf("error in generic service for 'Run', %w", err)
 		return
 	}
 
 	stopResp, err := ex.Stop(ctx, client, cmd.GenericRequest.StopRequest)
 	cmd.StopResp = stopResp
 	if err != nil {
-		err = fmt.Errorf("error in generic service for 'Stop', %s", err)
+		err = fmt.Errorf("error in generic service for 'Stop', %w", err)
 		return
 	}
 

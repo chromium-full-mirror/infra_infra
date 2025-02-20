@@ -6,7 +6,6 @@ package shivas
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"os/exec"
 	"regexp"
@@ -77,7 +76,7 @@ func (u *DUTRepairer) Repair(
 	matches := linkRe.FindAllString(rawData, -1)
 	// we expected there are two urls
 	if len(matches) != 2 {
-		return nil, errors.New(fmt.Sprintf("Can't parse the url from the output: %v\n", rawData))
+		return nil, fmt.Errorf("Can't parse the url from the output: %v\n", rawData)
 	}
 
 	return &DUTRepairResponse{BuildLink: matches[0], TaskLink: matches[1]}, nil

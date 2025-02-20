@@ -60,7 +60,7 @@ func (ctrCipd *CtrCipdInfo) Initialize(ctx context.Context) error {
 		return errors.Annotate(err, "Ctr ensure error: ").Err()
 	}
 
-	logging.Infof(ctx, fmt.Sprintf("CTR initialization succeeded."))
+	logging.Infof(ctx, "CTR initialization succeeded.")
 	ctrCipd.IsInitialized = true
 	return nil
 }

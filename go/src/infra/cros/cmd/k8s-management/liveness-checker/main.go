@@ -90,7 +90,7 @@ func metricsInit(ctx context.Context, serviceName, tsmonEndpoint, tsmonCredentia
 	fl.Target.SetDefaultsFromHostname()
 
 	if err := tsmon.InitializeFromFlags(ctx, &fl); err != nil {
-		return fmt.Errorf("metrics init: %s", err)
+		return fmt.Errorf("metrics init: %w", err)
 	}
 	return nil
 }
@@ -112,22 +112,22 @@ func createRequests(ctx context.Context, endpoints []string, uri, extraHeaders s
 		}
 		base, err := url.Parse(e)
 		if err != nil {
-			return nil, fmt.Errorf("create requests for (%q, %q): %s", e, uri, err)
+			return nil, fmt.Errorf("create requests for (%q, %q): %w", e, uri, err)
 		}
 
 		u, err := url.Parse(uri)
 		if err != nil {
-			return nil, fmt.Errorf("create requests for (%q, %q): %s", e, uri, err)
+			return nil, fmt.Errorf("create requests for (%q, %q): %w", e, uri, err)
 		}
 
 		r, err := http.NewRequestWithContext(ctx, "GET", base.ResolveReference(u).String(), nil)
 		if err != nil {
-			return nil, fmt.Errorf("create requests for (%q, %q): %s", e, uri, err)
+			return nil, fmt.Errorf("create requests for (%q, %q): %w", e, uri, err)
 		}
 		reqs = append(reqs, r)
 	}
 	if err := setExtraHeaders(reqs, extraHeaders); err != nil {
-		return nil, fmt.Errorf("create requests: %s", err)
+		return nil, fmt.Errorf("create requests: %w", err)
 	}
 	return reqs, nil
 }
@@ -180,13 +180,13 @@ func checkEndpoints(ctx context.Context, c *http.Client, reqs []*http.Request, c
 func checkEndpoint(c *http.Client, r *http.Request, checkers []httpRespChecker) error {
 	resp, err := c.Do(r)
 	if err != nil {
-		return fmt.Errorf("check endpoint %q: %s", r.URL, err)
+		return fmt.Errorf("check endpoint %q: %w", r.URL, err)
 	}
 	defer resp.Body.Close()
 
 	for _, chk := range checkers {
 		if err := chk(resp); err != nil {
-			return fmt.Errorf("check endpoint %q: %s", r.URL, err)
+			return fmt.Errorf("check endpoint %q: %w", r.URL, err)
 		}
 	}
 	return nil
@@ -212,7 +212,7 @@ func httpContentChecker(expectedMD5 string) httpRespChecker {
 	return func(resp *http.Response) error {
 		b, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return fmt.Errorf("HTTP content MD5 check: read body: %s", err)
+			return fmt.Errorf("HTTP content MD5 check: read body: %w", err)
 		}
 		if m := fmt.Sprintf("%x", md5.Sum(b)); m != expectedMD5 {
 			return fmt.Errorf("HTTP content MD5 check: got %q, exptected %q", m, expectedMD5)

@@ -151,9 +151,7 @@ func (c *runCmd) innerRun(ctx context.Context, a subcommands.Application, args [
 	}
 	err = g.Wait()
 	// Read all generated results for the output.
-	for _, result := range provisionResults {
-		out.Responses = append(out.Responses, result)
-	}
+	out.Responses = append(out.Responses, provisionResults...)
 	return out, errors.Annotate(err, "inner run").Err()
 }
 

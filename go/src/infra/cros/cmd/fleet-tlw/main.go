@@ -83,11 +83,11 @@ func innerMain() error {
 func authMethodFromKeyFile(keyfile string) (ssh.Signer, error) {
 	key, err := ioutil.ReadFile(keyfile)
 	if err != nil {
-		return nil, fmt.Errorf("auth ssh from key file: %s", err)
+		return nil, fmt.Errorf("auth ssh from key file: %w", err)
 	}
 	signer, err := ssh.ParsePrivateKey(key)
 	if err != nil {
-		return nil, fmt.Errorf("auth ssh from key file: %s", err)
+		return nil, fmt.Errorf("auth ssh from key file: %w", err)
 	}
 	return signer, nil
 }

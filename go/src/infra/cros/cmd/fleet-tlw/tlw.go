@@ -279,7 +279,7 @@ func getCallerIP(ctx context.Context) (string, error) {
 	}
 	callerIP, _, err := net.SplitHostPort(p.Addr.String())
 	if err != nil {
-		return "", fmt.Errorf("Error determining IP address: %s", err)
+		return "", fmt.Errorf("Error determining IP address: %w", err)
 	}
 	return callerIP, nil
 }

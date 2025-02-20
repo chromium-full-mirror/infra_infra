@@ -153,7 +153,7 @@ func (c addDevboard) validateArgs() error {
 			return cmdlib.NewQuietUsageError(c.Flags, "Cannot skip servo serial. Not a servo V3 device.")
 		}
 	} else if c.servoSerial != "" || c.servoSetupType != "" || c.servoDockerContainerName != "" {
-		return cmdlib.NewQuietUsageError(c.Flags, fmt.Sprintf("Wrong usage!!\nProvided extra servo details when servo hostname is not provided."))
+		return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nProvided extra servo details when servo hostname is not provided.")
 	}
 	if c.servoSetupType != "" {
 		if _, ok := chromeosLab.ServoSetupType_value[appendServoSetupPrefix(c.servoSetupType)]; !ok {

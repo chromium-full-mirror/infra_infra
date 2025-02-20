@@ -80,7 +80,7 @@ func (b *BackgroundTLS) CacheForDut(ctx context.Context, imageURL, dutName strin
 	if err != nil {
 	}
 	if err != nil {
-		return "", fmt.Errorf("cacheForDut: failed to wait for CacheForDut, %s", err)
+		return "", fmt.Errorf("cacheForDut: failed to wait for CacheForDut, %w", err)
 	}
 
 	if s := op.GetError(); s != nil {

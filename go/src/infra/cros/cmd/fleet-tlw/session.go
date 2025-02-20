@@ -142,7 +142,7 @@ func (s *sessionServer) CreateSession(ctx context.Context, req *access.CreateSes
 func (s *sessionServer) setupSessionContext(ses session) sessionContext {
 	sc := sessionContext{session: ses}
 	sc.ctx, sc.cancelFunc = context.WithCancel(context.Background())
-	sc.cancelTimer = time.NewTimer(ses.expire.Sub(time.Now()))
+	sc.cancelTimer = time.NewTimer(time.Until(ses.expire))
 	s.wg.Add(1)
 	go func() {
 		defer s.wg.Done()
@@ -206,7 +206,7 @@ func (s *sessionServer) UpdateSession(ctx context.Context, req *access.UpdateSes
 		if !sc.cancelTimer.Stop() {
 			return nil, status.Errorf(codes.Aborted, "session already expired")
 		}
-		sc.cancelTimer.Reset(sc.expire.Sub(time.Now()))
+		sc.cancelTimer.Reset(time.Until(sc.expire))
 	}
 	s.sessions[name] = sc
 	return sc.toProto(name), nil

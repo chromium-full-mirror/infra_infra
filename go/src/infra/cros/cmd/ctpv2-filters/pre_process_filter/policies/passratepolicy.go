@@ -139,7 +139,7 @@ func (q *PassRatePolicy) stabilityFromPolicy() error {
 	// Query using all possible milestones. We will only search for results in the current on the first iterations.
 	bqIter, err := interfaces.QueryForResults(q.variant, mileStroneRegex, q.log)
 	if err != nil {
-		return fmt.Errorf("unable to determine stabily: %s", err)
+		return fmt.Errorf("unable to determine stabily: %w", err)
 	}
 
 	// Iterate through the results.

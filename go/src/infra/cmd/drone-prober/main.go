@@ -118,7 +118,7 @@ func runProbe(ctx context.Context) error {
 	err := runExec(ctx, cmd)
 	if err != nil {
 		dockerRunErrorCount.Inc()
-		return fmt.Errorf("run probe docker run failed: err=%q", err)
+		return fmt.Errorf("run probe docker run failed: err=%w", err)
 	}
 	log.Println("Run probe docker run completed succesfully")
 	return nil

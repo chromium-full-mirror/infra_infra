@@ -53,7 +53,7 @@ func newProvisionState(s *Server, req *tls.ProvisionDutRequest) (*provisionState
 
 	u, uErr := url.Parse(p.imagePath)
 	if uErr != nil {
-		return nil, fmt.Errorf("setPaths: failed to parse path %s, %s", p.imagePath, uErr)
+		return nil, fmt.Errorf("setPaths: failed to parse path %s, %w", p.imagePath, uErr)
 	}
 
 	d, version := path.Split(u.Path)
@@ -65,7 +65,7 @@ func newProvisionState(s *Server, req *tls.ProvisionDutRequest) (*provisionState
 func (p *provisionState) connect(ctx context.Context, addr string) (func(), error) {
 	c, err := p.s.clientPool.GetContext(ctx, addr)
 	if err != nil {
-		return nil, fmt.Errorf("connect: DUT unreachable, %s", err)
+		return nil, fmt.Errorf("connect: DUT unreachable, %w", err)
 	}
 
 	p.c = c
@@ -117,54 +117,54 @@ func (p *provisionState) swapStatefulPartition(ctx context.Context) error {
 
 	tmpMnt, err := runCmdOutput(p.c, "/usr/bin/mktemp -d")
 	if err != nil {
-		return fmt.Errorf("swapStatefulPartition: failed to create temporary directory, %s", err)
+		return fmt.Errorf("swapStatefulPartition: failed to create temporary directory, %w", err)
 	}
 	tmpMnt = strings.TrimSpace(tmpMnt)
 
 	err = runCmd(p.c, fmt.Sprintf("/bin/dd if=/dev/zero of=%s/fs bs=512M count=1", tmpMnt))
 	if err != nil {
-		return fmt.Errorf("swapStatefulPartition: failed to create zero file, %s", err)
+		return fmt.Errorf("swapStatefulPartition: failed to create zero file, %w", err)
 	}
 
 	err = runCmd(p.c, fmt.Sprintf("/sbin/mkfs.ext4 -O none,has_journal %s/fs", tmpMnt))
 	if err != nil {
-		return fmt.Errorf("swapStatefulPartition: failed to create powerwash filesystem, %s", err)
+		return fmt.Errorf("swapStatefulPartition: failed to create powerwash filesystem, %w", err)
 	}
 
 	err = runCmd(p.c, fmt.Sprintf("/bin/mkdir %s/mnt", tmpMnt))
 	if err != nil {
-		return fmt.Errorf("swapStatefulPartition: failed to create mount directory, %s", err)
+		return fmt.Errorf("swapStatefulPartition: failed to create mount directory, %w", err)
 	}
 
 	err = runCmd(p.c, fmt.Sprintf("/bin/mount %[1]s/fs %[1]s/mnt", tmpMnt))
 	if err != nil {
-		return fmt.Errorf("swapStatefulPartition: failed to mount powerwash filesystem, %s", err)
+		return fmt.Errorf("swapStatefulPartition: failed to mount powerwash filesystem, %w", err)
 	}
 
 	err = runCmd(p.c, fmt.Sprintf("/bin/echo -n \"fast safe keepimg\" > %s/mnt/factory_install_reset", tmpMnt))
 	if err != nil {
-		return fmt.Errorf("swapStatefulPartition: failed to write reset file, %s", err)
+		return fmt.Errorf("swapStatefulPartition: failed to write reset file, %w", err)
 	}
 
 	err = runCmd(p.c, fmt.Sprintf("/bin/umount %s/mnt", tmpMnt))
 	if err != nil {
-		return fmt.Errorf("swapStatefulPartition: failed to unmount powerwash filesystem, %s", err)
+		return fmt.Errorf("swapStatefulPartition: failed to unmount powerwash filesystem, %w", err)
 	}
 
 	err = runCmd(p.c, "/sbin/fsfreeze -f /mnt/stateful_partition")
 	if err != nil {
-		return fmt.Errorf("swapStatefulPartition: failed to freeze stateful filesystem, %s", err)
+		return fmt.Errorf("swapStatefulPartition: failed to freeze stateful filesystem, %w", err)
 	}
 
 	r, err := getRootDev(p.c)
 	if err != nil {
-		return fmt.Errorf("swapStatefulPartition: failed to get root device from DUT, %s", err)
+		return fmt.Errorf("swapStatefulPartition: failed to get root device from DUT, %w", err)
 	}
 	pi := getPartitionInfo(r)
 
 	err = runCmd(p.c, fmt.Sprintf("/bin/dd if=%s/fs of=%s bs=1M conv=fsync", tmpMnt, pi.stateful))
 	if err != nil {
-		return fmt.Errorf("swapStatefulPartition: failed to unmount powerwash filesystem, %s", err)
+		return fmt.Errorf("swapStatefulPartition: failed to unmount powerwash filesystem, %w", err)
 	}
 
 	return nil
@@ -175,7 +175,7 @@ func (p *provisionState) swapStatefulPartition(ctx context.Context) error {
 func (p *provisionState) provisionOS(ctx context.Context) error {
 	r, err := getRootDev(p.c)
 	if err != nil {
-		return fmt.Errorf("provisionOS: failed to get root device from DUT, %s", err)
+		return fmt.Errorf("provisionOS: failed to get root device from DUT, %w", err)
 	}
 
 	stopSystemDaemons(p.c)
@@ -183,21 +183,21 @@ func (p *provisionState) provisionOS(ctx context.Context) error {
 	// Only clear the inactive verified DLC marks if the DLCs exist.
 	dlcsExist, err := pathExists(p.c, dlcLibDir)
 	if err != nil {
-		return fmt.Errorf("provisionOS: failed to check if DLC is enabled, %s", err)
+		return fmt.Errorf("provisionOS: failed to check if DLC is enabled, %w", err)
 	}
 	if dlcsExist {
 		if err := clearInactiveDLCVerifiedMarks(p.c, r); err != nil {
-			return fmt.Errorf("provisionOS: failed to clear inactive verified DLC marks, %s", err)
+			return fmt.Errorf("provisionOS: failed to clear inactive verified DLC marks, %w", err)
 		}
 	}
 
 	pi := getPartitionInfo(r)
 	if err := p.installPartitions(ctx, pi); err != nil {
-		return fmt.Errorf("provisionOS: failed to provision the OS, %s", err)
+		return fmt.Errorf("provisionOS: failed to provision the OS, %w", err)
 	}
 	if err := p.postInstall(pi); err != nil {
 		p.revertPostInstall(pi)
-		return fmt.Errorf("provisionOS: failed to set next kernel, %s", err)
+		return fmt.Errorf("provisionOS: failed to set next kernel, %w", err)
 	}
 
 	if board, err := getBoard(p.c); err == nil && strings.HasPrefix(board, "reven") {
@@ -214,7 +214,7 @@ func (p *provisionState) provisionOS(ctx context.Context) error {
 	if p.preventReboot {
 		log.Printf("provisionOS: reboot prevented by request")
 	} else if err := hardRebootDUT(ctx, p.c); err != nil {
-		return fmt.Errorf("provisionOS: failed to reboot DUT, %s", err)
+		return fmt.Errorf("provisionOS: failed to reboot DUT, %w", err)
 	}
 	return nil
 }
@@ -226,12 +226,12 @@ func (p *provisionState) wipeStateful(ctx context.Context) error {
 	}
 
 	if err := runCmd(p.c, "echo 'fast keepimg' > /mnt/stateful_partition/factory_install_reset"); err != nil {
-		return fmt.Errorf("wipeStateful: Failed to to write to factory reset file, %s", err)
+		return fmt.Errorf("wipeStateful: Failed to to write to factory reset file, %w", err)
 	}
 
 	runLabMachineAutoReboot(p.c)
 	if err := rebootDUT(ctx, p.c); err != nil {
-		return fmt.Errorf("wipeStateful: failed to reboot DUT, %s", err)
+		return fmt.Errorf("wipeStateful: failed to reboot DUT, %w", err)
 	}
 	return nil
 }
@@ -241,14 +241,14 @@ func (p *provisionState) provisionStateful(ctx context.Context) error {
 
 	if err := p.installStateful(ctx); err != nil {
 		p.revertStatefulInstall()
-		return fmt.Errorf("provisionStateful: failed to install stateful partition, %s", err)
+		return fmt.Errorf("provisionStateful: failed to install stateful partition, %w", err)
 	}
 	if p.preventReboot {
 		log.Printf("provisionStateful: reboot prevented by request")
 	} else {
 		runLabMachineAutoReboot(p.c)
 		if err := rebootDUT(ctx, p.c); err != nil {
-			return fmt.Errorf("provisionStateful: failed to reboot DUT, %s", err)
+			return fmt.Errorf("provisionStateful: failed to reboot DUT, %w", err)
 		}
 	}
 	return nil
@@ -257,7 +257,7 @@ func (p *provisionState) provisionStateful(ctx context.Context) error {
 func (p *provisionState) verifyOSProvision(ctx context.Context) error {
 	sourceLsb, err := runCmdOutput(p.c, "cat /etc/lsb-release")
 	if err != nil {
-		return fmt.Errorf("verify OS provision: failed to get source /etc/lsb-release, %s", err)
+		return fmt.Errorf("verify OS provision: failed to get source /etc/lsb-release, %w", err)
 	}
 
 	if sourceLsb != p.targetLsb {
@@ -275,7 +275,7 @@ func (p *provisionState) verifyOSProvision(ctx context.Context) error {
 func (p *provisionState) verifyKernelState(ctx context.Context) error {
 	r, err := getRootDev(p.c)
 	if err != nil {
-		return fmt.Errorf("verifyKernelState: failed to get root device from DUT, %s", err)
+		return fmt.Errorf("verifyKernelState: failed to get root device from DUT, %w", err)
 	}
 	pi := getPartitionInfo(r)
 	for {
@@ -345,7 +345,7 @@ fi`
 func (p *provisionState) installKernel(ctx context.Context, pi partitionInfo) error {
 	url, err := p.s.cacheForDut(ctx, path.Join(p.imagePath, "full_dev_part_KERN.bin.gz"), p.dutName)
 	if err != nil {
-		return fmt.Errorf("install kernel: failed to get GS Cache URL, %s", err)
+		return fmt.Errorf("install kernel: failed to get GS Cache URL, %w", err)
 	}
 	return runCmdRetry(ctx, p.c, 5, fmt.Sprintf(fetchUngzipConvertCmd, url, pi.inactiveKernel))
 }
@@ -354,11 +354,11 @@ func (p *provisionState) installKernel(ctx context.Context, pi partitionInfo) er
 func (p *provisionState) installRoot(ctx context.Context, pi partitionInfo) error {
 	url, err := p.s.cacheForDut(ctx, path.Join(p.imagePath, "full_dev_part_ROOT.bin.gz"), p.dutName)
 	if err != nil {
-		return fmt.Errorf("install root: failed to get GS Cache URL, %s", err)
+		return fmt.Errorf("install root: failed to get GS Cache URL, %w", err)
 	}
 	err = runCmdRetry(ctx, p.c, 5, fmt.Sprintf(fetchUngzipConvertCmd, url, pi.inactiveRoot))
 	if err != nil {
-		return fmt.Errorf("install root: download and copy to DUT failed, %s", err)
+		return fmt.Errorf("install root: download and copy to DUT failed, %w", err)
 	}
 	return nil
 }
@@ -367,14 +367,14 @@ func (p *provisionState) installRoot(ctx context.Context, pi partitionInfo) erro
 func (p *provisionState) installMiniOS(ctx context.Context, pi partitionInfo) error {
 	url, err := p.s.cacheForDut(ctx, path.Join(p.imagePath, "full_dev_part_MINIOS.bin.gz"), p.dutName)
 	if err != nil {
-		return fmt.Errorf("install miniOS: failed to get GS Cache URL, %s", err)
+		return fmt.Errorf("install miniOS: failed to get GS Cache URL, %w", err)
 	}
 	// Write to both A + B miniOS partitions.
 	if err := runCmdRetry(ctx, p.c, 5, fmt.Sprintf(fetchUngzipConvertCmd, url, pi.miniOSA)); err != nil {
-		return fmt.Errorf("install miniOS: failed to write to A partition, %s", err)
+		return fmt.Errorf("install miniOS: failed to write to A partition, %w", err)
 	}
 	if err := runCmdRetry(ctx, p.c, 5, fmt.Sprintf(fetchUngzipConvertCmd, url, pi.miniOSB)); err != nil {
-		return fmt.Errorf("install miniOS: failed to write to B partition, %s", err)
+		return fmt.Errorf("install miniOS: failed to write to B partition, %w", err)
 	}
 	return nil
 }
@@ -388,7 +388,7 @@ const (
 func (p *provisionState) installStateful(ctx context.Context) error {
 	url, err := p.s.cacheForDut(ctx, path.Join(p.imagePath, "stateful.tgz"), p.dutName)
 	if err != nil {
-		return fmt.Errorf("install stateful: failed to get GS Cache URL, %s", err)
+		return fmt.Errorf("install stateful: failed to get GS Cache URL, %w", err)
 	}
 	return runCmdRetry(ctx, p.c, 5, strings.Join([]string{
 		fmt.Sprintf("rm -rf %[1]s %[2]s/var_new %[2]s/dev_image_new", updateStatefulFilePath, statefulPath),
@@ -412,31 +412,31 @@ func (p *provisionState) installPartitions(ctx context.Context, pi partitionInfo
 func (p *provisionState) postInstall(pi partitionInfo) error {
 	tmpMnt, err := runCmdOutput(p.c, "mktemp -d")
 	if err != nil {
-		return fmt.Errorf("postInstall: failed to create temporary directory, %s", err)
+		return fmt.Errorf("postInstall: failed to create temporary directory, %w", err)
 	}
 	tmpMnt = strings.TrimSpace(tmpMnt)
 
 	// Mount, get hash, unmount.
 	err = runCmd(p.c, fmt.Sprintf("mount -o ro %s %s", pi.inactiveRoot, tmpMnt))
 	if err != nil {
-		return fmt.Errorf("postInstall: failed to mount inactive root, %s", err)
+		return fmt.Errorf("postInstall: failed to mount inactive root, %w", err)
 	}
 
 	p.targetLsb, err = runCmdOutput(p.c, fmt.Sprintf("cat %s/etc/lsb-release", tmpMnt))
 	if err != nil {
-		return fmt.Errorf("postInstall: failed getting /etc/lsb-release within inactive root mount, %s", err)
+		return fmt.Errorf("postInstall: failed getting /etc/lsb-release within inactive root mount, %w", err)
 	}
 
 	err = runCmd(p.c, fmt.Sprintf("%s/postinst %s", tmpMnt, pi.inactiveRoot))
 	if err != nil {
-		return fmt.Errorf("postInstall: failed to postinst from inactive root, %s", err)
+		return fmt.Errorf("postInstall: failed to postinst from inactive root, %w", err)
 	}
 
 	if err := runCmd(p.c, fmt.Sprintf("umount %s", tmpMnt)); err != nil {
-		return fmt.Errorf("postInstall: failed to umount temporary directory, %s", err)
+		return fmt.Errorf("postInstall: failed to umount temporary directory, %w", err)
 	}
 	if err := runCmd(p.c, fmt.Sprintf("rmdir %s", tmpMnt)); err != nil {
-		return fmt.Errorf("postInstall: failed to remove temporary directory, %s", err)
+		return fmt.Errorf("postInstall: failed to remove temporary directory, %w", err)
 	}
 	return nil
 }
@@ -478,7 +478,7 @@ func (p *provisionState) provisionDLCs(ctx context.Context, specs []*tls.Provisi
 	var err error
 	r, err := getRootDev(p.c)
 	if err != nil {
-		return fmt.Errorf("provision DLCs: failed to get root device from DUT, %s", err)
+		return fmt.Errorf("provision DLCs: failed to get root device from DUT, %w", err)
 	}
 
 	// TODO(kimjae): Can parallelize, once outputs can be sorted.
@@ -486,18 +486,18 @@ func (p *provisionState) provisionDLCs(ctx context.Context, specs []*tls.Provisi
 		dlcID := spec.GetId()
 		dlcOutputDir := path.Join(dlcCacheDir, dlcID, dlcPackage)
 		if err := p.installDLC(ctx, spec, dlcOutputDir, getActiveDLCSlot(r)); err != nil {
-			return fmt.Errorf("provision DLCs: failed to install the following DLC (%s), %s", dlcID, err)
+			return fmt.Errorf("provision DLCs: failed to install the following DLC (%s), %w", dlcID, err)
 		}
 	}
 
 	// As part of the transition to using tmpfiles.d, dlcservice paths must have correct permissions/owners set.
 	// Simply starting the dlcservice daemon will not fix this due to security concerns.
 	if err := runCmd(p.c, fmt.Sprintf("chown -R dlcservice:dlcservice %s", dlcCacheDir)); err != nil {
-		return fmt.Errorf("provision DLCs: failed to set owner for DLC cache (%s), %s", dlcCacheDir, err)
+		return fmt.Errorf("provision DLCs: failed to set owner for DLC cache (%s), %w", dlcCacheDir, err)
 	}
 
 	if err := runCmd(p.c, fmt.Sprintf("chmod -R 0755 %s", dlcCacheDir)); err != nil {
-		return fmt.Errorf("provision DLCs: failed to set permissions for DLC cache (%s), %s", dlcCacheDir, err)
+		return fmt.Errorf("provision DLCs: failed to set permissions for DLC cache (%s), %w", dlcCacheDir, err)
 	}
 
 	return nil
@@ -506,7 +506,7 @@ func (p *provisionState) provisionDLCs(ctx context.Context, specs []*tls.Provisi
 func (p *provisionState) installDLC(ctx context.Context, spec *tls.ProvisionDutRequest_DLCSpec, dlcOutputDir string, slot dlcSlot) error {
 	verified, err := isDLCVerified(p.c, spec, slot)
 	if err != nil {
-		return fmt.Errorf("install DLC: failed is DLC verified check, %s", err)
+		return fmt.Errorf("install DLC: failed is DLC verified check, %w", err)
 	}
 
 	dlcID := spec.GetId()
@@ -519,7 +519,7 @@ func (p *provisionState) installDLC(ctx context.Context, spec *tls.ProvisionDutR
 	dlcURL := path.Join(p.imagePath, "dlc", dlcID, dlcPackage, dlcImage)
 	url, err := p.s.cacheForDut(ctx, dlcURL, p.dutName)
 	if err != nil {
-		return fmt.Errorf("install DLC: failed to get GS Cache server, %s", err)
+		return fmt.Errorf("install DLC: failed to get GS Cache server, %w", err)
 	}
 
 	dlcOutputSlotDir := path.Join(dlcOutputDir, string(slot))
@@ -527,7 +527,7 @@ func (p *provisionState) installDLC(ctx context.Context, spec *tls.ProvisionDutR
 	dlcCmd := fmt.Sprintf(`mkdir -p %[1]s && curl -S -s -v -# -C - --retry 3 --retry-delay 60 --output %[2]s %[3]s`,
 		dlcOutputSlotDir, dlcOutputImage, url)
 	if err := runCmd(p.c, dlcCmd); err != nil {
-		return fmt.Errorf("provision DLC: failed to provision DLC %s, %s", dlcID, err)
+		return fmt.Errorf("provision DLC: failed to provision DLC %s, %w", dlcID, err)
 	}
 	return nil
 }
@@ -538,14 +538,14 @@ func (p *provisionState) provisionMiniOS(ctx context.Context) error {
 
 	r, err := getRootDev(p.c)
 	if err != nil {
-		return fmt.Errorf("provision MiniOS: failed to get root device from DUT, %s", err)
+		return fmt.Errorf("provision MiniOS: failed to get root device from DUT, %w", err)
 	}
 
 	// Check if the device has miniOS partitions.
 	for _, part := range []string{"9", "10"} {
 		out, err := runCmdOutput(p.c, fmt.Sprintf("cgpt show -t %s -i %s", r.disk, part))
 		if err != nil {
-			return fmt.Errorf("provision MiniOS: failed to get partition type, %s", err)
+			return fmt.Errorf("provision MiniOS: failed to get partition type, %w", err)
 		}
 		out = strings.TrimSpace(out)
 		// Check against miniOS GUID type.
@@ -557,7 +557,7 @@ func (p *provisionState) provisionMiniOS(ctx context.Context) error {
 
 	log.Printf("provision MiniOS: continuing to provision miniOS partitions")
 	if err := p.installMiniOS(ctx, getPartitionInfo(r)); err != nil {
-		return fmt.Errorf("provision MiniOS: failed to install miniOS, %s", err)
+		return fmt.Errorf("provision MiniOS: failed to install miniOS, %w", err)
 	}
 	return nil
 }

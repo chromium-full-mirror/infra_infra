@@ -164,7 +164,7 @@ func fetchHostChanges(
 			return nil
 		})
 		if err != nil {
-			return fmt.Errorf("DoWithRetry ChangeQuery: %v", err)
+			return fmt.Errorf("DoWithRetry ChangeQuery: %w", err)
 		}
 		results := <-ch
 		for _, c := range batch {
@@ -199,7 +199,7 @@ func (c *Change) fetchFileList(ctx context.Context, httpClient *http.Client) err
 		return nil
 	})
 	if err != nil {
-		return fmt.Errorf("DoWithRetry ListFiles: %v", err)
+		return fmt.Errorf("DoWithRetry ListFiles: %w", err)
 	}
 	results := <-ch
 	c.RevisionInfo.Files = make(map[string]gerrit.FileInfo)

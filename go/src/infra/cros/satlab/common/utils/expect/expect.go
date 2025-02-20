@@ -53,7 +53,7 @@ func NewStatus(code codes.Code, msg string) *Status {
 
 // NewStatusf returns a Status with the provided code and a formatted message.
 func NewStatusf(code codes.Code, format string, a ...interface{}) *Status {
-	return NewStatus(code, fmt.Sprintf(fmt.Sprintf(format, a...)))
+	return NewStatus(code, fmt.Sprint(fmt.Sprintf(format, a...)))
 }
 
 // Err is a helper to handle errors.
@@ -754,7 +754,7 @@ func (e *GExpect) ExpectSwitchCase(cs []Caser, timeout time.Duration) (string, [
 	// Read in current data and start actively check for matches.
 	var tbuf bytes.Buffer
 	if _, err := io.Copy(&tbuf, e); err != nil {
-		return tbuf.String(), nil, -1, fmt.Errorf("io.Copy failed: %v", err)
+		return tbuf.String(), nil, -1, fmt.Errorf("io.Copy failed: %w", err)
 	}
 	for {
 	L1:
@@ -814,7 +814,7 @@ func (e *GExpect) ExpectSwitchCase(cs []Caser, timeout time.Duration) (string, [
 			// Don't send anything if string is empty.
 			if st != "" {
 				if err := e.Send(st); err != nil {
-					return o, match, i, fmt.Errorf("failed to send: %q err: %v", st, err)
+					return o, match, i, fmt.Errorf("failed to send: %q err: %w", st, err)
 				}
 			}
 			// Tag handling.
@@ -836,7 +836,7 @@ func (e *GExpect) ExpectSwitchCase(cs []Caser, timeout time.Duration) (string, [
 		if !e.check() {
 			nr, err := io.Copy(&tbuf, e)
 			if err != nil {
-				return tbuf.String(), nil, -1, fmt.Errorf("io.Copy failed: %v", err)
+				return tbuf.String(), nil, -1, fmt.Errorf("io.Copy failed: %w", err)
 			}
 			if nr == 0 {
 				return tbuf.String(), nil, -1, errors.New("expect: Process not running")
@@ -847,7 +847,7 @@ func (e *GExpect) ExpectSwitchCase(cs []Caser, timeout time.Duration) (string, [
 			// Expect timeout.
 			nr, err := io.Copy(&tbuf, e)
 			if err != nil {
-				return tbuf.String(), nil, -1, fmt.Errorf("io.Copy failed: %v", err)
+				return tbuf.String(), nil, -1, fmt.Errorf("io.Copy failed: %w", err)
 			}
 			// If we got no new data we return otherwise give it another chance to match.
 			if nr == 0 {
@@ -858,13 +858,13 @@ func (e *GExpect) ExpectSwitchCase(cs []Caser, timeout time.Duration) (string, [
 			// Periodical timer to make sure data is handled in case the <-e.rcv channel
 			// was missed.
 			if _, err := io.Copy(&tbuf, e); err != nil {
-				return tbuf.String(), nil, -1, fmt.Errorf("io.Copy failed: %v", err)
+				return tbuf.String(), nil, -1, fmt.Errorf("io.Copy failed: %w", err)
 			}
 		case <-e.rcv:
 			// Data to fetch.
 			nr, err := io.Copy(&tbuf, e)
 			if err != nil {
-				return tbuf.String(), nil, -1, fmt.Errorf("io.Copy failed: %v", err)
+				return tbuf.String(), nil, -1, fmt.Errorf("io.Copy failed: %w", err)
 			}
 			// timer should be reset when new output is available.
 			if nr > 0 {

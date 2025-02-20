@@ -90,13 +90,13 @@ func validateTelemetryJobPreset(p preset) error {
 			len(p.TelemetryExperiment.StorySelection.StoryTags) > 0) ||
 			(len(p.TelemetryExperiment.StorySelection.Story) == 0 &&
 				len(p.TelemetryExperiment.StorySelection.StoryTags) == 0) {
-			return fmt.Errorf(text.Doc(`
+			return errors.New(text.Doc(`
 				telemetry experiments must only have exactly one of story or
 				story_tags in story_selection
 			`))
 		}
 		if len(p.TelemetryExperiment.Config) == 0 {
-			return fmt.Errorf(text.Doc(`
+			return errors.New(text.Doc(`
 				telemetry experiments must have a non-empty config
 			`))
 		}

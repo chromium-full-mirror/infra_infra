@@ -99,7 +99,7 @@ func (s *TestLibsServer) updateServerFromReq(req *pb.CrosToolRunnerTestRequest) 
 	}
 	fmt.Printf("Servo:\n%s", chromeOS.Servo)
 	addrs := make(map[string]string)
-	if chromeOS.Servo != nil && chromeOS.Servo.Present == true {
+	if chromeOS.Servo != nil && chromeOS.Servo.Present {
 		addrs["servo"] = fmt.Sprintf("%s:%d", chromeOS.Servo.ServodAddress.Address,
 			chromeOS.Servo.ServodAddress.Port)
 	}

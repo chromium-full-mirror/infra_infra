@@ -79,7 +79,7 @@ func (c *loadRun) Run(a subcommands.Application, args []string, env subcommands.
 
 	err := c.innerRun(a, args, env)
 	if err != nil {
-		fmt.Fprintf(a.GetErr(), err.Error())
+		fmt.Fprint(a.GetErr(), err.Error())
 		return 1
 	}
 	return 0
@@ -315,7 +315,7 @@ func getFullHostInfo(ctx context.Context, deviceInfo *ufsapi.GetDeviceDataRespon
 		hostname := getHostname(deviceInfo)
 		labDutTopo, err = getDUTTopology(ctx, hostname)
 		// Output labDutTopo to stdout during development
-		log.Printf(proto.MarshalTextString(labDutTopo))
+		log.Print(proto.MarshalTextString(labDutTopo))
 		if err != nil {
 			// Output error to stdout during testing
 			fmt.Println("Error getting DUT topology: ", err.Error())
@@ -328,14 +328,14 @@ func getFullHostInfo(ctx context.Context, deviceInfo *ufsapi.GetDeviceDataRespon
 		}
 		// Output hostInfo to stdout during development
 		log.Printf("Host info from DutTopology:\n")
-		log.Printf(proto.MarshalTextString(hostInfo))
+		log.Print(proto.MarshalTextString(hostInfo))
 
 		// This is done only for testing purposes.
 		// TODO(b/201424819): Remove this part once testing is done.
 		oldHostInfo := hostInfoFromDeviceInfo(deviceInfo)
 		addDeviceStateToHostInfo(oldHostInfo, deviceState)
 		log.Printf("Old Host info:\n")
-		log.Printf(proto.MarshalTextString(oldHostInfo))
+		log.Print(proto.MarshalTextString(oldHostInfo))
 	} else {
 		hostInfo = hostInfoFromDeviceInfo(deviceInfo)
 		addDeviceStateToHostInfo(hostInfo, deviceState)

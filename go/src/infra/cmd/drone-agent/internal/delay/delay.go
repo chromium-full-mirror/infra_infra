@@ -21,7 +21,7 @@ type Timer struct {
 // NewTimer returns a new Timer.
 func NewTimer(t time.Time) *Timer {
 	return &Timer{
-		timer: time.NewTimer(t.Sub(time.Now())),
+		timer: time.NewTimer(time.Until(t)),
 	}
 }
 
@@ -43,7 +43,7 @@ func (t *Timer) Set(new time.Time) {
 		// Timer already fired.
 		return
 	}
-	t.timer.Reset(new.Sub(time.Now()))
+	t.timer.Reset(time.Until(new))
 }
 
 // Stop stops the timer from firing if it has not already.  The timer

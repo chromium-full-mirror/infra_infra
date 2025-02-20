@@ -150,7 +150,7 @@ func buildExecutors(ctx context.Context, req *api.CTPv2Request, cloud bool) ([]e
 
 	containerMetadata, err := gcs.FetchImageData(ctx, board, gcsPath)
 	if err != nil {
-		return nil, fmt.Errorf("unable to fetch image data: %s", err)
+		return nil, fmt.Errorf("unable to fetch image data: %w", err)
 	}
 
 	// First must always be the container Manager. All further executors will require the manager.
@@ -159,7 +159,7 @@ func buildExecutors(ctx context.Context, req *api.CTPv2Request, cloud bool) ([]e
 
 	defaultKarbon, defaultKoffe, err := executor.DefaultFilters(req, containerMetadata)
 	if err != nil {
-		return nil, fmt.Errorf("Unable to create default filters: %s", err)
+		return nil, fmt.Errorf("Unable to create default filters: %w", err)
 	}
 
 	for _, filter := range defaultKarbon {

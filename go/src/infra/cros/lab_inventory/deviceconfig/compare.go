@@ -94,7 +94,7 @@ func compareBoxsterWithV0(ctx context.Context, boxsterCfgs, v0Cfgs []*device.Con
 		}
 	}
 
-	if _, err := fmt.Fprintf(writer, strings.Join(logs, "\n")); err != nil {
+	if _, err := fmt.Fprint(writer, strings.Join(logs, "\n")); err != nil {
 		return err
 	}
 	return nil

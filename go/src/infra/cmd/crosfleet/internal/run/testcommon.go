@@ -6,6 +6,7 @@ package run
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"math"
@@ -187,7 +188,7 @@ func (c *testCommonFlags) validateAndAutocompleteFlags(ctx context.Context, f *f
 		// image for the given board.
 		latestImage, err := latestImage(ctx, c.board, bbService, authFlags)
 		if err != nil {
-			return fmt.Errorf("error determining the latest image for board %s: %v", c.board, err)
+			return fmt.Errorf("error determining the latest image for board %s: %w", c.board, err)
 		}
 		printer.WriteTextStderr("Using latest green build image %s for board %s", latestImage, c.board)
 		c.image = latestImage
@@ -207,15 +208,15 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, args []string, mainArgTy
 	// If running an individual test via CTP, we require the test harness to be
 	// specified.
 	if mainArgType == testCmdName && c.cft && c.testHarness == "" {
-		errors = append(errors, fmt.Sprintf("missing harness flag"))
+		errors = append(errors, "missing harness flag")
 	}
 	// harness should not be provided for non-cft.
 	if mainArgType == testCmdName && !c.cft && c.testHarness != "" {
-		errors = append(errors, fmt.Sprintf("harness should only be provided for single cft test case"))
+		errors = append(errors, "harness should only be provided for single cft test case")
 	}
 	// trv2 should be false for non-cft.
 	if !c.cft && c.trv2 {
-		errors = append(errors, fmt.Sprintf("cannot run non-cft test case via trv2"))
+		errors = append(errors, "cannot run non-cft test case via trv2")
 	}
 	// trv2 should be false for non-cft.
 	if !c.cft && c.dynamicTrv2 {
@@ -227,11 +228,11 @@ func (c *testCommonFlags) validateArgs(f *flag.FlagSet, args []string, mainArgTy
 	}
 	// trv2 should be false for non-cft.
 	if !c.cft && c.enableAutotestSharding {
-		errors = append(errors, fmt.Sprintf("cannot run non-cft with autotest sharding"))
+		errors = append(errors, "cannot run non-cft with autotest sharding")
 	}
 	// cft should be true for tag_criteria based test plan.
 	if !c.cft && (len(c.tagIncludes) > 0 || len(c.tagExcludes) > 0 || len(c.testNameIncludes) > 0 || len(c.testNameExcludes) > 0) {
-		errors = append(errors, fmt.Sprintf("cannot run non-cft with tag_criteria args"))
+		errors = append(errors, "cannot run non-cft with tag_criteria args")
 	}
 	if c.image != "" && c.release != "" {
 		errors = append(errors, "cannot specify both image and release branch")
@@ -392,7 +393,7 @@ func (l *ctpRunLauncher) launchTestsAsync(ctx context.Context) (*crosfleetpb.Bui
 			// Don't fail the command if we were able to request some builds.
 			l.printer.WriteTextStderr(fullErrorMsg)
 		} else {
-			return buildLaunchList, fmt.Errorf(fullErrorMsg)
+			return buildLaunchList, errors.New(fullErrorMsg)
 		}
 	}
 	if l.cliFlags.exitEarly {
@@ -410,7 +411,7 @@ func (l *ctpRunLauncher) launchTestsAsync(ctx context.Context) (*crosfleetpb.Bui
 			// requested builds as having started.
 			l.printer.WriteTextStderr(fullErrorMsg)
 		} else {
-			return buildLaunchList, fmt.Errorf(fullErrorMsg)
+			return buildLaunchList, errors.New(fullErrorMsg)
 		}
 	}
 	return buildLaunchList, nil
@@ -678,7 +679,7 @@ func checkAndPrintFleetValidationErrors(results fleetValidationResults, printer 
 			// Don't fail the command if we were able to request some runs.
 			printer.WriteTextStderr(fullErrorMsg)
 		} else {
-			return fmt.Errorf(fullErrorMsg)
+			return errors.New(fullErrorMsg)
 		}
 	}
 	return nil

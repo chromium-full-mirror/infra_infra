@@ -467,7 +467,7 @@ func (s *Server) provisionLacros(req *tls.ProvisionLacrosRequest, opName string)
 func runCmd(c *ssh.Client, cmd string) error {
 	s, err := c.NewSession()
 	if err != nil {
-		return fmt.Errorf("runCmd: failed to create session, %v", err)
+		return fmt.Errorf("runCmd: failed to create session, %w", err)
 	}
 	defer s.Close()
 
@@ -480,7 +480,7 @@ func runCmd(c *ssh.Client, cmd string) error {
 	err = s.Run("/bin/bash -")
 
 	if err != nil {
-		return fmt.Errorf("runCmd: failed to run command, %v", err)
+		return fmt.Errorf("runCmd: failed to run command, %w", err)
 	}
 
 	return nil
@@ -504,7 +504,7 @@ func runCmdRetry(ctx context.Context, c *ssh.Client, retryLimit uint, cmd string
 		if err == nil {
 			err = retryErr
 		} else {
-			err = fmt.Errorf("%s, %w", err, retryErr)
+			err = fmt.Errorf("%w, %w", err, retryErr)
 		}
 		time.Sleep(2 * time.Second)
 	}
@@ -530,7 +530,7 @@ func runCmdOutput(c *ssh.Client, cmd string) (string, error) {
 
 	stdoutStr := stdoutBuf.String()
 	if err != nil {
-		return "", fmt.Errorf("runCmdOutput: failed to run command, %v", err)
+		return "", fmt.Errorf("runCmdOutput: failed to run command, %w", err)
 	}
 
 	return stdoutStr, err
@@ -551,7 +551,7 @@ func newOperationError(c codes.Code, msg, reason string) *status.Status {
 func pathExists(c *ssh.Client, path string) (bool, error) {
 	exists, err := runCmdOutput(c, fmt.Sprintf("[ -e %s ] && echo -n 1 || echo -n 0", path))
 	if err != nil {
-		return false, fmt.Errorf("path exists: failed to check if %s exists, %s", path, err)
+		return false, fmt.Errorf("path exists: failed to check if %s exists, %w", path, err)
 	}
 	return exists == "1", nil
 }

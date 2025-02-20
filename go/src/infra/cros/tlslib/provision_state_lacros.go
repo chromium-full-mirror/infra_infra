@@ -94,7 +94,7 @@ func newProvisionLacrosState(s *Server, req *tls.ProvisionLacrosRequest) (*provi
 func (p *provisionLacrosState) connect(ctx context.Context, addr string) (func(), error) {
 	c, err := p.s.clientPool.GetContext(ctx, addr)
 	if err != nil {
-		return nil, fmt.Errorf("connect: DUT unreachable, %s", err)
+		return nil, fmt.Errorf("connect: DUT unreachable, %w", err)
 	}
 
 	p.c = c
@@ -106,46 +106,46 @@ func (p *provisionLacrosState) connect(ctx context.Context, addr string) (func()
 
 func (p *provisionLacrosState) provisionLacros(ctx context.Context) error {
 	if err := p.extractLacrosMetadata(ctx); err != nil {
-		return fmt.Errorf("provisionLacros: failed to extract Lacros metadata.json, %s", err)
+		return fmt.Errorf("provisionLacros: failed to extract Lacros metadata.json, %w", err)
 	}
 
 	if err := p.installLacrosAsComponent(ctx); err != nil {
-		return fmt.Errorf("provisionLacros: failed to install Lacros as component, %s", err)
+		return fmt.Errorf("provisionLacros: failed to install Lacros as component, %w", err)
 	}
 
 	// Get the Lacros image hash. (Must be after installing Lacros image and running verity).
 	lacrosImageHash, err := getSHA256Sum(ctx, p.c, p.lacrosImagePath)
 	if err != nil {
-		return fmt.Errorf("provisionLacros: failed to get Lacros image hash, %s", err)
+		return fmt.Errorf("provisionLacros: failed to get Lacros image hash, %w", err)
 	}
 
 	// Get the Lacros table hash.
 	lacrosTableHash, err := getSHA256Sum(ctx, p.c, p.lacrosTablePath)
 	if err != nil {
-		return fmt.Errorf("provisionLacros: failed to get Lacros table hash, %s", err)
+		return fmt.Errorf("provisionLacros: failed to get Lacros table hash, %w", err)
 	}
 
 	// Create the Lacros manifest file.
 	if err := p.writeManifest(ctx, lacrosImageHash, lacrosTableHash); err != nil {
-		return fmt.Errorf("provisionLacros: failed to write Lacros manifest, %s", err)
+		return fmt.Errorf("provisionLacros: failed to write Lacros manifest, %w", err)
 	}
 
 	// Create the component updater Lacros manifest file.
 	if err := p.writeComponentManifest(ctx); err != nil {
-		return fmt.Errorf("provisionLacros: failed to write component Lacros manifest, %s", err)
+		return fmt.Errorf("provisionLacros: failed to write component Lacros manifest, %w", err)
 	}
 
 	// Write the Lacros version to the latest-version file.
 	lacrosLastestVersionPath := path.Join(p.lacrosComponentRootPath, "latest-version")
 	if err := runCmd(p.c, fmt.Sprintf("echo -n %s > %s", p.metadata.Content.Version, lacrosLastestVersionPath)); err != nil {
-		return fmt.Errorf("provisionLacros: failed to write Lacros version to latest-version file, %s", err)
+		return fmt.Errorf("provisionLacros: failed to write Lacros version to latest-version file, %w", err)
 	}
 
 	// Change file mode and owner of provisioned files if the path is prefixed with the CrOS component path.
 	const crosComponentRootPath = "/home/chronos/cros-components"
 	if strings.HasPrefix(p.lacrosComponentRootPath, crosComponentRootPath) {
 		if err := runCmd(p.c, fmt.Sprintf("chown -R chronos:chronos %s && chmod -R 0755 %s", crosComponentRootPath, crosComponentRootPath)); err != nil {
-			return fmt.Errorf("provisionLacros: failed to chown/chmod provisioned files under %s, %s", crosComponentRootPath, err)
+			return fmt.Errorf("provisionLacros: failed to chown/chmod provisioned files under %s, %w", crosComponentRootPath, err)
 		}
 	}
 	return nil
@@ -155,16 +155,16 @@ func (p *provisionLacrosState) provisionLacros(ctx context.Context) error {
 func (p *provisionLacrosState) extractLacrosMetadata(ctx context.Context) error {
 	metadataURL, err := p.getSourceFullURL(ctx, "metadata.json")
 	if err != nil {
-		return fmt.Errorf("extractMetadata: failed to get a metadata URL, %s", err)
+		return fmt.Errorf("extractMetadata: failed to get a metadata URL, %w", err)
 	}
 	metadataJSONStr, err := runCmdOutput(p.c, fmt.Sprintf("curl --keepalive-time 20 -S -s -v -# -C - --retry 3 --retry-delay 60 %s", metadataURL))
 	if err != nil {
-		return fmt.Errorf("extractMetadata: failed to read Lacros metadata.json from %v, %s", metadataURL, err)
+		return fmt.Errorf("extractMetadata: failed to read Lacros metadata.json from %v, %w", metadataURL, err)
 	}
 
 	metadataJSON := lacrosMetadata{}
 	if err := json.Unmarshal([]byte(metadataJSONStr), &metadataJSON); err != nil {
-		return fmt.Errorf("extractMetadata: failed to unmarshal Lacros metadata.json, %s", err)
+		return fmt.Errorf("extractMetadata: failed to unmarshal Lacros metadata.json, %w", err)
 	}
 	p.metadata = metadataJSON
 	if p.overrideVersion != "" {
@@ -189,19 +189,19 @@ func (p *provisionLacrosState) installLacrosAsComponent(ctx context.Context) err
 	}
 	imageURL, err := p.getSourceFullURL(ctx, imageFileName)
 	if err != nil {
-		return fmt.Errorf("installLacrosAsComponent: failed to get a image URL, %s", err)
+		return fmt.Errorf("installLacrosAsComponent: failed to get a image URL, %w", err)
 	}
 
 	p.lacrosComponentPath = path.Join(p.lacrosComponentRootPath, p.metadata.Content.Version)
 	p.lacrosImagePath = path.Join(p.lacrosComponentPath, "image.squash")
 
 	if err := runCmdRetry(ctx, p.c, 5, fmt.Sprintf("mkdir -p %s && curl --keepalive-time 20 -S -s -v -# -C - --retry 3 --retry-delay 60 %s --output %s", p.lacrosComponentPath, imageURL, p.lacrosImagePath)); err != nil {
-		return fmt.Errorf("installLacrosAsComponent: failed to install Lacros image from %s, %s", imageURL, err)
+		return fmt.Errorf("installLacrosAsComponent: failed to install Lacros image from %s, %w", imageURL, err)
 	}
 
 	lacrosBlocks, err := alignImageToPage(ctx, p.c, p.lacrosImagePath)
 	if err != nil {
-		return fmt.Errorf("installLacrosAsComponent: failed to align Lacros image, %s", err)
+		return fmt.Errorf("installLacrosAsComponent: failed to align Lacros image, %w", err)
 	}
 
 	// Generate the verity (hashtree and table) from Lacros image.
@@ -210,12 +210,12 @@ func (p *provisionLacrosState) installLacrosAsComponent(ctx context.Context) err
 	if err := runCmd(p.c,
 		fmt.Sprintf("verity mode=create alg=sha256 payload=%s payload_blocks=%d hashtree=%s salt=random > %s",
 			p.lacrosImagePath, lacrosBlocks, lacrosHashtreePath, p.lacrosTablePath)); err != nil {
-		return fmt.Errorf("installLacrosAsComponent: failed to generate verity for Lacros image, %s", err)
+		return fmt.Errorf("installLacrosAsComponent: failed to generate verity for Lacros image, %w", err)
 	}
 
 	// Append the hashtree (merkle tree) onto the end of the Lacros image.
 	if err := runCmd(p.c, fmt.Sprintf("cat %s >> %s", lacrosHashtreePath, p.lacrosImagePath)); err != nil {
-		return fmt.Errorf("installLacrosAsComponent: failed to append hashtree to Lacros image, %s", err)
+		return fmt.Errorf("installLacrosAsComponent: failed to append hashtree to Lacros image, %w", err)
 	}
 
 	return nil
@@ -225,7 +225,7 @@ func (p *provisionLacrosState) installLacrosAsComponent(ctx context.Context) err
 func getSHA256Sum(ctx context.Context, c *ssh.Client, path string) (string, error) {
 	hash, err := runCmdOutput(c, fmt.Sprintf("sha256sum %s | cut -d' ' -f1", path))
 	if err != nil {
-		return "", fmt.Errorf("getSHA256Sum: failed to get hash of %s, %s", path, err)
+		return "", fmt.Errorf("getSHA256Sum: failed to get hash of %s, %w", path, err)
 	}
 	return strings.TrimSpace(hash), nil
 }
@@ -234,12 +234,12 @@ func getSHA256Sum(ctx context.Context, c *ssh.Client, path string) (string, erro
 func alignImageToPage(ctx context.Context, c *ssh.Client, path string) (int, error) {
 	sizeStr, err := runCmdOutput(c, "stat -c%s "+path)
 	if err != nil {
-		return 0, fmt.Errorf("alignImageToPage: failed to get image size, %s", err)
+		return 0, fmt.Errorf("alignImageToPage: failed to get image size, %w", err)
 	}
 	sizeStr = strings.TrimSpace(sizeStr)
 	size, err := strconv.Atoi(sizeStr)
 	if err != nil {
-		return 0, fmt.Errorf("alignImageToPage: failed to get image size as an integer, %s", err)
+		return 0, fmt.Errorf("alignImageToPage: failed to get image size as an integer, %w", err)
 	}
 
 	// Round up to the nearest 4KB block size.
@@ -250,7 +250,7 @@ func alignImageToPage(ctx context.Context, c *ssh.Client, path string) (int, err
 		log.Printf("alignImageToPage: image %s isn't 4KB aligned, so extending it", path)
 		if err := runCmd(c, fmt.Sprintf("dd if=/dev/zero bs=1 count=%d seek=%d of=%s",
 			blocks*pageSize-size, size, path)); err != nil {
-			return 0, fmt.Errorf("alignImageToPage: failed to align image to 4KB, %s", err)
+			return 0, fmt.Errorf("alignImageToPage: failed to align image to 4KB, %w", err)
 		}
 	}
 	return blocks, nil
@@ -272,11 +272,11 @@ func (p *provisionLacrosState) writeManifest(ctx context.Context, imageHash, tab
 		TableSha256Hash: tableHash,
 	}, "", "  ")
 	if err != nil {
-		return fmt.Errorf("writeManifest: failed to Marshal Lacros manifest json, %s", err)
+		return fmt.Errorf("writeManifest: failed to Marshal Lacros manifest json, %w", err)
 	}
 	lacrosManifestPath := path.Join(p.lacrosComponentPath, "imageloader.json")
 	if err := runCmd(p.c, fmt.Sprintf("echo '%s' > %s", lacrosManifestJSON, lacrosManifestPath)); err != nil {
-		return fmt.Errorf("writeManifest: failed to write Lacros manifest json to DUT, %s", err)
+		return fmt.Errorf("writeManifest: failed to write Lacros manifest json to DUT, %w", err)
 	}
 	return nil
 }
@@ -301,11 +301,11 @@ func (p *provisionLacrosState) writeComponentManifest(ctx context.Context) error
 		IsRemovable:     false,
 	}, "", "  ")
 	if err != nil {
-		return fmt.Errorf("writeComponentManifest: failed to Marshal Lacros manifest json, %s", err)
+		return fmt.Errorf("writeComponentManifest: failed to Marshal Lacros manifest json, %w", err)
 	}
 	lacrosComponentManifestPath := path.Join(p.lacrosComponentPath, "manifest.json")
 	if err := runCmd(p.c, fmt.Sprintf("echo '%s' > %s", lacrosComponentManifestJSON, lacrosComponentManifestPath)); err != nil {
-		return fmt.Errorf("writeComponentManifest: failed to write Lacros manifest json to DUT, %s", err)
+		return fmt.Errorf("writeComponentManifest: failed to write Lacros manifest json to DUT, %w", err)
 	}
 	return nil
 }
@@ -321,7 +321,7 @@ func (p *provisionLacrosState) getSourceFullURL(ctx context.Context, part string
 		return parsed, nil
 	}(p.sourceURL, part)
 	if err != nil {
-		return "", fmt.Errorf("getSourceFullURL: failed to join a URL, %s", err)
+		return "", fmt.Errorf("getSourceFullURL: failed to join a URL, %w", err)
 	}
 
 	fullURL := ""
@@ -331,7 +331,7 @@ func (p *provisionLacrosState) getSourceFullURL(ctx context.Context, part string
 		// from TLS side instead of from the DUT.
 		fullURL, err = p.s.cacheForDut(ctx, url.String(), p.dutName)
 		if err != nil {
-			return "", fmt.Errorf("getSourceFullURL: failed to CacheForDut, %s", err)
+			return "", fmt.Errorf("getSourceFullURL: failed to CacheForDut, %w", err)
 		}
 	case DeviceFilePath:
 		if url.Scheme != "" && url.Scheme != "file" {

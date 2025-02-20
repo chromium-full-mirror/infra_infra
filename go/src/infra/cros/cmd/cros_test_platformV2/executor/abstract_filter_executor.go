@@ -65,7 +65,7 @@ func (ex *FilterExecutor) Execute(ctx context.Context, cmd string, resp *api.Int
 func (ex *FilterExecutor) run(req *api.InternalTestplan) (*api.InternalTestplan, error) {
 	resp, err := ex.client.Execute(context.Background(), req)
 	if err != nil {
-		return resp, fmt.Errorf("err running filter: %s", err)
+		return resp, fmt.Errorf("err running filter: %w", err)
 	}
 
 	return resp, nil
@@ -111,7 +111,7 @@ func (ex *FilterExecutor) init() error {
 
 	filterClient := api.NewGenericFilterServiceClient(conn)
 	if filterClient == nil {
-		return fmt.Errorf("could not connect to GenericFilterClient: %s", err)
+		return fmt.Errorf("could not connect to GenericFilterClient: %w", err)
 	}
 	ex.client = filterClient
 

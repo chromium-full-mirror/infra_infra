@@ -84,7 +84,7 @@ func (cmd *LoadDutTopologyCmd) updateHwTestStateKeeper(
 	if cmd.DutTopology != nil {
 		sk.DutTopology = cmd.DutTopology
 		if err := sk.Injectables.Set("dutTopology", sk.DutTopology); err != nil {
-			return fmt.Errorf("Cmd %s failed to set dutTopology in the injectables storage, %s", cmd.GetCommandType(), err)
+			return fmt.Errorf("Cmd %s failed to set dutTopology in the injectables storage, %w", cmd.GetCommandType(), err)
 		}
 	}
 

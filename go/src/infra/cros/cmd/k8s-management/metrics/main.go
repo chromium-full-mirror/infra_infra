@@ -46,7 +46,7 @@ func (c *commonOpts) BqInserter() (*bigquery.Inserter, error) {
 
 	bqc, err := bigquery.NewClient(ctx, c.cloudProjectID, option.WithCredentialsFile(c.svcAcctJSON))
 	if err != nil {
-		return nil, fmt.Errorf("get BigQuery inserter: %s", err)
+		return nil, fmt.Errorf("get BigQuery inserter: %w", err)
 	}
 	return bqc.Dataset(c.dataset).Table(c.tableName).Inserter(), nil
 }
@@ -65,12 +65,12 @@ func main() {
 func getK8sClientSet() (*kubernetes.Clientset, error) {
 	k8sConfig, err := rest.InClusterConfig()
 	if err != nil {
-		return nil, fmt.Errorf("get K8s client set: %s", err)
+		return nil, fmt.Errorf("get K8s client set: %w", err)
 	}
 
 	clientset, err := kubernetes.NewForConfig(k8sConfig)
 	if err != nil {
-		return nil, fmt.Errorf("get K8s client set: %s", err)
+		return nil, fmt.Errorf("get K8s client set: %w", err)
 	}
 	return clientset, nil
 }
@@ -83,7 +83,7 @@ func getClusterName(c *kubernetes.Clientset) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := c.RESTClient().Get().AbsPath(c.LegacyPrefix).Do(ctx).Into(v); err != nil {
-		return "", fmt.Errorf("get cluster name: %s", err)
+		return "", fmt.Errorf("get cluster name: %w", err)
 	}
 	if len(v.ServerAddressByClientCIDRs) == 0 {
 		return "", errors.New("no data in ServerAddressByClientCIDRs")

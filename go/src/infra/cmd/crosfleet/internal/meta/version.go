@@ -66,7 +66,7 @@ func (c *versionRun) innerRun(a subcommands.Application, args []string, env subc
 		return err
 	}
 
-	fmt.Printf(fmt.Sprintf("crosfleet CLI tool: v%d+%s\n", site.VersionNumber, time.Time(d.RegisteredTs).Format("20060102150405")))
+	fmt.Print(fmt.Sprintf("crosfleet CLI tool: v%d+%s\n", site.VersionNumber, time.Time(d.RegisteredTs).Format("20060102150405")))
 	fmt.Printf("CIPD Package:\t%s\n", p.Package)
 	fmt.Printf("CIPD Version:\t%s\n", p.Pin.InstanceID)
 	fmt.Printf("CIPD Updated:\t%s\n", d.RegisteredTs)

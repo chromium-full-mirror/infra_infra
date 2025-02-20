@@ -19,12 +19,12 @@ func ReadInput(fileName string) (*api.CTPv2Request, error) {
 
 	f, err := os.Open(fileName)
 	if err != nil {
-		return &req, fmt.Errorf("fail to read file %v: %v", fileName, err)
+		return &req, fmt.Errorf("fail to read file %v: %w", fileName, err)
 	}
 	umrsh := jsonpb.Unmarshaler{}
 	umrsh.AllowUnknownFields = true
 	if err := umrsh.Unmarshal(f, &req); err != nil {
-		return &req, fmt.Errorf("fail to unmarshal file %v: %v", fileName, err)
+		return &req, fmt.Errorf("fail to unmarshal file %v: %w", fileName, err)
 	}
 	return &req, nil
 }

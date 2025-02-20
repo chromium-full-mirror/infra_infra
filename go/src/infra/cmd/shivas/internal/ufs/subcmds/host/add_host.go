@@ -135,7 +135,7 @@ func (c *addHost) innerRun(a subcommands.Application, args []string, env subcomm
 			return fmt.Errorf("batch add not supported %d items provided", len(machineLSEs))
 		}
 		if machinelse.GetMachines() == nil || len(machinelse.GetMachines()) <= 0 {
-			return errors.New(fmt.Sprintf("machines field is empty in json. It is a required parameter for json input."))
+			return errors.New("machines field is empty in json. It is a required parameter for json input.")
 		}
 		if machinelse.GetChromeBrowserMachineLse() == nil && machinelse.GetChromeosMachineLse() == nil &&
 			machinelse.GetAttachedDeviceLse() == nil {

@@ -38,11 +38,11 @@ type gcrRepo struct {
 func (g *gcrRepo) List(ctx context.Context) (*google.Tags, error) {
 	repo, err := name.NewRepository(g.name)
 	if err != nil {
-		return nil, fmt.Errorf("list %q: %s", g.name, err)
+		return nil, fmt.Errorf("list %q: %w", g.name, err)
 	}
 	t, err := google.List(repo, google.WithContext(ctx), google.WithAuth(g.auth))
 	if err != nil {
-		return nil, fmt.Errorf("list %q: %s", g.name, err)
+		return nil, fmt.Errorf("list %q: %w", g.name, err)
 	}
 	return t, nil
 }
@@ -52,15 +52,15 @@ func (g *gcrRepo) Tag(ctx context.Context, newTag, existingTag string) error {
 	targetImg := fmt.Sprintf("%s:%s", g.name, existingTag)
 	ref, err := name.ParseReference(targetImg)
 	if err != nil {
-		return fmt.Errorf("tag remote %q with %q: %s", targetImg, newTag, err)
+		return fmt.Errorf("tag remote %q with %q: %w", targetImg, newTag, err)
 	}
 	desc, err := remote.Get(ref, remote.WithContext(ctx), remote.WithAuth(g.auth))
 	if err != nil {
-		return fmt.Errorf("tag remote %q with %q: %s", targetImg, newTag, err)
+		return fmt.Errorf("tag remote %q with %q: %w", targetImg, newTag, err)
 	}
 	dst := desc.Ref.Context().Tag(newTag)
 	if err := remote.Tag(dst, desc, remote.WithContext(ctx), remote.WithAuth(g.auth)); err != nil {
-		return fmt.Errorf("tag remote %q with %q: %s", targetImg, newTag, err)
+		return fmt.Errorf("tag remote %q with %q: %w", targetImg, newTag, err)
 	}
 	log.Printf("%q: Remote tagged %q->%q", g.name, existingTag, newTag)
 	return nil
@@ -70,10 +70,10 @@ func (g *gcrRepo) Tag(ctx context.Context, newTag, existingTag string) error {
 func (g *gcrRepo) Untag(ctx context.Context, tag string) error {
 	ref, err := name.ParseReference(fmt.Sprintf("%s:%s", g.name, tag))
 	if err != nil {
-		return fmt.Errorf("untag remote %q of %q: %s", g, tag, err)
+		return fmt.Errorf("untag remote %q of %q: %w", g, tag, err)
 	}
 	if err := remote.Delete(ref, remote.WithContext(ctx), remote.WithAuth(g.auth)); err != nil {
-		return fmt.Errorf("untag remote %q of %q: %s", g, tag, err)
+		return fmt.Errorf("untag remote %q of %q: %w", g, tag, err)
 	}
 	log.Printf("%q: Remote untagged %q", g.name, tag)
 	return nil

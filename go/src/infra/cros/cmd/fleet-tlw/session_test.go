@@ -41,7 +41,7 @@ func TestSessionServer(t *testing.T) {
 	t.Parallel()
 	limit := 10 * time.Second
 	if deadline, ok := t.Deadline(); ok {
-		if newLim := deadline.Sub(time.Now()); newLim < limit {
+		if newLim := time.Until(deadline); newLim < limit {
 			limit = newLim
 		}
 	}

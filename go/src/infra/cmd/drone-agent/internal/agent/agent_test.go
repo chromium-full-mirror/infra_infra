@@ -291,7 +291,7 @@ func TestAgent_draining_reports_lame_duck_mode(t *testing.T) {
 			case <-time.After(time.Second):
 				t.Errorf("agent did not call ReportDrone")
 			}
-			if time.Now().Sub(now) > time.Second {
+			if time.Since(now) > time.Second {
 				t.Errorf("agent did not report lame duck")
 				break checkReports
 			}

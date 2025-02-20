@@ -157,7 +157,7 @@ func cipdEnsureProd(a subcommands.Application, dir string, printer *common.CLIPr
 	// We unconditionally run `sudo` on all OS's, however, we expect it to fail on Windows.
 	printer.WriteTextStderr("Retrying as root. Updating crosfleet through cipd.\n")
 	if err := asRootUnix.Run(); err != nil {
-		return fmt.Errorf("updating cipd as root: %s", err)
+		return fmt.Errorf("updating cipd as root: %w", err)
 	}
 	return nil
 }

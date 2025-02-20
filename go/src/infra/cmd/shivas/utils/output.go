@@ -334,10 +334,10 @@ func ConcurrentDelete(ctx context.Context, ic ufsAPI.FleetClient, names []string
 				// log error message
 				fmt.Fprintln(os.Stderr, err.Error()+" => "+names[i])
 				// send failure deletion message to the buffered channel
-				failureQueue <- fmt.Sprintf("%s", names[i])
+				failureQueue <- names[i]
 			} else {
 				// send successful deletion message to the buffered channel
-				successQueue <- fmt.Sprintf("%s", names[i])
+				successQueue <- names[i]
 			}
 		}(i)
 	}

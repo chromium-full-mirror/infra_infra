@@ -76,7 +76,7 @@ func (ex *GenericProvisionExecutor) genericProvisionHandler(
 
 	client, lroClient, err := ex.ConnectToService(ctx, cmd.ProvisionRequest.GetServiceAddress())
 	if err != nil {
-		err = fmt.Errorf("error connecting to provision service, %s", err)
+		err = fmt.Errorf("error connecting to provision service, %w", err)
 		return
 	}
 

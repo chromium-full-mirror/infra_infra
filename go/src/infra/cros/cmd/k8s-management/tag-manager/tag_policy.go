@@ -43,16 +43,16 @@ func (p *maxDistancePolicy) apply(img *image.OfficialList) error {
 	// (older) than the tag to follow.
 	d, err := img.Distance(p.tagToControl, p.tagToFollow)
 	if err != nil {
-		return fmt.Errorf("apply %q: %s", p, err)
+		return fmt.Errorf("apply %q: %w", p, err)
 	}
 	if n := int(p.maxVersionNewer); d > n {
 		if err := img.MoveTag(p.tagToControl, n-d); err != nil {
-			return fmt.Errorf("apply %q: %s", p, err)
+			return fmt.Errorf("apply %q: %w", p, err)
 		}
 	}
 	if o := -int(p.maxVersionOlder); d < o {
 		if err := img.MoveTag(p.tagToControl, o-d); err != nil {
-			return fmt.Errorf("apply %q: %s", p, err)
+			return fmt.Errorf("apply %q: %w", p, err)
 		}
 	}
 	return nil
@@ -77,7 +77,7 @@ func (p *latestPolicy) apply(img *image.OfficialList) error {
 		return nil
 	}
 	if err := img.PutTag(p.controlledTag(), target); err != nil {
-		return fmt.Errorf("apply %q: %s", p, err)
+		return fmt.Errorf("apply %q: %w", p, err)
 	}
 	return nil
 }

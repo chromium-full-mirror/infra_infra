@@ -219,7 +219,7 @@ func runPrejobTask(ctx context.Context, a *atutil.MainJob, t *atutil.AdminTask, 
 	}()
 	_, err = atutil.RunAutoserv(ctx, a, t, ac.Logger().RawWriter())
 	if err != nil {
-		return fmt.Errorf("task %s failed: %s", t.Type, err)
+		return fmt.Errorf("task %s failed: %w", t.Type, err)
 	}
 	return nil
 }

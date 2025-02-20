@@ -5,7 +5,6 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -83,7 +82,7 @@ func TestCreateRequests(t *testing.T) {
 			}
 			var gotURLs []string
 			for _, r := range reqs {
-				gotURLs = append(gotURLs, fmt.Sprintf("%s", r.URL))
+				gotURLs = append(gotURLs, r.URL.String())
 				if diff := cmp.Diff(c.wantHeader, r.Header); diff != "" {
 					t.Errorf("createRequest(%v, %q, %q) returned unexpected headers (-want +got):\n%s", c.endpoints, c.uri, c.headers, diff)
 				}

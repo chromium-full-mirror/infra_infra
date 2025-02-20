@@ -109,7 +109,7 @@ func (i *List) TraverseToNewer(startingTag string, f func(*google.ManifestInfo) 
 	}
 	ok, err := i.traverse(startingTag, nextNewer, f)
 	if err != nil {
-		return false, fmt.Errorf("traverse to newer: %s", err)
+		return false, fmt.Errorf("traverse to newer: %w", err)
 	}
 	return ok, nil
 }
@@ -124,7 +124,7 @@ func (i *List) TraverseToOlder(startingTag string, f func(*google.ManifestInfo) 
 	}
 	ok, err := i.traverse(startingTag, nextOlder, f)
 	if err != nil {
-		return false, fmt.Errorf("traverse to older: %s", err)
+		return false, fmt.Errorf("traverse to older: %w", err)
 	}
 	return ok, nil
 }
@@ -141,7 +141,7 @@ func (i *List) traverse(startingTag string, next func(int) (*google.ManifestInfo
 	for {
 		stop, err := f(m)
 		if err != nil {
-			return false, fmt.Errorf("traverse %q: %s", i, err)
+			return false, fmt.Errorf("traverse %q: %w", i, err)
 		}
 		if stop {
 			return true, nil
@@ -182,10 +182,10 @@ func (i *List) NewerThan(tagName1, tagName2 string) (bool, error) {
 func (i *List) PutTag(tag, target string) error {
 	// Moving a tag equivalent to delete tag and then add the tag.
 	if err := i.DeleteTag(tag); err != nil {
-		return fmt.Errorf("put tag: %s", err)
+		return fmt.Errorf("put tag: %w", err)
 	}
 	if err := i.addTag(tag, target); err != nil {
-		return fmt.Errorf("put tag: %s", err)
+		return fmt.Errorf("put tag: %w", err)
 	}
 	return nil
 }

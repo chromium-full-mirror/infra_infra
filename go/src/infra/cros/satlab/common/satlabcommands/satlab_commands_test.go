@@ -72,14 +72,14 @@ func macAddressCommandHelper(hostname, macAddress, cmdOutput string) *executor.F
 				return []byte(hostname), nil
 			} else if cmd == fmt.Sprintf("%s exec dhcp cat %s", paths.DockerPath, fmt.Sprintf(paths.NetInfoPathTemplate, "eth0")) {
 				return []byte(macAddress), nil
-			} else if cmd == fmt.Sprintf(fmt.Sprintf("%s exec dhcp ip route show", paths.DockerPath)) {
+			} else if cmd == fmt.Sprint(fmt.Sprintf("%s exec dhcp ip route show", paths.DockerPath)) {
 				return []byte(
 					fmt.Sprintf("%v/24 dev eth0 scope link  src %v", hostname, hostname),
 				), nil
 			} else if in.Path == paths.Grep {
 				return []byte(hostname), nil
 			}
-			return nil, errors.New(fmt.Sprintf("handle command: %v", in.Path))
+			return nil, fmt.Errorf("handle command: %v", in.Path)
 		},
 		CmdOutput: cmdOutput,
 	}

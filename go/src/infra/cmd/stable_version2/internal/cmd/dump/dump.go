@@ -57,17 +57,17 @@ func (c *command) innerRun(a subcommands.Application, args []string, env subcomm
 	var contents []byte
 	contents, err := fetchStableVersionFile(ctx, &c.authFlags)
 	if err != nil {
-		return fmt.Errorf("getting remote file contents: %s", err)
+		return fmt.Errorf("getting remote file contents: %w", err)
 	}
 
 	sv, err := filterByModel(contents, c.model)
 	if err != nil {
-		return fmt.Errorf("filtering out model (%s): %s", c.model, err)
+		return fmt.Errorf("filtering out model (%s): %w", c.model, err)
 	}
 
 	jsonStr, err := svlib.WriteSVToString(sv)
 	if err != nil {
-		return fmt.Errorf("converting to JSON: %s", err)
+		return fmt.Errorf("converting to JSON: %w", err)
 	}
 
 	fmt.Fprintf(a.GetOut(), "%s\n", jsonStr)

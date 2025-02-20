@@ -231,7 +231,7 @@ func logTableSchema(metadata *bigquery.TableMetadata) {
 // Given a json RawMessage, return debug string information such as the raw
 // message and key/value pairs.
 func debugJsonRawMessage(message json.RawMessage) string {
-	var debugString string = ""
+	var debugString = ""
 	debugString = fmt.Sprintf("Raw message: %v", string(message))
 	debugString += "Unmarshalled json: " + debugPrintJsonRawMessage(1, message)
 	return debugString

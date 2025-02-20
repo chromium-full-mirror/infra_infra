@@ -50,16 +50,16 @@ func (c *podPerfCmd) Execute(_ context.Context, _ *flag.FlagSet, _ ...interface{
 func (c *podPerfCmd) startPodPerf() error {
 	inserter, err := c.commonOpts.BqInserter()
 	if err != nil {
-		return fmt.Errorf("start pod perf metrics: %s", err)
+		return fmt.Errorf("start pod perf metrics: %w", err)
 	}
 
 	k8sConfig, err := rest.InClusterConfig()
 	if err != nil {
-		return fmt.Errorf("start pod perf metrics: %s", err)
+		return fmt.Errorf("start pod perf metrics: %w", err)
 	}
 	clientset, err := k8sclientset.NewForConfig(k8sConfig)
 	if err != nil {
-		return fmt.Errorf("start pod perf metrics: %s", err)
+		return fmt.Errorf("start pod perf metrics: %w", err)
 	}
 	mi := clientset.MetricsV1beta1().PodMetricses(c.namespace)
 

@@ -90,12 +90,12 @@ func SetUpLog() error {
 	basedir := "/var/tmp/"
 	logPath := path.Join(basedir, bbid)
 	if err := os.MkdirAll(logPath, 0755); err != nil {
-		return fmt.Errorf("failed to create directory %v: %v", basedir, err)
+		return fmt.Errorf("failed to create directory %v: %w", basedir, err)
 	}
 	lfp := filepath.Join(logPath, "ctrlog.txt")
 	lf, err := os.Create(lfp)
 	if err != nil {
-		return fmt.Errorf("failed to create file %v: %v", lfp, err)
+		return fmt.Errorf("failed to create file %v: %w", lfp, err)
 	}
 	log.SetOutput(io.MultiWriter(lf, os.Stderr))
 	log.SetPrefix("<cros-tool-runner> ")

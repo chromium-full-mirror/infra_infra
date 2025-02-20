@@ -61,7 +61,7 @@ func Setup(ctx context.Context, tsmonEndpoint, tsmonCredentialPath string) error
 	fl.Target.TaskJobName = "drone-agent"
 
 	if err := tsmon.InitializeFromFlags(ctx, &fl); err != nil {
-		return fmt.Errorf("metrics: setup tsmon: %s", err)
+		return fmt.Errorf("metrics: setup tsmon: %w", err)
 	}
 
 	// The registered functions run automatically when tsmon flush every time.
@@ -97,7 +97,7 @@ func updateCPUMetrics(c context.Context, m *stats.Metrics) error {
 	}
 	l, err := cgroupCPULimit()
 	if err != nil {
-		return fmt.Errorf("update CPU metrics: %s", err)
+		return fmt.Errorf("update CPU metrics: %w", err)
 	}
 	cpuLimit.Set(c, l)
 	cpuThrottledCount.Set(c, int64(cpu.Throttling.ThrottledPeriods))
@@ -116,14 +116,14 @@ func updateCPUMetrics(c context.Context, m *stats.Metrics) error {
 func cgroupCPULimit() (float64, error) {
 	quota, err := parseIntFromCgroupFile("cpu", "cpu.cfs_quota_us")
 	if err != nil {
-		return 0, fmt.Errorf("cgroup CPU limit: %s", err)
+		return 0, fmt.Errorf("cgroup CPU limit: %w", err)
 	}
 	if quota == -1 { // No limit on CPU.
 		return -1, nil
 	}
 	period, err := parseIntFromCgroupFile("cpu", "cpu.cfs_period_us")
 	if err != nil {
-		return 0, fmt.Errorf("cgroup CPU limit: %s", err)
+		return 0, fmt.Errorf("cgroup CPU limit: %w", err)
 	}
 	return float64(quota) / float64(period), nil
 }
@@ -134,12 +134,12 @@ func parseIntFromCgroupFile(controller, controlFile string) (int64, error) {
 	f := path.Join(baseDir, controller, controlFile)
 	c, err := os.ReadFile(f)
 	if err != nil {
-		return 0, fmt.Errorf("parse int from cgroup file '%s/%s': %s", controller, controlFile, err)
+		return 0, fmt.Errorf("parse int from cgroup file '%s/%s': %w", controller, controlFile, err)
 	}
 
 	v, err := strconv.ParseInt(strings.TrimRight(string(c), "\n"), 10, 64)
 	if err != nil {
-		return 0, fmt.Errorf("parse int from cgroup file '%s/%s': %s", controller, controlFile, err)
+		return 0, fmt.Errorf("parse int from cgroup file '%s/%s': %w", controller, controlFile, err)
 	}
 	return v, nil
 }

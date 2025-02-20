@@ -107,7 +107,7 @@ func Run(ctx context.Context, c trservice.Client, args Args, inputPath string) (
 			validTest, err = verifyFleetTestsPolicy(ctx, c, board, model, ts.Name, image, args.Build.CreatedBy, qsAccount)
 			if !validTest {
 				logging.Errorf(ctx, "Fleet Validation failed for test %v due to error %v, failing test run.", requestTaskSet, err)
-				return nil, fmt.Errorf("Fleet Validation failed for test %v due to error %v, failing test run.", requestTaskSet, err)
+				return nil, fmt.Errorf("Fleet Validation failed for test %v due to error %w, failing test run.", requestTaskSet, err)
 			}
 		}
 

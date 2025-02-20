@@ -117,7 +117,7 @@ func (cmd *ParseDutTopologyCmd) Execute(ctx context.Context) error {
 	if cmd.PrimaryDutModel != nil {
 		info, err := cmd.matchDut(devicePool, cmd.PrimaryDutModel)
 		if err != nil {
-			return fmt.Errorf("Failed to match primaryDevice, %s", err)
+			return fmt.Errorf("Failed to match primaryDevice, %w", err)
 		}
 		cmd.appendDevice(common.NewPrimaryDeviceIdentifier().ID, info)
 	}
@@ -125,7 +125,7 @@ func (cmd *ParseDutTopologyCmd) Execute(ctx context.Context) error {
 	for _, companionDutModel := range cmd.CompanionDutModels {
 		info, err := cmd.matchDut(devicePool, companionDutModel)
 		if err != nil {
-			return fmt.Errorf("Failed to match companionDevice, %s", err)
+			return fmt.Errorf("Failed to match companionDevice, %w", err)
 		}
 		deviceId := common.NewCompanionDeviceIdentifier(companionDutModel.GetBuildTarget())
 		if _, ok := cmd.Devices[deviceId.ID]; ok {

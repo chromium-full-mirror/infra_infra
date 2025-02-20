@@ -31,7 +31,7 @@ const refreshInterval = time.Hour
 func NewUFSEnv(c ufsapi.FleetClient) (Environment, error) {
 	e := &ufsEnv{client: c, zones: make(map[string]ufsmodels.Zone)}
 	if err := e.refresh(); err != nil {
-		return nil, fmt.Errorf("NewUFSEnv: %s", err)
+		return nil, fmt.Errorf("NewUFSEnv: %w", err)
 	}
 	return e, nil
 }
@@ -78,7 +78,7 @@ func (e *ufsEnv) GetZoneForServer(name string) (ufsmodels.Zone, error) {
 
 	m, err := e.client.GetMachine(ctx, &ufsapi.GetMachineRequest{Name: ufsutil.AddPrefix(ufsutil.MachineCollection, name)})
 	if err != nil {
-		return ufsmodels.Zone_ZONE_UNSPECIFIED, fmt.Errorf("get zone from server name %q: %s", name, err)
+		return ufsmodels.Zone_ZONE_UNSPECIFIED, fmt.Errorf("get zone from server name %q: %w", name, err)
 	}
 	e.zones[name] = m.GetLocation().GetZone()
 	return e.zones[name], nil
@@ -108,7 +108,7 @@ func (e *ufsEnv) GetZoneForDUT(name string) (ufsmodels.Zone, error) {
 		Name: ufsutil.AddPrefix(ufsutil.MachineLSECollection, name),
 	})
 	if err != nil {
-		return ufsmodels.Zone_ZONE_UNSPECIFIED, fmt.Errorf("get zone for DUT %q: %s", name, err)
+		return ufsmodels.Zone_ZONE_UNSPECIFIED, fmt.Errorf("get zone for DUT %q: %w", name, err)
 	}
 	e.zones[name] = ufsmodels.Zone(ufsmodels.Zone_value[lse.GetZone()])
 	return e.zones[name], nil
@@ -127,7 +127,7 @@ func (e *ufsEnv) refresh() error {
 
 	cs, err := fetchCachingServicesFromUFS(e.client)
 	if err != nil {
-		return fmt.Errorf("refresh caching services: %s", err)
+		return fmt.Errorf("refresh caching services: %w", err)
 	}
 
 	// For the caching services selected by UFS zone, we MUST NOT set the
@@ -149,13 +149,13 @@ func (e *ufsEnv) refresh() error {
 	}
 	s, err := getCachingSubnets(subnetBased)
 	if err != nil {
-		return fmt.Errorf("refresh caching services: %s", err)
+		return fmt.Errorf("refresh caching services: %w", err)
 	}
 	e.subnets = s
 
 	z, err := getCachingZones(e, zoneBased)
 	if err != nil {
-		return fmt.Errorf("refresh caching services: %s", err)
+		return fmt.Errorf("refresh caching services: %w", err)
 	}
 	e.cacheZones = z
 	return nil
@@ -167,7 +167,7 @@ func getCachingSubnets(cs []*ufsmodels.CachingService) ([]Subnet, error) {
 	for _, s := range cs {
 		svc, err := cachingServiceName(s)
 		if err != nil {
-			return nil, fmt.Errorf("get caching subnets: %s", err)
+			return nil, fmt.Errorf("get caching subnets: %w", err)
 		}
 		subnets := s.GetServingSubnets()
 		for _, s := range subnets {
@@ -177,7 +177,7 @@ func getCachingSubnets(cs []*ufsmodels.CachingService) ([]Subnet, error) {
 	for k, v := range m {
 		_, ipNet, err := net.ParseCIDR(k)
 		if err != nil {
-			return nil, fmt.Errorf("fetch caching subnets: parse subnet %q: %s", k, err)
+			return nil, fmt.Errorf("fetch caching subnets: parse subnet %q: %w", k, err)
 		}
 		sort.Strings(v)
 		result = append(result, Subnet{IPNet: ipNet, Backends: v})
@@ -195,7 +195,7 @@ func getCachingZones(env Environment, ss []*ufsmodels.CachingService) (map[ufsmo
 		name, err := cachingServiceName(s)
 		svc := CachingService(name)
 		if err != nil {
-			return nil, fmt.Errorf("get caching zones: %s", err)
+			return nil, fmt.Errorf("get caching zones: %w", err)
 		}
 		if zs := s.GetZones(); len(zs) > 0 {
 			for _, z := range zs {
@@ -210,7 +210,7 @@ func getCachingZones(env Environment, ss []*ufsmodels.CachingService) (map[ufsmo
 		node := s.GetSecondaryNode()
 		z, err := env.GetZoneForServer(node)
 		if err != nil {
-			return nil, fmt.Errorf("get caching zones of %q (using node %q): %s", svc, node, err)
+			return nil, fmt.Errorf("get caching zones of %q (using node %q): %w", svc, node, err)
 		}
 		result[z] = append(result[z], svc)
 	}
@@ -232,7 +232,7 @@ func cachingServiceName(s *ufsmodels.CachingService) (string, error) {
 	port := strconv.Itoa(int(s.GetPort()))
 	ip, err := lookupHost(nameParts[1])
 	if err != nil {
-		return "", fmt.Errorf("caching service name: %s", err)
+		return "", fmt.Errorf("caching service name: %w", err)
 	}
 	return fmt.Sprintf("http://%s", net.JoinHostPort(ip, port)), nil
 }
@@ -246,7 +246,7 @@ func fetchCachingServicesFromUFS(c ufsapi.FleetClient) ([]*ufsmodels.CachingServ
 
 	resp, err := c.ListCachingServices(ctx, &ufsapi.ListCachingServicesRequest{})
 	if err != nil {
-		return nil, fmt.Errorf("list caching service from UFS: %s", err)
+		return nil, fmt.Errorf("list caching service from UFS: %w", err)
 	}
 	return resp.GetCachingServices(), nil
 }
@@ -256,7 +256,7 @@ func fetchCachingServicesFromUFS(c ufsapi.FleetClient) ([]*ufsmodels.CachingServ
 func lookupHost(hostname string) (string, error) {
 	addrs, err := net.LookupHost(hostname)
 	if err != nil {
-		return "", fmt.Errorf("look up IP of %q: %s", hostname, err)
+		return "", fmt.Errorf("look up IP of %q: %w", hostname, err)
 	}
 	if len(addrs) == 0 {
 		return "", fmt.Errorf("look up IP of %q: No addresses found", hostname)

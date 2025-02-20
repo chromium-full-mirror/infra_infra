@@ -104,7 +104,7 @@ func (c *addKVM) innerRun(a subcommands.Application, args []string, env subcomma
 				return err
 			}
 			if kvm.GetRack() == "" {
-				return errors.New(fmt.Sprintf("rack field is empty in json. It is a required parameter for json input."))
+				return errors.New("rack field is empty in json. It is a required parameter for json input.")
 			}
 		} else {
 			c.parseArgs(&kvm)

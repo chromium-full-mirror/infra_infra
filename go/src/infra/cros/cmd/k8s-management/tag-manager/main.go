@@ -59,7 +59,7 @@ func innerMain() error {
 	if *serviceAccountJSON != "" {
 		content, err := os.ReadFile(*serviceAccountJSON)
 		if err != nil {
-			return fmt.Errorf("read credential %q: %s", *serviceAccountJSON, err)
+			return fmt.Errorf("read credential %q: %w", *serviceAccountJSON, err)
 		}
 		auth = google.NewJSONKeyAuthenticator(string(content))
 	} else {
@@ -67,7 +67,7 @@ func innerMain() error {
 		var err error
 		auth, err = google.NewEnvAuthenticator()
 		if err != nil {
-			return fmt.Errorf("get GCP env auth: %s", err)
+			return fmt.Errorf("get GCP env auth: %w", err)
 		}
 	}
 

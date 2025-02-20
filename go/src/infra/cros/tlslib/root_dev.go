@@ -28,7 +28,7 @@ func getRootDev(c *ssh.Client) (rootDev, error) {
 	// Example 2: "/dev/sda3"
 	curRoot, err := runCmdOutput(c, "rootdev -s")
 	if err != nil {
-		return r, fmt.Errorf("get root device: failed to get current root, %s", err)
+		return r, fmt.Errorf("get root device: failed to get current root, %w", err)
 	}
 	curRoot = strings.TrimSpace(curRoot)
 
@@ -36,7 +36,7 @@ func getRootDev(c *ssh.Client) (rootDev, error) {
 	// Example 2: "/dev/sda"
 	rootDisk, err := runCmdOutput(c, "rootdev -s -d")
 	if err != nil {
-		return r, fmt.Errorf("get root device: failed to get root disk, %s", err)
+		return r, fmt.Errorf("get root device: failed to get root disk, %w", err)
 	}
 	r.disk = strings.TrimSpace(rootDisk)
 

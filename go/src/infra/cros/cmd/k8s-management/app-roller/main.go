@@ -76,7 +76,7 @@ func innerMain() error {
 
 	content, err := os.ReadFile(*serviceAccountJSON)
 	if err != nil {
-		return fmt.Errorf("read credential %q: %s", *serviceAccountJSON, err)
+		return fmt.Errorf("read credential %q: %w", *serviceAccountJSON, err)
 	}
 	auth := google.NewJSONKeyAuthenticator(string(content))
 
@@ -86,13 +86,13 @@ func innerMain() error {
 	} else {
 		nr, err = netrc.Parse(*netrcPath)
 		if err != nil {
-			return fmt.Errorf("parse netrc %q: %s", *netrcPath, err)
+			return fmt.Errorf("parse netrc %q: %w", *netrcPath, err)
 		}
 	}
 	downloader := &netrcClient{nr}
 	apps, err := loadApps(downloader, *appsYAMLURL)
 	if err != nil {
-		return fmt.Errorf("load apps yaml %q: %s", *appsYAMLURL, err)
+		return fmt.Errorf("load apps yaml %q: %w", *appsYAMLURL, err)
 	}
 
 	// clusterName is a global var which is used in lower level functions.
@@ -149,11 +149,11 @@ func loadApps(d downloader, fileURL string) ([]app, error) {
 	log.Printf("Download the applications config file from %q", fileURL)
 	content, err := d.download(fileURL)
 	if err != nil {
-		return nil, fmt.Errorf("load apps from %q: %s", fileURL, err)
+		return nil, fmt.Errorf("load apps from %q: %w", fileURL, err)
 	}
 	var apps []app
 	if err := yaml.Unmarshal([]byte(content), &apps); err != nil {
-		return nil, fmt.Errorf("load apps from %q: %s", fileURL, err)
+		return nil, fmt.Errorf("load apps from %q: %w", fileURL, err)
 	}
 	return apps, nil
 }
@@ -162,23 +162,23 @@ func loadApps(d downloader, fileURL string) ([]app, error) {
 func rolloutApp(ctx context.Context, a app, auth authn.Authenticator, d downloader) error {
 	yamlTemplate, err := d.download(a.Source)
 	if err != nil {
-		return fmt.Errorf("roll out app %q: %s", a, err)
+		return fmt.Errorf("roll out app %q: %w", a, err)
 	}
 	imageMap, err := resolveImages(a.Images, auth)
 	if err != nil {
-		return fmt.Errorf("roll out app %q: %s", a, err)
+		return fmt.Errorf("roll out app %q: %w", a, err)
 	}
 	content, err := genAppYaml(yamlTemplate, imageMap)
 	if err != nil {
-		return fmt.Errorf("roll out app %q: %s", a, err)
+		return fmt.Errorf("roll out app %q: %w", a, err)
 	}
 	yamlDocs, err := splitYAMLDoc(content)
 	if err != nil {
-		return fmt.Errorf("roll out app %q: %s", a, err)
+		return fmt.Errorf("roll out app %q: %w", a, err)
 	}
 	for _, d := range yamlDocs {
 		if err := applyToK8s(ctx, d); err != nil {
-			return fmt.Errorf("roll out app %q: %s", a, err)
+			return fmt.Errorf("roll out app %q: %w", a, err)
 		}
 	}
 	return nil
@@ -190,14 +190,14 @@ func resolveImages(images []image, auth authn.Authenticator) (map[string]string,
 	for _, img := range images {
 		obj, err := parseImage(img)
 		if err != nil {
-			return nil, fmt.Errorf("resolve images (%q): %s", img, err)
+			return nil, fmt.Errorf("resolve images (%q): %w", img, err)
 		}
 		if _, ok := m[img.Name]; ok {
 			return nil, fmt.Errorf("resolve images (%q): duplicate image name %q", img, img.Name)
 		}
 		officialTag, err := resolveImageToOfficial(obj, auth)
 		if err != nil {
-			return nil, fmt.Errorf("resolve images (%q): %s", img, err)
+			return nil, fmt.Errorf("resolve images (%q): %w", img, err)
 		}
 		log.Printf("Resolved %q to %q", img, officialTag)
 		m[img.Name] = officialTag
@@ -209,7 +209,7 @@ func resolveImages(images []image, auth authn.Authenticator) (map[string]string,
 func genAppYaml(yamlTemplate string, imageMap map[string]string) (string, error) {
 	t, err := yamltemplate.New("base").Parse(yamlTemplate)
 	if err != nil {
-		return "", fmt.Errorf("gen YAML: %s", err)
+		return "", fmt.Errorf("gen YAML: %w", err)
 	}
 
 	var buf bytes.Buffer
@@ -262,7 +262,7 @@ func parseImage(img image) (*parsedImage, error) {
 	}
 	re, err := regexp.Compile(img.OfficialTagRegex)
 	if err != nil {
-		return nil, fmt.Errorf("parse image %q: %s", img, err)
+		return nil, fmt.Errorf("parse image %q: %w", img, err)
 	}
 
 	// Set the default tag if it's not specified.
@@ -288,7 +288,7 @@ const latestOfficial = "latest-official"
 func resolveImageToOfficial(img *parsedImage, auth authn.Authenticator) (string, error) {
 	allTags, err := img.repo.allTagsOnImage(auth, img.tag)
 	if err != nil {
-		return "", fmt.Errorf("resolve to official: %s", err)
+		return "", fmt.Errorf("resolve to official: %w", err)
 	}
 	for _, t := range allTags {
 		if img.regex.Match([]byte(t)) {
@@ -314,7 +314,7 @@ type netrcClient struct{ nr *netrc.Netrc }
 func (n *netrcClient) download(strURL string) (string, error) {
 	u, err := url.Parse(strURL)
 	if err != nil {
-		return "", fmt.Errorf("download %q: %s", strURL, err)
+		return "", fmt.Errorf("download %q: %w", strURL, err)
 	}
 	q := u.Query()
 	q.Set("format", "TEXT")
@@ -324,13 +324,13 @@ func (n *netrcClient) download(strURL string) (string, error) {
 	c := http.Client{Timeout: 10 * time.Second}
 	req, err := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
 	if err != nil {
-		return "", fmt.Errorf("download %q: %s", u, err)
+		return "", fmt.Errorf("download %q: %w", u, err)
 	}
 	n.setAuth(req, u.Hostname())
 
 	resp, err := c.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("download from %q: %s", u, err)
+		return "", fmt.Errorf("download from %q: %w", u, err)
 	}
 	body, err := io.ReadAll(resp.Body)
 	defer resp.Body.Close()
@@ -338,11 +338,11 @@ func (n *netrcClient) download(strURL string) (string, error) {
 		return "", fmt.Errorf("download %q: status code %d", u, resp.StatusCode)
 	}
 	if err != nil {
-		return "", fmt.Errorf("download %q: %s", u, err)
+		return "", fmt.Errorf("download %q: %w", u, err)
 	}
 	content, err := base64.StdEncoding.DecodeString(string(body))
 	if err != nil {
-		return "", fmt.Errorf("download %q: %s", u, err)
+		return "", fmt.Errorf("download %q: %w", u, err)
 	}
 	return string(content), nil
 }
@@ -377,7 +377,7 @@ func (g gcrRepo) String() string { return g.name }
 func (g *gcrRepo) allTagsOnImage(auth authn.Authenticator, tag string) ([]string, error) {
 	repo, err := name.NewRepository(g.name)
 	if err != nil {
-		return nil, fmt.Errorf("all tags on image %q:%q: %s", g, tag, err)
+		return nil, fmt.Errorf("all tags on image %q:%q: %w", g, tag, err)
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -385,7 +385,7 @@ func (g *gcrRepo) allTagsOnImage(auth authn.Authenticator, tag string) ([]string
 
 	tags, err := google.List(repo, google.WithAuth(auth), google.WithContext(ctx))
 	if err != nil {
-		return nil, fmt.Errorf("all tags on image %q:%q: %s", g, tag, err)
+		return nil, fmt.Errorf("all tags on image %q:%q: %w", g, tag, err)
 	}
 	for _, m := range tags.Manifests {
 		for _, t := range m.Tags {
@@ -403,7 +403,7 @@ func applyToK8s(ctx context.Context, generatedYAML string) error {
 	defer cancel()
 	c, err := k8sApply(ctx, generatedYAML)
 	if err != nil {
-		return fmt.Errorf("apply to k8s: %s", err)
+		return fmt.Errorf("apply to k8s: %w", err)
 	}
 	if c != nil {
 		changelog.LogChange(ctx, &bqRow{cluster: clusterName, change: *c})
@@ -419,12 +419,12 @@ var clusterName string
 func getClusterName() (string, error) {
 	k8sConfig, err := rest.InClusterConfig()
 	if err != nil {
-		return "", fmt.Errorf("get cluster name: %s", err)
+		return "", fmt.Errorf("get cluster name: %w", err)
 	}
 
 	clientset, err := kubernetes.NewForConfig(k8sConfig)
 	if err != nil {
-		return "", fmt.Errorf("get cluster name: %s", err)
+		return "", fmt.Errorf("get cluster name: %w", err)
 	}
 	// We use the API server info (i.e. 'IP:port') as the cluster name.
 	// See https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/client-go/discovery/discovery_client.go#L160
@@ -433,7 +433,7 @@ func getClusterName() (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := clientset.RESTClient().Get().AbsPath(clientset.LegacyPrefix).Do(ctx).Into(v); err != nil {
-		return "", fmt.Errorf("get cluster name: %s", err)
+		return "", fmt.Errorf("get cluster name: %w", err)
 	}
 	if len(v.ServerAddressByClientCIDRs) == 0 {
 		return "", fmt.Errorf("no data in ServerAddressByClientCIDRs")
@@ -453,11 +453,11 @@ func splitYAMLDoc(content string) ([]string, error) {
 			break
 		}
 		if err != nil {
-			return nil, fmt.Errorf("split YAML doc: %s", err)
+			return nil, fmt.Errorf("split YAML doc: %w", err)
 		}
 		s, err := yaml.Marshal(v)
 		if err != nil {
-			return nil, fmt.Errorf("split YAML doc: %s", err)
+			return nil, fmt.Errorf("split YAML doc: %w", err)
 		}
 		docs = append(docs, string(s))
 	}

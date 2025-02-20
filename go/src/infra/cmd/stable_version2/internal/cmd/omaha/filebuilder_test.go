@@ -124,7 +124,7 @@ func TestFileBuilder(t *testing.T) {
 			diff := cmp.Diff(tt.out, sv, protocmp.Transform())
 			if diff != "" {
 				msg := fmt.Sprintf("name (%s): unexpected diff (%s)", tt.name, diff)
-				t.Errorf(msg)
+				t.Error(msg)
 			}
 
 			if !tt.f(e) {
@@ -214,13 +214,13 @@ func TestGetCrosFirmwareVersion(t *testing.T) {
 			diff := cmp.Diff(tt.outCros, c, protocmp.Transform())
 			if diff != "" {
 				msg := fmt.Sprintf("name (%s): unexpected diff (%s)", tt.name, diff)
-				t.Errorf(msg)
+				t.Error(msg)
 			}
 
 			diff = cmp.Diff(tt.outFw, f, protocmp.Transform())
 			if diff != "" {
 				msg := fmt.Sprintf("name (%s): unexpected diff (%s)", tt.name, diff)
-				t.Errorf(msg)
+				t.Error(msg)
 			}
 
 			if !tt.f(e) {
@@ -293,7 +293,7 @@ func TestBestVersion(t *testing.T) {
 			diff := cmp.Diff(tt.out, out)
 			if diff != "" {
 				msg := fmt.Sprintf("name (%s): unexpected diff (%s)", tt.name, diff)
-				t.Errorf(msg)
+				t.Error(msg)
 			}
 
 			if !tt.f(e) {
@@ -369,7 +369,7 @@ func TestAllCrosVersions(t *testing.T) {
 			diff := cmp.Diff(tt.out, out)
 			if diff != "" {
 				msg := fmt.Sprintf("name (%s): unexpected diff (%s)", tt.name, diff)
-				t.Errorf(msg)
+				t.Error(msg)
 			}
 		})
 	}

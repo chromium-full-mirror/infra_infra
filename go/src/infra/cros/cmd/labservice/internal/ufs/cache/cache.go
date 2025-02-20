@@ -46,7 +46,7 @@ func (l *Locator) SetPreferredServices(services []string) error {
 	for i, s := range services {
 		a, err := parseAddress(s)
 		if err != nil {
-			return fmt.Errorf("set preferred services %q: %s", s, err)
+			return fmt.Errorf("set preferred services %q: %w", s, err)
 		}
 		r[i] = *a
 	}
@@ -72,7 +72,7 @@ func (l *Locator) FindCacheServer(dutName string, client ufsapi.FleetClient) (*l
 	log.Printf("Find cache server: fall back to subnet based: %s", err)
 	cs, err = l.findCacheServerBySubnet(dutName, client)
 	if err != nil {
-		return nil, fmt.Errorf("find cache server for %q: %s", dutName, err)
+		return nil, fmt.Errorf("find cache server for %q: %w", dutName, err)
 	}
 	return cs, nil
 }
@@ -116,7 +116,7 @@ func (l *Locator) findPreferredServer(dutName string) (*labapi.IpEndpoint, error
 func (l *Locator) findCacheServerByZone(dutName string, client ufsapi.FleetClient) (*labapi.IpEndpoint, error) {
 	z, err := l.zones.getZoneForSU(dutName, client)
 	if err != nil {
-		return nil, fmt.Errorf("find cache server by zone for %q: %s", dutName, err)
+		return nil, fmt.Errorf("find cache server by zone for %q: %w", dutName, err)
 	}
 	cs, ok := l.zones.getCacheZones(client)[z]
 	if !ok {
@@ -133,12 +133,12 @@ func (l *Locator) findCacheServerByZone(dutName string, client ufsapi.FleetClien
 func (l *Locator) findCacheServerBySubnet(dutName string, client ufsapi.FleetClient) (*labapi.IpEndpoint, error) {
 	subnets, err := l.subnets.getSubnets(client)
 	if err != nil {
-		return nil, fmt.Errorf("find cache server by subnet: %s", err)
+		return nil, fmt.Errorf("find cache server by subnet: %w", err)
 	}
 
 	sn, err := findSubnet(dutName, subnets)
 	if err != nil {
-		return nil, fmt.Errorf("find cache server by subnet: %s", err)
+		return nil, fmt.Errorf("find cache server by subnet: %w", err)
 	}
 
 	be := chooseBackend(sn.Backends, dutName)

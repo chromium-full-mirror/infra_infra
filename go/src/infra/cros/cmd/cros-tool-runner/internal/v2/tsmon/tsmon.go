@@ -39,7 +39,7 @@ func Init() error {
 
 	// Initialize the library once on application start:
 	if err := tsmon.InitializeFromFlags(context.Background(), &tsmonFlags); err != nil {
-		return fmt.Errorf("metrics: error setup tsmon: %s", err)
+		return fmt.Errorf("metrics: error setup tsmon: %w", err)
 	}
 	return nil
 }

@@ -61,7 +61,7 @@ func (cmd *GenericServiceCmd) instantiateWithHwTestStateKeeper(
 	if err := commoncommands.InstantiatePopFromQueue(sk.GenericQueue, func(element any) {
 		cmd.GenericRequest = element.(*api.GenericTask)
 	}); err != nil {
-		return fmt.Errorf("cmd %s missing dependency: GenericRequest, %s", cmd.GetCommandType(), err)
+		return fmt.Errorf("cmd %s missing dependency: GenericRequest, %w", cmd.GetCommandType(), err)
 	}
 
 	return nil

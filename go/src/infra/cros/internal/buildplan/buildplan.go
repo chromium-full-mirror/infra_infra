@@ -46,7 +46,7 @@ func (c *CheckBuildersInput) CheckBuilders() (*cros_pb.GenerateBuildPlanResponse
 	// Get all of the files referenced by each GerritCommit in the Build.
 	affectedFiles, err := extractAffectedFiles(c.Changes, c.ChangeRevs, c.RepoToBranchToSrcRoot)
 	if err != nil {
-		return nil, fmt.Errorf("error in extractAffectedFiles: %+v", err)
+		return nil, fmt.Errorf("error in extractAffectedFiles: %+w", err)
 	}
 	hasAffectedFiles := len(affectedFiles) > 0
 
@@ -54,7 +54,7 @@ func (c *CheckBuildersInput) CheckBuilders() (*cros_pb.GenerateBuildPlanResponse
 	// relevant for each builder.
 	testsAllBuilders, err := hasTestAllManifestXMLChange(affectedFiles)
 	if err != nil {
-		return nil, fmt.Errorf("error in hasTestAllManifestXMLChange: %+v", err)
+		return nil, fmt.Errorf("error in hasTestAllManifestXMLChange: %+w", err)
 	}
 	if testsAllBuilders {
 		log.Printf("Running all children builds in order to test all Manifest XML change.")

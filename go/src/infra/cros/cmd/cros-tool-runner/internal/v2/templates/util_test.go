@@ -27,7 +27,7 @@ func TestParsePortBindingString(t *testing.T) {
 	}
 	parsed, err := TemplateUtils.parsePortBindingString(original)
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Error(err.Error())
 	}
 	if parsed.String() != expect.String() {
 		t.Errorf("Result doesn't match\nexpect: %v\nactual: %v", expect, parsed)
@@ -42,7 +42,7 @@ func TestParseMultilinePortBindings(t *testing.T) {
 	}
 	parsed, err := TemplateUtils.parseMultilinePortBindings(original)
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Error(err.Error())
 	}
 	if len(parsed) != len(expect) || parsed[0].String() != expect[0].String() || parsed[1].String() != expect[1].String() {
 		t.Errorf("Result doesn't match\nexpect: %v\nactual: %v", expect, parsed)
@@ -56,7 +56,7 @@ func TestParseMultilinePortBindings_ipv6BindingIgnored(t *testing.T) {
 	}
 	parsed, err := TemplateUtils.parseMultilinePortBindings(original)
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Error(err.Error())
 	}
 	if len(parsed) != len(expect) || parsed[0].String() != expect[0].String() {
 		t.Errorf("Result doesn't match\nexpect: %v\nactual: %v", expect, parsed)
@@ -67,7 +67,7 @@ func TestParseMultilinePortBindings_empty(t *testing.T) {
 	original := "\n"
 	parsed, err := TemplateUtils.parseMultilinePortBindings(original)
 	if err != nil {
-		t.Errorf(err.Error())
+		t.Error(err.Error())
 	}
 	if len(parsed) != 0 {
 		t.Errorf("Expect empty port bindings returned")

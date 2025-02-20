@@ -21,11 +21,11 @@ import (
 func cgroupStats() (*stats.Metrics, error) {
 	control, err := cgroups.Load(cgroups.V1, cgroups.StaticPath("/"))
 	if err != nil {
-		return nil, fmt.Errorf("loading root cgroup status: %s", err)
+		return nil, fmt.Errorf("loading root cgroup status: %w", err)
 	}
 	stats, err := control.Stat(cgroups.IgnoreNotExist)
 	if err != nil {
-		return nil, fmt.Errorf("loading root cgroup status: %s", err)
+		return nil, fmt.Errorf("loading root cgroup status: %w", err)
 	}
 	return stats, nil
 }

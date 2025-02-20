@@ -49,7 +49,7 @@ type address struct {
 // getSubnets returns the list of up-to-date subnets and cache servers.
 func (e *subnetsFinder) getSubnets(client ufsapi.FleetClient) ([]Subnet, error) {
 	if err := e.refreshSubnets(client); err != nil {
-		return nil, fmt.Errorf("get subnets: %s", err)
+		return nil, fmt.Errorf("get subnets: %w", err)
 	}
 	return e.subnets, nil
 }
@@ -65,7 +65,7 @@ func (e *subnetsFinder) refreshSubnets(client ufsapi.FleetClient) error {
 	e.expire = n.Add(refreshInterval)
 	s, err := fetchCachingSubnets(client)
 	if err != nil {
-		return fmt.Errorf("refresh subnets: %s", err)
+		return fmt.Errorf("refresh subnets: %w", err)
 	}
 	e.subnets = s
 	return nil
@@ -76,7 +76,7 @@ func (e *subnetsFinder) refreshSubnets(client ufsapi.FleetClient) error {
 func fetchCachingSubnets(client ufsapi.FleetClient) ([]Subnet, error) {
 	cachingServices, err := fetchCachingServicesFromUFS(client)
 	if err != nil {
-		return nil, fmt.Errorf("fetch caching subnets: %s", err)
+		return nil, fmt.Errorf("fetch caching subnets: %w", err)
 	}
 
 	var result []Subnet
@@ -84,7 +84,7 @@ func fetchCachingSubnets(client ufsapi.FleetClient) ([]Subnet, error) {
 	for _, s := range cachingServices {
 		addr, err := cachingServiceAddr(s)
 		if err != nil {
-			return nil, fmt.Errorf("fetch caching subnets: %s", err)
+			return nil, fmt.Errorf("fetch caching subnets: %w", err)
 		}
 		subnets := s.GetServingSubnets()
 		for _, s := range subnets {
@@ -94,7 +94,7 @@ func fetchCachingSubnets(client ufsapi.FleetClient) ([]Subnet, error) {
 	for k, v := range m {
 		_, ipNet, err := net.ParseCIDR(k)
 		if err != nil {
-			return nil, fmt.Errorf("fetch caching subnets: parse subnet %q: %s", k, err)
+			return nil, fmt.Errorf("fetch caching subnets: parse subnet %q: %w", k, err)
 		}
 		sort.Slice(v, func(i, j int) bool {
 			return v[i].Ip < v[j].Ip || (v[i].Ip == v[j].Ip && v[i].Port < v[j].Port)
@@ -116,7 +116,7 @@ func fetchCachingServicesFromUFS(c ufsapi.FleetClient) ([]*ufsmodels.CachingServ
 		Filter: "state=serving",
 	})
 	if err != nil {
-		return nil, fmt.Errorf("fetch caching service from UFS: %s", err)
+		return nil, fmt.Errorf("fetch caching service from UFS: %w", err)
 	}
 	return resp.GetCachingServices(), nil
 }
@@ -132,7 +132,7 @@ func cachingServiceAddr(s *ufsmodels.CachingService) (addr *address, err error) 
 	port := s.GetPort()
 	ip, err := lookupHost(nameParts[1])
 	if err != nil {
-		return nil, fmt.Errorf("get caching service address: %s", err)
+		return nil, fmt.Errorf("get caching service address: %w", err)
 	}
 	return &address{Ip: ip, Port: port}, nil
 }
@@ -142,7 +142,7 @@ func cachingServiceAddr(s *ufsmodels.CachingService) (addr *address, err error) 
 func lookupHost(hostname string) (string, error) {
 	addrs, err := net.LookupHost(hostname)
 	if err != nil {
-		return "", fmt.Errorf("look up host: IP of %q: %s", hostname, err)
+		return "", fmt.Errorf("look up host: IP of %q: %w", hostname, err)
 	}
 	if len(addrs) == 0 {
 		return "", fmt.Errorf("look up host: IP of %q: No addresses found", hostname)

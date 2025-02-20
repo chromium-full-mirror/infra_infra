@@ -7,6 +7,7 @@ package validateconfig
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"unicode/utf8"
@@ -104,13 +105,13 @@ func InspectFile(path string) (*labPlatform.StableVersions, error) {
 // InspectBuffer takes file contents and determines what, if anything, is wrong with a stable_versions.cfg file.
 func InspectBuffer(contents []byte) (*labPlatform.StableVersions, error) {
 	if len(contents) == 0 {
-		return nil, fmt.Errorf(FileLenZero)
+		return nil, errors.New(FileLenZero)
 	}
 	if !utf8.ValidString(string(contents)) {
-		return nil, fmt.Errorf(FileNotUTF8)
+		return nil, errors.New(FileNotUTF8)
 	}
 	if !isValidJSON(contents) {
-		return nil, fmt.Errorf(FileNotJSON)
+		return nil, errors.New(FileNotJSON)
 	}
 	sv, err := ParseStableVersions(contents)
 	if err != nil {
@@ -151,22 +152,22 @@ func ParseStableCrosVersion(contents []byte) (*labPlatform.StableCrosVersion, er
 
 func validateStableVersions(sv *labPlatform.StableVersions) error {
 	if sv == nil {
-		return fmt.Errorf(FileJSONNull)
+		return errors.New(FileJSONNull)
 	}
 	if sv.Cros == nil {
-		return fmt.Errorf(FileMissingCrosKey)
+		return errors.New(FileMissingCrosKey)
 	}
 	if sv.Firmware == nil {
-		return fmt.Errorf(FileMissingFirmwareKey)
+		return errors.New(FileMissingFirmwareKey)
 	}
 	if sv.Faft == nil {
-		return fmt.Errorf(FileMissingFaftKey)
+		return errors.New(FileMissingFaftKey)
 	}
 	if len(sv.Cros) == 0 {
-		return fmt.Errorf(FileNoCrosEntries)
+		return errors.New(FileNoCrosEntries)
 	}
 	if len(sv.Firmware) == 0 {
-		return fmt.Errorf(FileNoFirmwareEntries)
+		return errors.New(FileNoFirmwareEntries)
 	}
 	if err := shallowValidateCrosVersions(sv); err != nil {
 		return err
@@ -210,7 +211,7 @@ func shallowValidateFirmwareVersions(sv *labPlatform.StableVersions) error {
 		model := fw.GetKey().GetModelId().GetValue()
 		joined, err := stableversion.JoinBuildTargetModel(bt, model)
 		if err != nil {
-			return fmt.Errorf("shallowValidateFirmwareVersions: internal error: %s", err)
+			return fmt.Errorf("shallowValidateFirmwareVersions: internal error: %w", err)
 		}
 		version := fw.GetVersion()
 		if bt == "" {
@@ -239,7 +240,7 @@ func shallowValidateFaftVersions(sv *labPlatform.StableVersions) error {
 		model := fa.GetKey().GetModelId().GetValue()
 		joined, err := stableversion.JoinBuildTargetModel(bt, model)
 		if err != nil {
-			return fmt.Errorf("shallowValidateFaftVersions: internal error: %s", err)
+			return fmt.Errorf("shallowValidateFaftVersions: internal error: %w", err)
 		}
 		version := fa.GetVersion()
 		if bt == "" {

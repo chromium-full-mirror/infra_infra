@@ -181,11 +181,11 @@ func (c *checkBuild) readInput() (*cros_pb.GenerateBuildPlanRequest, error) {
 	if len(c.inputBinaryPb) > 0 {
 		inputPb, err := ioutil.ReadFile(c.inputBinaryPb)
 		if err != nil {
-			return nil, fmt.Errorf("Failed reason input_binary_pb\n%v", err)
+			return nil, fmt.Errorf("Failed reason input_binary_pb\n%w", err)
 		}
 		req := &cros_pb.GenerateBuildPlanRequest{}
 		if err := proto.Unmarshal(inputPb, req); err != nil {
-			return nil, fmt.Errorf("Failed parsing input_binary_pb as proto\n%v", err)
+			return nil, fmt.Errorf("Failed parsing input_binary_pb as proto\n%w", err)
 		}
 		return req, nil
 	}
@@ -193,22 +193,22 @@ func (c *checkBuild) readInput() (*cros_pb.GenerateBuildPlanRequest, error) {
 		inputBytes, err := ioutil.ReadFile(c.inputTextPb)
 		log.Printf("Request is:\n%s", string(inputBytes))
 		if err != nil {
-			return nil, fmt.Errorf("Failed reading input_text_pb\n%v", err)
+			return nil, fmt.Errorf("Failed reading input_text_pb\n%w", err)
 		}
 		req := &cros_pb.GenerateBuildPlanRequest{}
 		if err := proto.UnmarshalText(string(inputBytes), req); err != nil {
-			return nil, fmt.Errorf("Couldn't decode %s as a chromiumos.GenerateBuildPlanRequest\n%v", c.inputJSON, err)
+			return nil, fmt.Errorf("Couldn't decode %s as a chromiumos.GenerateBuildPlanRequest\n%w", c.inputJSON, err)
 		}
 		return req, nil
 	}
 	inputBytes, err := ioutil.ReadFile(c.inputJSON)
 	log.Printf("Request is:\n%s", string(inputBytes))
 	if err != nil {
-		return nil, fmt.Errorf("Failed reading input_json\n%v", err)
+		return nil, fmt.Errorf("Failed reading input_json\n%w", err)
 	}
 	req := &cros_pb.GenerateBuildPlanRequest{}
 	if err := unmarshaler.Unmarshal(bytes.NewReader(inputBytes), req); err != nil {
-		return nil, fmt.Errorf("Couldn't decode %s as a chromiumos.GenerateBuildPlanRequest\n%v", c.inputJSON, err)
+		return nil, fmt.Errorf("Couldn't decode %s as a chromiumos.GenerateBuildPlanRequest\n%w", c.inputJSON, err)
 	}
 	return req, nil
 }
@@ -240,19 +240,19 @@ func (c *checkBuild) fetchConfigFromGitiles() (*fetchConfigResult, error) {
 	}
 	buildIrrelevanceConfig := &testplans_pb.BuildIrrelevanceCfg{}
 	if err := proto.Unmarshal([]byte((*m)[buildIrrelevanceConfigPath]), buildIrrelevanceConfig); err != nil {
-		return nil, fmt.Errorf("Couldn't decode %s as a BuildIrrelevanceCfg\n%v", (*m)[buildIrrelevanceConfigPath], err)
+		return nil, fmt.Errorf("Couldn't decode %s as a BuildIrrelevanceCfg\n%w", (*m)[buildIrrelevanceConfigPath], err)
 	}
 	slimBuildConfig := &testplans_pb.SlimBuildCfg{}
 	if err := proto.Unmarshal([]byte((*m)[slimBuildConfigPath]), slimBuildConfig); err != nil {
-		return nil, fmt.Errorf("Couldn't decode %s as a SlimBuildCfg\n%v", (*m)[slimBuildConfigPath], err)
+		return nil, fmt.Errorf("Couldn't decode %s as a SlimBuildCfg\n%w", (*m)[slimBuildConfigPath], err)
 	}
 	targetTestRequirementsConfig := &testplans_pb.TargetTestRequirementsCfg{}
 	if err := proto.Unmarshal([]byte((*m)[targetTestRequirementsConfigPath]), targetTestRequirementsConfig); err != nil {
-		return nil, fmt.Errorf("Couldn't decode %s as a TargetTestRequirementsCfg\n%v", (*m)[targetTestRequirementsConfigPath], err)
+		return nil, fmt.Errorf("Couldn't decode %s as a TargetTestRequirementsCfg\n%w", (*m)[targetTestRequirementsConfigPath], err)
 	}
 	builderConfigs := &cros_pb.BuilderConfigs{}
 	if err := proto.Unmarshal([]byte((*m)[builderConfigsPath]), builderConfigs); err != nil {
-		return nil, fmt.Errorf("Couldn't decode %s as a BuilderConfigs\n%v", (*m)[builderConfigsPath], err)
+		return nil, fmt.Errorf("Couldn't decode %s as a BuilderConfigs\n%w", (*m)[builderConfigsPath], err)
 	}
 	// It can be useful to log these when debugging, but they currently add >6 MB of text to the logging
 	// log.Printf("Fetched config from Gitiles:\n%s\n\n%s\n\n%s",
@@ -270,7 +270,7 @@ func readGerritChanges(changeBytes []*cros_pb.ProtoBytes) ([]*bbproto.GerritChan
 	for i, c := range changeBytes {
 		gc := &bbproto.GerritChange{}
 		if err := proto.Unmarshal(c.SerializedProto, gc); err != nil {
-			return nil, fmt.Errorf("Couldn't decode %s as a GerritChange\n%v", c.String(), err)
+			return nil, fmt.Errorf("Couldn't decode %s as a GerritChange\n%w", c.String(), err)
 		}
 		log.Printf("Got GerritChange %d proto:\n%s", i, proto.MarshalTextString(gc))
 		changes = append(changes, gc)
@@ -304,7 +304,7 @@ func (c *checkBuild) fetchGerritData(changes []*bbproto.GerritChange) (*igerrit.
 func readGitilesCommit(gitilesBytes *cros_pb.ProtoBytes) (*bbproto.GitilesCommit, error) {
 	gc := &bbproto.GitilesCommit{}
 	if err := proto.Unmarshal(gitilesBytes.SerializedProto, gc); err != nil {
-		return nil, fmt.Errorf("Couldn't decode %s as a GitilesCommit\n%v", gitilesBytes.String(), err)
+		return nil, fmt.Errorf("Couldn't decode %s as a GitilesCommit\n%w", gitilesBytes.String(), err)
 	}
 	log.Printf("Got GitilesCommit proto:\n%s", proto.MarshalTextString(gc))
 	return gc, nil
@@ -338,7 +338,7 @@ func (c *checkBuild) getRepoToSourceRoot(gc *bbproto.GitilesCommit) (*map[string
 		return nil
 	})
 	if err != nil {
-		return nil, fmt.Errorf("Error with GetRepoToRemoteBranchToSourceRootFromGitiles\n%v", err)
+		return nil, fmt.Errorf("Error with GetRepoToRemoteBranchToSourceRootFromGitiles\n%w", err)
 	}
 	repoToRemoteBranchToSrcRoot := <-ch
 
@@ -352,27 +352,27 @@ func (c *checkBuild) writeOutput(resp *cros_pb.GenerateBuildPlanResponse) error 
 		marshal := &jsonpb.Marshaler{EmitDefaults: true, Indent: "  "}
 		jsonOutput, err := marshal.MarshalToString(resp)
 		if err != nil {
-			return fmt.Errorf("Failed to marshal JSON %v\n%v", resp, err)
+			return fmt.Errorf("Failed to marshal JSON %v\n%w", resp, err)
 		}
 		if err = ioutil.WriteFile(c.outputJSON, []byte(jsonOutput), 0644); err != nil {
-			return fmt.Errorf("Failed to write output JSON!\n%v", err)
+			return fmt.Errorf("Failed to write output JSON!\n%w", err)
 		}
 		log.Printf("Wrote JSON output to %s", c.outputJSON)
 	}
 
 	if len(c.outputTextPb) > 0 {
 		if err := ioutil.WriteFile(c.outputTextPb, []byte(proto.MarshalTextString(resp)), 0644); err != nil {
-			return fmt.Errorf("Failed to write output text proto!\n%v", err)
+			return fmt.Errorf("Failed to write output text proto!\n%w", err)
 		}
 	}
 
 	if len(c.outputBinaryPb) > 0 {
 		binaryOutput, err := proto.Marshal(resp)
 		if err != nil {
-			return fmt.Errorf("Failed to marshal binaryproto %v\n%v", resp, err)
+			return fmt.Errorf("Failed to marshal binaryproto %v\n%w", resp, err)
 		}
 		if err = ioutil.WriteFile(c.outputBinaryPb, binaryOutput, 0644); err != nil {
-			return fmt.Errorf("Failed to write output binary proto!\n%v", err)
+			return fmt.Errorf("Failed to write output binary proto!\n%w", err)
 		}
 		log.Printf("Wrote output binary proto to %s", c.outputBinaryPb)
 	}

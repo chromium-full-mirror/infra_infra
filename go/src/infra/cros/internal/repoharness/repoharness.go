@@ -299,7 +299,7 @@ func (r *RepoHarness) AddFiles(project RemoteProject, branch string, files []Fil
 		return "", fmt.Errorf("remote %s does not exist in manifest", project.RemoteName)
 	}
 
-	projectLabel := fmt.Sprintf("%s", project.ProjectName)
+	projectLabel := project.ProjectName
 
 	// Populate project in specified remote with files. Because the remote repository is bare,
 	// we need to write/commit the files locally and then push them to the remote.

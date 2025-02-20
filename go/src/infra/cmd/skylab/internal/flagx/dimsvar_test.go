@@ -63,7 +63,7 @@ func TestSplitKeyVal(t *testing.T) {
 			diff := cmp.Diff(expected, actual)
 			if diff != "" {
 				msg := fmt.Sprintf("unexpected diff (%s)", diff)
-				t.Errorf(msg)
+				t.Error(msg)
 			}
 		})
 	}

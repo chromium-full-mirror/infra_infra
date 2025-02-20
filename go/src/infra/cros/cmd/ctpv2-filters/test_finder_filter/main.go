@@ -91,17 +91,17 @@ func executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.C
 func startAndRunTestFinder(testPlan *api.InternalTestplan, log *log.Logger) (*api.CrosTestFinderResponse, error) {
 	req, err := toTestFinderRequest(testPlan)
 	if err != nil {
-		return nil, fmt.Errorf("failed to Translate Request: %s", err)
+		return nil, fmt.Errorf("failed to Translate Request: %w", err)
 	}
 	log.Printf("made req: %s", req)
 
 	response, err := test_finder.FindTests(log, req, mdDir)
 	if err != nil {
-		return nil, fmt.Errorf("unable to run test-finder: %s", err)
+		return nil, fmt.Errorf("unable to run test-finder: %w", err)
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("Failed2 to call test-finder: %s", err)
+		return nil, fmt.Errorf("Failed2 to call test-finder: %w", err)
 	}
 
 	log.Printf("Got Response: %s", response)

@@ -44,11 +44,11 @@ func (s *TestLibsServer) newRunningLib(ctx context.Context, info *LibReg) (*Runn
 		if _, err := os.Stat(outputDir); errors.Is(err, os.ErrNotExist) {
 			err := os.MkdirAll(outputDir, os.ModePerm)
 			if err != nil {
-				return nil, fmt.Errorf("could not create output directory: %s", err)
+				return nil, fmt.Errorf("could not create output directory: %w", err)
 			}
 		} else {
 			if err != nil {
-				return nil, fmt.Errorf("could not stat output directory: %s", err)
+				return nil, fmt.Errorf("could not stat output directory: %w", err)
 			}
 		}
 		logVolumes = append(logVolumes, fmt.Sprintf("%s:%s", outputDir, info.LogDir))
@@ -87,7 +87,7 @@ func (s *TestLibsServer) newRunningLib(ctx context.Context, info *LibReg) (*Runn
 	// Start container.
 	err := d.Run(ctx, true, false, "cros-libs")
 	if err != nil {
-		return nil, fmt.Errorf("could not start container: %s", err)
+		return nil, fmt.Errorf("could not start container: %w", err)
 	}
 
 	// Get host side of mapped port, if any.
@@ -123,7 +123,7 @@ func (s *TestLibsServer) newRunningLib(ctx context.Context, info *LibReg) (*Runn
 				ticker.Stop()
 				rl.kill(ctx)
 				delete(s.running, rl.id)
-				return nil, fmt.Errorf("could not ping lib %s: %s", rl.info.Name, lastErr)
+				return nil, fmt.Errorf("could not ping lib %s: %w", rl.info.Name, lastErr)
 			case <-ticker.C:
 				resp, err := rl.Run(ctx, info.Ping, "")
 				if resp != nil && err == nil {
@@ -131,7 +131,7 @@ func (s *TestLibsServer) newRunningLib(ctx context.Context, info *LibReg) (*Runn
 					break poll
 				}
 				s.logger.Printf("Failed poll while pinging container!")
-				s.logger.Printf(string(resp))
+				s.logger.Print(string(resp))
 				lastErr = err
 			}
 		}
