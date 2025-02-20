@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	xmlrpc_value "go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
@@ -155,7 +156,7 @@ func setPowerStateSentry(ctx context.Context, r *RPMPowerRequest) error {
 		return errors.Annotate(err, "setPowerStateSentry: Error creating HTTP request").Err()
 	}
 	req.Header.Set("Content-Type", "application/json")
-	if err := setSentryRPMAuthHeader(req); err != nil {
+	if err := setSentryRPMAuthHeader(ctx, req); err != nil {
 		return errors.Annotate(err, "setPowerStateSentry: Error setting Authorization header").Err()
 	}
 
@@ -191,10 +192,22 @@ func setPowerStateSentry(ctx context.Context, r *RPMPowerRequest) error {
 // setSentryRPMAuthHeader fetches the RPM password based on the file in the
 // environment variable and sets the appropriate authorization header in the
 // request.
-func setSentryRPMAuthHeader(req *http.Request) error {
+func setSentryRPMAuthHeader(ctx context.Context, req *http.Request) error {
 	passwordFile := os.Getenv("DOCKER_RPM_PASSWORD")
 	if passwordFile == "" {
-		return errors.Reason("setSentryRPMAuthHeader: Could not get Sentry RPM password file path").Err()
+		for i, path := range strings.Fields(`/creds/rpm/password.json /usr/local/etc/cloudbots/etc/rpm/password.json`) {
+			_, err := os.Stat(path)
+			if err == nil {
+				log.Infof(ctx, "falling back to path #%d %q for RPM credential", i, path)
+				passwordFile = path
+				break
+			} else {
+				log.Infof(ctx, "fallback path #%d %q for RPM credential", i, path)
+			}
+		}
+		if passwordFile == "" {
+			return errors.Reason("setSentryRPMAuthHeader: Could not get Sentry RPM password file path").Err()
+		}
 	}
 	passwordJSON, err := os.ReadFile(passwordFile)
 	if err != nil {
