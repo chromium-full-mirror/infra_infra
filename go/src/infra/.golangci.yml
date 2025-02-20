@@ -7,7 +7,9 @@ linters:
   enable:
     - errorlint
     - gci
-    - stylecheck
+    # TODO(gregorynisbet): temporary disable stylecheck until https://chromium-review.googlesource.com/c/infra/infra/+/6250546 lands.
+    # It is too aggressive.
+    # - stylecheck
 
 linters-settings:
   # TODO(gregorynisbet): Use default config here.
