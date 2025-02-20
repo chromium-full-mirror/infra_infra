@@ -86,7 +86,7 @@ func releaseExpiredVMs(ctx context.Context, gcpProject string) error {
 	logging.Debugf(ctx, "releaseExpiredVMs: releasing expired VMs for GCP project: %v", gcpProject)
 	instancesClient, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
-		return fmt.Errorf("NewInstancesRESTClient: %v", err)
+		return fmt.Errorf("NewInstancesRESTClient: %w", err)
 	}
 	defer instancesClient.Close()
 
@@ -94,9 +94,7 @@ func releaseExpiredVMs(ctx context.Context, gcpProject string) error {
 
 	allZones := []string{}
 	for _, subZones := range constants.AllQuotaZones {
-		for _, subZone := range subZones {
-			allZones = append(allZones, subZone)
-		}
+		allZones = append(allZones, subZones...)
 	}
 
 	// Loop through all quota zones for expired instances.
@@ -123,7 +121,7 @@ func releaseExpiredVMs(ctx context.Context, gcpProject string) error {
 					GceRegion:  zone,
 				})
 				if err != nil {
-					errors = multierror.Append(errors, fmt.Errorf("failed to schedule VM instance for deletion %s: %v", in.GetName(), err))
+					errors = multierror.Append(errors, fmt.Errorf("failed to schedule VM instance for deletion %s: %w", in.GetName(), err))
 					continue
 				}
 			}
@@ -139,7 +137,7 @@ func pushLeaseMetrics(ctx context.Context, gcpProject string) error {
 	logging.Debugf(ctx, "pushLeaseMetrics: gathering lease metrics for GCP project: %v", gcpProject)
 	instancesClient, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
-		return fmt.Errorf("NewInstancesRESTClient: %v", err)
+		return fmt.Errorf("NewInstancesRESTClient: %w", err)
 	}
 	defer instancesClient.Close()
 
@@ -186,7 +184,7 @@ func isInstanceExpired(ctx context.Context, instance *computepb.Instance, deleti
 		if m.GetKey() == "expiration_time" {
 			expirationTime, err = strconv.ParseInt(m.GetValue(), 10, 64)
 			if err != nil {
-				return false, fmt.Errorf("failed to convert expiration time: %v", err)
+				return false, fmt.Errorf("failed to convert expiration time: %w", err)
 			}
 			break
 		}

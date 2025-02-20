@@ -70,11 +70,11 @@ func CreateInstance(parentCtx context.Context, client computeInstancesClient, en
 	zone := hostReqs.GetGceRegion()
 	networkInterfaces, err := getInstanceNetworkInterfaces(ctx, hostReqs)
 	if err != nil {
-		return fmt.Errorf("failed to get network interfaces: %v", err)
+		return fmt.Errorf("failed to get network interfaces: %w", err)
 	}
 	metadata, err := getMetadata(ctx, env, r)
 	if err != nil {
-		return fmt.Errorf("failed to get metadata: %v", err)
+		return fmt.Errorf("failed to get metadata: %w", err)
 	}
 
 	req := &computepb.InsertInstanceRequest{
@@ -107,7 +107,7 @@ func CreateInstance(parentCtx context.Context, client computeInstancesClient, en
 	logging.Debugf(ctx, "CreateInstance: InsertInstanceRequest payload: %v", req)
 	op, err := client.Insert(ctx, req)
 	if err != nil {
-		return fmt.Errorf("unable to create instance: %v", err)
+		return fmt.Errorf("unable to create instance: %w", err)
 	}
 	if op == nil {
 		return errors.New("no operation returned for waiting")
@@ -115,7 +115,7 @@ func CreateInstance(parentCtx context.Context, client computeInstancesClient, en
 
 	logging.Debugf(ctx, "CreateInstance: waiting for operation completion")
 	if err = op.Wait(ctx); err != nil {
-		return fmt.Errorf("unable to wait for the operation: %v", err)
+		return fmt.Errorf("unable to wait for the operation: %w", err)
 	}
 
 	logging.Infof(ctx, "CreateInstance: instance scheduled for creation: %s", leaseID)
@@ -136,7 +136,7 @@ func DeleteInstance(ctx context.Context, c computeInstancesClient, r *api.Releas
 	// job take care of any stale instances instead. See b/287524018.
 	_, err := c.Delete(ctx, req)
 	if err != nil {
-		return fmt.Errorf("unable to delete instance: %v", err)
+		return fmt.Errorf("unable to delete instance: %w", err)
 	}
 
 	logging.Infof(ctx, "DeleteInstance: instance delete request received by GCP")

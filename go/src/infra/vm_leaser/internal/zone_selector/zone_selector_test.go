@@ -22,9 +22,7 @@ func TestSelectZone(t *testing.T) {
 
 	allZones := []string{}
 	for _, a := range constants.ChromeOSZones {
-		for _, b := range a {
-			allZones = append(allZones, b)
-		}
+		allZones = append(allZones, a...)
 	}
 
 	ftt.Run("Test SelectZone", t, func(t *ftt.Test) {
