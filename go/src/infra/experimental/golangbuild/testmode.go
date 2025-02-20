@@ -283,7 +283,7 @@ func fetchSubrepo(ctx context.Context, spec *buildSpec, randomizeDir bool) (repo
 		// under golangbuild. Clear away the existing directory for the new one. It's likely just a git
 		// checkout at the wrong commit, and it's simpler and easier to just start from scratch.
 		if err := os.RemoveAll(repoDir); err != nil {
-			return "", fmt.Errorf("fetching subrepo: deleting %s in anticipation of re-fetching: %v", repoDir, err)
+			return "", fmt.Errorf("fetching subrepo: deleting %s in anticipation of re-fetching: %w", repoDir, err)
 		}
 	}
 	if err := fetchRepo(ctx, spec.subrepoSrc, repoDir, spec.inputs); err != nil {
@@ -789,7 +789,7 @@ func gorootVersion(ctx context.Context, goroot string) (langVer string, err erro
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, filepath.Join(goroot, "src", "internal", "goversion", "goversion.go"), nil, 0)
 	if os.IsNotExist(err) {
-		return "", fmt.Errorf("did not find goversion.go file (%v); wrong goroot or did internal/goversion package change?", err)
+		return "", fmt.Errorf("did not find goversion.go file (%w); wrong goroot or did internal/goversion package change?", err)
 	} else if err != nil {
 		return "", err
 	}

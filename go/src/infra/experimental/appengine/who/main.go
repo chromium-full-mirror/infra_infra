@@ -347,7 +347,7 @@ var getBugsFromMonorail = func(c context.Context, q string,
 		return nil, err
 	}
 
-	logging.Debugf(c, "Fetch to monorail took %v. Got %d bugs.", time.Now().Sub(before), res.TotalResults)
+	logging.Debugf(c, "Fetch to monorail took %v. Got %d bugs.", time.Since(before), res.TotalResults)
 	return res, nil
 }
 

@@ -117,7 +117,7 @@ func sendOneQPS(ctx context.Context, res chan Result, bbC buildbucketpb.BuildsCl
 
 	for {
 		// How long we need to sleep to get ~= 1 QPS since the last *send* time.
-		dt := next.Sub(time.Now())
+		dt := time.Until(next)
 
 		// Randomize sleep a bit to avoid all goroutines sending requests in
 		// a lockstep.

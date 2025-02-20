@@ -367,7 +367,7 @@ func getChildBuilds(ctx context.Context, buildID string) ([]string, error) {
 	}
 	resp, err := bc.SearchBuilds(ctx, &bbpb.SearchBuildsRequest{Predicate: &bbpb.BuildPredicate{ChildOf: id}})
 	if err != nil {
-		return nil, fmt.Errorf("getting children for %s: %v", buildID, err)
+		return nil, fmt.Errorf("getting children for %s: %w", buildID, err)
 	}
 	var children []string
 	for _, b := range resp.Builds {
