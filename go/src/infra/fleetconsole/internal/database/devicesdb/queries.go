@@ -37,12 +37,12 @@ func buildGetColumnQuery(distinct bool, column *queryutils.Column) *queryutils.Q
 func buildCountDevicesQuery(filter string) (*queryutils.Query, error) {
 	q, err := queryutils.NewQueryBuilder(DevicesTable).WithCustomSelectClause(`SELECT
 		COUNT(*) AS total,
-		COUNT(CASE WHEN state = 'DEVICE_STATE_LEASED' THEN 1 ELSE 0 END) AS leased,
-		COUNT(CASE WHEN state = 'DEVICE_STATE_AVAILABLE' THEN 1 ELSE 0 END) AS available,
-		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'ready' THEN 1 ELSE 0 END) AS ready,
-		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'needs_manual_repair' THEN 1 ELSE 0 END) AS needs_manual_repair,
-		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'needs_repair' THEN 1 ELSE 0 END) AS needs_repair,
-		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'repair_failed' THEN 1 ELSE 0 END) AS repair_failed`).WithFromClause().WithWhereClause(filter)
+		COUNT(CASE WHEN state = 'DEVICE_STATE_LEASED' THEN 1 ELSE NULL END) AS leased,
+		COUNT(CASE WHEN state = 'DEVICE_STATE_AVAILABLE' THEN 1 ELSE NULL END) AS available,
+		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'ready' THEN 1 ELSE NULL END) AS ready,
+		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'needs_manual_repair' THEN 1 ELSE NULL END) AS needs_manual_repair,
+		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'needs_repair' THEN 1 ELSE NULL END) AS needs_repair,
+		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'repair_failed' THEN 1 ELSE NULL END) AS repair_failed`).WithFromClause().WithWhereClause(filter)
 	if err != nil {
 		return nil, utils.InvalidFilterError(err)
 	}
