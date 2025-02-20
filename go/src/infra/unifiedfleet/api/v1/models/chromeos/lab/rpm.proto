@@ -15,13 +15,15 @@ message OSRPM {
   string powerunit_outlet = 2;
 
   // Type of RPM that controls the device
-  // Next Tag: 3
+  // Next Tag: 4
   enum Type {
     TYPE_UNKNOWN = 0;
     // Sentry Switched PDU
     TYPE_SENTRY = 1;
     // IP Power 9850
     TYPE_IP9850 = 2;
+    // CPI PDU
+    TYPE_CPI = 3;
   }
   Type powerunit_type = 3;
 }

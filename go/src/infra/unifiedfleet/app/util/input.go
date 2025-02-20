@@ -580,6 +580,7 @@ var StrToRPMType = map[string]string{
 	"unknown": "TYPE_UNKNOWN",
 	"sentry":  "TYPE_SENTRY",
 	"ip9850":  "TYPE_IP9850",
+	"cpi":     "TYPE_CPI",
 }
 
 // IsRPMType checks if a string refers to a valid OSRPM_Type.
