@@ -50,14 +50,14 @@ func walkFilesystem(
 		// Get Filesystem/Volume Id of root path of backup
 		baseFs, err := getFs(ctx, root)
 		if err != nil {
-			errorChan <- fmt.Errorf("Failed to stat root path '%s': %v", root, err)
+			errorChan <- fmt.Errorf("Failed to stat root path '%s': %w", root, err)
 			return
 		}
 
 		errorChan <- filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
 			// Check context
 			select {
-			case _ = <-ctx.Done():
+			case <-ctx.Done():
 				return ctx.Err()
 			default:
 			}

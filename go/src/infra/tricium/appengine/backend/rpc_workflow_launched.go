@@ -168,9 +168,7 @@ func extractFunctionWorkerStructure(
 			m[function] = a
 		}
 		workerRun := &track.WorkerRun{ID: w.Name, Platform: w.ProvidesForPlatform}
-		for _, n := range w.Next {
-			workerRun.Next = append(workerRun.Next, n)
-		}
+		workerRun.Next = append(workerRun.Next, w.Next...)
 		a.Workers = append(a.Workers, workerRun)
 		a.Function.Workers = append(a.Function.Workers, w.Name)
 		functions = append(functions, function)

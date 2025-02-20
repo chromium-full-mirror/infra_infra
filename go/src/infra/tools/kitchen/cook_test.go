@@ -139,12 +139,12 @@ func TestCook(t *testing.T) {
 
 				// Prepare arguments
 				recipeInputPath := filepath.Join(tdir, "recipe_input.json")
-				resultDBProperty := fmt.Sprintf(`
+				resultDBProperty := `
 					"resultdb": {
 						"invocation": "invocations/build:1",
 						"hostname":   "test.results.cr.dev"
 					}
-				`)
+				`
 				if withResultDBContext {
 					resultDBProperty = ""
 				}

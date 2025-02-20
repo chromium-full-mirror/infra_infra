@@ -35,7 +35,7 @@ func delFromGS(ctx context.Context, bucket *storage.BucketHandle, prefix string,
 
 			for filename := range filenamesChan {
 				select {
-				case _ = <-ctx.Done():
+				case <-ctx.Done():
 					break
 				default:
 				}
@@ -45,7 +45,7 @@ func delFromGS(ctx context.Context, bucket *storage.BucketHandle, prefix string,
 						if err == storage.ErrObjectNotExist {
 							return nil
 						}
-						return fmt.Errorf("Failed to delete object '%s': %v", objName, err)
+						return fmt.Errorf("Failed to delete object '%s': %w", objName, err)
 					}
 					filesDeleted.Add(ctx, 1)
 					return nil

@@ -101,7 +101,7 @@ func (d *Dir) getAllPaths(ctx context.Context, paths chan<- string, prefix strin
 
 	for f := range d.Files {
 		select {
-		case _ = <-ctx.Done():
+		case <-ctx.Done():
 			return
 		default:
 		}

@@ -119,7 +119,7 @@ func (o *options) makeJob(ctx context.Context) (j *job, err error) {
 	// bucket
 	client, err := storage.NewClient(ctx, option.WithServiceAccountFile(o.creds))
 	if err != nil {
-		return nil, fmt.Errorf("failed to create new GCS client: %v", err)
+		return nil, fmt.Errorf("failed to create new GCS client: %w", err)
 	}
 	j.bucket = client.Bucket(o.bucket)
 
@@ -130,7 +130,7 @@ func (o *options) makeJob(ctx context.Context) (j *job, err error) {
 	if o.key != "" {
 		key, err := readKey(o.key)
 		if err != nil {
-			return nil, fmt.Errorf("failed to read encryption key from file '%s': %v", o.key, err)
+			return nil, fmt.Errorf("failed to read encryption key from file '%s': %w", o.key, err)
 		}
 		j.key = key
 	}
@@ -139,7 +139,7 @@ func (o *options) makeJob(ctx context.Context) (j *job, err error) {
 	if o.prevState != "" {
 		state, err := filetree.Load(ctx, o.prevState)
 		if err != nil {
-			return nil, fmt.Errorf("failed to get previous backup state: %v", err)
+			return nil, fmt.Errorf("failed to get previous backup state: %w", err)
 		}
 		j.prevState = state
 	}
@@ -153,18 +153,18 @@ func (o *options) makeJob(ctx context.Context) (j *job, err error) {
 func readKey(file string) (key []byte, err error) {
 	f, err := os.Open(file)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open encryption key file '%s': %v", file, err)
+		return nil, fmt.Errorf("failed to open encryption key file '%s': %w", file, err)
 	}
 	defer func() {
 		if errClose := f.Close(); errClose != nil {
-			err = fmt.Errorf("failed to close encryption key file '%s': %v", file, errClose)
+			err = fmt.Errorf("failed to close encryption key file '%s': %w", file, errClose)
 		}
 	}()
 
 	decoder := base64.NewDecoder(base64.StdEncoding, f)
 	key = make([]byte, 32) // AES key is 32 bytes
 	if _, err = io.ReadFull(decoder, key); err != nil {
-		return nil, fmt.Errorf("failed to decode key from file '%s': %v", file, err)
+		return nil, fmt.Errorf("failed to decode key from file '%s': %w", file, err)
 	}
 
 	return key, nil // nil error may be overwritten in defer

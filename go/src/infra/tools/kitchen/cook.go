@@ -307,7 +307,7 @@ func (c *cookRun) prepareProperties(env environ.Env) (map[string]interface{}, *k
 		DockerAuth:   true,
 		FirebaseAuth: false,
 	}
-	if val, _ := props["$kitchen"]; val != nil {
+	if val := props["$kitchen"]; val != nil {
 		blob, err := json.Marshal(val)
 		if err != nil {
 			return nil, nil, errors.Annotate(err, "impossible serialization error").Err()

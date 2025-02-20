@@ -82,7 +82,7 @@ func mainImpl(ctx context.Context) error {
 		return err
 	}
 	if err2 != nil {
-		return fmt.Errorf("failed to cleanup! %v", err2)
+		return fmt.Errorf("failed to cleanup! %w", err2)
 	}
 	return nil
 }

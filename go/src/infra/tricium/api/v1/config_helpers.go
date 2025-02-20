@@ -76,7 +76,7 @@ func checkAcls(c context.Context, pc *ProjectConfig, role Acl_Role) (bool, error
 	}
 	ok, err := auth.IsMember(c, groups...)
 	if err != nil {
-		return false, fmt.Errorf("failed to check member in group(s) (%v): %v", groups, err)
+		return false, fmt.Errorf("failed to check member in group(s) (%v): %w", groups, err)
 	}
 	return ok, nil
 }
@@ -172,7 +172,7 @@ func ValidateFunction(f *Function, sc *ServiceConfig) error {
 			return errors.New("function has impl that provides unknown data type")
 		}
 		if err = validateImpl(i, sc, needs, provides); err != nil {
-			return fmt.Errorf("invalid impl for function %s: %v", f.Name, err)
+			return fmt.Errorf("invalid impl for function %s: %w", f.Name, err)
 		}
 		if i.ProvidesForPlatform == Platform_ANY {
 			continue

@@ -51,23 +51,23 @@ func WriteDataType(prefix string, t proto.Message) (string, error) {
 	// In Tricium we try to use jsonpb whenever working with protos.
 	json, err := (&jsonpb.Marshaler{}).MarshalToString(t)
 	if err != nil {
-		return "", fmt.Errorf("failed to marshal: %v", err)
+		return "", fmt.Errorf("failed to marshal: %w", err)
 	}
 	p, err := GetPathForDataType(t)
 	if err != nil {
-		return p, fmt.Errorf("failed to get path for type: %v", err)
+		return p, fmt.Errorf("failed to get path for type: %w", err)
 	}
 	path := path.Join(prefix, p)
 	if err = os.MkdirAll(filepath.Dir(path), os.ModePerm); err != nil {
-		return path, fmt.Errorf("failed to make directories for path: %v", err)
+		return path, fmt.Errorf("failed to make directories for path: %w", err)
 	}
 	f, err := os.Create(path)
 	if err != nil {
-		return path, fmt.Errorf("failed to create file: %v", err)
+		return path, fmt.Errorf("failed to create file: %w", err)
 	}
 	defer f.Close()
 	if _, err := f.WriteString(json); err != nil {
-		return path, fmt.Errorf("failed to write to file: %v", err)
+		return path, fmt.Errorf("failed to write to file: %w", err)
 	}
 	return path, nil
 }
@@ -76,15 +76,15 @@ func WriteDataType(prefix string, t proto.Message) (string, error) {
 func ReadDataType(prefix string, t proto.Message) error {
 	p, err := GetPathForDataType(t)
 	if err != nil {
-		return fmt.Errorf("failed to get path for type: %v", err)
+		return fmt.Errorf("failed to get path for type: %w", err)
 	}
 	path := path.Join(prefix, p)
 	msg, err := ioutil.ReadFile(path)
 	if err != nil {
-		return fmt.Errorf("failed to read file: %v", err)
+		return fmt.Errorf("failed to read file: %w", err)
 	}
 	if err := jsonpb.UnmarshalString(string(msg), t); err != nil {
-		return fmt.Errorf("failed to unmarshal: %v", err)
+		return fmt.Errorf("failed to unmarshal: %w", err)
 	}
 	return nil
 }
@@ -96,7 +96,7 @@ func FilterFiles(files []*Data_File, filters ...string) ([]*Data_File, error) {
 		for _, filter := range filters {
 			matched, err := filepath.Match(filter, filepath.Base(f.Path))
 			if err != nil {
-				return nil, fmt.Errorf("bad path_filters pattern %q: %v", filter, err)
+				return nil, fmt.Errorf("bad path_filters pattern %q: %w", filter, err)
 			}
 			if matched {
 				filteredFiles = append(filteredFiles, f)

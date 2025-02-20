@@ -79,7 +79,7 @@ func listGitChangedFiles(ctx context.Context, gitDir string) ([]string, error) {
 		if exitError, ok := err.(*exec.ExitError); ok {
 			logging.Debugf(ctx, "stderr from git command was '%s'", exitError.Stderr)
 		}
-		return nil, fmt.Errorf("error running '%s' with args '%s': %v", gitCmd.Path, gitCmd.Args, err)
+		return nil, fmt.Errorf("error running '%s' with args '%s': %w", gitCmd.Path, gitCmd.Args, err)
 	}
 
 	lines := bufio.NewScanner(bytes.NewReader(output))
@@ -121,7 +121,7 @@ func processGitDirs(ctx context.Context, gitDirsChan <-chan string, findChanged 
 		for dir := range gitDirsChan {
 
 			select {
-			case _ = <-ctx.Done():
+			case <-ctx.Done():
 				continue
 			default:
 			}
@@ -139,7 +139,7 @@ func processGitDirs(ctx context.Context, gitDirsChan <-chan string, findChanged 
 						if os.IsNotExist(err) {
 							continue
 						}
-						errorChan <- fmt.Errorf("Error stat-ing file '%s': %v", c, err)
+						errorChan <- fmt.Errorf("Error stat-ing file '%s': %w", c, err)
 						continue
 					}
 					changedFilesChan <- fileInfo{c, info}

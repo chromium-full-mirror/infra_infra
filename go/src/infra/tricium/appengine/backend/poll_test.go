@@ -54,7 +54,7 @@ func (m *mockPollRestAPI) QueryChanges(c context.Context, host, project string, 
 		m.changes = make(map[string][]gr.ChangeInfo)
 	}
 	id := gerritProjectID(host, project)
-	changes, _ := m.changes[id]
+	changes := m.changes[id]
 	return changes, false, nil
 }
 
@@ -76,7 +76,7 @@ func (m *mockPollRestAPI) addChanges(host, project string, c []gr.ChangeInfo) {
 		m.changes = make(map[string][]gr.ChangeInfo)
 	}
 	id := gerritProjectID(host, project)
-	changes, _ := m.changes[id]
+	changes := m.changes[id]
 	changes = append(changes, c...)
 	m.changes[id] = changes
 }
@@ -261,7 +261,7 @@ func TestPollProjectBasicBehavior(t *testing.T) {
 				for _, gd := range gerritProjects {
 					p := &Project{ID: gerritProjectID(gd.Host, gd.Project)}
 					assert.Loosely(t, ds.Get(ctx, p), should.BeNil)
-					tm, _ := lastPolls[p.ID]
+					tm := lastPolls[p.ID]
 					assert.Loosely(t, tm.Equal(p.LastPoll), should.BeTrue)
 				}
 			})

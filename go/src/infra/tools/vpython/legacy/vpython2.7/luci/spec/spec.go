@@ -99,7 +99,7 @@ func Hash(spec *vpython.Spec, rt *vpython.Runtime, extra ...string) string {
 	mustMarshal := func(msg proto.Message) []byte {
 		data, err := proto.Marshal(msg)
 		if err != nil {
-			panic(fmt.Errorf("failed to marshal proto: %v", err))
+			panic(fmt.Errorf("failed to marshal proto: %w", err))
 		}
 		return data
 	}
@@ -108,7 +108,7 @@ func Hash(spec *vpython.Spec, rt *vpython.Runtime, extra ...string) string {
 
 	mustWrite := func(v int, err error) {
 		if err != nil {
-			panic(fmt.Errorf("impossible: %s", err))
+			panic(fmt.Errorf("impossible: %w", err))
 		}
 	}
 

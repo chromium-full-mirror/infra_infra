@@ -65,7 +65,7 @@ func backupToGS(
 						logging.Warningf(ctx, "File intended for backup was not found: %s", filename)
 						continue
 					}
-					errorChan <- fmt.Errorf("Failed to copy file '%s' to GCS: %v", filename, err)
+					errorChan <- fmt.Errorf("Failed to copy file '%s' to GCS: %w", filename, err)
 					continue
 				}
 
@@ -98,7 +98,7 @@ func writeToGS(ctx context.Context, filename string, bucket *storage.BucketHandl
 		gsWriter := obj.NewWriter(ctx)
 		defer func() {
 			if errGs := gsWriter.Close(); errGs != nil {
-				err = transient.Tag.Apply(fmt.Errorf("Failed to close gcsWriter: %v", errGs))
+				err = transient.Tag.Apply(fmt.Errorf("Failed to close gcsWriter: %w", errGs))
 				return
 			}
 			bytesStored.Add(ctx, gsWriter.Attrs().Size)
@@ -107,7 +107,7 @@ func writeToGS(ctx context.Context, filename string, bucket *storage.BucketHandl
 		zipWriter := gzip.NewWriter(gsWriter)
 		defer func() {
 			if errZip := zipWriter.Close(); errZip != nil {
-				err = fmt.Errorf("Failed to close gzipWriter: %v", errZip)
+				err = fmt.Errorf("Failed to close gzipWriter: %w", errZip)
 			}
 		}()
 
@@ -124,7 +124,7 @@ func writeToGS(ctx context.Context, filename string, bucket *storage.BucketHandl
 
 		if written, err = io.Copy(zipWriter, f); err != nil {
 			// FIXME determine if error really is transient
-			return transient.Tag.Apply(fmt.Errorf("Failed to backup file '%s': %v", filename, err))
+			return transient.Tag.Apply(fmt.Errorf("Failed to backup file '%s': %w", filename, err))
 		}
 
 		return nil

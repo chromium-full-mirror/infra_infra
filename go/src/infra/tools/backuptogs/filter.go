@@ -43,7 +43,7 @@ func filterFiles(
 		for info := range filesChan {
 
 			select {
-			case _ = <-ctx.Done():
+			case <-ctx.Done():
 				continue
 			default:
 			}

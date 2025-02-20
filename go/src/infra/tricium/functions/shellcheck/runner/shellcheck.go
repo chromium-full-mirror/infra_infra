@@ -37,7 +37,7 @@ func (r *Runner) Version() (string, error) {
 	r.log("Executing `%s --version`", r.Path)
 	output, err := exec.Command(r.Path, "--version").Output()
 	if err != nil {
-		return "", fmt.Errorf("`%s --version` failed: %v", r.Path, err)
+		return "", fmt.Errorf("`%s --version` failed: %w", r.Path, err)
 	}
 	r.log("Version output: %q", output)
 	if !bytes.HasPrefix(bytes.TrimSpace(output), []byte("ShellCheck")) {
@@ -76,12 +76,12 @@ func (r *Runner) Warnings(paths ...string) ([]Warning, error) {
 
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		return nil, fmt.Errorf("StdoutPipe failed: %v", err)
+		return nil, fmt.Errorf("StdoutPipe failed: %w", err)
 	}
 
 	r.log("Executing `%s %v`", cmd.Path, cmd.Args)
 	if err := cmd.Start(); err != nil {
-		return nil, fmt.Errorf("command %q Start failed: %v", r.Path, err)
+		return nil, fmt.Errorf("command %q Start failed: %w", r.Path, err)
 	}
 
 	var warns []Warning
@@ -94,7 +94,7 @@ func (r *Runner) Warnings(paths ...string) ([]Warning, error) {
 	if v, err := r.Version(); err == nil {
 		nestedJSON = strings.HasPrefix(v, "0.8")
 	} else {
-		return nil, fmt.Errorf("Parsing version failed: %v", err)
+		return nil, fmt.Errorf("Parsing version failed: %w", err)
 	}
 	var decodeErr error
 	if nestedJSON {
@@ -108,21 +108,21 @@ func (r *Runner) Warnings(paths ...string) ([]Warning, error) {
 		// Get the exit status.
 		exitErr, ok := err.(*exec.ExitError)
 		if !ok {
-			return nil, fmt.Errorf("Wait failed: %v", err)
+			return nil, fmt.Errorf("Wait failed: %w", err)
 		}
 		waitStatus, ok := exitErr.Sys().(syscall.WaitStatus)
 		if !ok {
-			return nil, fmt.Errorf("no WaitStatus on %v", exitErr)
+			return nil, fmt.Errorf("no WaitStatus on %w", exitErr)
 		}
 		// Exit status 1 means "success with some issues".
 		if waitStatus.ExitStatus() != 1 {
 			r.log("shellcheck stderr:\n%s", exitErr.Stderr)
-			return nil, fmt.Errorf("shellcheck failed: %v", err)
+			return nil, fmt.Errorf("shellcheck failed: %w", err)
 		}
 	}
 
 	if decodeErr != nil {
-		return nil, fmt.Errorf("Decode failed: %v", decodeErr)
+		return nil, fmt.Errorf("Decode failed: %w", decodeErr)
 	}
 	if nestedJSON {
 		warns = comments.Comments

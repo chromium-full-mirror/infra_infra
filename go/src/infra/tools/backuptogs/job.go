@@ -133,7 +133,7 @@ func waitToFinish(ctx context.Context, doneChan <-chan struct{}, errorChan <-cha
 				}
 				cancelFunc()
 			}
-		case _ = <-doneChan:
+		case <-doneChan:
 			logging.Debugf(ctx, "Pipeline finished")
 			done = true
 		}

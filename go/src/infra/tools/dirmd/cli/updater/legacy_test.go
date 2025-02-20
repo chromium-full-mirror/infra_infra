@@ -56,5 +56,5 @@ func jsonIndent(t testing.TB, data []byte) string {
 	buf := &bytes.Buffer{}
 	err := json.Indent(buf, data, "", "  ")
 	assert.Loosely(t, err, should.BeNil, truth.LineContext())
-	return string(buf.Bytes())
+	return buf.String()
 }

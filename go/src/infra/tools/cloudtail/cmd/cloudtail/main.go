@@ -116,7 +116,7 @@ func (opts *commonOptions) processFlags(ctx context.Context) (context.Context, s
 	if opts.localLogFile != "" {
 		f, err := os.OpenFile(opts.localLogFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 		if err != nil {
-			return ctx, state, fmt.Errorf("Local log file %q not writable: %s", opts.localLogFile, err)
+			return ctx, state, fmt.Errorf("Local log file %q not writable: %w", opts.localLogFile, err)
 		}
 		ctx = (&gologger.LoggerConfig{
 			Out: f,
