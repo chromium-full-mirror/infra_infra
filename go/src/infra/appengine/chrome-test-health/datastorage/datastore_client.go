@@ -156,9 +156,9 @@ func (c DataStoreClient) Query(
 	}
 
 	if order != nil {
-		switch order.(type) {
+		switch order := order.(type) {
 		case string:
-			q = q.Order(order.(string))
+			q = q.Order(order)
 		default:
 			return fmt.Errorf("%s: Argument order should be either a string or nil", ErrInvalidType)
 		}

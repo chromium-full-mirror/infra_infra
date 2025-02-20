@@ -200,7 +200,7 @@ func (c *Client) GetCoverageSummary(ctx context.Context, req *api.GetCoverageSum
 		nodes = components
 	}
 
-	var combinedSummary []*structpb.Struct = [](*structpb.Struct){}
+	var combinedSummary = [](*structpb.Struct){}
 	for _, node := range nodes {
 		// Fetch the SummaryCoverageReport entity for the given configuration.
 		summary := entities.SummaryCoverageData{}

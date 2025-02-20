@@ -359,8 +359,7 @@ func (e *AssetHandler) GetDefaultResources(ctx context.Context, req *proto.GetDe
 			return nil, err
 		}
 
-		var assetResource *proto.AssetResourceModel
-		assetResource = &proto.AssetResourceModel{ResourceId: entities[0].ResourceId, AliasName: data[1], Default: true}
+		var assetResource = &proto.AssetResourceModel{ResourceId: entities[0].ResourceId, AliasName: data[1], Default: true}
 		assetResources = append(assetResources, assetResource)
 	}
 

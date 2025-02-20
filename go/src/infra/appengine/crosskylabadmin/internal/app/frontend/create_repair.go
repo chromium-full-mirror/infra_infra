@@ -39,11 +39,12 @@ type ufsErrorPolicy string
 // Lax      -- if we do not need the UFS response to make a decision, do not fail the request.
 const (
 	// The strict policy causes all UFS error requests to be treated as fatal and causes the request to fail.
-	ufsErrorPolicyStrict         ufsErrorPolicy = "strict"
-	ufsErrorPolicyFallback                      = "fallback"
-	ufsErrorPolicyLax                           = "lax"
-	maxConsequentRecFailureCount                = 4
+	ufsErrorPolicyStrict   ufsErrorPolicy = "strict"   //nolint:unused
+	ufsErrorPolicyFallback ufsErrorPolicy = "fallback" //nolint:unused
+	ufsErrorPolicyLax      ufsErrorPolicy = "lax"      //nolint:unused
 )
+
+const maxConsequentRecFailureCount = 4
 
 // NormalizeError policy normalizes a string into the canonical name for a policy.
 func normalizeErrorPolicy(policy string) (ufsErrorPolicy, error) {

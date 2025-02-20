@@ -76,9 +76,7 @@ func (p *adminTaskBotPusher) getDUTsForLabstations(ctx context.Context, labstati
 		return nil, err
 	}
 	for _, item := range resp.GetItems() {
-		for _, hostname := range item.GetDutName() {
-			duts = append(duts, hostname)
-		}
+		duts = append(duts, item.GetDutName()...)
 	}
 	return duts, nil
 }
@@ -192,9 +190,8 @@ func (p *adminTaskBotPusher) pushBotsForAdminTasksImpl(ctx context.Context, req 
 	// "repair_failed" devices associated with labstations that have recently rebooted.
 	// When a labstation reboots, this is basically a fresh opportunity for the DUT to be recovered.
 	if dutState == "needs_repair" {
-		var err error
 		// The cron job that runs smart scheduling runs every 2 minutes.
-		err = p.repairDUTsWithRecentLabstationReboots(ctx, now.Add(-2*time.Minute), now.Add(1*time.Minute))
+		var err = p.repairDUTsWithRecentLabstationReboots(ctx, now.Add(-2*time.Minute), now.Add(1*time.Minute))
 		if err != nil {
 			return nil, err
 		}
