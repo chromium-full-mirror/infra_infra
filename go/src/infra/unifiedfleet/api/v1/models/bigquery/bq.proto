@@ -8,6 +8,7 @@ package unifiedfleet.api.v1.models.bigquery;
 
 option go_package = "infra/unifiedfleet/api/v1/models/bigquery;apibq";
 
+import "google/protobuf/timestamp.proto";
 import "infra/unifiedfleet/api/v1/models/asset.proto";
 import "infra/unifiedfleet/api/v1/models/change_event.proto";
 import "infra/unifiedfleet/api/v1/models/chrome_platform.proto";
@@ -148,4 +149,45 @@ message HwidDataRow {
 // A device config row in BQ device_config table.
 message DeviceConfigRow {
     models.chromeos.device.Config device_config = 1;
+}
+
+// Latest DUT Info Table Schema
+//
+// Next tag: 36
+message LatestDutInfoRow {
+    google.protobuf.Timestamp update_timestamp = 1;
+    string hostname = 2;
+    string assetTag = 3;
+    string serial_number = 4;
+    string hwid = 5;
+    string location_zone = 6;
+    string hive = 7;
+    string dut_state = 8;
+    string dut_state_reason = 9;
+    string board = 10;
+    string model = 11;
+    repeated string pool = 12;
+    string phase = 13;
+    bool is_cbx = 14;
+    string has_servo = 15;
+    string servo_hostname = 16;
+    string servo_serial = 17;
+    string servo_port = 18;
+    string servo_usb_state = 19;
+    string servo_fw_channel = 20;
+    string servo_host_type = 21;
+    string servo_type_raw = 22;
+    string servo_state = 23;
+    string rpm_hostname = 24;
+    string rpm_outlet = 25;
+    string switch_name = 26;
+    string switch_port = 27;
+    string storage_state = 28;
+    string rpm_state = 29;
+    string battery_state = 30;
+    string wifi_state = 31;
+    string bluetooth_state = 32;
+    string dolos_state = 33;
+    string os_type = 34;
+    string os_version = 35;
 }
