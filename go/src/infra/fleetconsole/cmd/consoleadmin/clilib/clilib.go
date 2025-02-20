@@ -36,6 +36,7 @@ func Application(ctxFuncs ...func(context.Context) context.Context) *cli.Applica
 			commands.PingDeviceManagerCommand,
 			commands.PingUFSCommand,
 			commands.ListDevicesCommand,
+			commands.GetDeviceCommand,
 			commands.RepopulateCacheCommand,
 			commands.PingDBCommand,
 			commands.PingUICommand,
