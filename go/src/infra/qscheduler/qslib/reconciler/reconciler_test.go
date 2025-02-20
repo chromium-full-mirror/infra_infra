@@ -33,7 +33,7 @@ func assertAssignments(t *testing.T, description string,
 	got []Assignment, want []Assignment) {
 	t.Helper()
 	if diff := pretty.Compare(got, want); diff != "" {
-		t.Errorf(fmt.Sprintf("%s got unexpected assignment diff (-got +want): %s", description, diff))
+		t.Errorf("%s got unexpected assignment diff (-got +want): %s", description, diff)
 	}
 }
 

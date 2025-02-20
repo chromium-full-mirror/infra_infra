@@ -224,7 +224,7 @@ func printAccountDescriptionTable(tw *tabwriter.Writer, report *qscheduler.Inspe
 		r := make(row, 0, 2)
 		r = append(r, []string{
 			account,
-			fmt.Sprintf("%s", config.GetDescription()),
+			config.GetDescription(),
 		}...)
 		t = append(t, r)
 	}
