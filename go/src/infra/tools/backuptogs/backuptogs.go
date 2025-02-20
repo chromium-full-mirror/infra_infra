@@ -52,10 +52,10 @@ func backupToGS(
 			defer wg.Done()
 
 			for filename := range filenameChan {
-				select {
-				case _ = <-ctx.Done():
-					break
-				default:
+				// Stop doing work when the context is done.
+				if err := ctx.Err(); err != nil {
+					errorChan <- err
+					return
 				}
 
 				objName := prefix + filepath.ToSlash(filename)
