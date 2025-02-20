@@ -45,8 +45,7 @@ func TestEndpointsInsertIssue(t *testing.T) {
 			*res.Issue = *req.Issue
 			res.Issue.Id = 1
 
-			var insertIssueServer *httptest.Server
-			insertIssueServer = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			var insertIssueServer *httptest.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Loosely(t, r.URL.String(), should.Equal("/projects/chromium/issues?sendEmail=false"))
 
 				actualReq := &Issue{}
@@ -163,8 +162,7 @@ func TestEndpointsListComments(t *testing.T) {
 		t.Run("succeeds", func(t *ftt.Test) {
 			req := &ListCommentsRequest{Issue: &IssueRef{IssueId: 859707, ProjectId: "chromium"}}
 
-			var srv *httptest.Server
-			srv = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			var srv *httptest.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Loosely(t, r.URL.String(), should.Equal("/projects/chromium/issues/859707/comments?startIndex=0"))
 				_, err := w.Write([]byte(`{
 					"items": [

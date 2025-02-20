@@ -199,7 +199,7 @@ func updateExitStatus(c context.Context, paths []string) error {
 
 		status, err := strconv.ParseInt(strings.TrimSpace(string(raw)), 10, 64)
 		if err != nil {
-			return fmt.Errorf("file %s does not contain a number: %s", path, err)
+			return fmt.Errorf("file %s does not contain a number: %w", path, err)
 		}
 
 		exitStatus.Set(c, status)

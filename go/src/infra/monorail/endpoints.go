@@ -74,7 +74,7 @@ func (c *epClient) call(ctx context.Context, method, urlSuffix string, request, 
 	// Make an HTTP request.
 	req, err := http.NewRequest(method, c.url+urlSuffix, reqBuf)
 	if err != nil {
-		return fmt.Errorf("could not make a request to %s: %s", req.URL, err)
+		return fmt.Errorf("could not make a request to %s: %w", req.URL, err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")

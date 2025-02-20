@@ -22,10 +22,10 @@ const (
 	maxStaleness        = time.Second * 160
 
 	notFound       status = "not_found"
-	invalidJSON           = "invalid_json"
-	invalidVersion        = "invalid_version"
-	staleFile             = "stale_file"
-	good                  = "good"
+	invalidJSON    status = "invalid_json"
+	invalidVersion status = "invalid_version"
+	staleFile      status = "stale_file"
+	good           status = "good"
 )
 
 // deviceStatusFile is the contents of a ~/android_device_status.json file, but

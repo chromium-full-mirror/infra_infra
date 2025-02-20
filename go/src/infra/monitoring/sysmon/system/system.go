@@ -260,7 +260,7 @@ func updateDiskMetrics(c context.Context) errors.MultiError {
 
 	partitions, err := disk.Partitions(false)
 	if err != nil {
-		ret = append(ret, fmt.Errorf("failed to get list of partitions: %s", err))
+		ret = append(ret, fmt.Errorf("failed to get list of partitions: %w", err))
 	} else {
 		for _, part := range partitions {
 			if part.Mountpoint == "" || part.Device == "none" || shouldIgnoreFstype(part.Fstype) || shouldIgnoreMountpoint(part.Mountpoint) {
@@ -270,7 +270,7 @@ func updateDiskMetrics(c context.Context) errors.MultiError {
 			usage, err := disk.Usage(part.Mountpoint)
 			if err != nil {
 				ret = append(ret, fmt.Errorf(
-					"failed to get disk usage for partition '%s': %s", part.Mountpoint, err))
+					"failed to get disk usage for partition '%s': %w", part.Mountpoint, err))
 				continue
 			}
 			diskFree.Set(c, int64(usage.Free), part.Mountpoint)
@@ -285,7 +285,7 @@ func updateDiskMetrics(c context.Context) errors.MultiError {
 	case err != nil && err.Error() == "not implemented yet": // ErrNotImplementedError is in an internal package.
 		// Not implemented on Darwin.
 	case err != nil:
-		ret = append(ret, fmt.Errorf("failed to get disk IO counters: %s", err))
+		ret = append(ret, fmt.Errorf("failed to get disk IO counters: %w", err))
 	default:
 		var devices []string
 		for device := range io {
@@ -355,7 +355,7 @@ func updateProcessMetrics(c context.Context) error {
 	case err != nil && err.Error() == "not implemented yet": // ErrNotImplementedError is in an internal package.
 		// Not implemented on Windows.
 	case err != nil:
-		return fmt.Errorf("failed to get load average: %s", err)
+		return fmt.Errorf("failed to get load average: %w", err)
 	default:
 		loadAverage.Set(c, avg.Load1, 1)
 		loadAverage.Set(c, avg.Load5, 5)

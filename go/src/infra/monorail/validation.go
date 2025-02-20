@@ -44,14 +44,14 @@ func (i *Issue) Validate() error {
 	}
 	for _, ref := range i.BlockedOn {
 		if err := ref.Validate(); err != nil {
-			return fmt.Errorf("blockedOn: %s", err)
+			return fmt.Errorf("blockedOn: %w", err)
 		}
 	}
 
 	seen := map[string]struct{}{}
 	for _, cc := range i.Cc {
 		if err := cc.Validate(); err != nil {
-			return fmt.Errorf("cc: %s", err)
+			return fmt.Errorf("cc: %w", err)
 		}
 		// Monorail does not like duplicates in CC list.
 		if _, saw := seen[cc.Name]; saw {
@@ -84,7 +84,7 @@ func (i *Issue) Validate() error {
 // Validate checks the message for errors.
 func (i *InsertIssueRequest) Validate() error {
 	if err := i.Issue.Validate(); err != nil {
-		return fmt.Errorf("issue: %s", err)
+		return fmt.Errorf("issue: %w", err)
 	}
 	if i.Issue.Id != 0 {
 		return fmt.Errorf("issue: must not have id")
@@ -104,7 +104,7 @@ func (l *ListCommentsRequest) Validate() error {
 		return fmt.Errorf("start_index must be >= 0")
 	}
 	if err := l.Issue.Validate(); err != nil {
-		return fmt.Errorf("issue: %s", err)
+		return fmt.Errorf("issue: %w", err)
 	}
 	return nil
 }
