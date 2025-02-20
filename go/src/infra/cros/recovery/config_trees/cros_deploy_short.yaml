@@ -34685,6 +34685,7 @@ plans:
         - name: Chameleond version is up to date ('sample_pass')
           conditions:
             - name: Btpeer release process should be chameleond-based ('btpeer_assert_release_process_matches') (RUN_ONCE)
+            - name: Btpeer should not have ignore file present ('btpeer_assert_ignore_file_present') (RUN_ONCE)
           dependencies:
             - name: Fetch btpeer chameleond release config from GCS ('btpeer_fetch_btpeer_chameleond_release_config') (RUN_ONCE)
             - name: Identify expected chameleond release bundle ('btpeer_identify_expected_chameleond_release_bundle') (RUN_ONCE)

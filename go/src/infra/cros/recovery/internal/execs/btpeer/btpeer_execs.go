@@ -154,10 +154,30 @@ func assertReleaseProcessMatchesExec(ctx context.Context, info *execs.ExecInfo) 
 	return nil
 }
 
+// assertIgnoreFilePresented asserts the chameleond update process if the ignore_btpeer file presents in a btpeer device.
+//
+// This is a temporary function to prevent chameleond updates on btpeers.
+// It should be removed when the image-based release becomes stable.
+func assertIgnoreFilePresent(ctx context.Context, info *execs.ExecInfo) error {
+	sshRunner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
+	pathToFile := "/etc/chromiumos/ignore_btpeer_update"
+	exists, err := ssh.TestFileExists(ctx, sshRunner, pathToFile)
+	if err != nil {
+		return errors.Annotate(err, "failed to verify if ignore_btpeer_update exists or not").Err()
+	}
+
+	if exists {
+		return errors.Reason("assert btpeer from running as %s is presented", pathToFile).Err()
+	}
+
+	return nil
+}
+
 func init() {
 	execs.Register("btpeer_state_broken", setStateBrokenExec)
 	execs.Register("btpeer_state_working", setStateWorkingExec)
 	execs.Register("btpeer_reboot", rebootExec)
 	execs.Register("btpeer_assert_uptime_is_less_than_duration", assertUptimeIsLessThanDurationExec)
 	execs.Register("btpeer_assert_release_process_matches", assertReleaseProcessMatchesExec)
+	execs.Register("btpeer_assert_ignore_file_present", assertIgnoreFilePresent)
 }

@@ -6398,6 +6398,11 @@ plans:
               docs:
                 - Passes if the release process this specific btpeer use is image-based.
                 - The btpeer will be chosen to use the chameleond-based process if it is not chosen to use the new image-based release process.
+            - name: Btpeer should not have ignore file present (RUN_ONCE)
+              exec_name: btpeer_assert_ignore_file_present
+              docs:
+                - Passes if btpeer doesn't have ignore file (ignore_btpeer_update)
+                - Btpeer update should be failed if file exists
           dependencies:
             - name: Fetch btpeer chameleond release config from GCS (RUN_ONCE)
               exec_name: btpeer_fetch_btpeer_chameleond_release_config
