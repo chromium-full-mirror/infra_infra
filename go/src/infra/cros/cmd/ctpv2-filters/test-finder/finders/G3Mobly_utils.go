@@ -44,9 +44,19 @@ func createTestCaseFromTestInfo(testInfo TestInfo) *api.TestCaseMetadata {
 		TestCase: &api.TestCase{
 			Name: testInfo.Name,
 			Tags: formatTags(testInfo.Tags),
+			Id: &api.TestCase_Id{
+				Value: testInfo.Name,
+			},
 		},
 		TestCaseInfo: &api.TestCaseInfo{
 			ExtraInfo: createExtraInfo(testInfo),
+		},
+		TestCaseExec: &api.TestCaseExec{
+			TestHarness: &api.TestHarness{
+				TestHarnessType: &api.TestHarness_Mobly_{
+					Mobly: &api.TestHarness_Mobly{},
+				},
+			},
 		},
 	}
 }

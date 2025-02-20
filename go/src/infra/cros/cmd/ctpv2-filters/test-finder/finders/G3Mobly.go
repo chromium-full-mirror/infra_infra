@@ -66,12 +66,11 @@ func addMoblyFlagToSuiteArgs(tp *api.InternalTestplan) {
 	existingMD := tp.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata()
 	if existingMD == nil || len(existingMD.Args) == 0 {
 		existingMD = &api.ExecutionMetadata{Args: []*api.Arg{}}
-
-		existingMD.Args = append(existingMD.Args, &api.Arg{
-			Flag:  "moblySuite",
-			Value: "true",
-		})
 	}
+	existingMD.Args = append(existingMD.Args, &api.Arg{
+		Flag:  "moblySuite",
+		Value: "true",
+	})
 	tp.SuiteInfo.SuiteMetadata.ExecutionMetadata = existingMD
 }
 
