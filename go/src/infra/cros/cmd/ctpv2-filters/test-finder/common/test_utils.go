@@ -52,3 +52,25 @@ func GenerateSuiteInfo() *api.SuiteInfo {
 	}
 	return SuiteInfo
 }
+
+// GenerateSuiteInfo creates SuiteInfo to be used in unittests.
+func GenerateSuiteInfoTF() *api.SuiteInfo {
+	SuiteInfo := &api.SuiteInfo{
+		SuiteRequest: &api.SuiteRequest{
+			SuiteRequest: &api.SuiteRequest_TestSuite{
+				TestSuite: &api.TestSuite{
+					Name: "foo",
+					Spec: &api.TestSuite_TestCaseTagCriteria_{
+						TestCaseTagCriteria: &api.TestSuite_TestCaseTagCriteria{
+							Tags: []string{"suite:cts"},
+						},
+					},
+				},
+			},
+			MaximumDuration: durationpb.New(142200),
+			AnalyticsName:   "bar",
+			TestArgs:        "",
+		},
+	}
+	return SuiteInfo
+}

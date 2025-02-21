@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	finder "go.chromium.org/chromiumos/test/util/finder"
 
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/common"
 )
@@ -40,8 +41,13 @@ func TestSuiteFromTestplan(t *testing.T) {
 	internalTestPlan := &api.InternalTestplan{
 		SuiteInfo: common.GenerateSuiteInfo(),
 	}
-	fmt.Println(internalTestPlan)
-	tests, err := matchTests(common.GenerateTestMetadata(), internalTestPlan)
+
+	suites, err := TPtoSuite(internalTestPlan)
+	if err != nil {
+		t.Fatalf("got err: %s", err)
+	}
+
+	tests, err := finder.MatchedTestsForSuites(common.GenerateTestMetadata(), suites)
 	if err != nil {
 		t.Fatalf("got err: %s", err)
 	}

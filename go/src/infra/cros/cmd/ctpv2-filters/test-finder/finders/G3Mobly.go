@@ -24,40 +24,33 @@ type G3MoblyFinder struct {
 	*common.AbstractFinder
 }
 
-func matchTestsforG3Mobly(testSuites []*api.TestSuite) ([]*api.TestCaseMetadata, error) {
+func matchTestsforG3Mobly(testSuites []*api.TestSuite, log *log.Logger) ([]*api.TestCaseMetadata, error) {
 	src, err := getSourceData(context.Background(), "mobly_priv_artifacts/out")
 	if err != nil {
-		fmt.Printf("err %s", err)
+		log.Println("Unable to fetch data from GCS: ", err)
 	}
 	// The source data will not have direct access to the actual proto bindings; thus is in a loose json format
 	// we will translate this into the strict proto format here.
-	metadata := translateSrcToMetadata(src)
+	metadata := translateG3SrcToMetadata(src)
 
-	return finder.MatchedTestsForSuites(metadata, testSuites)
-}
-
-func matchTests(metadata []*api.TestCaseMetadata, req *api.InternalTestplan) ([]*api.TestCaseMetadata, error) {
-	testSuites, err := common.TestSuiteFromTestplan(req)
-	if err != nil {
-		return nil, err
-	}
 	return finder.MatchedTestsForSuites(metadata, testSuites)
 }
 
 func (ex *G3MoblyFinder) FindTestsAB() (*api.InternalTestplan, error) {
 	suites, err := TPtoSuite(ex.Testplan)
 	if err != nil {
+		ex.Logger.Println("unable to convert testplan to suite: ", err)
 		return nil, err
 	}
-	matchingTests, err := matchTestsforG3Mobly(suites)
+	matchingTests, err := matchTestsforG3Mobly(suites, ex.Logger)
 	if err != nil {
-		fmt.Printf("err %s", err)
+		ex.Logger.Println("unable to match test:", err)
 	}
 
 	// Translate the TC metadata schema into CTP testplan schema.
 	ctpTestCases := common.TranslateTCMtoCTPTC(matchingTests)
 	ex.Testplan.TestCases = append(ex.Testplan.TestCases, ctpTestCases...)
-	addMoblyFlagToSuiteArgs(ex.Testplan)
+	common.AddFlexibleTFFlag(ex.Testplan)
 	return ex.Testplan, nil
 }
 

@@ -30,7 +30,6 @@ func FindNewestDirInGcsBucket(ctx context.Context, gcsBasePath string, bucket *s
 	for {
 		attrs, err := it.Next()
 		if errors.Is(err, io.EOF) {
-			fmt.Println("eof")
 			break
 		}
 		if err != nil {
@@ -53,7 +52,13 @@ func FindNewestDirInGcsBucket(ctx context.Context, gcsBasePath string, bucket *s
 
 // PullAllFilesFromGcsDir will grab all the files from a dir matching the postfix
 func PullAllFilesFromGcsDir(ctx context.Context, bucket *storage.BucketHandle, dir string, postfix string) ([][]byte, error) {
-	it := bucket.Objects(ctx, &storage.Query{Prefix: dir})
+	var it *storage.ObjectIterator
+	if dir != "" {
+		it = bucket.Objects(ctx, &storage.Query{Prefix: dir})
+
+	} else {
+		it = bucket.Objects(ctx, &storage.Query{})
+	}
 	var data [][]byte // Accumulate data from all JSON files
 	for {
 		attrs, err := it.Next()
@@ -63,7 +68,6 @@ func PullAllFilesFromGcsDir(ctx context.Context, bucket *storage.BucketHandle, d
 		if err != nil {
 			break
 		}
-		fmt.Println(attrs.Name)
 		if strings.HasSuffix(attrs.Name, postfix) {
 			r, err := bucket.Object(attrs.Name).NewReader(ctx)
 			if err != nil {
@@ -75,6 +79,7 @@ func PullAllFilesFromGcsDir(ctx context.Context, bucket *storage.BucketHandle, d
 			if err != nil {
 				return nil, fmt.Errorf("reading data from %s: %w", attrs.Name, err)
 			}
+
 			data = append(data, jsonData) // Append data from current file
 		}
 	}
@@ -113,7 +118,6 @@ func tfToCTPTestCase(metadata *api.TestCaseMetadata) *api.CTPTestCase {
 	if len(deps) != 0 {
 		tc.Metadata.TestCase.Dependencies = deps
 	}
-	fmt.Println(tc.Name)
 	return tc
 }
 
@@ -166,4 +170,17 @@ func TestSuiteFromTestplan(req *api.InternalTestplan) ([]*api.TestSuite, error) 
 	TestSuites := []*api.TestSuite{testSuite}
 	return TestSuites, nil
 
+}
+
+// append the magical `FlexibleTF` key on the suiteArgs to be processed by cros-test.
+func AddFlexibleTFFlag(tp *api.InternalTestplan) {
+	existingMD := tp.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata()
+	if existingMD == nil || len(existingMD.Args) == 0 {
+		existingMD = &api.ExecutionMetadata{Args: []*api.Arg{}}
+	}
+	existingMD.Args = append(existingMD.Args, &api.Arg{
+		Flag:  "FlexibleTF",
+		Value: "true",
+	})
+	tp.SuiteInfo.SuiteMetadata.ExecutionMetadata = existingMD
 }

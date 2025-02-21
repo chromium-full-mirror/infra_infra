@@ -31,7 +31,7 @@ type AbstractFinder struct {
 
 	Testplan *api.InternalTestplan
 	ctx      context.Context
-	logger   *log.Logger
+	Logger   *log.Logger
 }
 
 // NewAbstractFinder provides a new Abstract Finder
@@ -40,7 +40,7 @@ func NewAbstractFinder(ctx context.Context, req *api.InternalTestplan, exType Fi
 		FinderHarness: exType,
 		Testplan:      req,
 		ctx:           ctx,
-		logger:        log,
+		Logger:        log,
 	}
 }
 

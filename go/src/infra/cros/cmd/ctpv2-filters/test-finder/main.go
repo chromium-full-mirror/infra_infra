@@ -20,7 +20,7 @@ var binName = "testFinder"
 func executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
 	ctx := context.Background()
 
-	_, err := service.FindTests(ctx, req, log)
+	err := service.FindTests(ctx, req, log)
 	if err != nil {
 		return nil, err
 	}

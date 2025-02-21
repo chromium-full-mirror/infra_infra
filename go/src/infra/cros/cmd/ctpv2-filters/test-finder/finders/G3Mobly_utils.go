@@ -20,7 +20,7 @@ type ExtraInfo struct {
 	ExecutableName string `json:"executable_name"`
 }
 
-func translateSrcToMetadata(src [][]byte) (metaData []*api.TestCaseMetadata) {
+func translateG3SrcToMetadata(src [][]byte) (metaData []*api.TestCaseMetadata) {
 	var testInfoList []TestInfo
 
 	for _, srcInfo := range src {
