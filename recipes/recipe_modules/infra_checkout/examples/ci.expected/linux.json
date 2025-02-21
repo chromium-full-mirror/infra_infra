@@ -202,7 +202,7 @@
     "cmd": [
       "go",
       "test",
-      "infra/..."
+      "go.chromium.org/infra/..."
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {
@@ -238,7 +238,7 @@
     "cmd": [
       "go",
       "test",
-      "infra/..."
+      "go.chromium.org/infra/..."
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra",
     "env": {

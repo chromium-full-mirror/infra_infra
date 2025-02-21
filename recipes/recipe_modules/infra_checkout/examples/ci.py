@@ -21,9 +21,9 @@ def RunSteps(api):
   co.gclient_runhooks()
   _ = co.bot_update_step  # coverage...
   with co.go_env():
-    api.step('go test', ['go', 'test', 'infra/...'])
+    api.step('go test', ['go', 'test', 'go.chromium.org/infra/...'])
   with co.go_env():  # for coverage
-    api.step('go test', ['go', 'test', 'infra/...'])
+    api.step('go test', ['go', 'test', 'go.chromium.org/infra/...'])
   with api.context(cwd=co.patch_root_path):
     api.step('python tests', ['python3', 'test.py', 'test', 'infra'])
   with api.context(cwd=co.path):
