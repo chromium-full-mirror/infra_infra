@@ -7,9 +7,7 @@ linters:
   enable:
     - errorlint
     - gci
-    # TODO(gregorynisbet): temporary disable stylecheck until https://chromium-review.googlesource.com/c/infra/infra/+/6250546 lands.
-    # It is too aggressive.
-    # - stylecheck
+    - stylecheck
 
 linters-settings:
   # TODO(gregorynisbet): Use default config here.
@@ -32,6 +30,16 @@ linters-settings:
     # If `true`, make the section order the same as the order of `sections`.
     # Default: false
     custom-order: true
+
+  # Start the stylecheck config off small and grow it over time as we remove classes of error.
+  stylecheck:
+    checks:
+      - ST1013 # HTTP Error code not magic number
+
+  # Start the staticcheck config off small and grow it over time as we remove classes of error.
+  staticcheck:
+    checks:
+      - SA1000 # Invalid regex
 
 # https://golangci-lint.run/usage/configuration/#issues-configuration
 issues:
