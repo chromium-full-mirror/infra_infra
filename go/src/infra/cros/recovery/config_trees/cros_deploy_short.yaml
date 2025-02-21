@@ -2728,6 +2728,22 @@ plans:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                    - name: is_servo_type_ccd
+                    - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -3192,6 +3208,22 @@ plans:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                    - name: is_servo_type_ccd
+                    - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -3881,6 +3913,22 @@ plans:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                    - name: is_servo_type_ccd
+                    - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -4384,6 +4432,22 @@ plans:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                    - name: is_servo_type_ccd
+                    - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -5059,6 +5123,22 @@ plans:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                        - name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                          conditions:
+                            - name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -5477,6 +5557,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -5914,6 +6010,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -7291,7 +7403,7 @@ plans:
                     - name: is_servo_type_ccd
                 - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
-            - name: Check if request labstation reboot ('sample_fail')
+            - name: Place reboot request for labstation ('sample_fail')
               conditions:
                 - name: Check if servo is not connected by hub ('servo_not_connected_by_hub')
               dependencies:
@@ -7446,6 +7558,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -7851,6 +7979,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -8256,6 +8400,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -8661,6 +8821,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -9084,6 +9260,22 @@ plans:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                    - name: is_servo_type_ccd
+                    - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                   conditions:
                     - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -9504,6 +9696,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -10065,6 +10273,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -11073,6 +11297,22 @@ plans:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                        - name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                          conditions:
+                            - name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -11634,6 +11874,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -12083,7 +12339,7 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Has repair-request for re-provision ('dut_has_any_repair_requests')
               recoveries:
-                - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Provision Android OS ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
@@ -12095,7 +12351,8 @@ plans:
                       conditions:
                         - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                         - name: CrosToolRunner is up ('ctr_is_up')
-                    - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -12816,6 +13073,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -13380,6 +13653,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -14485,6 +14774,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -15049,6 +15354,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -15904,6 +16225,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -16976,6 +17313,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -17681,6 +18034,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -18361,6 +18730,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -19253,6 +19638,22 @@ plans:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                        - name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                          conditions:
+                            - name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -19677,6 +20078,22 @@ plans:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                        - name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                          conditions:
+                            - name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -20101,6 +20518,22 @@ plans:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                        - name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                          conditions:
+                            - name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -20535,6 +20968,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -20969,6 +21418,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -21406,6 +21871,22 @@ plans:
                                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                     - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                                - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                      dependencies:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                          conditions:
+                                            - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: is_servo_type_ccd
+                                    - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                      conditions:
+                                        - name: is_servo_type_ccd
+                                    - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                                   conditions:
                                     - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -21841,6 +22322,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -22274,6 +22771,22 @@ plans:
                                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                     - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                                - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                      dependencies:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                          conditions:
+                                            - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: is_servo_type_ccd
+                                    - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                      conditions:
+                                        - name: is_servo_type_ccd
+                                    - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                                   conditions:
                                     - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -22706,6 +23219,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -23115,6 +23644,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -23542,6 +24087,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -23951,6 +24512,22 @@ plans:
                                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                     - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                                - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                      dependencies:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                          conditions:
+                                            - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: is_servo_type_ccd
+                                    - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                      conditions:
+                                        - name: is_servo_type_ccd
+                                    - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                                 - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                                   conditions:
                                     - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -24381,6 +24958,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -24794,6 +25387,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -25199,6 +25808,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -25608,6 +26233,22 @@ plans:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                        - name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                          conditions:
+                            - name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -26024,6 +26665,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -26676,6 +27333,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -27389,6 +28062,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -27953,6 +28642,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -28981,6 +29686,22 @@ plans:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                        - name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                          conditions:
+                            - name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -29400,6 +30121,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -29890,7 +30627,7 @@ plans:
                         - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                           conditions:
                             - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
-                    - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                    - name: Provision Android OS ('sample_pass') (ALWAYS_RUN)
                       conditions:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                         - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
@@ -29902,7 +30639,8 @@ plans:
                           conditions:
                             - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                             - name: CrosToolRunner is up ('ctr_is_up')
-                        - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                        - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                        - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                       conditions:
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -29979,7 +30717,7 @@ plans:
                         - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                           conditions:
                             - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
-                    - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                    - name: Provision Android OS ('sample_pass') (ALWAYS_RUN)
                       conditions:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                         - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
@@ -29991,7 +30729,8 @@ plans:
                           conditions:
                             - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                             - name: CrosToolRunner is up ('ctr_is_up')
-                        - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                        - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                        - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                       conditions:
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -30224,6 +30963,22 @@ plans:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                        - name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                          conditions:
+                            - name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -30679,6 +31434,22 @@ plans:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              conditions:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                        - name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                          conditions:
+                            - name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -31196,6 +31967,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -31606,6 +32393,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -32011,6 +32814,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -32416,6 +33235,22 @@ plans:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                             - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                        - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                            - name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                              conditions:
+                                - name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                         - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                           conditions:
                             - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -32821,6 +33656,22 @@ plans:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                            - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                              conditions:
+                                - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                                  dependencies:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                      conditions:
+                                        - name: Setup has servo info ('dut_servo_host_present')
+                                - name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                             - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                               conditions:
                                 - name: Is Chrome based ('cros_is_chrome_based') (ALWAYS_RUN)
@@ -33276,7 +34127,7 @@ plans:
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
-                - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Provision Android OS ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
@@ -33288,7 +34139,8 @@ plans:
                       conditions:
                         - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                         - name: CrosToolRunner is up ('ctr_is_up')
-                    - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -33356,6 +34208,22 @@ plans:
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
+                - name: Try fake disconnect and wait to be access ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                    - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                          conditions:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                    - name: is_servo_type_ccd
+                    - name: DUT is G3/S5 powerstate ('servo_power_state_match') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
+                      conditions:
+                        - name: is_servo_type_ccd
+                    - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
                 - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
@@ -33525,6 +34393,11 @@ plans:
                     - name: Boot DUT in recovery and install from USB-drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: Place reboot request for labstation ('sample_fail')
+                  conditions:
+                    - name: Check if servo is not connected by hub ('servo_not_connected_by_hub')
+                  dependencies:
+                    - name: Create request to reboot labstation ('labstation_create_reboot_request') (RUN_ONCE)
             - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
               conditions:
                 - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
@@ -33550,7 +34423,7 @@ plans:
                               conditions:
                                 - name: Setup has servo info ('dut_servo_host_present')
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
-                - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Provision Android OS ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
@@ -33562,7 +34435,8 @@ plans:
                       conditions:
                         - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                         - name: CrosToolRunner is up ('ctr_is_up')
-                    - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -33805,7 +34679,7 @@ plans:
             - name: Device Uptime (Allow to fail) ('cros_uptime_print')
             - name: Has repair-request for re-provision ('dut_has_any_repair_requests')
               recoveries:
-                - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Provision Android OS ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
@@ -33817,7 +34691,8 @@ plans:
                       conditions:
                         - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                         - name: CrosToolRunner is up ('ctr_is_up')
-                    - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -34434,7 +35309,7 @@ plans:
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                       conditions:
                         - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
-                - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Provision Android OS ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
@@ -34446,7 +35321,8 @@ plans:
                       conditions:
                         - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                         - name: CrosToolRunner is up ('ctr_is_up')
-                    - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -34523,7 +35399,7 @@ plans:
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                       conditions:
                         - name: Is Android based ('cros_is_android_based') (ALWAYS_RUN)
-                - name: Provision Android OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Provision Android OS ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
@@ -34535,7 +35411,8 @@ plans:
                       conditions:
                         - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
                         - name: CrosToolRunner is up ('ctr_is_up')
-                    - name: Foil-provision Setup service ('ctr_foil_provision_setup_service')
+                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)

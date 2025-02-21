@@ -47,8 +47,10 @@ func androidActions(actions map[string]*Action) {
 				"Install Android OS by booting from servo USB-drive",
 				"Reset servo_v4.1 ethernet and wait for ping",
 				"Power cycle DUT by RPM and wait for ping",
+				"Try fake disconnect and wait to be access",
 				"Force reimage to ChromeOS in DEV mode",
 				"Install OS in recovery mode by booting from servo USB-drive",
+				"Place reboot request for labstation",
 			},
 		},
 		"ADB set Android as always awake": {
@@ -142,6 +144,18 @@ func androidActions(actions map[string]*Action) {
 			},
 			ExecName: "ctr_foil_provision_setup_service",
 		},
+		"Foil-provision install OS": {
+			Docs: []string{
+				"Run install scrpt on the DUT.",
+			},
+			ExecName: "ctr_foil_provision_install",
+			ExecTimeout: &durationpb.Duration{
+				// The provision now requires USB-drive by default!
+				// Set 1 hour just in case.
+				Seconds: 3600,
+			},
+			RunControl: RunControl_ALWAYS_RUN,
+		},
 		"Provision Android OS": {
 			Docs: []string{
 				"The install performs real install Android on the DUT.",
@@ -153,14 +167,10 @@ func androidActions(actions map[string]*Action) {
 			Dependencies: []string{
 				"Detect CacheService address",
 				"Start Foil-provision",
-				"Foil-provision Setup service",
+				"Foil-provision install OS",
+				"Remove PROVISION repair-request",
 			},
-			ExecName: "ctr_foil_provision_install",
-			ExecTimeout: &durationpb.Duration{
-				// The provision now requires USB-drive by default!
-				// Set 1 hour just in case.
-				Seconds: 3600,
-			},
+			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Update FW and install Android OS from servo USB-drive": {

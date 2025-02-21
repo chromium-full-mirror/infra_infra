@@ -232,7 +232,7 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in DEV mode by USB-drive",
 				"Reset power using servo if booted from USB",
 				"Battery cut-off by servo and wait for SSH",
-				"Check if request labstation reboot",
+				"Place reboot request for labstation",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{
@@ -255,7 +255,7 @@ func crosRepairActions() map[string]*Action {
 				"Reset servo_v4.1 ethernet and wait for ping",
 				"Install Android OS by booting from servo USB-drive",
 				"Update FW and install Android OS from servo USB-drive",
-				"Check if request labstation reboot",
+				"Place reboot request for labstation",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{
@@ -286,6 +286,7 @@ func crosRepairActions() map[string]*Action {
 				"Cold reset by servo and wait for ping",
 				"Install OS in recovery mode by booting from servo USB-drive (no storage check)",
 				"Update FW from fw-image by servo and wait for boot",
+				"Try fake disconnect and wait to be access",
 				"Update fingerpprint FW from USB drive",
 				"Install OS in recovery mode by booting from servo USB-drive",
 				"Install OS in recovery mode by booting from servo USB-drive (Flex with AMT)",
@@ -2726,6 +2727,17 @@ func crosRepairActions() map[string]*Action {
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
+		"Wait to be SSHable (short waiting)": {
+			// No recovery actions as that is help action.
+			Docs: []string{
+				"Try to wait device to be accesable shortly.",
+				"Waiting time 30 seconds.",
+			},
+			ExecName:      "cros_ssh",
+			ExecTimeout:   &durationpb.Duration{Seconds: 30},
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
 		"Wait to be pingable (normal boot)": {
 			// No recovery actions as that is help action.
 			Docs: []string{
@@ -4231,7 +4243,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName:               "cros_update_audio_beamforming_type",
 			AllowFailAfterRecovery: true,
 		},
-		"Check if request labstation reboot": {
+		"Place reboot request for labstation": {
 			Docs: []string{
 				"Check if there's a need to reboot the connected labstation.",
 				"Request labstation reboot may bring DUT back but it happens",
@@ -4756,6 +4768,23 @@ func crosRepairActions() map[string]*Action {
 				"Try fake disconnect",
 				"Sleep 60 seconds",
 				"Wait to be SSHable (normal boot)",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Try fake disconnect and wait to be access": {
+			Docs: []string{
+				"This action will virtually disconnect servo from DUT and plug it back.",
+			},
+			Conditions: []string{
+				"Is a Chromebook",
+				"Is servod running",
+				"is_servo_type_ccd",
+				"DUT is G3/S5 powerstate",
+			},
+			Dependencies: []string{
+				"Try fake disconnect",
+				"Wait to be SSHable (short waiting)",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,

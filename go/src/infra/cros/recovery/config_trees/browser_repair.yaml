@@ -10314,7 +10314,7 @@ plans:
                   docs:
                     - Try to wait device to be sshable after the device being rebooted.
                     - Waiting time 150 seconds.
-            - name: Check if request labstation reboot
+            - name: Place reboot request for labstation
               exec_name: sample_fail
               docs:
                 - Check if there's a need to reboot the connected labstation.
@@ -10822,6 +10822,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -12193,6 +12244,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -13564,6 +13666,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -14935,6 +15088,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -16403,6 +16607,57 @@ plans:
                         - requests:REFLASH_FW
                       docs:
                         - Remove REFLASH_FW repair-requests.
+                - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - This action will virtually disconnect servo from DUT and plug it back.
+                  conditions:
+                    - name: Is a Chromebook (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:aurora,reven
+                        - invert_result:true
+                      docs:
+                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                    - name: is_servo_type_ccd
+                      exec_name: is_servo_type_ccd
+                    - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                      exec_name: servo_power_state_match
+                      exec_args:
+                        - power_states:G3,S5
+                      docs:
+                        - Check if the DUT powerstate is S5 or G3 (device is off).
+                  dependencies:
+                    - name: Try fake disconnect (ALWAYS_RUN)
+                      exec_name: servo_fake_disconnect_dut
+                      exec_args:
+                        - delay_in_ms:100
+                        - timeout_in_ms:2000
+                      docs:
+                        - Run servo fake disconnect type-c connector from the DUT side.
+                        - The action mimic unplug-plug connection to the DUT.
+                      conditions:
+                        - name: is_servo_type_ccd
+                          exec_name: is_servo_type_ccd
+                    - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Try to wait device to be accesable shortly.
+                        - Waiting time 30 seconds.
                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                   exec_name: cros_install_in_recovery_mode
                   exec_args:
@@ -17830,6 +18085,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -19712,6 +20018,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -23100,6 +23457,57 @@ plans:
                             - requests:REFLASH_FW
                           docs:
                             - Remove REFLASH_FW repair-requests.
+                    - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - This action will virtually disconnect servo from DUT and plug it back.
+                      conditions:
+                        - name: Is a Chromebook (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:true
+                          docs:
+                            - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                        - name: is_servo_type_ccd
+                          exec_name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                          exec_name: servo_power_state_match
+                          exec_args:
+                            - power_states:G3,S5
+                          docs:
+                            - Check if the DUT powerstate is S5 or G3 (device is off).
+                      dependencies:
+                        - name: Try fake disconnect (ALWAYS_RUN)
+                          exec_name: servo_fake_disconnect_dut
+                          exec_args:
+                            - delay_in_ms:100
+                            - timeout_in_ms:2000
+                          docs:
+                            - Run servo fake disconnect type-c connector from the DUT side.
+                            - The action mimic unplug-plug connection to the DUT.
+                          conditions:
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                          exec_name: cros_ssh
+                          docs:
+                            - Try to wait device to be accesable shortly.
+                            - Waiting time 30 seconds.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -24973,6 +25381,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -26477,8 +26936,8 @@ plans:
               docs:
                 - Check if PROVISION repair-request is present.
               recoveries:
-                - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
-                  exec_name: ctr_foil_provision_install
+                - name: Provision Android OS (ALWAYS_RUN)
+                  exec_name: sample_pass
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
@@ -26514,10 +26973,16 @@ plans:
                           docs:
                             - 'Verify that cros-tool-runner service is up and running, '
                             - the tool expected to start as part of system preparation.
-                    - name: Foil-provision Setup service
-                      exec_name: ctr_foil_provision_setup_service
+                    - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
+                      exec_name: ctr_foil_provision_install
                       docs:
-                        - The setup method needs to be called once before performing install.
+                        - Run install scrpt on the DUT.
+                    - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:PROVISION
+                      docs:
+                        - Remove a PROVISION repair-request.
                 - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -28920,6 +29385,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -30810,6 +31326,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -34517,6 +35084,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -36407,6 +37025,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -39254,6 +39923,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -42856,6 +43576,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -45227,6 +45998,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -47509,6 +48331,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -50491,6 +51364,57 @@ plans:
                             - requests:REFLASH_FW
                           docs:
                             - Remove REFLASH_FW repair-requests.
+                    - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - This action will virtually disconnect servo from DUT and plug it back.
+                      conditions:
+                        - name: Is a Chromebook (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:true
+                          docs:
+                            - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                        - name: is_servo_type_ccd
+                          exec_name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                          exec_name: servo_power_state_match
+                          exec_args:
+                            - power_states:G3,S5
+                          docs:
+                            - Check if the DUT powerstate is S5 or G3 (device is off).
+                      dependencies:
+                        - name: Try fake disconnect (ALWAYS_RUN)
+                          exec_name: servo_fake_disconnect_dut
+                          exec_args:
+                            - delay_in_ms:100
+                            - timeout_in_ms:2000
+                          docs:
+                            - Run servo fake disconnect type-c connector from the DUT side.
+                            - The action mimic unplug-plug connection to the DUT.
+                          conditions:
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                          exec_name: cros_ssh
+                          docs:
+                            - Try to wait device to be accesable shortly.
+                            - Waiting time 30 seconds.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -51910,6 +52834,57 @@ plans:
                             - requests:REFLASH_FW
                           docs:
                             - Remove REFLASH_FW repair-requests.
+                    - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - This action will virtually disconnect servo from DUT and plug it back.
+                      conditions:
+                        - name: Is a Chromebook (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:true
+                          docs:
+                            - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                        - name: is_servo_type_ccd
+                          exec_name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                          exec_name: servo_power_state_match
+                          exec_args:
+                            - power_states:G3,S5
+                          docs:
+                            - Check if the DUT powerstate is S5 or G3 (device is off).
+                      dependencies:
+                        - name: Try fake disconnect (ALWAYS_RUN)
+                          exec_name: servo_fake_disconnect_dut
+                          exec_args:
+                            - delay_in_ms:100
+                            - timeout_in_ms:2000
+                          docs:
+                            - Run servo fake disconnect type-c connector from the DUT side.
+                            - The action mimic unplug-plug connection to the DUT.
+                          conditions:
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                          exec_name: cros_ssh
+                          docs:
+                            - Try to wait device to be accesable shortly.
+                            - Waiting time 30 seconds.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -53330,6 +54305,57 @@ plans:
                             - requests:REFLASH_FW
                           docs:
                             - Remove REFLASH_FW repair-requests.
+                    - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - This action will virtually disconnect servo from DUT and plug it back.
+                      conditions:
+                        - name: Is a Chromebook (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:true
+                          docs:
+                            - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                        - name: is_servo_type_ccd
+                          exec_name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                          exec_name: servo_power_state_match
+                          exec_args:
+                            - power_states:G3,S5
+                          docs:
+                            - Check if the DUT powerstate is S5 or G3 (device is off).
+                      dependencies:
+                        - name: Try fake disconnect (ALWAYS_RUN)
+                          exec_name: servo_fake_disconnect_dut
+                          exec_args:
+                            - delay_in_ms:100
+                            - timeout_in_ms:2000
+                          docs:
+                            - Run servo fake disconnect type-c connector from the DUT side.
+                            - The action mimic unplug-plug connection to the DUT.
+                          conditions:
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                          exec_name: cros_ssh
+                          docs:
+                            - Try to wait device to be accesable shortly.
+                            - Waiting time 30 seconds.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -54779,6 +55805,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -56226,6 +57303,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -57686,6 +58814,57 @@ plans:
                                         - requests:REFLASH_FW
                                       docs:
                                         - Remove REFLASH_FW repair-requests.
+                                - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - This action will virtually disconnect servo from DUT and plug it back.
+                                  conditions:
+                                    - name: Is a Chromebook (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:true
+                                      docs:
+                                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                    - name: Is servod running (ALWAYS_RUN)
+                                      exec_name: sample_pass
+                                      docs:
+                                        - Verify that servo host specified in setup and servod is running.
+                                      dependencies:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                          exec_name: servod_echo
+                                          exec_args:
+                                            - ssh_check:false
+                                          conditions:
+                                            - name: Setup has servo info
+                                              exec_name: dut_servo_host_present
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                    - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                      exec_name: servo_power_state_match
+                                      exec_args:
+                                        - power_states:G3,S5
+                                      docs:
+                                        - Check if the DUT powerstate is S5 or G3 (device is off).
+                                  dependencies:
+                                    - name: Try fake disconnect (ALWAYS_RUN)
+                                      exec_name: servo_fake_disconnect_dut
+                                      exec_args:
+                                        - delay_in_ms:100
+                                        - timeout_in_ms:2000
+                                      docs:
+                                        - Run servo fake disconnect type-c connector from the DUT side.
+                                        - The action mimic unplug-plug connection to the DUT.
+                                      conditions:
+                                        - name: is_servo_type_ccd
+                                          exec_name: is_servo_type_ccd
+                                    - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                      exec_name: cros_ssh
+                                      docs:
+                                        - Try to wait device to be accesable shortly.
+                                        - Waiting time 30 seconds.
                                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
@@ -59135,6 +60314,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -60580,6 +61810,57 @@ plans:
                                         - requests:REFLASH_FW
                                       docs:
                                         - Remove REFLASH_FW repair-requests.
+                                - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - This action will virtually disconnect servo from DUT and plug it back.
+                                  conditions:
+                                    - name: Is a Chromebook (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:true
+                                      docs:
+                                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                    - name: Is servod running (ALWAYS_RUN)
+                                      exec_name: sample_pass
+                                      docs:
+                                        - Verify that servo host specified in setup and servod is running.
+                                      dependencies:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                          exec_name: servod_echo
+                                          exec_args:
+                                            - ssh_check:false
+                                          conditions:
+                                            - name: Setup has servo info
+                                              exec_name: dut_servo_host_present
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                    - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                      exec_name: servo_power_state_match
+                                      exec_args:
+                                        - power_states:G3,S5
+                                      docs:
+                                        - Check if the DUT powerstate is S5 or G3 (device is off).
+                                  dependencies:
+                                    - name: Try fake disconnect (ALWAYS_RUN)
+                                      exec_name: servo_fake_disconnect_dut
+                                      exec_args:
+                                        - delay_in_ms:100
+                                        - timeout_in_ms:2000
+                                      docs:
+                                        - Run servo fake disconnect type-c connector from the DUT side.
+                                        - The action mimic unplug-plug connection to the DUT.
+                                      conditions:
+                                        - name: is_servo_type_ccd
+                                          exec_name: is_servo_type_ccd
+                                    - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                      exec_name: cros_ssh
+                                      docs:
+                                        - Try to wait device to be accesable shortly.
+                                        - Waiting time 30 seconds.
                                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
@@ -62026,6 +63307,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -63409,6 +64741,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -64841,6 +66224,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -66224,6 +67658,57 @@ plans:
                                         - requests:REFLASH_FW
                                       docs:
                                         - Remove REFLASH_FW repair-requests.
+                                - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - This action will virtually disconnect servo from DUT and plug it back.
+                                  conditions:
+                                    - name: Is a Chromebook (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:true
+                                      docs:
+                                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                    - name: Is servod running (ALWAYS_RUN)
+                                      exec_name: sample_pass
+                                      docs:
+                                        - Verify that servo host specified in setup and servod is running.
+                                      dependencies:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                          exec_name: servod_echo
+                                          exec_args:
+                                            - ssh_check:false
+                                          conditions:
+                                            - name: Setup has servo info
+                                              exec_name: dut_servo_host_present
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                    - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                      exec_name: servo_power_state_match
+                                      exec_args:
+                                        - power_states:G3,S5
+                                      docs:
+                                        - Check if the DUT powerstate is S5 or G3 (device is off).
+                                  dependencies:
+                                    - name: Try fake disconnect (ALWAYS_RUN)
+                                      exec_name: servo_fake_disconnect_dut
+                                      exec_args:
+                                        - delay_in_ms:100
+                                        - timeout_in_ms:2000
+                                      docs:
+                                        - Run servo fake disconnect type-c connector from the DUT side.
+                                        - The action mimic unplug-plug connection to the DUT.
+                                      conditions:
+                                        - name: is_servo_type_ccd
+                                          exec_name: is_servo_type_ccd
+                                    - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                      exec_name: cros_ssh
+                                      docs:
+                                        - Try to wait device to be accesable shortly.
+                                        - Waiting time 30 seconds.
                                 - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                                   exec_name: cros_install_in_recovery_mode
                                   exec_args:
@@ -67663,6 +69148,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -69069,6 +70605,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -70445,6 +72032,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -71831,6 +73469,57 @@ plans:
                             - requests:REFLASH_FW
                           docs:
                             - Remove REFLASH_FW repair-requests.
+                    - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - This action will virtually disconnect servo from DUT and plug it back.
+                      conditions:
+                        - name: Is a Chromebook (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:true
+                          docs:
+                            - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                        - name: is_servo_type_ccd
+                          exec_name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                          exec_name: servo_power_state_match
+                          exec_args:
+                            - power_states:G3,S5
+                          docs:
+                            - Check if the DUT powerstate is S5 or G3 (device is off).
+                      dependencies:
+                        - name: Try fake disconnect (ALWAYS_RUN)
+                          exec_name: servo_fake_disconnect_dut
+                          exec_args:
+                            - delay_in_ms:100
+                            - timeout_in_ms:2000
+                          docs:
+                            - Run servo fake disconnect type-c connector from the DUT side.
+                            - The action mimic unplug-plug connection to the DUT.
+                          conditions:
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                          exec_name: cros_ssh
+                          docs:
+                            - Try to wait device to be accesable shortly.
+                            - Waiting time 30 seconds.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -73243,6 +74932,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -75434,6 +77174,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -77823,6 +79614,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -79713,6 +81555,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -83173,6 +85066,57 @@ plans:
                             - requests:REFLASH_FW
                           docs:
                             - Remove REFLASH_FW repair-requests.
+                    - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - This action will virtually disconnect servo from DUT and plug it back.
+                      conditions:
+                        - name: Is a Chromebook (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:true
+                          docs:
+                            - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                        - name: is_servo_type_ccd
+                          exec_name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                          exec_name: servo_power_state_match
+                          exec_args:
+                            - power_states:G3,S5
+                          docs:
+                            - Check if the DUT powerstate is S5 or G3 (device is off).
+                      dependencies:
+                        - name: Try fake disconnect (ALWAYS_RUN)
+                          exec_name: servo_fake_disconnect_dut
+                          exec_args:
+                            - delay_in_ms:100
+                            - timeout_in_ms:2000
+                          docs:
+                            - Run servo fake disconnect type-c connector from the DUT side.
+                            - The action mimic unplug-plug connection to the DUT.
+                          conditions:
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                          exec_name: cros_ssh
+                          docs:
+                            - Try to wait device to be accesable shortly.
+                            - Waiting time 30 seconds.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -84583,6 +86527,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -86284,8 +88279,8 @@ plans:
                           conditions:
                             - name: Is Android based (ALWAYS_RUN)
                               exec_name: cros_is_android_based
-                    - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
-                      exec_name: ctr_foil_provision_install
+                    - name: Provision Android OS (ALWAYS_RUN)
+                      exec_name: sample_pass
                       docs:
                         - The install performs real install Android on the DUT.
                       conditions:
@@ -86321,10 +88316,16 @@ plans:
                               docs:
                                 - 'Verify that cros-tool-runner service is up and running, '
                                 - the tool expected to start as part of system preparation.
-                        - name: Foil-provision Setup service
-                          exec_name: ctr_foil_provision_setup_service
+                        - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
+                          exec_name: ctr_foil_provision_install
                           docs:
-                            - The setup method needs to be called once before performing install.
+                            - Run install scrpt on the DUT.
+                        - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:PROVISION
+                          docs:
+                            - Remove a PROVISION repair-request.
                     - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
                       exec_name: sample_pass
                       docs:
@@ -86622,8 +88623,8 @@ plans:
                           conditions:
                             - name: Is Android based (ALWAYS_RUN)
                               exec_name: cros_is_android_based
-                    - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
-                      exec_name: ctr_foil_provision_install
+                    - name: Provision Android OS (ALWAYS_RUN)
+                      exec_name: sample_pass
                       docs:
                         - The install performs real install Android on the DUT.
                       conditions:
@@ -86659,10 +88660,16 @@ plans:
                               docs:
                                 - 'Verify that cros-tool-runner service is up and running, '
                                 - the tool expected to start as part of system preparation.
-                        - name: Foil-provision Setup service
-                          exec_name: ctr_foil_provision_setup_service
+                        - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
+                          exec_name: ctr_foil_provision_install
                           docs:
-                            - The setup method needs to be called once before performing install.
+                            - Run install scrpt on the DUT.
+                        - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:PROVISION
+                          docs:
+                            - Remove a PROVISION repair-request.
                     - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
                       exec_name: sample_pass
                       docs:
@@ -87462,6 +89469,57 @@ plans:
                             - requests:REFLASH_FW
                           docs:
                             - Remove REFLASH_FW repair-requests.
+                    - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - This action will virtually disconnect servo from DUT and plug it back.
+                      conditions:
+                        - name: Is a Chromebook (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:true
+                          docs:
+                            - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                        - name: is_servo_type_ccd
+                          exec_name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                          exec_name: servo_power_state_match
+                          exec_args:
+                            - power_states:G3,S5
+                          docs:
+                            - Check if the DUT powerstate is S5 or G3 (device is off).
+                      dependencies:
+                        - name: Try fake disconnect (ALWAYS_RUN)
+                          exec_name: servo_fake_disconnect_dut
+                          exec_args:
+                            - delay_in_ms:100
+                            - timeout_in_ms:2000
+                          docs:
+                            - Run servo fake disconnect type-c connector from the DUT side.
+                            - The action mimic unplug-plug connection to the DUT.
+                          conditions:
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                          exec_name: cros_ssh
+                          docs:
+                            - Try to wait device to be accesable shortly.
+                            - Waiting time 30 seconds.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -89017,6 +91075,57 @@ plans:
                             - requests:REFLASH_FW
                           docs:
                             - Remove REFLASH_FW repair-requests.
+                    - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - This action will virtually disconnect servo from DUT and plug it back.
+                      conditions:
+                        - name: Is a Chromebook (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:true
+                          docs:
+                            - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              conditions:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                        - name: is_servo_type_ccd
+                          exec_name: is_servo_type_ccd
+                        - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                          exec_name: servo_power_state_match
+                          exec_args:
+                            - power_states:G3,S5
+                          docs:
+                            - Check if the DUT powerstate is S5 or G3 (device is off).
+                      dependencies:
+                        - name: Try fake disconnect (ALWAYS_RUN)
+                          exec_name: servo_fake_disconnect_dut
+                          exec_args:
+                            - delay_in_ms:100
+                            - timeout_in_ms:2000
+                          docs:
+                            - Run servo fake disconnect type-c connector from the DUT side.
+                            - The action mimic unplug-plug connection to the DUT.
+                          conditions:
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                        - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                          exec_name: cros_ssh
+                          docs:
+                            - Try to wait device to be accesable shortly.
+                            - Waiting time 30 seconds.
                     - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                       exec_name: cros_install_in_recovery_mode
                       exec_args:
@@ -90783,6 +92892,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -92172,6 +94332,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -93543,6 +95754,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -94914,6 +97176,57 @@ plans:
                                 - requests:REFLASH_FW
                               docs:
                                 - Remove REFLASH_FW repair-requests.
+                        - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - This action will virtually disconnect servo from DUT and plug it back.
+                          conditions:
+                            - name: Is a Chromebook (RUN_ONCE)
+                              exec_name: dut_check_board
+                              exec_args:
+                                - string_values:aurora,reven
+                                - invert_result:true
+                              docs:
+                                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                            - name: is_servo_type_ccd
+                              exec_name: is_servo_type_ccd
+                            - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                              exec_name: servo_power_state_match
+                              exec_args:
+                                - power_states:G3,S5
+                              docs:
+                                - Check if the DUT powerstate is S5 or G3 (device is off).
+                          dependencies:
+                            - name: Try fake disconnect (ALWAYS_RUN)
+                              exec_name: servo_fake_disconnect_dut
+                              exec_args:
+                                - delay_in_ms:100
+                                - timeout_in_ms:2000
+                              docs:
+                                - Run servo fake disconnect type-c connector from the DUT side.
+                                - The action mimic unplug-plug connection to the DUT.
+                              conditions:
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                            - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_ssh
+                              docs:
+                                - Try to wait device to be accesable shortly.
+                                - Waiting time 30 seconds.
                         - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                           exec_name: cros_install_in_recovery_mode
                           exec_args:
@@ -96285,6 +98598,57 @@ plans:
                                     - requests:REFLASH_FW
                                   docs:
                                     - Remove REFLASH_FW repair-requests.
+                            - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - This action will virtually disconnect servo from DUT and plug it back.
+                              conditions:
+                                - name: Is a Chromebook (RUN_ONCE)
+                                  exec_name: dut_check_board
+                                  exec_args:
+                                    - string_values:aurora,reven
+                                    - invert_result:true
+                                  docs:
+                                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                                - name: Is servod running (ALWAYS_RUN)
+                                  exec_name: sample_pass
+                                  docs:
+                                    - Verify that servo host specified in setup and servod is running.
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                      exec_name: servod_echo
+                                      exec_args:
+                                        - ssh_check:false
+                                      conditions:
+                                        - name: Setup has servo info
+                                          exec_name: dut_servo_host_present
+                                - name: is_servo_type_ccd
+                                  exec_name: is_servo_type_ccd
+                                - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                                  exec_name: servo_power_state_match
+                                  exec_args:
+                                    - power_states:G3,S5
+                                  docs:
+                                    - Check if the DUT powerstate is S5 or G3 (device is off).
+                              dependencies:
+                                - name: Try fake disconnect (ALWAYS_RUN)
+                                  exec_name: servo_fake_disconnect_dut
+                                  exec_args:
+                                    - delay_in_ms:100
+                                    - timeout_in_ms:2000
+                                  docs:
+                                    - Run servo fake disconnect type-c connector from the DUT side.
+                                    - The action mimic unplug-plug connection to the DUT.
+                                  conditions:
+                                    - name: is_servo_type_ccd
+                                      exec_name: is_servo_type_ccd
+                                - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                                  exec_name: cros_ssh
+                                  docs:
+                                    - Try to wait device to be accesable shortly.
+                                    - Waiting time 30 seconds.
                             - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
                               exec_name: cros_install_in_recovery_mode
                               exec_args:
@@ -97792,8 +100156,8 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
-                - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
-                  exec_name: ctr_foil_provision_install
+                - name: Provision Android OS (ALWAYS_RUN)
+                  exec_name: sample_pass
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
@@ -97829,10 +100193,16 @@ plans:
                           docs:
                             - 'Verify that cros-tool-runner service is up and running, '
                             - the tool expected to start as part of system preparation.
-                    - name: Foil-provision Setup service
-                      exec_name: ctr_foil_provision_setup_service
+                    - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
+                      exec_name: ctr_foil_provision_install
                       docs:
-                        - The setup method needs to be called once before performing install.
+                        - Run install scrpt on the DUT.
+                    - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:PROVISION
+                      docs:
+                        - Remove a PROVISION repair-request.
                 - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -98055,6 +100425,57 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
+                - name: Try fake disconnect and wait to be access (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - This action will virtually disconnect servo from DUT and plug it back.
+                  conditions:
+                    - name: Is a Chromebook (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:aurora,reven
+                        - invert_result:true
+                      docs:
+                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          conditions:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                    - name: is_servo_type_ccd
+                      exec_name: is_servo_type_ccd
+                    - name: DUT is G3/S5 powerstate (ALWAYS_RUN)
+                      exec_name: servo_power_state_match
+                      exec_args:
+                        - power_states:G3,S5
+                      docs:
+                        - Check if the DUT powerstate is S5 or G3 (device is off).
+                  dependencies:
+                    - name: Try fake disconnect (ALWAYS_RUN)
+                      exec_name: servo_fake_disconnect_dut
+                      exec_args:
+                        - delay_in_ms:100
+                        - timeout_in_ms:2000
+                      docs:
+                        - Run servo fake disconnect type-c connector from the DUT side.
+                        - The action mimic unplug-plug connection to the DUT.
+                      conditions:
+                        - name: is_servo_type_ccd
+                          exec_name: is_servo_type_ccd
+                    - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Try to wait device to be accesable shortly.
+                        - Waiting time 30 seconds.
                 - name: Force reimage to ChromeOS in DEV mode (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -98611,6 +101032,24 @@ plans:
                         - requests:PROVISION,REIMAGE_BY_USBKEY
                       docs:
                         - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
+                - name: Place reboot request for labstation
+                  exec_name: sample_fail
+                  docs:
+                    - Check if there's a need to reboot the connected labstation.
+                    - Request labstation reboot may bring DUT back but it happens
+                    - in an asynchronous task so we make this action always fail
+                    - to avoid an unnecessary retry of critical actions that triggered
+                    - this action, e.g. 'Device is pingable' will get retried.
+                  conditions:
+                    - name: Check if servo is not connected by hub
+                      exec_name: servo_not_connected_by_hub
+                      docs:
+                        - Check if the servo is not connected by hub.
+                  dependencies:
+                    - name: Create request to reboot labstation (RUN_ONCE)
+                      exec_name: labstation_create_reboot_request
+                      docs:
+                        - Try to create reboot flag file request in the connected labstation.
             - name: ADB set Android as always awake (ALWAYS_RUN)
               exec_name: ctr_make_awake_always
               docs:
@@ -98675,8 +101114,8 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
-                - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
-                  exec_name: ctr_foil_provision_install
+                - name: Provision Android OS (ALWAYS_RUN)
+                  exec_name: sample_pass
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
@@ -98712,10 +101151,16 @@ plans:
                           docs:
                             - 'Verify that cros-tool-runner service is up and running, '
                             - the tool expected to start as part of system preparation.
-                    - name: Foil-provision Setup service
-                      exec_name: ctr_foil_provision_setup_service
+                    - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
+                      exec_name: ctr_foil_provision_install
                       docs:
-                        - The setup method needs to be called once before performing install.
+                        - Run install scrpt on the DUT.
+                    - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:PROVISION
+                      docs:
+                        - Remove a PROVISION repair-request.
                 - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -99517,8 +101962,8 @@ plans:
               docs:
                 - Check if PROVISION repair-request is present.
               recoveries:
-                - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
-                  exec_name: ctr_foil_provision_install
+                - name: Provision Android OS (ALWAYS_RUN)
+                  exec_name: sample_pass
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
@@ -99554,10 +101999,16 @@ plans:
                           docs:
                             - 'Verify that cros-tool-runner service is up and running, '
                             - the tool expected to start as part of system preparation.
-                    - name: Foil-provision Setup service
-                      exec_name: ctr_foil_provision_setup_service
+                    - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
+                      exec_name: ctr_foil_provision_install
                       docs:
-                        - The setup method needs to be called once before performing install.
+                        - Run install scrpt on the DUT.
+                    - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:PROVISION
+                      docs:
+                        - Remove a PROVISION repair-request.
                 - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -101655,8 +104106,8 @@ plans:
                       conditions:
                         - name: Is Android based (ALWAYS_RUN)
                           exec_name: cros_is_android_based
-                - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
-                  exec_name: ctr_foil_provision_install
+                - name: Provision Android OS (ALWAYS_RUN)
+                  exec_name: sample_pass
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
@@ -101692,10 +104143,16 @@ plans:
                           docs:
                             - 'Verify that cros-tool-runner service is up and running, '
                             - the tool expected to start as part of system preparation.
-                    - name: Foil-provision Setup service
-                      exec_name: ctr_foil_provision_setup_service
+                    - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
+                      exec_name: ctr_foil_provision_install
                       docs:
-                        - The setup method needs to be called once before performing install.
+                        - Run install scrpt on the DUT.
+                    - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:PROVISION
+                      docs:
+                        - Remove a PROVISION repair-request.
                 - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -101993,8 +104450,8 @@ plans:
                       conditions:
                         - name: Is Android based (ALWAYS_RUN)
                           exec_name: cros_is_android_based
-                - name: Provision Android OS (ALWAYS_RUN) (time:'1h0m0s')
-                  exec_name: ctr_foil_provision_install
+                - name: Provision Android OS (ALWAYS_RUN)
+                  exec_name: sample_pass
                   docs:
                     - The install performs real install Android on the DUT.
                   conditions:
@@ -102030,10 +104487,16 @@ plans:
                           docs:
                             - 'Verify that cros-tool-runner service is up and running, '
                             - the tool expected to start as part of system preparation.
-                    - name: Foil-provision Setup service
-                      exec_name: ctr_foil_provision_setup_service
+                    - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
+                      exec_name: ctr_foil_provision_install
                       docs:
-                        - The setup method needs to be called once before performing install.
+                        - Run install scrpt on the DUT.
+                    - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:PROVISION
+                      docs:
+                        - Remove a PROVISION repair-request.
                 - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
