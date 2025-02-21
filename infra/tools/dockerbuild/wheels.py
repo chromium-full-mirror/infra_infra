@@ -2270,6 +2270,7 @@ SPECS.update({
         Universal('google-cloud-core', '2.3.3', pyversions=['py3']),
         Universal('google-cloud-datastore', '1.6.0'),
         Universal('google-cloud-datastore', '2.1.6', pyversions=['py3']),
+        Universal('google-cloud-datastore', '2.20.2', pyversions=['py3']),
         Universal('google-cloud-dns', '0.28.0'),
         Universal('google-cloud-firestore', '0.28.0'),
         Universal('google-cloud-kms', '2.11.1', pyversions=['py3']),
