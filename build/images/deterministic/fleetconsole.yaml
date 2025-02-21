@@ -17,4 +17,4 @@ sources:
   - ../../../go/src/infra/fleetconsole
 
 build:
-  - go_binary: infra/fleetconsole/cmd/fleetconsoleserver
+  - go_binary: go.chromium.org/infra/fleetconsole/cmd/fleetconsoleserver

@@ -8,5 +8,5 @@ sources:
   - ../../../../../go/src/infra/experimental/swarming/botholder
 
 build:
-  - go_binary: infra/experimental/swarming/botholder
+  - go_binary: go.chromium.org/infra/experimental/swarming/botholder
     dest: ${contextdir}/botholder

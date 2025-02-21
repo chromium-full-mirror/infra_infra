@@ -8,6 +8,6 @@ sources:
   - ../../../../go/src/infra/unifiedfleet
 
 build:
-  - go_binary: infra/unifiedfleet/cmd/ufs-service
+  - go_binary: go.chromium.org/infra/unifiedfleet/cmd/ufs-service
     # ContextDir defaults to the directory with Dockerfile
     dest: ${contextdir}/ufs-service

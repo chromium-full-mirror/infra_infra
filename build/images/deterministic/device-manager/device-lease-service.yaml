@@ -17,5 +17,5 @@ sources:
   - ../../../../go/src/infra/device_manager
 
 build:
-  - go_binary: infra/device_manager/cmd/device_lease_service
+  - go_binary: go.chromium.org/infra/device_manager/cmd/device_lease_service
     dest: ${contextdir}/device-lease-service

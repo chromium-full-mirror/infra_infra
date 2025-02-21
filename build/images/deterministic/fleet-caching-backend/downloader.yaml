@@ -6,6 +6,6 @@ dockerfile: ../../../../go/src/infra/cros/cmd/caching-backend/downloader/docker/
 deterministic: true
 
 build:
-  - go_binary: infra/cros/cmd/caching-backend/downloader
+  - go_binary: go.chromium.org/infra/cros/cmd/caching-backend/downloader
     # ContextDir defaults to the directory with Dockerfile
     dest: ${contextdir}/downloader

@@ -6,4 +6,4 @@ dockerfile: ../../../../go/src/infra/cros/cmd/labtunnel/docker/Dockerfile
 deterministic: true
 
 build:
-  - go_binary: infra/cros/cmd/labtunnel
+  - go_binary: go.chromium.org/infra/cros/cmd/labtunnel

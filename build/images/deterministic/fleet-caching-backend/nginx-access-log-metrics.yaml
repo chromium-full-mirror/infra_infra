@@ -6,6 +6,6 @@ dockerfile: ../../../../go/src/infra/cros/cmd/caching-backend/nginx-access-log-m
 deterministic: true
 
 build:
-  - go_binary: infra/cros/cmd/caching-backend/nginx-access-log-metrics
+  - go_binary: go.chromium.org/infra/cros/cmd/caching-backend/nginx-access-log-metrics
   # ContextDir defaults to the directory with Dockerfile
     dest: ${contextdir}/nginx-access-log-metrics

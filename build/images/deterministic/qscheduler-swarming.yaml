@@ -8,5 +8,5 @@ sources:
   - ../../../go/src/infra/qscheduler
 
 build:
-  - go_binary: infra/qscheduler/service/cmd/qscheduler-swarming
+  - go_binary: go.chromium.org/infra/qscheduler/service/cmd/qscheduler-swarming
     dest: ${contextdir}/qscheduler-swarming

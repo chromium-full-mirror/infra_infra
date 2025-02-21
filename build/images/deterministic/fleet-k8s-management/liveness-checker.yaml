@@ -6,6 +6,6 @@ dockerfile: ../../../../go/src/infra/cros/cmd/k8s-management/liveness-checker/do
 deterministic: true
 
 build:
-  - go_binary: infra/cros/cmd/k8s-management/liveness-checker
+  - go_binary: go.chromium.org/infra/cros/cmd/k8s-management/liveness-checker
     # ContextDir defaults to the directory with Dockerfile
     dest: ${contextdir}/liveness-checker

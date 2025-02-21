@@ -8,5 +8,5 @@ sources:
   - ../../../../go/src/infra/vm_leaser
 
 build:
-  - go_binary: infra/vm_leaser/cmd/vm_leaser
+  - go_binary: go.chromium.org/infra/vm_leaser/cmd/vm_leaser
     dest: ${contextdir}/vm-leaser-service

@@ -6,6 +6,6 @@ dockerfile: ../../../../go/src/infra/cros/cmd/caching-backend/backend-scanner/do
 deterministic: true
 
 build:
-  - go_binary: infra/cros/cmd/caching-backend/backend-scanner
+  - go_binary: go.chromium.org/infra/cros/cmd/caching-backend/backend-scanner
     # ContextDir defaults to the directory with Dockerfile
     dest: ${contextdir}/backend-scanner

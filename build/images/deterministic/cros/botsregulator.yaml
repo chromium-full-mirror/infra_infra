@@ -8,4 +8,4 @@ sources:
   - ../../../../go/src/infra/cros/botsregulator
 
 build:
-  - go_binary: infra/cros/botsregulator/cmd/botsregulator
+  - go_binary: go.chromium.org/infra/cros/botsregulator/cmd/botsregulator

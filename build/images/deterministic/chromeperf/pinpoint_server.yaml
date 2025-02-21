@@ -8,5 +8,5 @@ sources:
   - ../../../../go/src/infra/chromeperf
 
 build:
-  - go_binary: infra/chromeperf/pinpoint_server
+  - go_binary: go.chromium.org/infra/chromeperf/pinpoint_server
     dest: ${contextdir}/bin/pinpoint_server

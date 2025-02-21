@@ -20,4 +20,4 @@ sources:
   - ../../../../go/src/infra/cros/fleetcost
 
 build:
-  - go_binary: infra/cros/fleetcost/cmd/fleetcostserver
+  - go_binary: go.chromium.org/infra/cros/fleetcost/cmd/fleetcostserver
