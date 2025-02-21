@@ -19,7 +19,7 @@ def GetCustomFieldMap() -> dict[str, str]:
   client = datastore.Client()
   results = client.query(kind='RedirectToCustomFields').fetch()
   for result in results:
-    custom_fields_map[result.id] = {
+    custom_fields_map[result.key.name] = {
         'monorail_prefix': result.get('MonorailPrefix'),
         'custom_field_id': result.get('CustomFieldId'),
         'expected_value_type': result.get('ExpectedValueType'),

@@ -4,7 +4,7 @@
 
 import collections
 
-Key = collections.namedtuple('Key', ('kind', 'id'))
+Key = collections.namedtuple('Key', ('kind', 'name'))
 
 
 class Entity(dict):
@@ -15,10 +15,6 @@ class Entity(dict):
   @property
   def key(self):
     return self._key
-
-  @property
-  def id(self):
-    return self._key.id
 
 
 class Query:
@@ -41,8 +37,8 @@ class Client:
   def __init__(self):
     self._store = {}
 
-  def key(self, kind: str, key_id: str) -> Key:
-    return Key(kind, key_id)
+  def key(self, kind: str, name: str) -> Key:
+    return Key(kind, name)
 
   def get(self, key: Key) -> Entity:
     return self._store.get(key)
