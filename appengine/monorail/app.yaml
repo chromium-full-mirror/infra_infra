@@ -2,8 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-runtime: python39
-app_engine_apis: true
+runtime: python311
 
 entrypoint: gunicorn -b :$PORT --timeout 60 --workers ${WORKERS} main:app
 
@@ -20,25 +19,20 @@ automatic_scaling:
 
 luci_gae_vars:
   monorail-dev:
-    WORKERS: "1"
+    WORKERS: "2"
     MIN_IDLE_INSTANCES: "1"
-    MAX_INSTANCES: "10"
+    MAX_INSTANCES: "2"
     MAX_PENDING_LATENCY: "automatic"
   monorail-staging:
-    WORKERS: "1"
+    WORKERS: "2"
     MIN_IDLE_INSTANCES: "1"
-    MAX_INSTANCES: "20"
+    MAX_INSTANCES: "5"
     MAX_PENDING_LATENCY: "0.2s"
   monorail-prod:
-    WORKERS: "8"
-    MIN_IDLE_INSTANCES: "5"
-    MAX_INSTANCES: "100"
+    WORKERS: "2"
+    MIN_IDLE_INSTANCES: "3"
+    MAX_INSTANCES: "10"
     MAX_PENDING_LATENCY: "0.2s"
-
-env_variables:
-  # https://cloud.google.com/appengine/docs/standard/python3/services/access#compatibility
-  MEMCACHE_USE_CROSS_COMPATIBLE_PROTOCOL: "True"
-  NDB_USE_CROSS_COMPATIBLE_PICKLE_PROTOCOL: "True"
 
 handlers:
 - url: /.*

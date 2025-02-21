@@ -39,7 +39,7 @@ serve_remote:
 	$(GAE_PY) devserver -A monorail-staging -o -- $(DEV_APPSERVER_FLAGS)
 
 pytest:
-	vpython3 test.py
+	vpython3 -m pytest
 
 pylint:
 	pylint --py3k *py {$(PY_DIRS)}{/,/test/}*py

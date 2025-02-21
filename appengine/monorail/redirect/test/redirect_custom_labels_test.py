@@ -3,82 +3,81 @@
 # found in the LICENSE file.
 
 import unittest
-
-from google.appengine.ext import ndb
-from google.appengine.ext import testbed
+from unittest import mock
 
 from redirect import redirect_custom_labels
+from redirect.test import datastore_stub
 
 
 class TestRedirectCustomLabelsToHotlists(unittest.TestCase):
 
-  def setUp(self):
-    self.testbed = testbed.Testbed()
-    self.testbed.activate()
-    self.testbed.init_datastore_v3_stub()
-    self.testbed.init_memcache_stub()
-    ndb.get_context().clear_cache()
-
-  def tearDown(self):
-    self.testbed.deactivate()
-
-  def testGetRedirectCustomLabels(self):
-    redirector = redirect_custom_labels.RedirectCustomLabelsToHotlists
-    redirector(
-        ProjectName='a', MonorailLabel='test', HotlistId='12345',
-        id='a:test').put()
-
-    t = redirector.Get('a', 'test')
+  @mock.patch(
+      'google.cloud.datastore.Client',
+      datastore_stub.MakeClient(
+          {
+              datastore_stub.Key('RedirectCustomLabelsToHotlists', 'a:test'):
+                  {
+                      'ProjectName': 'a',
+                      'MonorailLabel': 'test',
+                      'HotlistId': '12345'
+                  },
+          }))
+  def testGetRedirectCustomLabelsAsdf(self):
+    t = redirect_custom_labels.GetHotlist('a', 'test')
     self.assertEqual(t, '12345')
 
+  @mock.patch('google.cloud.datastore.Client', datastore_stub.Client)
   def testGetRedirectCustomValueWithoutValue(self):
-    redirector = redirect_custom_labels.RedirectCustomLabelsToHotlists
-
-    t = redirector.Get('a', 'test')
+    t = redirect_custom_labels.GetHotlist('a', 'test')
     self.assertEqual(t, None)
 
+  @mock.patch(
+      'google.cloud.datastore.Client',
+      datastore_stub.MakeClient(
+          {
+              datastore_stub.Key('RedirectCustomLabelsToHotlists', 'a:test1'):
+                  {
+                      'ProjectName': 'a',
+                      'MonorailLabel': 'test1',
+                      'HotlistId': '12345'
+                  },
+              datastore_stub.Key('RedirectCustomLabelsToHotlists', 'a:test2'):
+                  {
+                      'ProjectName': 'a',
+                      'MonorailLabel': 'test1',
+                      'HotlistId': '23456'
+                  },
+          }))
   def testGetRedirectCustomValueOnlyReturnTheFirstMatch(self):
     # There should be only one match in db.
     # This may change if we decided to support multiple value mapping.
-    redirector = redirect_custom_labels.RedirectCustomLabelsToHotlists
-    redirector(
-        ProjectName='a', MonorailLabel='test1', HotlistId='12345',
-        id='a:test1').put()
-    redirector(
-        ProjectName='a', MonorailLabel='test2', HotlistId='23456',
-        id='a:test2').put()
-    t = redirector.Get('a', 'test1')
+    t = redirect_custom_labels.GetHotlist('a', 'test1')
     self.assertEqual(t, '12345')
 
 
 class TestRedirectToCustomFields(unittest.TestCase):
 
-  def setUp(self):
-    self.testbed = testbed.Testbed()
-    self.testbed.activate()
-    self.testbed.init_datastore_v3_stub()
-    self.testbed.init_memcache_stub()
-    ndb.get_context().clear_cache()
-
-  def tearDown(self):
-    self.testbed.deactivate()
-
+  @mock.patch(
+      'google.cloud.datastore.Client',
+      datastore_stub.MakeClient(
+          {
+              datastore_stub.Key('RedirectToCustomFields', 'a:test-1-'):
+                  {
+                      'ProjectName': 'a',
+                      'MonorailPrefix': 'test-',
+                      'CustomFieldId': '12345',
+                      'ExpectedValueType': 'numeric',
+                  },
+              datastore_stub.Key('RedirectToCustomFields', 'a:test-2-'):
+                  {
+                      'ProjectName': 'a',
+                      'MonorailPrefix': 'test-',
+                      'CustomFieldId': '23456',
+                      'ProcessRedirectValue': 'capitalize',
+                  },
+          }))
   def testGetRedirectToCustomFields(self):
-    redirector = redirect_custom_labels.RedirectToCustomFields
-    redirector(
-        ProjectName='a',
-        MonorailPrefix='test-',
-        CustomFieldId='12345',
-        ExpectedValueType='numeric',
-        id='a:test-1-').put()
-    redirector(
-        ProjectName='a',
-        MonorailPrefix='test-',
-        CustomFieldId='23456',
-        ProcessRedirectValue='capitalize',
-        id='a:test-2-').put()
-
-    t = redirector.GetAll()
+    t = redirect_custom_labels.GetCustomFieldMap()
     self.assertEqual(
         t, {
             'a:test-1-':

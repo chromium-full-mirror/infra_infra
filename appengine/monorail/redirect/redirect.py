@@ -64,7 +64,7 @@ def GenerateRedirectApp():
 
   # RESTful API that maps Monorail local issue IDs to redirected issue IDs.
   def MappingApi(project_name: str, local_id: int) -> str:
-    redirect_id = redirectissue.RedirectIssue.Get(project_name, local_id)
+    redirect_id = redirectissue.Get(project_name, local_id)
     if redirect_id:
       return str(redirect_id)
     flask.abort(404)
@@ -94,7 +94,7 @@ def _GenerateIssueDetailRedirectURL(local_id: int, project_name: str):
     print(json.dumps({**log, 'type': 'passthrough', 'redirect_id': local_id}))
     return redirect_base_url + '/' + str(local_id)
 
-  tracker_id = redirectissue.RedirectIssue.Get(project_name, local_id)
+  tracker_id = redirectissue.Get(project_name, local_id)
   if not tracker_id:
     print(json.dumps({**log, 'type': 'unknown_issue'}))
     return None

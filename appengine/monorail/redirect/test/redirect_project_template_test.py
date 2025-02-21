@@ -3,41 +3,34 @@
 # found in the LICENSE file.
 
 import unittest
-
-from google.appengine.ext import ndb
-from google.appengine.ext import testbed
+from unittest import mock
 
 from redirect import redirect_project_template
+from redirect.test import datastore_stub
 
 
 class TestRedirectCustomValue(unittest.TestCase):
 
-  def setUp(self):
-    self.testbed = testbed.Testbed()
-    self.testbed.activate()
-    self.testbed.init_datastore_v3_stub()
-    self.testbed.init_memcache_stub()
-    ndb.get_context().clear_cache()
-
-  def tearDown(self):
-    self.testbed.deactivate()
-
+  @mock.patch(
+      'google.cloud.datastore.Client',
+      datastore_stub.MakeClient(
+          {
+              datastore_stub.Key(
+                  'RedirectProjectTemplate', 'a:default template'):
+                  {
+                      'ProjectName': 'a',
+                      'MonorailTemplateName': 'default template',
+                      'RedirectComponentID': '123',
+                      'RedirectTemplateID': '456',
+                  }
+          }))
   def testGetRedirectProjectTemplate(self):
-    redirectProjectTemplate = redirect_project_template.RedirectProjectTemplate
-    redirectProjectTemplate(
-        ProjectName='a',
-        MonorailTemplateName='default template',
-        RedirectComponentID='123',
-        RedirectTemplateID='456',
-        id='a:default template').put()
-
-    (t, v) = redirectProjectTemplate.Get('a', 'default template')
+    (t, v) = redirect_project_template.Get('a', 'default template')
     self.assertEqual(t, '123')
     self.assertEqual(v, '456')
 
+  @mock.patch('google.cloud.datastore.Client', datastore_stub.Client)
   def testGetRedirectProjectTemplateWithoutValue(self):
-    redirectProjectTemplate = redirect_project_template.RedirectProjectTemplate
-
-    (t, v) = redirectProjectTemplate.Get('a', 'default template')
+    (t, v) = redirect_project_template.Get('a', 'default template')
     self.assertEqual(t, None)
     self.assertEqual(v, None)

@@ -109,9 +109,8 @@ def GetNewIssueParams(params: MultiDict, project_name: str):
   # Get component and template id.
   template_name = params.get('template', type=str)
   if template_name:
-    redirect_component_id, redirect_template_id = (
-        redirect_project_template.RedirectProjectTemplate.Get(
-            project_name, template_name))
+    redirect_component_id, redirect_template_id = redirect_project_template.Get(
+        project_name, template_name)
     if redirect_component_id:
       new_issue_params.append(('component', redirect_component_id))
       has_append_component = True
@@ -126,9 +125,8 @@ def GetNewIssueParams(params: MultiDict, project_name: str):
     # exists. The redirect is base on first value on the list.
     if components and not has_append_component:
       component = components[0]
-      redirect_component_id, _ = (
-          redirect_project_template.RedirectProjectTemplate.Get(
-              project_name, component))
+      redirect_component_id, _ = redirect_project_template.Get(
+          project_name, component)
       if redirect_component_id:
         new_issue_params.append(('component', redirect_component_id))
         has_append_component = True
@@ -253,8 +251,7 @@ def _GenerateTrackerSearchKeyValuePair(project_name, key, value):
 
 
 def _GetCustomLabelsRedirectInfo(request_type, project_name, label):
-  hotlist_id = redirect_custom_labels.RedirectCustomLabelsToHotlists.Get(
-      project_name, label)
+  hotlist_id = redirect_custom_labels.GetHotlist(project_name, label)
 
   if not hotlist_id:
     # Check if the label is mapped to a custom field.
@@ -270,7 +267,7 @@ def _GetCustomLabelsRedirectInfo(request_type, project_name, label):
 
 def _GetCustomLabelsToCustomFieldRedirectInfo(
     request_type, project_name, label):
-  custom_fields_map = redirect_custom_labels.RedirectToCustomFields.GetAll()
+  custom_fields_map = redirect_custom_labels.GetCustomFieldMap()
 
   lookup_key = project_name + ":" + label
   matches = [

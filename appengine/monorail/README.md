@@ -18,7 +18,7 @@ make pytest
 To run a single test:
 
 ```
-vpython3 test.py services/test/issue_svc_test.py::IssueServiceTest::testUpdateIssues_Normal
+vpython3 -m pytest services/test/issue_svc_test.py::IssueServiceTest::testUpdateIssues_Normal
 ```
 
 ## Release process

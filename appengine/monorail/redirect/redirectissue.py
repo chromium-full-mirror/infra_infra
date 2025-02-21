@@ -2,19 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from google.appengine.ext import ndb
+from google.cloud import datastore
 
 
-class RedirectIssue(ndb.Model):
-  """Represents a issue redirect information."""
-  ProjectName = ndb.StringProperty()
-  MonorailLocalID = ndb.StringProperty()
-  RedirectID = ndb.StringProperty()
-
-  @classmethod
-  def Get(cls, project: str, issue_local_id: int) -> int:
-    key = project + ':' + str(issue_local_id)
-    redirect_issue_entity = ndb.Key('RedirectIssue', key).get()
-    if not redirect_issue_entity:
-      return None
-    return int(redirect_issue_entity.RedirectID)
+def Get(project: str, issue_local_id: int) -> int:
+  client = datastore.Client()
+  key = project + ':' + str(issue_local_id)
+  redirect_issue_entity = client.get(client.key('RedirectIssue', key))
+  if not redirect_issue_entity:
+    return None
+  return int(redirect_issue_entity.get('RedirectID'))
