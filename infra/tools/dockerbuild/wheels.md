@@ -6291,6 +6291,7 @@ wheel: <
 * *mac-x64-py3.8*
 * *manylinux-x64-py3.11*
 * *manylinux-x64-py3.8*
+* *windows-x64-py3.11*
 
 ## **multidict**
 
@@ -12130,6 +12131,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/websocket_client-py2_py3"
   version: "version:0.40.0"
+>
+```
+
+
+* *universal*
+
+### 1.8.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/websocket_client-py2_py3"
+  version: "version:1.8.0"
 >
 ```
 
