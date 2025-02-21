@@ -41,6 +41,14 @@ paths:
       https://chromium.googlesource.com/infra/luci/gae/+/main{/dir}
       https://chromium.googlesource.com/infra/luci/gae/+/main{/dir}/{file}#{line}
 
+  /infra:
+    repo: https://chromium.googlesource.com/infra/infra/go/src/infra
+    vcs: git
+    display: >
+      https://chromium.googlesource.com/infra/infra/go/src/infra
+      https://chromium.googlesource.com/infra/infra/go/src/infra/+/main{/dir}
+      https://chromium.googlesource.com/infra/infra/go/src/infra/+/main{/dir}/{file}#{line}
+
   /luci:
     repo: https://chromium.googlesource.com/infra/luci/luci-go
     vcs: git
