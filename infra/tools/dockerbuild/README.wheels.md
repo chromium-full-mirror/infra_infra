@@ -34,7 +34,7 @@ flow for common and less-common situations.
 1. Once you are done adding the wheel, run `vpython3 -m infra.tools.dockerbuild wheel-dump` to update `wheels.md` before creating your CL.
 1. The CL tryjobs will verify that the wheel builds on all of the platforms.
 1. Request a review from one of the [OWNERS](https://source.chromium.org/chromium/infra/infra/+/main:infra/tools/dockerbuild/OWNERS)
-1. Once the CL is committed, the [production builders](https://ci.chromium.org/p/infra-internal/g/wheel_builders/builders) will build and upload the wheel to [CIPD](https://chrome-infra-packages.appspot.com/p/infra/python/wheels).
+1. Once the CL is committed, the [production builders](https://ci.chromium.org/p/infra-internal/g/wheel_builders/builders) will build and upload the wheel to [CIPD](https://chrome-infra-packages.appspot.com/p/infra/python/wheels). If you wish to test the wheel ahead of submission, see [Uploading new wheel to experimental](#uploading-new-wheel-to-experimental).
 
 **Can't get the wheel to build using these instructions?**
 
@@ -205,3 +205,43 @@ A short example:
 This will apply the two patches:
 * `patches/scandir-1.9.0-some-fix.patch`
 * `patches/scandir-1.9.0-another-change.patch`
+
+# Uploading new wheel to experimental
+
+Only the bots can write to
+https://chrome-infra-packages.appspot.com/p/infra/python/wheels/, but everyone
+can write to https://chrome-infra-packages.appspot.com/p/experimental/. So
+before submitting a CL that creates a new wheel, you can upload it to
+https://chrome-infra-packages.appspot.com/p/experimental/username_at_chromium.org/...
+and point your .vpython file to it for testing. This can be achieved with the
+commands below.
+
+```
+# From the root of the infra repo, run the upload command once. This will fail
+# but create the necessary .pkg file. Make sure to replace
+# websocket_client-1.8.0 with your wheel name.
+$ vpython3 \
+  -m \
+  infra.tools.dockerbuild \
+  --root \
+  $PWD/.dockerbuild \
+  --upload-sources \
+  wheel-build \
+  --wheel_re websocket_client-1.8.0 \
+  --upload
+```
+Run `ls .dockerbuild/packages` and find the name of the pkg file, e.g.
+`websocket_client-1.8.0-py2.py3-none-any.whl.pkg`.
+```
+$ mkdir experimental_wheel && cd experimental_wheel
+$ unzip ../.dockerbuild/packages/websocket_client-1.8.0-py2.py3-none-any.whl.pkg
+$ chmod 644 .cipdpkg/manifest.json
+```
+Now, assuming your email is username@chromium.org, open .cipdpkg/manifest.json
+and prepend experimental/username_at_chromium.org/ to the package name. Finally,
+adjust the version number below and run:
+```
+$ zip -r ../experimental_wheel.pkg .
+$ cipd pkg-register ../experimental_wheel.pkg -tag version:1.18.0
+
+```
