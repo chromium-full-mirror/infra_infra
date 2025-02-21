@@ -170,7 +170,7 @@ func TestBootstrapPropertiesPropertiesValidation(t *testing.T) {
 							},
 							"ref": "refs/heads/top-level"
 						},
-						"properties_file": "go.chromium.org/infra/config/bucket/builder/properties.json"
+						"properties_file": "infra/config/bucket/builder/properties.json"
 					}`))
 
 				err := validate(props, "$test")
@@ -235,7 +235,7 @@ func TestBootstrapPropertiesPropertiesValidation(t *testing.T) {
 							},
 							"config_repo_path": "path/to/dependency"
 						},
-						"properties_file": "go.chromium.org/infra/config/generated/builders/bucket/builder/properties.json"
+						"properties_file": "infra/config/generated/builders/bucket/builder/properties.json"
 					}`))
 
 				err := validate(props, "$test")
@@ -257,7 +257,7 @@ func TestBootstrapPropertiesPropertiesValidation(t *testing.T) {
 							},
 							"config_repo_submodule_path": "submodule/path"
 						},
-						"properties_file": "go.chromium.org/infra/config/generated/builders/bucket/builder/properties.json"
+						"properties_file": "infra/config/generated/builders/bucket/builder/properties.json"
 					}`))
 
 				err := validate(props, "$test")

@@ -151,8 +151,8 @@ func TestEnsure(t *testing.T) {
 					Instances: map[string]*PackageInstance{
 						"fake-instance-id": {
 							Contents: map[string]string{
-								"go.chromium.org/infra/config/recipes.cfg": "fake-recipes.cfg",
-								"recipes/foo.py": "fake-recipe-foo",
+								"infra/config/recipes.cfg": "fake-recipes.cfg",
+								"recipes/foo.py":           "fake-recipe-foo",
 							},
 						},
 					},
@@ -169,8 +169,8 @@ func TestEnsure(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			layout := collect(cipdRoot, "fake-subdir")
 			assert.Loosely(t, layout, should.Resemble(map[string]string{
-				"go.chromium.org/infra/config/recipes.cfg": "fake-recipes.cfg",
-				"recipes/foo.py": "fake-recipe-foo",
+				"infra/config/recipes.cfg": "fake-recipes.cfg",
+				"recipes/foo.py":           "fake-recipe-foo",
 			}))
 		})
 

@@ -36,7 +36,7 @@ func (i *retryIterator) Next(ctx context.Context, err error) time.Duration {
 	return retry.Stop
 }
 
-var ctxKey = "go.chromium.org/infra/chromium/bootstrapper/clients/gob.ExecuteRetriesEnabled"
+var ctxKey = "infra/chromium/bootstrapper/clients/gob.ExecuteRetriesEnabled"
 
 // EnableRetries enables retries for Execute (the default behavior).
 func EnableRetries(ctx context.Context) context.Context {

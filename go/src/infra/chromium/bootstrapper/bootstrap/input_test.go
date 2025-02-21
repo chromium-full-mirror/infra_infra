@@ -73,7 +73,7 @@ func TestInput(t *testing.T) {
 					},
 					"ref": "refs/heads/top-level"
 				},
-				"properties_file": "go.chromium.org/infra/config/fake-bucket/fake-builder/properties.json"
+				"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 			}`)
 
 			t.Run("for incorrectly typed $bootstrap/exe", func(t *ftt.Test) {
@@ -105,7 +105,7 @@ func TestInput(t *testing.T) {
 					},
 					"ref": "refs/heads/top-level"
 				},
-				"properties_file": "go.chromium.org/infra/config/fake-bucket/fake-builder/properties.json"
+				"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 			}`)
 			setBootstrapExeProperties(build, `{
 				"exe": {
@@ -136,7 +136,7 @@ func TestInput(t *testing.T) {
 						},
 						"ref": "refs/heads/top-level"
 					},
-					"properties_file": "go.chromium.org/infra/config/fake-bucket/fake-builder/properties.json"
+					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 				}`)))
 				assert.That(t, input.exeProperties, should.Match(mustParseBootstrapExeProperties(`{
 					"exe": {
@@ -218,7 +218,7 @@ func TestInput(t *testing.T) {
 						},
 						"ref": "refs/heads/top-level"
 					},
-					"properties_file": "go.chromium.org/infra/config/fake-bucket/fake-builder/properties.json"
+					"properties_file": "infra/config/fake-bucket/fake-builder/properties.json"
 				}`)))
 			})
 

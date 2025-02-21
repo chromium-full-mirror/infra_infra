@@ -35,7 +35,7 @@ var _ CasClient = (*client.Client)(nil)
 // CasClientFactory creates the client for downloading blobs from CAS.
 type CasClientFactory func(ctx context.Context, instance string) (CasClient, error)
 
-var ctxKey = "go.chromium.org/infra/chromium/bootstrapper/recipe.CasClientFactory"
+var ctxKey = "infra/chromium/bootstrapper/recipe.CasClientFactory"
 
 // UseCasClientFactory returns a context that causes new Client instances to
 // use the given factory when getting the CAS client.

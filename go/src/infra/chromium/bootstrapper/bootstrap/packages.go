@@ -26,7 +26,7 @@ const (
 )
 
 const (
-	depotToolsPackage        = "go.chromium.org/infra/recipe_bundles/chromium.googlesource.com/chromium/tools/depot_tools"
+	depotToolsPackage        = "infra/recipe_bundles/chromium.googlesource.com/chromium/tools/depot_tools"
 	depotToolsPackageVersion = "refs/heads/main"
 )
 
