@@ -18,33 +18,39 @@ import (
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/common"
 )
 
-var G3MoblyFinderType = common.FinderHarness("G3Mobly")
+var TradefedFinderType = common.FinderHarness("Tradefed")
 
-type G3MoblyFinder struct {
+type TradefedFinder struct {
 	*common.AbstractFinder
 }
 
-func matchTestsforG3Mobly(testSuites []*api.TestSuite, log *log.Logger) ([]*api.TestCaseMetadata, error) {
-	src, err := getSourceData(context.Background(), "mobly_priv_artifacts/out")
+func matchTestsForTradefed(testSuites []*api.TestSuite, log *log.Logger) ([]*api.TestCaseMetadata, error) {
+	src, err := getTFSourceData(context.Background(), "cros-xts-metadata")
 	if err != nil {
 		log.Println("Unable to fetch data from GCS: ", err)
 	}
 	// The source data will not have direct access to the actual proto bindings; thus is in a loose json format
 	// we will translate this into the strict proto format here.
-	metadata := translateG3SrcToMetadata(src)
+	metadata := translateTFSrcToMetadata(src)
+	log.Println("Looked for test cases in: ", metadata)
 
 	return finder.MatchedTestsForSuites(metadata, testSuites)
 }
 
-func (ex *G3MoblyFinder) FindTestsAB() (*api.InternalTestplan, error) {
+func (ex *TradefedFinder) FindTestsAB() (*api.InternalTestplan, error) {
+	ex.Logger.Println("Looking for TF Tests!")
 	suites, err := TPtoSuite(ex.Testplan)
 	if err != nil {
 		ex.Logger.Println("unable to convert testplan to suite: ", err)
 		return nil, err
 	}
-	matchingTests, err := matchTestsforG3Mobly(suites, ex.Logger)
+	matchingTests, err := matchTestsForTradefed(suites, ex.Logger)
 	if err != nil {
 		ex.Logger.Println("unable to match test:", err)
+	}
+	if len(matchingTests) == 0 {
+		ex.Logger.Println("Found no test cases for: ", suites)
+
 	}
 
 	// Translate the TC metadata schema into CTP testplan schema.
@@ -54,42 +60,23 @@ func (ex *G3MoblyFinder) FindTestsAB() (*api.InternalTestplan, error) {
 	return ex.Testplan, nil
 }
 
-func NewG3MoblyFinder(ctx context.Context, req *api.InternalTestplan, log *log.Logger) *G3MoblyFinder {
-	absExec := common.NewAbstractFinder(ctx, req, G3MoblyFinderType, log)
-	return &G3MoblyFinder{AbstractFinder: absExec}
+func NewTradefedFinder(ctx context.Context, req *api.InternalTestplan, log *log.Logger) *TradefedFinder {
+	absExec := common.NewAbstractFinder(ctx, req, TradefedFinderType, log)
+	return &TradefedFinder{AbstractFinder: absExec}
 }
 
-func getSourceData(ctx context.Context, gcsBasePath string) ([][]byte, error) {
+func getTFSourceData(ctx context.Context, gcsBasePath string) ([][]byte, error) {
 	client, err := storage.NewClient(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("storage.NewClient: %w", err)
 	}
 	defer client.Close()
 
-	bucketName, pf, err := common.ExtractBucketAndPrefixFromPath(gcsBasePath)
-	if err != nil {
-		return nil, err
-	}
+	bucket := client.Bucket(gcsBasePath)
 
-	bucket := client.Bucket(bucketName)
-
-	// Currently G3Mobly content is fetched off the latest.
-	// TODO, we probably should expose a way to pass in a desired path to allow repeatability on tests here.
-	newestDir, err := common.FindNewestDirInGcsBucket(ctx, gcsBasePath, bucket, pf)
-	if err != nil {
-		return nil, err
-	}
-	data, err := common.PullAllFilesFromGcsDir(ctx, bucket, newestDir, ".json")
+	data, err := common.PullAllFilesFromGcsDir(ctx, bucket, "", "latest.json")
 	if err != nil {
 		return nil, err
 	}
 	return data, nil
-}
-
-func TPtoSuite(req *api.InternalTestplan) ([]*api.TestSuite, error) {
-	testSuites, err := common.TestSuiteFromTestplan(req)
-	if err != nil {
-		return nil, err
-	}
-	return testSuites, nil
 }

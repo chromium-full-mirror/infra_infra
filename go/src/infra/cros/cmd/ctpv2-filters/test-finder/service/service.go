@@ -17,6 +17,7 @@ import (
 
 func FindTests(ctx context.Context, req *api.InternalTestplan, log *log.Logger) error {
 	finders := getFindersFromRequest(ctx, req, log)
+	log.Println("In Find tests.")
 	allResults := []*api.InternalTestplan{}
 	for _, finder := range finders {
 		rspn, err := finder.FindTestsAB()
@@ -35,10 +36,10 @@ func FindTests(ctx context.Context, req *api.InternalTestplan, log *log.Logger) 
 func getFindersFromRequest(ctx context.Context, req *api.InternalTestplan, log *log.Logger) []common.FinderInterface {
 	g3MoblyFinder := finders.NewG3MoblyFinder(ctx, req, log)
 	// Coming in a follow up CL
-	// internalTFFinder := finders.NewTFFinder(ctx, req, log)
+	internalTFFinder := finders.NewTradefedFinder(ctx, req, log)
 
 	// For now, we will use all. To be adjusted.
 	// TODO implement; currently just building up the logical flow + signatures.
-	finders := []common.FinderInterface{g3MoblyFinder}
+	finders := []common.FinderInterface{g3MoblyFinder, internalTFFinder}
 	return finders
 }

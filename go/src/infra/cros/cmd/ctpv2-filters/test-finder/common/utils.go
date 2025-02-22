@@ -182,5 +182,10 @@ func AddFlexibleTFFlag(tp *api.InternalTestplan) {
 		Flag:  "FlexibleTF",
 		Value: "true",
 	})
-	tp.SuiteInfo.SuiteMetadata.ExecutionMetadata = existingMD
+	if tp.GetSuiteInfo().GetSuiteMetadata() != nil {
+		tp.SuiteInfo.SuiteMetadata.ExecutionMetadata = existingMD
+	} else {
+
+		tp.SuiteInfo.SuiteMetadata = &api.SuiteMetadata{ExecutionMetadata: existingMD}
+	}
 }
