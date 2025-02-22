@@ -9,10 +9,23 @@ linters:
     - gci
     - stylecheck
 
+  disable:
+    # Some projects are not ineffassign-clean yet.
+    - ineffassign
+    # There are many, many unused functions.
+    - unused
+    # There are also many unchecked errors.
+    - errcheck
+
 linters-settings:
   # TODO(gregorynisbet): Use default config here.
   errorlint:
+    # Moving %v or %s to %w is a breaking API change.
     errorf: false
+    # == is okay on errors (for now)
+    comparison: false
+    # type switches on errors are okay (for now)
+    asserts: false
 
   # https://golangci-lint.run/usage/linters/#gci
   gci:
@@ -40,6 +53,19 @@ linters-settings:
   staticcheck:
     checks:
       - SA1000 # Invalid regex
+
+  # Go vet exposes a disable switch, so we can enable everything and disable stuff in a piecemeal fashion.
+  govet:
+    disable:
+      # Too many cases of copying protos. For example, in tricium and, sadly, UFS.
+      - copylocks
+
+  # Start the gosimple config off slow.
+  gosimple:
+    checks:
+      # Omit comparison with boolean constant.
+      # https://staticcheck.dev/docs/checks/#S1002
+      - S1002
 
 # https://golangci-lint.run/usage/configuration/#issues-configuration
 issues:

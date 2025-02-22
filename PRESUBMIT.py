@@ -149,12 +149,6 @@ def GoCheckers(input_api, output_api):
           kwargs={'stdin': stdin}),
     )
 
-    # Isinstance doesn't work since the GitChange class isn't accessible.
-    if hasattr(input_api.change, 'UpstreamBranch'):
-      since = ['--new-from-rev', input_api.change.UpstreamBranch()]
-    else:
-      since = []
-
   # In case of multiple files in the same directory, use dict to dedupe.
   dirs = {
       os.path.dirname(f.AbsoluteLocalPath()): os.path.dirname(f.LocalPath())
@@ -180,7 +174,7 @@ def GoCheckers(input_api, output_api):
             # from the directory you're trying to lint.
             cmd=[
                 'golangci-lint', 'run', '--timeout=15m',
-                '--allow-parallel-runners', *since, '.'
+                '--allow-parallel-runners', '.'
             ],
             kwargs={'cwd': absolute}))
 
