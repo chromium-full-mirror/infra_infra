@@ -3,6 +3,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -98,7 +99,7 @@ func fetchTransferConfigs(ctx context.Context, client *datatransfer.Client, proj
 	configs := make(map[string]*datatransferpb.TransferConfig)
 	for {
 		config, err := it.Next()
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {

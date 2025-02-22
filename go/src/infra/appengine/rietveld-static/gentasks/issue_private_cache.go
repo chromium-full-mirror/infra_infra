@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"errors"
 	"log"
 
 	"cloud.google.com/go/datastore"
@@ -19,7 +20,7 @@ func NewIssuePrivateCacheMap(ctx context.Context, dsClient *datastore.Client) Is
 	doc := struct{}{}
 	for t := dsClient.Run(ctx, q); ; {
 		key, err := t.Next(doc)
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {

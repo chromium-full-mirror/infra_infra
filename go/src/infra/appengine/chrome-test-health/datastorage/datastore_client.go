@@ -95,13 +95,13 @@ func (c DataStoreClient) Get(ctx context.Context, result interface{}, entityName
 
 	err := c.datastoreClient.Get(ctx, entityKeyLiteral, result)
 	if err != nil {
-		if err == datastore.ErrInvalidEntityType {
+		if errors.Is(err, datastore.ErrInvalidEntityType) {
 			return fmt.Errorf("%s: The result argument is likely an invalid type", ErrInvalidType)
 		}
-		if err == datastore.ErrInvalidKey {
+		if errors.Is(err, datastore.ErrInvalidKey) {
 			return ErrInvalidKey
 		}
-		if err == datastore.ErrNoSuchEntity {
+		if errors.Is(err, datastore.ErrNoSuchEntity) {
 			return ErrEntityNotFound
 		}
 		return ErrInternal

@@ -6,6 +6,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -95,7 +96,7 @@ func scanner(ctx context.Context, dsClient *datastore.Client, kind string,
 	t := dsClient.Run(ctx, q)
 	for i := 1; ; i++ {
 		key, err := t.Next(doc)
-		if err == iterator.Done {
+		if errors.Is(err, iterator.Done) {
 			break
 		}
 		if err != nil {
