@@ -10773,6 +10773,18 @@ wheel: <
 
 * *universal*
 
+### 1.17.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/six-py2_py3"
+  version: "version:1.17.0"
+>
+```
+
+
+* *universal*
+
 ## **smmap2**
 
 ### 2.0.3

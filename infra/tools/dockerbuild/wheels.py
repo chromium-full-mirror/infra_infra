@@ -2602,6 +2602,7 @@ SPECS.update({
         Universal('six', '1.14.0'),
         Universal('six', '1.15.0'),
         Universal('six', '1.16.0'),
+        Universal('six', '1.17.0'),
         Universal('smmap2', '2.0.3'),
         Universal('sniffio', '1.2.0', pyversions=['py3']),
         Universal('sniffio', '1.3.0', pyversions=['py3']),
