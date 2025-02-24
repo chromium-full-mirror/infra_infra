@@ -744,8 +744,8 @@ go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/ctp 
 go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/ctp v0.0.0-20241114171457-3c3ac99d1157/go.mod h1:mP+pnPJ8U3Ps18aQr/ic2ZdhRQaGhCaoKPJKevbCMKo=
 go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/lro v0.0.0-20241114171457-3c3ac99d1157 h1:CbAdYVkh9R89A8x1eyt0ZW7NOqPQX+nhbBXoh+cp6ek=
 go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/lro v0.0.0-20241114171457-3c3ac99d1157/go.mod h1:tSvAX6a7PcR9fZ6i5Q9a16QN/LMhjeGH4qnKnIeDhHY=
-go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20250221023157-b639573204d2 h1:VWNEidTl8/8mfa7L5VjfJvU0Cb7sq0ui8Ie+lJ7ZIK4=
-go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20250221023157-b639573204d2/go.mod h1:VxplHpYDJfo6o7R2O5pPKBo/dGJcXUAJesuTgYu8Z0I=
+go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20250222035237-f6dac7265759 h1:UQMMZVRssyquhq7MN8GClK3FfadtTcTehYDfQySUm3k=
+go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20250222035237-f6dac7265759/go.mod h1:VxplHpYDJfo6o7R2O5pPKBo/dGJcXUAJesuTgYu8Z0I=
 go.chromium.org/tast/src/go.chromium.org/tast v0.0.0-20241114170151-b736fca5c46d h1:pXAMCoMQbtp7QAhiFeCqY6+ktqiv1y5HrY5IdiBd/mM=
 go.chromium.org/tast/src/go.chromium.org/tast v0.0.0-20241114170151-b736fca5c46d/go.mod h1:DPbLnNqAljH/BVJqWhvwY6tgaJMEyC/5U1XaIkNCgPk=
 go.einride.tech/aip v0.68.0 h1:4seM66oLzTpz50u4K1zlJyOXQ3tCzcJN7I22tKkjipw=
