@@ -31,7 +31,7 @@ type ADBResponse interface {
 func ExecCommand(ctx context.Context, adbClient api.ADBServiceClient, timeout time.Duration, command string, args ...string) (ADBResponse, error) {
 	res, err := RunCommand(ctx, adbClient, timeout, command, args...)
 	if err != nil {
-		return res, errors.Annotate(err, "exec adb command").Err()
+		return res, errors.Annotate(err, "exec adb command %q", command).Err()
 	}
 	if res.GetExitCode() != 0 {
 		return res, errors.Reason("exec adb command: failed with exitcode: %d", res.GetExitCode()).Err()

@@ -34,15 +34,33 @@ func ADBConnect(ctx context.Context, retryCount int, retryinterval time.Duration
 	adbPort := adbTool.Port(ctx)
 	deviceName := fmt.Sprintf("%s:%d", dut.Name, adbPort)
 
+	adbRoot := func() error {
+		_, err := adb.RunCommand(ctx, client, singleRunTimeout, "-s", deviceName, "root")
+		return err
+	}
+
 	if isConnected(ctx, deviceName, client, singleRunTimeout) {
+		// If the device is connected and there is no request to reconnect,
+		// then we need to root service to run commands as the root user.
+		if !forceReconnect {
+			log.Infof(ctx, "Device is already connected, no need to reconnect just root it!")
+			if _, err := adb.RunCommand(ctx, client, singleRunTimeout, "root"); err != nil {
+				log.Debugf(ctx, "Fail to root device: %s", err)
+				log.Debugf(ctx, "Reenforce disconnect first")
+				if err := adbRoot(); err != nil {
+					log.Debugf(ctx, "Fail to root device: %s", err)
+				}
+				forceReconnect = true
+			} else {
+				log.Infof(ctx, "Device rooted!")
+				return nil
+			}
+		}
 		if forceReconnect {
 			log.Infof(ctx, "Device is already listed so we disconnect it first")
 			if _, err := adb.ExecCommand(ctx, client, singleRunTimeout, "disconnect", deviceName); err != nil {
 				log.Debugf(ctx, "Fail to disconnect device: %s", err)
 			}
-		} else {
-			log.Infof(ctx, "Device is already connected, no need to reconnect!")
-			return nil
 		}
 	}
 
@@ -55,7 +73,7 @@ func ADBConnect(ctx context.Context, retryCount int, retryinterval time.Duration
 		if _, err := adb.ExecCommand(ctx, client, singleRunTimeout, "connect", deviceName); err != nil {
 			return errors.Annotate(err, "fail to connect").Err()
 		}
-		if _, err := adb.ExecCommand(ctx, client, singleRunTimeout, "root"); err != nil {
+		if err := adbRoot(); err != nil {
 			return errors.Annotate(err, "fail to root service, event when expected").Err()
 		}
 		if res, err := adb.ExecCommand(ctx, client, singleRunTimeout, "devices"); err != nil {
