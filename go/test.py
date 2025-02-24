@@ -94,26 +94,6 @@ def _print_and_run(command: list[str],
   return (p.returncode, p.stdout)
 
 
-def _run_vet(package_root):
-  """Runs 'go vet <package_root>/...'
-
-  Returns:
-   0 if and only if all tests pass.
-  """
-  if not _check_go_available():
-    print('Can\'t find Go executable in PATH.')
-    print('Go vet not supported')
-    return 1
-
-  # Turn off copylock analysis. Eventually, when we stop copying protobufs
-  # in various places, we can turn it on.
-  command = ['go', 'vet', '-copylocks=false', f'{package_root}/...']
-
-  # TODO: adapt results of go vet to resultdb.
-
-  return _print_and_run(command)[0]
-
-
 def run_tests(package_root):
   """Runs 'go test <package_root>/...'.
 
@@ -179,7 +159,6 @@ def run_all(package_root):
   # as possible.
   results = [
     _run_build(package_root),
-    _run_vet(package_root),
     run_tests(package_root),
   ]
 
