@@ -1,0 +1,11 @@
+package: infra/tricium/legacy_functions/copyright/${platform}
+description: Tricium analyzer checking for the appropriate copyright header
+update_latest_ref: true
+platforms:
+  - linux-amd64
+go_packages:
+  - go.chromium.org/infra/tricium/functions/copyright
+root: ../../go/bin
+data:
+  - file: copyright${exe_suffix}
+  - version_file: .versions/copyright${exe_suffix}.cipd_version
