@@ -455,5 +455,8 @@ func ExtractDutToPush(ctx context.Context, b *swarmingv2.BotInfo, dims strpair.M
 		}
 		logging.Infof(ctx, "swarming BotID: succesfully got dut name - %q", dut)
 	}
+	if skipHostMap[dut] {
+		return ""
+	}
 	return dut
 }
