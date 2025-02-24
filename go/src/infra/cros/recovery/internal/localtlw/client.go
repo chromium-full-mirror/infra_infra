@@ -312,6 +312,8 @@ func (c *tlwClient) RunRPMAction(ctx context.Context, req *tlw.RunRPMActionReque
 		t = rpm.RPMTypeSentry
 	case tlw.RPMType_IP9850:
 		t = rpm.RPMTypeIP9850
+	case tlw.RPMType_CPI:
+		t = rpm.RPMTypeCPI
 	default:
 		// This is new field. Instead of backfilling, we assume this is a Sentry RPM.
 		// Any other RPM should have its type explicitly set.

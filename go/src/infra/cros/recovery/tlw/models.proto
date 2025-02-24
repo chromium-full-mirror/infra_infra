@@ -101,6 +101,8 @@ enum RPMType {
   SENTRY = 1;
   // IPPower 9850
   IP9850 = 2;
+  // CPI
+  CPI = 3;
 }
 
 // RunRPMActionRequest represents data to perform action on RPM outlet.

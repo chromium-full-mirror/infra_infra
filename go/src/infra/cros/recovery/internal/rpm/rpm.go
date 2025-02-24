@@ -65,6 +65,8 @@ const (
 	RPMTypeSentry RPMType = "SENTRY"
 	// IPPower 9850 RPM
 	RPMTypeIP9850 RPMType = "IP9850"
+	// CPI
+	RPMTypeCPI RPMType = "CPI"
 )
 
 // RPMPowerRequest holds data required from rpm service to perform a state change.
