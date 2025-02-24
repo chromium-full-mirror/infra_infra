@@ -58,6 +58,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/golang/protobuf v1.5.4
 	github.com/google/cel-go v0.22.1
+	github.com/google/generative-ai-go v0.19.0
 	github.com/google/go-cmp v0.6.0
 	github.com/google/go-containerregistry v0.14.0
 	github.com/google/safetext v0.0.0-20240722112252-5a72de7e7962
@@ -151,6 +152,7 @@ require (
 
 require (
 	cel.dev/expr v0.19.0 // indirect
+	cloud.google.com/go/ai v0.8.0 // indirect
 	cloud.google.com/go/auth v0.14.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.7 // indirect
 	cloud.google.com/go/errorreporting v0.3.2 // indirect
