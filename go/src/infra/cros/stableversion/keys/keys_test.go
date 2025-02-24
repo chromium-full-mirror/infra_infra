@@ -29,7 +29,6 @@ func TestNewBuilder(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			kb := NewBuilder()
@@ -82,7 +81,6 @@ func TestNew(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			kb := New(tt.deviceType, tt.board, tt.model, tt.pool)

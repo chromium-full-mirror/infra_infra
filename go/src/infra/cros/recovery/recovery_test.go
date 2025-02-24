@@ -677,7 +677,6 @@ func TestVerify(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -791,7 +790,6 @@ func TestGetConfiguration(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			a := &RunArgs{}
@@ -888,7 +886,6 @@ func TestCollectResourcesForPlan(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		c := c
 		t.Run(c.plan, func(t *testing.T) {
 			t.Parallel()
 			out := collectResourcesForPlan(c.plan, dut)

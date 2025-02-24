@@ -63,7 +63,6 @@ var availableRWFirmwareTests = []struct {
 func TestAvailableRWFirmware(t *testing.T) {
 	t.Parallel()
 	for _, tt := range availableRWFirmwareTests {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			actualRWFirmware, actualErr := tt.mf.AvailableRWFirmware()
@@ -185,7 +184,6 @@ var ReadFirmwareManifestTest = []struct {
 func TestParseFirmwareManifest(t *testing.T) {
 	t.Parallel()
 	for _, tt := range ReadFirmwareManifestTest {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()

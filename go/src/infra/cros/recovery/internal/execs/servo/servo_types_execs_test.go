@@ -37,7 +37,6 @@ var servoV3TestCases = []struct {
 func TestServoVerifyV3Exec(t *testing.T) {
 	t.Parallel()
 	for _, tt := range servoV3TestCases {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()

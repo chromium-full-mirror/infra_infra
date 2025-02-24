@@ -179,7 +179,6 @@ func TestZones_initialization(t *testing.T) {
 		},
 	}
 	for name, test := range tests {
-		test := test
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			c := &fakeUFSClient{services: test.svc}

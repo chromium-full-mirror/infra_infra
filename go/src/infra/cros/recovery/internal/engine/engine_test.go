@@ -194,7 +194,6 @@ func TestRun(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	for _, c := range planTestCases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			// t.Parallel() -- TODO(gregorynisbet): Consider parallelizing.
 			args := &execs.RunArgs{
@@ -288,7 +287,6 @@ func TestRunRecovery(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	for _, c := range recoveryTestCases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			r := recoveryEngine{
 				plan: &config.Plan{
@@ -379,7 +377,6 @@ func TestActionExec(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	for _, c := range runExecTestCases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			r := recoveryEngine{
 				plan: &config.Plan{
@@ -491,7 +488,6 @@ func TestActionExecCache(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	for _, c := range actionResultsCacheTestCases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			r := recoveryEngine{
 				plan: &config.Plan{
@@ -552,7 +548,6 @@ var resetCacheTestCases = []struct {
 func TestResetCacheAfterSuccessfulRecoveryAction(t *testing.T) {
 	t.Parallel()
 	for _, c := range resetCacheTestCases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			actions := make(map[string]*config.Action)
 			for name, rc := range c.got {
@@ -609,7 +604,7 @@ var setCacheTestCases = []struct {
 func TestCacheActionResult(t *testing.T) {
 	t.Parallel()
 	for _, c := range setCacheTestCases {
-		c := c
+
 		t.Run(c.name, func(t *testing.T) {
 			r := recoveryEngine{
 				plan: &config.Plan{
@@ -687,7 +682,6 @@ var isRecoveryUsageTestCases = []struct {
 func TestRecoveryCachePersistence(t *testing.T) {
 	t.Parallel()
 	for _, c := range isRecoveryUsageTestCases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			r := recoveryEngine{
 				plan: &config.Plan{

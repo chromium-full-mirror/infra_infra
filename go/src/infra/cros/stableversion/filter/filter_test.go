@@ -195,7 +195,6 @@ var testWithModelData = []struct {
 func TestWithModel(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testWithModelData {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			out := WithModel(tt.in, tt.model)

@@ -94,7 +94,6 @@ func TestReadCryptoHomeStatusInfo(t *testing.T) {
 	ctx := context.Background()
 	t.Parallel()
 	for _, tt := range readCryptoHomeStatusInfoCases {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			actualCrypto, actualErr := ReadCryptoHomeStatusInfo(ctx, tt.rawOutput)

@@ -32,7 +32,6 @@ func TestGetFullyQualifiedHostname(t *testing.T) {
 	}
 
 	for i, tc := range tests {
-		tc := tc
 		t.Run(fmt.Sprintf("TestFullyQualifiedHostname%d", i), func(t *testing.T) {
 			t.Parallel()
 			got := GetFullyQualifiedHostname(tc.input.specifiedSatlabID, tc.input.fetchedSatlabID, tc.input.prefix, tc.input.content)

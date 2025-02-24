@@ -51,7 +51,6 @@ var isSmartHubExpectedExecTests = []struct {
 func TestIsSmartHubExpectedExec(t *testing.T) {
 	t.Parallel()
 	for _, tt := range isSmartHubExpectedExecTests {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()

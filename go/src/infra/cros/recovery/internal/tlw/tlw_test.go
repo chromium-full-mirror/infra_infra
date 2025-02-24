@@ -29,7 +29,6 @@ var extractDutNameTestCases = []struct {
 func TestExtractDutName(t *testing.T) {
 	t.Parallel()
 	for _, tc := range extractDutNameTestCases {
-		tc := tc
 		name := fmt.Sprintf("case %s", tc.caseName)
 		t.Run(name, func(t *testing.T) {
 			got := extractDutName(tc.in)

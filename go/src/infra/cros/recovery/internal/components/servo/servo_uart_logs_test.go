@@ -75,7 +75,6 @@ var parseContentTestCases = []struct {
 func TestParseUartStreamContent(t *testing.T) {
 	t.Parallel()
 	for _, tt := range parseContentTestCases {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			r := parseUartStreamContent(tt.got)

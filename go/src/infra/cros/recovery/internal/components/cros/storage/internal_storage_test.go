@@ -70,7 +70,6 @@ var detectInternalStorageTests = []struct {
 func TestDetectInternalStorage(t *testing.T) {
 	t.Parallel()
 	for _, tt := range detectInternalStorageTests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
@@ -120,7 +119,6 @@ var deviceMainStoragePathTests = []struct {
 func TestDeviceMainStoragePath(t *testing.T) {
 	t.Parallel()
 	for _, tt := range deviceMainStoragePathTests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()

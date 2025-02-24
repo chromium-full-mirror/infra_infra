@@ -38,7 +38,6 @@ var IsPathExistTests = []struct {
 func TestIsPathExist(t *testing.T) {
 	t.Parallel()
 	for _, tt := range IsPathExistTests {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
@@ -113,7 +112,6 @@ var PathHasEnoughValueTests = []struct {
 func TestPathHasEnoughValue(t *testing.T) {
 	t.Parallel()
 	for _, tt := range PathHasEnoughValueTests {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
@@ -176,7 +174,6 @@ var PathOccupiedSpacePercentageTests = []struct {
 func TestPathOccupiedSpacePercentage(t *testing.T) {
 	t.Parallel()
 	for _, tt := range PathOccupiedSpacePercentageTests {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()

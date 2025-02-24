@@ -49,7 +49,6 @@ func TestParseServodLogTimeTest(t *testing.T) {
 	t.Parallel()
 	log := logger.NewLogger()
 	for _, tt := range parseServodLogTimeTestCases {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			got, err := parseServodLogTime(tt.got, log)
@@ -113,7 +112,6 @@ func TestExtractTimeFromServoLog(t *testing.T) {
 	t.Parallel()
 	log := logger.NewLogger()
 	for _, tt := range extractTimeFromServoLogTestCase {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			got, err := extractTimeFromServoLog(tt.got, log)

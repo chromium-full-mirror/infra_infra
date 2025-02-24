@@ -69,7 +69,6 @@ var createServoDeviceFwUpdateCmdTestCases = []struct {
 func TestCreateServoDeviceFwUpdateCmd(t *testing.T) {
 	t.Parallel()
 	for _, tt := range createServoDeviceFwUpdateCmdTestCases {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			got := createServoDeviceFwUpdateCmd(tt.useContainer, tt.device, tt.forceUpdate, tt.channel)

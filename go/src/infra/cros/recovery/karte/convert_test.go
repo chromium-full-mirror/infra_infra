@@ -83,7 +83,6 @@ func TestConvertActionToKarteAction(t *testing.T) {
 		},
 	}
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			expected := tt.output
@@ -163,7 +162,6 @@ func TestConvertKarteActionToAction(t *testing.T) {
 		},
 	}
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			expected := tt.output
@@ -205,7 +203,6 @@ func TestConvertActionRoundTrip(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			expected := tt.input

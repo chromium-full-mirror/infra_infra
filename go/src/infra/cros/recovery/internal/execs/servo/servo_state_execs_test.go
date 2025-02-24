@@ -102,7 +102,6 @@ var setServoStateExecTestCases = []struct {
 func TestSetServoStateExec(t *testing.T) {
 	t.Parallel()
 	for _, tt := range setServoStateExecTestCases {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
@@ -174,7 +173,6 @@ var matchServoStateExecTestCases = []struct {
 func TestMatchServoStateExec(t *testing.T) {
 	t.Parallel()
 	for _, tt := range matchServoStateExecTestCases {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()

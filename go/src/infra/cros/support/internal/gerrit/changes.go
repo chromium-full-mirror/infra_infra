@@ -233,8 +233,6 @@ func MustFetchChanges(parentCtx context.Context, httpClient *http.Client, change
 
 	// Parallel request per host.
 	for host, changes := range hostChanges {
-		// Copy loop variables into scope.
-		host, changes := host, changes
 		wg.Add(1)
 		go func() {
 			defer wg.Done()

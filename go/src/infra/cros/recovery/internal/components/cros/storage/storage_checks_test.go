@@ -160,7 +160,6 @@ var storageSMARTFieldValueTests = []struct {
 func TestStorageSMARTFieldValue(t *testing.T) {
 	t.Parallel()
 	for _, tt := range storageSMARTFieldValueTests {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()

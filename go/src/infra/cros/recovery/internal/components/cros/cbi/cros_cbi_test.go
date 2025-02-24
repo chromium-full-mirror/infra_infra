@@ -64,7 +64,6 @@ func TestBuildCBILocation(t *testing.T) {
 		},
 	}
 	for _, tt := range testCases {
-		tt := tt
 		t.Run(tt.locateCBIOutput, func(t *testing.T) {
 			t.Parallel()
 			cbiLocation, _ := buildCBILocation(tt.locateCBIOutput)
@@ -110,7 +109,6 @@ func TestParseBytesFromCBIContents(t *testing.T) {
 		},
 	}
 	for _, tt := range testCases {
-		tt := tt
 		t.Run(tt.cbiContents, func(t *testing.T) {
 			t.Parallel()
 			hexBytes, _ := parseBytesFromCBIContents(tt.cbiContents, tt.numBytesToRead)
@@ -140,7 +138,6 @@ func TestContainsCBIMagic(t *testing.T) {
 		},
 	}
 	for _, tt := range testCases {
-		tt := tt
 		t.Run(tt.cbi.GetRawContents(), func(t *testing.T) {
 			t.Parallel()
 			actualBool := ContainsCBIMagic(tt.cbi)

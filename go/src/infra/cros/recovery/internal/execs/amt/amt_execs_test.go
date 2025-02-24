@@ -79,7 +79,7 @@ func TestSetAMTStateExec(t *testing.T) {
 		},
 	}
 	for _, tt := range testCases {
-		tt := tt
+
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
@@ -131,7 +131,6 @@ func TestAMTManagerNotPresentExec(t *testing.T) {
 		},
 	}
 	for _, tt := range testCases {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()

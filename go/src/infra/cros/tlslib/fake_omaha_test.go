@@ -202,7 +202,6 @@ func TestCreateFakeOmahaErrors(t *testing.T) {
 		t.Fatalf("New TLS server: %s", err)
 	}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			_, err := s.CreateFakeOmaha(timeoutCtx(t, time.Second), tc.req)

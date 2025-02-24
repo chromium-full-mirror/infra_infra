@@ -56,7 +56,6 @@ var enrichWithTrackingIdsCases = []struct {
 func TestEnrichWithTrackingIds(t *testing.T) {
 	t.Parallel()
 	for _, tt := range enrichWithTrackingIdsCases {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()

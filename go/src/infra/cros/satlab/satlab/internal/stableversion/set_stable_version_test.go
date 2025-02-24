@@ -22,7 +22,6 @@ func TestValidateBoardModelArgs(t *testing.T) {
 		{"Partial version info", setStableVersionRun{board: "zork", model: "gumboz", os: "R115-15474.70.0", fwImage: "zork-firmware/R87-13434.819.0"}, 2, false},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			ans, err := tt.sv.validateBoardModelArgs()
@@ -54,7 +53,6 @@ func TestValidateHostnameArgs(t *testing.T) {
 		{"Flex with fwImage version", setStableVersionRun{hostname: "satlab-11111111-host1", os: "R115-15474.70.0", fwImage: "zork-firmware/R87-13434.819.0", isFlex: true}, true},
 	}
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			err := tt.sv.validateHostnameArgs()

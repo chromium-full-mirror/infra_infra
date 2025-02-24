@@ -137,7 +137,6 @@ var mainDeviceTestCases = []struct {
 func TestMainDevice(t *testing.T) {
 	t.Parallel()
 	for _, tt := range mainDeviceTestCases {
-		tt := tt
 		t.Run(tt.servoType, func(t *testing.T) {
 			t.Parallel()
 			servo := NewServoType(tt.servoType)
@@ -184,7 +183,6 @@ var extractComponentsTestCases = []struct {
 func TestExtractComponents(t *testing.T) {
 	t.Parallel()
 	for _, tt := range extractComponentsTestCases {
-		tt := tt
 		t.Run(tt.servoType, func(t *testing.T) {
 			t.Parallel()
 			servo := NewServoType(tt.servoType)

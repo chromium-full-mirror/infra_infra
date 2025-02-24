@@ -96,7 +96,6 @@ var testCases = []struct {
 func TestGetPowerSupplyInfoInMap(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testCases {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			result := getPowerSupplyInfoInMap(tt.in)

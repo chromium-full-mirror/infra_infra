@@ -149,7 +149,6 @@ func TestParseNewFaftPrefix(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.input, func(t *testing.T) {
 			t.Parallel()
 			out, _ := parseNewFaftPrefix(tt.input)
@@ -191,7 +190,6 @@ func TestParseNewFaftSuffix(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.input, func(t *testing.T) {
 			t.Parallel()
 			out, _ := parseNewFaftSuffix(tt.input)
@@ -262,7 +260,6 @@ func TestParseFaftVersion(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.input, func(t *testing.T) {
 			t.Parallel()
 			out, err := ParseFaftVersion(tt.input)
