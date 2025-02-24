@@ -15,6 +15,8 @@ import (
 	"go.chromium.org/infra/cros/recovery/internal/components/cros/storage"
 	"go.chromium.org/infra/cros/recovery/internal/components/linux"
 	"go.chromium.org/infra/cros/recovery/internal/execs"
+	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // auditStorageSMARTExec confirms that it is able to audit
@@ -119,10 +121,43 @@ func hasEnoughStorageSpacePercentageExec(ctx context.Context, info *execs.ExecIn
 	return nil
 }
 
+// UpdateStorageInfoToInvExec read storage from the resource and update DUT info.
+func UpdateStorageInfoToInvExec(ctx context.Context, info *execs.ExecInfo) error {
+	run := info.DefaultRunner()
+	actionArgs := info.GetActionArgs(ctx)
+	allowedOverride := actionArgs.AsBool(ctx, "allowed_override", false)
+	storageType := info.GetChromeos().GetStorage().GetType()
+	if storageType != tlw.Storage_TYPE_UNSPECIFIED {
+		if allowedOverride {
+			log.Debugf(ctx, "Storage type is %q and override is allowed.", storageType)
+		} else {
+			log.Debugf(ctx, "Storage type is %q and it is not allowed to override it.", storageType)
+			return nil
+		}
+	}
+	storageTypeStr, err := run(ctx, info.GetExecTimeout(), "cros_config /hardware-properties storage-type")
+	if err != nil {
+		return errors.Annotate(err, "fail to get storage type").Err()
+	}
+	log.Debugf(ctx, "Storage type is %q", storageTypeStr)
+	storageTypeStr = strings.TrimSpace(storageTypeStr)
+	if storageTypeStr == "" {
+		return errors.Reason("wrong storage type: storage type is empty").Err()
+	}
+	newStorageType := tlw.Storage_TYPE_UNSPECIFIED
+	if _, ok := tlw.Storage_Type_value[storageTypeStr]; ok {
+		newStorageType = tlw.Storage_Type(tlw.Storage_Type_value[storageTypeStr])
+	}
+	info.GetChromeos().GetStorage().Type = newStorageType
+	log.Debugf(ctx, "Update Storage Type to %q", newStorageType)
+	return nil
+}
+
 func init() {
 	execs.Register("cros_audit_storage_smart", auditStorageSMARTExec)
 	execs.Register("cros_audit_storage_bad_blocks", auditStorageBadblocksExec)
 	execs.Register("cros_has_enough_storage_space", hasEnoughStorageSpaceExec)
 	execs.Register("cros_has_enough_storage_space_percentage", hasEnoughStorageSpacePercentageExec)
 	execs.Register("cros_has_enough_index_nodes", hasEnoughFreeIndexNodesExec)
+	execs.Register("cros_update_storage_to_inventory", UpdateStorageInfoToInvExec)
 }
