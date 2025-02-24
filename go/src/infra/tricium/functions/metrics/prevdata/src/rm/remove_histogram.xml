@@ -1,0 +1,22 @@
+<histogram-configuration>
+    <histograms>
+        <histogram name="Test.Histogram1" units="units" expires_after="2019-12-30">
+            <owner>ltina@google.com</owner>
+            <owner>chrome-metrics-team@google.com</owner>
+            <summary> This is a summary </summary>
+        </histogram>
+        <histogram name="Test.Histogram2" units="units" expires_after="2019-12-30">
+            <owner>ltina@google.com</owner>
+            <owner>chrome-metrics-team@google.com</owner>
+            <summary> This is a summary </summary>
+        </histogram>
+        <histogram name="Test.Histogram100" units="units" expires_after="2019-12-30">
+            <owner>ltina@google.com</owner>
+            <owner>chrome-metrics-team@google.com</owner>
+            <summary> This is a summary </summary>
+            <obsolete>
+                Typo, replaced by Test.Histogram10.
+            </obsolete>
+        </histogram>
+    </histograms>
+</histogram-configuration>

@@ -1,0 +1,27 @@
+<histogram-configuration>
+    <histograms>
+        <histogram name="Test.Histogram1" units="units" expires_after="2019-12-30">
+            <owner>ltina@google.com</owner>
+            <owner>chrome-metrics-team@google.com</owner>
+            <summary> This is a summary </summary>
+        </histogram>
+        <histogram name="Test{OpponentType}.Histogram2.{Character}" units="units" expires_after="2019-12-30">
+            <owner>ltina@google.com</owner>
+            <owner>chrome-metrics-team@google.com</owner>
+            <summary> This is a summary </summary>
+            <token key="Character">
+                <variant name="Bulbasaur"/>
+                <variant name="Charizard"/>
+            </token>
+            <token key="OpponentType">
+                <variant name="Dragon" summary="dragon"/>
+                <variant name="Flying" summary="flappity-flap"/>
+                <variant name="Psychic" summary="psychic">
+                    <obsolete>
+                        Removed 2023/09.
+                    </obsolete>
+                </variant>
+            </token>
+        </histogram>
+    </histograms>
+</histogram-configuration>

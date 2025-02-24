@@ -1,0 +1,13 @@
+diff --git a/rm/add_remove_histogram.xml b/rm/add_remove_histogram.xml
+index ba751d6..7eda52f 100644
+--- a/rm/add_remove_histogram.xml
++++ b/rm/add_remove_histogram.xml
+@@ -5,7 +5,7 @@
+             <owner>chrome-metrics-team@google.com</owner>
+             <summary> This is a summary </summary>
+         </histogram>
+-        <histogram name="Test.Histogram2" units="units" expires_after="2019-12-30">
++        <histogram name="Test.Histogram99" units="units" expires_after="2019-12-30">
+             <owner>ltina@google.com</owner>
+             <owner>chrome-metrics-team@google.com</owner>
+             <summary> This is a summary </summary>

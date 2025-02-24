@@ -1,0 +1,262 @@
+// Copyright 2016 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package tricium;
+
+option go_package = "go.chromium.org/infra/tricium/api/v1;tricium";
+
+import "google/protobuf/timestamp.proto";
+import "go.chromium.org/infra/tricium/api/v1/data.proto";
+import "go.chromium.org/infra/tricium/api/v1/platform.proto";
+
+// Tricium implements the main API of the Tricium service.
+service Tricium {
+  // Analyze requests analysis of a list of paths.
+  //
+  // An analysis request for a list of paths in a project connected to Tricium
+  // via the Tricium configuration. On success, the ID of the resulting run is
+  // returned.
+  rpc Analyze(AnalyzeRequest) returns (AnalyzeResponse);
+
+  // Progress requests progress information for a run.
+  //
+  // A run corresponds to an analyze request and is identified with a run ID.
+  rpc Progress(ProgressRequest) returns (ProgressResponse);
+
+  // Feedback requests feedback for an analyzer category.
+  rpc Feedback(FeedbackRequest) returns (FeedbackResponse);
+
+  // ReportNotUseful reports not useful feedback for a robot comment.
+  rpc ReportNotUseful(ReportNotUsefulRequest) returns (ReportNotUsefulResponse);
+}
+
+// AnalyzeRequest contains the details needed for an analysis request.
+message AnalyzeRequest {
+  // Name of the project in luci-config, used to get the project config.
+  string project = 1;
+
+  // Files to analyze in the project, with metadata.
+  repeated Data.File files = 5;
+
+  oneof source {
+    GerritRevision gerrit_revision = 7;
+    GitCommit git_commit = 8;
+  }
+}
+
+// Information uniquely identifying a Gerrit patch set, including
+// the git details needed to fetch from this patch set.
+message GerritRevision {
+  // Gerrit host.
+  //
+  // This value must not include the URL schema and is assumed to not include
+  // literal string "##", since this string is used internally as a separator.
+  // The schema is assumed to be "https".
+  string host = 1;
+
+  // Gerrit project name.
+  //
+  // This value is assumed to not include "##".
+  string project = 2;
+
+  // Gerrit change ID.
+  //
+  // This value should be of the form "<project>~<branch>~<Change-Id>", where
+  // <Change-Id> is a Change-Id footer string, and not a legacy change ID
+  // number. Note that "refs/heads/" can be omitted from the branch.
+  //
+  // Example: "myProject~master~I8473b95934b5732ac55d26311a706c9c2bde9940"
+  string change = 3;
+
+  // The full URL to the Git repository for this project, e.g. on Gitiles.
+  string git_url = 4;
+
+  // Gerrit change revision ref string.
+  //
+  // This value should be the fetch URL for a revision of a change. Note that
+  // the last number of a change revision ref is the corresponding patch set.
+  string git_ref = 5;
+
+  // Commit message text from Gerrit.
+  string commit_message = 6;
+}
+
+message GitCommit {
+  // Full repository URL, including schema, host and path.
+  string url = 1;
+
+  // A git commit-ish, such as a refname like "refs/heads/master".
+  // This can also be a tag or git commit hash.
+  string ref = 2;
+}
+
+message AnalyzeResponse {
+  // ID of the run started for this request.
+  //
+  // This ID can be used to track progress and request results.
+  string run_id = 1;
+}
+
+message ProgressRequest {
+  // An optional function name.
+  //
+  // If provided, only progress for the provided function will be returned.
+  // The function name should match the name of the function in the Tricium
+  // configuration.
+  //
+  // NB! Currently not supported.
+  string function = 2;
+
+  // Optional platform that may be provided together with an function name.
+  //
+  // If provided, only progress for the provided function and platform will be provided.
+  //
+  // NB! Currently not supported.
+  Platform platform = 3;
+
+  // The information that's used to look up the run. If this request is for a
+  // particular Gerrit revision, then that can be provided; otherwise the run
+  // ID can be used.
+  oneof source {
+    GerritRevision gerrit_revision = 4;
+    string run_id = 1;
+  }
+}
+
+message ProgressResponse {
+  // ID of the run progress is reported for.
+  string run_id = 1;
+
+  // Overall state for the run provided in the progress request.
+  State state = 2;
+
+  // Function progress matching the requested progress report.
+  //
+  // For a provided run ID this corresponds to all functions and platforms, and
+  // for any selection of these, a subset is returned.
+  //
+  // NB! Selection of a subset is currently not supported.
+  repeated FunctionProgress function_progress = 3;
+}
+
+message FunctionProgress {
+  // The function name.
+  string name = 1;
+
+  // The platform for which the function progress is reported.
+  Platform.Name platform = 2;
+
+  // The state of the function.
+  //
+  // For an function on a specific platform this state corresponds to the state
+  // of the worker, else it is the aggregated state of all workers for the function.
+  State state = 3;
+
+  reserved 4, 5;
+
+  // Number of comments.
+  //
+  // For analyzers that are done and produce comments.
+  int32 num_comments = 6;
+
+  // Host for the buildbucket server running tasks for the workers of the function.
+  string buildbucket_host = 7;
+
+  // The ID of the buildbucket build triggered for the function worker.
+  int64 buildbucket_build_id = 8;
+}
+
+message FeedbackRequest {
+  // Name of the project in luci-config to provide feedback for.
+  //
+  // In practice this was never required, although we had intended
+  // to make it required. See crbug.com/905885.
+  string project = 4;
+
+  // Analyzer category to provide aggregated feedback for.
+  //
+  // This includes the analyzer name along with optional subcategories
+  // separated with slash, e.g., "ClangTidy" or "ClangTidy/llvm-header-guard".
+  //
+  // Required field. Must include at least the analyzer name and should not
+  // end with a slash.
+  string category = 1;
+
+  // Start of time period to report feedback for.
+  //
+  // Feedback for comments created from this time (inclusive) will be included.
+  // Must be before end_time.
+  //
+  // Optional field. If not specified, this means "go as far back as possible".
+  google.protobuf.Timestamp start_time = 2;
+
+  // End of time period to report feedback for.
+  //
+  // Feedback for comments created up until this time (exclusive) will be included.
+  // Must be after start_time.
+  //
+  // Optional field. Defaults to now.
+  google.protobuf.Timestamp end_time = 3;
+}
+
+message FeedbackResponse {
+  // Number of returned comments.
+  //
+  // In any case where an analyzer was run on multiple platforms and the
+  // resulting comments were merged, only merged comments are returned in this
+  // count. Note that only merged comments are ever returned from the Tricium
+  // service.
+  int32 comments = 1;
+
+  // Number of collected 'not useful' reports.
+  int32 not_useful_reports = 2;
+}
+
+message ReportNotUsefulRequest {
+  // ID of comment.
+  string comment_id = 1;
+}
+
+message ReportNotUsefulResponse {
+  // Email address of the owner of the analyzer.
+  string owner = 1;
+
+  // Monorail bug component of the analyzer being.
+  string monorail_component = 2 [deprecated=true];
+
+  // ID of the chromium issue tracker component for the analyzer.
+  int64 issue_tracker_component_id = 3;
+}
+
+enum State {
+  // Pending is for when an analysis request has been received but the
+  // corresponding workflow, function, or workers are not running yet.
+  PENDING = 0;
+
+  // Running is for when the workflow, function, or workers of a request have
+  // been launched, but have not finished.
+  RUNNING = 1;
+
+  // Success is for a workflow, function, or worker that successfully completed.
+  //
+  // Success of workflows and functions is aggregated from underlying
+  // functions and workers, where full success means success is aggregated.
+  SUCCESS = 2;
+
+  // Failure is for a workflow, function, or worker that completed with failure.
+  //
+  // Failure of workflows and functions is aggregated from underlying functions
+  // and workers, where any occurrence of failure means failure is aggregated.
+  FAILURE = 3;
+
+  reserved 4, 5;
+
+  // Aborted is for workers aborted due to a failing worker dependency.
+  //
+  // For instance, the worker providing the data needed by a worker may have
+  // failed.
+  ABORTED = 6;
+}

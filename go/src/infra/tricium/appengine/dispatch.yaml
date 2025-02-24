@@ -1,0 +1,25 @@
+dispatch:
+
+- url: "*/config/*"
+  module: backend
+
+- url: "*/driver/*"
+  module: backend
+
+- url: "*/gerrit/*"
+  module: backend
+
+- url: "*/launcher/*"
+  module: backend
+
+- url: "*/rpcexplorer/*"
+  module: default
+
+- url: "*/static/*"
+  module: default
+
+- url: "*/tracker/*"
+  module: backend
+
+- url: "*/*"
+  module: default

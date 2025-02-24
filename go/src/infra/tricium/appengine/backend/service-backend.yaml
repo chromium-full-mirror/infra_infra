@@ -1,0 +1,24 @@
+service: backend
+runtime: go123
+app_engine_apis: true
+
+handlers:
+
+ - url: /internal/.*
+   script: auto
+   secure: always
+   login: admin
+
+ - url: /.*/internal/.*
+   script: auto
+   secure: always
+   login: admin
+
+ - url: /_ah/push-handlers/notify
+   script: auto
+   secure: always
+   login: admin
+
+ - url: /.*
+   script: auto
+   secure: always

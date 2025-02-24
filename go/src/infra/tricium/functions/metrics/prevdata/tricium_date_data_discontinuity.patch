@@ -1,0 +1,12 @@
+diff --git a/expiry/good_date.xml b/expiry/good_date.xml
+index abf5e6b..c173b8a 100644
+--- a/expiry/good_date.xml
++++ b/expiry/good_date.xml
+@@ -1,6 +1,6 @@
+ <histogram-configuration>
+     <histograms>
+-        <histogram name="Test.Histogram1" units="units" expires_after="2019-08-01">
++        <histogram name="Test.Histogram1" units="units" expires_after="2019-12-30">
+             <owner>ltina@google.com</owner>
+             <owner>chrome-metrics-team@google.com</owner>
+             <summary> This is a summary </summary>

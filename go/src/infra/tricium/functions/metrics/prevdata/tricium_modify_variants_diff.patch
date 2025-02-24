@@ -1,0 +1,12 @@
+diff --git a/rm/modify_variants.xml b/rm/modify_variants.xml
+index 0b2dc76..5e86d76 100644
+--- a/rm/modify_variants.xml
++++ b/rm/modify_variants.xml
+@@ -2,7 +2,6 @@
+     <histograms>
+         <variants name="Character">
+             <variant name="Bulbasaur"/>
+-            <variant name="Charizard"/>
+         </variants>
+         <histogram name="Test.Histogram1" units="units" expires_after="2019-12-30">
+             <owner>ltina@google.com</owner>

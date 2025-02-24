@@ -1,0 +1,21 @@
+cron:
+
+- description: "Gerrit poll"
+  url: /gerrit/internal/poll
+  schedule: every 1 mins
+  target: gerrit
+
+- description: "Update luci-config configurations"
+  url: /config/update
+  target: config
+  schedule: every 10 minutes
+
+- description: "tsmon housekeeping task"
+  url: /internal/cron/ts_mon/housekeeping
+  schedule: every 1 minutes
+  target: default
+
+- description: "Flush all pending rows to BigQuery"
+  url: /tracker/internal/cron/bqlog/flush
+  schedule: every 1 minutes
+  target: default

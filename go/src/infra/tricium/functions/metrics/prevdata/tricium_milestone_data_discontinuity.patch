@@ -1,0 +1,12 @@
+diff --git a/expiry/milestone/good_milestone.xml b/expiry/milestone/good_milestone.xml
+index 18d54a4..2ee6e8b 100644
+--- a/expiry/milestone/good_milestone.xml
++++ b/expiry/milestone/good_milestone.xml
+@@ -1,6 +1,6 @@
+ <histogram-configuration>
+     <histograms>
+-        <histogram name="Test.Histogram1" units="units" expires_after="M60">
++        <histogram name="Test.Histogram1" units="units" expires_after="M79">
+             <owner>ltina@google.com</owner>
+             <owner>chrome-metrics-team@google.com</owner>
+             <summary> This is a summary </summary>
