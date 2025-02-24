@@ -219,8 +219,8 @@ func GetConfigs() []*UprevConfig {
 			Name: "rdb-publish",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/cft/publish/rdb-publish/${platform}"),
-				NewCIPDPackageWithRef("go.chromium.org/infra/tools/result_adapter/linux-amd64", "prod"),
-				NewCIPDPackageWithRef("go.chromium.org/infra/tools/rdb/linux-amd64", "latest"),
+				NewCIPDPackageWithRef("infra/tools/result_adapter/linux-amd64", "prod"),
+				NewCIPDPackageWithRef("infra/tools/rdb/linux-amd64", "latest"),
 			},
 			Repositories: []*Repository{
 				DefaultRepository,
