@@ -671,10 +671,10 @@ func (d *Device) ApplySwarmingDims(ctx context.Context, dims swarming.Dimensions
 		d.DutID = ""
 		return fmt.Errorf("apply swarming dims to labels: %w", err)
 	}
-	if d.DutID != newDutID {
+	if d.DutID != "" && d.DutID != newDutID {
 		logging.Warningf(ctx, "dut_id %q of %q will be overridden to %q by the scheduleable label value", d.DutID, d.ID, newDutID)
-		d.DutID = newDutID
 	}
+	d.DutID = newDutID
 	return nil
 }
 
