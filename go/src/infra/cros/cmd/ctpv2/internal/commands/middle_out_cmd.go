@@ -961,7 +961,9 @@ func CreateDims(ctx context.Context, hwInfo *hwInfo, pool string, readycheck boo
 
 	dims := []string{}
 	if readycheck {
-		dims = append(dims, "dut_state:ready")
+		// dut_state can be ready while tests are running in dynamic TRv2
+		// So we need task:idle so we choose proper option based on real state of the lab
+		dims = append(dims, "dut_state:ready", "task:idle")
 	}
 
 	if len(hwInfo.req.GetSchedulingUnits()) > 0 {
