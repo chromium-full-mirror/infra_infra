@@ -11,11 +11,17 @@ import (
 const trueString = "True"
 const falseString = "False"
 
-func peripheralStateToString(ps ufslabconfigpb.PeripheralState) string {
+func peripheralStateToBoolString(ps ufslabconfigpb.PeripheralState) string {
 	if ps == ufslabconfigpb.PeripheralState_UNKNOWN || ps == ufslabconfigpb.PeripheralState_NOT_CONNECTED {
 		return falseString
 	}
 	return trueString
+}
+
+var hardwareStatePrefixLength = len("HARDWARE_")
+
+func hardwareStateToSwarmingString(hs ufslabconfigpb.HardwareState) string {
+	return hs.String()[hardwareStatePrefixLength:]
 }
 
 func boolToSwarmingString(b bool) string {

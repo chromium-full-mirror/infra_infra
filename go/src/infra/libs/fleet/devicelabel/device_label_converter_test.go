@@ -22,7 +22,7 @@ func TestConvert(t *testing.T) {
 	device, err := ConvertChromeOS(fakeChromeOSDataForConvert)
 	assert.Loosely(t, err, should.BeNil)
 	assert.Loosely(t, device, should.NotBeNil)
-	assert.Loosely(t, len(device.GetDeviceLabels()), should.Equal(5))
+	assert.Loosely(t, len(device.GetDeviceLabels()), should.Equal(14))
 	for _, l := range device.GetDeviceLabels() {
 		verifyForConvert(t, l.GetSchedulableId(), l.GetSchedulableValue())
 	}
@@ -63,15 +63,32 @@ var fakeChromeOSDataForConvert = &ufspb.ChromeOSDeviceData{
 		},
 	},
 	DutState: &ufslabconfigpb.DutState{
-		AudioBeamforming:    "fake-beaming",
-		AudioLoopbackDongle: ufslabconfigpb.PeripheralState_BAD_RIBBON_CABLE,
+		AudioBeamforming:       "fake-beaming",
+		AudioLoopbackDongle:    ufslabconfigpb.PeripheralState_BAD_RIBBON_CABLE,
+		BluetoothState:         ufslabconfigpb.HardwareState_HARDWARE_NEED_REPLACEMENT,
+		CellularModemState:     ufslabconfigpb.HardwareState_HARDWARE_NOT_DETECTED,
+		Chameleon:              ufslabconfigpb.PeripheralState_BROKEN,
+		Cr50Phase:              ufslabconfigpb.DutState_CR50_PHASE_PVT,
+		WifiPeripheralState:    ufslabconfigpb.PeripheralState_WORKING,
+		Servo:                  ufslabconfigpb.PeripheralState_NO_SSH,
+		ServoUsbState:          ufslabconfigpb.HardwareState_HARDWARE_NORMAL,
+		WorkingBluetoothBtpeer: 4,
 	},
 }
 
 var expectedLabelsForConvert = map[string][]string{
-	"label-arc":                   {"False"},
-	"label-audio_beamforming":     {"fake-beaming"},
-	"label-audio_box":             {"False"},
-	"label-audio_cable":           {"True"},
-	"label-audio_loopback_dongle": {"True"},
+	"label-arc":                      {"False"},
+	"label-audio_beamforming":        {"fake-beaming"},
+	"label-audio_box":                {"False"},
+	"label-audio_cable":              {"True"},
+	"label-audio_loopback_dongle":    {"True"},
+	"label-bluetooth_state":          {"NEED_REPLACEMENT"},
+	"label-cellular_modem_state":     {"NOT_DETECTED"},
+	"label-chameleon_state":          {"BROKEN"},
+	"label-cr50_phase":               {"CR50_PHASE_PVT"},
+	"label-peripheral_wifi_state":    {"WORKING"},
+	"label-servo":                    {"True"},
+	"label-servo_state":              {"NO_SSH"},
+	"label-servo_usb_state":          {"NORMAL"},
+	"label-working_bluetooth_btpeer": {"4"},
 }
