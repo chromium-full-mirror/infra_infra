@@ -5,4 +5,3 @@
 package tricium
 
 //go:generate cproto
-//go:generate proto-gae -type ProjectConfig -type ServiceConfig -type Acl -type Data_File
