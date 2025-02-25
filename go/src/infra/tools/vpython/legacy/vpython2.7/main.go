@@ -101,7 +101,7 @@ var defaultConfig = application.Config{
 		PythonVersion: "2.7",
 	},
 	VENVPackage: vpython.Spec_Package{
-		Name:    "go.chromium.org/infra/3pp/tools/virtualenv",
+		Name:    "infra/3pp/tools/virtualenv",
 		Version: "version:2@16.7.10.chromium.7",
 	},
 	InterpreterPaths:        setupBundledInterpreters(),
