@@ -188,7 +188,7 @@ func (c *testCommonFlags) validateAndAutocompleteFlags(ctx context.Context, f *f
 		// image for the given board.
 		latestImage, err := latestImage(ctx, c.board, bbService, authFlags)
 		if err != nil {
-			return fmt.Errorf("error determining the latest image for board %s: %w", c.board, err)
+			printer.WriteTextStderr("Error found while determining latest image for board %s. Moving forward assuming this is an AL run.", c.board)
 		}
 		printer.WriteTextStderr("Using latest green build image %s for board %s", latestImage, c.board)
 		c.image = latestImage

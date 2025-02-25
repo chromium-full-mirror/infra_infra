@@ -578,11 +578,17 @@ func getGcsPathFromProvisionInfos(provInfos []*testapi.ProvisionInfo) string {
 
 func findGcsPathFromTarget(target *testapi.Target, board string, variant string) string {
 	provInfos := getProvisionInfoFromTarget(target, board, variant)
+	gcsPath := ""
 	if provInfos != nil {
-		return getGcsPathFromProvisionInfos(provInfos)
+		gcsPath = getGcsPathFromProvisionInfos(provInfos)
 	}
 
-	return ""
+	if gcsPath != "" {
+		return gcsPath
+	}
+
+	// AL runs will have gcs_paths in sw_req if provision info doesn't have the info
+	return target.GetSwReq().GetGcsPath()
 }
 
 // findGcsPath finds gcs path for provided board.
