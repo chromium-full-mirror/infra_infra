@@ -6,6 +6,7 @@ package consoleserver
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"cloud.google.com/go/bigquery"
@@ -29,7 +30,14 @@ func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, 
 		return nil, err
 	}
 
-	q := bqClient.Query("select * from fleet_console_bq.resource_requests")
+	offset, err := resourceRequestsPageTokenToOffset(req)
+
+	if err != nil {
+		logging.Errorf(ctx, "failed to extract page token: %s", err)
+		return nil, err
+	}
+
+	q := bqClient.Query("select * from fleet_console_bq.resource_requests limit " + strconv.Itoa(int(req.PageSize)+1) + " offset " + strconv.Itoa(offset))
 
 	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(5*time.Second))
 	defer cancel()
@@ -61,7 +69,34 @@ func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, 
 		}
 	}
 
+	nextPageToken := ""
+
+	if len(resourceRequests) > int(req.PageSize) {
+		nextPageToken, err = resourceRequestsOffsetToPageToken(offset+int(req.PageSize), req)
+		if err != nil {
+			logging.Errorf(ctx, "failed to encode next page token: %s", err)
+			return nil, err
+		}
+
+		resourceRequests = resourceRequests[:req.PageSize]
+	}
+
 	return &fleetconsolerpc.ListResourceRequestsResponse{
 		ResourceRequests: resourceRequests,
+		NextPageToken:    nextPageToken,
 	}, nil
+}
+
+func resourceRequestsPageTokenToOffset(req *fleetconsolerpc.ListResourceRequestsRequest) (int, error) {
+	return utils.PageTokenToOffset(req.GetPageToken(), map[string]string{
+		"filter":   req.GetFilter(),
+		"order_by": req.GetOrderBy(),
+	})
+}
+
+func resourceRequestsOffsetToPageToken(offset int, req *fleetconsolerpc.ListResourceRequestsRequest) (string, error) {
+	return utils.OffsetToPageToken(offset, map[string]string{
+		"filter":   req.GetFilter(),
+		"order_by": req.GetOrderBy(),
+	})
 }

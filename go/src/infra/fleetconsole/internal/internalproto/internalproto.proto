@@ -8,9 +8,8 @@ package fleetconsole;
 
 option go_package = "go.chromium.org/infra/fleetconsole/internal/internalproto;internalproto";
 
-// The message represents ListDevices pagination token.
-message ListDevicesPaginationToken {
+// The message represents a generic offset-based pagination token.
+message PaginationToken {
   int32 offset = 1;
   string params_hash = 2;
 }
-
