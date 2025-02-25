@@ -62,7 +62,7 @@ func New() (api.ImageApi, error) {
 	return &cloudsdkImageApi{
 		// Default retry policy for image status query.
 		imageQueryInitialRetryBackoff: 1 * time.Second,
-		imageQueryMaxRetries:          3,
+		imageQueryMaxRetries:          5,
 	}, nil
 }
 
