@@ -254,8 +254,8 @@ func setupEnv(ctx context.Context, inputs *golangbuildpb.Inputs, builderName, go
 	if inputs.Target.Goarch == "wasm" {
 		// Add go_*_wasm_exec and the appropriate Wasm runtime to PATH.
 		env.Set("PATH", fmt.Sprintf("%v%c%v%c%v",
-			filepath.Join(goroot, "misc/wasm"), os.PathListSeparator,
 			filepath.Join(goroot, "lib/wasm"), os.PathListSeparator,
+			filepath.Join(goroot, "misc/wasm"), os.PathListSeparator, // TODO: Delete misc/wasm after Go 1.23 ages out.
 			env.Get("PATH")))
 		switch {
 		case inputs.Target.Goos == "js":
@@ -280,21 +280,6 @@ func setupEnv(ctx context.Context, inputs *golangbuildpb.Inputs, builderName, go
 	return env.SetInCtx(ctx)
 }
 
-// dropFromPathBySuffix updates the PATH list in env, dropping paths that match
-// any of the provided suffixes. It is used to drop certain LUCI-provided paths.
-func dropFromPathBySuffix(env environ.Env, dropSuffixes ...string) {
-	pathList := filepath.SplitList(env.Get("PATH"))
-	pathList = slices.DeleteFunc(pathList, func(path string) bool {
-		for _, s := range dropSuffixes {
-			if strings.HasSuffix(path, s) {
-				return true
-			}
-		}
-		return false
-	})
-	env.Set("PATH", strings.Join(pathList, string(filepath.ListSeparator)))
-}
-
 // setupModuleEnv applies module-specific environment variables.
 // These should be discussed in advance, and kept to a minimum.
 func setupModuleEnv(ctx context.Context, m module) context.Context {
@@ -309,6 +294,21 @@ func setupModuleEnv(ctx context.Context, m module) context.Context {
 		env.Remove("GOTOOLCHAIN")
 		return env.SetInCtx(ctx)
 	}
+}
+
+// dropFromPathBySuffix updates the PATH list in env, dropping paths that match
+// any of the provided suffixes. It is used to drop certain LUCI-provided paths.
+func dropFromPathBySuffix(env environ.Env, dropSuffixes ...string) {
+	pathList := filepath.SplitList(env.Get("PATH"))
+	pathList = slices.DeleteFunc(pathList, func(path string) bool {
+		for _, s := range dropSuffixes {
+			if strings.HasSuffix(path, s) {
+				return true
+			}
+		}
+		return false
+	})
+	env.Set("PATH", strings.Join(pathList, string(filepath.ListSeparator)))
 }
 
 func addEnv(ctx context.Context, add ...string) context.Context {

@@ -414,6 +414,14 @@ Testing any Go packages inside such modules is not supported.`, m.Path, m.RepoRe
 	var testErrors []error
 	for _, m := range modules {
 		ctx := setupModuleEnv(ctx, m)
+		if spec.inputs.Target.Goarch == "wasm" {
+			var err error
+			ctx, err = addGoWasmExecToPath(ctx, spec, m)
+			if err != nil {
+				testErrors = append(testErrors, err)
+				continue
+			}
+		}
 		jsonDumpFile := filepath.Join(spec.workdir, "go.testjson")
 		testCmd := spec.wrapTestCmd(ctx, spec.goCmd(ctx, m.RootDir, spec.goTestArgs("./...")...), jsonDumpFile)
 		if err := cmdStepRun(ctx, fmt.Sprintf("test %s module", m.Path), testCmd, false, jsonDumpFile); err != nil {
@@ -421,6 +429,61 @@ Testing any Go packages inside such modules is not supported.`, m.Path, m.RepoRe
 		}
 	}
 	return attachTestsFailed(errors.Join(testErrors...))
+}
+
+// addGoWasmExecToPath adds $(go env GOROOT)/lib/wasm to PATH as needed
+// for testing GOARCH=wasm ports. It does so in the context of module m.
+func addGoWasmExecToPath(ctx context.Context, spec *buildSpec, m module) (context.Context, error) {
+	if environ.FromCtx(ctx).Get("GOTOOLCHAIN") == "local" {
+		// The common case.
+		//
+		// Nothing to do. setupEnv handled this case.
+		return ctx, nil
+	}
+
+	// If GOTOOLCHAIN isn't set to local, then a different toolchain
+	// version may end up being used while running tests in module m.
+	//
+	// Add go_*_wasm_exec and the appropriate Wasm runtime to PATH
+	// that correspond to that particular version, overriding what
+	// setupEnv already did for the common case.
+
+	envCmd := spec.goCmd(ctx, m.RootDir, "env", "-json", "GOROOT")
+	envOutput, err := cmdStepOutput(ctx, fmt.Sprintf("determine toolchain root for %s module", m.Path), envCmd, true)
+	if err != nil {
+		return ctx, err
+	}
+	var e struct{ GOROOT string }
+	if err = json.Unmarshal(envOutput, &e); err != nil {
+		return ctx, fmt.Errorf("error parsing go env output: %v", err)
+	}
+
+	// In Go 1.24 and newer, cmd/go/internal/toolchain/select.go knows to
+	// set the executable bits for any go_*_*_exec commands in GOROOT/lib.
+	// But Go 1.23 doesn't. So, help it out to ease migration.
+	//
+	// TODO: Delete this after Go 1.23 ages out.
+	if spec.inputs.GoBranch == "release-branch.go1.23" {
+		for _, cmd := range [...]string{"go_js_wasm_exec", "go_wasip1_wasm_exec"} {
+			path := filepath.Join(e.GOROOT, "lib/wasm", cmd)
+			info, err := os.Stat(path)
+			if errors.Is(err, fs.ErrNotExist) {
+				// OK. Nothing to do below.
+				continue
+			} else if err != nil {
+				return ctx, fmt.Errorf("addGoWasmExecToPath: stat in GOROOT/lib/wasm failed: %v", err)
+			}
+			if err := os.Chmod(path, info.Mode()&0777|0111); err != nil {
+				return ctx, fmt.Errorf("addGoWasmExecToPath: chmod in GOROOT/lib/wasm failed: %v", err)
+			}
+		}
+	}
+
+	env := environ.FromCtx(ctx)
+	env.Set("PATH", fmt.Sprintf("%v%c%v",
+		filepath.Join(e.GOROOT, "lib/wasm"), os.PathListSeparator,
+		env.Get("PATH")))
+	return env.SetInCtx(ctx), nil
 }
 
 func logSkippedModule(ctx context.Context, modulePath, skipReason string) {
