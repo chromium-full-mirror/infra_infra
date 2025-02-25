@@ -6,13 +6,15 @@ package rand
 
 import (
 	"math/rand"
+	"sync"
 	"time"
 )
 
 const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 var (
-	seededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
+	seededRandMu sync.Mutex
+	seededRand   *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 )
 
 // String generates randomg string with expected length.
@@ -22,9 +24,12 @@ func String(length int) string {
 
 // stringWithCharset generates string based on charset and required length.
 func stringWithCharset(length int, charset string) string {
+	seededRandMu.Lock()
+	defer seededRandMu.Unlock()
 	b := make([]byte, length)
 	for i := range b {
-		b[i] = charset[seededRand.Intn(len(charset))]
+		n := seededRand.Intn(len(charset))
+		b[i] = charset[n]
 	}
 	return string(b)
 }
