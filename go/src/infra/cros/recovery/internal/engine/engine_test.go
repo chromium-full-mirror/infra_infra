@@ -192,13 +192,14 @@ var planTestCases = []struct {
 
 func TestRun(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
 	for _, c := range planTestCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
 			// t.Parallel() -- TODO(gregorynisbet): Consider parallelizing.
 			args := &execs.RunArgs{
 				EnableRecovery: true,
 			}
+			ctx := context.Background()
 			err := Run(ctx, c.name, c.got, args, nil)
 			if c.expSuccess {
 				if err != nil {
@@ -285,14 +286,15 @@ var recoveryTestCases = []struct {
 
 func TestRunRecovery(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
 	for _, c := range recoveryTestCases {
 		t.Run(c.name, func(t *testing.T) {
+			c := c
 			r := recoveryEngine{
 				plan: &config.Plan{
 					Actions: c.got,
 				},
 			}
+			ctx := context.Background()
 			r.initCache()
 			err := r.runRecoveries(ctx, "a", nil)
 			if c.expStartOver {
@@ -375,14 +377,15 @@ var runExecTestCases = []struct {
 
 func TestActionExec(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
 	for _, c := range runExecTestCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
 			r := recoveryEngine{
 				plan: &config.Plan{
 					Actions: c.got,
 				},
 			}
+			ctx := context.Background()
 			r.initCache()
 			err := r.runActionExec(ctx, "a", nil, c.enableRecovery)
 			if c.expError && c.expStartOver {
@@ -486,14 +489,15 @@ var actionResultsCacheTestCases = []struct {
 
 func TestActionExecCache(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
 	for _, c := range actionResultsCacheTestCases {
+		c := c
 		t.Run(c.name, func(t *testing.T) {
 			r := recoveryEngine{
 				plan: &config.Plan{
 					Actions: c.got,
 				},
 			}
+			ctx := context.Background()
 			r.initCache()
 			r.runActionExec(ctx, "a", nil, true)
 			err, ok := r.actionResultFromCache("a")

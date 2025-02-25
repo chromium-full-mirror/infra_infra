@@ -391,7 +391,7 @@ func (r *recoveryEngine) runActionExecWithTimeout(ctx context.Context, actionNam
 	cw := make(chan error, 1)
 	go func() {
 		// Populate default metric action to be available by context.
-		ctx = metrics.WithAction(ctx, metric)
+		ctx := metrics.WithAction(ctx, metric)
 		err := execs.Run(ctx, execInfo)
 		cw <- err
 	}()
