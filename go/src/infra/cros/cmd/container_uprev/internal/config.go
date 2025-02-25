@@ -301,6 +301,16 @@ func GetConfigs() []*UprevConfig {
 				PartnerRepository,
 			},
 		},
+		{
+			Name: "test-finder",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/ctpv2-filters/test-finder/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
+		},
 		// {
 		// 	Name: "tradefed",
 		// 	CIPDPackages: []*CIPDPackage{
