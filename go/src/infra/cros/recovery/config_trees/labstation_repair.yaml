@@ -85,6 +85,8 @@ plans:
               docs:
                 - Action is always runnable.
               conditions:
+                - name: rpm_action_enabled
+                  exec_name: rpm_action_enabled
                 - name: has_rpm_info
                   exec_name: has_rpm_info
               dependencies:
@@ -124,6 +126,8 @@ plans:
                   docs:
                     - Power off the labstation via RPM.
                   conditions:
+                    - name: rpm_action_enabled
+                      exec_name: rpm_action_enabled
                     - name: has_rpm_info
                       exec_name: has_rpm_info
                 - name: Sleep 1 minute (Allow to fail) (ALWAYS_RUN) (time:'1m10s')
@@ -135,6 +139,8 @@ plans:
                   docs:
                     - Power on the labstation via RPM.
                   conditions:
+                    - name: rpm_action_enabled
+                      exec_name: rpm_action_enabled
                     - name: has_rpm_info
                       exec_name: has_rpm_info
                 - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
@@ -173,6 +179,8 @@ plans:
                   docs:
                     - Action is always runnable.
                   conditions:
+                    - name: rpm_action_enabled
+                      exec_name: rpm_action_enabled
                     - name: has_rpm_info
                       exec_name: has_rpm_info
                   dependencies:
@@ -212,6 +220,8 @@ plans:
                       docs:
                         - Power off the labstation via RPM.
                       conditions:
+                        - name: rpm_action_enabled
+                          exec_name: rpm_action_enabled
                         - name: has_rpm_info
                           exec_name: has_rpm_info
                     - name: Sleep 1 minute (Allow to fail) (ALWAYS_RUN) (time:'1m10s')
@@ -223,6 +233,8 @@ plans:
                       docs:
                         - Power on the labstation via RPM.
                       conditions:
+                        - name: rpm_action_enabled
+                          exec_name: rpm_action_enabled
                         - name: has_rpm_info
                           exec_name: has_rpm_info
                     - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
@@ -285,6 +297,8 @@ plans:
                   docs:
                     - Action is always runnable.
                   conditions:
+                    - name: rpm_action_enabled
+                      exec_name: rpm_action_enabled
                     - name: has_rpm_info
                       exec_name: has_rpm_info
                   dependencies:
@@ -324,6 +338,8 @@ plans:
                       docs:
                         - Power off the labstation via RPM.
                       conditions:
+                        - name: rpm_action_enabled
+                          exec_name: rpm_action_enabled
                         - name: has_rpm_info
                           exec_name: has_rpm_info
                     - name: Sleep 1 minute (Allow to fail) (ALWAYS_RUN) (time:'1m10s')
@@ -335,6 +351,8 @@ plans:
                       docs:
                         - Power on the labstation via RPM.
                       conditions:
+                        - name: rpm_action_enabled
+                          exec_name: rpm_action_enabled
                         - name: has_rpm_info
                           exec_name: has_rpm_info
                     - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
@@ -655,6 +673,8 @@ plans:
               docs:
                 - Action is always runnable.
               conditions:
+                - name: rpm_action_enabled
+                  exec_name: rpm_action_enabled
                 - name: has_rpm_info
                   exec_name: has_rpm_info
               dependencies:
@@ -773,6 +793,8 @@ plans:
               docs:
                 - Action is always runnable.
               conditions:
+                - name: rpm_action_enabled
+                  exec_name: rpm_action_enabled
                 - name: has_rpm_info
                   exec_name: has_rpm_info
               dependencies:
@@ -886,6 +908,8 @@ plans:
               docs:
                 - Action is always runnable.
               conditions:
+                - name: rpm_action_enabled
+                  exec_name: rpm_action_enabled
                 - name: has_rpm_info
                   exec_name: has_rpm_info
               dependencies:

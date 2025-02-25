@@ -27,6 +27,23 @@ func hasRpmInfoExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Reason("has rpm info: not present or incorrect").Err()
 }
 
+// rpmActionEnabled checks if rpm actions are in place for the rpm type
+func rpmActionEnabled(ctx context.Context, info *execs.ExecInfo) error {
+	if r := info.GetChromeos().GetRpmOutlet(); r != nil {
+		switch r.GetType() {
+		case tlw.RPMType_IP9850:
+			fallthrough
+		case tlw.RPMType_CPI:
+			return errors.Reason("rpm action enabled: rpm actions disabled for rpm type").Err()
+		case tlw.RPMType_SENTRY:
+			fallthrough
+		default:
+			return nil
+		}
+	}
+	return errors.Reason("rpm action enabled: rpm info missing").Err()
+}
+
 // rpmPowerCycleExec performs power cycle the device by RPM.
 // This function use RPM service built-in cycle interface which has an 5 seconds interval between power state change.
 func rpmPowerCycleExec(ctx context.Context, info *execs.ExecInfo) error {
@@ -184,6 +201,7 @@ func deviceHostnameAndRPMOutlet(info *execs.ExecInfo, deviceType string) (string
 func init() {
 	// TODO(bniche@): retire non device execs after device execs are fully integrated.
 	execs.Register("has_rpm_info", hasRpmInfoExec)
+	execs.Register("rpm_action_enabled", rpmActionEnabled)
 	execs.Register("rpm_power_cycle", rpmPowerCycleExec)
 	execs.Register("rpm_power_off", rpmPowerOffExec)
 	execs.Register("rpm_power_on", rpmPowerOnExec)

@@ -2113,11 +2113,13 @@ plans:
             - name: Device is SSHable (simple) ('cros_ssh') (ALWAYS_RUN) (time:'15s')
             - name: Audit RPM config (with battery) ('rpm_audit_with_battery') (time:'10m0s')
               conditions:
+                - name: rpm_action_enabled
                 - name: Battery is present on device ('cros_is_battery_present') (ALWAYS_RUN)
               dependencies:
                 - name: 'RPM set state: WRONG_CONFIG (''set_rpm_state'')'
             - name: Audit RPM config (without battery) ('rpm_audit_without_battery') (time:'10m0s')
               conditions:
+                - name: rpm_action_enabled
                 - name: No Battery is present on device ('sample_fail')
                   conditions:
                     - name: Battery is present on device ('cros_is_battery_present') (ALWAYS_RUN)

@@ -94,6 +94,8 @@ plans:
               docs:
                 - Power cycle the labstation via RPM.
               conditions:
+                - name: rpm_action_enabled
+                  exec_name: rpm_action_enabled
                 - name: has_rpm_info
                   exec_name: has_rpm_info
         - name: Update inventory info
@@ -144,6 +146,8 @@ plans:
               docs:
                 - Power cycle the labstation via RPM.
               conditions:
+                - name: rpm_action_enabled
+                  exec_name: rpm_action_enabled
                 - name: has_rpm_info
                   exec_name: has_rpm_info
         - name: Remove reboot requests from host (Allow to fail)
@@ -160,6 +164,8 @@ plans:
             - Validate and update rpm_state.
             - The execs is not ready yet.
           conditions:
+            - name: rpm_action_enabled
+              exec_name: rpm_action_enabled
             - name: has_rpm_info
               exec_name: has_rpm_info
           recoveries:
@@ -168,6 +174,8 @@ plans:
               docs:
                 - Power cycle the labstation via RPM.
               conditions:
+                - name: rpm_action_enabled
+                  exec_name: rpm_action_enabled
                 - name: has_rpm_info
                   exec_name: has_rpm_info
         - name: 'Set state: ready (RUN_ONCE)'

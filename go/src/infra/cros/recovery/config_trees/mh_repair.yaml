@@ -8479,6 +8479,8 @@ plans:
                   docs:
                     - Verifies that the RPM configuration provides some data for the hostname and outlet.
                     - This action does not verify the correctness of the data.
+                - name: rpm_action_enabled
+                  exec_name: rpm_action_enabled
               dependencies:
                 - name: rpm_power_cycle
                   exec_name: rpm_power_cycle
@@ -9437,6 +9439,8 @@ plans:
                   docs:
                     - Verifies that the RPM configuration provides some data for the hostname and outlet.
                     - This action does not verify the correctness of the data.
+                - name: rpm_action_enabled
+                  exec_name: rpm_action_enabled
               dependencies:
                 - name: rpm_power_cycle
                   exec_name: rpm_power_cycle

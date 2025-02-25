@@ -120,6 +120,8 @@ func SetPowerStateHTTP(ctx context.Context, req *RPMPowerRequest) error {
 		return setPowerStateSentry(ctx, req)
 	case RPMTypeIP9850:
 		return setPowerStateIP9850(ctx, req)
+	case RPMTypeCPI:
+		return setPowerStateCPI(ctx, req)
 	case "":
 		return errors.Reason("SetPowerStateHTTP: RPMType cannot be empty.").Err()
 	default:
@@ -217,9 +219,14 @@ func setSentryRPMAuthHeader(req *http.Request) error {
 	return nil
 }
 
-// setPowerStateSentry sets power state for IPPower 9850 RPM over HTTP based on RPMPowerRequest.
+// setPowerStateIP9850 sets power state for IPPower 9850 RPM over HTTP based on RPMPowerRequest.
 // https://www.aviosys.com/products/9850.php
 func setPowerStateIP9850(ctx context.Context, req *RPMPowerRequest) error {
+	return errors.Reason("Not implemented").Err()
+}
+
+// setPowerStateCPI sets power state for CPI RPM over HTTP based on RPMPowerRequest.
+func setPowerStateCPI(ctx context.Context, req *RPMPowerRequest) error {
 	return errors.Reason("Not implemented").Err()
 }
 

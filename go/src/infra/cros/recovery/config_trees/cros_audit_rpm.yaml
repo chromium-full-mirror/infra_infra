@@ -6204,6 +6204,8 @@ plans:
               docs:
                 - Verify RPM when battery is present on the DUT.
               conditions:
+                - name: rpm_action_enabled
+                  exec_name: rpm_action_enabled
                 - name: Battery is present on device (ALWAYS_RUN)
                   exec_name: cros_is_battery_present
                   docs:
@@ -6219,6 +6221,8 @@ plans:
               docs:
                 - Verify RPM configs and set RPM state for DUT without battery
               conditions:
+                - name: rpm_action_enabled
+                  exec_name: rpm_action_enabled
                 - name: No Battery is present on device
                   exec_name: sample_fail
                   conditions:

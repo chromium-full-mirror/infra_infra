@@ -98,6 +98,7 @@ func LabstationDeployConfig() *Configuration {
 				"The execs is not ready yet.",
 			},
 			Conditions: []string{
+				"rpm_action_enabled",
 				"has_rpm_info",
 			},
 			ExecName:    "rpm_audit_without_battery",
@@ -122,6 +123,7 @@ func LabstationDeployConfig() *Configuration {
 				"Power cycle the labstation via RPM.",
 			},
 			Conditions: []string{
+				"rpm_action_enabled",
 				"has_rpm_info",
 			},
 			ExecName: "rpm_power_cycle",

@@ -2764,6 +2764,7 @@ plans:
             - name: Power cycle DUT by RPM and wait for ping ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: RPM config present ('device_has_rpm_info')
+                - name: rpm_action_enabled
               dependencies:
                 - name: rpm_power_cycle
                 - name: Set servo PD to src (Allow to fail) ('servo_set') (ALWAYS_RUN)
@@ -12622,6 +12623,7 @@ plans:
                     - name: Power cycle DUT by RPM and wait for ping ('sample_pass') (ALWAYS_RUN)
                       conditions:
                         - name: RPM config present ('device_has_rpm_info')
+                        - name: rpm_action_enabled
                       dependencies:
                         - name: rpm_power_cycle
                         - name: Set servo PD to src (Allow to fail) ('servo_set') (ALWAYS_RUN)
@@ -12784,6 +12786,7 @@ plans:
                   recoveries:
                     - name: Recover by disabling factory settings ('sample_pass')
                       conditions:
+                        - name: rpm_action_enabled
                         - name: Device without cros EC ('dut_check_board') (RUN_ONCE)
                         - name: Battery is expected on device ('dut_has_battery')
                         - name: Battery is present on device ('cros_is_battery_present') (ALWAYS_RUN)
@@ -12796,6 +12799,8 @@ plans:
                             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
                         - name: Set RPM OFF ('device_rpm_power_off') (ALWAYS_RUN)
+                          conditions:
+                            - name: rpm_action_enabled
                         - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                         - name: Power ON DUT by servo ('servo_set') (ALWAYS_RUN)
                           dependencies:
@@ -12807,10 +12812,13 @@ plans:
                                     - name: Setup has servo info ('dut_servo_host_present')
                         - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
                         - name: Set RPM ON ('device_rpm_power_on') (ALWAYS_RUN)
+                          conditions:
+                            - name: rpm_action_enabled
                         - name: Set servo PD to src (Allow to fail) ('servo_set') (ALWAYS_RUN)
                     - name: Power cycle DUT by RPM and wait for ping ('sample_pass') (ALWAYS_RUN)
                       conditions:
                         - name: RPM config present ('device_has_rpm_info')
+                        - name: rpm_action_enabled
                       dependencies:
                         - name: rpm_power_cycle
                         - name: Set servo PD to src (Allow to fail) ('servo_set') (ALWAYS_RUN)
@@ -30135,6 +30143,7 @@ plans:
                 - name: Power cycle DUT by RPM and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: RPM config present ('device_has_rpm_info')
+                    - name: rpm_action_enabled
                   dependencies:
                     - name: rpm_power_cycle
                     - name: Set servo PD to src (Allow to fail) ('servo_set') (ALWAYS_RUN)
@@ -30431,6 +30440,7 @@ plans:
                 - name: Power cycle DUT by RPM and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: RPM config present ('device_has_rpm_info')
+                    - name: rpm_action_enabled
                   dependencies:
                     - name: rpm_power_cycle
                     - name: Set servo PD to src (Allow to fail) ('servo_set') (ALWAYS_RUN)

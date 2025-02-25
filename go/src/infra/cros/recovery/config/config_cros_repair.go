@@ -780,6 +780,7 @@ func crosRepairActions() map[string]*Action {
 				"Automated process to disable factory settings.",
 			},
 			Conditions: []string{
+				"rpm_action_enabled",
 				"Device without cros EC",
 				"Battery is expected on device",
 				"Battery is present on device",
@@ -799,6 +800,9 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "sample_pass",
 		},
 		"Set RPM OFF": {
+			Conditions: []string{
+				"rpm_action_enabled",
+			},
 			ExecName: "device_rpm_power_off",
 			ExecExtraArgs: []string{
 				"device_type:dut",
@@ -806,6 +810,9 @@ func crosRepairActions() map[string]*Action {
 			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Set RPM ON": {
+			Conditions: []string{
+				"rpm_action_enabled",
+			},
 			ExecName: "device_rpm_power_on",
 			ExecExtraArgs: []string{
 				"device_type:dut",
@@ -2898,6 +2905,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"RPM config present",
+				"rpm_action_enabled",
 			},
 			Dependencies: []string{
 				"rpm_power_cycle",
@@ -4000,6 +4008,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify RPM configs and set RPM state for DUT without battery",
 			},
 			Conditions: []string{
+				"rpm_action_enabled",
 				"No Battery is present on device",
 			},
 			Dependencies: []string{
@@ -4013,6 +4022,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify RPM when battery is present on the DUT.",
 			},
 			Conditions: []string{
+				"rpm_action_enabled",
 				"Battery is present on device",
 			},
 			Dependencies: []string{

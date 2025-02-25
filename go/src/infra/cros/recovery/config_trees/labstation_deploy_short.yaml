@@ -21,6 +21,7 @@ plans:
           recoveries:
             - name: Power cycle by RPM ('rpm_power_cycle') (ALWAYS_RUN) (time:'2m0s')
               conditions:
+                - name: rpm_action_enabled
                 - name: has_rpm_info
         - name: Update inventory info ('sample_pass')
           dependencies:
@@ -39,15 +40,18 @@ plans:
                 - name: cros_not_on_stable_version
             - name: Power cycle by RPM ('rpm_power_cycle') (ALWAYS_RUN) (time:'2m0s')
               conditions:
+                - name: rpm_action_enabled
                 - name: has_rpm_info
         - name: Remove reboot requests from host (Allow to fail) ('cros_remove_all_reboot_request')
         - name: Update provisioned info ('cros_update_provision_info')
         - name: Validate RPM info ('rpm_audit_without_battery') (time:'15m0s')
           conditions:
+            - name: rpm_action_enabled
             - name: has_rpm_info
           recoveries:
             - name: Power cycle by RPM ('rpm_power_cycle') (ALWAYS_RUN) (time:'2m0s')
               conditions:
+                - name: rpm_action_enabled
                 - name: has_rpm_info
         - name: 'Set state: ready (''dut_set_state'') (RUN_ONCE)'
           dependencies:

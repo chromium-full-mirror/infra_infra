@@ -2802,6 +2802,7 @@ plans:
             - name: Power cycle DUT by RPM and wait for ping ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: RPM config present ('device_has_rpm_info')
+                - name: rpm_action_enabled
               dependencies:
                 - name: rpm_power_cycle
                 - name: Set servo PD to src (Allow to fail) ('servo_set') (ALWAYS_RUN)
@@ -3098,6 +3099,7 @@ plans:
             - name: Power cycle DUT by RPM and wait for ping ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: RPM config present ('device_has_rpm_info')
+                - name: rpm_action_enabled
               dependencies:
                 - name: rpm_power_cycle
                 - name: Set servo PD to src (Allow to fail) ('servo_set') (ALWAYS_RUN)

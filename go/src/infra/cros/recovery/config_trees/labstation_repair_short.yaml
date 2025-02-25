@@ -17,6 +17,7 @@ plans:
           recoveries:
             - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: rpm_action_enabled
                 - name: has_rpm_info
               dependencies:
                 - name: rpm_power_cycle
@@ -31,10 +32,12 @@ plans:
               dependencies:
                 - name: Power off by RPM (Allow to fail) ('rpm_power_off') (ALWAYS_RUN) (time:'2m0s')
                   conditions:
+                    - name: rpm_action_enabled
                     - name: has_rpm_info
                 - name: Sleep 1 minute (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
                 - name: Power on by RPM ('rpm_power_on') (ALWAYS_RUN) (time:'2m0s')
                   conditions:
+                    - name: rpm_action_enabled
                     - name: has_rpm_info
                 - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
                 - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
@@ -47,6 +50,7 @@ plans:
               recoveries:
                 - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
                   conditions:
+                    - name: rpm_action_enabled
                     - name: has_rpm_info
                   dependencies:
                     - name: rpm_power_cycle
@@ -61,10 +65,12 @@ plans:
                   dependencies:
                     - name: Power off by RPM (Allow to fail) ('rpm_power_off') (ALWAYS_RUN) (time:'2m0s')
                       conditions:
+                        - name: rpm_action_enabled
                         - name: has_rpm_info
                     - name: Sleep 1 minute (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
                     - name: Power on by RPM ('rpm_power_on') (ALWAYS_RUN) (time:'2m0s')
                       conditions:
+                        - name: rpm_action_enabled
                         - name: has_rpm_info
                     - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
                     - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
@@ -83,6 +89,7 @@ plans:
               recoveries:
                 - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
                   conditions:
+                    - name: rpm_action_enabled
                     - name: has_rpm_info
                   dependencies:
                     - name: rpm_power_cycle
@@ -97,10 +104,12 @@ plans:
                   dependencies:
                     - name: Power off by RPM (Allow to fail) ('rpm_power_off') (ALWAYS_RUN) (time:'2m0s')
                       conditions:
+                        - name: rpm_action_enabled
                         - name: has_rpm_info
                     - name: Sleep 1 minute (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
                     - name: Power on by RPM ('rpm_power_on') (ALWAYS_RUN) (time:'2m0s')
                       conditions:
+                        - name: rpm_action_enabled
                         - name: has_rpm_info
                     - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
                     - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
@@ -192,6 +201,7 @@ plans:
                 - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
             - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: rpm_action_enabled
                 - name: has_rpm_info
               dependencies:
                 - name: rpm_power_cycle
@@ -227,6 +237,7 @@ plans:
                 - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
             - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: rpm_action_enabled
                 - name: has_rpm_info
               dependencies:
                 - name: rpm_power_cycle
@@ -260,6 +271,7 @@ plans:
                 - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
             - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
               conditions:
+                - name: rpm_action_enabled
                 - name: has_rpm_info
               dependencies:
                 - name: rpm_power_cycle

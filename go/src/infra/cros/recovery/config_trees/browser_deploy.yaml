@@ -6718,6 +6718,8 @@ plans:
                   docs:
                     - Verifies that the RPM configuration provides some data for the hostname and outlet.
                     - This action does not verify the correctness of the data.
+                - name: rpm_action_enabled
+                  exec_name: rpm_action_enabled
               dependencies:
                 - name: rpm_power_cycle
                   exec_name: rpm_power_cycle
@@ -6829,6 +6831,8 @@ plans:
                       docs:
                         - Verifies that the RPM configuration provides some data for the hostname and outlet.
                         - This action does not verify the correctness of the data.
+                    - name: rpm_action_enabled
+                      exec_name: rpm_action_enabled
                   dependencies:
                     - name: rpm_power_cycle
                       exec_name: rpm_power_cycle
@@ -15465,6 +15469,8 @@ plans:
                   docs:
                     - Verify RPM when battery is present on the DUT.
                   conditions:
+                    - name: rpm_action_enabled
+                      exec_name: rpm_action_enabled
                     - name: Battery is present on device (ALWAYS_RUN)
                       exec_name: cros_is_battery_present
                       docs:
@@ -15480,6 +15486,8 @@ plans:
                   docs:
                     - Verify RPM configs and set RPM state for DUT without battery
                   conditions:
+                    - name: rpm_action_enabled
+                      exec_name: rpm_action_enabled
                     - name: No Battery is present on device
                       exec_name: sample_fail
                       conditions:
@@ -21685,6 +21693,8 @@ plans:
                   docs:
                     - Verifies that the RPM configuration provides some data for the hostname and outlet.
                     - This action does not verify the correctness of the data.
+                - name: rpm_action_enabled
+                  exec_name: rpm_action_enabled
               dependencies:
                 - name: rpm_power_cycle
                   exec_name: rpm_power_cycle
@@ -54796,6 +54806,8 @@ plans:
                           docs:
                             - Verifies that the RPM configuration provides some data for the hostname and outlet.
                             - This action does not verify the correctness of the data.
+                        - name: rpm_action_enabled
+                          exec_name: rpm_action_enabled
                       dependencies:
                         - name: rpm_power_cycle
                           exec_name: rpm_power_cycle
@@ -55324,6 +55336,8 @@ plans:
                       docs:
                         - Automated process to disable factory settings.
                       conditions:
+                        - name: rpm_action_enabled
+                          exec_name: rpm_action_enabled
                         - name: Device without cros EC (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
@@ -55371,6 +55385,9 @@ plans:
                           exec_name: device_rpm_power_off
                           exec_args:
                             - device_type:dut
+                          conditions:
+                            - name: rpm_action_enabled
+                              exec_name: rpm_action_enabled
                         - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
@@ -55405,6 +55422,9 @@ plans:
                           exec_name: device_rpm_power_on
                           exec_args:
                             - device_type:dut
+                          conditions:
+                            - name: rpm_action_enabled
+                              exec_name: rpm_action_enabled
                         - name: Set servo PD to src (Allow to fail) (ALWAYS_RUN)
                           exec_name: servo_set
                           exec_args:
@@ -55425,6 +55445,8 @@ plans:
                           docs:
                             - Verifies that the RPM configuration provides some data for the hostname and outlet.
                             - This action does not verify the correctness of the data.
+                        - name: rpm_action_enabled
+                          exec_name: rpm_action_enabled
                       dependencies:
                         - name: rpm_power_cycle
                           exec_name: rpm_power_cycle
@@ -113704,6 +113726,8 @@ plans:
                       docs:
                         - Verifies that the RPM configuration provides some data for the hostname and outlet.
                         - This action does not verify the correctness of the data.
+                    - name: rpm_action_enabled
+                      exec_name: rpm_action_enabled
                   dependencies:
                     - name: rpm_power_cycle
                       exec_name: rpm_power_cycle
@@ -114662,6 +114686,8 @@ plans:
                       docs:
                         - Verifies that the RPM configuration provides some data for the hostname and outlet.
                         - This action does not verify the correctness of the data.
+                    - name: rpm_action_enabled
+                      exec_name: rpm_action_enabled
                   dependencies:
                     - name: rpm_power_cycle
                       exec_name: rpm_power_cycle

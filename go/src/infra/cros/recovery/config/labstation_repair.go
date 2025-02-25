@@ -212,6 +212,7 @@ func LabstationRepairConfig() *Configuration {
 				"Action is always runnable.",
 			},
 			Conditions: []string{
+				"rpm_action_enabled",
 				"has_rpm_info",
 			},
 			Dependencies: []string{
@@ -247,6 +248,7 @@ func LabstationRepairConfig() *Configuration {
 				"Power off the labstation via RPM.",
 			},
 			Conditions: []string{
+				"rpm_action_enabled",
 				"has_rpm_info",
 			},
 			ExecName: "rpm_power_off",
@@ -260,6 +262,7 @@ func LabstationRepairConfig() *Configuration {
 				"Power on the labstation via RPM.",
 			},
 			Conditions: []string{
+				"rpm_action_enabled",
 				"has_rpm_info",
 			},
 			ExecName: "rpm_power_on",
