@@ -6,7 +6,9 @@ package consoleserver
 
 import (
 	"context"
-	"strconv"
+	"fmt"
+	"slices"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/bigquery"
@@ -18,6 +20,44 @@ import (
 	"go.chromium.org/infra/fleetconsole/internal/bigqueryclient"
 	"go.chromium.org/infra/fleetconsole/internal/utils"
 )
+
+const (
+	ResourceRequestTableName = "fleet_console_bq.resource_requests"
+	RrIDColumn               = "rr_id"
+	ResourceDetailsColumn    = "resource_details"
+	ProcurementDateColumn    = "procurement_end_date"
+	BuildEndDateColumn       = "build_end_date"
+	QAEndDateColumn          = "qa_end_date"
+	ConfigEndDateColumn      = "config_end_date"
+)
+
+// currently we are using big query table names as part of a contract with frontend, which is not a good practice
+// in future this method should perform an actual mapping from the contract to the big query name
+// this method serves us as a guard from SQL Injection, since BigQuery API doesn't allow for parametrized ORDER BY
+func MapOrderBy(orderBy string) (string, error) {
+	if orderBy == "" {
+		return RrIDColumn, nil
+	}
+
+	parts := strings.Split(orderBy, " ")
+
+	if !slices.Contains([]string{RrIDColumn, ResourceDetailsColumn, ProcurementDateColumn, BuildEndDateColumn, QAEndDateColumn, ConfigEndDateColumn}, parts[0]) {
+		return "", fmt.Errorf("invalid order_by field: %s", orderBy)
+	}
+
+	if len(parts) > 1 {
+		if len(parts) > 2 {
+			return "", fmt.Errorf("invalid order_by field: %s", orderBy)
+		}
+		direction := strings.ToUpper(parts[1])
+		if direction != "ASC" && direction != "DESC" {
+			return "", fmt.Errorf("invalid order_by field: %s", orderBy)
+		}
+		return parts[0] + " " + direction, nil
+	}
+
+	return parts[0], nil
+}
 
 // ListResourceRequests lists resource requests.
 func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, req *fleetconsolerpc.ListResourceRequestsRequest) (*fleetconsolerpc.ListResourceRequestsResponse, error) {
@@ -37,7 +77,22 @@ func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, 
 		return nil, err
 	}
 
-	q := bqClient.Query("select * from fleet_console_bq.resource_requests limit " + strconv.Itoa(int(req.PageSize)+1) + " offset " + strconv.Itoa(offset))
+	orderBy, err := MapOrderBy(req.GetOrderBy())
+	if err != nil {
+		logging.Errorf(ctx, "failed to extract order by: %s", err)
+		return nil, err
+	}
+
+	// seems like ORDER BY doesn't support parameters, so we need to make sure the column name is correct ourselves
+	q := bqClient.Query("SELECT * FROM " + ResourceRequestTableName + " ORDER BY " + orderBy + " LIMIT @limit OFFSET @offset")
+	q.Parameters = []bigquery.QueryParameter{
+		{
+			Name: "limit", Value: int(req.GetPageSize()) + 1,
+		},
+		{
+			Name: "offset", Value: offset,
+		},
+	}
 
 	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(5*time.Second))
 	defer cancel()
@@ -53,16 +108,16 @@ func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, 
 		var row map[string]bigquery.Value
 		err := it.Next(&row)
 		if err == nil {
-			rrID := row["rr_id"].(string)
+			rrID := row[RrIDColumn].(string)
 
 			resourceRequests = append(resourceRequests, &fleetconsolerpc.ResourceRequest{
 				RrId:               rrID,
 				Name:               "resourceRequests/" + rrID,
-				ResourceDetails:    row["resource_details"].(string),
-				ProcurementEndDate: utils.FromCivilDate(row["procurement_end_date"].(civil.Date)),
-				BuildEndDate:       utils.FromCivilDate(row["build_end_date"].(civil.Date)),
-				QaEndDate:          utils.FromCivilDate(row["qa_end_date"].(civil.Date)),
-				ConfigEndDate:      utils.FromCivilDate(row["config_end_date"].(civil.Date)),
+				ResourceDetails:    row[ResourceDetailsColumn].(string),
+				ProcurementEndDate: utils.FromCivilDate(row[ProcurementDateColumn].(civil.Date)),
+				BuildEndDate:       utils.FromCivilDate(row[BuildEndDateColumn].(civil.Date)),
+				QaEndDate:          utils.FromCivilDate(row[QAEndDateColumn].(civil.Date)),
+				ConfigEndDate:      utils.FromCivilDate(row[ConfigEndDateColumn].(civil.Date)),
 			})
 		} else {
 			break
