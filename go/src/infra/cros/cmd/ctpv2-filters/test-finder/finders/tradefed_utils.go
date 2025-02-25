@@ -34,9 +34,7 @@ type TargetBuild struct {
 	Abi     string `json:"abi"`
 }
 
-func translateTFSrcToMetadata(src [][]byte) (metaData []*api.TestCaseMetadata) {
-	// var testInfoList []TFTestInfo
-
+func TranslateTFSrcToMetadata(src [][]byte) (metaData []*api.TestCaseMetadata) {
 	for _, srcInfo := range src {
 		var testInfoListLocal TFTestInfo
 		err := json.Unmarshal(srcInfo, &testInfoListLocal)

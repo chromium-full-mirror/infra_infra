@@ -25,13 +25,13 @@ type TradefedFinder struct {
 }
 
 func matchTestsForTradefed(testSuites []*api.TestSuite, log *log.Logger) ([]*api.TestCaseMetadata, error) {
-	src, err := getTFSourceData(context.Background(), "cros-xts-metadata")
+	src, err := GetTFSourceData(context.Background(), "cros-xts-metadata")
 	if err != nil {
 		log.Println("Unable to fetch data from GCS: ", err)
 	}
 	// The source data will not have direct access to the actual proto bindings; thus is in a loose json format
 	// we will translate this into the strict proto format here.
-	metadata := translateTFSrcToMetadata(src)
+	metadata := TranslateTFSrcToMetadata(src)
 	log.Println("Looked for test cases in: ", metadata)
 
 	return finder.MatchedTestsForSuites(metadata, testSuites)
@@ -65,7 +65,7 @@ func NewTradefedFinder(ctx context.Context, req *api.InternalTestplan, log *log.
 	return &TradefedFinder{AbstractFinder: absExec}
 }
 
-func getTFSourceData(ctx context.Context, gcsBasePath string) ([][]byte, error) {
+func GetTFSourceData(ctx context.Context, gcsBasePath string) ([][]byte, error) {
 	client, err := storage.NewClient(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("storage.NewClient: %w", err)

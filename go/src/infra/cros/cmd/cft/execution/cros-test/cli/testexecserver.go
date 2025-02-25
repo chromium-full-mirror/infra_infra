@@ -21,6 +21,7 @@ import (
 	"go.chromium.org/chromiumos/test/util/finder"
 
 	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/driver"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/finders"
 )
 
 // driverToTestsMapping builds a map between test and its driver.
@@ -65,6 +66,28 @@ func driverToTestsMapping(logger *log.Logger, mdList []*api.TestCaseMetadata) (m
 
 // runTests runs the requested tests.
 func runTests(ctx context.Context, logger *log.Logger, resultRootDir, tlwAddr string, metadataList *api.TestCaseMetadataList, req *api.CrosTestRequest) (*api.CrosTestResponse, error) {
+	md := metadataList.GetValues()
+	shouldPullGcsMD := isFlexibleTFSuite(req)
+
+	if shouldPullGcsMD {
+		src, err := finders.GetSourceData(context.Background(), "mobly_priv_artifacts/out")
+		if err != nil {
+			fmt.Printf("err %s", err)
+		}
+		metadata := finders.TranslateG3SrcToMetadata(src)
+		md = append(md, metadata...)
+
+		tfsrc, err := finders.GetTFSourceData(context.Background(), "cros-xts-metadata")
+		if err != nil {
+			log.Println("Unable to fetch data from GCS: ", err)
+		}
+		// The source data will not have direct access to the actual proto bindings; thus is in a loose json format
+		// we will translate this into the strict proto format here.
+		tfMetadata := finders.TranslateTFSrcToMetadata(tfsrc)
+		md = append(md, tfMetadata...)
+
+	}
+
 	matchedMdList, err := finder.MatchedTestsForSuites(metadataList.Values, req.TestSuites)
 	if err != nil {
 		return nil, statuserrors.NewStatusError(statuserrors.InvalidArgument,
@@ -158,4 +181,26 @@ func writeOutput(output string, resp *api.CrosTestResponse) error {
 			fmt.Errorf("failed to write file %v: %w", output, err))
 	}
 	return nil
+}
+
+func isFlexibleTFSuite(req *api.CrosTestRequest) bool {
+	for _, suite := range req.GetTestSuites() {
+		md := suite.GetExecutionMetadata()
+		if mdFlagPresent(md, "FlexibleTF") {
+
+			return true
+		}
+	}
+	return false
+}
+
+func mdFlagPresent(metadata *api.ExecutionMetadata, flagName string) bool {
+	if metadata != nil && len(metadata.Args) > 0 {
+		for _, arg := range metadata.Args {
+			if arg.Flag == flagName {
+				return true
+			}
+		}
+	}
+	return false
 }

@@ -25,13 +25,13 @@ type G3MoblyFinder struct {
 }
 
 func matchTestsforG3Mobly(testSuites []*api.TestSuite, log *log.Logger) ([]*api.TestCaseMetadata, error) {
-	src, err := getSourceData(context.Background(), "mobly_priv_artifacts/out")
+	src, err := GetSourceData(context.Background(), "mobly_priv_artifacts/out")
 	if err != nil {
 		log.Println("Unable to fetch data from GCS: ", err)
 	}
 	// The source data will not have direct access to the actual proto bindings; thus is in a loose json format
 	// we will translate this into the strict proto format here.
-	metadata := translateG3SrcToMetadata(src)
+	metadata := TranslateG3SrcToMetadata(src)
 
 	return finder.MatchedTestsForSuites(metadata, testSuites)
 }
@@ -59,7 +59,7 @@ func NewG3MoblyFinder(ctx context.Context, req *api.InternalTestplan, log *log.L
 	return &G3MoblyFinder{AbstractFinder: absExec}
 }
 
-func getSourceData(ctx context.Context, gcsBasePath string) ([][]byte, error) {
+func GetSourceData(ctx context.Context, gcsBasePath string) ([][]byte, error) {
 	client, err := storage.NewClient(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("storage.NewClient: %w", err)
