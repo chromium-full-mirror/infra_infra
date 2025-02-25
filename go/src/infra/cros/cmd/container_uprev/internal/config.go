@@ -302,7 +302,9 @@ func GetConfigs() []*UprevConfig {
 			},
 		},
 		{
-			Name: "test-finder",
+			Name:          "test-finder",
+			ContainerName: "cros-test-finder",
+			Entrypoint:    "test_finder",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/ctpv2-filters/test-finder/${platform}"),
 			},
