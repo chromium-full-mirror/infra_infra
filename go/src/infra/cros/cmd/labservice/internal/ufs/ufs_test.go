@@ -53,6 +53,26 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 											Wifi: &lab.Wifi{
 												Wificell:    true,
 												AntennaConn: lab.Wifi_CONN_CONDUCTIVE,
+												WifiRouters: []*lab.WifiRouter{
+													{
+														Hostname:   "router_1",
+														State:      lab.PeripheralState_BROKEN,
+														Model:      "OPENWRT[Ubiquiti_UniFi_6_Lite]",
+														DeviceType: labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_OPENWRT,
+														Rpm: &lab.OSRPM{
+															PowerunitName:   "fake-power-unit-1",
+															PowerunitOutlet: "FAKE1",
+															PowerunitType:   lab.OSRPM_TYPE_SENTRY,
+														},
+														SupportedFeatures: []labapi.WifiRouterFeature{
+															labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_IEEE_802_11_N,
+															labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_IEEE_802_11_AC,
+														},
+													},
+													{
+														Hostname: "router_2",
+													},
+												},
 											},
 											Touch: &lab.Touch{
 												Mimo: true,
@@ -323,6 +343,33 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 							Environment: labapi.Wifi_WIFI_CELL,
 							Antenna: &labapi.WifiAntenna{
 								Connection: labapi.WifiAntenna_CONDUCTIVE,
+							},
+							WifiRouters: []*labapi.WifiRouter{
+								{
+									Hostname:   "router_1",
+									State:      labapi.PeripheralState_BROKEN,
+									Model:      "OPENWRT[Ubiquiti_UniFi_6_Lite]",
+									DeviceType: labapi.WifiRouterDeviceType_WIFI_ROUTER_DEVICE_TYPE_OPENWRT,
+									Rpm: &labapi.RPM{
+										Present: true,
+										FrontendAddress: &labapi.IpEndpoint{
+											Address: "rpm-service",
+											Port:    9999,
+										},
+										PowerUnitHostname: &labapi.IpEndpoint{
+											Address: "fake-power-unit-1",
+										},
+										PowerUnitOutlet: "FAKE1",
+										Type:            labapi.RPMType_RPM_TYPE_SENTRY,
+									},
+									SupportedFeatures: []labapi.WifiRouterFeature{
+										labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_IEEE_802_11_N,
+										labapi.WifiRouterFeature_WIFI_ROUTER_FEATURE_IEEE_802_11_AC,
+									},
+								},
+								{
+									Hostname: "router_2",
+								},
 							},
 						},
 						Touch: &labapi.Touch{

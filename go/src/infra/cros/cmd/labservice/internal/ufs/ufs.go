@@ -436,6 +436,28 @@ func getWifi(p *lab.Peripherals) *labapi.Wifi {
 			Connection: mapWifiAntenna(w.GetAntennaConn()),
 		}
 	}
+	// Add WiFi AP info into dut topology.
+	for _, r := range w.GetWifiRouters() {
+		router := &labapi.WifiRouter{
+			Hostname:          r.GetHostname(),
+			Model:             r.GetModel(),
+			SupportedFeatures: r.GetSupportedFeatures(),
+			DeviceType:        r.GetDeviceType(),
+			Rpm:               getRpm(r.GetRpm()),
+		}
+		switch r.GetState() {
+		case lab.PeripheralState_WORKING:
+			router.State = labapi.PeripheralState_WORKING
+		case lab.PeripheralState_BROKEN:
+			router.State = labapi.PeripheralState_BROKEN
+		case lab.PeripheralState_UNKNOWN:
+			router.State = labapi.PeripheralState_PERIPHERAL_STATE_UNSPECIFIED
+		default:
+			// Unknown -> Set as NA
+			router.State = labapi.PeripheralState_NOT_APPLICABLE
+		}
+		res.WifiRouters = append(res.WifiRouters, router)
+	}
 	return res
 }
 
