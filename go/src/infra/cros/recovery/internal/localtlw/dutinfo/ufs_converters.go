@@ -5,6 +5,7 @@
 package dutinfo
 
 import (
+	crosLabAPI "go.chromium.org/chromiumos/config/go/test/lab/api"
 	deviceconfig "go.chromium.org/chromiumos/infra/proto/go/device"
 
 	"go.chromium.org/infra/cros/recovery/tlw"
@@ -50,19 +51,19 @@ func convertFirmwareChannel(s ufslab.ServoFwChannel) tlw.ServoFwChannel {
 	return tlw.ServoFwChannel_STABLE
 }
 
-var storageTypes = map[deviceconfig.Config_Storage]tlw.Storage_Type{
-	deviceconfig.Config_STORAGE_SSD:  tlw.Storage_SSD,
-	deviceconfig.Config_STORAGE_HDD:  tlw.Storage_HDD,
-	deviceconfig.Config_STORAGE_MMC:  tlw.Storage_MMC,
-	deviceconfig.Config_STORAGE_NVME: tlw.Storage_NVME,
-	deviceconfig.Config_STORAGE_UFS:  tlw.Storage_UFS,
+var storageTypes = map[deviceconfig.Config_Storage]crosLabAPI.StorageType{
+	deviceconfig.Config_STORAGE_SSD:  crosLabAPI.StorageType_SSD,
+	deviceconfig.Config_STORAGE_HDD:  crosLabAPI.StorageType_HDD,
+	deviceconfig.Config_STORAGE_MMC:  crosLabAPI.StorageType_MMC,
+	deviceconfig.Config_STORAGE_NVME: crosLabAPI.StorageType_NVME,
+	deviceconfig.Config_STORAGE_UFS:  crosLabAPI.StorageType_UFS,
 }
 
-func convertStorageType(t deviceconfig.Config_Storage) tlw.Storage_Type {
+func convertStorageType(t deviceconfig.Config_Storage) crosLabAPI.StorageType {
 	if v, ok := storageTypes[t]; ok {
 		return v
 	}
-	return tlw.Storage_TYPE_UNSPECIFIED
+	return crosLabAPI.StorageType_UNSPECIFIED
 }
 
 func convertAudioLoopbackState(s ufslab.PeripheralState) tlw.DUTAudio_LoopbackState {

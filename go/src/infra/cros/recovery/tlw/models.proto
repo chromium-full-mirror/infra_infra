@@ -10,10 +10,11 @@ option go_package = "go.chromium.org/infra/cros/recovery/tlw;tlw";
 
 import "google/protobuf/duration.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/config/api/test/xmlrpc/xmlrpc.proto";
-import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/usb_drive.proto";
-import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/cbi.proto";
-import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_router.proto";
 import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/bluetooth_peer.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/cbi.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/storage.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/usb_drive.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_router.proto";
 
 // RunRequest represents result of executed command.
 message RunRequest {
@@ -454,17 +455,8 @@ message ProvisionedInfo {
 message Storage {
   // State of the component.
   HardwareState state = 1;
-  // Type describes which type or storage used on the DUT.
-  enum Type {
-    TYPE_UNSPECIFIED = 0;
-    SSD = 1;
-    HDD = 2;
-    MMC = 3;
-    NVME = 4;
-    UFS = 5;
-  }
   // Type of storage used on device.
-  Type type = 2;
+  chromiumos.test.lab.api.StorageType type = 2;
 }
 
 // Chameleon holds info about chameleon device.

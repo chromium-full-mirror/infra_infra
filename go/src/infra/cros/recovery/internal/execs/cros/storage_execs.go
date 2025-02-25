@@ -10,13 +10,13 @@ import (
 	"strings"
 	"time"
 
+	crosLabAPI "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/recovery/internal/components/cros/storage"
 	"go.chromium.org/infra/cros/recovery/internal/components/linux"
 	"go.chromium.org/infra/cros/recovery/internal/execs"
 	"go.chromium.org/infra/cros/recovery/internal/log"
-	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // auditStorageSMARTExec confirms that it is able to audit
@@ -127,7 +127,7 @@ func UpdateStorageInfoToInvExec(ctx context.Context, info *execs.ExecInfo) error
 	actionArgs := info.GetActionArgs(ctx)
 	allowedOverride := actionArgs.AsBool(ctx, "allowed_override", false)
 	storageType := info.GetChromeos().GetStorage().GetType()
-	if storageType != tlw.Storage_TYPE_UNSPECIFIED {
+	if storageType != crosLabAPI.StorageType_UNSPECIFIED {
 		if allowedOverride {
 			log.Debugf(ctx, "Storage type is %q and override is allowed.", storageType)
 		} else {
@@ -144,9 +144,9 @@ func UpdateStorageInfoToInvExec(ctx context.Context, info *execs.ExecInfo) error
 	if storageTypeStr == "" {
 		return errors.Reason("wrong storage type: storage type is empty").Err()
 	}
-	newStorageType := tlw.Storage_TYPE_UNSPECIFIED
-	if _, ok := tlw.Storage_Type_value[storageTypeStr]; ok {
-		newStorageType = tlw.Storage_Type(tlw.Storage_Type_value[storageTypeStr])
+	newStorageType := crosLabAPI.StorageType_UNRECOGNIZED
+	if k, ok := crosLabAPI.StorageType_value[storageTypeStr]; ok {
+		newStorageType = crosLabAPI.StorageType(k)
 	}
 	info.GetChromeos().GetStorage().Type = newStorageType
 	log.Debugf(ctx, "Update Storage Type to %q", newStorageType)

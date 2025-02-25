@@ -8,16 +8,15 @@ import (
 	"context"
 	"testing"
 
+	crosLabAPI "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/testing/ftt"
-
-	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // Test cases for TestStorageSMARTFieldValue
 var storageSMARTFieldValueTests = []struct {
 	testName      string
 	rawOutput     string
-	expectedType  tlw.Storage_Type
+	expectedType  crosLabAPI.StorageType
 	expectedState StorageState
 }{
 	{
@@ -26,7 +25,7 @@ var storageSMARTFieldValueTests = []struct {
 		xxxxxx
 		xxxxxx
 		`,
-		tlw.Storage_TYPE_UNSPECIFIED,
+		crosLabAPI.StorageType_UNSPECIFIED,
 		StorageStateUndefined,
 	},
 	{
@@ -36,7 +35,7 @@ var storageSMARTFieldValueTests = []struct {
 		SATA Version is: SATA 3.1, 6.0 Gb/s (current: 6.0 Gb/s)
 		xxxxxx
 		`,
-		tlw.Storage_SSD,
+		crosLabAPI.StorageType_SSD,
 		StorageStateNormal,
 	},
 	{
@@ -47,7 +46,7 @@ var storageSMARTFieldValueTests = []struct {
 		184 End-to-End_Error   PO--CK   001   001   097    NOW  135
 		xxxxxx
 		`,
-		tlw.Storage_SSD,
+		crosLabAPI.StorageType_SSD,
 		StorageStateCritical,
 	},
 	{
@@ -58,7 +57,7 @@ var storageSMARTFieldValueTests = []struct {
 		7 Reallocated_Sector_Ct   PO--CK   101   001   097
 		xxxxxx
 		`,
-		tlw.Storage_SSD,
+		crosLabAPI.StorageType_SSD,
 		StorageStateWarning,
 	},
 	{
@@ -70,7 +69,7 @@ var storageSMARTFieldValueTests = []struct {
 		DEVICE_LIFE_TIME_EST_TYP_A: 0x01
 		xxxxxx
 		`,
-		tlw.Storage_MMC,
+		crosLabAPI.StorageType_MMC,
 		StorageStateCritical,
 	},
 	{
@@ -82,7 +81,7 @@ var storageSMARTFieldValueTests = []struct {
 		DEVICE_LIFE_TIME_EST_TYP_A: 0x01
 		xxxxxx
 		`,
-		tlw.Storage_MMC,
+		crosLabAPI.StorageType_MMC,
 		StorageStateWarning,
 	},
 	{
@@ -94,7 +93,7 @@ var storageSMARTFieldValueTests = []struct {
 		DEVICE_LIFE_TIME_EST_TYP_A: 0x01
 		xxxxxx
 		`,
-		tlw.Storage_MMC,
+		crosLabAPI.StorageType_MMC,
 		StorageStateNormal,
 	},
 	{
@@ -105,7 +104,7 @@ var storageSMARTFieldValueTests = []struct {
 		Percentage Used:         100%
 		xxxxxx
 		`,
-		tlw.Storage_NVME,
+		crosLabAPI.StorageType_NVME,
 		StorageStateWarning,
 	},
 	{
@@ -116,7 +115,7 @@ var storageSMARTFieldValueTests = []struct {
 		Percentage Used:         90%
 		xxxxxx
 		`,
-		tlw.Storage_NVME,
+		crosLabAPI.StorageType_NVME,
 		StorageStateNormal,
 	},
 	{
@@ -128,7 +127,7 @@ var storageSMARTFieldValueTests = []struct {
 		Device Health Descriptor: [Byte offset 0x3]: bDeviceLifeTimeEstA = 0x1
 		xxxxxx
 		`,
-		tlw.Storage_UFS,
+		crosLabAPI.StorageType_UFS,
 		StorageStateCritical,
 	},
 	{
@@ -140,7 +139,7 @@ var storageSMARTFieldValueTests = []struct {
 		Device Health Descriptor: [Byte offset 0x3]: bDeviceLifeTimeEstA = 0x1
 		xxxxxx
 		`,
-		tlw.Storage_UFS,
+		crosLabAPI.StorageType_UFS,
 		StorageStateWarning,
 	},
 	{
@@ -152,7 +151,7 @@ var storageSMARTFieldValueTests = []struct {
 		Device Health Descriptor: [Byte offset 0x3]: bDeviceLifeTimeEstA = 0x1
 		xxxxxx
 		`,
-		tlw.Storage_UFS,
+		crosLabAPI.StorageType_UFS,
 		StorageStateNormal,
 	},
 }
@@ -190,8 +189,8 @@ func TestExtractStorageType(t *testing.T) {
 		if err != nil {
 			t.Errorf("Expected no error")
 		}
-		if typeOfStorage != tlw.Storage_SSD {
-			t.Errorf("Expected storage type: %q, got: %q", tlw.Storage_SSD, typeOfStorage)
+		if typeOfStorage != crosLabAPI.StorageType_SSD {
+			t.Errorf("Expected storage type: %q, got: %q", crosLabAPI.StorageType_SSD, typeOfStorage)
 		}
 	})
 	ftt.Run("MMC Type, no error", t, func(t *ftt.Test) {
@@ -204,8 +203,8 @@ func TestExtractStorageType(t *testing.T) {
 		if err != nil {
 			t.Errorf("Expected no error")
 		}
-		if typeOfStorage != tlw.Storage_MMC {
-			t.Errorf("Expected storage type: %q, got: %q", tlw.Storage_MMC, typeOfStorage)
+		if typeOfStorage != crosLabAPI.StorageType_MMC {
+			t.Errorf("Expected storage type: %q, got: %q", crosLabAPI.StorageType_MMC, typeOfStorage)
 		}
 	})
 	ftt.Run("NVME Type, no error", t, func(t *ftt.Test) {
@@ -218,8 +217,8 @@ func TestExtractStorageType(t *testing.T) {
 		if err != nil {
 			t.Errorf("Expected no error")
 		}
-		if typeOfStorage != tlw.Storage_NVME {
-			t.Errorf("Expected storage type: %q, got: %q", tlw.Storage_NVME, typeOfStorage)
+		if typeOfStorage != crosLabAPI.StorageType_NVME {
+			t.Errorf("Expected storage type: %q, got: %q", crosLabAPI.StorageType_NVME, typeOfStorage)
 		}
 	})
 	ftt.Run("Undefined Type, no error", t, func(t *ftt.Test) {
@@ -230,8 +229,8 @@ func TestExtractStorageType(t *testing.T) {
 		if err != nil {
 			t.Errorf("Expected no error")
 		}
-		if typeOfStorage != tlw.Storage_TYPE_UNSPECIFIED {
-			t.Errorf("Expected storage type: %q, got: %q", tlw.Storage_TYPE_UNSPECIFIED, typeOfStorage)
+		if typeOfStorage != crosLabAPI.StorageType_UNSPECIFIED {
+			t.Errorf("Expected storage type: %q, got: %q", crosLabAPI.StorageType_UNSPECIFIED, typeOfStorage)
 		}
 	})
 }
