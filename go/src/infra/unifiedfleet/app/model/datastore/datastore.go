@@ -18,6 +18,8 @@ import (
 	"go.chromium.org/luci/grpc/grpcutil"
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/auth/realms"
+
+	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // Error messages for datastore operations
@@ -234,14 +236,16 @@ func GetACL(ctx context.Context, pm proto.Message, nf NewRealmEntityFunc, needed
 		return nil, status.Errorf(codes.Internal, InternalError)
 	}
 
-	has, err := auth.HasPermission(ctx, neededPerm, entity.GetRealm(), nil)
-	if err != nil {
-		logging.Errorf(ctx, "Failed to fetch auth permissions: %s", err)
-		return nil, status.Errorf(codes.Internal, InternalError)
-	}
-	if !has {
-		logging.Infof(ctx, "User %s does not have permission %s in realm %s", auth.CurrentIdentity(ctx), neededPerm.String(), entity.GetRealm())
-		return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+	if !util.SkipRealmsCheck {
+		has, err := auth.HasPermission(ctx, neededPerm, entity.GetRealm(), nil)
+		if err != nil {
+			logging.Errorf(ctx, "Failed to fetch auth permissions: %s", err)
+			return nil, status.Errorf(codes.Internal, InternalError)
+		}
+		if !has {
+			logging.Infof(ctx, "User %s does not have permission %s in realm %s", auth.CurrentIdentity(ctx), neededPerm.String(), entity.GetRealm())
+			return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+		}
 	}
 
 	pm, perr := entity.GetProto()
@@ -463,14 +467,16 @@ func BatchGetACL(ctx context.Context, es []proto.Message, nf NewRealmEntityFunc,
 	}
 
 	for _, e := range entities {
-		has, err := auth.HasPermission(ctx, neededPerm, e.GetRealm(), nil)
-		if err != nil {
-			logging.Errorf(ctx, "Failed to fetch auth permissions: %s", err)
-			return nil, status.Errorf(codes.Internal, InternalError)
-		}
-		if !has {
-			logging.Infof(ctx, "User %s does not have permission %s in realm %s", auth.CurrentIdentity(ctx), neededPerm.String(), e.GetRealm())
-			return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+		if !util.SkipRealmsCheck {
+			has, err := auth.HasPermission(ctx, neededPerm, e.GetRealm(), nil)
+			if err != nil {
+				logging.Errorf(ctx, "Failed to fetch auth permissions: %s", err)
+				return nil, status.Errorf(codes.Internal, InternalError)
+			}
+			if !has {
+				logging.Infof(ctx, "User %s does not have permission %s in realm %s", auth.CurrentIdentity(ctx), neededPerm.String(), e.GetRealm())
+				return nil, status.Errorf(codes.PermissionDenied, "Permission denied")
+			}
 		}
 
 		pm, err := e.GetProto()
@@ -550,15 +556,17 @@ func BatchDeleteACL(ctx context.Context, es []proto.Message, nf NewRealmEntityFu
 		}
 	}
 
-	for _, e := range entities {
-		has, err := auth.HasPermission(ctx, neededPerm, e.GetRealm(), nil)
-		if err != nil {
-			logging.Errorf(ctx, "Failed to fetch auth permissions: %s", err)
-			return status.Errorf(codes.Internal, "Fail to fetch auth permissions: %s", err)
-		}
-		if !has {
-			logging.Infof(ctx, "User %s does not have permission %s in realm %s", auth.CurrentIdentity(ctx), neededPerm.String(), e.GetRealm())
-			return status.Errorf(codes.PermissionDenied, "Permission denied")
+	if !util.SkipRealmsCheck {
+		for _, e := range entities {
+			has, err := auth.HasPermission(ctx, neededPerm, e.GetRealm(), nil)
+			if err != nil {
+				logging.Errorf(ctx, "Failed to fetch auth permissions: %s", err)
+				return status.Errorf(codes.Internal, "Fail to fetch auth permissions: %s", err)
+			}
+			if !has {
+				logging.Infof(ctx, "User %s does not have permission %s in realm %s", auth.CurrentIdentity(ctx), neededPerm.String(), e.GetRealm())
+				return status.Errorf(codes.PermissionDenied, "Permission denied")
+			}
 		}
 	}
 
