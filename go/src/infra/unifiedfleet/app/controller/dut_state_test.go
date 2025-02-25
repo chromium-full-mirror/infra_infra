@@ -16,6 +16,7 @@ import (
 	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 	"go.chromium.org/infra/unifiedfleet/app/model/history"
 	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	"go.chromium.org/infra/unifiedfleet/app/model/registration"
 	"go.chromium.org/infra/unifiedfleet/app/model/state"
 	"go.chromium.org/infra/unifiedfleet/app/util"
 )
@@ -127,34 +128,38 @@ func TestUpdateDutStateWithDeviceLabels(t *testing.T) {
 	ftt.Run("UpdateDutState with DeviceLabels", t, func(t *ftt.Test) {
 		t.Run("Update dut state with device labels happy path", func(t *ftt.Test) {
 			ds1 := mockDutState("update-dutstate-devicelabels-1", "update-dutstate-devicelabels-hostname1")
-			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
+				Name: "update-dutstate-devicelabels-machine1",
+			})
+			assert.NoErr(t, err)
+			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
 				Name:     "update-dutstate-devicelabels-hostname1",
 				Hostname: "update-dutstate-devicelabels-hostname1",
 				Lse: &ufspb.MachineLSE_ChromeosMachineLse{
 					ChromeosMachineLse: &ufspb.ChromeOSMachineLSE{},
 				},
-				Realm: util.AtlLabAdminRealm,
+				Machines: []string{"update-dutstate-devicelabels-machine1"},
+				Realm:    util.AtlLabAdminRealm,
 			})
-			assert.Loosely(t, err, should.BeNil)
-
+			assert.NoErr(t, err)
 			su1 := &ufspb.SchedulingUnit{
 				Name:        "update-dutstate-su-1",
 				MachineLSEs: []string{"update-dutstate-devicelabels-hostname1"},
 			}
 			_, err = inventory.CreateSchedulingUnit(ctx, su1)
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 
 			_, err = UpdateDutState(ctx, ds1)
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 
 			// DUT labels
 			resp, err := inventory.GetDeviceLabels(ctx, util.AddPrefix(util.MachineLSECollection, "update-dutstate-devicelabels-hostname1"))
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetName(), should.Equal("machineLSEs/update-dutstate-devicelabels-hostname1"))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_CHROMEOS_DEVICE))
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "devicelabels/machineLSEs/update-dutstate-devicelabels-hostname1")
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 			assert.Loosely(t, changes, should.HaveLength(1))
 			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
 			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
@@ -162,12 +167,12 @@ func TestUpdateDutStateWithDeviceLabels(t *testing.T) {
 
 			// Scheduling Unit labels
 			resp, err = inventory.GetDeviceLabels(ctx, util.AddPrefix(util.SchedulingUnitCollection, "update-dutstate-su-1"))
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetName(), should.Equal("schedulingunits/update-dutstate-su-1"))
 			assert.Loosely(t, resp.GetResourceType(), should.Equal(ufspb.ResourceType_RESOURCE_TYPE_SCHEDULING_UNIT))
 			changes, err = history.QueryChangesByPropertyName(ctx, "name", "devicelabels/schedulingunits/update-dutstate-su-1")
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 			assert.Loosely(t, changes, should.HaveLength(1))
 			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
 			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))

@@ -19,6 +19,7 @@ import (
 	. "go.chromium.org/infra/unifiedfleet/app/model/datastore"
 	"go.chromium.org/infra/unifiedfleet/app/model/history"
 	"go.chromium.org/infra/unifiedfleet/app/model/inventory"
+	"go.chromium.org/infra/unifiedfleet/app/model/registration"
 	"go.chromium.org/infra/unifiedfleet/app/util"
 )
 
@@ -377,41 +378,51 @@ func TestUpdateSchedulingUnit(t *testing.T) {
 		})
 
 		t.Run("Update SchedulingUnit for existing SchedulingUnit - partial update(append) machinelses", func(t *ftt.Test) {
-			_, err := inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
-				Name: "dut-1",
-				Lse:  &ufspb.MachineLSE_ChromeosMachineLse{},
+			_, err := registration.CreateMachine(ctx, &ufspb.Machine{
+				Name: "machine-1",
 			})
-			assert.Loosely(t, err, should.BeNil)
-
+			assert.NoErr(t, err)
 			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
-				Name: "dut-2",
-				Lse:  &ufspb.MachineLSE_ChromeosMachineLse{},
+				Name:     "dut-1",
+				Lse:      &ufspb.MachineLSE_ChromeosMachineLse{},
+				Machines: []string{"machine-1"},
 			})
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
+
+			_, err = registration.CreateMachine(ctx, &ufspb.Machine{
+				Name: "machine-2",
+			})
+			assert.NoErr(t, err)
+			_, err = inventory.CreateMachineLSE(ctx, &ufspb.MachineLSE{
+				Name:     "dut-2",
+				Lse:      &ufspb.MachineLSE_ChromeosMachineLse{},
+				Machines: []string{"machine-2"},
+			})
+			assert.NoErr(t, err)
 
 			su1 := mockSchedulingUnit("su-7")
 			su1.MachineLSEs = []string{"dut-1"}
 			_, err = inventory.CreateSchedulingUnit(ctx, su1)
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 
 			su2 := mockSchedulingUnit("su-7")
 			su2.MachineLSEs = []string{"dut-2"}
 			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.InventoriesUpdate, util.AtlLabAdminRealm)
 			resp, err := UpdateSchedulingUnit(ctx, su2, &field_mask.FieldMask{Paths: []string{"machinelses"}})
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, resp.GetName(), should.Equal(su2.GetName()))
 			assert.Loosely(t, resp.GetMachineLSEs(), should.Match([]string{"dut-1", "dut-2"}))
 
 			changes, err := history.QueryChangesByPropertyName(ctx, "name", "schedulingunits/su-7")
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 			assert.Loosely(t, changes, should.HaveLength(1))
 			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("schedulingunit.machinelses"))
 			assert.Loosely(t, changes[0].GetOldValue(), should.Equal("[dut-1]"))
 			assert.Loosely(t, changes[0].GetNewValue(), should.Equal("[dut-1 dut-2]"))
 
 			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "schedulingunits/su-7")
-			assert.Loosely(t, err, should.BeNil)
+			assert.NoErr(t, err)
 			assert.Loosely(t, msgs, should.HaveLength(1))
 			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})

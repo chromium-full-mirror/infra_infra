@@ -1024,17 +1024,19 @@ func GetChromeOSDeviceData(ctx context.Context, id, hostname string) (*ufspb.Chr
 			LabConfig: lse,
 		}, nil
 	}
-	return getChromeOSDeviceDataWithLSEAndMachine(ctx, lse, machine)
+	return getChromeOSDeviceDataWithLSEOrMachine(ctx, lse, machine)
 }
 
-// GetChromeOSDeviceDataWithLSEAndMachine returns ChromeOSDeviceData using the provided lse/machine
+// getChromeOSDeviceDataWithLSEOrMachine returns ChromeOSDeviceData using the provided lse/machine
 // Succeeds if at least one of lse and machine are non-nil
-func getChromeOSDeviceDataWithLSEAndMachine(ctx context.Context, lse *ufspb.MachineLSE, machine *ufspb.Machine) (*ufspb.ChromeOSDeviceData, error) {
+func getChromeOSDeviceDataWithLSEOrMachine(ctx context.Context, lse *ufspb.MachineLSE, machine *ufspb.Machine) (*ufspb.ChromeOSDeviceData, error) {
 	if lse == nil && machine == nil {
 		return nil, fmt.Errorf("both the MachineLSE and Machine are nil")
 	}
 
-	// If lse is nil, fetch based on machine
+	// We only fetch lse and machine if they're nil.
+	// Otherwise, we use the provided values
+	// If lse is nil, fetch lse based on machine data
 	if lse == nil {
 		id := machine.GetName()
 		logging.Debugf(ctx, "getting full configs for machine %s", id)
@@ -1047,22 +1049,16 @@ func getChromeOSDeviceDataWithLSEAndMachine(ctx context.Context, lse *ufspb.Mach
 		}
 		lse = machinelses[0]
 	}
-	// If machine is nil, fetch based on lse
-	var err error
+	// If machine is nil, fetch machine based on lse data
 	if machine == nil {
 		if len(lse.GetMachines()) == 0 {
-			logging.Warningf(ctx, "MachineLSE %d does not include machine info.", lse.GetName())
-			return &ufspb.ChromeOSDeviceData{
-				LabConfig: lse,
-			}, nil
+			return nil, errors.Reason("MachineLSE %s does not include machine info.", lse.GetName()).Err()
 		}
 		id := lse.GetMachines()[0]
+		var err error
 		machine, err = GetMachine(ctx, id)
 		if err != nil {
-			logging.Errorf(ctx, "Machine for %s not found. Error: %s", id, err)
-			return &ufspb.ChromeOSDeviceData{
-				LabConfig: lse,
-			}, nil
+			return nil, errors.Annotate(err, "Machine for %s not found.", id).Err()
 		}
 	}
 
