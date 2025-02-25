@@ -135,7 +135,7 @@ func pushImage(ctx context.Context, fullname string) (stdout string, stderr stri
 
 // buildAndPush builds and pushes the docker image to the artifact
 // directory and returns the sha produced.
-func buildAndPush(ctx context.Context, imageCache map[string]any, repo *Repository, dir, name, tag string) (containerInfoItem *common.ContainerInfoItem, err error) {
+func buildAndPush(ctx context.Context, imageCache map[string]any, repo *Repository, dir, name, entrypoint, tag string) (containerInfoItem *common.ContainerInfoItem, err error) {
 	step, ctx := build.StartStep(ctx, "Build and Push")
 	defer func() { step.End(err) }()
 
@@ -176,7 +176,7 @@ func buildAndPush(ctx context.Context, imageCache map[string]any, repo *Reposito
 	}
 	logging.Infof(ctx, "DIGEST: %s", sha)
 
-	containerInfoItem = common.NewContainerInfoItem(repo.Hostname, repo.Project, sha, name)
+	containerInfoItem = common.NewContainerInfoItem(repo.Hostname, repo.Project, sha, name, entrypoint)
 	return
 }
 

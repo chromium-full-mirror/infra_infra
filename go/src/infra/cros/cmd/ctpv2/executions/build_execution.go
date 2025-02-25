@@ -413,7 +413,9 @@ func fillInUserDefinedFilters(ctx context.Context, req *api.CTPRequest, creds, c
 			if containerInfo.GetContainer().GetName() == "" {
 				containerInfo.Container.Name = filterName
 			}
-			containerInfo.BinaryName = filter.GetContainerInfo().GetBinaryName()
+			if binName := filter.GetContainerInfo().GetBinaryName(); binName != "" {
+				containerInfo.BinaryName = binName
+			}
 			containerInfo.BinaryArgs = filter.GetContainerInfo().GetBinaryArgs()
 			updatedFilters = append(updatedFilters, &api.CTPFilter{
 				ContainerInfo: containerInfo,

@@ -89,6 +89,8 @@ type UprevConfig struct {
 	// Defaults to Name, but can be separately set if
 	// container name is different than the uprev name.
 	ContainerName string
+	// Name of the binary entrypoint.
+	Entrypoint string
 	// Binaries used during docker image setup.
 	CIPDPackages []*CIPDPackage
 	// Prepper is a function signature representing
@@ -320,7 +322,7 @@ func CleanConfigs(configs []*UprevConfig) []*UprevConfig {
 			config.ContainerName = config.Name
 		}
 
-		if config.Repositories == nil || len(config.Repositories) == 0 {
+		if len(config.Repositories) == 0 {
 			config.Repositories = []*Repository{DefaultRepository}
 		}
 	}

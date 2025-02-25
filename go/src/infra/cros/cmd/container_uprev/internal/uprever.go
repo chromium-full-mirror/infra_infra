@@ -69,7 +69,7 @@ func UprevContainer(ctx context.Context, imageCache map[string]any, config *Upre
 	}
 	// Will have exactly one repository after upstream mapping.
 	repo := config.Repositories[0]
-	if containerInfoItem, err = buildAndPush(ctx, imageCache, repo, dir, config.ContainerName, imageTag); err != nil {
+	if containerInfoItem, err = buildAndPush(ctx, imageCache, repo, dir, config.ContainerName, config.Entrypoint, imageTag); err != nil {
 		err = errors.Annotate(err, "failed to build and push image").Err()
 		return
 	}

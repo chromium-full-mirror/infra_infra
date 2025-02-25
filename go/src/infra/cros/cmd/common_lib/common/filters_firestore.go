@@ -26,9 +26,10 @@ type ContainerInfoItem struct {
 	RepositoryProject  string
 	Digest             string
 	ContainerName      string
+	BinaryName         string
 }
 
-func NewContainerInfoItem(host, project, digest, name string) *ContainerInfoItem {
+func NewContainerInfoItem(host, project, digest, name, binary string) *ContainerInfoItem {
 	if host == "" {
 		host = DefaultDockerHost
 	}
@@ -41,6 +42,7 @@ func NewContainerInfoItem(host, project, digest, name string) *ContainerInfoItem
 		RepositoryProject:  project,
 		Digest:             digest,
 		ContainerName:      name,
+		BinaryName:         binary,
 	}
 }
 
@@ -178,6 +180,7 @@ func buildContainerInfoFromDocumentRef(ctx context.Context, documentRef *firesto
 				Project:  containerInfoItem.RepositoryProject,
 			},
 		},
+		BinaryName: containerInfoItem.BinaryName,
 	}
 	return
 }
