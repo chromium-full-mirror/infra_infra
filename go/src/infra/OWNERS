@@ -18,6 +18,9 @@ per-file go.*=vadimsh@chromium.org
 per-file go.*=yiwzhang@google.com
 per-file go.*=gregorynisbet@google.com
 
+# BLD
+per-file go.*=juahurta@google.com
+
 # APAC
 per-file go.*=bryner@google.com
 per-file go.*=jwata@google.com
