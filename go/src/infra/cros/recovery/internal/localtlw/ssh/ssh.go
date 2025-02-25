@@ -13,7 +13,6 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"go.chromium.org/infra/cros/recovery/internal/log"
-	"go.chromium.org/infra/cros/recovery/internal/rand"
 	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
@@ -29,8 +28,6 @@ func RunBackground(ctx context.Context, provider SSHProvider, addr string, cmd s
 
 // run executes commands on a remote host by SSH.
 func run(ctx context.Context, provider SSHProvider, addr string, cmd string, background bool) (result *tlw.RunResult) {
-	// TODO(b:267504440): Delete session key logs since they are only required for debugging a specific issue.
-	sessionLogsKey := rand.String(32)
 	result = &tlw.RunResult{
 		Command:  cmd,
 		ExitCode: -1,
@@ -55,7 +52,7 @@ func run(ctx context.Context, provider SSHProvider, addr string, cmd string, bac
 		result.Stderr = fmt.Sprintf("%s: cmd is empty", errorMessage)
 		return
 	}
-	log.Debugf(ctx, "Getting SSH client: %q for %q", sessionLogsKey, addr)
+	log.Debugf(ctx, "Getting SSH client: for %q", addr)
 	sc, err := provider.Get(ctx, addr)
 	if err != nil {
 		result.Stderr = fmt.Sprintf("%s: fail to get client from pool; %s", errorMessage, err)
@@ -63,11 +60,12 @@ func run(ctx context.Context, provider SSHProvider, addr string, cmd string, bac
 	}
 	defer func() {
 		if err := provider.CloseClient(ctx, sc); err != nil {
-			log.Debugf(ctx, "SSH client closed %q with error: %s", sessionLogsKey, err)
+			log.Debugf(ctx, "SSH client closed with error: %s", err)
+		} else {
+			log.Debugf(ctx, "SSH client closed!")
 		}
 	}()
-	log.Debugf(ctx, "SSH client received: %q", sessionLogsKey)
-	result = createSessionAndExecute(ctx, cmd, sc, background, sessionLogsKey)
+	result = createSessionAndExecute(ctx, cmd, sc, background)
 	log.Debugf(ctx, "Run SSH %q: Cmd: %q", addr, result.Command)
 	log.Debugf(ctx, "Run SSH %q: ExitCode: %d", addr, result.ExitCode)
 	log.Debugf(ctx, "Run SSH %q: Stdout(%d): %s", addr, len(result.Stderr), trancateString(result.Stdout, 1000))
@@ -101,21 +99,18 @@ func trancateString(str string, max int) string {
 // createSessionAndExecute creates ssh session and perform execution by ssh.
 //
 // The function also aborted execution if context canceled.
-func createSessionAndExecute(ctx context.Context, cmd string, client SSHClient, background bool, sessionLogsKey string) (result *tlw.RunResult) {
+func createSessionAndExecute(ctx context.Context, cmd string, client SSHClient, background bool) (result *tlw.RunResult) {
 	result = &tlw.RunResult{
 		Command:  cmd,
 		ExitCode: -1,
 	}
-	log.Debugf(ctx, "Started SSH session: %q", sessionLogsKey)
 	session, err := client.NewSession()
 	if err != nil {
 		result.Stderr = fmt.Sprintf("internal run ssh: %v", err)
 		return
 	}
 	defer func() {
-		log.Debugf(ctx, "Closing SSH session: %q", sessionLogsKey)
 		session.Close()
-		log.Debugf(ctx, "SSH Session %q closed.", sessionLogsKey)
 	}()
 	var stdOut, stdErr bytes.Buffer
 	session.Stdout = &stdOut
@@ -153,16 +148,14 @@ func createSessionAndExecute(ctx context.Context, cmd string, client SSHClient, 
 		}()
 		select {
 		case <-sw:
-			log.Debugf(ctx, "SSH Session %q: exiting by execution", sessionLogsKey)
 			return exit(runErr)
 		case <-ctx.Done():
-			log.Debugf(ctx, "SSH Session %q: stopping by context", sessionLogsKey)
+			log.Debugf(ctx, "SSH Session: stopping by context")
 			// At the end abort session.
 			// Session will be closed in defer.
 			if err := session.Signal(ssh.SIGABRT); err != nil {
 				log.Errorf(ctx, "Fail to abort context by ABORT signal: %s", err)
 			}
-			log.Debugf(ctx, "SSH Session %q: stopped by context", sessionLogsKey)
 			return exit(ctx.Err())
 		}
 	}
