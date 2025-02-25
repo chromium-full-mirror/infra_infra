@@ -442,7 +442,7 @@ func TestListMachines(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	machines := make([]*ufspb.Machine, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		chromeOSMachine1 := mockChromeOSMachine(fmt.Sprintf("chromeos-%d", i), "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
 		resp, _ := CreateMachine(ctx, chromeOSMachine1)
 		machines = append(machines, resp)
@@ -484,12 +484,12 @@ func TestListMachinesACL(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	machines := make([]*ufspb.Machine, 0, 20)
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		chromeOSMachine := mockChromeOSMachine(fmt.Sprintf("chromeos-0%d", i), "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS5)
 		resp, _ := CreateMachine(ctx, chromeOSMachine)
 		machines = append(machines, resp)
 	}
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		chromeOSMachine := mockChromeOSMachine(fmt.Sprintf("chromeos-1%d", i), "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
 		resp, _ := CreateMachine(ctx, chromeOSMachine)
 		machines = append(machines, resp)
@@ -584,7 +584,7 @@ func TestListMachinesByIdPrefixSearch(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	machines := make([]*ufspb.Machine, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		chromeOSMachine1 := mockChromeOSMachine(fmt.Sprintf("chromeos-%d", i), "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
 		resp, _ := CreateMachine(ctx, chromeOSMachine1)
 		machines = append(machines, resp)
@@ -685,7 +685,7 @@ func TestBatchUpdateMachines(t *testing.T) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		machines := make([]*ufspb.Machine, 0, 4)
-		for i := 0; i < 4; i++ {
+		for i := range 4 {
 			chromeOSMachine1 := mockChromeOSMachine(fmt.Sprintf("chromeos-%d", i), "chromeoslab", "samus", ufspb.Zone_ZONE_CHROMEOS4)
 			resp, err := CreateMachine(ctx, chromeOSMachine1)
 			assert.Loosely(t, err, should.BeNil)

@@ -110,7 +110,7 @@ func TestListSwitches(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	switches := make([]*ufspb.Switch, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		switch1 := mockSwitch(fmt.Sprintf("switch-%d", i))
 		resp, _ := CreateSwitch(ctx, switch1)
 		switches = append(switches, resp)

@@ -471,7 +471,7 @@ func TestListMachines(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 	machines := make([]*ufspb.Machine, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		chromeOSMachine1 := mockChromeOSMachine("", "chromeoslab", "samus")
 		chromeOSMachine1.Name = fmt.Sprintf("chromeos-asset-%d", i)
 		resp, _ := registration.CreateMachine(tf.C, chromeOSMachine1)
@@ -703,7 +703,7 @@ func TestListRacks(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 	racks := make([]*ufspb.Rack, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		rack1 := &ufspb.Rack{
 			Name: fmt.Sprintf("rack-%d", i),
 		}
@@ -1052,7 +1052,7 @@ func TestListNics(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 	nics := make([]*ufspb.Nic, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		nic := &ufspb.Nic{
 			Name: fmt.Sprintf("nic-%d", i),
 		}
@@ -1383,7 +1383,7 @@ func TestListKVMs(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 	KVMs := make([]*ufspb.KVM, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		kvm := &ufspb.KVM{
 			Name: fmt.Sprintf("kvm-%d", i),
 		}
@@ -1656,7 +1656,7 @@ func TestListRPMs(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 	RPMs := make([]*ufspb.RPM, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		rpm := &ufspb.RPM{
 			Name: fmt.Sprintf("rpm-%d", i),
 		}
@@ -2001,7 +2001,7 @@ func TestListDracs(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 	dracs := make([]*ufspb.Drac, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		drac := &ufspb.Drac{
 			Name: fmt.Sprintf("drac-%d", i),
 		}
@@ -2274,7 +2274,7 @@ func TestListSwitches(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 	switches := make([]*ufspb.Switch, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		s := &ufspb.Switch{
 			Name: fmt.Sprintf("switch-%d", i),
 		}

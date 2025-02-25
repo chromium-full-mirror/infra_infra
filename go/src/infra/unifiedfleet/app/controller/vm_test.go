@@ -680,7 +680,7 @@ func TestBatchGetVMs(t *testing.T) {
 	ftt.Run("BatchGetVMs", t, func(t *ftt.Test) {
 		t.Run("Batch get vms - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.VM, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				entities[i] = &ufspb.VM{
 					Name: fmt.Sprintf("vm-batchGet-%d", i),
 				}

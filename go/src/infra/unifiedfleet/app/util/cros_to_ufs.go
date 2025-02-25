@@ -82,7 +82,7 @@ func ParseOSDhcpdConf(conf string, topology map[string]*ufspb.Vlan) (*DHCPConf, 
 			if err != nil {
 				return nil, errors.Reason("fail to parse subnet %s to uint32", subnet).Err()
 			}
-			for i := 0; i < int(vlan.CapacityIp); i++ {
+			for range vlan.CapacityIp {
 				ipV4Str := IPv4IntToStr(startIP)
 				ip := &ufspb.IP{
 					Id:      GetIPName(vlan.GetName(), ipV4Str),

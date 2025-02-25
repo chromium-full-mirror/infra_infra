@@ -263,7 +263,7 @@ func TestListMachineLSEs(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	machineLSEs := make([]*ufspb.MachineLSE, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		machineLSE1 := mockMachineLSE(fmt.Sprintf("machineLSE-%d", i))
 		resp, _ := CreateMachineLSE(ctx, machineLSE1)
 		machineLSEs = append(machineLSEs, resp)
@@ -306,12 +306,12 @@ func TestListMachineLSEsACL(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 	browserMachineLSEs := make([]*ufspb.MachineLSE, 0, 4)
 	acsMachineLSEs := make([]*ufspb.MachineLSE, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		machineLSE1 := mockMachineLSEWithRealm(fmt.Sprintf("machineLSE-%d", i), util.BrowserLabAdminRealm)
 		resp, _ := CreateMachineLSE(ctx, machineLSE1)
 		browserMachineLSEs = append(browserMachineLSEs, resp)
 	}
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		machineLSE1 := mockMachineLSEWithRealm(fmt.Sprintf("machineLSE-%d", i+4), util.AcsLabAdminRealm)
 		resp, _ := CreateMachineLSE(ctx, machineLSE1)
 		acsMachineLSEs = append(acsMachineLSEs, resp)
@@ -401,7 +401,7 @@ func TestListMachineLSEsByIdPrefixSearch(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	machineLSEs := make([]*ufspb.MachineLSE, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		machineLSE1 := mockMachineLSE(fmt.Sprintf("machineLSE-%d", i))
 		resp, _ := CreateMachineLSE(ctx, machineLSE1)
 		machineLSEs = append(machineLSEs, resp)
@@ -502,7 +502,7 @@ func TestBatchUpdateMachineLSEs(t *testing.T) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		machineLSEs := make([]*ufspb.MachineLSE, 0, 4)
-		for i := 0; i < 4; i++ {
+		for i := range 4 {
 			machineLSE1 := mockMachineLSE(fmt.Sprintf("machineLSE-%d", i))
 			resp, err := CreateMachineLSE(ctx, machineLSE1)
 			assert.Loosely(t, err, should.BeNil)
@@ -581,7 +581,7 @@ func TestListAllMachineLSEs(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	machineLSEs := make([]*ufspb.MachineLSE, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		machineLSE1 := mockMachineLSE(fmt.Sprintf("machineLSE-%d", i))
 		machineLSE1.Description = "Test machineLSE"
 		resp, _ := CreateMachineLSE(ctx, machineLSE1)
@@ -592,7 +592,7 @@ func TestListAllMachineLSEs(t *testing.T) {
 			resp, _ := ListAllMachineLSEs(ctx, true)
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, len(resp), should.Equal(4))
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				assert.Loosely(t, resp[i].GetName(), should.Equal(fmt.Sprintf("machineLSE-%d", i)))
 				assert.Loosely(t, resp[i].GetDescription(), should.BeEmpty)
 			}

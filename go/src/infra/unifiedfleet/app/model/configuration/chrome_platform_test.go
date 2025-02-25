@@ -117,7 +117,7 @@ func TestListChromePlatforms(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	chromePlatforms := make([]*ufspb.ChromePlatform, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		chromePlatform1 := mockChromePlatform(fmt.Sprintf("chromePlatform-%d", i), "Camera")
 		resp, _ := CreateChromePlatform(ctx, chromePlatform1)
 		chromePlatforms = append(chromePlatforms, resp)

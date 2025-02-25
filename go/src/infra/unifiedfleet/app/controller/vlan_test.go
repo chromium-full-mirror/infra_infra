@@ -622,7 +622,7 @@ func TestListVlans(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	vlans := make([]*ufspb.Vlan, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		vlan1 := mockVlan("", "")
 		vlan1.Name = fmt.Sprintf("vlan-%d", i)
 		vlan1.Zones = []ufspb.Zone{ufspb.Zone_ZONE_MTV96}
@@ -759,7 +759,7 @@ func TestBatchGetVlans(t *testing.T) {
 	ftt.Run("BatchGetVlans", t, func(t *ftt.Test) {
 		t.Run("Batch get vlans - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.Vlan, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				entities[i] = &ufspb.Vlan{
 					Name: fmt.Sprintf("vlan-batchGet-%d", i),
 				}

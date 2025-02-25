@@ -1075,7 +1075,7 @@ func TestListNics(t *testing.T) {
 	ctx := testingContext()
 	nicsWithSwitch := make([]*ufspb.Nic, 0, 2)
 	nics := make([]*ufspb.Nic, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		nic := mockNic(fmt.Sprintf("nic-%d", i))
 		if i%2 == 0 {
 			nic.SwitchInterface = &ufspb.SwitchInterface{Switch: "switch-12"}
@@ -1113,7 +1113,7 @@ func TestBatchGetNics(t *testing.T) {
 	ftt.Run("BatchGetNics", t, func(t *ftt.Test) {
 		t.Run("Batch get nics - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.Nic, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				entities[i] = &ufspb.Nic{
 					Name: fmt.Sprintf("nic-batchGet-%d", i),
 				}

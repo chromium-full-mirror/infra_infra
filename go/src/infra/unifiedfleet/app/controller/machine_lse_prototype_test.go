@@ -28,7 +28,7 @@ func TestListMachineLSEPrototypes(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	machineLSEPrototypes := make([]*ufspb.MachineLSEPrototype, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		machineLSEPrototype1 := mockMachineLSEPrototype("")
 		machineLSEPrototype1.Name = fmt.Sprintf("machineLSEPrototype-%d", i)
 		resp, _ := configuration.CreateMachineLSEPrototype(ctx, machineLSEPrototype1)
@@ -99,7 +99,7 @@ func TestBatchGetMachineLSEPrototypes(t *testing.T) {
 	ftt.Run("BatchGetMachineLSEPrototypes", t, func(t *ftt.Test) {
 		t.Run("Batch get machine lse prototypes - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.MachineLSEPrototype, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				entities[i] = &ufspb.MachineLSEPrototype{
 					Name: fmt.Sprintf("machinelseprototype-batchGet-%d", i),
 				}

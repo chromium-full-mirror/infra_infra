@@ -1666,7 +1666,7 @@ func TestListMachines(t *testing.T) {
 	ctx := testingContext()
 	machinesWithChromeplatform := make([]*ufspb.Machine, 0, 2)
 	machines := make([]*ufspb.Machine, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		machine := &ufspb.Machine{
 			Name: fmt.Sprintf("machinefilter-%d", i),
 			Device: &ufspb.Machine_ChromeBrowserMachine{
@@ -1726,7 +1726,7 @@ func TestBatchGetMachines(t *testing.T) {
 	ftt.Run("BatchGetMachines", t, func(t *ftt.Test) {
 		t.Run("Batch get machine - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.Machine, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				entities[i] = &ufspb.Machine{
 					Name: fmt.Sprintf("machine-batchGet-%d", i),
 					Location: &ufspb.Location{

@@ -116,7 +116,7 @@ func TestListRackLSEs(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	rackLSEs := make([]*ufspb.RackLSE, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		rackLSE1 := mockRackLSE(fmt.Sprintf("rackLSE-%d", i))
 		resp, _ := CreateRackLSE(ctx, rackLSE1)
 		rackLSEs = append(rackLSEs, resp)
@@ -188,7 +188,7 @@ func TestBatchUpdateRackLSEs(t *testing.T) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		rackLSEs := make([]*ufspb.RackLSE, 0, 4)
-		for i := 0; i < 4; i++ {
+		for i := range 4 {
 			rackLSE1 := mockRackLSE(fmt.Sprintf("rackLSE-%d", i))
 			resp, err := CreateRackLSE(ctx, rackLSE1)
 			assert.Loosely(t, err, should.BeNil)

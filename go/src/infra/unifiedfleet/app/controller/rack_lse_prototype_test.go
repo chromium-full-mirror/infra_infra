@@ -28,7 +28,7 @@ func TestListRackLSEPrototypes(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	rackLSEPrototypes := make([]*ufspb.RackLSEPrototype, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		rackLSEPrototype1 := mockRackLSEPrototype("")
 		rackLSEPrototype1.Name = fmt.Sprintf("rackLSEPrototype-%d", i)
 		resp, _ := configuration.CreateRackLSEPrototype(ctx, rackLSEPrototype1)
@@ -99,7 +99,7 @@ func TestBatchGetRackLSEPrototypes(t *testing.T) {
 	ftt.Run("BatchGetRackLSEPrototypes", t, func(t *ftt.Test) {
 		t.Run("Batch get rack lse prototypes - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.RackLSEPrototype, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				entities[i] = &ufspb.RackLSEPrototype{
 					Name: fmt.Sprintf("racklseprototype-batchGet-%d", i),
 				}

@@ -116,7 +116,7 @@ func TestListKVMs(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	KVMs := make([]*ufspb.KVM, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		KVM1 := mockKVM(fmt.Sprintf("KVM-%d", i))
 		resp, _ := CreateKVM(ctx, KVM1)
 		KVMs = append(KVMs, resp)
@@ -191,7 +191,7 @@ func TestBatchUpdateKVMs(t *testing.T) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		kvms := make([]*ufspb.KVM, 0, 4)
-		for i := 0; i < 4; i++ {
+		for i := range 4 {
 			kvm1 := mockKVM(fmt.Sprintf("kvm-%d", i))
 			kvm1.ChromePlatform = "chromePlatform-1"
 			resp, err := CreateKVM(ctx, kvm1)

@@ -121,7 +121,7 @@ func pad(x []byte, n int) []byte {
 	}
 	out := make([]byte, n)
 
-	for i := 0; i < n; i++ {
+	for i := range n {
 		j := n - i - 1
 		k := len(x) - i - 1
 		if k < 0 {

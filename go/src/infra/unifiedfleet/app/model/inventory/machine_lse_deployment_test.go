@@ -94,7 +94,7 @@ func TestBatchGetMachineLSEDeployments(t *testing.T) {
 	ftt.Run("BatchGetMachineLSEDeployments", t, func(t *ftt.Test) {
 		t.Run("Batch get machine lse deployments - happy path", func(t *ftt.Test) {
 			drs := make([]*ufspb.MachineLSEDeployment, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				drs[i] = mockMachineLSEDeployment(fmt.Sprintf("dr-batchGet-%d", i))
 			}
 			_, err := UpdateMachineLSEDeployments(ctx, drs)
@@ -130,7 +130,7 @@ func TestListMachineLSEDeployments(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	drs := make([]*ufspb.MachineLSEDeployment, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		drs[i] = mockMachineLSEDeployment(fmt.Sprintf("dr-List-%d", i))
 	}
 	updatedDrs, _ := UpdateMachineLSEDeployments(ctx, drs)

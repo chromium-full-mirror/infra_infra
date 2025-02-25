@@ -116,7 +116,7 @@ func TestListMachineLSEPrototypes(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	machineLSEPrototypes := make([]*ufspb.MachineLSEPrototype, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		machineLSEPrototype1 := mockMachineLSEPrototype(fmt.Sprintf("machineLSEPrototype-%d", i))
 		resp, _ := CreateMachineLSEPrototype(ctx, machineLSEPrototype1)
 		machineLSEPrototypes = append(machineLSEPrototypes, resp)

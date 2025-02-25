@@ -771,7 +771,7 @@ func TestListMachineLSEs(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 	machineLSEs := make([]*ufspb.MachineLSE, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		resp, _ := inventory.CreateMachineLSE(tf.C, &ufspb.MachineLSE{
 			Name:     fmt.Sprintf("machineLSEFilter-%d", i),
 			Machines: []string{"mac-1"},
@@ -1153,7 +1153,7 @@ func TestListRackLSEs(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 	rackLSEs := make([]*ufspb.RackLSE, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		resp, _ := inventory.CreateRackLSE(tf.C, &ufspb.RackLSE{
 			Name:  fmt.Sprintf("rackLSE-%d", i),
 			Racks: []string{"rack-1"},
@@ -1519,7 +1519,7 @@ func TestListSchedulingUnits(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 	schedulingUnits := make([]*ufspb.SchedulingUnit, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		su := mockSchedulingUnit("")
 		su.Name = fmt.Sprintf("su-%d", i)
 		resp, _ := inventory.CreateSchedulingUnit(tf.C, su)

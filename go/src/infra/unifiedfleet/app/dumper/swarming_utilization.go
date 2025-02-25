@@ -82,7 +82,7 @@ func (sc *swarmingClientImpl) listAliveBotsInPool(ctx context.Context, pool stri
 	cursor := ""
 	var out []*swarmingv2.BotInfo
 
-	for i := 0; i < maxSwarmingIterations; i++ {
+	for range maxSwarmingIterations {
 		resp, err := sc.botsClient.ListBots(ctx, getRequest(cursor))
 		if err != nil {
 			return nil, errors.Annotate(err, "failed to list alive and idle bots in pool %s", pool).Err()

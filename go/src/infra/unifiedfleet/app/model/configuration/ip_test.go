@@ -104,7 +104,7 @@ func TestGetProtos(t *testing.T) {
 
 func mockIps(count int) []*ufspb.IP {
 	protos := make([]*ufspb.IP, count)
-	for i := 0; i < count; i++ {
+	for i := range count {
 		protos[i] = &ufspb.IP{
 			Id:      fmt.Sprint(i),
 			Ipv4:    1111,

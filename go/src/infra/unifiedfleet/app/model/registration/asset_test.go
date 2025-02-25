@@ -216,7 +216,7 @@ func TestListAssets(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	assets := make([]*ufspb.Asset, 0, 10)
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		asset := mockAsset(fmt.Sprintf("C00000%d", i), "eve", fmt.Sprintf("cros4-row3-rack5-host%d", i), ufspb.AssetType_DUT, ufspb.Zone_ZONE_CHROMEOS4)
 		resp, _ := CreateAsset(ctx, asset)
 		assets = append(assets, resp)
@@ -256,12 +256,12 @@ func TestListAssetsACL(t *testing.T) {
 	t.Parallel()
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	assets := make([]*ufspb.Asset, 0, 20)
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		asset := mockAsset(fmt.Sprintf("C00000%d", i), "eve", fmt.Sprintf("chromeos4-row3-rack5-host%d", i), ufspb.AssetType_DUT, ufspb.Zone_ZONE_CHROMEOS4)
 		resp, _ := CreateAsset(ctx, asset)
 		assets = append(assets, resp)
 	}
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		asset := mockAsset(fmt.Sprintf("C00001%d", i), "eve", fmt.Sprintf("chromeos5-row3-rack5-host%d", i), ufspb.AssetType_DUT, ufspb.Zone_ZONE_CHROMEOS5)
 		resp, _ := CreateAsset(ctx, asset)
 		assets = append(assets, resp)
@@ -382,7 +382,7 @@ func TestBatchUpdateAssets(t *testing.T) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		assets := make([]*ufspb.Asset, 0, 4)
-		for i := 0; i < 4; i++ {
+		for i := range 4 {
 			asset := mockAsset(fmt.Sprintf("C0000%d0", i), "eve", fmt.Sprintf("cros4-row3-rack5-host%d", i), ufspb.AssetType_DUT, ufspb.Zone_ZONE_CHROMEOS4)
 			resp, err := CreateAsset(ctx, asset)
 			assert.Loosely(t, err, should.BeNil)
@@ -417,7 +417,7 @@ func TestGetAllAssets(t *testing.T) {
 		})
 		t.Run("GetAllAssets - non-empty database", func(t *ftt.Test) {
 			assets := make([]*ufspb.Asset, 0, 10)
-			for i := 0; i < 10; i++ {
+			for i := range 10 {
 				asset := mockAsset(fmt.Sprintf("C000300%d", i), "eve", fmt.Sprintf("cros6-row7-rack5-host%d", i), ufspb.AssetType_DUT, ufspb.Zone_ZONE_CHROMEOS4)
 				resp, err := CreateAsset(ctx, asset)
 				assert.Loosely(t, err, should.BeNil)

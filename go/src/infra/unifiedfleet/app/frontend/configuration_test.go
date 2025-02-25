@@ -262,7 +262,7 @@ func TestListChromePlatforms(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 	chromePlatforms := make([]*ufspb.ChromePlatform, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		chromePlatform1 := mockChromePlatform("", "Camera")
 		chromePlatform1.Name = fmt.Sprintf("chromePlatform-%d", i)
 		resp, _ := configuration.CreateChromePlatform(tf.C, chromePlatform1)
@@ -604,7 +604,7 @@ func TestListMachineLSEPrototypes(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 	machineLSEPrototypes := make([]*ufspb.MachineLSEPrototype, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		machineLSEPrototype1 := mockMachineLSEPrototype("")
 		machineLSEPrototype1.Name = fmt.Sprintf("machineLSEPrototype-%d", i)
 		resp, _ := configuration.CreateMachineLSEPrototype(tf.C, machineLSEPrototype1)
@@ -929,7 +929,7 @@ func TestListRackLSEPrototypes(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 	rackLSEPrototypes := make([]*ufspb.RackLSEPrototype, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		rackLSEPrototype1 := mockRackLSEPrototype("")
 		rackLSEPrototype1.Name = fmt.Sprintf("rackLSEPrototype-%d", i)
 		resp, _ := configuration.CreateRackLSEPrototype(tf.C, rackLSEPrototype1)
@@ -1263,7 +1263,7 @@ func TestListVlans(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 	vlans := make([]*ufspb.Vlan, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		vlan1 := mockVlan("")
 		vlan1.Name = fmt.Sprintf("vlan-%d", i)
 		resp, _ := configuration.CreateVlan(tf.C, vlan1)

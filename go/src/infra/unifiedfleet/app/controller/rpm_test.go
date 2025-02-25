@@ -885,7 +885,7 @@ func TestListRPMs(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	rpms := make([]*ufspb.RPM, 0, 2)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		rpm := mockRPM(fmt.Sprintf("rpm-%d", i))
 		resp, _ := registration.CreateRPM(ctx, rpm)
 		rpms = append(rpms, resp)
@@ -911,7 +911,7 @@ func TestBatchGetRPMs(t *testing.T) {
 	ftt.Run("BatchGetRPMs", t, func(t *ftt.Test) {
 		t.Run("Batch get rpms - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.RPM, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				entities[i] = &ufspb.RPM{
 					Name: fmt.Sprintf("rpm-batchGet-%d", i),
 				}

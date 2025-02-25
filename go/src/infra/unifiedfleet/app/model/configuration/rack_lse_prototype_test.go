@@ -116,7 +116,7 @@ func TestListRackLSEPrototypes(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	rackLSEPrototypes := make([]*ufspb.RackLSEPrototype, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		rackLSEPrototype1 := mockRackLSEPrototype(fmt.Sprintf("rackLSEPrototype-%d", i))
 		resp, _ := CreateRackLSEPrototype(ctx, rackLSEPrototype1)
 		rackLSEPrototypes = append(rackLSEPrototypes, resp)

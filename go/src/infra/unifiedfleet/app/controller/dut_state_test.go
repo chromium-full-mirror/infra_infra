@@ -403,7 +403,7 @@ func TestListDutStates(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	dutStates := make([]*chromeosLab.DutState, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		cs := mockDutState(fmt.Sprintf("cs-machine-%d", i), fmt.Sprintf("cs-dut-%d", i))
 		dutStates = append(dutStates, cs)
 	}

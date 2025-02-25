@@ -124,7 +124,7 @@ func TestListMachineLSEDeployments(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	drs := make([]*ufspb.MachineLSEDeployment, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		dr := mockMachineLSEDeployment(fmt.Sprintf("list-dr-%d", i))
 		if i%2 == 0 {
 			dr.Hostname = fmt.Sprintf("host-%d", i)

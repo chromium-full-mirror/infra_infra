@@ -280,7 +280,7 @@ func TestListCachingServices(t *testing.T) {
 	tf, validate := newTestFixtureWithContext(ctx, t)
 	defer validate()
 	cachingServices := make([]*ufspb.CachingService, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		cs := mockCachingService("")
 		cs.Name = fmt.Sprintf("cs-%d", i)
 		resp, _ := caching.CreateCachingService(tf.C, cs)

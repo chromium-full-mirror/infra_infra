@@ -123,7 +123,7 @@ func TestListCachingServices(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	cachingServices := make([]*ufspb.CachingService, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		cs := mockCachingService(fmt.Sprintf("cs-%d", i))
 		resp, _ := CreateCachingService(ctx, cs)
 		cachingServices = append(cachingServices, resp)

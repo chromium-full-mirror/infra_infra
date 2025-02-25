@@ -197,11 +197,11 @@ func TestListDutStatesACL(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	dutStates := make([]*chromeosLab.DutState, 0, 8)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		broswerDutState := mockDutStateWithRealm(fmt.Sprintf("dut-state-%d", i), util.BrowserLabAdminRealm)
 		dutStates = append(dutStates, broswerDutState)
 	}
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		satlabDutState := mockDutStateWithRealm(fmt.Sprintf("dut-state-%d", i+4), util.SatLabInternalUserRealm)
 		dutStates = append(dutStates, satlabDutState)
 	}

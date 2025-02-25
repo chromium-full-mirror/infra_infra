@@ -116,7 +116,7 @@ func TestListNics(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	nics := make([]*ufspb.Nic, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		nic1 := mockNic(fmt.Sprintf("nic-%d", i))
 		resp, _ := CreateNic(ctx, nic1)
 		nics = append(nics, resp)
@@ -191,7 +191,7 @@ func TestBatchUpdateNics(t *testing.T) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		nics := make([]*ufspb.Nic, 0, 4)
-		for i := 0; i < 4; i++ {
+		for i := range 4 {
 			nic1 := mockNic(fmt.Sprintf("nic-%d", i))
 			resp, err := CreateNic(ctx, nic1)
 			assert.Loosely(t, err, should.BeNil)

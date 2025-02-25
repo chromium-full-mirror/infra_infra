@@ -116,7 +116,7 @@ func TestListRPMs(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	RPMs := make([]*ufspb.RPM, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		RPM1 := mockRPM(fmt.Sprintf("RPM-%d", i))
 		resp, _ := CreateRPM(ctx, RPM1)
 		RPMs = append(RPMs, resp)

@@ -3275,7 +3275,7 @@ func TestListMachineLSEs(t *testing.T) {
 	ctx := testingContext()
 	machineLSEsWithProperties := make([]*ufspb.MachineLSE, 0, 2)
 	machineLSEs := make([]*ufspb.MachineLSE, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		machineLSE := mockDutMachineLSE(fmt.Sprintf("machineLSE-%d", i))
 		if i%2 == 0 {
 			machineLSE.GetChromeosMachineLse().GetDeviceLse().NetworkDeviceInterface = &ufspb.SwitchInterface{Switch: "switch-1"}
@@ -3313,7 +3313,7 @@ func TestListMachineLSEs(t *testing.T) {
 		})
 
 		t.Run("List machineLSEs - list machine lses with free slots", func(t *ftt.Test) {
-			for i := 0; i < 8; i++ {
+			for i := range 8 {
 				machineLSE1 := &ufspb.MachineLSE{
 					Name: fmt.Sprintf("machineLSE-free-%d", i),
 				}
@@ -3349,7 +3349,7 @@ func TestBatchGetMachineLSEs(t *testing.T) {
 	ftt.Run("BatchGetMachineLSEs", t, func(t *ftt.Test) {
 		t.Run("Batch get machine lses - happy path", func(t *ftt.Test) {
 			lses := make([]*ufspb.MachineLSE, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				lse := &ufspb.MachineLSE{
 					Name: fmt.Sprintf("lse-batchGet-%d", i),
 				}

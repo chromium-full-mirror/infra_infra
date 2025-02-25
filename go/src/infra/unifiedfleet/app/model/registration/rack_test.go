@@ -246,7 +246,7 @@ func TestListRacks(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	racks := make([]*ufspb.Rack, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		rack1 := mockRack(fmt.Sprintf("rack-%d", i), 5, ufspb.Zone_ZONE_CHROMEOS4)
 		resp, _ := CreateRack(ctx, rack1)
 		racks = append(racks, resp)
@@ -288,12 +288,12 @@ func TestListRacksACL(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	racks := make([]*ufspb.Rack, 0, 8)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		rack := mockRack(fmt.Sprintf("rack-1%d", i), 4, ufspb.Zone_ZONE_CHROMEOS4)
 		resp, _ := CreateRack(ctx, rack)
 		racks = append(racks, resp)
 	}
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		rack := mockRack(fmt.Sprintf("rack-2%d", i), 4, ufspb.Zone_ZONE_SFO36_BROWSER)
 		resp, _ := CreateRack(ctx, rack)
 		racks = append(racks, resp)
@@ -399,7 +399,7 @@ func TestBatchUpdateRacks(t *testing.T) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		Racks := make([]*ufspb.Rack, 0, 4)
-		for i := 0; i < 4; i++ {
+		for i := range 4 {
 			Rack1 := mockRack(fmt.Sprintf("Rack-%d", i), 10, ufspb.Zone_ZONE_CHROMEOS4)
 			resp, err := CreateRack(ctx, Rack1)
 			assert.Loosely(t, err, should.BeNil)

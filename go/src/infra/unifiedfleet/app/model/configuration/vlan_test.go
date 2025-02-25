@@ -116,7 +116,7 @@ func TestListVlans(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	vlans := make([]*ufspb.Vlan, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		vlan1 := mockVlan(fmt.Sprintf("vlan-%d", i))
 		resp, _ := CreateVlan(ctx, vlan1)
 		vlans = append(vlans, resp)

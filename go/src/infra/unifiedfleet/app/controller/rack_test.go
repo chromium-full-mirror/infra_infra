@@ -748,7 +748,7 @@ func TestListRacks(t *testing.T) {
 	ctx := testingContext()
 	racksWithSwitch := make([]*ufspb.Rack, 0, 2)
 	racks := make([]*ufspb.Rack, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		rack := &ufspb.Rack{
 			Name: fmt.Sprintf("rack-%d", i),
 			Rack: &ufspb.Rack_ChromeBrowserRack{
@@ -791,7 +791,7 @@ func TestBatchGetRacks(t *testing.T) {
 	ftt.Run("BatchGetRacks", t, func(t *ftt.Test) {
 		t.Run("Batch get racks - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.Rack, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				entities[i] = &ufspb.Rack{
 					Name: fmt.Sprintf("rack-batchGet-%d", i),
 				}

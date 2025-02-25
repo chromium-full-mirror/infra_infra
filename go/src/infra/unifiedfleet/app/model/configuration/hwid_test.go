@@ -513,7 +513,7 @@ func TestListHwidData(t *testing.T) {
 	datastore.GetTestable(ctx).Consistent(true)
 
 	hds := make([]*ufspb.HwidData, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		hdId := fmt.Sprintf("test-hwid-%d", i)
 		hd := mockHwidData()
 		resp, err := UpdateHwidData(ctx, hd, hdId)

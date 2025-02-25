@@ -70,7 +70,7 @@ func TestBatchUpdateDeviceConfig(t *testing.T) {
 
 	ftt.Run("When a valid config is added", t, func(t *ftt.Test) {
 		cfgs := make([]*deviceconfig.Config, 2)
-		for i := 0; i < 2; i++ {
+		for i := range 2 {
 			cfgs[i] = makeDevCfgForTesting(fmt.Sprintf("board%d", i), fmt.Sprintf("model%d", i), fmt.Sprintf("variant%d", i), []string{fmt.Sprintf("test-%d", i)})
 		}
 		resp, err := BatchUpdateDeviceConfigs(ctx, []*deviceconfig.Config{cfgs[0]}, constantRealmAssigner)

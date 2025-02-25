@@ -116,7 +116,7 @@ func TestListDracs(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	dracs := make([]*ufspb.Drac, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		drac1 := mockDrac(fmt.Sprintf("drac-%d", i))
 		resp, _ := CreateDrac(ctx, drac1)
 		dracs = append(dracs, resp)
@@ -191,7 +191,7 @@ func TestBatchUpdateDracs(t *testing.T) {
 		ctx := gaetesting.TestingContextWithAppID("go-test")
 		datastore.GetTestable(ctx).Consistent(true)
 		dracs := make([]*ufspb.Drac, 0, 4)
-		for i := 0; i < 4; i++ {
+		for i := range 4 {
 			drac1 := mockDrac(fmt.Sprintf("drac-%d", i))
 			resp, err := CreateDrac(ctx, drac1)
 			assert.Loosely(t, err, should.BeNil)

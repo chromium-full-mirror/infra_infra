@@ -179,7 +179,7 @@ func TestListSchedulingUnits(t *testing.T) {
 	ctx := gaetesting.TestingContextWithAppID("go-test")
 	datastore.GetTestable(ctx).Consistent(true)
 	SchedulingUnits := make([]*ufspb.SchedulingUnit, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		su := mockSchedulingUnit(fmt.Sprintf("su-%d", i))
 		resp, _ := CreateSchedulingUnit(ctx, su)
 		SchedulingUnits = append(SchedulingUnits, resp)

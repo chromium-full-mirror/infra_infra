@@ -580,7 +580,7 @@ func TestListSchedulingUnits(t *testing.T) {
 	ctx := testingContext()
 	schedulingUnitsWithPools := make([]*ufspb.SchedulingUnit, 0, 2)
 	schedulingUnits := make([]*ufspb.SchedulingUnit, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		su := mockSchedulingUnit(fmt.Sprintf("su-%d", i))
 		if i%2 == 0 {
 			su.Pools = []string{"DUT_QUOTA"}

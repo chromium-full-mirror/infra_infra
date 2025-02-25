@@ -970,7 +970,7 @@ func TestListKVMs(t *testing.T) {
 	ctx := testingContext()
 	kvmsWithChromeplatform := make([]*ufspb.KVM, 0, 2)
 	kvms := make([]*ufspb.KVM, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		kvm := mockKVM(fmt.Sprintf("kvm-%d", i))
 		if i%2 == 0 {
 			kvm.ChromePlatform = "chromeplatform-12"
@@ -1008,7 +1008,7 @@ func TestBatchGetKVMs(t *testing.T) {
 	ftt.Run("BatchGetKVMs", t, func(t *ftt.Test) {
 		t.Run("Batch get kvms - happy path", func(t *ftt.Test) {
 			kvms := make([]*ufspb.KVM, 0, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				kvm := mockKVM(fmt.Sprintf("kvm-batchGet-%d", i))
 				resp, err := registration.CreateKVM(ctx, kvm)
 				assert.Loosely(t, err, should.BeNil)

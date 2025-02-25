@@ -776,7 +776,7 @@ func TestListSwitches(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	switches := make([]*ufspb.Switch, 0, 2)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		Switch := mockSwitch(fmt.Sprintf("Switch-%d", i))
 		resp, _ := registration.CreateSwitch(ctx, Switch)
 		switches = append(switches, resp)
@@ -802,7 +802,7 @@ func TestBatchGetSwitches(t *testing.T) {
 	ftt.Run("BatchGetSwitches", t, func(t *ftt.Test) {
 		t.Run("Batch get switches - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.Switch, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				entities[i] = &ufspb.Switch{
 					Name: fmt.Sprintf("switch-batchGet-%d", i),
 				}
