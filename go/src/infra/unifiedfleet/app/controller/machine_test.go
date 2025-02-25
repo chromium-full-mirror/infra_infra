@@ -10,6 +10,7 @@ import (
 
 	"google.golang.org/genproto/protobuf/field_mask"
 
+	crosLabAPI "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
@@ -1116,11 +1117,13 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 	const hwID = "hwID"
 	const deviceSku = "deviceSku"
 	const dlmSkuId = "12345"
+	storageType := crosLabAPI.StorageType_HDD
 	dutData := &ufsAPI.ChromeOsRecoveryData_DutData{
 		SerialNumber: serialNumber,
 		HwID:         hwID,
 		DeviceSku:    deviceSku,
 		DlmSkuId:     dlmSkuId,
+		StorageType:  storageType,
 	}
 	ftt.Run("UpdateRecoveryDutData for an OS machine", t, func(t *ftt.Test) {
 		t.Run("Update a non-OS machine", func(t *ftt.Test) {
@@ -1155,6 +1158,7 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 			assert.Loosely(t, req.GetChromeosMachine().GetHwid(), should.BeEmpty)
 			assert.Loosely(t, req.GetChromeosMachine().GetSku(), should.BeEmpty)
 			assert.Loosely(t, req.GetChromeosMachine().GetDlmSkuId(), should.BeEmpty)
+			assert.Loosely(t, req.GetChromeosMachine().GetStorageType(), should.Equal(crosLabAPI.StorageType_UNSPECIFIED))
 
 			asset, err = registration.GetAsset(ctx, machineName)
 			assert.Loosely(t, err, should.BeNil)
@@ -1199,6 +1203,7 @@ func TestUpdateRecoveryDutData(t *testing.T) {
 			assert.Loosely(t, req.GetChromeosMachine().GetHwid(), should.Equal(hwID))
 			assert.Loosely(t, req.GetChromeosMachine().GetSku(), should.Equal(deviceSku))
 			assert.Loosely(t, req.GetChromeosMachine().GetDlmSkuId(), should.Equal(dlmSkuId))
+			assert.Loosely(t, req.GetChromeosMachine().GetStorageType(), should.Equal(storageType))
 
 			asset, err = registration.GetAsset(ctx, machineName)
 			assert.Loosely(t, err, should.BeNil)

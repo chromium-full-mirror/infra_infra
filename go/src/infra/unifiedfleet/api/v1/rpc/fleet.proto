@@ -13,6 +13,10 @@ import "google/protobuf/field_mask.proto";
 import "google/api/field_behavior.proto";
 import "google/api/resource.proto";
 import "google/rpc/status.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/cbi.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/storage.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/usb_drive.proto";
+import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_router.proto";
 import "go.chromium.org/infra/unifiedfleet/api/v1/models/asset.proto";
 import "go.chromium.org/infra/unifiedfleet/api/v1/models/machine.proto";
 import "go.chromium.org/infra/unifiedfleet/api/v1/models/caching_service.proto";
@@ -33,10 +37,7 @@ import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/modeminfo.
 import "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab/siminfo.proto";
 import "go.chromium.org/infra/unifiedfleet/api/v1/models/machine_lse_deployment.proto";
 import "go.chromium.org/infra/unifiedfleet/api/v1/models/scheduling_unit.proto";
-import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/cbi.proto";
 import "go.chromium.org/infra/unifiedfleet/api/v1/models/ownership.proto";
-import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/usb_drive.proto";
-import "go.chromium.org/chromiumos/config/proto/chromiumos/test/lab/api/wifi_router.proto";
 
 service Fleet {
   // CreateChromePlatform creates a new chromePlatform.
@@ -1829,6 +1830,7 @@ message ChromeOsRecoveryData {
     string hwID = 2;
     string device_sku = 3;
     string dlm_sku_id = 4;
+    chromiumos.test.lab.api.StorageType storage_type = 5;
   }
 
   // Used for updating back essential configs from repair/deploy task.
@@ -1855,14 +1857,14 @@ message ChromeOsRecoveryData {
     string fw_version = 2;
   }
 
-message ModemInfo {
-  // The device model cellular sub-variant.
-  string model_variant = 1;
-  // The modem hardware type.
-  models.chromeos.lab.ModemType type = 2;
-  // Equipment Identifier
-  string imei = 3;
-}
+  message ModemInfo {
+    // The device model cellular sub-variant.
+    string model_variant = 1;
+    // The modem hardware type.
+    models.chromeos.lab.ModemType type = 2;
+    // Equipment Identifier
+    string imei = 3;
+  }
 
   message LabData {
     string servo_type = 1;
