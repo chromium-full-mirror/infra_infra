@@ -21,7 +21,7 @@ vars = {
 deps = {
   "luci":
      "{chromium_git}/infra/luci/luci-py@" +
-     "1898fb9162af738ae3428020f1ec3523de1c0de7",
+     "f770e04394fb6676d20ec362ea3f1e1e692c42b5",
 
   "go/src/go.chromium.org/luci":
      "{chromium_git}/infra/luci/luci-go@" +
