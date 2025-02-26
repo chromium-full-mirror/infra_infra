@@ -38,6 +38,9 @@ type Device struct {
 	DeviceState       string
 	SchedulableLabels SchedulableLabels `json:"SchedulableLabels"`
 
+	// IsActive marks if a Device should be schedulable on its own (actively
+	// schedulable). DUTs part of a SchedulingUnit as defined in UFS will be
+	// marked inactive.
 	IsActive bool
 	// CreatedTime is alwasys not NULL, so we don't have to use sql.NullTime.
 	CreatedTime                  time.Time
