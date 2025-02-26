@@ -4957,6 +4957,7 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in DEV mode, with force to DEV-mode",
 				"Install OS in DEV mode with fresh image",
 				"Install OS in DEV mode, with force to DEV-mode with test firmware",
+				"Install OS in recovery mode by booting from servo USB-drive",
 			},
 		},
 		"Install OS in DEV mode with fresh image": {
@@ -4995,7 +4996,8 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in DEV mode by USB-drive",
 				"Remove REFLASH_FW repair-request",
 			},
-			ExecName: "sample_pass",
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Is it first deployment task": {
 			Docs: []string{
