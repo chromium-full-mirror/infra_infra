@@ -54,6 +54,9 @@ const (
 	// DutOSDimensionKey identifies the swarming dimension containing the
 	// OS label for the DUT.
 	DutOSDimensionKey = "label-os_type"
+	// ManagedDutDimensionKey identifies the swarming dimension containing the
+	// managed_dut label for the DUT.
+	ManagedDutDimensionKey = "label-managed_dut"
 	// DutNameDimensionKey identifies the swarming dimension
 	// containing the DUT name.
 	DutNameDimensionKey = "dut_name"

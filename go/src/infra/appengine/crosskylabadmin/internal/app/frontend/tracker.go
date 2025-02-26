@@ -417,6 +417,10 @@ func IsLabstationOS(ctx context.Context, botID string, dims strpair.Map) (err er
 // doesn't have an os dimension or something goes wrong trying to retrieve it.
 func isDutOS(ctx context.Context, botID string, dims strpair.Map) (err error) {
 	logging.Infof(ctx, "Get os type for botID = %s.", botID)
+	if _, err = util.ExtractSingleValuedDimension(dims, clients.ManagedDutDimensionKey); err == nil {
+		logging.Infof(ctx, "bot:%s is a multi-dut", botID)
+		return nil
+	}
 	os, err := util.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
 	if err != nil {
 		return errors.Annotate(err, "failed to extract Dut OS").Err()
