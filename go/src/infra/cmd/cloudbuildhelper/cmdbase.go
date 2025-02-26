@@ -14,7 +14,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"text/template"
+	"text/template" // NOLINT
 
 	"github.com/maruel/subcommands"
 	"golang.org/x/oauth2"
