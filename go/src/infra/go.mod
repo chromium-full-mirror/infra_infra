@@ -59,7 +59,7 @@ require (
 	github.com/golang/protobuf v1.5.4
 	github.com/google/cel-go v0.22.1
 	github.com/google/generative-ai-go v0.19.0
-	github.com/google/go-cmp v0.7.0
+	github.com/google/go-cmp v0.6.0
 	github.com/google/go-containerregistry v0.14.0
 	github.com/google/safetext v0.0.0-20240722112252-5a72de7e7962
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
@@ -336,6 +336,6 @@ replace (
 replace (
 	go.chromium.org/chromiumos/ctp => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/ctp v0.0.0-20241114171457-3c3ac99d1157
 	go.chromium.org/chromiumos/lro => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/lro v0.0.0-20241114171457-3c3ac99d1157
-	go.chromium.org/chromiumos/test => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20250225041139-d3b99b35bcf5
+	go.chromium.org/chromiumos/test => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20250225231640-c71aa76a03eb
 	go.chromium.org/tast => go.chromium.org/tast/src/go.chromium.org/tast v0.0.0-20241114170151-b736fca5c46d
 )
