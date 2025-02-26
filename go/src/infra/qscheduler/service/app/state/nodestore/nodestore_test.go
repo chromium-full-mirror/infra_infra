@@ -26,6 +26,7 @@ import (
 
 	"go.chromium.org/luci/appengine/gaetesting"
 	. "go.chromium.org/luci/common/testing/truth/convey/facade"
+	"go.chromium.org/luci/common/testing/truth/should"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	"go.chromium.org/infra/qscheduler/qslib/scheduler"
@@ -173,7 +174,7 @@ func TestClean(t *testing.T) {
 			So(t, delCount, ShouldEqualInt64(100))
 			afterClean, err := store.Get(ctx)
 			So(t, err, ShouldBeNil)
-			So(t, beforeClean, DangerousShouldResemble(afterClean))
+			So(t, beforeClean, should.Resemble(afterClean))
 			count, err = datastore.Count(ctx, datastore.NewQuery("stateNode"))
 			So(t, count, ShouldEqualInt64(101))
 		})
