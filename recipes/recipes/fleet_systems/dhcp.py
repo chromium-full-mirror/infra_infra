@@ -5,7 +5,7 @@
 
 from recipe_engine import post_process
 
-PYTHON_VERSION_COMPATIBILITY = "PY3"
+PYTHON_VERSION_COMPATIBILITY = 'PY3'
 
 DEPS = [
     'depot_tools/bot_update',
@@ -13,7 +13,6 @@ DEPS = [
     'depot_tools/tryserver',
     'infra/docker',
     'recipe_engine/buildbucket',
-    'recipe_engine/cipd',
     'recipe_engine/file',
     'recipe_engine/json',
     'recipe_engine/path',
@@ -30,118 +29,34 @@ _IMAGE_TEMPLATE = 'fleet_systems/dhcp/%s:latest'
 #
 # The images are generated from configs here:
 # https://chromium.googlesource.com/infra/infra/+/main/build/images/daily/fleet_systems/dhcp
-#
-# UFS reports these versions for the DHCP servers (Ubuntu LTS only).
-_IMAGE_VERSIONS = [14.04, 16.04, 18.04, 20.04]
 
-_TEST_HOST = 'test-host'
-_TEST_ZONE = 'test_zone'
-_TEST_ZONE_NO_HOSTS = 'test_zone_no_hosts'
-_ZONE_HOST_MAP_FILE = 'services/dhcpd/zone_host_map.json'
-_ZONE_HOST_MAP_TESTDATA = {_TEST_ZONE: [_TEST_HOST], _TEST_ZONE_NO_HOSTS: []}
+_ZONE_OS_MAP_FILE = 'services/dhcpd/zone_os_map.json'
 
 
-def _GetZonesToTest(api, zone_host_map):
+def _GetZonesToTest(api, zone_os_map):
   """Iterate over files in the CL to determine which zones need testing."""
-  dhcp_dirs = ['%s/dhcpd' % d for d in ['configs', 'services']]
+  change_repo_url = api.m.tryserver.gerrit_change_repo_url
+  dhcp_dirs = [f'{directory}/dhcpd' for directory in ['configs', 'services']]
   patch_root = api.gclient.get_gerrit_patch_root()
   zones_to_test = set()
 
-  assert patch_root, ('local path is not configured for %s' %
-                      api.m.tryserver.gerrit_change_repo_url)
+  assert patch_root, f'local path is not configured for {change_repo_url}'
+
   for f in api.m.tryserver.get_files_affected_by_patch(patch_root):
-    for zone in zone_host_map:
-      if any(['%s/%s/' % (d, zone) in f for d in dhcp_dirs]):
+    for zone in zone_os_map:
+      if any([f'{dhcp_dir}/{zone}/' in f for dhcp_dir in dhcp_dirs]):
         zones_to_test.add(zone)
   return zones_to_test
 
 
-def _InstallShivasCIPD(api):
-  """Install shivas CIPD package and return path to the binary."""
-  packages_dir = api.path.cleanup_dir / 'packages'
-  ensure_file = api.cipd.EnsureFile()
-  ensure_file.add_package('infra/shivas/${platform}', 'prod')
-  api.cipd.ensure(packages_dir, ensure_file, name='ensure shivas installed')
-  return packages_dir / 'shivas'
-
-
-def _GetUFSData(api, names, shivas_path, sub_command):
-  """Use Shivas to query UFS for host or vm information."""
-  return api.step(
-      'get ufs %s data' % sub_command,
-      [
-          shivas_path, 'get', sub_command, '-json', '-namespace', 'browser',
-          '-noemit'
-      ] + list(names),
-      infra_step=True,
-      stdout=api.json.output()).stdout
-
-
-def _GetHostOsVersions(api, shivas_path, zone_host_map, zone):
-  """Get up to date OS versions for each host from UFS.
-
-  Query UFS for hosts/vms in the specified zone to determine their OS versions,
-  then print an empty step with the zone, host list, and OSes that will be
-  tested as a result.
-
-  Args:
-      api: Some api interface for LUCI I guess.
-      shivas_path: Path to local shivas binary.
-      zone_host_map: Dict mapping dhcp zones to dhcp server hostnames.
-      zone: The network zone that the dhcp hosts are in.
-
-  Returns:
-      A set of os versions to test for that zone.
-  """
-  host_os_map = {}
-  host_warnings = {}
-  step_text = []
-
-  for host_type in ['host', 'vm']:
-    step_result_data = _GetUFSData(api, zone_host_map[zone], shivas_path,
-                                   host_type)
-    for entry in step_result_data:
-      host = entry['name']
-      # chromeBrowserMachineLse key only exists for hosts but not vms.
-      os_str = entry.get('chromeBrowserMachineLse', entry)['osVersion']['value']
-      try:
-        numeric_version_str = os_str.split()[1]
-        major_minor_str = '.'.join(numeric_version_str.split('.')[:2])
-        version = float(major_minor_str)  # 18.04, 20.04 etc.
-      except ValueError:
-        # Set a default value if something goes wrong.
-        version = _IMAGE_VERSIONS[-1]
-
-      # Find the closest image version to use: 12.04 would be 14.04,
-      # 20.04 would be 20.04, 22.04 would be 20.04.
-      closest_version = min(_IMAGE_VERSIONS, key=lambda x: abs(x - version))
-      host_os_map[host] = closest_version
-      if closest_version != version:
-        host_warnings[host] = (
-            'WARNING: No compatible image for \'%s\', testing with \'%s\' '
-            'instead.' % (version, closest_version))
-
-  missing_hosts = set(zone_host_map[zone]).difference(host_os_map)
-  if missing_hosts:
-    api.step.empty(
-        'WARNING UFS missing hosts:',
-        step_text='"%s" listed in "zone_host_map.json" but not present in UFS' %
-        ', '.join(missing_hosts))
-
-  # Display host/os version that will be tested.
-  for host, version in host_os_map.items():
-    warning = ''
-    if host in host_warnings:
-      warning = '  %s' % host_warnings[host]
-    step_text.append('%s: %s%s' % (host, version, warning))
-  api.step.empty('%s:' % zone, step_text='\n'.join(step_text))
-
-  return set(host_os_map.values())
-
-
-def _PullDockerImages(api, os_versions):
+def _PullDockerImages(api, oses_by_zone):
   """Pull docker images needed for testing."""
   api.docker.login(server='gcr.io', project='chops-public-images-prod')
+
+  # Flatten the lists of oses.
+  os_versions = set()
+  for oses in oses_by_zone.values():
+    os_versions.update(oses)
 
   for os_version in sorted(os_versions):
     image = _IMAGE_TEMPLATE % os_version
@@ -149,7 +64,7 @@ def _PullDockerImages(api, os_versions):
       api.docker.pull(image)
     except api.step.StepFailure:
       raise api.step.InfraFailure(
-          'Image %s does not exist in the container registry.' % image)
+          f'Image {image} does not exist in the container registry.')
 
 
 def RunSteps(api):
@@ -157,54 +72,50 @@ def RunSteps(api):
 
   assert api.platform.is_linux, 'Unsupported platform, only Linux is supported.'
   api.docker.ensure_installed()
-  shivas_path = _InstallShivasCIPD(api)
 
   api.gclient.set_config('chrome_golo')
   api.bot_update.ensure_checkout()
   api.gclient.runhooks()
 
   # Read a file in the repo that defines zones and their dhcp servers.
-  zone_host_map = api.file.read_json(
-      'read %s' % _ZONE_HOST_MAP_FILE,
-      api.path.checkout_dir / _ZONE_HOST_MAP_FILE,
-      test_data=_ZONE_HOST_MAP_TESTDATA)
+  zone_os_map = api.file.read_json(f'read {_ZONE_OS_MAP_FILE}',
+                                   api.path.checkout_dir / _ZONE_OS_MAP_FILE)
 
-  zones_to_test = _GetZonesToTest(api, zone_host_map)
+  zones_to_test = _GetZonesToTest(api, zone_os_map)
   if not zones_to_test:
     api.step.empty('CL does not contain DHCP changes')
     return
 
   for zone in zones_to_test:
-    if zone_host_map[zone]:
-      oses_by_zone[zone] = _GetHostOsVersions(api, shivas_path, zone_host_map,
-                                              zone)
-    else:
-      oses_by_zone[zone] = set([max(_IMAGE_VERSIONS)])
+    oses_by_zone[zone] = zone_os_map[zone]
 
-  _PullDockerImages(api,
-                    set([os for oses in oses_by_zone.values() for os in oses]))
+  _PullDockerImages(api, oses_by_zone)
 
   # Test each zone/os combination as necessary.
   for zone, oses in sorted(oses_by_zone.items()):
     for os in sorted(oses):
       api.docker.run(
           image=_IMAGE_TEMPLATE % os,
-          step_name='DHCP config test for %s on %s' % (zone, os),
+          step_name=f'DHCP config test for {zone} on {os}',
           cmd_args=[zone],
           dir_mapping=[(api.path.checkout_dir, '/src')])
 
 
 def GenTests(api):
+  no_image_for_os_version = '420.04'
+  no_image_for_zone = 'test_zone_image_missing'
+  no_oses_for_zone = 'test_zone_no_oses'
+  test_zone = 'test_zone'
+  test_zone_os_versions = ['22.04', '24.04']
+  zone_not_in_zone_os_map = 'missing_test_zone'
+  zone_os_map = {
+      test_zone: test_zone_os_versions,
+      no_oses_for_zone: [],
+      no_image_for_zone: [no_image_for_os_version],
+  }
 
-  def test_ufs_output(os_version):
-    return api.json.output([{
-        'name': _TEST_HOST,
-        'osVersion': {
-            'value': 'Ubuntu %s LTS' % os_version,
-        }
-    }])
-
-  def changed_files(test_file='services/dhcpd/%s/foo' % _TEST_ZONE):
+  def changed_files(test_zone):
+    test_file = f'services/dhcpd/{test_zone}/foo'
     t = api.override_step_data(
         'git diff to analyze patch', stdout=api.raw_io.output(test_file))
     t += api.path.exists(
@@ -215,11 +126,34 @@ def GenTests(api):
       'chrome_golo_dhcp',
       api.properties(),
       api.buildbucket.try_build(),
-      changed_files(),
+      changed_files(test_zone),
+      api.override_step_data(f'read {_ZONE_OS_MAP_FILE}',
+                             api.file.read_json(zone_os_map)),
+      api.override_step_data('docker pull %s' % _IMAGE_TEMPLATE %
+                             test_zone_os_versions[0]),
+      api.override_step_data('docker pull %s' % _IMAGE_TEMPLATE %
+                             test_zone_os_versions[1]),
       api.override_step_data(
-          'get ufs host data', stdout=test_ufs_output(_IMAGE_VERSIONS[0])),
+          f'DHCP config test for {test_zone} on {test_zone_os_versions[0]}'),
       api.override_step_data(
-          'get ufs vm data', stdout=test_ufs_output(_IMAGE_VERSIONS[0])),
+          f'DHCP config test for {test_zone} on {test_zone_os_versions[1]}'),
+      api.post_process(post_process.StatusSuccess),
+      api.post_process(post_process.DropExpectation),
+  )
+
+  yield api.test(
+      'chrome_golo_dhcp_missing_compatible_image_version',
+      api.properties(),
+      api.buildbucket.try_build(),
+      changed_files(no_image_for_zone),
+      api.override_step_data(f'read {_ZONE_OS_MAP_FILE}',
+                             api.file.read_json(zone_os_map)),
+      api.override_step_data(
+          'docker pull %s' % _IMAGE_TEMPLATE % no_image_for_os_version,
+          retcode=1),
+      api.expect_status('INFRA_FAILURE'),
+      api.post_process(post_process.StatusException),
+      api.post_process(post_process.DropExpectation),
   )
 
   yield api.test(
@@ -232,63 +166,19 @@ def GenTests(api):
   )
 
   yield api.test(
-      'chrome_golo_dhcp_ufs_missing_hosts',
+      'chrome_golo_dhcp_no_oses_defined_for_zone',
       api.properties(),
       api.buildbucket.try_build(),
-      changed_files(),
-      api.override_step_data('get ufs host data', stdout=api.json.output([])),
-      api.override_step_data('get ufs vm data', stdout=api.json.output([])),
+      changed_files(no_oses_for_zone),
       api.post_process(post_process.StatusSuccess),
       api.post_process(post_process.DropExpectation),
   )
 
   yield api.test(
-      'chrome_golo_dhcp_image_does_not_exist',
+      'chrome_golo_dhcp_zone_not_in_zone_os_map',
       api.properties(),
       api.buildbucket.try_build(),
-      changed_files(),
-      api.override_step_data(
-          'get ufs host data', stdout=test_ufs_output(_IMAGE_VERSIONS[0])),
-      api.override_step_data(
-          'get ufs vm data', stdout=test_ufs_output(_IMAGE_VERSIONS[0])),
-      api.override_step_data(
-          'docker pull %s' % _IMAGE_TEMPLATE % _IMAGE_VERSIONS[0], retcode=1),
-      api.expect_status('INFRA_FAILURE'),
-      api.post_process(post_process.StatusException),
-      api.post_process(post_process.DropExpectation),
-  )
-
-  yield api.test(
-      'chrome_golo_dhcp_non_float_os_version',
-      api.properties(),
-      api.buildbucket.try_build(),
-      changed_files(),
-      api.override_step_data(
-          'get ufs host data', stdout=test_ufs_output('bad_version')),
-      api.override_step_data(
-          'get ufs vm data', stdout=test_ufs_output('bad_version')),
-      api.post_process(post_process.StatusSuccess),
-      api.post_process(post_process.DropExpectation),
-  )
-
-  yield api.test(
-      'chrome_golo_dhcp_no_matching_image_for_os_version',
-      api.properties(),
-      api.buildbucket.try_build(),
-      changed_files(),
-      api.override_step_data(
-          'get ufs host data', stdout=test_ufs_output('100.04.5')),
-      api.override_step_data(
-          'get ufs vm data', stdout=test_ufs_output('100.04.5')),
-      api.post_process(post_process.StatusSuccess),
-      api.post_process(post_process.DropExpectation),
-  )
-
-  yield api.test(
-      'chrome_golo_dhcp_no_hosts_in_zone_host_map_json',
-      api.properties(),
-      api.buildbucket.try_build(),
-      changed_files(test_file='services/dhcpd/%s/foo' % _TEST_ZONE_NO_HOSTS),
+      changed_files(zone_not_in_zone_os_map),
       api.post_process(post_process.StatusSuccess),
       api.post_process(post_process.DropExpectation),
   )
