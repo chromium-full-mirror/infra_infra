@@ -70,6 +70,7 @@ var vidPidServoTypes = map[string]string{
 	"18d1:520d": servo.SERVO_V4P1,
 	"18d1:5014": servo.CCD_GSC,
 	"18d1:504a": servo.CCD_GSC,
+	"18d1:5066": servo.CCD_GSC,
 	"18d1:501a": servo.SERVO_MICRO,
 	"18d1:5041": servo.C2D2,
 	"18d1:5020": servo.SWEETBERRY,
