@@ -106,6 +106,7 @@ func executeContainerUprev(ctx context.Context, dockerKeyFile, cipdLabel, imageT
 				CIPDPackages:  config.CIPDPackages,
 				Prepper:       config.Prepper,
 				Resources:     config.Resources,
+				Entrypoint:    config.Entrypoint,
 			})
 		}
 	}
