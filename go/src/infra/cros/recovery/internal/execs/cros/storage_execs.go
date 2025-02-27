@@ -121,11 +121,11 @@ func hasEnoughStorageSpacePercentageExec(ctx context.Context, info *execs.ExecIn
 	return nil
 }
 
-// UpdateStorageInfoToInvExec read storage from the resource and update DUT info.
-func UpdateStorageInfoToInvExec(ctx context.Context, info *execs.ExecInfo) error {
+// updateStorageTypeToInvExec read storage type from the resource and update DUT info.
+func updateStorageTypeToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
 	actionArgs := info.GetActionArgs(ctx)
-	allowedOverride := actionArgs.AsBool(ctx, "allowed_override", false)
+	allowedOverride := actionArgs.AsBool(ctx, "allowed_override", true)
 	storageType := info.GetChromeos().GetStorage().GetType()
 	if storageType != crosLabAPI.StorageType_UNSPECIFIED {
 		if allowedOverride {
@@ -159,5 +159,5 @@ func init() {
 	execs.Register("cros_has_enough_storage_space", hasEnoughStorageSpaceExec)
 	execs.Register("cros_has_enough_storage_space_percentage", hasEnoughStorageSpacePercentageExec)
 	execs.Register("cros_has_enough_index_nodes", hasEnoughFreeIndexNodesExec)
-	execs.Register("cros_update_storage_to_inventory", UpdateStorageInfoToInvExec)
+	execs.Register("cros_update_storage_type_to_inventory", updateStorageTypeToInvExec)
 }

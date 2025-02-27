@@ -2244,6 +2244,13 @@ func crosRepairActions() map[string]*Action {
 			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
+		"Read storage type from DUT": {
+			Docs: []string{
+				"Read storage type from DUT.",
+			},
+			ExecName:   "cros_update_storage_type_to_inventory",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
 		"Read DUT serial-number from DUT": {
 			Conditions: []string{
 				"Not Satlab device",
@@ -2369,6 +2376,7 @@ func crosRepairActions() map[string]*Action {
 				"Read if audio loopback present",
 				"Read dlm_sku_id",
 				"Update RO_VPD from DUT to Inventory",
+				"Read storage type from DUT",
 			},
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},

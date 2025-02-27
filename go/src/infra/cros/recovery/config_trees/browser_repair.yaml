@@ -93894,6 +93894,10 @@ plans:
                               docs:
                                 - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
+                - name: Read storage type from DUT (ALWAYS_RUN)
+                  exec_name: cros_update_storage_type_to_inventory
+                  docs:
+                    - Read storage type from DUT.
             - name: Collect dmesg logs from DUT (Allow to fail)
               exec_name: cros_dmesg
               exec_args:

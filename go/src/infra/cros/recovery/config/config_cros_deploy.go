@@ -333,6 +333,7 @@ func deployActions() map[string]*Action {
 				"Collect HWID into inventory",
 				"Read DUT serial-number from DUT",
 				"Read DUT serial-number from DUT (Satlab)",
+				"Read storage type from DUT",
 				"Read device SKU",
 				"servo_type_label",
 				"Read RO_VPD from DUT",
