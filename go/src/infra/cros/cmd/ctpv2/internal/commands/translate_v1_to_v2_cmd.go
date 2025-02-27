@@ -354,96 +354,26 @@ func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg 
 	return nil
 }
 
+type TestType string
+
+// DO NOT CHANGE THESE STRING VALUES
+const (
+	OSTestType     TestType = "OS"
+	KernelTestType TestType = "KERNEL"
+)
+
 func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.State) (*api.SuiteRequest, error) {
 	// Default values
 	suiteName := "adhoc"
 	testCaseTagCriteria := &api.TestSuite_TestCaseTagCriteria{}
-	antsInvID := ""
-	antsWuID := ""
-	buildEnv := ""
 	totalShards := 0
 	retryCount := 0
 	maxDuration := &durationpb.Duration{Seconds: 40 * 3600}
 	maxInShard := 10
 	dddSuite := false
-
-	// build related
-	buildID := ""
-	branch := ""
-	buildFlavor := ""
-	buildType := ""
-	buildTarget := ""
-
-	extraBuildID := ""
-	extraBranch := ""
-	extraBuildFlavor := ""
-	extraBuildType := ""
-	extraBuildTarget := ""
-
-	for _, data := range testJobMsg.PluginData {
-		if data.Key == "ants_invocation_id" {
-			antsInvID = data.Values[0] // if the key is present, there should be only one value
-		} else if data.Key == "ants_work_unit_id" {
-			antsWuID = data.Values[0] // if the key is present, there should be only one value
-		}
-	}
-
-	for _, option := range testJobMsg.RunnerOptions {
-		if option.Key == "build_environment" {
-			buildEnv = option.Values[0] // if the key is present, there should be only one value
-		}
-	}
-
-	if testJobMsg.Build != nil {
-		buildID = testJobMsg.Build.BuildId
-		branch = testJobMsg.Build.Branch
-		buildFlavor = testJobMsg.Build.BuildTarget // Use buildTarget as buildFlavor since buildFlavor sometimes can hold incorrectly formatted value (context: b/379696736)
-		buildTarget = testJobMsg.Build.BuildTarget
-		buildType = testJobMsg.Build.BuildType
-	}
-
-	if len(testJobMsg.ExtraBuilds) != 0 {
-		extraBuild := testJobMsg.ExtraBuilds[0] // TODO (azrahman): add multiple extra build support
-
-		extraBuildID = extraBuild.BuildId
-		extraBranch = extraBuild.Branch
-		extraBuildFlavor = extraBuild.BuildTarget // Use buildTarget as buildFlavor since buildFlavor sometimes can hold incorrectly formatted value (context: b/379696736)
-		extraBuildTarget = extraBuild.BuildTarget
-		extraBuildType = extraBuild.BuildType
-	}
+	testType := OSTestType // default to OS type testing if not provided by ATP
 
 	executionMetadata := &api.ExecutionMetadata{}
-	if common.IsProd(buildState.Build().GetBuilder()) {
-		executionMetadata = &api.ExecutionMetadata{
-			Args: []*api.Arg{
-				{Flag: "branch", Value: branch},
-				{Flag: "build_flavor", Value: buildFlavor},
-				{Flag: "build_id", Value: buildID},
-				{Flag: "build_target", Value: buildTarget},
-				{Flag: "build_type", Value: buildType},
-				{Flag: "extra_branch", Value: extraBranch},
-				{Flag: "extra_build_flavor", Value: extraBuildFlavor},
-				{Flag: "extra_build", Value: extraBuildID},
-				{Flag: "extra_target", Value: extraBuildTarget},
-				{Flag: "extra_build_type", Value: extraBuildType},
-			},
-		}
-	}
-
-	// add ants info if they are not null
-	if antsInvID != "" {
-		executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "ants_invocation_id", Value: antsInvID})
-	}
-	if antsWuID != "" {
-		executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "ants_work_unit_id", Value: antsWuID})
-	}
-
-	if common.IsProd(buildState.Build().GetBuilder()) {
-		if buildEnv != "" {
-			executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "android-build-environment", Value: buildEnv})
-		}
-	}
-
 	if testJobMsg.Test != nil {
 		if testJobMsg.Test.Name != "" {
 			suiteName = testJobMsg.Test.Name
@@ -459,11 +389,17 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 			} else if arg.Key == "test_names_exclude_list" {
 				testCaseTagCriteria.TestNameExcludes = append(testCaseTagCriteria.TestNameExcludes, arg.Values...)
 			} else if arg.Key == "max_in_shard" {
-				// max_in_shard should only contain a single value.
+				// max_in_shard should have exactly one value.
 				if len(arg.Values) != 1 {
-					continue
+					return nil, fmt.Errorf("exactly one value is expected for max_in_shard, found %d.", len(arg.Values))
 				}
 				maxInShard, _ = strconv.Atoi(arg.Values[0])
+			} else if arg.Key == "test-type" {
+				// test-type should have exactly one value.
+				if len(arg.Values) != 1 {
+					return nil, fmt.Errorf("exactly one value is expected for test-type, found %d.", len(arg.Values))
+				}
+				testType = TestType(arg.Values[0])
 			} else {
 				// directly plumb through any other args
 				for _, value := range arg.Values {
@@ -481,15 +417,37 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 		retryCount = int(testJobMsg.Test.RunCount) - 1 // RunCount represents total count
 	}
 
+	// we want dev and staging tests to pick up latest prod build (through al filter) and hence not providing these intentionally
+	if common.IsProd(buildState.Build().GetBuilder()) {
+		if testType == KernelTestType {
+			// For kernel test configs, primary build is kernel build. extraBuild[0] is OS and extraBuild[1] is testSuites.
+			populateKernelBuildInfo(testJobMsg.Build, executionMetadata)
+			if len(testJobMsg.ExtraBuilds) == 2 { // For kernel tests we expect exactly 2 extra builds
+				populatePrimaryBuildInfo(testJobMsg.ExtraBuilds[0], executionMetadata)
+				populateExtraBuildInfo(testJobMsg.ExtraBuilds[1], executionMetadata)
+			} else {
+				return nil, fmt.Errorf("for %s test-type, exactly 2 extra builds are expected, found %d.", testType, len(testJobMsg.ExtraBuilds))
+			}
+		} else if testType == OSTestType {
+			// For OS test configs, primary build is OS, extraBuild[0] is testSuites.
+			populatePrimaryBuildInfo(testJobMsg.Build, executionMetadata)
+			if len(testJobMsg.ExtraBuilds) == 1 { // For OS tests we expect exactly 1 extra build
+				populateExtraBuildInfo(testJobMsg.ExtraBuilds[0], executionMetadata)
+			} else {
+				return nil, fmt.Errorf("for %s test-type, exactly 1 extra build is expected, found %d.", testType, len(testJobMsg.ExtraBuilds))
+			}
+		}
+	}
+
+	// add ants info
+	antsInvID, antsWuID := populateAntsInfo(testJobMsg, executionMetadata, buildState)
+
 	// Validations
 	if antsInvID == "" {
 		return nil, fmt.Errorf("no ants invocation id found")
 	}
 	if antsWuID == "" {
 		return nil, fmt.Errorf("no ants workunit id found")
-	}
-	if buildEnv == "" {
-		return nil, fmt.Errorf("no build env found")
 	}
 
 	if !testCaseTagCriteria.ProtoReflect().IsValid() {
@@ -508,6 +466,90 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 		MaxInShard:      int64(maxInShard),
 		DddSuite:        dddSuite,
 		RetryCount:      int64(retryCount)}, nil
+}
+
+func populatePrimaryBuildInfo(build *common.BuildMessage, executionMetadata *api.ExecutionMetadata) {
+	if build == nil {
+		return
+	}
+
+	localExecMetadata := &api.ExecutionMetadata{
+		Args: []*api.Arg{
+			{Flag: "branch", Value: build.Branch},
+			{Flag: "build_flavor", Value: build.BuildTarget}, // Use buildTarget as buildFlavor since buildFlavor sometimes can hold incorrectly formatted value (context: b/379696736)
+			{Flag: "build_id", Value: build.BuildId},
+			{Flag: "build_target", Value: build.BuildTarget},
+			{Flag: "build_type", Value: build.BuildType},
+		},
+	}
+
+	executionMetadata.Args = append(executionMetadata.Args, localExecMetadata.Args...)
+}
+
+func populateExtraBuildInfo(extraBuild *common.BuildMessage, executionMetadata *api.ExecutionMetadata) {
+	if extraBuild == nil {
+		return
+	}
+
+	localExecMetadata := &api.ExecutionMetadata{
+		Args: []*api.Arg{
+			{Flag: "extra_branch", Value: extraBuild.Branch},
+			{Flag: "extra_build_flavor", Value: extraBuild.BuildTarget}, // Use buildTarget as buildFlavor since buildFlavor sometimes can hold incorrectly formatted value (context: b/379696736)
+			{Flag: "extra_build", Value: extraBuild.BuildId},
+			{Flag: "extra_target", Value: extraBuild.BuildTarget},
+			{Flag: "extra_build_type", Value: extraBuild.BuildType},
+		},
+	}
+
+	executionMetadata.Args = append(executionMetadata.Args, localExecMetadata.Args...)
+}
+
+func populateKernelBuildInfo(kernelBuild *common.BuildMessage, executionMetadata *api.ExecutionMetadata) {
+	if kernelBuild == nil {
+		return
+	}
+
+	localExecMetadata := &api.ExecutionMetadata{
+		Args: []*api.Arg{
+			{Flag: "kernel_branch", Value: kernelBuild.Branch},
+			{Flag: "kernel_build_flavor", Value: kernelBuild.BuildTarget}, // Use buildTarget as buildFlavor since buildFlavor sometimes can hold incorrectly formatted value (context: b/379696736)
+			{Flag: "kernel_build", Value: kernelBuild.BuildId},
+			{Flag: "kernel_target", Value: kernelBuild.BuildTarget},
+			{Flag: "kernel_build_type", Value: kernelBuild.BuildType},
+		},
+	}
+
+	executionMetadata.Args = append(executionMetadata.Args, localExecMetadata.Args...)
+}
+
+func populateAntsInfo(testJobMsg *common.TestJobMessage, executionMetadata *api.ExecutionMetadata, buildState *build.State) (string, string) {
+	antsInvID := ""
+	antsWuID := ""
+	for _, data := range testJobMsg.PluginData {
+		if data.Key == "ants_invocation_id" {
+			if len(data.Values) != 0 && data.Values[0] != "" {
+				antsInvID = data.Values[0]
+				executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "ants_invocation_id", Value: antsInvID})
+			}
+		} else if data.Key == "ants_work_unit_id" {
+			if len(data.Values) != 0 && data.Values[0] != "" {
+				antsWuID = data.Values[0]
+				executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "ants_work_unit_id", Value: antsWuID})
+			}
+		}
+	}
+
+	if common.IsProd(buildState.Build().GetBuilder()) {
+		for _, option := range testJobMsg.RunnerOptions {
+			if option.Key == "build_environment" {
+				if len(option.Values) != 0 && option.Values[0] != "" {
+					executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "android-build-environment", Value: option.Values[0]})
+				}
+			}
+		}
+	}
+
+	return antsInvID, antsWuID
 }
 
 func excludeFormatting(exclude string) string {
