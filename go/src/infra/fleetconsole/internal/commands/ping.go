@@ -7,6 +7,7 @@ package commands
 
 import (
 	"context"
+	"time"
 
 	"github.com/maruel/subcommands"
 
@@ -45,7 +46,7 @@ func (c *pingCommand) innerRun(ctx context.Context, a subcommands.Application, a
 	if err != nil {
 		return errors.Annotate(err, "ping").Err()
 	}
-	client, err := consoleClient(ctx, host, c.AuthFlags, c.CommonFlags.HTTP())
+	client, err := consoleClient(ctx, host, c.AuthFlags, c.CommonFlags.HTTP(), 30*time.Second)
 	if err != nil {
 		return err
 	}

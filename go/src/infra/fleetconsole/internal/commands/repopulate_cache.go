@@ -7,6 +7,7 @@ package commands
 
 import (
 	"context"
+	"time"
 
 	"github.com/maruel/subcommands"
 
@@ -45,7 +46,7 @@ func (c *repopulateCacheCommand) innerRun(ctx context.Context, a subcommands.App
 	if err != nil {
 		return errors.Annotate(err, "repopulate cache").Err()
 	}
-	client, err := consoleClient(ctx, host, c.AuthFlags, c.CommonFlags.HTTP())
+	client, err := consoleClient(ctx, host, c.AuthFlags, c.CommonFlags.HTTP(), 30*time.Minute)
 	if err != nil {
 		return errors.Annotate(err, "repopulate cache").Err()
 	}

@@ -9,7 +9,7 @@ import (
 	"database/sql"
 	"fmt"
 	"slices"
-	"strings"
+	"sync"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
@@ -17,8 +17,11 @@ import (
 
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 	"go.chromium.org/infra/fleetconsole/internal/database/devicesdb"
+	"go.chromium.org/infra/fleetconsole/internal/database/queryutils"
 	"go.chromium.org/infra/fleetconsole/internal/devicemanagerclient"
+	"go.chromium.org/infra/fleetconsole/internal/ufsclient"
 	"go.chromium.org/infra/fleetconsole/internal/utils"
+	ufsmodel "go.chromium.org/infra/unifiedfleet/api/v1/models"
 )
 
 // The sql library doesn't support more than this number of parameters
@@ -29,7 +32,18 @@ func (frontend *FleetConsoleFrontend) RepopulateCache(ctx context.Context, req *
 	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
 
 	deviceManagerClient, err := frontend.deviceManagerClient(ctx, frontend.cloudProject)
-	devices, err := getAllDevices(ctx, deviceManagerClient)
+	if err != nil {
+		return nil, err
+	}
+	// Device manager always uses prod ufs even in it's dev environment,
+	// this means that we also need to use ufs prod in our dev, otherwise
+	// we will not be able to match deviceManager devices with ufs devices
+	ufsClient, err := frontend.ufsClient(ctx, "fleet-console-prod")
+	if err != nil {
+		return nil, err
+	}
+
+	devices, err := getAllDevices(ctx, deviceManagerClient, ufsClient)
 	if err != nil {
 		return nil, err
 	}
@@ -45,23 +59,42 @@ func (frontend *FleetConsoleFrontend) RepopulateCache(ctx context.Context, req *
 	return &fleetconsolerpc.RepopulateCacheResponse{}, nil
 }
 
-func getAllDevices(ctx context.Context, deviceManagerClient *devicemanagerclient.Client) ([]*devicesdb.DeviceDAO, error) {
-	var devices []*devicesdb.DeviceDAO
-	nextPageToken := ""
-	for {
-		res, err := deviceManagerClient.Leaser.ListDevices(ctx, &api.ListDevicesRequest{
-			PageToken: nextPageToken,
-		})
-		if err != nil {
-			return nil, err
+func getAllDevices(ctx context.Context, deviceManagerClient *devicemanagerclient.Client, ufsClient ufsclient.Client) ([]*devicesdb.DeviceDAO, error) {
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	states := make(map[string]api.DeviceState)
+	var dmErr error
+	go func() {
+		devices, errInner := devicemanagerclient.GetAllDmDevices(ctx, deviceManagerClient)
+		if errInner != nil {
+			dmErr = errInner
+			return
 		}
 
-		devices = append(devices, utils.Map[*api.Device, *devicesdb.DeviceDAO](res.Devices, devicesdb.FromDeviceManagerDevice)...)
-
-		nextPageToken = res.GetNextPageToken()
-		if nextPageToken == "" {
-			break
+		for _, d := range devices {
+			states[d.Id] = d.State
 		}
+		wg.Done()
+	}()
+
+	wg.Add(1)
+	var devicesUfs []*ufsmodel.DeviceLabels
+	var ufsErr error
+	go func() {
+		devicesUfs, ufsErr = ufsclient.GetAllUfsDevices(ctx, ufsClient)
+		wg.Done()
+	}()
+	wg.Wait()
+
+	if dmErr != nil || ufsErr != nil {
+		return nil, fmt.Errorf("Got an error while fetching data, dmErr = %v, ufsErr = %v", dmErr, ufsErr)
+	}
+
+	devices := make([]*devicesdb.DeviceDAO, len(devicesUfs))
+	for i, d := range devicesUfs {
+		state := states[devicesdb.IdFromUfsName(d.Name)].String()
+		devices[i] = devicesdb.FromUfsDevice(d, state)
 	}
 
 	return devices, nil
@@ -91,31 +124,12 @@ func saveDevices(ctx context.Context, dbConnection *sql.DB, devices []*devicesdb
 		args := utils.FlatMap(devicesChunk, func(d *devicesdb.DeviceDAO) []any { return d.DeviceAsDBArguments() })
 
 		_, err := dbConnection.ExecContext(ctx,
-			fmt.Sprintf(q, getValuesString(len(args), parametersPerDevice)),
+			fmt.Sprintf(q, queryutils.ValuesString(len(args), parametersPerDevice)),
 			args...)
 		if err != nil {
 			logging.Warningf(ctx, "Failed to write device %v\n", err)
 		}
 	}
-}
-
-// Returns a string in the shape of "($1, $2, $3), ($4, $5, $6)"
-// lenValues is the total number of values (6 in the example above)
-// numberOfArgs is the number of args in each parenthesis (3 in the example above)
-//
-// If lenValues is not cleanly divisible by numberOfArgs the remaining values will be ignored:
-// E.G: getValuesString(5, 2) = "($1, $2), ($3, $4)"
-func getValuesString(lenValues int, numberOfArgs int) string {
-	values := make([]string, lenValues/numberOfArgs)
-
-	for i := 0; i < lenValues/numberOfArgs; i++ {
-		inner := make([]string, numberOfArgs)
-		for j := 0; j < numberOfArgs; j++ {
-			inner[j] = fmt.Sprintf("$%d", j+i*numberOfArgs+1)
-		}
-		values[i] = "(" + strings.Join(inner, ", ") + ")"
-	}
-	return strings.Join(values, ", ")
 }
 
 func deleteOtherDevices(ctx context.Context, dbConnection *sql.DB, devices []*devicesdb.DeviceDAO) error {
@@ -130,7 +144,7 @@ func deleteOtherDevices(ctx context.Context, dbConnection *sql.DB, devices []*de
 
 	res, err := dbConnection.ExecContext(
 		ctx,
-		fmt.Sprintf(`DELETE FROM "Devices" where id NOT IN (%s)`, getValuesString(len(devices), 1)),
+		fmt.Sprintf(`DELETE FROM "Devices" where id NOT IN (%s)`, queryutils.ValuesString(len(devices), 1)),
 		deviceIds...,
 	)
 	if err != nil {

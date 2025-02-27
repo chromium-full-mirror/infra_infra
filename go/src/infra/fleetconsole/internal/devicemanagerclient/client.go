@@ -104,3 +104,26 @@ func ListDevicesIter(ctx context.Context, leaser api.DeviceLeaseServiceClient, r
 		}
 	}
 }
+
+func GetAllDmDevices(ctx context.Context, deviceManagerClient *Client) ([]*api.Device, error) {
+	var devices []*api.Device
+	nextPageToken := ""
+	for {
+		dmRes, err := deviceManagerClient.Leaser.ListDevices(ctx, &api.ListDevicesRequest{
+			PageToken: nextPageToken,
+			Filter:    "is_active = true", // when a device is deleted from UFS DM keeps it as inactive
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		devices = append(devices, dmRes.Devices...)
+
+		nextPageToken = dmRes.GetNextPageToken()
+		if nextPageToken == "" {
+			break
+		}
+	}
+
+	return devices, nil
+}

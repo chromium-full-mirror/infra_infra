@@ -8,6 +8,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/maruel/subcommands"
 
@@ -55,7 +56,7 @@ func (c *pingDeviceManagerCommand) innerRun(ctx context.Context, a subcommands.A
 	}
 	switch c.mode {
 	case "default":
-		client, err := consoleClient(ctx, host, c.AuthFlags, c.CommonFlags.HTTP())
+		client, err := consoleClient(ctx, host, c.AuthFlags, c.CommonFlags.HTTP(), 30*time.Second)
 		if err != nil {
 			return errors.Annotate(err, "ping (default)").Err()
 		}

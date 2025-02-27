@@ -8,6 +8,7 @@ package commands
 import (
 	"context"
 	"os/exec"
+	"time"
 
 	"github.com/maruel/subcommands"
 
@@ -46,7 +47,7 @@ func (c *pingDBCommand) innerRun(ctx context.Context, a subcommands.Application,
 	if err != nil {
 		return errors.Annotate(err, "ping db - getting host").Err()
 	}
-	client, err := consoleClient(ctx, host, c.AuthFlags, c.CommonFlags.HTTP())
+	client, err := consoleClient(ctx, host, c.AuthFlags, c.CommonFlags.HTTP(), 30*time.Second)
 	if err != nil {
 		return errors.Annotate(err, "ping db - creating console client").Err()
 	}
