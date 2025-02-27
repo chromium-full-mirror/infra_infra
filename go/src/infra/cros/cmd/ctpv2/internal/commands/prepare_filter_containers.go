@@ -136,8 +136,8 @@ func (cmd *PrepareFilterContainersInfoCmd) Execute(ctx context.Context) error {
 	// get the container MD from, but this will need to be solved long term.
 	var buildContainerMetadata map[string]*buildapi.ContainerImageInfo
 	build := 0
-	if cmd.IsAlRun {
-		step.SetSummaryMarkdown("skipping building container metadata from GCS path for AL run")
+	if cmd.IsAlRun || cmd.IsPartnerRun {
+		step.SetSummaryMarkdown("skipping building container metadata from GCS path for exempted runs")
 	} else {
 		board, gcsPath, err := gcsInfo(cmd.CtpReq)
 		if err != nil {
