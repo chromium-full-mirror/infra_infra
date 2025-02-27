@@ -9,34 +9,15 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/googleapis/gax-go/v2"
-	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/ctp/builder"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/auth"
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 
-	"go.chromium.org/infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
 	"go.chromium.org/infra/cros/satlab/common/site"
 )
-
-// FakeMoblabClient is a mock Moblab API client that returns hardcoded data
-type FakeMoblabClient struct{}
-
-func (f *FakeMoblabClient) StageBuild(ctx context.Context, req *moblabpb.StageBuildRequest, opts ...gax.CallOption) (*moblab.StageBuildOperation, error) {
-
-	return &moblab.StageBuildOperation{}, nil
-}
-
-func (f *FakeMoblabClient) CheckBuildStageStatus(context.Context, *moblabpb.CheckBuildStageStatusRequest, ...gax.CallOption) (*moblabpb.CheckBuildStageStatusResponse, error) {
-
-	name := "buildTargets/octopus/models/bobba/builds/1234.0.0/artifacts/chromeos-moblab-peng-staging"
-	return &moblabpb.CheckBuildStageStatusResponse{
-		IsBuildStaged:       true,
-		StagedBuildArtifact: &moblabpb.BuildArtifact{Name: name},
-	}, nil
-}
 
 // FakeBuildbucketClient is a mock Buildbucket client that returns hardcoded data
 type FakeBuildbucketClient struct {
@@ -64,10 +45,8 @@ func TestRun(t *testing.T) {
 
 	expectedLink := "https://ci.chromium.org/ui/b/0"
 
-	fakeMoblabClient := FakeMoblabClient{}
 	fakeBuildbucketClient := FakeBuildbucketClient{badData: false}
-	bucket := "chromeos-distributed-fleet-s4p"
-	buildLink, err := (&Run{}).triggerRunWithClients(context.Background(), &fakeMoblabClient, &fakeBuildbucketClient, bucket)
+	buildLink, err := (&Run{}).triggerRunWithClients(context.Background(), &fakeBuildbucketClient)
 	if err != nil {
 		t.Errorf("Unexpected err: %v", err)
 	}
@@ -385,4 +364,78 @@ func TestReadMixedTestplan(t *testing.T) {
 	if cftOnlyTestPlan.Cft == nil || cftOnlyTestPlan.NonCft != nil {
 		t.Errorf("CFT only testplan must produce 1 CFT test plan")
 	}
+}
+
+func assertFilter(t *testing.T, filter *api.CTPFilter, expectedName, expectedTag string) {
+	t.Helper()
+	ci := filter.ContainerInfo.Container
+	if ci.Name != expectedName {
+		t.Errorf("expected filter name %q, got %q", expectedName, ci.Name)
+	}
+	if len(ci.Tags) == 0 {
+		t.Fatalf("expected at least one tag in %q filter", expectedName)
+	}
+	if ci.Tags[0] != expectedTag {
+		t.Errorf("expected tag %q, got %q", expectedTag, ci.Tags[0])
+	}
+}
+
+func TestPartnerFilters(t *testing.T) {
+	t.Parallel()
+
+	t.Run("DesktopFalse", func(t *testing.T) {
+		t.Parallel()
+		r := Run{
+			Board:     "nami",
+			Milestone: "134",
+			Build:     "16182.0.0",
+			Desktop:   false,
+		}
+		filters := r.partnerFilters()
+		if got, want := len(filters), 2; got != want {
+			t.Fatalf("expected %d filters, got %d", want, got)
+		}
+
+		t.Run("PartnerStagingFilter", func(t *testing.T) {
+			t.Parallel()
+			assertFilter(t, filters[0], "partner-staging", "prod_partner-staging")
+		})
+
+		t.Run("CrosTestFinderFilter", func(t *testing.T) {
+			t.Parallel()
+			assertFilter(t, filters[1], "cros-test-finder", "nami-release.R134-16182.0.0")
+		})
+	})
+
+	t.Run("DesktopTrue", func(t *testing.T) {
+		t.Parallel()
+		r := Run{
+			Board:     "nami",
+			Milestone: "134",
+			Build:     "16182.0.0",
+			Desktop:   true,
+		}
+		filters := r.partnerFilters()
+		if got, want := len(filters), 1; got != want {
+			t.Errorf("expected %d filter, got %d", want, got)
+		}
+	})
+
+	t.Run("EmptyBoard", func(t *testing.T) {
+		t.Parallel()
+		r := Run{
+			Milestone: "134",
+			Build:     "16182.0.0",
+			Image:     "nami-release/R132-16100.0.0",
+			Desktop:   false,
+		}
+		filters := r.partnerFilters()
+		if got, want := len(filters), 2; got != want {
+			t.Errorf("expected %d filters, got %d", want, got)
+		}
+		t.Run("FallbackCrosTestFinderFilter", func(t *testing.T) {
+			t.Parallel()
+			assertFilter(t, filters[1], "cros-test-finder", "nami-release.R132-16100.0.0")
+		})
+	})
 }

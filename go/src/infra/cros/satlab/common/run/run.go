@@ -10,7 +10,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path"
 	"path/filepath"
 	"slices"
 	"strconv"
@@ -19,9 +18,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"github.com/golang/protobuf/jsonpb"
-	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -31,7 +28,6 @@ import (
 	buildbucketpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/errors"
 
-	"go.chromium.org/infra/cros/satlab/common/google.golang.org/google/chromeos/moblab"
 	"go.chromium.org/infra/cros/satlab/common/satlabcommands"
 	"go.chromium.org/infra/cros/satlab/common/site"
 	"go.chromium.org/infra/cros/satlab/common/utils/executor"
@@ -39,15 +35,16 @@ import (
 )
 
 const (
-	hostname                = "us-docker.pkg.dev"
-	testServicesRegistry    = "cros-registry/test-services"
-	incrementalRunBinary    = "pvs_incremental_run_filter"
-	incrementalRunContainer = "pvs-incremental-run-filter"
-	incrementalRunDigest    = "sha256:815065a0f464c3f64d6dee321ef9abff9530fc8ca5d8808fc225ccca8ff37ecb"
-	prodTag                 = "prod"
-	desktopPrefix           = "AL."
-	dummySuiteName          = "TestSuite"
-	crosTestProdTag         = "AOSP-Prod"
+	hostname                    = "us-docker.pkg.dev"
+	testServicesRegistry        = "cros-registry/test-services"
+	testServicesPartnerRegistry = "cros-registry/partner-test-services"
+	incrementalRunBinary        = "pvs_incremental_run_filter"
+	incrementalRunContainer     = "pvs-incremental-run-filter"
+	incrementalRunDigest        = "sha256:815065a0f464c3f64d6dee321ef9abff9530fc8ca5d8808fc225ccca8ff37ecb"
+	prodTag                     = "prod"
+	desktopPrefix               = "AL."
+	dummySuiteName              = "TestSuite"
+	crosTestProdTag             = "AOSP-Prod"
 )
 
 // Run holds the arguments that are needed for the run command.
@@ -103,12 +100,7 @@ func (c *Run) TriggerRun(ctx context.Context) (string, error) {
 			return "", err
 		}
 
-		moblabClient, err := moblab.NewBuildClient(ctx, option.WithCredentialsFile(site.GetServiceAccountPath()))
-		if err != nil {
-			return "", errors.Annotate(err, "satlab new moblab api build client").Err()
-		}
-
-		link, err := c.triggerRunWithClients(ctx, moblabClient, bbClient, site.GetGCSImageBucket())
+		link, err := c.triggerRunWithClients(ctx, bbClient)
 		if err != nil {
 			return "", errors.Annotate(err, "triggerRunWithClients").Err()
 		}
@@ -327,22 +319,60 @@ func (c *Run) userDefinedFilters() []*api.CTPFilter {
 		}
 		userDefinedFilters = append(userDefinedFilters, foilFilter)
 	}
+	if site.IsPartner() {
+		userDefinedFilters = append(c.partnerFilters(), userDefinedFilters...)
+	}
 	return userDefinedFilters
 }
 
-func (c *Run) triggerRunWithClients(ctx context.Context, moblabClient MoblabClient, bbClient BuildbucketClient, gcsBucket string) (string, error) {
+// partnerFilters returns filters specific to partner.
+// These filters handle partner-specific logic, such as staging and cros-test-finder integration.
+func (c *Run) partnerFilters() []*api.CTPFilter {
+	partnerFilters := []*api.CTPFilter{
+		{
+			ContainerInfo: &api.ContainerInfo{
+				Container: &buildapi.ContainerImageInfo{
+					Name:   "partner-staging",
+					Digest: "sha256:",
+					Repository: &buildapi.GcrRepository{
+						Hostname: hostname,
+						Project:  testServicesPartnerRegistry,
+					},
+					Tags: []string{fmt.Sprintf("%s_partner-staging", prodTag)},
+				},
+			},
+		},
+	}
+	if !c.Desktop {
+		partnerFilters = append(partnerFilters, c.crosTestFinderFilter())
+	}
+	return partnerFilters
+}
 
-	// There is no explicit check on whether staging of the image is successful or not
-	// There are 2 reasons for this:
-	// 1. "Custom chromeOS builds" are expected to be already in the partner bucket. There is no
-	// check on whether that already exists in the bucket. (In an ideal world, there would be
-	// one, but right now there is none. This is much harder because there is no list of
-	// compulsory artifacts that should exist in the folder)
-	// 2. Latency: Waiting for the copying to take place is not a good user experience and
-	// is not necessary anyway in this case. Although copying is fairly quick, it is left to
-	// be handled by server in the background
-	_ = StageImageToBucket(ctx, moblabClient, c.Board, c.Model, c.Build)
+// crosTestFinderFilter returns the cros-test-finder filter for partner configurations.
+// It constructs the image tag using the board, milestone, and build, or falls back to the image name.
+func (c *Run) crosTestFinderFilter() *api.CTPFilter {
+	tag := fmt.Sprintf("%s-release.R%s-%s", c.Board, c.Milestone, c.Build)
+	if c.Board == "" || c.Milestone == "" || c.Build == "" {
+		tag = strings.Replace(c.Image, "/", ".", -1)
+	}
+	return &api.CTPFilter{
+		ContainerInfo: &api.ContainerInfo{
+			Container: &buildapi.ContainerImageInfo{
+				Name:   "cros-test-finder",
+				Digest: "sha256:",
+				Repository: &buildapi.GcrRepository{
+					Hostname: hostname,
+					Project:  fmt.Sprintf("cros-registry/%s", site.GetGCSImageBucket()),
+				},
+				Tags: []string{tag},
+			},
+		},
+	}
+}
 
+// triggerRunWithClients triggers the Run with the given Buildbucket client.
+func (c *Run) triggerRunWithClients(ctx context.Context, bbClient BuildbucketClient) (string, error) {
 	link, err := ScheduleBuild(ctx, bbClient)
 	if err != nil {
 		return "", errors.Annotate(err, "satlab schedule build").Err()
@@ -433,47 +463,6 @@ func (c *Run) createTestPlan() (*satlabrpcserver.CftMixTestplan, error) {
 	return nil, fmt.Errorf("createTestPlan: must provide a suite/test/testplan")
 }
 
-// StageImageToBucket stages the specified Chrome OS image to the user GCS bucket
-func StageImageToBucket(ctx context.Context, moblabClient MoblabClient, board string, model string, buildVersion string) error {
-	bucket := site.GetGCSImageBucket()
-	if bucket == "" {
-		return errors.New("GCS_BUCKET not found")
-	}
-
-	buildTarget := fmt.Sprintf("buildTargets/%s/models/%s", board, model)
-	artifactName := fmt.Sprintf("%s/builds/%s/artifacts/%s", buildTarget, buildVersion, bucket)
-	stageReq := &moblabpb.StageBuildRequest{
-		Name: artifactName,
-	}
-
-	_, err := moblabClient.StageBuild(ctx, stageReq)
-	if err != nil {
-		return err
-	}
-	var stageStatus *moblabpb.CheckBuildStageStatusResponse
-	count := 10
-	for {
-		count--
-		req := &moblabpb.CheckBuildStageStatusRequest{
-			Name: artifactName,
-		}
-		stageStatus, err = moblabClient.CheckBuildStageStatus(ctx, req)
-		if err != nil {
-			return err
-		}
-		if stageStatus.IsBuildStaged {
-			break
-		}
-		if count == 0 {
-			return fmt.Errorf("stage not completed within 10 retries")
-		}
-	}
-	destPath := stageStatus.StagedBuildArtifact.Path
-
-	fmt.Printf("Artifacts staged to %s\n", path.Join(bucket, destPath))
-	return nil
-}
-
 // ScheduleBuild register a build. If it successes, it returns a link of build. Otherwise,
 // return an error.
 func ScheduleBuild(ctx context.Context, bbClient BuildbucketClient) (string, error) {
@@ -487,28 +476,22 @@ func ScheduleBuild(ctx context.Context, bbClient BuildbucketClient) (string, err
 
 // Set drone target to user-provided satlab or local satlab if one isn't provided
 func (c *Run) getDroneTarget(ctx context.Context) (string, error) {
-	var satlabTarget string
 	if c.SatlabId != "" {
-		satlabTarget = fmt.Sprintf(c.SatlabId)
-	} else if c.Local { // get id of local satlab if one is not provided
+		return c.SatlabId, nil
+	}
+	if c.Local { // get id of local satlab if one is not provided
 		localSatlab, err := satlabcommands.GetDockerHostBoxIdentifier(ctx, &executor.ExecCommander{})
 		if err != nil {
 			return "", errors.Annotate(err, "satlab get docker host box identifier").Err()
 		}
-		satlabTarget = fmt.Sprintf("satlab-%s", localSatlab)
+		return fmt.Sprintf("satlab-%s", localSatlab), nil
 	}
-	return satlabTarget, nil
+	return "", nil
 }
 
 // BuildbucketClient interface provides subset of Buildbucket methods relevant to Satlab CLI
 type BuildbucketClient interface {
 	ScheduleCTPBuild(ctx context.Context) (*buildbucketpb.Build, error)
-}
-
-// MoblabClient interface provides subset of Moblab API methods relevant to Satlab CLI
-type MoblabClient interface {
-	StageBuild(ctx context.Context, req *moblabpb.StageBuildRequest, opts ...gax.CallOption) (*moblab.StageBuildOperation, error)
-	CheckBuildStageStatus(ctx context.Context, req *moblabpb.CheckBuildStageStatusRequest, opts ...gax.CallOption) (*moblabpb.CheckBuildStageStatusResponse, error)
 }
 
 // Downloads specified testplan from bucket to remote access container
