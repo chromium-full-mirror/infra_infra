@@ -6,13 +6,12 @@ package tricium
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 
-	"github.com/golang/protobuf/jsonpb"
-	proto "github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -26,7 +25,7 @@ const (
 
 // GetPathForDataType returns the file path to use for the provided Tricium
 // data type.
-func GetPathForDataType(t interface{}) (string, error) {
+func GetPathForDataType(t any) (string, error) {
 	switch t := t.(type) {
 	case *Data_GitFileDetails:
 		return GitFileDetailsPath, nil
@@ -49,7 +48,8 @@ func WriteDataType(prefix string, t proto.Message) (string, error) {
 	// with underscores.
 	//
 	// In Tricium we try to use jsonpb whenever working with protos.
-	json, err := (&jsonpb.Marshaler{}).MarshalToString(t)
+
+	json, err := protojson.Marshal(t)
 	if err != nil {
 		return "", fmt.Errorf("failed to marshal: %w", err)
 	}
@@ -66,7 +66,7 @@ func WriteDataType(prefix string, t proto.Message) (string, error) {
 		return path, fmt.Errorf("failed to create file: %w", err)
 	}
 	defer f.Close()
-	if _, err := f.WriteString(json); err != nil {
+	if _, err := f.Write(json); err != nil {
 		return path, fmt.Errorf("failed to write to file: %w", err)
 	}
 	return path, nil
@@ -79,11 +79,12 @@ func ReadDataType(prefix string, t proto.Message) error {
 		return fmt.Errorf("failed to get path for type: %w", err)
 	}
 	path := path.Join(prefix, p)
-	msg, err := ioutil.ReadFile(path)
+	msg, err := os.ReadFile(path)
 	if err != nil {
 		return fmt.Errorf("failed to read file: %w", err)
 	}
-	if err := jsonpb.UnmarshalString(string(msg), t); err != nil {
+
+	if err := protojson.Unmarshal(msg, t); err != nil {
 		return fmt.Errorf("failed to unmarshal: %w", err)
 	}
 	return nil
