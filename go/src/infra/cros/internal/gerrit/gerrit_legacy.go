@@ -8,6 +8,7 @@ package gerrit
 import (
 	"context"
 	"fmt"
+	"log"
 	"net/http"
 	"net/url"
 	"regexp"
@@ -117,13 +118,14 @@ func GetChangeRev(ctx context.Context, authedClient *http.Client, changeNum int6
 			return nil, err
 		}
 	}
+	// ctx sets an overall timeout for all attempts.
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
 	defer cancel()
+	apiTimeoutDuration := 30 * time.Second // The timeout for a single API call.
 	ch := make(chan *gerritpb.ChangeInfo, 1)
 	err = shared.DoWithRetry(ctx, retryOpts, func() error {
-		// This sets the deadline for the individual API call, while the outer context sets
-		// an overall timeout for all attempts.
-		innerCtx, cancel := context.WithTimeout(ctx, 30*time.Second)
+		// innerCtx sets the deadline for the individual API call.
+		innerCtx, cancel := context.WithTimeout(ctx, apiTimeoutDuration)
 		defer cancel()
 		change, err := g.GetChange(innerCtx, &gerritpb.GetChangeRequest{
 			Number: changeNum,
@@ -132,6 +134,15 @@ func GetChangeRev(ctx context.Context, authedClient *http.Client, changeNum int6
 				gerritpb.QueryOption_ALL_FILES,
 			}})
 		if err != nil {
+			if errors.Is(err, context.DeadlineExceeded) {
+				// Timeouts may be caused by big response payloads, e.g. if a CL modifies a lot of files.
+				// Avoid this by increasing the timeout (within reasonable limits).
+				log.Printf("Gerrit GetChange timed out after %s.", apiTimeoutDuration)
+				if apiTimeoutDuration < 2*time.Minute {
+					apiTimeoutDuration = apiTimeoutDuration * 2
+				}
+				log.Printf("Trying again with a timeout of %s.", apiTimeoutDuration)
+			}
 			return err
 		}
 		ch <- change
@@ -213,7 +224,7 @@ func (crv ChangeRevData) GetChangeRev(host string, changeNum int64, revision int
 func GetChangeRevData(ctx context.Context, authedClient *http.Client, changeIds []ChangeRevKey) (*ChangeRevData, error) {
 	output := &ChangeRevData{m: make(map[string]*ChangeRev)}
 
-	// If there are a large number of changes, there is a change of exceeding
+	// If there are a large number of changes, there is a chance of exceeding
 	// Gerrit quota. Use longer retry opts in this case.
 	retryOpts := shared.DefaultOpts
 	if len(changeIds) > 20 {
