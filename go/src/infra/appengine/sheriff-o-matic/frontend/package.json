@@ -31,6 +31,9 @@
     "web-component-tester": "^5.0.0",
     "web-component-tester-istanbul": "https://github.com/t2ym/web-component-tester-istanbul/tarball/0.10.1"
   },
+  "overrides": {
+    "@babel/traverse": "7.23.2"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit --skipLibCheck",
     "build": "esbuild --bundle src/index.tsx --minify --outfile=scripts/bundle.js",
