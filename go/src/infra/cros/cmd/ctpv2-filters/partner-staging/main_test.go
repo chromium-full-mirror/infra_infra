@@ -106,8 +106,8 @@ func TestExtractBuildsToStage(t *testing.T) {
 	}
 	testPlan := GenerateTestPlan()
 	buildsToStage, cft := extractBuildsToStage(testPlan)
-	if cft {
-		t.Errorf("Expected cft to be false, got true")
+	if !cft {
+		t.Errorf("Expected cft to be true, got false")
 	}
 	if !reflect.DeepEqual(buildsToStage, expectedBuildsToStage) {
 		t.Errorf("Expected %v, got %v", expectedBuildsToStage, buildsToStage)

@@ -8,7 +8,7 @@ Staging in this application is implemented in the same way as in [CTPV1](https:/
 ### Run
 - Build:
 ```bash
-CGO_ENABLED=0 go build -o partner-staging ctpv2/partner-staging/main.go
+CGO_ENABLED=0 go build -o partner-staging
 ```
 - Run
 ```bash
@@ -125,7 +125,7 @@ go test -v go.chromium.org/chromiumos/test/ctpv2/partner-staging
 - Build binary
 - Build docker image:
 ```bash
-docker build --file ../../../chromiumos/test/dockerfiles/partner-staging/Dockerfile -t us-docker.pkg.dev/cros-registry/partner-test-services/partner-staging .
+docker build --file ../../container_uprev/internal/dockerfiles/Dockerfile_partner-staging -t us-docker.pkg.dev/cros-registry/partner-test-services/partner-staging .
 ```
 - Push docker image:
 ```bash

@@ -95,17 +95,10 @@ func mapBuildsToBucket(req *api.InternalTestplan) map[string]string {
 }
 
 // isCFTenabled checks if CFT is enabled in the InternalTestplan request.
-func isCFTenabled(req *api.InternalTestplan) bool {
-	for _, testCase := range req.TestCases {
-		if metadata := testCase.Metadata; metadata != nil {
-			if testExec := metadata.TestCaseExec; testExec != nil {
-				if testExec.TestHarness != nil {
-					return true
-				}
-			}
-		}
-	}
-	return false
+func isCFTenabled(_ *api.InternalTestplan) bool {
+	// now we can't verify if cft is enabled in the request
+	// ToDo: need to wait until client library will be updated: cl/725213532
+	return true
 }
 
 // stageBuilds stages the specified Chrome OS builds to the user GCS buckets.
