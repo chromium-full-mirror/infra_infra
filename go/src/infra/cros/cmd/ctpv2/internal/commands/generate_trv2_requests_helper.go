@@ -577,6 +577,9 @@ func getGcsPathFromProvisionInfos(provInfos []*testapi.ProvisionInfo) string {
 }
 
 func findGcsPathFromTarget(target *testapi.Target, board string, variant string) string {
+	if !(strings.ToLower(getBuildTargetFromSchedulingTarget(target)) == board && strings.ToLower(target.GetSwarmingDef().GetVariant()) == variant) {
+		return ""
+	}
 	provInfos := getProvisionInfoFromTarget(target, board, variant)
 	gcsPath := ""
 	if provInfos != nil {
