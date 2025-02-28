@@ -207,7 +207,7 @@ func (c *addLabstation) innerRun(a subcommands.Application, args []string, env s
 				UseLatestVersion: c.latestVersion,
 				BBProject:        c.deployBBProject,
 				BBBucket:         c.deployBBBucket,
-				BBBuilderName:    ufsUtil.GetDeployBBBuilderName(params.Labstation.GetHostname()),
+				BBBuilderName:    ufsUtil.GetDeployBBBuilderName(params.Labstation.GetHostname(), ""),
 			}
 			dErr := utils.ScheduleDeployTask(ctx, scheduleDeployParams)
 			resTable.RecordResult(swarmingOp, params.Labstation.GetHostname(), dErr)

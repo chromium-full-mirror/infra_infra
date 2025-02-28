@@ -211,7 +211,7 @@ func (c *updateLabstation) innerRun(a subcommands.Application, args []string, en
 					UseLatestVersion: c.latestVersion,
 					BBProject:        c.deployBBProject,
 					BBBucket:         c.deployBBBucket,
-					BBBuilderName:    ufsUtil.GetDeployBBBuilderName(req.MachineLSE.GetHostname()),
+					BBBuilderName:    ufsUtil.GetDeployBBBuilderName(req.MachineLSE.GetHostname(), ""),
 				}
 
 				err = utils.ScheduleDeployTask(ctx, deployParams)

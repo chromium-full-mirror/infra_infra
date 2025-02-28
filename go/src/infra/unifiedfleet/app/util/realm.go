@@ -264,7 +264,10 @@ func IsInChromePerfPool(pools []string) bool {
 // https://source.corp.google.com/h/chrome-internal/chromeos/codesearch/+/main:infra/config/lab_platform/labpack/main.star;l=96;bpv=1
 // The name is different for different swarming pool, swarming pool is decided by bot prefix,
 // and bot prefix is decided by hostname prefix.
-func GetDeployBBBuilderName(hostname string) string {
+func GetDeployBBBuilderName(hostname, hive string) string {
+	if hive == chromeClankHive {
+		return "deploy-clank"
+	}
 	if strings.HasPrefix(hostname, ChromePerfPinpointPrefix) {
 		return "deploy-pinpoint"
 	}

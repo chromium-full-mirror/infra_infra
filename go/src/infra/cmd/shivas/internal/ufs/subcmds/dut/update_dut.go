@@ -253,6 +253,11 @@ func (c *updateDUT) Run(a subcommands.Application, args []string, env subcommand
 	return 0
 }
 
+type deployArgs struct {
+	needToDeploy      bool
+	deployBuilderHive string
+}
+
 func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subcommands.Env) error {
 	if len(args) != 0 {
 		return fmt.Errorf("update dut does not take any position parameters: %#v provided", args)
@@ -294,7 +299,7 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 	}
 
 	// Create a map of DUTs to avoid triggering multiple tasks.
-	deployTasks := make(map[string]bool)
+	deployTasks := make(map[string]*deployArgs)
 
 	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
@@ -305,7 +310,7 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 	for _, req := range requests {
 
 		// Collect the deploy actions required for the request. This is done before DUT is changed on UFS.
-		needToDeploy, err := c.needToDeploy(ctx, ic, req)
+		needToDeploy, deployBuilderHive, err := c.needToDeploy(ctx, ic, req)
 		if err != nil {
 			return err
 		}
@@ -324,8 +329,10 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 			}
 			fmt.Printf("[%s] Failed to update UFS. Attempting to trigger deploy task '-force-deploy'. %s\n", req.MachineLSE.GetName(), err.Error())
 		}
-		deployTasks[req.MachineLSE.GetName()] = needToDeploy
-
+		deployTasks[req.MachineLSE.GetName()] = &deployArgs{
+			needToDeploy:      needToDeploy,
+			deployBuilderHive: deployBuilderHive,
+		}
 	}
 
 	var bc buildbucket.Client
@@ -339,7 +346,7 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 	for _, req := range requests {
 		// Check if the deployment is needed.
-		needRunDeploy, ok := deployTasks[req.MachineLSE.GetName()]
+		deployArgs, ok := deployTasks[req.MachineLSE.GetName()]
 		if !ok {
 			// Deploy Task not required.
 			continue
@@ -350,7 +357,7 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 			return errors.Annotate(err, "creating Scheduke client").Err()
 		}
 		// Swarm a deploy task if required or enforced.
-		if needRunDeploy || c.forceDeploy {
+		if deployArgs.needToDeploy || c.forceDeploy {
 			deployParams := utils.DeployTaskParams{
 				Client:           bc,
 				SchedulingClient: sc,
@@ -360,7 +367,7 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 				UseLatestVersion: c.latestVersion,
 				BBProject:        c.deployBBProject,
 				BBBucket:         c.deployBBBucket,
-				BBBuilderName:    ufsUtil.GetDeployBBBuilderName(req.GetMachineLSE().GetHostname()),
+				BBBuilderName:    ufsUtil.GetDeployBBBuilderName(req.GetMachineLSE().GetHostname(), deployArgs.deployBuilderHive),
 			}
 			utils.ScheduleDeployTask(ctx, deployParams)
 			resTable.RecordResult(swarmOp, req.MachineLSE.GetName(), err)
@@ -404,12 +411,12 @@ func (c updateDUT) validateArgs() error {
 		// Check if servo type is valid.
 		// Note: This check is run irrespective of servo input because it is possible to perform an update on only this field.
 		if _, ok := chromeosLab.ServoSetupType_value[appendServoSetupPrefix(c.servoSetupType)]; c.servoSetupType != "" && !ok {
-			return cmdlib.NewQuietUsageError(c.Flags, "Invalid value for servo setup type. Valid values are "+cmdhelp.ServoSetupTypeAllowedValuesString())
+			return cmdlib.NewQuietUsageError(c.Flags, "Invalid value for servo setup type. Valid values are %s", cmdhelp.ServoSetupTypeAllowedValuesString())
 		}
 		// Check if servo firmware channel is valid.
 		// Note: This check is run irrespective of servo input because it is possible to perform an update on only this field.
 		if _, ok := chromeosLab.ServoFwChannel_value[appendServoFwChannelPrefix(c.servoFwChannel)]; c.servoFwChannel != "" && !ok {
-			return cmdlib.NewQuietUsageError(c.Flags, "Invalid value for servo firmware channel. Valid values are "+cmdhelp.ServoFwChannelAllowedValuesString())
+			return cmdlib.NewQuietUsageError(c.Flags, "Invalid value for servo firmware channel. Valid values are %s", cmdhelp.ServoFwChannelAllowedValuesString())
 		}
 		// Check if the license input is valid if it's not being cleared.
 		if !ufsUtil.ContainsAnyStrings(c.licenseIds, utils.ClearFieldValue) {
@@ -477,7 +484,7 @@ func (c updateDUT) validateArgs() error {
 	if c.newSpecsFile != "" {
 		// Helper function to return the formatted error.
 		f := func(input string) error {
-			return cmdlib.NewQuietUsageError(c.Flags, fmt.Sprintf("Wrong usage!!\nThe MCSV/JSON mode is specified. '-%s' cannot be specified at the same time.", input))
+			return cmdlib.NewQuietUsageError(c.Flags, "Wrong usage!!\nThe MCSV/JSON mode is specified. '-%s' cannot be specified at the same time.", input)
 		}
 		// Cannot accept cmdline inputs for DUT when csv/json mode is specified
 		// The following flags can be set with JSON/MCSV mode.
@@ -1125,7 +1132,7 @@ func generateDolosWithMask(dolosHost, dolosSerialCable string, dolosRpmHost stri
 //  2. Updates to asset.
 //
 // If neither of them is found. Return false, nil.
-func (c *updateDUT) needToDeploy(ctx context.Context, ic ufsAPI.FleetClient, req *ufsAPI.UpdateMachineLSERequest) (a bool, err error) {
+func (c *updateDUT) needToDeploy(ctx context.Context, ic ufsAPI.FleetClient, req *ufsAPI.UpdateMachineLSERequest) (a bool, hive string, err error) {
 	defer func() {
 		// Cannot trust JSON input to have all the fields. Log error.
 		if r := recover(); r != nil {
@@ -1140,47 +1147,49 @@ func (c *updateDUT) needToDeploy(ctx context.Context, ic ufsAPI.FleetClient, req
 			return
 		}
 	}()
+	newDut := req.MachineLSE
+	// Get the existing DUT configuration.
+	oldDut, err := ic.GetMachineLSE(ctx, &ufsAPI.GetMachineLSERequest{
+		Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, newDut.GetName()),
+	})
+	// If DUT doesn't exist return error as update will fail.
+	if err != nil {
+		return false, "", errors.Annotate(err, "getDeployActions - Please check if DUT exists before updating. Failed to get DUT %s", newDut.GetName()).Err()
+	}
+
+	deployBuilderHive := ufsUtil.GetHiveForDut(newDut.GetName(), oldDut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive())
+	if c.hive != "" {
+		deployBuilderHive = c.hive
+	}
+
 	// Check if its partial update. Determine actions and state based on what's being updated.
 	if req.UpdateMask != nil && len(req.UpdateMask.Paths) > 0 {
 		if ufsUtil.ContainsAnyStrings(req.UpdateMask.Paths, "machines") {
 			// Asset update. Set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
-			return true, nil
+			return true, deployBuilderHive, nil
 		}
 		if ufsUtil.ContainsAnyStrings(req.UpdateMask.Paths, partialUpdateDeployPaths...) {
 			// RPM/Servo update set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
 			// Append any options that were set to force and return.
-			return true, nil
+			return true, deployBuilderHive, nil
 		}
-		return false, nil
+		return false, "", nil
 	}
 
 	// Check if it's a JSON update and validate full update.
 	if c.newSpecsFile != "" && !utils.IsCSVFile(c.newSpecsFile) {
-		// Full update requires verifying what's being changed on the existing DUT.
-		newDut := req.MachineLSE
-
-		// Get the existing DUT configuration.
-		oldDut, err := ic.GetMachineLSE(ctx, &ufsAPI.GetMachineLSERequest{
-			Name: ufsUtil.AddPrefix(ufsUtil.MachineLSECollection, newDut.GetName()),
-		})
-
-		// If DUT doesn't exist return error as update will fail.
-		if err != nil {
-			return false, errors.Annotate(err, "getDeployActions - Please check if DUT exists before updating. Failed to get DUT %s", newDut.GetName()).Err()
-		}
-
 		// Fail if the target is not a DUT.
 		if err := utils.IsDUT(oldDut); err != nil {
-			return false, errors.Annotate(err, "getDeployActions - %s is not a DUT", oldDut.GetName()).Err()
+			return false, "", errors.Annotate(err, "getDeployActions - %s is not a DUT", oldDut.GetName()).Err()
 		}
 
 		// Check if asset was updated.
 		if oldDut.GetMachines()[0] != newDut.GetMachines()[0] {
 			// Asset update. Set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
-			return true, nil
+			return true, deployBuilderHive, nil
 		}
 
 		// Check for any servo changes. Need to run a deploy task for the following cases
@@ -1198,7 +1207,7 @@ func (c *updateDUT) needToDeploy(ctx context.Context, ic ufsAPI.FleetClient, req
 			req.MachineLSE.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().Servo = nil
 			// Servo update set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
-			return true, nil
+			return true, deployBuilderHive, nil
 		}
 
 		// Check if the user intends to clear servo type and topology
@@ -1209,7 +1218,7 @@ func (c *updateDUT) needToDeploy(ctx context.Context, ic ufsAPI.FleetClient, req
 			// Servo update set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
 			// Need to run deploy task.
-			return true, nil
+			return true, deployBuilderHive, nil
 		}
 
 		// Check if we are adding a new servo.
@@ -1217,7 +1226,7 @@ func (c *updateDUT) needToDeploy(ctx context.Context, ic ufsAPI.FleetClient, req
 		if oldServo == nil || oldServo.GetServoHostname() == "" {
 			// Servo update set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
-			return true, nil
+			return true, deployBuilderHive, nil
 		}
 
 		// Check if servo was updated by the user.
@@ -1230,7 +1239,7 @@ func (c *updateDUT) needToDeploy(ctx context.Context, ic ufsAPI.FleetClient, req
 		if !ufsUtil.ProtoEqual(oldServoCopy, newServo) {
 			// Servo update set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
-			return true, nil
+			return true, deployBuilderHive, nil
 		}
 		// User doesn't intend to update servo. Avoid calling the deploy task and copy servo_type and topology from oldServo.
 		newServo.ServoType = oldServo.GetServoType()
@@ -1249,11 +1258,11 @@ func (c *updateDUT) needToDeploy(ctx context.Context, ic ufsAPI.FleetClient, req
 			// RPM update set state to manual_repair.
 			req.MachineLSE.ResourceState = ufspb.State_STATE_DEPLOYED_TESTING
 			// Append any options that were set to force and return.
-			return true, nil
+			return true, deployBuilderHive, nil
 		}
 	}
 	// Didn't find any reason to run deploy task.
-	return false, nil
+	return false, "", nil
 }
 
 // updateDUTToUFS verifies the request and calls UpdateMachineLSE API with the given request.

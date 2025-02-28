@@ -312,6 +312,7 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 		if err != nil {
 			return errors.Annotate(err, "creating Scheduke client").Err()
 		}
+		deployBuilderHive := ufsUtil.GetHiveForDut(param.DUT.GetName(), c.hive)
 		deployParams := utils.DeployTaskParams{
 			Client:           bc,
 			SchedulingClient: sc,
@@ -321,7 +322,7 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 			UseLatestVersion: c.latestVersion,
 			BBProject:        c.deployBBProject,
 			BBBucket:         c.deployBBBucket,
-			BBBuilderName:    ufsUtil.GetDeployBBBuilderName(param.DUT.GetName()),
+			BBBuilderName:    ufsUtil.GetDeployBBBuilderName(param.DUT.GetName(), deployBuilderHive),
 		}
 
 		if err := utils.ScheduleDeployTask(ctx, deployParams); err != nil {
