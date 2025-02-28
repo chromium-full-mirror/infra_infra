@@ -59,7 +59,7 @@ require (
 	github.com/golang/protobuf v1.5.4
 	github.com/google/cel-go v0.22.1
 	github.com/google/generative-ai-go v0.19.0
-	github.com/google/go-cmp v0.6.0
+	github.com/google/go-cmp v0.7.0
 	github.com/google/go-containerregistry v0.14.0
 	github.com/google/safetext v0.0.0-20240722112252-5a72de7e7962
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
