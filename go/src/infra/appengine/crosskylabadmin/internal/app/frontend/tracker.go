@@ -6,7 +6,6 @@ package frontend
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -291,9 +290,8 @@ func identifyBotsForRepair(ctx context.Context, bots []*swarmingv2.BotInfo, skip
 	repairBOTs = make([]string, 0, len(bots))
 	for _, b := range bots {
 		dims := util.DimensionsMap(b.Dimensions)
-		err := isDutOS(ctx, b.BotId, dims)
-		if err != nil {
-			logging.Warningf(ctx, "failed to obtain os type for bot %q", b.BotId)
+		if IsLabstationOS(ctx, b.BotId, dims) {
+			logging.Warningf(ctx, "%q is a labstation bot", b.BotId)
 			continue
 		}
 		dut := ExtractDutToPush(ctx, b, dims, skipHostMap)
@@ -316,10 +314,8 @@ func identifyBotsForAudit(ctx context.Context, bots []*swarmingv2.BotInfo, dutSt
 	botIDs := make([]string, 0, len(bots))
 	for _, b := range bots {
 		dims := util.DimensionsMap(b.Dimensions)
-		err := isDutOS(ctx, b.BotId, dims)
-		logging.Infof(ctx, "%q", err)
-		if err != nil {
-			logging.Warningf(ctx, "failed to obtain os type for bot %q", b.BotId)
+		if IsLabstationOS(ctx, b.BotId, dims) {
+			logging.Warningf(ctx, "%q is a labstation bot", b.BotId)
 			continue
 		}
 		dut := ExtractDutToPush(ctx, b, dims, skipHostMap)
@@ -358,9 +354,8 @@ func identifyLabstationsForRepair(ctx context.Context, bots []*swarmingv2.BotInf
 	botIDs := make([]string, 0, len(bots))
 	for _, b := range bots {
 		dims := util.DimensionsMapV2(b.GetDimensions())
-		err := IsLabstationOS(ctx, b.BotId, dims)
-		if err != nil {
-			logging.Warningf(ctx, "failed to obtain os type for bot %q. err: ", b.BotId, err)
+		if !IsLabstationOS(ctx, b.BotId, dims) {
+			logging.Warningf(ctx, "%q is not a labstation bot", b.BotId)
 			continue
 		}
 
@@ -400,36 +395,14 @@ func simple3TimesRetry() retry.Factory {
 	}
 }
 
-func IsLabstationOS(ctx context.Context, botID string, dims strpair.Map) (err error) {
+func IsLabstationOS(ctx context.Context, botID string, dims strpair.Map) bool {
 	logging.Infof(ctx, "Get os type for botID = %s.", botID)
 	os, err := util.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
-	if err != nil {
-		return errors.Annotate(err, "failed to extract Dut OS").Err()
+	if err != nil || os != "OS_TYPE_LABSTATION" {
+		logging.Infof(ctx, "%q could be either a dut or multi-dut", botID)
+		return false
 	}
-	// Some bot may not have os dimension(e.g. scheduling unit), so we ignore the error here.
-	if os != "OS_TYPE_LABSTATION" {
-		return errors.Annotate(err, "This bot may not have an os dimensionos = %q", os).Err()
-	}
-	return nil
-}
-
-// isDutOS checks the os type of a particular bot and returns an error if the bot
-// doesn't have an os dimension or something goes wrong trying to retrieve it.
-func isDutOS(ctx context.Context, botID string, dims strpair.Map) (err error) {
-	logging.Infof(ctx, "Get os type for botID = %s.", botID)
-	if _, err := util.ExtractSingleValuedDimension(dims, clients.ManagedDutDimensionKey); err == nil {
-		logging.Infof(ctx, "bot:%s is a multi-dut", botID)
-		return nil
-	}
-	os, err := util.ExtractSingleValuedDimension(dims, clients.DutOSDimensionKey)
-	if err != nil {
-		return errors.Annotate(err, "failed to extract Dut OS").Err()
-	}
-	// Some bot may not have os dimension(e.g. scheduling unit), so we ignore the error here.
-	if os == "" || os == "OS_TYPE_LABSTATION" {
-		return fmt.Errorf("this bot may not have an os dimensionos = %q", os)
-	}
-	return nil
+	return true
 }
 
 // ExtractDutToPush returns the dut name to push for repair or audit
