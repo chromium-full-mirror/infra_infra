@@ -96,9 +96,6 @@ type SrcDirectory struct {
 	// ChromiumosDirPath is the path to the root chromiumos source directory.
 	ChromiumosDirPath string
 
-	// BTPeerManagerDirPath is the path the source directory for btpeer_manager.
-	BTPeerManagerDirPath string
-
 	// ChameleonDirPath is the path to the chameleon repo source directory.
 	ChameleonDirPath string
 
@@ -119,13 +116,11 @@ func NewSrcDirectory(chromiumosDirPath string) (*SrcDirectory, error) {
 	}
 	srcDir := &SrcDirectory{
 		ChromiumosDirPath:    chromiumosDirPathAbs,
-		BTPeerManagerDirPath: filepath.Join(chromiumosDirPathAbs, "src", "platform", "dev", "contrib", "btpeer_manager"),
 		ChameleonDirPath:     filepath.Join(chromiumosDirPathAbs, "src", "platform", "chameleon"),
 		ChameleonDistDirPath: filepath.Join(chromiumosDirPathAbs, "src", "platform", "chameleon", "dist"),
 	}
 	pathsToCheck := []string{
 		srcDir.ChromiumosDirPath,
-		srcDir.BTPeerManagerDirPath,
 		srcDir.ChameleonDirPath,
 	}
 	for _, path := range pathsToCheck {

@@ -34,7 +34,7 @@ func RootCmd() (*cobra.Command, error) {
 		}
 		dirContext.Src = srcDir
 		if workingDirPath == "" {
-			workingDirPath = dirContext.Src.BTPeerManagerDirPath
+			workingDirPath = path.Join(usr.HomeDir, ".btpeer_manager_working_dir")
 		}
 		workingDir, err := dirs.NewWorkingDirectory(workingDirPath)
 		if err != nil {
