@@ -57,9 +57,13 @@ func List(ctx context.Context, dbConn *sql.DB, filter, orderby string, offset, p
 			return nil, hasMoreData, fmt.Errorf("ListDevices: %w", err)
 		}
 
-		port, err := strconv.Atoi(portDB)
-		if err != nil {
-			return nil, hasMoreData, fmt.Errorf("invalid port value: %s", portDB)
+		port := 0
+		if portDB != "" {
+			port, err = strconv.Atoi(portDB)
+
+			if err != nil {
+				return nil, hasMoreData, fmt.Errorf("invalid port value: %s", portDB)
+			}
 		}
 
 		device.Type = deviceType
