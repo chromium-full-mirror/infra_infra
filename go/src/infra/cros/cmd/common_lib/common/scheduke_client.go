@@ -27,8 +27,7 @@ import (
 )
 
 const (
-	dmExperiment      = "dm"
-	poolConfigsDirURL = "https://chrome-internal.googlesource.com/chromeos/infra/config/+/refs/heads/main/testingconfig/"
+	dmExperiment = "dm"
 	// SchedukeDevPool is the pool that the Scheduke dev instance schedules on.
 	SchedukeDevPool = "schedukeTest"
 )
@@ -40,9 +39,6 @@ var (
 	schedukeGetExecutionEndpoint    = "tasks"
 	schedukeCancelExecutionEndpoint = "tasks/cancel"
 	maxHTTPRetries                  = 5
-	blockedPoolsURL                 = poolConfigsDirURL + "blocked_pools.txt?format=text"
-	dmPoolsURL                      = poolConfigsDirURL + "dm_pools.txt?format=text"
-	schedukePoolsURL                = poolConfigsDirURL + "ctp2_pools.txt?format=text"
 )
 
 type SchedukeClient struct {
@@ -62,11 +58,11 @@ func NewSchedukeClientForCLI(ctx context.Context, dev bool, authOpts auth.Option
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: setting up Gerrit client").Err()
 	}
-	dmPools, err := GetPoolsFromURL(ctx, gc, dmPoolsURL)
+	dmPools, err := GetPoolsFromURL(ctx, gc, DmPoolsURL)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch dm pools").Err()
 	}
-	blockedPools, err := GetPoolsFromURL(ctx, gc, blockedPoolsURL)
+	blockedPools, err := GetPoolsFromURL(ctx, gc, BlockedPoolsURL)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch blocked pools").Err()
 	}
@@ -114,11 +110,11 @@ func NewSchedukeClientForLUCIExe(ctx context.Context, pool string) (*SchedukeCli
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForLUCIExe: setting up Gerrit client").Err()
 	}
-	dmPools, err := GetPoolsFromURL(ctx, gc, dmPoolsURL)
+	dmPools, err := GetPoolsFromURL(ctx, gc, DmPoolsURL)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch dm pools").Err()
 	}
-	blockedPools, err := GetPoolsFromURL(ctx, gc, blockedPoolsURL)
+	blockedPools, err := GetPoolsFromURL(ctx, gc, BlockedPoolsURL)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch blocked pools").Err()
 	}
@@ -158,11 +154,11 @@ func NewSchedukeClientForGCP(ctx context.Context, pool string) (*SchedukeClient,
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForGCP: seeting up Gerrit client").Err()
 	}
-	dmPools, err := GetPoolsFromURL(ctx, gc, dmPoolsURL)
+	dmPools, err := GetPoolsFromURL(ctx, gc, DmPoolsURL)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch dm pools").Err()
 	}
-	blockedPools, err := GetPoolsFromURL(ctx, gc, blockedPoolsURL)
+	blockedPools, err := GetPoolsFromURL(ctx, gc, BlockedPoolsURL)
 	if err != nil {
 		return nil, errors.Annotate(err, "NewSchedukeClientForCLI: failed to fetch blocked pools").Err()
 	}
@@ -232,7 +228,7 @@ func (s *SchedukeClient) ScheduleExecution(req *schedukeapi.KeyedTaskRequestEven
 		resolvePool(e)
 		pools = append(pools, e.Pool)
 	}
-	poolsBlocked, err := AnyStringInGerritList(s.ctx, s.gerritClient, pools, blockedPoolsURL, s.blockedPools)
+	poolsBlocked, err := AnyStringInGerritList(s.ctx, s.gerritClient, pools, BlockedPoolsURL, s.blockedPools)
 	if err != nil {
 		return nil, err
 	}
@@ -474,7 +470,7 @@ func (s *SchedukeClient) CancelTasks(taskStateIDs []int64, users, deviceNames []
 // ShouldUseDM returns a bool indicating whether a task request with the given
 // pool should enable the Device Manager experiment.
 func ShouldUseDM(ctx context.Context, c clientThatSendsRequests, pool string, dmPools ...string) (bool, error) {
-	return AnyStringInGerritList(ctx, c, []string{pool}, dmPoolsURL, dmPools)
+	return AnyStringInGerritList(ctx, c, []string{pool}, DmPoolsURL, dmPools)
 }
 
 // schedukeParams converts a list of task state IDs, users, and device names to

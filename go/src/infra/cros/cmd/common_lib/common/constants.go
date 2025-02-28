@@ -142,7 +142,11 @@ const (
 	HostIP                              = "host-ip"
 	PcqQsAccount                        = "pcq"
 
-	ATILink = "https://android-build.corp.google.com/test_investigate/invocation"
+	ATILink           = "https://android-build.corp.google.com/test_investigate/invocation"
+	PoolConfigsDirURL = "https://chrome-internal.googlesource.com/chromeos/infra/config/+/refs/heads/main/testingconfig/"
+	BlockedPoolsURL   = PoolConfigsDirURL + "blocked_pools.txt?format=text"
+	DmPoolsURL        = PoolConfigsDirURL + "dm_pools.txt?format=text"
+	SchedukePoolsURL  = PoolConfigsDirURL + "ctp2_pools.txt?format=text"
 
 	// Build Experiments
 	EnableXTSArchiverExperiment = "chromeos.cros_infra_config.enable_xts_archiver"

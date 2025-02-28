@@ -253,8 +253,12 @@ func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 	common.WriteAnyObjectToStepLog(ctx, step, cmd.CtpV1Requests, "Received CtpV1 Request")
 	v1KeysMap := cmd.CreateKeysForEachV1Request()
 	common.WriteAnyObjectToStepLog(ctx, step, v1KeysMap, "RequestToBMVTargetKeyMap")
-
-	v2RequestMap, requestChainMap, dddTrackerMap := commonbuilders.NewCTPV2FromV1(ctx, cmd.CtpV1Requests, cmd.BuildState).BuildRequest()
+	newCTPV2FromV1, err := commonbuilders.NewCTPV2FromV1(ctx, cmd.CtpV1Requests, cmd.BuildState)
+	if err != nil {
+		logging.Infof(ctx, "err while constructing newCTPV2FromV1: %s", err.Error())
+		return err
+	}
+	v2RequestMap, requestChainMap, dddTrackerMap := newCTPV2FromV1.BuildRequest()
 	common.WriteAnyObjectToStepLog(ctx, step, requestChainMap, "RequestChainMap")
 	common.WriteAnyObjectToStepLog(ctx, step, dddTrackerMap, "DddTrackerMap")
 	cmd.CtpV2RequestMap = v2RequestMap // will be used to propagate the request key to each invocation

@@ -116,5 +116,5 @@ func ShouldUseScheduke(ctx context.Context, pool string, authOpts auth.Options) 
 	if err != nil {
 		return false, errors.Annotate(err, "initializing Gerrit client to read Scheduke pools allowlist").Err()
 	}
-	return AnyStringInGerritList(ctx, gc, []string{pool}, schedukePoolsURL, nil)
+	return AnyStringInGerritList(ctx, gc, []string{pool}, SchedukePoolsURL, nil)
 }

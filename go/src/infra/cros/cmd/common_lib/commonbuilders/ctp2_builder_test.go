@@ -42,7 +42,7 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 		requests := map[string]*test_platform.Request{
 			"r1": getCTPv1Request("board", "model", "board-release/R123.0.0", "suite", "", "", false, false),
 		}
-		v2RequestMap, _, _ := builders.NewCTPV2FromV1(context.Background(), requests, &build.State{}).BuildRequest()
+		v2RequestMap, _, _ := builders.NewCTPV2FromV1WithCustomManifestFetcher(context.Background(), requests, MockManifestFetcher, &build.State{}).BuildRequest()
 		result := ConstructCtpv2Req(v2RequestMap)
 
 		assert.Loosely(t, result.GetRequests(), should.HaveLength(1))
@@ -81,8 +81,8 @@ func TestCTPv1Tov2Translation(t *testing.T) {
 			request1 = request2
 			request2 = swap
 		}
-		assert.Loosely(t, request1.GetSchedulerInfo().GetScheduler(), should.Equal(testapi.SchedulerInfo_SCHEDUKE))
-		assert.Loosely(t, request2.GetSchedulerInfo().GetScheduler(), should.Equal(testapi.SchedulerInfo_SCHEDUKE))
+		assert.Loosely(t, request1.GetSchedulerInfo().GetScheduler(), should.Equal(testapi.SchedulerInfo_QSCHEDULER))
+		assert.Loosely(t, request2.GetSchedulerInfo().GetScheduler(), should.Equal(testapi.SchedulerInfo_QSCHEDULER))
 		target1 := request1.GetScheduleTargets()[0].GetTargets()[0]
 		target2 := request2.GetScheduleTargets()[0].GetTargets()[0]
 		assert.Loosely(t, target1.GetSwTarget().GetLegacySw().GetGcsPath(), should.Equal("gs://chromeos-image-archive/board-release/R123.0.0"))
