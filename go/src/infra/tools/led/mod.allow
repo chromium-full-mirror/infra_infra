@@ -1,0 +1,10 @@
+# Restricts allowed modules. See infra.git/go/check_{imports,gomod}.py
+$google
+$google_ext
+$luci
+github.com/mattn/go-tty
+github.com/mitchellh/go-homedir
+github.com/pkg/xattr
+github.com/xo/terminfo
+github.com/Microsoft/go-winio
+github.com/mattn/go-isatty

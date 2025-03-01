@@ -1,0 +1,12 @@
+# Restricts allowed modules. See infra.git/go/check_{imports,gomod}.py
+$google
+$google_ext
+$luci
+$opencensus
+$otel
+github.com/apache/arrow/go/v15
+github.com/goccy/go-json
+github.com/mitchellh/go-homedir
+github.com/pierrec/lz4/v4
+github.com/xo/terminfo
+github.com/zeebo/xxh3
