@@ -28202,7 +28202,9 @@ plans:
                                       conditions:
                                         - name: Setup has servo info ('dut_servo_host_present')
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
-                - name: Read storage type from DUT ('cros_update_storage_type_to_inventory') (ALWAYS_RUN)
+                - name: Read storage type from DUT (Allow to fail) ('cros_update_storage_type_to_inventory') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
             - name: Collect dmesg logs from DUT (Allow to fail) ('cros_dmesg')
             - name: Disable verbose network logging for cellular DUTs (Allow to fail) ('sample_pass')
               conditions:

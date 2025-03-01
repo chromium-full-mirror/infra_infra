@@ -2248,8 +2248,12 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Read storage type from DUT.",
 			},
-			ExecName:   "cros_update_storage_type_to_inventory",
-			RunControl: RunControl_ALWAYS_RUN,
+			Conditions: []string{
+				"Is a Chromebook",
+			},
+			ExecName:               "cros_update_storage_type_to_inventory",
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
 		},
 		"Read DUT serial-number from DUT": {
 			Conditions: []string{
