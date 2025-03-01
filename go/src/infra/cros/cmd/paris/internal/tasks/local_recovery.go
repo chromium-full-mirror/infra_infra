@@ -90,6 +90,8 @@ For now only running in testing mode.`,
 		c.Flags.StringVar(&c.namespace, "namespace", "os", `Specify which namespace to use. The default is "os".`)
 		c.Flags.StringVar(&c.adbPort, "adb-port", "", `Specify value for ADB_CONNECTION_PORT.`)
 		c.Flags.StringVar(&c.adbPath, "adb-path", "", `Specify value for ADB_PATH.`)
+		c.Flags.StringVar(&c.swarmingID, "swarming-id", "", "Optional unique Swarming-ID for logging purpose.")
+		c.Flags.StringVar(&c.bbID, "bb-id", "", "Optional unique buildbucket ID for logging purpose.")
 		return c
 	},
 }
@@ -277,6 +279,8 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 		EnableRecovery:        !c.onlyVerify,
 		EnableUpdateInventory: c.updateInventory,
 		ShowSteps:             c.showSteps,
+		SwarmingTaskID:        c.swarmingID,
+		BuildbucketID:         c.bbID,
 		Metrics:               metrics,
 		TaskName:              tn,
 		LogRoot:               logRoot,
