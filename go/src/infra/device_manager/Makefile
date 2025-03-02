@@ -9,6 +9,11 @@ GCP_PROJECT := fleet-device-manager-dev
 GCP_REGION := us-central1
 LUCI_AUTH_SERVICE := chrome-infra-auth-dev.appspot.com
 
+# Allow devs to override the command used for docker compose.
+# Most people use `docker compose` some use `docker-compose` or
+# `sudo` + the following command.
+DOCKER_COMPOSE ?= docker compose
+
 define help_message
 
 Helpers for managing Device Manager project in $(PROJECT_PATH)
@@ -64,40 +69,40 @@ dev: build
 # Build Docker compose service
 .PHONY: build-docker-compose
 build-docker-compose: build
-	docker compose -f docker-compose.dev.yml build --no-cache
+	$(DOCKER_COMPOSE) -f docker-compose.dev.yml build --no-cache
 
 
 # Run Docker service locally using Docker Compose
 .PHONY: docker-service
 docker-service: build-docker-compose
 	CURRENT_UID="$(id -u):$(id -g)" \
-	docker compose -f docker-compose.dev.yml up \
+	$(DOCKER_COMPOSE) -f docker-compose.dev.yml up \
 	device_lease_service
 
 # Run Docker notifier service locally using Docker Compose
 .PHONY: docker-notifier
 docker-notifier: build-docker-compose
 	CURRENT_UID="$(id -u):$(id -g)" \
-	docker compose -f docker-compose.dev.yml up \
+	$(DOCKER_COMPOSE) -f docker-compose.dev.yml up \
 	notifier_service
 
 # Run Docker expirer service locally using Docker Compose
 .PHONY: docker-expirer
 docker-expirer: build-docker-compose
 	CURRENT_UID="$(id -u):$(id -g)" \
-	docker compose -f docker-compose.dev.yml up \
+	$(DOCKER_COMPOSE) -f docker-compose.dev.yml up \
 	expirer_service
 
 # Run Docker Postgres db locally using Docker Compose
 .PHONY: docker-db
 docker-db:
 	CURRENT_UID="$(id -u):$(id -g)" \
-	docker compose -f docker-compose.dev.yml up \
+	$(DOCKER_COMPOSE) -f docker-compose.dev.yml up \
 	device_manager_db
 
 # Run Docker PubSub locally using Docker Compose
 .PHONY: docker-pubsub
 docker-pubsub:
 	CURRENT_UID="$(id -u):$(id -g)" \
-	docker compose -f docker-compose.dev.yml up \
+	$(DOCKER_COMPOSE) -f docker-compose.dev.yml up \
 	pubsub
