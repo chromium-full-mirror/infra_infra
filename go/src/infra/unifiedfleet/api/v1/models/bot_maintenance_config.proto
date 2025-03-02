@@ -1,0 +1,20 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package unifiedfleet.api.v1.models;
+
+option go_package = "go.chromium.org/infra/unifiedfleet/api/v1/models;ufspb";
+
+message BotMaintenanceConfig {
+   // swarming instance to which this bot will communicate
+   string swarming_instance = 1;
+   // Customers who use this bot.
+   repeated string owners = 2;
+   // dimensions to which this bot belongs to
+   repeated string dimensions = 3;
+   // maintenance configuration it belongs to.
+   string maintenance_config_name = 4;
+}
