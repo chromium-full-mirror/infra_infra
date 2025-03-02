@@ -19,6 +19,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/v2/commands"
 	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/v2/state"
 	"go.chromium.org/infra/cros/cmd/cros-tool-runner/internal/v2/templates"
+	"go.chromium.org/infra/cros/internal/env"
 )
 
 // ContainerServerImpl implements the gRPC services by running commands and
@@ -438,14 +439,18 @@ func (*serverStateManager) removeNetworks() {
 		log.Println("no networks to clean up")
 		return
 	}
-	log.Printf("removing networks: %v", state.ServerState.Networks.GetMapping())
-	cmd := commands.NetworkRemove{Names: networkIds}
-	stdout, stderr, _ := cmd.Execute(context.Background())
-	if stdout != "" {
-		log.Printf("received stdout: %s", stdout)
-	}
-	if stderr != "" {
-		log.Printf("received stderr: %s", stderr)
+	if env.IsCloudBot() {
+		log.Printf("removing networks: %v", state.ServerState.Networks.GetMapping())
+		cmd := commands.NetworkRemove{Names: networkIds}
+		stdout, stderr, _ := cmd.Execute(context.Background())
+		if stdout != "" {
+			log.Printf("received stdout: %s", stdout)
+		}
+		if stderr != "" {
+			log.Printf("received stderr: %s", stderr)
+		}
+	} else {
+		log.Println("no delete network on drones!")
 	}
 	state.ServerState.Networks.Clear()
 }
