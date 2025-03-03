@@ -71,7 +71,6 @@ func BenchmarkE2E(b *testing.B) {
 
 	// Run queries for each top-level file.
 	for _, n := range g.root.children {
-		n := n
 		if len(n.children) > 0 {
 			continue
 		}
@@ -88,6 +87,14 @@ func BenchmarkE2E(b *testing.B) {
 
 func TestE2E(t *testing.T) {
 	t.Parallel()
+
+	// This test affects the current repo state.
+	// It is also the longest-running test in infra, weighing in at about 62.395s.
+	// Skip it if the INTEGRATION_TESTS environment variable is not set to 1, which is a
+	// common idiom in the LUCI repo.
+	if os.Getenv("INTEGRATION_TESTS") != "1" {
+		t.Skip("TestE2E takes a long time and inspects the *current* repo. INTEGRATION_TESTS=1 to enable.")
+	}
 
 	repoDir := benchRepoDir(t)
 	ftt.Run(`E2E`, t, func(t *ftt.Test) {
