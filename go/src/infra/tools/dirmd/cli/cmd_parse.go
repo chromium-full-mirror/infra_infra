@@ -114,7 +114,7 @@ func (r *parseRun) parseStdin() (*dirmdpb.Metadata, string) {
 func (r *parseRun) printAsJson(mds []*dirmdpb.Metadata, errMsgs, files []string) int {
 	res := make(map[string]map[string]interface{})
 	exitCode := 0
-	for i := range len(files) {
+	for i := range files {
 		md := mds[i]
 		errMsg := errMsgs[i]
 		file := files[i]

@@ -178,9 +178,9 @@ func TestResolvePythonInterpreter(t *testing.T) {
 		}
 
 		t.Run(`First interpreter in slice is selected by default`, func(t *ftt.Test) {
-			for i := range len(pythons) {
+			for i := range pythons {
 				cfgPythons := SliceFlag{pythons[i].py.Python}
-				for j := range len(pythons) {
+				for j := range pythons {
 					if i != j {
 						cfgPythons = append(cfgPythons, pythons[j].py.Python)
 					}
