@@ -26,7 +26,7 @@ import (
 
 // The sql library doesn't support more than this number of parameters
 const maxQueryParametersCount = 65535
-const parametersPerDevice = 7
+const parametersPerDevice = 8
 
 // RepopulateCache repopulates the AlloyDB cache.
 func (frontend *FleetConsoleFrontend) RepopulateCache(ctx context.Context, req *fleetconsolerpc.RepopulateCacheRequest) (_ *fleetconsolerpc.RepopulateCacheResponse, err error) {
@@ -109,7 +109,8 @@ func saveDevices(ctx context.Context, dbConnection *sql.DB, devices []*devicesdb
 			port,
 			type,
 			state,
-			labels
+			labels,
+			realm
 		)
 		VALUES %s
 		ON CONFLICT (id) DO UPDATE SET
@@ -118,7 +119,8 @@ func saveDevices(ctx context.Context, dbConnection *sql.DB, devices []*devicesdb
 			port=EXCLUDED.port,
 			type=EXCLUDED.type,
 			state=EXCLUDED.state,
-			labels=EXCLUDED.labels
+			labels=EXCLUDED.labels,
+			realm=EXCLUDED.realm
 		`
 
 	for devicesChunk := range slices.Chunk(devices, maxQueryParametersCount/parametersPerDevice) {

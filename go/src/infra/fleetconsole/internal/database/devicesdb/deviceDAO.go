@@ -25,6 +25,7 @@ type DeviceDAO struct {
 	Type       string
 	State      string
 	DeviceSpec *DeviceSpecDAO
+	Realm      string
 }
 
 type DeviceAddressDAO struct {
@@ -108,6 +109,7 @@ func (device *DeviceDAO) DeviceAsDBArguments() []any {
 		device.Type,
 		device.State,
 		device.DeviceSpec.Labels,
+		device.Realm,
 	}
 }
 
@@ -121,6 +123,7 @@ func FromUfsDevice(device *ufsmodel.DeviceLabels, state string) *DeviceDAO {
 		// Type: deprecated
 		DeviceSpec: hardwareReqs,
 		State:      state,
+		Realm:      device.Realm,
 	}
 
 	for k, v := range device.GetLabels() {
