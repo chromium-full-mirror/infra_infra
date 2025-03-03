@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/errors/errtag"
 	"go.chromium.org/luci/common/logging"
 )
 
@@ -94,7 +95,7 @@ func writeResponse(ctx context.Context, outFile string, response proto.Message) 
 // Use partialErrorTag to indicate when partial response is written to the
 // output file. Use returnCode() to return the corresponding return code on
 // process exit.
-var partialErrorTag = errors.BoolTag{Key: errors.NewTagKey("partial results are available despite this error")}
+var partialErrorTag = errtag.Make("partial results are available despite this error", true)
 
 func setupLogging(ctx context.Context) context.Context {
 	return logging.SetLevel(ctx, logging.Info)

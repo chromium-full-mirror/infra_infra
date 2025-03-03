@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/errors/errtag"
 )
 
 type sleepBeforeExitingTag struct {
@@ -31,7 +32,7 @@ func (s sleepBeforeExitingTag) In(err error) (sleepDuration time.Duration, ok bo
 
 var (
 	// PatchRejected indicates that some portion of a patch was rejected.
-	PatchRejected = errors.BoolTag{Key: errors.NewTagKey("the patch could not be applied")}
+	PatchRejected = errtag.Make("the patch could not be applied", true)
 	// SleepBeforeExiting indicates that the top-level code should sleep before returning
 	// control to the calling process, with the duration of the sleep being the tag's value.
 	SleepBeforeExiting = sleepBeforeExitingTag{Key: errors.NewTagKey("the properties file does not exist in the dependency project")}

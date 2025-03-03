@@ -4,12 +4,14 @@
 
 package execs
 
-import "go.chromium.org/luci/common/errors"
+import (
+	"go.chromium.org/luci/common/errors/errtag"
+)
 
 var (
 	// Error tag to track error with request to start critical actions over.
-	PlanStartOverTag = errors.BoolTag{Key: errors.NewTagKey("plan-start-over")}
+	PlanStartOverTag = errtag.Make("plan-start-over", true)
 
 	// Error tag to track error with request to stop execution of the current plan.
-	PlanAbortTag = errors.BoolTag{Key: errors.NewTagKey("plan-abort")}
+	PlanAbortTag = errtag.Make("plan-abort", true)
 )

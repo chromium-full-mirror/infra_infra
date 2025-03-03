@@ -19,6 +19,7 @@ import (
 	"unicode/utf8"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/errors/errtag"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/resultdb/pbutil"
 	pb "go.chromium.org/luci/resultdb/proto/v1"
@@ -62,9 +63,7 @@ var (
 	// This is a synthetic test created by test launcher, not a real test.
 	syntheticTestRE = regexp.MustCompile(`^GoogleTestVerification.Uninstantiated(?:Type)?ParamaterizedTestSuite<\w+>$`)
 
-	syntheticTestTag = errors.BoolTag{
-		Key: errors.NewTagKey("synthetic test"),
-	}
+	syntheticTestTag = errtag.Make("synthetic test", true)
 
 	// fatalMessageRE extracts fatal log lines, and is used as a fallback to
 	// extract failure reasons where result parts are not available (such as

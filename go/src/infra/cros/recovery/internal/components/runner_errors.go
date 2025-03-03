@@ -6,6 +6,7 @@ package components
 
 import (
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/errors/errtag"
 )
 
 var (
@@ -17,23 +18,23 @@ var (
 	StdErrTag = errors.NewTagKey("std_error")
 
 	// 127: linux command line error of command not found.
-	SSHErrorCLINotFound = errors.BoolTag{Key: errors.NewTagKey("ssh_error_cli_not_found")}
+	SSHErrorCLINotFound = errtag.Make("ssh_error_cli_not_found", true)
 
 	// 124: linux command line error of command timeout.
-	SSHErrorLinuxTimeout = errors.BoolTag{Key: errors.NewTagKey("linux_timeout")}
+	SSHErrorLinuxTimeout = errtag.Make("linux_timeout", true)
 
 	// other linux error tag.
-	GeneralError = errors.BoolTag{Key: errors.NewTagKey("general_error")}
+	GeneralError = errtag.Make("general_error", true)
 
 	// internal error tag.
-	SSHErrorInternal = errors.BoolTag{Key: errors.NewTagKey("ssh_error_internal")}
+	SSHErrorInternal = errtag.Make("ssh_error_internal", true)
 
 	// -1: fail to create ssh session.
-	FailToCreateSSHErrorInternal = errors.BoolTag{Key: errors.NewTagKey("fail_to_create_ssh_error_internal")}
+	FailToCreateSSHErrorInternal = errtag.Make("fail_to_create_ssh_error_internal", true)
 
 	// -2: session is down, but the server sends no confirmation of the exit status.
-	NoExitStatusErrorInternal = errors.BoolTag{Key: errors.NewTagKey("no_exit_status_error_internal")}
+	NoExitStatusErrorInternal = errtag.Make("no_exit_status_error_internal", true)
 
 	// other internal error tag.
-	OtherErrorInternal = errors.BoolTag{Key: errors.NewTagKey("other_error_internal")}
+	OtherErrorInternal = errtag.Make("other_error_internal", true)
 )

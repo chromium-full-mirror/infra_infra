@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/errors/errtag"
 	"go.chromium.org/luci/common/logging"
 
 	"go.chromium.org/infra/rts"
@@ -59,7 +60,7 @@ var (
 	}
 	requireAllTestsRegexp = regexp.MustCompile(fmt.Sprintf("^(%s)$", strings.Join(requireAllTests, "|")))
 
-	disableRTS = errors.BoolTag{Key: errors.NewTagKey("skip RTS")}
+	disableRTS = errtag.Make("skip RTS", true)
 )
 
 // selectTests calls skipFile for test files that should be skipped.

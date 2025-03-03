@@ -23,6 +23,7 @@ import (
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/errors/errtag"
 	"go.chromium.org/luci/common/flag/stringmapflag"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/signals"
@@ -404,7 +405,7 @@ func parseVersion(v string) (out [3]int64, err error) {
 }
 
 // isCLIError is tagged into errors caused by bad CLI flags.
-var isCLIError = errors.BoolTag{Key: errors.NewTagKey("bad CLI invocation")}
+var isCLIError = errtag.Make("bad CLI invocation", true)
 
 // errBadFlag produces an error related to malformed or absent CLI flag
 func errBadFlag(flag, msg string) error {

@@ -12,16 +12,13 @@ import (
 	"time"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/errors/errtag"
 
 	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
-var stopRetryLoopTag = errors.BoolTag{Key: errors.NewTagKey("break retry loop")}
-
-// LoopBreakTag returns tags to break to retry loop per request.
-func LoopBreakTag() errors.BoolTag {
-	return stopRetryLoopTag
-}
+// LoopBreakTag is a tag to break the retry loop per request.
+var LoopBreakTag = errtag.Make("break retry loop", true)
 
 // WithTimeout retries execute function in giving time duration.
 //
@@ -128,11 +125,11 @@ func retry(ctx context.Context, o *retryOptions) error {
 			// If iteration finished with success we break the loop.
 			if err == nil {
 				return
-			} else if stopRetryLoopTag.In(err) {
+			} else if LoopBreakTag.In(err) {
 				log.Debugf(ctx, "Retry received request for abort!")
 				o.abort(ctx)
 				// Removing tag from the error to void recursion stop.
-				stopRetryLoopTag.Off().Apply(err)
+				err = LoopBreakTag.ApplyValue(err, false)
 				return
 			}
 			time.Sleep(o.interval)

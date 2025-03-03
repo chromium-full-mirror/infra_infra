@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/skylab_test_runner"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform/steps"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/errors/errtag"
 	"go.chromium.org/luci/common/logging"
 
 	"go.chromium.org/infra/cmd/cros_test_platform/internal/execution/args"
@@ -39,7 +40,7 @@ type ArgsModifier interface {
 
 // InvalidDependencies tag indicates that an error was caused because
 // swarming dependencies for a task were invalid.
-var InvalidDependencies = errors.BoolTag{Key: errors.NewTagKey("invalid test dependencies")}
+var InvalidDependencies = errtag.Make("invalid test dependencies", true)
 
 // ValidateDependencies checks whether this test has dependencies satisfied by
 // VMLab or at least one Skylab bot.

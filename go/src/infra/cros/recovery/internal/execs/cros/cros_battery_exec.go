@@ -57,7 +57,7 @@ func isBatteryCanChangeToExpectedLevelExec(ctx context.Context, info *execs.Exec
 			// Breaking the loop as battery is not charging.
 			log.Debugf("Battery is not charged or discharging. Please verify that DUT connected to power and charging.")
 			log.Debugf("Possible that the DUT is not ready for deployment in lab.")
-			return errors.Reason("reached expected level: charged %f%% when expected %f%%", bl-lastChargedLevel, batteryChargingPerRetry).Tag(retry.LoopBreakTag()).Err()
+			return errors.Reason("reached expected level: charged %f%% when expected %f%%", bl-lastChargedLevel, batteryChargingPerRetry).Tag(retry.LoopBreakTag).Err()
 		}
 		lastChargedLevel = bl
 		return errors.Reason("reached expected level: the %v%% lower expected %v%% level", bl, batteryExpectedLevel).Err()
