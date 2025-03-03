@@ -25,12 +25,60 @@ func (tw *TWriter) Write(p []byte) (n int, err error) {
 }
 
 func TestGoldenFile(t *testing.T) {
+	firmwareBuilds := make(map[string]FirmwareBranchBuild)
+	firmwareBuilds["zork"] = FirmwareBranchBuild{
+		Builder:         "firmware-zork-13434.B-branch",
+		FirmwareByBoard: "zork/firmware_from_source.tar.bz2",
+		ArtifactLink:    "gs://chromeos-image-archive/firmware-zork-13434.B-branch/R87-13434.899.0-1-8724259196952154561",
+	}
+	firmwareBuilds["corsola"] = FirmwareBranchBuild{
+		Builder:         "firmware-corsola-15194.B-branch",
+		FirmwareByBoard: "corsola/firmware_from_source.tar.bz2",
+		ArtifactLink:    "gs://chromeos-image-archive/firmware-corsola-15194.B-branch/R109-15194.291.0-1-8724140311024464177",
+	}
+	firmwareBuilds["rex"] = FirmwareBranchBuild{
+		Builder:         "firmware-rex-15709.B-branch",
+		FirmwareByBoard: "rex/firmware_from_source.tar.bz2",
+		ArtifactLink:    "gs://chromeos-image-archive/firmware-rex-15709.B-branch/R122-15709.223.0-1-8722295718732023121",
+	}
+	ecMilestoneBuilds := make(map[string]map[int]FirmwareBranchBuild)
+	ecMilestoneBuilds["rex"] = make(map[int]FirmwareBranchBuild)
+	ecMilestoneBuilds["rex"][134] = FirmwareBranchBuild{
+		Builder:         "firmware-ec-R134-16181.3.B-branch",
+		FirmwareByBoard: "rex/firmware_from_source.tar.bz2",
+		ArtifactLink:    "gs://chromeos-image-archive/firmware-ec-R134-16181.3.B-branch/R134-16181.3.19-1-8721865933425388673",
+	}
 	for tcIndex, tc := range []struct {
 		inputFile          string
 		expectedOutputFile string
+		specs              *FirmwareSpecs
 	}{
-		{"testdata/input1.textpb", "testdata/output1.textpb"},
-		{"testdata/input2.textpb", "testdata/output2.textpb"},
+		{"testdata/input1.textpb", "testdata/output1.textpb", &FirmwareSpecs{
+			Ro:             LatestFirmwareBranch,
+			FallbackToCros: true,
+			FirmwareBuilds: firmwareBuilds,
+		}},
+		{"testdata/input1.textpb", "testdata/output1.textpb", &FirmwareSpecs{
+			Ro:             LatestFirmwareBranch + "," + OSSource,
+			FirmwareBuilds: firmwareBuilds,
+		}},
+		{"testdata/input2.textpb", "testdata/output2.textpb", &FirmwareSpecs{
+			Ro:             LatestFirmwareBranch,
+			FallbackToCros: true,
+			FirmwareBuilds: firmwareBuilds,
+		}},
+		{"testdata/input2.textpb", "testdata/output2.textpb", &FirmwareSpecs{
+			Ro:             LatestFirmwareBranch + "," + OSSource,
+			FirmwareBuilds: firmwareBuilds,
+		}},
+		{"testdata/faft_bios_rex_input1.textpb", "testdata/faft_bios_rex_output1.textpb", &FirmwareSpecs{
+			Ro:                LatestFirmwareBranch + "," + OSSource,
+			ECRO:              "M-1," + LatestFirmwareBranch + "," + OSSource,
+			ECRW:              "M-1," + LatestFirmwareBranch + "," + OSSource,
+			FirmwareBuilds:    firmwareBuilds,
+			ECMilestoneBuilds: ecMilestoneBuilds,
+			LatestMilestone:   135,
+		}},
 	} {
 		// Read the input file
 		data, err := os.ReadFile(tc.inputFile)
@@ -58,22 +106,7 @@ func TestGoldenFile(t *testing.T) {
 			continue
 		}
 
-		firmwareSpecs := &FirmwareSpecs{}
-		firmwareSpecs.Ro = LatestFirmwareBranch
-		firmwareSpecs.FallbackToCros = true
-		firmwareSpecs.FirmwareBuilds = make(map[string]FirmwareBranchBuild)
-		firmwareSpecs.FirmwareBuilds["zork"] = FirmwareBranchBuild{
-			Builder:         "firmware-zork-13434.B-branch",
-			FirmwareByBoard: "zork/firmware_from_source.tar.bz2",
-			ArtifactLink:    "gs://chromeos-image-archive/firmware-zork-13434.B-branch/R87-13434.899.0-1-8724259196952154561",
-		}
-		firmwareSpecs.FirmwareBuilds["corsola"] = FirmwareBranchBuild{
-			Builder:         "firmware-corsola-15194.B-branch",
-			FirmwareByBoard: "corsola/firmware_from_source.tar.bz2",
-			ArtifactLink:    "gs://chromeos-image-archive/firmware-corsola-15194.B-branch/R109-15194.291.0-1-8724140311024464177",
-		}
-
-		err = GenerateDynamicInfo(req, firmwareSpecs, log.New(&TWriter{t: t}, "", log.Lshortfile))
+		err = GenerateDynamicInfo(req, tc.specs, log.New(&TWriter{t: t}, "", log.Lshortfile))
 		if err != nil {
 			t.Errorf("[%d]GenerateDynamicInfo failed: %+v", tcIndex, err)
 			continue
@@ -85,14 +118,14 @@ func TestGoldenFile(t *testing.T) {
 				return a.GetKey() < b.GetKey()
 			}),
 		); diff != "" {
-			t.Errorf("[%d]messages are not equal: %v", tcIndex, diff)
+			t.Errorf("[%d]messages are not equal: %s", tcIndex, diff)
 		}
 		if diff := cmp.Diff(expected, req, protocmp.Transform(),
 			protocmp.SortRepeated(func(a, b *api.DynamicDep) bool {
 				return a.GetKey() < b.GetKey()
 			}),
 		); diff != "" {
-			t.Errorf("[%d]messages are not equal: %v", tcIndex, diff)
+			t.Errorf("[%d]messages are not equal: %s", tcIndex, diff)
 		}
 	}
 }

@@ -4659,7 +4659,7 @@ suite_info {
                 }
                 metadata {
                   [type.googleapis.com/chromiumos.test.api.CrOSProvisionMetadata] {
-                        update_firmware: false
+                    update_firmware: false
                   }
                 }
               }
@@ -4721,8 +4721,12 @@ suite_info {
               }
               install_request {
                 metadata {
-                  type_url: "type.googleapis.com/chromiumos.test.api.FirmwareProvisionInstallMetadata"
-                  value: "\n\"\n\017*\r\010\002\022\t${apFwRo}\032\017*\r\010\002\022\t${apFwRo}"
+                  [type.googleapis.com/chromiumos.test.api.FirmwareProvisionInstallMetadata] {
+                    firmware_config {
+                      main_ro_payload { firmware_image_path { host_type: GS path: "${apFwRo}" } }
+                      ec_ro_payload { firmware_image_path { host_type: GS path: "${apFwRo}" } }
+                    }
+                  }
                 }
               }
               dynamic_deps {

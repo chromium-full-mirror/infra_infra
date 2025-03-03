@@ -28,15 +28,19 @@ const (
 
 var (
 	// Firmware lookup keys.
-	FirmwareRo = helpers.LookupKey("apFwRo")
-	FirmwareRw = helpers.LookupKey("apFwRw")
+	FirmwareRo   = helpers.LookupKey("apFwRo")
+	FirmwareRw   = helpers.LookupKey("apFwRw")
+	FirmwareECRO = helpers.LookupKey("ecFwRo")
+	FirmwareECRW = helpers.LookupKey("ecFwRw")
 )
 
 // FirmwareProvisionLookupValues stores the relevant firmware
 // values that need to be stored within the lookup tables.
 type FirmwareProvisionLookupValues struct {
-	Ro string
-	Rw string
+	Ro   string
+	Rw   string
+	ECRO string
+	ECRW string
 }
 
 // DynamicFirmwareProvisionHelper provides a wrapper around
@@ -65,6 +69,12 @@ func (DH *DynamicFirmwareProvisionHelper) ApplyFirmwareProvisionToLookup(lookupT
 	if values.Rw != "" {
 		lookupTable[FirmwareRw.WithIndex(count).AsKey()] = values.Rw
 	}
+	if values.ECRO != "" {
+		lookupTable[FirmwareECRO.WithIndex(count).AsKey()] = values.ECRO
+	}
+	if values.ECRW != "" {
+		lookupTable[FirmwareECRW.WithIndex(count).AsKey()] = values.ECRW
+	}
 
 	DH.count += 1
 }
@@ -92,20 +102,33 @@ func (DH *DynamicFirmwareProvisionHelper) GenerateProvisionRequest(req *api.Inte
 func (DH *DynamicFirmwareProvisionHelper) newFirmwareInstallRequest() *interfaces.ProvisionTaskInstallRequest {
 	var ro *gobuildapi.FirmwarePayload
 	var rw *gobuildapi.FirmwarePayload
+	var ecro *gobuildapi.FirmwarePayload
+	var ecrw *gobuildapi.FirmwarePayload
 
 	if DH.specs.Ro != "" {
 		ro = newFirmwarePayload(FirmwareRo.WithIndex(DH.count).AsPlaceholder())
+		ecro = ro
 	}
 
 	if DH.specs.Rw != "" {
 		rw = newFirmwarePayload(FirmwareRw.WithIndex(DH.count).AsPlaceholder())
+		ecrw = rw
+	}
+
+	if DH.specs.ECRO != "" {
+		ecro = newFirmwarePayload(FirmwareECRO.WithIndex(DH.count).AsPlaceholder())
+	}
+
+	if DH.specs.ECRW != "" {
+		ecrw = newFirmwarePayload(FirmwareECRW.WithIndex(DH.count).AsPlaceholder())
 	}
 
 	fwProvisionMetadata, _ := anypb.New(&api.FirmwareProvisionInstallMetadata{
 		FirmwareConfig: &gobuildapi.FirmwareConfig{
 			MainRoPayload: ro,
-			EcRoPayload:   ro,
+			EcRoPayload:   ecro,
 			MainRwPayload: rw,
+			EcRwPayload:   ecrw,
 		},
 	})
 	return &interfaces.ProvisionTaskInstallRequest{
