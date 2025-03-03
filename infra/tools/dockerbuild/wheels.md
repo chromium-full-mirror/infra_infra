@@ -128,6 +128,18 @@ wheel: <
 
 ## **GitPython**
 
+### 2.1.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/gitpython-py2_py3"
+  version: "version:2.1.1"
+>
+```
+
+
+* *universal*
+
 ### 2.1.9
 
 ```protobuf
@@ -419,6 +431,20 @@ wheel: <
 
 ## **PyYAML**
 
+### 3.12.cbuildbot
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyyaml/${vpython_platform}"
+  version: "version:3.12.cbuildbot"
+>
+```
+
+
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *manylinux-x64-py3.8*
+
 ### 5.4.1.chromium.2
 
 ```protobuf
@@ -485,6 +511,20 @@ wheel: <
 * *universal*
 
 ## **SQLAlchemy**
+
+### 1.0.15
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/sqlalchemy/${vpython_platform}"
+  version: "version:1.0.15"
+>
+```
+
+
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *manylinux-x64-py3.8*
 
 ### 2.0.4
 
@@ -2190,6 +2230,20 @@ wheel: <
 
 ## **coverage**
 
+### 5.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/coverage/${vpython_platform}"
+  version: "version:5.1"
+>
+```
+
+
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *manylinux-x64-py3.8*
+
 ### 5.5.chromium.3
 
 ```protobuf
@@ -3052,6 +3106,48 @@ wheel: <
 
 * *universal*
 
+## **gax-google-logging-v2**
+
+### 0.8.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/gax-google-logging-v2-py2_py3"
+  version: "version:0.8.1"
+>
+```
+
+
+* *universal*
+
+## **gax-google-pubsub-v1**
+
+### 0.8.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/gax-google-pubsub-v1-py2_py3"
+  version: "version:0.8.1"
+>
+```
+
+
+* *universal*
+
+## **gcloud**
+
+### 0.18.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/gcloud-py2_py3"
+  version: "version:0.18.1"
+>
+```
+
+
+* *universal*
+
 ## **gevent**
 
 ### 1.5.0.chromium.1
@@ -3177,6 +3273,18 @@ wheel: <
 
 ## **gitdb2**
 
+### 2.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/gitdb2-py2_py3"
+  version: "version:2.0.0"
+>
+```
+
+
+* *universal*
+
 ### 2.0.3
 
 ```protobuf
@@ -3211,6 +3319,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/google-api-core-py2_py3"
   version: "version:0.1.1"
+>
+```
+
+
+* *universal*
+
+### 1.19.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-api-core-py2_py3"
+  version: "version:1.19.0"
 >
 ```
 
@@ -3351,6 +3471,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/google-auth-py2_py3"
   version: "version:1.2.1"
+>
+```
+
+
+* *universal*
+
+### 1.14.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-auth-py2_py3"
+  version: "version:1.14.0"
 >
 ```
 
@@ -3841,6 +3973,18 @@ wheel: <
 
 * *universal*
 
+### 1.15.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-logging-py2_py3"
+  version: "version:1.15.1"
+>
+```
+
+
+* *universal*
+
 ## **google-cloud-logging-py3**
 
 ### 3.0.0
@@ -4210,6 +4354,20 @@ wheel: <
 * *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
+## **google-gax**
+
+### 0.12.5
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-gax-py2_py3"
+  version: "version:0.12.5"
+>
+```
+
+
+* *universal*
+
 ## **google-pasta-py3**
 
 ### 0.2.0
@@ -4298,6 +4456,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/googleapis-common-protos-py2_py3"
   version: "version:1.5.3"
+>
+```
+
+
+* *universal*
+
+### 1.51.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/googleapis-common-protos-py2_py3"
+  version: "version:1.51.0"
 >
 ```
 
@@ -4518,6 +4688,34 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/grpc-google-iam-v1-py3"
   version: "version:0.12.6"
+>
+```
+
+
+* *universal*
+
+## **grpc-google-logging-v2**
+
+### 0.8.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/grpc-google-logging-v2-py2_py3"
+  version: "version:0.8.1"
+>
+```
+
+
+* *universal*
+
+## **grpc-google-pubsub-v1**
+
+### 0.8.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/grpc-google-pubsub-v1-py2_py3"
+  version: "version:0.8.1"
 >
 ```
 
@@ -5372,6 +5570,18 @@ wheel: <
 * *universal*
 
 ## **inotify_simple**
+
+### 1.1.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/inotify_simple-py2_py3"
+  version: "version:1.1.1"
+>
+```
+
+
+* *universal*
 
 ### 1.1.7
 
@@ -6388,6 +6598,20 @@ wheel: <
 
 ## **mysqlclient**
 
+### 1.3.14
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mysqlclient/${vpython_platform}"
+  version: "version:1.3.14"
+>
+```
+
+
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *manylinux-x64-py3.8*
+
 ### 2.1.1
 
 ```protobuf
@@ -6535,6 +6759,20 @@ wheel: <
 * *universal*
 
 ## **numpy**
+
+### 1.16.6
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/numpy/${vpython_platform}"
+  version: "version:1.16.6"
+>
+```
+
+
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *manylinux-x64-py3.8*
 
 ### 1.20.supported.2
 
@@ -7312,6 +7550,18 @@ wheel: <
 
 ## **pbr**
 
+### 1.10.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pbr-py2_py3"
+  version: "version:1.10.0"
+>
+```
+
+
+* *universal*
+
 ### 3.0.0
 
 ```protobuf
@@ -7700,6 +7950,18 @@ wheel: <
 * *universal*
 
 ## **ply**
+
+### 3.8
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/ply-py2_py3"
+  version: "version:3.8"
+>
+```
+
+
+* *universal*
 
 ### 3.11
 
@@ -8105,6 +8367,20 @@ wheel: <
 
 ## **psutil**
 
+### 4.3.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/psutil/${vpython_platform}"
+  version: "version:4.3.1"
+>
+```
+
+
+* *linux-arm64-py3.8*
+* *linux-armv6-py3.8*
+* *manylinux-x64-py3.8*
+
 ### 5.6.2
 
 ```protobuf
@@ -8407,6 +8683,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/pyasn1-py2_py3"
   version: "version:0.5.1"
+>
+```
+
+
+* *universal*
+
+## **pyasn1-modules**
+
+### 0.2.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyasn1-modules-py2_py3"
+  version: "version:0.2.1"
 >
 ```
 
@@ -9243,6 +9533,18 @@ wheel: <
 
 ## **pyparsing**
 
+### 2.1.8
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyparsing-py2_py3"
+  version: "version:2.1.8"
+>
+```
+
+
+* *universal*
+
 ### 2.2.0
 
 ```protobuf
@@ -9671,6 +9973,18 @@ wheel: <
 
 ## **pytest-forked**
 
+### 1.1.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-forked-py2_py3"
+  version: "version:1.1.3"
+>
+```
+
+
+* *universal*
+
 ### 1.3.0
 
 ```protobuf
@@ -9748,6 +10062,18 @@ wheel: <
 * *universal*
 
 ## **pytest-reportlog-py3**
+
+### 0.1.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pytest-reportlog-py3"
+  version: "version:0.1.1"
+>
+```
+
+
+* *universal*
 
 ### 0.1.2
 
@@ -10786,6 +11112,18 @@ wheel: <
 * *universal*
 
 ## **smmap2**
+
+### 2.0.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/smmap2-py2_py3"
+  version: "version:2.0.1"
+>
+```
+
+
+* *universal*
 
 ### 2.0.3
 
