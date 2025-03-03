@@ -62,6 +62,13 @@ crosfleet run test -trv2 -dynamic-trv2 -harness=tast \
   -exit-early -dim label-servo_state:WORKING firmware.FwSplashScreen
 ```
 
+# Bigquery Usage
+
+This filter uses a
+[materialized view](https://pantheon.corp.google.com/bigquery?ws=!1m7!1m6!12m5!1m3!1sfirmware-bigquery!2sus-central1!3s3bf00f55-aac6-40af-9b20-de1eeee9fad3!2e1)
+in BigQuery to optimize the query time of finding the latest builds. It is
+refreshed automatically every hour.
+
 # Production deployment
 
 1.  The code is built automatically by
