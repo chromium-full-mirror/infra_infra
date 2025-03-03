@@ -100,7 +100,7 @@ func (q *QueryBuilder) Build(realms []string) (*Query, error) {
 	for i, realm := range realms {
 		valuesStrings[i] = q.bind(realm)
 	}
-	realmsClause += fmt.Sprintf("realm IN (%s)", strings.Join(valuesStrings, ", "))
+	realmsClause += fmt.Sprintf("(realm IN (%s) OR realm is NULL)", strings.Join(valuesStrings, ", "))
 
 	return &Query{
 		Statement:  fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n%s;", q.selectClause, q.fromClause, q.whereClause, realmsClause, q.orderByClause, q.paginationClause),
