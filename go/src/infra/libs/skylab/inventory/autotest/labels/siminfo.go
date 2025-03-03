@@ -102,7 +102,7 @@ func simInfoReverter(ls *inventory.SchedulableLabels, labels []string) []string 
 		num_profiles := 0
 		d = assignLastIntValueAndDropKey(d, &num_profiles, lv)
 		s.ProfileInfo = make([]*inventory.SIMProfileInfo, num_profiles)
-		for j := 0; j < num_profiles; j++ {
+		for j := range num_profiles {
 			s.ProfileInfo[j] = inventory.NewSimprofileinfo()
 			profile_id := strconv.Itoa(j)
 			lv = "sim_" + sim_id + "_" + profile_id + "_iccid"

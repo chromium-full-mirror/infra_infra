@@ -42,7 +42,7 @@ func (s *SSHConnector) Connect(ctx context.Context, addr string, config *ssh.Cli
 
 	clientCh := make(chan *ssh.Client, 1)
 	done := make(chan struct{}, 1)
-	for i := 0; i < s.retry+1; i++ {
+	for range s.retry + 1 {
 		go func() {
 			client, err := ssh.Dial("tcp", addr, config)
 			if err != nil {

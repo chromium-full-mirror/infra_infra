@@ -271,7 +271,7 @@ func New(ctx context.Context, o *Options) (*Conn, error) {
 	}
 
 	isCloudbot := os.Getenv("CLOUDBOTS_LAB_DOMAIN") != ""
-	for i := 0; i < o.ConnectRetries+1; i++ {
+	for i := range o.ConnectRetries + 1 {
 		start := time.Now()
 		var cl *ssh.Client
 		if isCloudbot {

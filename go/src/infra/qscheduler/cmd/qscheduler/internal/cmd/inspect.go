@@ -137,7 +137,7 @@ func (t table) sort() {
 // floatInsert inserts float slice to a row. If the size of the slice
 // is less than l, it will append 0.0 instead.
 func floatInsert(v []float32, l int, r row) row {
-	for k := 0; k < l; k++ {
+	for k := range l {
 		if k >= len(v) {
 			r = append(r, fmt.Sprintf("%.1f", 0.0))
 			continue

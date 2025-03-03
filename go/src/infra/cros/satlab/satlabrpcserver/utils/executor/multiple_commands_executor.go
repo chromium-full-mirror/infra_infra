@@ -44,7 +44,7 @@ func New(cmds ...*exec.Cmd) *MultipleCommandsExecutor {
 	// use `io.Pipe` to make a connection to all commands
 	// For example:
 	// cmd1 -> pipe -> cmd2 -> pipe -> cmd3 -> ... -> out buffer
-	for idx := 0; idx < lastIdx; idx++ {
+	for idx := range lastIdx {
 		inPipe, outPipe := io.Pipe()
 		cmds[idx].Stdout = outPipe
 		cmds[idx+1].Stdin = inPipe
@@ -73,7 +73,7 @@ func (c *MultipleCommandsExecutor) Exec(executor executor.IExecCommander) ([]byt
 	}
 
 	// Wait for the commands' result
-	for idx := 0; idx < lastIdx; idx++ {
+	for idx := range lastIdx {
 		if err := executor.Wait(c.cmds[idx]); err != nil {
 			return nil, err
 		}

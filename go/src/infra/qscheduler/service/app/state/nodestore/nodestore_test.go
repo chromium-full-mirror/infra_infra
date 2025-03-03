@@ -44,7 +44,7 @@ type createUniqueAccounts struct {
 var _ nodestore.Operator = &createUniqueAccounts{}
 
 func (n *createUniqueAccounts) Modify(ctx context.Context, s *types.QScheduler) error {
-	for i := 0; i < n.nAccounts; i++ {
+	for range n.nAccounts {
 		s.Scheduler.AddAccount(ctx, scheduler.AccountID(uuid.New().String()), scheduler.NewAccountConfig(0, map[string]int32{"label-model": 3}, 0, nil, false, ""), nil)
 	}
 	return nil
@@ -154,7 +154,7 @@ func TestClean(t *testing.T) {
 		})
 
 		Convey("a clean after some operations runs without error, removes stale entities, and does not affect state.", t, func(t *T) {
-			for i := 0; i < 200; i++ {
+			for range 200 {
 				store.Run(ctx, &createUniqueAccounts{nAccounts: 1})
 				if err != nil {
 					// This assert is guarded because we don't want to goconvey
@@ -263,10 +263,10 @@ func TestConcurrentRuns(t *testing.T) {
 
 			operator := &createUniqueAccounts{nAccounts: 1}
 
-			for i := 0; i < nStores; i++ {
+			for range nStores {
 				store := nodestore.New("foo-pool")
 				go func(store *nodestore.NodeStore) {
-					for j := 0; j < opsPerStore; j++ {
+					for range opsPerStore {
 						go func() {
 							// Add jitter to run attempts, for an acceptable level
 							// of contention.

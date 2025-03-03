@@ -106,7 +106,7 @@ func TestPersistObservations(t *testing.T) {
 		if diff := cmp.Diff(a.SealTime, scalars.ConvertTimeToTimestampPtr(time.Unix(1, 0)), protocmp.Transform()); diff != "" {
 			t.Errorf("unexpected diff (-want +got): %s", diff)
 		}
-		for i := 0; i < times; i++ {
+		for range times {
 			o, err := k.CreateObservation(ctx, &kartepb.CreateObservationRequest{
 				Observation: &kartepb.Observation{
 					ActionName: a.Name,

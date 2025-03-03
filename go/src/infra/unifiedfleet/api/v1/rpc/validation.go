@@ -1495,7 +1495,7 @@ func ParseResources(args interface{}, k string) []string {
 	case reflect.Ptr:
 		names = append(names, parse(v.Elem(), k))
 	case reflect.Slice:
-		for i := 0; i < v.Len(); i++ {
+		for i := range v.Len() {
 			n := parse(v.Index(i).Elem(), k)
 			if n != "" {
 				names = append(names, n)
@@ -1507,7 +1507,7 @@ func ParseResources(args interface{}, k string) []string {
 
 func parse(v reflect.Value, k string) string {
 	typeOfT := v.Type()
-	for i := 0; i < v.NumField(); i++ {
+	for i := range v.NumField() {
 		f := v.Field(i)
 		if typeOfT.Field(i).Name == k {
 			return f.Interface().(string)

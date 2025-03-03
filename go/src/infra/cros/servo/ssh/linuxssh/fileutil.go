@@ -335,7 +335,7 @@ func findChangedFiles(ctx context.Context, s *ssh.Conn, files map[string]string)
 		rh, err = getRemoteSHA1s(ctx, s, rp)
 		ch <- err
 	}()
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		if err := <-ch; err != nil {
 			return nil, fmt.Errorf("failed to get SHA1(s): %w", err)
 		}

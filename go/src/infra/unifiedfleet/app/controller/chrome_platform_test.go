@@ -30,7 +30,7 @@ func TestListChromePlatforms(t *testing.T) {
 	t.Parallel()
 	ctx := testingContext()
 	chromePlatforms := make([]*ufspb.ChromePlatform, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		chromePlatform1 := mockChromePlatform("", "Camera")
 		chromePlatform1.Name = fmt.Sprintf("chromePlatform-%d", i)
 		resp, _ := configuration.CreateChromePlatform(ctx, chromePlatform1)
@@ -173,7 +173,7 @@ func TestBatchGetChromePlatforms(t *testing.T) {
 	ftt.Run("BatchGetChromePlatforms", t, func(t *ftt.Test) {
 		t.Run("Batch get chrome platforms - happy path", func(t *ftt.Test) {
 			platforms := make([]*ufspb.ChromePlatform, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				platforms[i] = &ufspb.ChromePlatform{
 					Name: fmt.Sprintf("platform-batchGet-%d", i),
 				}

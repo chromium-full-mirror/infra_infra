@@ -178,9 +178,9 @@ func TestResolvePythonInterpreter(t *testing.T) {
 		}
 
 		t.Run(`First interpreter in slice is selected by default`, func(t *ftt.Test) {
-			for i := 0; i < len(pythons); i += 1 {
+			for i := range len(pythons) {
 				cfgPythons := SliceFlag{pythons[i].py.Python}
-				for j := 0; j < len(pythons); j += 1 {
+				for j := range len(pythons) {
 					if i != j {
 						cfgPythons = append(cfgPythons, pythons[j].py.Python)
 					}
@@ -310,9 +310,7 @@ func testVirtualEnvWith(t *testing.T, ri *resolvedInterpreter) {
 
 			envs := make([]*vpython.Environment, workers)
 			err := parallel.FanOutIn(func(taskC chan<- func() error) {
-				for i := 0; i < workers; i++ {
-					i := i
-
+				for i := range workers {
 					taskC <- func() error {
 						return With(c, config, func(c context.Context, v *Env) error {
 							// Has successfully loaded an Environment.

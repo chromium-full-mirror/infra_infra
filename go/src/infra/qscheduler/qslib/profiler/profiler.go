@@ -69,7 +69,7 @@ func NewSchedulerState(params StateParams) *scheduler.Scheduler {
 
 func newStateWithAccount(ctx context.Context, params StateParams, t time.Time) *scheduler.Scheduler {
 	state := scheduler.New(t)
-	for i := 0; i < params.Accounts; i++ {
+	for i := range params.Accounts {
 		chargeRate := make([]float32, scheduler.NumPriorities)
 		for j := range chargeRate {
 			chargeRate[j] = rand.Float32() * params.ChargeRateMax
@@ -95,9 +95,9 @@ func labelCorpus(size int) []string {
 }
 
 func addWorkers(ctx context.Context, t time.Time, params StateParams, corpus []string, s *scheduler.Scheduler) {
-	for i := 0; i < params.Workers; i++ {
+	for range params.Workers {
 		labels := stringset.New(params.LabelsPerWorker + 1)
-		for j := 0; j < params.LabelsPerWorker; j++ {
+		for range params.LabelsPerWorker {
 			labels.Add(corpus[rand.Intn(len(corpus))])
 		}
 		labels.Add(corpus[rand.Intn(params.ProvisionableLabels)])
@@ -106,9 +106,9 @@ func addWorkers(ctx context.Context, t time.Time, params StateParams, corpus []s
 }
 
 func addTasks(ctx context.Context, t time.Time, params StateParams, corpus []string, s *scheduler.Scheduler) {
-	for i := 0; i < params.Tasks; i++ {
+	for range params.Tasks {
 		labels := stringset.New(params.LabelsPerTask)
-		for j := 0; j < params.LabelsPerTask; j++ {
+		for range params.LabelsPerTask {
 			labels.Add(corpus[rand.Intn(len(corpus))])
 		}
 		provisionableLabel := corpus[rand.Intn(params.ProvisionableLabels)]
@@ -146,7 +146,7 @@ func RunSimulation(params SimulationParams) {
 
 	labels := labelCorpus(params.StateParams.LabelCorpusSize)
 
-	for i := 0; i < params.Iterations; i++ {
+	for i := range params.Iterations {
 		addTasks(ctx, t, params.StateParams, labels, state)
 		addWorkers(ctx, t, params.StateParams, labels, state)
 		state.UpdateTime(ctx, t)

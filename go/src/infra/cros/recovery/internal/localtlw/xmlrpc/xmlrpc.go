@@ -227,7 +227,7 @@ func newValue(in interface{}) (value, error) {
 	if reflect.TypeOf(in).Kind() == reflect.Slice || reflect.TypeOf(in).Kind() == reflect.Array {
 		v := reflect.ValueOf(in)
 		var a xmlArray
-		for i := 0; i < v.Len(); i++ {
+		for i := range v.Len() {
 			val, err := newValue(v.Index(i).Interface())
 			if err != nil {
 				return value{}, err

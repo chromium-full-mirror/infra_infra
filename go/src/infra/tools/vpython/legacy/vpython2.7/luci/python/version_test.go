@@ -169,7 +169,7 @@ func TestVersionLess(t *testing.T) {
 
 		t.Run(`Can sort reversed.`, func(t *ftt.Test) {
 			cp := append(versionSlice(nil), s...)
-			for i := 0; i < len(cp)/2; i++ {
+			for i := range len(cp) / 2 {
 				j := len(cp) - i - 1
 				cp[i], cp[j] = cp[j], cp[i]
 			}

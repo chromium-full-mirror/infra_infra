@@ -193,7 +193,7 @@ func SwitchToMatchingSIMSlot(ctx context.Context, runner components.Runner, pred
 	if err != nil {
 		return errors.Annotate(err, "get all sim info: wait for ModemManager to export modem").Err()
 	}
-	for i := int32(0); i < modemInfo.SIMSlotCount(); i++ {
+	for i := range modemInfo.SIMSlotCount() {
 		if err := SwitchSIMSlot(ctx, runner, i+1); err != nil {
 			return errors.Annotate(err, "get all sim info: switch to requested SIM slot").Err()
 		}
@@ -225,7 +225,7 @@ func GetAllSIMInfo(ctx context.Context, runner components.Runner) ([]*tlw.Cellul
 	}()
 
 	res := make([]*tlw.Cellular_SIMInfo, 0)
-	for i := int32(0); i < modemInfo.SIMSlotCount(); i++ {
+	for i := range modemInfo.SIMSlotCount() {
 		if err := SwitchSIMSlot(ctx, runner, i+1); err != nil {
 			return nil, errors.Annotate(err, "get all sim info: switch to requested SIM slot").Err()
 		}

@@ -217,7 +217,7 @@ func TestListCachingServices(t *testing.T) {
 	ctx := testingContext()
 	cachingServicesWithState := make([]*ufspb.CachingService, 0, 2)
 	cachingServices := make([]*ufspb.CachingService, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		cs := mockCachingService(fmt.Sprintf("cs-%d", i))
 		if i%2 == 0 {
 			cs.State = ufspb.State_STATE_SERVING

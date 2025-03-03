@@ -193,7 +193,7 @@ func (e *Eval) EvaluateSafety(ctx context.Context, strategy Strategy) (*evalpb.R
 		// Add 9 thresholds in between.
 		res.Thresholds = res.Thresholds[:99]
 		step := (th100 - th99) / 10
-		for i := 0; i < 9; i++ {
+		for i := range 9 {
 			res.Thresholds = append(res.Thresholds, &evalpb.Threshold{MaxDistance: th99 + step*float32(i+1)})
 		}
 		res.Thresholds = append(res.Thresholds, &evalpb.Threshold{MaxDistance: th100})
@@ -304,7 +304,7 @@ func (e *Eval) goMany(eg *errgroup.Group, f func() error) {
 	if concurrency <= 0 {
 		concurrency = defaultConcurrency
 	}
-	for i := 0; i < concurrency; i++ {
+	for range concurrency {
 		eg.Go(func() error {
 			return f()
 		})
@@ -329,7 +329,7 @@ func distanceQuantiles(afs []rts.Affectedness, count int) (distances []float32) 
 	}
 	sort.Float64s(allDistances)
 	distances = make([]float32, count)
-	for i := 0; i < count; i++ {
+	for i := range count {
 		boundary := int(math.Ceil(float64(len(afs)*(i+1)) / float64(count)))
 		distances[i] = float32(allDistances[boundary-1])
 	}

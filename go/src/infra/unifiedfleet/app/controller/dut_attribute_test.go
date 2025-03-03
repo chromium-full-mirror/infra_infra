@@ -77,7 +77,7 @@ func TestListDutAttributes(t *testing.T) {
 
 	wantFull := make([]*api.DutAttribute, 0, 4)
 	wantKeys := make([]*api.DutAttribute, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		id := fmt.Sprintf("attr%d", i)
 		da := mockDutAttribute(id, fmt.Sprintf("test.path.%d", i))
 		rsp, err := configuration.UpdateDutAttribute(ctx, da)

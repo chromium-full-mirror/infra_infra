@@ -447,7 +447,7 @@ func commonDirFromFiles(filepaths []string) (commonDir string) {
 		// Find the common prefix between the two paths
 		commonPrefix := ""
 		minPathLen := min(len(commonDir), len(path))
-		for i := 0; i < minPathLen; i++ {
+		for i := range minPathLen {
 			if commonDir[i] != path[i] {
 				break
 			}

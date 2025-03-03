@@ -655,7 +655,7 @@ func TestTerm() string {
 		res += tres.String()
 	}
 	res += "\nStandard 16:\t"
-	for c := 0; c < 16; c++ {
+	for c := range 16 {
 		tcol, _ := NewColor256(" ", "", strconv.Itoa(c))
 		res += tcol.String()
 	}

@@ -75,7 +75,7 @@ func TestRamBufferedBQInserter(t *testing.T) {
 				return &bqapi.TableDataInsertAllResponse{}, nil
 			}
 			entries := make([]bigquery.ValueSaver, 10)
-			for i := 0; i < 5; i++ {
+			for i := range 5 {
 				entries[2*i] = mkTestEntry(2*i, fmt.Sprintf("given:%d", 2*i))
 				entries[2*i+1] = mkTestEntry(2*i + 1)
 			}

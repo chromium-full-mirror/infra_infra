@@ -420,7 +420,7 @@ func (c *CCDOpenRun) prepareCCD(
 
 func tryConsole(f func() error) error {
 	var err error
-	for i := 0; i < consoleConnIterations; i++ {
+	for range consoleConnIterations {
 		if err = f(); err == nil {
 			return nil
 		}
@@ -527,7 +527,7 @@ func powerButtonAlert(w io.Writer) {
 		w,
 		"You may be asked to press the physical power button multiple times. Follow the instructions.",
 	)
-	for i := 0; i < 4; i++ {
+	for range 4 {
 		fmt.Fprint(w, ".")
 		time.Sleep(time.Second)
 	}
@@ -544,7 +544,7 @@ func (c *CCDOpenRun) runCCDOpen() error {
 	reCcdOpen := regexp.MustCompile(
 		`(Press the physical button now|PP press counted|[Tt]imeout|CCD [Oo]pened|Busy|Access Denied)`,
 	)
-	for i := 0; i < iterationsLimit; i++ {
+	for range iterationsLimit {
 		output, _, err := c.goexpectSession.Expect(reCcdOpen, waitTimeout)
 		if err != nil {
 			return errors.Annotate(err, "wait for output from ccd open command").Err()
@@ -597,7 +597,7 @@ func (c *CCDOpenRun) runCCDTestlabEnable() error {
 	reTestlab := regexp.MustCompile(
 		`(Press the physical button now|PP press counted|Updating testlab to true|CCD test lab mode enabled)`,
 	)
-	for i := 0; i < iterationsLimit; i++ {
+	for range iterationsLimit {
 		output, _, err := c.goexpectSession.Expect(reTestlab, timeout)
 		if err != nil {
 			return errors.Annotate(err, "expect output from ccd testlab enable command").Err()

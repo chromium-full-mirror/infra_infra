@@ -157,8 +157,8 @@ func TestIsDupe(t *testing.T) {
 
 func BenchmarkIsDupe(b *testing.B) {
 	s := []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
-	for i := 0; i < b.N; i++ {
-		for j := 0; j < len(s); j++ {
+	for range b.N {
+		for j := range len(s) {
 			isDupe(s, j)
 		}
 	}
@@ -166,9 +166,9 @@ func BenchmarkIsDupe(b *testing.B) {
 
 func BenchmarkIsDupeMap(b *testing.B) {
 	s := []string{"1", "2", "3", "4", "5", "6", "7", "8", "9", "10"}
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		seen := make(map[string]bool, len(s))
-		for j := 0; j < len(s); j++ {
+		for j := range len(s) {
 			v := s[j]
 			if seen[v] {
 				continue

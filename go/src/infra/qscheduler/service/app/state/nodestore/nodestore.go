@@ -234,7 +234,7 @@ func (n *NodeStore) Run(ctx context.Context, o Operator) (err error) {
 		}
 	}
 
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		// Slow path; read full state from datastore, then follow usual modification
 		// flow.
 		span.SetAttributes(attribute.Bool("nodestore.Run.cached", false))

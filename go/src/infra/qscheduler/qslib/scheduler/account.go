@@ -87,7 +87,7 @@ func BestPriorityFor(b Balance) Priority {
 func nextBalance(balance Balance, c *AccountConfig, elapsedSecs float32, runningJobs []int) Balance {
 	var runningJobsArray [NumPriorities]int
 	copy(runningJobsArray[:], runningJobs)
-	for priority := 0; priority < NumPriorities; priority++ {
+	for priority := range NumPriorities {
 		val := balance[priority]
 		val -= elapsedSecs * float32(runningJobsArray[priority])
 		chargeRate := c.ChargeRate[priority]

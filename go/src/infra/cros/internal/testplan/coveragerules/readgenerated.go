@@ -34,7 +34,7 @@ func getAllFileDescriptorProtos(descriptor protoreflect.MessageDescriptor) []*de
 	fdps := make([]*descriptorpb.FileDescriptorProto, 0)
 	fdps = append(fdps, protodesc.ToFileDescriptorProto(descriptor.ParentFile()))
 
-	for i := 0; i < descriptor.Fields().Len(); i += 1 {
+	for i := range descriptor.Fields().Len() {
 		fieldDesc := descriptor.Fields().Get(i)
 		if fieldDesc.Message() != nil {
 			fdps = append(fdps, getAllFileDescriptorProtos(fieldDesc.Message())...)

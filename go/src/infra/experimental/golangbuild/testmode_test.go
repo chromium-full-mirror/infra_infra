@@ -33,7 +33,7 @@ func testShardFuncByN(t *testing.T, f shardFunc, n int) {
 
 	// Shard all the tests.
 	shardTests := make([][]string, n)
-	for i := 0; i < n; i++ {
+	for i := range n {
 		shardTests[i] = f(allTests, testShard{shardID: uint32(i), nShards: uint32(n)})
 	}
 

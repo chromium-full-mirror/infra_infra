@@ -109,7 +109,7 @@ func runStartupOverhead(b *testing.B, spec string) {
 	_ = tdc.Wait(b)
 
 	b.ResetTimer()
-	for n := 0; n < b.N; n++ {
+	for range b.N {
 		tdc := tc.getDelegateCommand(c, td, environ.System())
 		_ = tdc.Run(b)
 		_ = tdc.Wait(b)

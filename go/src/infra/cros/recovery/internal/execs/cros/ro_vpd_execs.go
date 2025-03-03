@@ -106,7 +106,7 @@ func verifyROVPDDSMCalibExec(ctx context.Context, info *execs.ExecInfo) error {
 		return errors.Annotate(err, "cannot convert channel count to int").Err()
 	}
 
-	for ch := 0; ch < int(channelCount); ch++ {
+	for ch := range channelCount {
 		if speakerAmp != "TAS2563" {
 			cmd := fmt.Sprintf("vpd -i RO_VPD -g dsm_calib_r0_%d", ch)
 			if _, err := r(ctx, time.Minute, cmd); err != nil {

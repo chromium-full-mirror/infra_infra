@@ -87,7 +87,7 @@ func run(ctx context.Context) error {
 	// load.
 	wg := sync.WaitGroup{}
 	wg.Add(*qps)
-	for i := 0; i < *qps; i++ {
+	for range *qps {
 		go func() {
 			defer wg.Done()
 			sendOneQPS(ctx, res, bbC, &req)

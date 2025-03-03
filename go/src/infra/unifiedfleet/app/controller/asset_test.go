@@ -378,7 +378,7 @@ func TestGetAsset(t *testing.T) {
 
 func createArrayOfMockAssets(n int, prefix, zone, assetType, model string) []*ufspb.Asset {
 	var assets []*ufspb.Asset
-	for i := 0; i < n; i++ {
+	for i := range n {
 		aType := ufspb.AssetType_UNDEFINED
 		if assetType == "dut" {
 			aType = ufspb.AssetType_DUT

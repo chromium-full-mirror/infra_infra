@@ -39,7 +39,7 @@ func main() {
 	build.Main(func(ctx context.Context, args []string, st *build.State) error {
 		inputs := inputProps.GetInput(ctx)
 
-		for i := 0; i < int(inputs.Steps); i++ {
+		for i := range int(inputs.Steps) {
 			sleepStep(ctx, inputs, i)
 		}
 
@@ -114,7 +114,7 @@ func generateScheduleRequest(builder *bbpb.BuilderID, waitForChildren bool, batc
 	req := &bbpb.BatchRequest{
 		Requests: []*bbpb.BatchRequest_Request{},
 	}
-	for i := 0; i < batchSize; i++ {
+	for range batchSize {
 		subReq := &bbpb.ScheduleBuildRequest{
 			Builder: builder,
 		}
@@ -192,7 +192,7 @@ func scheduleChildBuilds(ctx context.Context, bbClient bbpb.BuildsClient, inputs
 	defer func() { step.End(nil) }()
 
 	buildIDs := make([]int64, 0, cbs.Children)
-	for i := 0; i < numBatch; i++ {
+	for i := range numBatch {
 		var batchSize int64
 		switch {
 		case cbs.BatchSize == 0:
@@ -267,7 +267,7 @@ func waitChildBuilds(ctx context.Context, bbClient bbpb.BuildsClient, buildIds [
 	step, ctx := build.StartStep(ctx, "wait children")
 	defer func() { step.End(nil) }()
 
-	for idx := 0; idx < 200; idx++ {
+	for idx := range 200 {
 		endedBuilds, err := waitOnce(ctx, bbClient, buildIds, cbs, idx)
 		if err != nil {
 			return err
@@ -424,7 +424,7 @@ func searchBuilds(ctx context.Context, bbClient bbpb.BuildsClient, inputs *fakeb
 		steps = steps - 3
 	}
 
-	for i := 0; i < steps; i++ {
+	for i := range steps {
 		if err := SearchBuildsByGerritChange(ctx, bbClient, sbs, i); err != nil {
 			return errors.Annotate(err, "search build %d", i).Err()
 		}

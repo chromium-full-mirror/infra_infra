@@ -22,7 +22,7 @@ func TestBatchGetDHCPs(t *testing.T) {
 	ftt.Run("BatchGetDHCPs", t, func(t *ftt.Test) {
 		t.Run("Batch get dhcps - happy path", func(t *ftt.Test) {
 			dhcps := make([]*ufspb.DHCPConfig, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				dhcp := &ufspb.DHCPConfig{
 					Hostname: fmt.Sprintf("dhcp-batchGet-%d", i),
 					Ip:       fmt.Sprintf("%d", i),

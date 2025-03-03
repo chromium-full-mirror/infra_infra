@@ -32,7 +32,7 @@ func servoTriggerKernelPanicExec(ctx context.Context, info *execs.ExecInfo) erro
 	// retryInterval is the timeout to for executing the sending request through servod command for every iteration.
 	retryInterval := argsMap.AsDuration(ctx, "retry_interval", 2, time.Second)
 	servod := info.NewServod()
-	for i := 0; i < requestCount; i++ {
+	for range requestCount {
 		// Simulate Alt VolumeUp X simultaneous press.
 		// This key combination is the kernel system request (sysrq) X.
 		if err := servod.Set(ctx, "sysrq_x", "tab"); err != nil {

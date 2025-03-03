@@ -664,7 +664,7 @@ func servoServodDTSAndServoRoleToggleExec(ctx context.Context, info *execs.ExecI
 		} else {
 			cmd := fmt.Sprintf("lsusb -v -d 18d1: | grep %q", gscSerial)
 			var lastErr error
-			for i := 0; i < verifyRetryCount; i++ {
+			for range verifyRetryCount {
 				log.Debugf(ctx, "Attempt %d to find servo with serial: %q.", gscSerial)
 				if _, err := hostAccess.Run(ctx, 30*time.Second, cmd); err != nil {
 					lastErr = errors.Annotate(err, "verify recovery gsc").Err()

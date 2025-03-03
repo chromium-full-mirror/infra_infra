@@ -148,7 +148,7 @@ func splitTimeRange(start time.Time, stop time.Time, entries int) ([]timeRangePa
 		return nil, err
 	}
 
-	for i := 0; i < entries; i++ {
+	for i := range entries {
 		curStart := start.Add(scaleNanoseconds(duration.Nanoseconds(), float64(i)/float64(entries)))
 		curStop := start.Add(scaleNanoseconds(duration.Nanoseconds(), float64(i+1)/float64(entries)))
 		if i == entries-1 {

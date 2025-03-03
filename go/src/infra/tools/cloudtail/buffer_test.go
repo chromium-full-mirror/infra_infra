@@ -54,7 +54,7 @@ func TestPushBuffer(t *testing.T) {
 				FlushThreshold: 2,
 			})
 			buf.Start(ctx)
-			for i := 0; i < 4; i++ {
+			for range 4 {
 				buf.Send(ctx, Entry{})
 			}
 			client.drain(t, 4, 30*time.Second)

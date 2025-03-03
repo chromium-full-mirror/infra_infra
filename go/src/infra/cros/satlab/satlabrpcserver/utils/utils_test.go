@@ -17,7 +17,7 @@ import (
 )
 
 func createFilesHelper(t *testing.T) {
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		fp, err := os.Create(fmt.Sprintf("./temp/%d.data", i))
 		if err != nil {
 			t.Fatalf("can not create file")

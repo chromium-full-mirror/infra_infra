@@ -165,7 +165,7 @@ func triggerTestShards(ctx context.Context, spec *buildSpec, shards uint32, buil
 	// Start N shards and collect their build IDs and invocation IDs.
 	buildIDs := make([]int64, 0, shards)
 	invocationIDs := make([]string, 0, shards)
-	for i := uint32(0); i < shards; i++ {
+	for i := range uint32(shards) {
 		shardBuild, err := triggerBuild(ctx, spec, testShard{shardID: i, nShards: shards}, builder)
 		if err != nil {
 			return nil, err

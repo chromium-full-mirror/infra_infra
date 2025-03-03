@@ -179,7 +179,7 @@ func SetProperty(s *structpb.Struct, key string, value interface{}) error {
 			value = nil
 		} else {
 			slice := make([]interface{}, s.Len())
-			for i := 0; i < s.Len(); i++ {
+			for i := range s.Len() {
 				slice[i] = s.Index(i).Interface()
 			}
 			value = slice

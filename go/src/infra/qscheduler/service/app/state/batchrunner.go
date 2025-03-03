@@ -448,7 +448,7 @@ func NewBatchRunnerForTest() *BatchRunner {
 // This is to be used only by tests, on Batcher instances created with
 // NewBatchRunnerForTest. Otherwise, this method panics.
 func (b *BatchRunner) TBatchWait(requests int) {
-	for i := 0; i < requests; i++ {
+	for range requests {
 		b.testonlyBatchWait <- struct{}{}
 	}
 }

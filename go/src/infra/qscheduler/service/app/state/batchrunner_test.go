@@ -57,7 +57,7 @@ func TestBatcherCancellations(t *testing.T) {
 			wg.Add(nRequests)
 
 			go func() {
-				for i := 0; i < nRequests; i++ {
+				for i := range nRequests {
 					go func(i int) {
 						defer wg.Done()
 						_, err := batcher.TryNotify(ctx, &swarming.NotifyTasksRequest{})
@@ -102,7 +102,7 @@ func TestBatcherBehavior(t *testing.T) {
 			now := tutils.TimestampProto(time.Now())
 
 			wg := sync.WaitGroup{}
-			for i := 0; i < nTasks; i++ {
+			for i := range nTasks {
 				wg.Add(2)
 				// Run nTasks assignment requests concurrently.
 				go func(i int) {

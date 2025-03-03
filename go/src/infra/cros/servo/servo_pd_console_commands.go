@@ -135,7 +135,7 @@ func (s *Servo) toggleServoDualRole(ctx context.Context) (int, error) {
 }
 
 func (s *Servo) enableServoDualRole(ctx context.Context) error {
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		if r, _ := s.toggleServoDualRole(ctx); r == 1 {
 			testing.ContextLog(ctx, "PDTester DRP mode enabled")
 			return nil

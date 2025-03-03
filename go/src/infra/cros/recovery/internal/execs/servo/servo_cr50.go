@@ -35,7 +35,7 @@ func averageSbuValue(ctx context.Context, servod components.Servod, sbuControl s
 	if retryCount <= 0 {
 		retryCount = 1
 	}
-	for i := 0; i < retryCount; i++ {
+	for range retryCount {
 		// We need to sleep some time to let system to reflect changes.
 		time.Sleep(100 * time.Millisecond)
 		stringVal, err := servodGetString(ctx, servod, sbuControl)

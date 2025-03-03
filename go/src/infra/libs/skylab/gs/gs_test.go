@@ -123,12 +123,12 @@ func TestConcurrentUploads(t *testing.T) {
 	const numDirs = 10
 	const numFilesPerDir = 100
 	files := make([]string, numDirs*numFilesPerDir)
-	for i := 0; i < numDirs; i++ {
+	for i := range numDirs {
 		subdir := fmt.Sprintf("d%d", i)
 		if err := os.Mkdir(filepath.Join(tf.src, subdir), 0755); err != nil {
 			t.Fatalf("Failed to create source directory %s: %s", subdir, err)
 		}
-		for j := 0; j < numFilesPerDir; j++ {
+		for j := range numFilesPerDir {
 			f := filepath.Join(subdir, fmt.Sprintf("f%d", j))
 			files[i*numFilesPerDir+j] = f
 			s, err := os.Create(filepath.Join(tf.src, f))

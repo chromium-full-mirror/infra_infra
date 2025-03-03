@@ -125,7 +125,7 @@ func (s *Servo) RequireDUTPDInfo(ctx context.Context) error {
 	numPorts := 0
 	enabledPorts := 0
 	pdPort := MaxPorts
-	for port := 0; port < MaxPorts; port++ {
+	for port := range MaxPorts {
 		if portInfo, err := s.getPDStateByTargetAndVersion(ctx, pdStateDUT, pdInfo.version, port); err == nil {
 			testing.ContextLogf(ctx, "DUT Port %d state: %#v", port, portInfo)
 

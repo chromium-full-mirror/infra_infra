@@ -201,7 +201,7 @@ func (r *logReader) readFileChange() (fc fileChange, err error) {
 	// Format doc: https://git-scm.com/docs/git-diff#_raw_output_format
 
 	// Skip 4 sub-blocks, each one ending with space.
-	for i := 0; i < 4; i++ {
+	for range 4 {
 		if _, err = r.readString(' '); err != nil {
 			return
 		}

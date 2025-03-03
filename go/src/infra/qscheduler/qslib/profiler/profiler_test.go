@@ -44,7 +44,7 @@ func BenchmarkEntitySize(b *testing.B) {
 	b.ResetTimer()
 
 	var protoBytes []byte
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		stateProto := state.ToProto()
 		protoBytes, _ = proto.Marshal(stateProto)
 	}
@@ -61,7 +61,7 @@ func BenchmarkEntityZip(b *testing.B) {
 	b.ResetTimer()
 
 	var compressedBytes []byte
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		buffer := &bytes.Buffer{}
 		w := zlib.NewWriter(buffer)
 		w.Write(protoBytes)
@@ -102,7 +102,7 @@ func BenchmarkSchedulerSimulation(b *testing.B) {
 			PerLabelTaskLimits: map[string]int32{"label-model": 2},
 		},
 	}
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		RunSimulation(params)
 	}
 }

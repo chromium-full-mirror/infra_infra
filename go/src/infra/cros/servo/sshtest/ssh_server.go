@@ -187,7 +187,7 @@ func handleForward(sConn *ssh.ServerConn, src net.Conn) error {
 	}()
 
 	var firstErr error
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		if err := <-ch; !errors.Is(err, io.EOF) && firstErr == nil {
 			firstErr = err
 		}

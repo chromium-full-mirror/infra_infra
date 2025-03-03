@@ -26,7 +26,7 @@ func (c *CPUTemperatureOrchestrator) GetAverageCPUTemperature() float32 {
 	size := c.queue.Size()
 	var rawData = c.queue.Data()
 
-	for i := 0; i < size; i++ {
+	for i := range size {
 		avg += rawData[i]
 	}
 

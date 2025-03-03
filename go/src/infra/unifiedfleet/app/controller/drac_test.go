@@ -1075,7 +1075,7 @@ func TestListDracs(t *testing.T) {
 	ctx := testingContext()
 	dracsWithSwitch := make([]*ufspb.Drac, 0, 2)
 	dracs := make([]*ufspb.Drac, 0, 4)
-	for i := 0; i < 4; i++ {
+	for i := range 4 {
 		drac := mockDrac(fmt.Sprintf("drac-%d", i))
 		if i%2 == 0 {
 			drac.SwitchInterface = &ufspb.SwitchInterface{Switch: "switch-12"}
@@ -1113,7 +1113,7 @@ func TestBatchGetDracs(t *testing.T) {
 	ftt.Run("BatchGetDracs", t, func(t *ftt.Test) {
 		t.Run("Batch get dracs - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.Drac, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				entities[i] = &ufspb.Drac{
 					Name: fmt.Sprintf("drac-batchGet-%d", i),
 				}

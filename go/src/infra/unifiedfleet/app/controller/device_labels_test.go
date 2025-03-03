@@ -230,7 +230,7 @@ func TestBatchGetDeviceLabels(t *testing.T) {
 	ftt.Run("BatchGetDeviceLabels", t, func(t *ftt.Test) {
 		t.Run("Batch get device labels - happy path", func(t *ftt.Test) {
 			entities := make([]*ufspb.DeviceLabels, 4)
-			for i := 0; i < 4; i++ {
+			for i := range 4 {
 				nameSuffix := fmt.Sprintf("devicelabels-batchGet-%d", i)
 				entities[i] = &ufspb.DeviceLabels{
 					Name:         util.AddPrefix(util.MachineLSECollection, nameSuffix),

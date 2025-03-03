@@ -38,7 +38,7 @@ func BenchmarkE2E(b *testing.B) {
 	// First, build the graph from scratch.
 	b.Run("Build", func(b *testing.B) {
 		b.ReportAllocs()
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			g = &Graph{}
 			if err := g.Update(ctx, repoDir, "refs/heads/main", UpdateOptions{}); err != nil {
 				b.Fatal(err)
@@ -51,7 +51,7 @@ func BenchmarkE2E(b *testing.B) {
 	// Serialize it.
 	buf := &bytes.Buffer{}
 	b.Run("Write", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			buf.Reset()
 			if err := g.Write(buf); err != nil {
 				b.Fatal(err)
@@ -61,7 +61,7 @@ func BenchmarkE2E(b *testing.B) {
 
 	// Deserialize it.
 	b.Run("Read", func(b *testing.B) {
-		for i := 0; i < b.N; i++ {
+		for range b.N {
 			r := bufio.NewReader(bytes.NewReader(buf.Bytes()))
 			if err := g.Read(r); err != nil {
 				b.Fatal(err)
@@ -76,7 +76,7 @@ func BenchmarkE2E(b *testing.B) {
 			continue
 		}
 		b.Run("Query-"+strings.TrimPrefix(n.name, "//"), func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				q := filegraph.Query{Sources: []filegraph.Node{n}, EdgeReader: &EdgeReader{}}
 				q.Run(func(*filegraph.ShortestPath) bool {
 					return true

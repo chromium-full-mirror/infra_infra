@@ -28,6 +28,7 @@ import (
 const maxQueryParametersCount = 65535
 const parametersPerDevice = 7
 
+// RepopulateCache repopulates the AlloyDB cache.
 func (frontend *FleetConsoleFrontend) RepopulateCache(ctx context.Context, req *fleetconsolerpc.RepopulateCacheRequest) (_ *fleetconsolerpc.RepopulateCacheResponse, err error) {
 	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
 

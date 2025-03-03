@@ -290,7 +290,7 @@ func CountFailedRepairFromMetrics(ctx context.Context, dutName string, taskName 
 		return 0, nil
 	}
 	var failedRepairCount int
-	for i := 0; i < matchedQueryResCount; i++ {
+	for i := range matchedQueryResCount {
 		if queryRes.Actions[i].Status == ActionStatusSuccess {
 			// since we are counting the number of failed repair tasks after last successful task.
 			// when we are encountering the successful record,that mean we reached latest success task

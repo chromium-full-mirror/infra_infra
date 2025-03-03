@@ -501,7 +501,7 @@ func TestGTestConversions(t *testing.T) {
 				expected.WriteString("filename.cc(123): ")
 
 				// Print 1002 bytes as 334 3-byte runes.
-				for i := 0; i < 334; i++ {
+				for range 334 {
 					// Use swedish "Place of interest symbol", which encodes as three-bytes, e2 8c 98.
 					// See https://blog.golang.org/strings.
 					input.WriteRune('\u2318')

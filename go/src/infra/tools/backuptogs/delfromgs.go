@@ -29,7 +29,7 @@ func delFromGS(ctx context.Context, bucket *storage.BucketHandle, prefix string,
 	var wg sync.WaitGroup
 	wg.Add(workers)
 
-	for i := 0; i < workers; i++ {
+	for range workers {
 		go func() {
 			defer wg.Done()
 

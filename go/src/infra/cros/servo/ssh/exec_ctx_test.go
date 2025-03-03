@@ -582,7 +582,7 @@ func TestSameStdoutAndStderrCtx(t *testing.T) {
 
 	longx := "x"
 	longy := "yy"
-	for i := 0; i < 7; i++ { // repeat the original 128 times
+	for range 7 { // repeat the original 128 times
 		longx += longx
 		longy += longy
 	}

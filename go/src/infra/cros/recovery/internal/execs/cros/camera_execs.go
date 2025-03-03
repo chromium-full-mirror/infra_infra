@@ -70,7 +70,7 @@ func auditCameraExec(ctx context.Context, info *execs.ExecInfo) (rErr error) {
 	}
 
 	var errs []error
-	for cameraIndex := 0; cameraIndex < cameraCount; cameraIndex++ {
+	for cameraIndex := range cameraCount {
 		interfaceType, err := camera.InterfaceType(ctx, ha, cameraIndex)
 		if err != nil {
 			err = errors.Annotate(err, interfaceTypeErrorMsg, cameraIndex).Err()

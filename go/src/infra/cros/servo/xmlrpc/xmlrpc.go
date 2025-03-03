@@ -222,7 +222,7 @@ func newValue(in interface{}) (value, error) {
 		// This is a slice or array, but not a []byte (aka a []uint8).
 		v := reflect.ValueOf(in)
 		var a xmlArray
-		for i := 0; i < v.Len(); i++ {
+		for i := range v.Len() {
 			val, err := newValue(v.Index(i).Interface())
 			if err != nil {
 				return value{}, err

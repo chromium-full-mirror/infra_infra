@@ -106,7 +106,7 @@ func (r *reader) readNode(n *node) error {
 
 	// Read the children.
 	n.children = make(map[string]*node, childCount)
-	for i := 0; i < childCount; i++ {
+	for range childCount {
 		childBaseName, err := r.readString()
 		if err != nil {
 			return err
