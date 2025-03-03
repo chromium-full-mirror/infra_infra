@@ -5,13 +5,17 @@
 package devicesdb
 
 import (
+	"context"
 	"regexp"
+
+	"go.chromium.org/luci/server/auth"
 
 	"go.chromium.org/infra/fleetconsole/internal/database/queryutils"
 	"go.chromium.org/infra/fleetconsole/internal/utils"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
-func buildListDevicesQuery(offset, pageSize int, filter, orderby string) (*queryutils.Query, error) {
+func buildListDevicesQuery(ctx context.Context, offset, pageSize int, filter, orderby string, realms []string) (*queryutils.Query, error) {
 	q, err := queryutils.NewQueryBuilder(DevicesTable).WithSelectAllClause().WithFromClause().WithOffsetPagination(offset, pageSize).WithWhereClause(filter)
 	if err != nil {
 		return nil, utils.InvalidFilterError(err)
@@ -27,14 +31,15 @@ func buildListDevicesQuery(offset, pageSize int, filter, orderby string) (*query
 		return nil, utils.InvalidOrderByError(err)
 	}
 
-	return q.Build(), nil
+	return q.Build(realms)
 }
 
-func buildGetColumnQuery(distinct bool, column *queryutils.Column) *queryutils.Query {
-	return queryutils.NewQueryBuilder(DevicesTable).WithSelectClause(distinct, column).WithFromClause().Build()
+func buildGetColumnQuery(ctx context.Context, distinct bool, column *queryutils.Column, realms []string) (*queryutils.Query, error) {
+	q, _ := queryutils.NewQueryBuilder(DevicesTable).WithSelectClause(distinct, column).WithFromClause().Build(realms)
+	return q, nil
 }
 
-func buildCountDevicesQuery(filter string) (*queryutils.Query, error) {
+func buildCountDevicesQuery(ctx context.Context, filter string, realms []string) (*queryutils.Query, error) {
 	q, err := queryutils.NewQueryBuilder(DevicesTable).WithCustomSelectClause(`SELECT
 		COUNT(*) AS total,
 		COUNT(CASE WHEN state = 'DEVICE_STATE_LEASED' THEN 1 ELSE NULL END) AS leased,
@@ -47,5 +52,20 @@ func buildCountDevicesQuery(filter string) (*queryutils.Query, error) {
 		return nil, utils.InvalidFilterError(err)
 	}
 
-	return q.Build(), nil
+	return q.Build(realms)
+}
+
+func GetUserRealms(ctx context.Context, cloudProject string) ([]string, error) {
+	// When running locally auth.QueryRealms is not implemented,
+	// this defaults to showing all devices
+	if cloudProject == "" {
+		return nil, nil
+	}
+
+	realms, err := auth.QueryRealms(ctx, ufsUtil.InventoriesList, "", nil)
+	if err != nil {
+		return nil, err
+	}
+	realms = append(realms, "") // Devices with no realms are visible to everyone
+	return realms, nil
 }

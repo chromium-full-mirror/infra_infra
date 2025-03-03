@@ -19,8 +19,11 @@ import (
 )
 
 // GetLabels gets all the dynamic labels and their possible values
-func GetLabels(ctx context.Context, dbConn *sql.DB) (map[string]*fleetconsolerpc.LabelValues, error) {
-	query := buildGetColumnQuery(false, LabelsColumn)
+func GetLabels(ctx context.Context, dbConn *sql.DB, realms []string) (map[string]*fleetconsolerpc.LabelValues, error) {
+	query, err := buildGetColumnQuery(ctx, false, LabelsColumn, realms)
+	if err != nil {
+		return nil, err
+	}
 	rows, err := dbConn.QueryContext(ctx, query.Statement, query.Parameters...)
 	if err != nil {
 		logging.Errorf(ctx, "failed to read from the DB: %s", err)
@@ -82,7 +85,7 @@ func GetLabels(ctx context.Context, dbConn *sql.DB) (map[string]*fleetconsolerpc
 }
 
 // GetBaseDimensions gets all the base dimensions and their possible values
-func GetBaseDimensions(ctx context.Context, dbConn *sql.DB) (map[string]*fleetconsolerpc.LabelValues, error) {
+func GetBaseDimensions(ctx context.Context, dbConn *sql.DB, realms []string) (map[string]*fleetconsolerpc.LabelValues, error) {
 	results := map[string]*LabelValuesDAO{}
 
 	for _, column := range DevicesTable.Columns {
@@ -90,7 +93,11 @@ func GetBaseDimensions(ctx context.Context, dbConn *sql.DB) (map[string]*fleetco
 			continue
 		}
 
-		query := buildGetColumnQuery(true, column)
+		query, err := buildGetColumnQuery(ctx, true, column, realms)
+		if err != nil {
+			return nil, err
+		}
+
 		rows, err := dbConn.QueryContext(ctx, query.Statement, query.Parameters...)
 		if err != nil {
 			logging.Errorf(ctx, "failed to read from the DB: %s", err)

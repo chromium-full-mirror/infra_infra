@@ -32,7 +32,12 @@ func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *flee
 		pageSize = min(int(req.PageSize), maxPageSize)
 	}
 
-	results, hasMoreData, err := devicesdb.List(ctx, frontend.dbConnection, req.Filter, req.OrderBy, offset, pageSize)
+	realms, err := devicesdb.GetUserRealms(ctx, frontend.cloudProject)
+	if err != nil {
+		return nil, err
+	}
+
+	results, hasMoreData, err := devicesdb.List(ctx, frontend.dbConnection, req.Filter, req.OrderBy, offset, pageSize, realms)
 	if err != nil {
 		return nil, err
 	}

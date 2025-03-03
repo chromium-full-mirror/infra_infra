@@ -20,13 +20,18 @@ import (
 func (frontend *FleetConsoleFrontend) GetDeviceDimensions(ctx context.Context, req *emptypb.Empty) (_ *fleetconsolerpc.GetDeviceDimensionsResponse, err error) {
 	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
 
-	labels, err := devicesdb.GetLabels(ctx, frontend.dbConnection)
+	realms, err := devicesdb.GetUserRealms(ctx, frontend.cloudProject)
+	if err != nil {
+		return nil, err
+	}
+
+	labels, err := devicesdb.GetLabels(ctx, frontend.dbConnection, realms)
 	if err != nil {
 		logging.Errorf(ctx, "failed to fetch label values: %s", err)
 		return nil, err
 	}
 
-	baseDimensions, err := devicesdb.GetBaseDimensions(ctx, frontend.dbConnection)
+	baseDimensions, err := devicesdb.GetBaseDimensions(ctx, frontend.dbConnection, realms)
 	if err != nil {
 		logging.Errorf(ctx, "failed to fetch base dimension values: %s", err)
 		return nil, err

@@ -83,11 +83,29 @@ func (q *QueryBuilder) WithOffsetPagination(offset int, pageSize int) *QueryBuil
 	return q
 }
 
-func (q *QueryBuilder) Build() *Query {
-	return &Query{
-		Statement:  fmt.Sprintf("%s\n%s\n%s\n%s\n%s;", q.selectClause, q.fromClause, q.whereClause, q.orderByClause, q.paginationClause),
-		Parameters: q.parameters.values,
+func (q *QueryBuilder) Build(realms []string) (*Query, error) {
+	if realms == nil {
+		return &Query{
+			Statement:  fmt.Sprintf("%s\n%s\n%s\n%s\n%s;", q.selectClause, q.fromClause, q.whereClause, q.orderByClause, q.paginationClause),
+			Parameters: q.parameters.values,
+		}, nil
 	}
+
+	realmsClause := "WHERE "
+	if q.whereClause != "" {
+		realmsClause = " AND "
+	}
+
+	valuesStrings := make([]string, len(realms))
+	for i, realm := range realms {
+		valuesStrings[i] = q.bind(realm)
+	}
+	realmsClause += fmt.Sprintf("realm IN (%s)", strings.Join(valuesStrings, ", "))
+
+	return &Query{
+		Statement:  fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n%s;", q.selectClause, q.fromClause, q.whereClause, realmsClause, q.orderByClause, q.paginationClause),
+		Parameters: q.parameters.values,
+	}, nil
 }
 
 // bind binds a new query parameter with the given value, and returns

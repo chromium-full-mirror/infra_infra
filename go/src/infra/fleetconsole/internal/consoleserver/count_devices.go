@@ -16,7 +16,12 @@ import (
 func (frontend *FleetConsoleFrontend) CountDevices(ctx context.Context, req *fleetconsolerpc.CountDevicesRequest) (_ *fleetconsolerpc.CountDevicesResponse, err error) {
 	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
 
-	result, err := devicesdb.CountDevices(ctx, frontend.dbConnection, req.GetFilter())
+	realms, err := devicesdb.GetUserRealms(ctx, frontend.cloudProject)
+	if err != nil {
+		return nil, err
+	}
+
+	result, err := devicesdb.CountDevices(ctx, frontend.dbConnection, req.GetFilter(), realms)
 	if err != nil {
 		return nil, err
 	}

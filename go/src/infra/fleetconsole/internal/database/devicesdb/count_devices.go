@@ -14,8 +14,8 @@ import (
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 )
 
-func CountDevices(ctx context.Context, dbConn *sql.DB, filter string) (*fleetconsolerpc.CountDevicesResponse, error) {
-	query, err := buildCountDevicesQuery(filter)
+func CountDevices(ctx context.Context, dbConn *sql.DB, filter string, realms []string) (*fleetconsolerpc.CountDevicesResponse, error) {
+	query, err := buildCountDevicesQuery(ctx, filter, realms)
 	if err != nil {
 		logging.Errorf(ctx, "failed to construct the query: %s", err)
 		return nil, err

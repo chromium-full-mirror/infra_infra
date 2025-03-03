@@ -17,9 +17,9 @@ import (
 	"go.chromium.org/infra/fleetconsole/internal/utils"
 )
 
-func List(ctx context.Context, dbConn *sql.DB, filter, orderby string, offset, pageSize int) ([]*fleetconsolerpc.Device, bool, error) {
+func List(ctx context.Context, dbConn *sql.DB, filter, orderby string, offset, pageSize int, realms []string) ([]*fleetconsolerpc.Device, bool, error) {
 	// Fetch one extra row to check whether there is more data available
-	query, err := buildListDevicesQuery(offset, pageSize+1, filter, orderby)
+	query, err := buildListDevicesQuery(ctx, offset, pageSize+1, filter, orderby, realms)
 	hasMoreData := false
 	if err != nil {
 		logging.Errorf(ctx, "failed to construct the query: %s", err)
