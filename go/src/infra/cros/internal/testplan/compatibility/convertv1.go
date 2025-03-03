@@ -1091,8 +1091,7 @@ func ToCTP1(
 				}
 			case tastVM:
 				if suiteInfo.totalShards > 0 {
-					var i int64
-					for i = 0; i < suiteInfo.totalShards; i++ {
+					for i := range suiteInfo.totalShards {
 						tastVMTest, err := createTastVMTest(buildInfo, suiteInfo, i)
 						if err != nil {
 							return nil, err
@@ -1122,8 +1121,7 @@ func ToCTP1(
 				}
 			case tastGCE:
 				if suiteInfo.totalShards > 0 {
-					var i int64
-					for i = 0; i < suiteInfo.totalShards; i++ {
+					for i := range suiteInfo.totalShards {
 						tastGCETest, err := createTastGCETest(buildInfo, suiteInfo, i)
 						if err != nil {
 							return nil, err
