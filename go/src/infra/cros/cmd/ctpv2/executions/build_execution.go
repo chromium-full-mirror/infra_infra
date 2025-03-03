@@ -44,6 +44,7 @@ var outputProps = build.RegisterOutputProperty[map[string]string]("ctpv2/sub-bui
 
 var ctrInputVersion = build.RegisterInputProperty[*protos.CipdVersionInfo](common.HwTestCtrInputPropertyName)
 var ctpv2InputVersion = build.RegisterInputProperty[*protos.CipdVersionInfo](common.HwTestCtpv2InputPropertyName)
+var schedukeDisallowListProps = build.RegisterInputProperty[map[string][]string](common.SchedukeDisallowListPropertyName)
 
 // LuciBuildExecution represents build executions.
 //
@@ -64,6 +65,16 @@ func LuciBuildExecution() {
 			if bqClient != nil {
 				defer bqClient.Close()
 			}
+
+			// Fetch the scheduke disallow list and place it in the "read only"
+			// variable in the common package in common_lib.
+			schedukeDisallowList := schedukeDisallowListProps.GetInput(ctx)
+			err := common.SetSchedukeMigrationList(schedukeDisallowList[common.SchedukeDisallowListMapKey])
+			if err != nil {
+				return err
+			}
+			logging.Infof(ctx, "schedukeDisallowList: %+v", common.GetSchedukeMigrationList())
+
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
 			resp, err := executeRequests(ctx, input, ctrCipdInfo.GetVersion().GetCipdLabel(), st, bqClient, ctpv2CipdInfo.GetVersion().GetCipdLabel(), input.GetPartnerConfig().GetValue())

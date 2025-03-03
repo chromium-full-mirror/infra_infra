@@ -4,7 +4,10 @@
 
 package common
 
-import "time"
+import (
+	"fmt"
+	"time"
+)
 
 // All common constants used throughout the service.
 const (
@@ -35,6 +38,8 @@ const (
 	HwTestCtrInputPropertyName             = "$chromeos/cros_tool_runner"
 	HwTestTrInputPropertyName              = "$chromeos/cros_test_runner"
 	HwTestCtpv2InputPropertyName           = "$chromeos/ctpv2"
+	SchedukeDisallowListPropertyName       = "$chromeos/migration"
+	SchedukeDisallowListMapKey             = "not_scheduke_pools_list"
 	CftServiceMetadataFileName             = ".cftmeta"
 	CftServiceMetadataLineContentSeparator = "="
 	CftServiceMetadataServicePortKey       = "SERVICE_PORT"
@@ -186,4 +191,21 @@ func DockerEnvVarsToPreserve() []string {
 		"DRONE_AGENT_HIVE",
 		"DOCKER_HOST",
 		"DOCKER_TLS_VERIFY"}
+}
+
+var (
+	schedukeMigrationList []string
+)
+
+func SetSchedukeMigrationList(list []string) error {
+	if schedukeMigrationList != nil {
+		return fmt.Errorf("schedukeMigrationList list can only be set once")
+	}
+
+	schedukeMigrationList = list
+	return nil
+}
+
+func GetSchedukeMigrationList() []string {
+	return schedukeMigrationList
 }
