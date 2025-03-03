@@ -8,6 +8,7 @@ linters:
     - errorlint
     - gci
     - stylecheck
+    - copyloopvar
 
   disable:
     # Some projects are not ineffassign-clean yet.

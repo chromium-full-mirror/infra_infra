@@ -193,7 +193,6 @@ var planTestCases = []struct {
 func TestRun(t *testing.T) {
 	t.Parallel()
 	for _, c := range planTestCases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			// t.Parallel() -- TODO(gregorynisbet): Consider parallelizing.
 			args := &execs.RunArgs{
@@ -288,7 +287,6 @@ func TestRunRecovery(t *testing.T) {
 	t.Parallel()
 	for _, c := range recoveryTestCases {
 		t.Run(c.name, func(t *testing.T) {
-			c := c
 			r := recoveryEngine{
 				plan: &config.Plan{
 					Actions: c.got,
@@ -378,7 +376,6 @@ var runExecTestCases = []struct {
 func TestActionExec(t *testing.T) {
 	t.Parallel()
 	for _, c := range runExecTestCases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			r := recoveryEngine{
 				plan: &config.Plan{
@@ -490,7 +487,6 @@ var actionResultsCacheTestCases = []struct {
 func TestActionExecCache(t *testing.T) {
 	t.Parallel()
 	for _, c := range actionResultsCacheTestCases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			r := recoveryEngine{
 				plan: &config.Plan{
