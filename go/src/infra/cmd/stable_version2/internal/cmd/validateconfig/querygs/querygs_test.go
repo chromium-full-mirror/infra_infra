@@ -263,7 +263,6 @@ func TestNonLowercaseIsMalformed(t *testing.T) {
 	t.Parallel()
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			bg := context.Background()
@@ -311,7 +310,6 @@ func TestIsLowercase(t *testing.T) {
 	t.Parallel()
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.in, func(t *testing.T) {
 			t.Parallel()
 			if isLowercase(tt.in) != tt.out {
@@ -351,7 +349,6 @@ func testCombinedKey(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.out, func(t *testing.T) {
 			t.Parallel()
 			want := tt.out

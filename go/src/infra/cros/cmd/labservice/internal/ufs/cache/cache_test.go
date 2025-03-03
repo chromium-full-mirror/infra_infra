@@ -109,7 +109,6 @@ func TestParseAddress_happy(t *testing.T) {
 		},
 	}
 	for n, tc := range cases {
-		tc := tc
 		t.Run(n, func(t *testing.T) {
 			got, err := parseAddress(tc.addr)
 			if err != nil {
@@ -132,7 +131,6 @@ func TestParseAddress_errors(t *testing.T) {
 		"extra part":              "server:port:more",
 	}
 	for n, tc := range cases {
-		tc := tc
 		t.Run(n, func(t *testing.T) {
 			t.Parallel()
 			_, err := parseAddress(tc)
@@ -189,7 +187,6 @@ var extractDutNameTestCases = []struct {
 func TestExtractDutName(t *testing.T) {
 	t.Parallel()
 	for _, tc := range extractDutNameTestCases {
-		tc := tc
 		name := fmt.Sprintf("case %s", tc.caseName)
 		t.Run(name, func(t *testing.T) {
 			got := extractDutName(tc.in)

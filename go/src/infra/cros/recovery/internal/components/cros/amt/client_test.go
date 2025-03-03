@@ -44,7 +44,6 @@ func TestNewAmtClient(t *testing.T) {
 		},
 	}
 	for _, tt := range testCases {
-		tt := tt
 		t.Run(strconv.FormatBool(tt.useTLSValue), func(t *testing.T) {
 			t.Parallel()
 			amt := NewAMTClient(ctx, "192.168.231.123", "admin", "P@ssword123", tt.useTLSValue)
@@ -72,7 +71,6 @@ func TestParseURI(t *testing.T) {
 		},
 	}
 	for _, tt := range testCases {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			uri, err := parseURI(tt.providedStr)

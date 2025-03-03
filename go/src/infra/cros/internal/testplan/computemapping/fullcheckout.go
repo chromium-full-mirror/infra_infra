@@ -40,7 +40,6 @@ func ToDirBQRows(ctx context.Context, chromiumosCheckout string, manifest *repo.
 	// Create one task in the pool for each project in the manifest.
 	if err := parallel.WorkPool(0, func(c chan<- func() error) {
 		for _, project := range manifest.Projects {
-			project := project
 			if strings.Contains(project.Groups, "notdefault") || strings.HasPrefix(project.Path, "src/chromium") {
 				logging.Warningf(ctx, "skipping project %q", project.Name)
 				continue

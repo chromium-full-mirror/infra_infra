@@ -102,10 +102,8 @@ func TestGetIndicatorFallbacks(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-
 			actual, err := controller.GetIndicatorFallbacks(tt.input)
 			if diff := typed.Got(actual).Want(tt.output).Diff(); diff != "" {
 				t.Errorf("unexpected diff (-want +got): %s", diff)
@@ -167,10 +165,8 @@ func TestNormalizeToHourlyCost(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-
 			actual, err := controller.NormalizeToHourlyCost(tt.ent, false)
 			switch {
 			case tt.ok && err != nil:

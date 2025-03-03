@@ -141,7 +141,6 @@ func TestLoadConfiguration(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	for _, c := range testLoadCases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			execsExist := func(string) bool {

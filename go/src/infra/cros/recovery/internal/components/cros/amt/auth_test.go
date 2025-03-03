@@ -30,7 +30,6 @@ func TestDigestFormatBool(t *testing.T) {
 		},
 	}
 	for _, tt := range testCases {
-		tt := tt
 		t.Run(strconv.FormatBool(tt.provided), func(t *testing.T) {
 			t.Parallel()
 			assert.Equal(t, tt.expected, digestFormatBool(tt.provided))
@@ -76,7 +75,6 @@ func TestParseDigestResponseSuccess(t *testing.T) {
 		},
 	}
 	for _, tt := range testCases {
-		tt := tt
 		got, err := parseDigestResponse(getTestResponse(tt.providedAlg, tt.providedAuth, tt.providedUserhash))
 		assert.Nil(t, err, fmt.Sprintf("error calling parseDigestResponse: %q", err))
 		assert.Equal(t, tt.expectedString, got.String())
@@ -108,7 +106,6 @@ func TestParseDigestResponseFailure(t *testing.T) {
 		},
 	}
 	for _, tt := range testCases {
-		tt := tt
 		_, err := parseDigestResponse(tt.specifiedHdr)
 		assert.ErrorContains(t, err, tt.expectedErr)
 	}
@@ -138,7 +135,6 @@ func TestStrongestQOP(t *testing.T) {
 		},
 	}
 	for _, tt := range testCases {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			dr, err := parseDigestResponse(getTestResponse("md2", tt.providedQOP, false))
@@ -186,7 +182,6 @@ func TestNewAuthorizationSuccess(t *testing.T) {
 		},
 	}
 	for _, tt := range testCases {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			dr, err := parseDigestResponse(getTestResponse(tt.providedAlg, tt.providedQop, tt.providedUserhash))
@@ -221,7 +216,6 @@ func TestNewAuthorizationFailure(t *testing.T) {
 		},
 	}
 	for _, tt := range testCases {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			dr, err := parseDigestResponse(getTestResponse(tt.providedAlg, "auth", false))

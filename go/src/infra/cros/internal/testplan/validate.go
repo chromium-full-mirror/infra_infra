@@ -97,14 +97,11 @@ func (v *validator) ValidateMapping(
 
 	return parallel.WorkPool(0, func(c chan<- func() error) {
 		for dir, metadata := range mapping.Dirs {
-			dir := dir
-			metadata := metadata
 			logging.Infof(ctx, "validating dir %q", dir)
 
 			for _, sourceTestPlan := range metadata.GetChromeos().GetCq().GetSourceTestPlans() {
 				for _, fn := range validationFns {
 					sourceTestPlan := sourceTestPlan
-					fn := fn
 					c <- func() error {
 						return fn(ctx, dir, repoRoot, sourceTestPlan)
 					}

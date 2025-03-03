@@ -588,8 +588,6 @@ func TestComputeNextModelState(t *testing.T) {
 		},
 	}
 	for _, c := range cases {
-		// Loop closure.
-		c := c
 		t.Run(fmt.Sprintf("case: small_%d large_%d canary_%d", c.amountSmall, c.amountLarge, c.canaryPercentage), func(t *testing.T) {
 			t.Parallel()
 			got := &migrationState{}

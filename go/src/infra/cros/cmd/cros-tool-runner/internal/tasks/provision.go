@@ -130,7 +130,6 @@ func (c *runCmd) innerRun(ctx context.Context, a subcommands.Application, args [
 	provisionResults := make([]*api.CrosProvisionResponse, len(req.GetDevices()))
 	// Each DUT will run in parallel execution.
 	for i, device := range req.GetDevices() {
-		i, device := i, device
 		crosDutContainer, err := findContainer(cm, device.GetContainerMetadataKey(), "cros-dut")
 		if err != nil {
 			return out, errors.Annotate(err, "inner run: failed to find container").Err()

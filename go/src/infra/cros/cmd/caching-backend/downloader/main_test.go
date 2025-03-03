@@ -92,7 +92,6 @@ func TestDownloadHandler(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.method+" "+tc.url, func(t *testing.T) {
 			t.Parallel()
 			r := httptest.NewRequest(tc.method, tc.url, strings.NewReader(""))
@@ -284,7 +283,6 @@ func TestExtracHandler(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		got, err := http.Get(fmt.Sprintf("%s%s", s.URL, tc.url))
 		t.Run(tc.url, func(t *testing.T) {
 			t.Parallel()
@@ -359,7 +357,6 @@ func TestParseURL(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.url, func(t *testing.T) {
 			t.Parallel()
 			got, err := parseURL(tc.url)
@@ -393,7 +390,6 @@ func TestParseURLErrors(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.url, func(t *testing.T) {
 			t.Parallel()
 			_, err := parseURL(tc.url)
@@ -456,7 +452,6 @@ func TestDecompressGZIPHandler(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		got, err := http.Get(fmt.Sprintf("%s%s", s.URL, tc.url))
 		if err != nil {
 			t.Fatalf("decompress gzip http.Get(%s) failed unexpectedly. err=%s", tc.url, err)
@@ -537,7 +532,6 @@ func TestDecompressXZHandler(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		url := fmt.Sprintf("%s%s", s.URL, tc.url)
 		got, err := http.Get(url)
 		if err != nil {

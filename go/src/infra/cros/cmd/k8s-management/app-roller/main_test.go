@@ -60,7 +60,6 @@ func TestResolveImageToOfficial(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			got, err := resolveImageToOfficial(tc.image, nil)
@@ -113,7 +112,6 @@ func TestResolveImageErrors(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			if _, err := resolveImages(tc.images, nil); err == nil {
 				t.Errorf("resolveImages(%v) succeeded, want error", tc.images)
@@ -156,7 +154,6 @@ func TestSplitYAMLDoc(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			got, _ := splitYAMLDoc(tc.content)

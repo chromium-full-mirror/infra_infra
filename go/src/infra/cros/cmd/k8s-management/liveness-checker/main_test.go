@@ -73,7 +73,6 @@ func TestCreateRequests(t *testing.T) {
 	}
 	ctx := context.Background()
 	for _, c := range cases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			reqs, err := createRequests(ctx, c.endpoints, c.uri, c.headers)
@@ -94,7 +93,6 @@ func TestCreateRequests(t *testing.T) {
 func TestCreateRequestsErrors(t *testing.T) {
 	cases := []string{"x-header", "x-header:", "x-header:1,x-foo", "x-header:1,x-foo:"}
 	for _, c := range cases {
-		c := c
 		t.Run("bad headers", func(t *testing.T) {
 			t.Parallel()
 			if _, err := createRequests(context.Background(), []string{"http://1.1.1.1"}, "/", c); err == nil {

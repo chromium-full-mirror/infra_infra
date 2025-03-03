@@ -64,10 +64,8 @@ func TestToIndicatorType(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-
 			got := tt.output
 			want, _ := utils.ToIndicatorType(tt.input)
 			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
@@ -129,10 +127,8 @@ func TestToUSD(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-
 			got := tt.output
 			want, _ := utils.ToUSD(tt.input)
 			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
@@ -184,10 +180,8 @@ func TestToCostCadence(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-
 			want := tt.output
 			got, _ := utils.ToCostCadence(tt.input)
 			if diff := typed.Got(got).Want(want).Diff(); diff != "" {
@@ -239,10 +233,8 @@ func TestToLocation(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-
 			want := tt.output
 			got, _ := utils.ToLocation(tt.input)
 			if diff := typed.Got(got).Want(want).Diff(); diff != "" {

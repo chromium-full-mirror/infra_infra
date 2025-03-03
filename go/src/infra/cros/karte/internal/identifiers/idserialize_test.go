@@ -79,7 +79,6 @@ func TestEncodedReturnsValidUTF8(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			bytes, _ := tt.in.VersionlessBytes()
@@ -158,7 +157,6 @@ func TestEndToEnd(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			actual, err := tt.idInfo.Encoded()

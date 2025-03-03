@@ -36,7 +36,6 @@ var testSchedukePriorityData = []struct {
 func TestSchedukePriority(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testSchedukePriorityData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.build.GetTags()), func(t *testing.T) {
 			t.Parallel()
 			gotPriority := trPriority(tt.build.GetTags())
@@ -76,7 +75,6 @@ var testQuotaAccountData = []struct {
 func TestQuotaAccount(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testQuotaAccountData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.build.GetTags()), func(t *testing.T) {
 			t.Parallel()
 			gotAccount := trQSAccount(tt.build.GetTags())
@@ -117,7 +115,6 @@ var testPeriodicData = []struct {
 func TestPeriodic(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testPeriodicData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.build.GetTags()), func(t *testing.T) {
 			t.Parallel()
 			gotPeriodicity := trBuildIsPeriodic(tt.build.GetTags())
@@ -171,7 +168,6 @@ var testAsapData = []struct {
 func TestAsap(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testAsapData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s/%v)", tt.qsAccount, tt.periodic), func(t *testing.T) {
 			t.Parallel()
 			gotAsap := asap(tt.qsAccount, tt.periodic)
@@ -322,7 +318,6 @@ func TestDimensionsDeviceNameAndPool(t *testing.T) {
 		schedukepb.DimValues{},
 		schedukepb.SwarmingDimensions{})
 	for _, tt := range testDimensionsDeviceNameAndPoolData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.bbDims), func(t *testing.T) {
 			t.Parallel()
 			gotSchedukeDims, gotDeviceName, gotPool := dimensionsDeviceNameAndPool(tt.bbDims)
@@ -362,7 +357,6 @@ var testCompressAndEncodeBBReqData = []struct {
 func TestCompressAndEncodeBBReq(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testCompressAndEncodeBBReqData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.src), func(t *testing.T) {
 			t.Parallel()
 			gotBuildStr, err := compressAndEncodeBBReq(tt.src)
@@ -466,7 +460,6 @@ func TestRespolvePoolName(t *testing.T) {
 		schedukepb.SwarmingDimensions{},
 		schedukepb.TaskRequestEvent{})
 	for _, tt := range testResolvePoolsData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.req), func(t *testing.T) {
 			t.Parallel()
 			resolvePool(tt.req)

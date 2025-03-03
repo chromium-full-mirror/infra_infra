@@ -59,7 +59,6 @@ func TestValidateFaft(t *testing.T) {
 	t.Parallel()
 	for _, uc := range validateFaftUseCases {
 		ctx := context.Background()
-		uc := uc
 		var r Reader
 		r.dld = fakeDownloader
 		r.exst = fakeExistenceChecker

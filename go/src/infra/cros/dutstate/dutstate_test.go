@@ -146,7 +146,6 @@ func TestConvertToUFSState(t *testing.T) {
 		},
 	}
 	for _, tc := range testcases {
-		tc := tc
 		t.Run(string(tc.in), func(t *testing.T) {
 			t.Parallel()
 			got := ConvertToUFSState(tc.in)
@@ -177,7 +176,6 @@ func TestConvertFromUFSState(t *testing.T) {
 		},
 	}
 	for _, tc := range testcases {
-		tc := tc
 		t.Run(tc.in.String(), func(t *testing.T) {
 			t.Parallel()
 			got := ConvertFromUFSState(tc.in)
@@ -216,7 +214,6 @@ func TestStateString(t *testing.T) {
 		},
 	}
 	for _, tc := range testcases {
-		tc := tc
 		t.Run(tc.in.String(), func(t *testing.T) {
 			t.Parallel()
 			got := tc.in.String()

@@ -63,7 +63,6 @@ func TestStreamNamespaceInterceptor(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			// This simply sends the *outgoing* context (what we forward to
 			// UFS) to the stream.

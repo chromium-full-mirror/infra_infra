@@ -144,7 +144,6 @@ func TestValidate(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	for _, c := range testValidateCases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			// t.Parallel() Test cannot be parallel because it modifies a global variable.
 			execsExist := func(string) bool {
@@ -264,7 +263,6 @@ var cycleTestCases = []struct {
 func TestVerifyPlanAcyclic(t *testing.T) {
 	t.Parallel()
 	for _, tt := range cycleTestCases {
-		tt := tt
 		t.Run(tt.testName, func(t *testing.T) {
 			t.Parallel()
 			// Assume "A" as the critical action.
@@ -330,7 +328,6 @@ var createMissingActionsCases = []struct {
 func TestCreateMissingActions(t *testing.T) {
 	t.Parallel()
 	for _, tt := range createMissingActionsCases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			createMissingActions(tt.inPlan, tt.inActions)

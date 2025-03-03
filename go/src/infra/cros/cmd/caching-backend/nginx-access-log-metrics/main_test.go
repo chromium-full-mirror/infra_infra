@@ -55,7 +55,6 @@ func TestParseLine(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
 			extraIgnoredPaths = []string{"/download/download-test.txt"}

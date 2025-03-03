@@ -68,7 +68,6 @@ var testSchedukeParamsData = []struct {
 func TestSchedukeParams(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testSchedukeParamsData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%v/%v/%v)", tt.taskStateIDs, tt.users, tt.deviceNames), func(t *testing.T) {
 			t.Parallel()
 			gotParam := schedukeParams(tt.taskStateIDs, tt.users, tt.deviceNames)

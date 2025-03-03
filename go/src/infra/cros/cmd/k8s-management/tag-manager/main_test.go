@@ -52,7 +52,6 @@ func TestAppConfigLatestTagOnly(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -151,9 +150,7 @@ func TestAppConfigCanaryAndProd(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-
 			r := &fakeRepo{tagsList: tc.tagsList}
 			c := newAppConfig(`^official-\d{1,2}$`, latestOfficialPolicy, canaryMaxDistancePolicy, prodMaxDistancePolicy)
 			err := c.apply(r)

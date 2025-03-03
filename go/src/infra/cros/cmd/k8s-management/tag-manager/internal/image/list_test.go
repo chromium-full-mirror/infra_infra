@@ -57,7 +57,6 @@ func TestNewestTag(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			l := NewList("name", genManifests(tc.list))
@@ -153,7 +152,6 @@ func TestTraverseToOlder(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			var gotTags []string
@@ -209,7 +207,6 @@ func TestTraverseToNewer(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			var gotTags []string
@@ -279,7 +276,6 @@ func TestPutTag(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			l := NewList("name", genManifests(tc.tagsList))
 			oldDigest, ok := l.TagToDigest[tc.tagToMove]
@@ -335,7 +331,6 @@ func TestPutTagErrors(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			l := NewList("name", genManifests(tc.tagsList))
 			if err := l.PutTag(tc.tagToMove, tc.target); err == nil {

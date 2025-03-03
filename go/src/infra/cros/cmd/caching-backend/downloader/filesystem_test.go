@@ -24,7 +24,6 @@ func TestMkfsHandlerBadRequests(t *testing.T) {
 	}
 	gsa := &archiveServer{}
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			req := httptest.NewRequest("GET", tc.url, nil)

@@ -54,7 +54,6 @@ var testSendRequestWithRetriesData = []struct {
 func TestSendRequestWithRetries(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testSendRequestWithRetriesData {
-		tt := tt
 		t.Run(fmt.Sprintf("%v", tt.client), func(t *testing.T) {
 			t.Parallel()
 			gotResp, err := sendHTTPRequestWithRetries(tt.client, nil, false)

@@ -96,7 +96,6 @@ func (c *Client) CreateRemoteBranchesAPI(authedClient *http.Client, branches []G
 	var createCount, readOnlyCount int64
 	for _, b := range branches {
 		<-throttle
-		b := b
 		g.Go(func() error {
 			err := func() error {
 				if skipRetries {
