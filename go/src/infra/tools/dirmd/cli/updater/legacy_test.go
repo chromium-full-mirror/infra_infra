@@ -22,6 +22,9 @@ import (
 func TestLegacy(t *testing.T) {
 	t.Parallel()
 
+	// TODO(gregorynisbet): Rewrite this test.
+	t.Skip("this test fails if you move .git to .git2 locally, so it must be doing something wrong")
+
 	ftt.Run(`Legacy`, t, func(t *ftt.Test) {
 		ctx := context.Background()
 		m, err := dirmd.ReadMapping(ctx, dirmdpb.MappingForm_FULL, false, "testdata/root")
