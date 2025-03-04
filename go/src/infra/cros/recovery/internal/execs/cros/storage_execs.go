@@ -145,6 +145,9 @@ func updateStorageTypeToInvExec(ctx context.Context, info *execs.ExecInfo) error
 		return errors.Reason("wrong storage type: storage type is empty").Err()
 	}
 	newStorageType := crosLabAPI.StorageType_UNRECOGNIZED
+	if strings.Contains(storageTypeStr, "MMC") {
+		storageTypeStr = "MMC"
+	}
 	if k, ok := crosLabAPI.StorageType_value[storageTypeStr]; ok {
 		newStorageType = crosLabAPI.StorageType(k)
 	}
