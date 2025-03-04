@@ -24,8 +24,7 @@ func Test_extractHTTPResponseCodeFromCurlErr(t *testing.T) {
 		"":                    0,
 	}
 	for k, v := range testCases {
-		errAnnotator := errors.Reason("http code extractor test")
-		errAnnotator.Tag(errors.TagValue{Key: components.StdErrTag, Value: k})
-		assert.IntsEqual(t, extractHTTPResponseCodeFromCurlErr(errAnnotator.Err()), v)
+		err := components.StdErrTag.ApplyValue(errors.New("http code extractor test"), k)
+		assert.IntsEqual(t, extractHTTPResponseCodeFromCurlErr(err), v)
 	}
 }

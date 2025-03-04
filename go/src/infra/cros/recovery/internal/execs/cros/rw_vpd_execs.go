@@ -70,20 +70,15 @@ func canListRWVPDKeysExec(ctx context.Context, info *execs.ExecInfo) error {
 	// We only care about error codes 11 and 12 following the logic in
 	// legacy repair.
 	if err != nil {
-		errorCode, ok := errors.TagValueIn(execs.ErrCodeTag, err)
+		errorCode, ok := execs.ErrCodeTag.Value(err)
 		log.Debugf(ctx, "Can List RW VPD Keys: code, %v, Type: %T", errorCode, errorCode)
 		if !ok {
 			return errors.Annotate(err, "can list rw pd keys: cannot find error code.").Err()
 		}
-		// When an error occurs within the runner, the exit code is
-		// stored as a value of type int32. When we extract it from
-		// the error tag interface, a comparison with literal 11
-		// (which is of type int) fails. Hence, we need to create an
-		// int32 value for the literals for a meaningful comparison.
-		if errorCode == int32(11) {
+		if errorCode == 11 {
 			log.Debugf(ctx, "Can List RW VPD Keys: Invalid VPD.")
 			return errors.Annotate(err, "can list rw vpd keys").Err()
-		} else if errorCode == int32(12) {
+		} else if errorCode == 12 {
 			log.Debugf(ctx, "Can List RW VPD Keys: Error when decoding VPD blob.")
 			return errors.Annotate(err, "can list rw vpd keys").Err()
 		}

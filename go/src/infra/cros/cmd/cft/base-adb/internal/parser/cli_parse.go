@@ -24,18 +24,13 @@ type Runner interface {
 }
 
 var (
-	// ExitCodeTag provides exit code value.
-	ExitCodeTag = errors.NewTagKey("exit_code")
-)
-
-var (
 	ServiceName     = "base-adb"
 	defaultLogDir   = fmt.Sprintf("/tmp/%s/", ServiceName)
 	defaultPort     = 80
 	helpDescription = fmt.Sprintf(`base-adb tool
 The tool is allow to communicate with adb on the host.
 Commands:
-  cli		Execution RPCs as CLI command. Not implemented yet! 
+  cli		Execution RPCs as CLI command. Not implemented yet!
   server	Starting server and allow work with server by RPC calls. Mostly used for tests.
   		usage: base-adb server -device {device_name} [-log-path /tmp/%s/] [-port %d]
   version	Print version of lib.

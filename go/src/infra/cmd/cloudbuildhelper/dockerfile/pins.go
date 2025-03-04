@@ -15,6 +15,7 @@ import (
 
 	"go.chromium.org/luci/common/data/stringset"
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/errors/errtag"
 	"go.chromium.org/luci/common/sync/parallel"
 )
 
@@ -130,7 +131,6 @@ func (p *Pins) Add(pin Pin) error {
 func (p *Pins) Visit(cb func(p *Pin) error) error {
 	return parallel.WorkPool(16, func(tasks chan<- func() error) {
 		for i := range p.Pins {
-			i := i
 			tasks <- func() error {
 				pin := p.Pins[i]
 				key := pin.ImageRef()
@@ -200,7 +200,7 @@ func (p *Pins) Resolver() Resolver {
 	return m
 }
 
-var missingPinTag = errors.NewTagKey("dockerfile.MissingPin")
+var missingPinTag = errtag.Make("dockerfile.MissingPin", (*Pin)(nil))
 
 type pinsResolver map[string]string
 
@@ -218,10 +218,7 @@ func (p pinsResolver) ResolveTag(image, tag string) (digest string, err error) {
 	if !ok {
 		// Note: the outer error wrapper usually has enough context already, adding
 		// 'image' and 'tag' values here causes duplication.
-		return "", errors.Reason("no such pinned <image>:<tag> combination in pins YAML").Tag(errors.TagValue{
-			Key:   missingPinTag,
-			Value: &pin,
-		}).Err()
+		return "", missingPinTag.ApplyValue(errors.New("no such pinned <image>:<tag> combination in pins YAML"), &pin)
 	}
 	return d, nil
 }
@@ -230,8 +227,8 @@ func (p pinsResolver) ResolveTag(image, tag string) (digest string, err error) {
 //
 // It may be wrapped. Returns a pin that ResolveTag was unable to resolve.
 func IsMissingPinErr(err error) *Pin {
-	if pin, ok := errors.TagValueIn(missingPinTag, err); ok {
-		return pin.(*Pin)
+	if pin, ok := missingPinTag.Value(err); ok {
+		return pin
 	}
 	return nil
 }

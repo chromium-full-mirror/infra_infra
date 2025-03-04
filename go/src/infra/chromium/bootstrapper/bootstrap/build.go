@@ -497,7 +497,7 @@ This should resolve once the CL that adds this builder rolls into %s/%s
 If you believe you are seeing this message in error, please contact a trooper
 This build will sleep for 10 minutes to avoid the builder cycling too quickly`,
 			propsFile, config.configCommit, config.inputCommit.Host, config.inputCommit.Project).Err()
-		err = SleepBeforeExiting.With(10 * time.Minute).Apply(err)
+		err = SleepBeforeExiting.ApplyValue(err, 10*time.Minute)
 		return err
 	})
 	if err != nil {

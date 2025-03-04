@@ -25,15 +25,11 @@ func RebootECByEcTool(ctx context.Context, r components.Runner) error {
 		output, err := r(ctx, 5*time.Second, fmtCmd)
 		log.Debugf(ctx, "RebootECByEcTool EC Reboot command help output : %s", output)
 		if err != nil {
-			errorCode, ok := errors.TagValueIn(components.ErrCodeTag, err)
+			errorCode, ok := components.ErrCodeTag.Value(err)
 			if !ok {
 				return errors.Annotate(err, "RebootECByEcTool: cannot find error code").Err()
 			}
-			// The errorCode value stored in the empty interface in the
-			// error tag is of type int32. To compare it with an integer
-			// literal, we need to convert the literal into int32 value,
-			// otherwise the comparison will always return 'false'.
-			if errorCode == int32(1) {
+			if errorCode == 1 {
 				continue
 			}
 		}

@@ -5,17 +5,16 @@
 package components
 
 import (
-	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/errors/errtag"
 )
 
 var (
 	// ErrCodeTag is the key value pair for storing the error code for the linux command.
-	ErrCodeTag = errors.NewTagKey("error_code")
+	ErrCodeTag = errtag.Make("error_code", int32(0))
 
 	// StdErrTag is the key value pair for storing the error code
 	// associated with the standard error
-	StdErrTag = errors.NewTagKey("std_error")
+	StdErrTag = errtag.Make("std_error", "")
 
 	// 127: linux command line error of command not found.
 	SSHErrorCLINotFound = errtag.Make("ssh_error_cli_not_found", true)

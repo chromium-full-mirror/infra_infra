@@ -524,7 +524,7 @@ func TestBootstrapMain(t *testing.T) {
 
 		t.Run("returns sleep duration for sleep tagged error", func(t *ftt.Test) {
 			bootstrapErr := errors.New("test error")
-			bootstrapErr = bootstrap.SleepBeforeExiting.With(20 * time.Second).Apply(bootstrapErr)
+			bootstrapErr = bootstrap.SleepBeforeExiting.ApplyValue(bootstrapErr, 20*time.Second)
 			performBootstrap := testBootstrapFn(bootstrapErr)
 
 			sleepDuration, err := bootstrapMain(ctx, getOptions, performBootstrap, execute, getStream)

@@ -48,11 +48,10 @@ func CurlURL(ctx context.Context, run components.Runner, timeout time.Duration, 
 // curl error object.
 func extractHTTPResponseCodeFromCurlErr(err error) int {
 	var httpResponseCode int
-	stdErr, ok := errors.TagValueIn(components.StdErrTag, err)
+	stdErrStr, ok := components.StdErrTag.Value(err)
 	if !ok {
 		return 0
 	}
-	stdErrStr := stdErr.(string)
 	re := regexp.MustCompile("(returned error: )([0-9]*)")
 	matchParts := re.FindAllStringSubmatch(stdErrStr, -1)
 	if len(matchParts) == 1 {

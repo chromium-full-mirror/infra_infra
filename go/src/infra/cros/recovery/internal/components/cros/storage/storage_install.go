@@ -69,12 +69,11 @@ func StorageIssuesExist(ctx context.Context, err error) tlw.DutStateReason {
 	if err == nil {
 		return tlw.DutStateReasonEmpty
 	}
-	stdErr, ok := errors.TagValueIn(components.StdErrTag, err)
+	stdErrStr, ok := components.StdErrTag.Value(err)
 	if !ok {
 		log.Debugf(ctx, "Check storage error: stderr not found.")
 		return tlw.DutStateReasonEmpty
 	}
-	stdErrStr := stdErr.(string)
 	// Check if the error message contains any message indicating a problem with the storage.
 	for storageError, reason := range storageErrors {
 		if strings.Contains(stdErrStr, storageError) {

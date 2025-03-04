@@ -274,8 +274,7 @@ func bootstrapMain(ctx context.Context, getOpts getOptionsFn, performBootstrap b
 		logging.Errorf(ctx, err.Error())
 		handleBootstrapError(ctx, err, getStream)
 
-		sleepDuration, _ := bootstrap.SleepBeforeExiting.In(err)
-		return sleepDuration, err
+		return bootstrap.SleepBeforeExiting.ValueOrDefault(err), err
 	}
 
 	return 0, nil

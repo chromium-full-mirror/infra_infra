@@ -1046,7 +1046,7 @@ func TestGetBootstrapConfig(t *testing.T) {
 
 					assert.That(t, err, should.ErrLike(`dependency properties file infra/config/fake-bucket/fake-builder/properties.json does not exist in pinned revision chromium.googlesource.com/dependency/+/dependency-dependency-head
 This should resolve once the CL that adds this builder rolls into chromium.googlesource.com/top/level`))
-					sleepDuration, errHasSleepTag := SleepBeforeExiting.In(err)
+					sleepDuration, errHasSleepTag := SleepBeforeExiting.Value(err)
 					assert.That(t, errHasSleepTag, should.BeTrue)
 					assert.That(t, sleepDuration, should.Equal(10*time.Minute))
 					assert.Loosely(t, config, should.BeNil)
@@ -1505,7 +1505,7 @@ This should resolve once the CL that adds this builder rolls into chromium.googl
 
 					assert.Loosely(t, err, should.ErrLike(`dependency properties file infra/config/fake-bucket/fake-builder/properties.json does not exist in pinned revision chromium.googlesource.com/dependency/+/dependency-revision
 This should resolve once the CL that adds this builder rolls into chromium.googlesource.com/top/level`))
-					sleepDuration, errHasSleepTag := SleepBeforeExiting.In(err)
+					sleepDuration, errHasSleepTag := SleepBeforeExiting.Value(err)
 					assert.That(t, errHasSleepTag, should.BeTrue)
 					assert.That(t, sleepDuration, should.Equal(10*time.Minute))
 					assert.Loosely(t, config, should.BeNil)
