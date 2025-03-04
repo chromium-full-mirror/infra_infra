@@ -57,7 +57,6 @@ func TestModule(t *testing.T) {
 			`luci_gae_vars: {"zzz": {123: "zzz"}}`,
 		}
 		for _, body := range cases {
-			body := body
 			t.Run(fmt.Sprintf("Case %q", body), func(t *ftt.Test) {
 				m, err := parseYAML([]byte(body))
 				assert.Loosely(t, err, should.BeNil)

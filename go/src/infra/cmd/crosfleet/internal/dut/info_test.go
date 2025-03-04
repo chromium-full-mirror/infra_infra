@@ -64,7 +64,6 @@ SERVO_SERIAL=sample-serial`,
 func TestDutInfoAsBashVariables(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testDutInfoAsBashVariablesData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.wantBashVars), func(t *testing.T) {
 			t.Parallel()
 			gotBashVars := dutInfoAsBashVariables(tt.info)

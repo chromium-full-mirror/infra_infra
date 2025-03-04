@@ -73,7 +73,6 @@ func MainImpl(ctx context.Context, args *Args, authenticator *auth.Authenticator
 
 	eg, ctx := errgroup.WithContext(ctx)
 	for _, source := range oracle.AllGitSources() {
-		source := source
 
 		eg.Go(func() error {
 			vpythons, err := oracle.WalkDirectory(source.Path, "*.vpython3", "*.vpython")
@@ -82,8 +81,6 @@ func MainImpl(ctx context.Context, args *Args, authenticator *auth.Authenticator
 			}
 
 			for _, vpySpec := range vpythons {
-				vpySpec := vpySpec
-
 				eg.Go(func() error {
 					return oracle.PinVpythonSpec(vpySpec)
 				})

@@ -330,7 +330,6 @@ func TestAssignNewDUTs(t *testing.T) {
 		},
 	}
 	for _, c := range cases {
-		c := c
 		t.Run(c.desc, func(t *testing.T) {
 			t.Parallel()
 			ctx := gaetesting.TestingContextWithAppID("go-test")
@@ -394,7 +393,6 @@ func TestFreeInvalidDUTs(t *testing.T) {
 		},
 	}
 	for _, c := range cases {
-		c := c
 		t.Run(c.desc, func(t *testing.T) {
 			t.Parallel()
 			ctx := gaetesting.TestingContextWithAppID("go-test")
@@ -502,7 +500,6 @@ func TestPruneDrainedDUTs(t *testing.T) {
 		},
 	}
 	for _, c := range cases {
-		c := c
 		t.Run(c.desc, func(t *testing.T) {
 			t.Parallel()
 			ctx := gaetesting.TestingContextWithAppID("go-test")

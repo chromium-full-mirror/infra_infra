@@ -85,7 +85,6 @@ var testTestPlanForTestsData = []struct {
 func TestTestPlanForTests(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testTestPlanForTestsData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s/%s/%s)", tt.testArgs, tt.testHarness, tt.testNames), func(t *testing.T) {
 			t.Parallel()
 			gotTestPlan := testPlanForTests(tt.testArgs, tt.testHarness, tt.testNames, 0)

@@ -181,7 +181,6 @@ func gatherProjectSources(ctx context.Context, fileName string) ([]source, error
 func processSources(ctx context.Context, sources []source, cb func(ctx context.Context, source source, raw []byte) error) error {
 	return parallel.FanOutIn(func(work chan<- func() error) {
 		for _, source := range sources {
-			source := source
 			work <- func() error {
 				var blob []byte
 				err := cfgclient.Get(ctx, source.cfgSet, source.path, cfgclient.Bytes(&blob), nil)

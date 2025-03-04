@@ -495,7 +495,6 @@ func writeNodes(ctx context.Context, bytes []byte, poolID string, generation int
 	start := time.Now()
 	err = parallel.WorkPool(workers, func(c chan<- func() error) {
 		for _, node := range nodes {
-			node := node
 			c <- func() error {
 				return datastore.Put(ctx, node)
 			}
@@ -519,7 +518,6 @@ func loadNodes(ctx context.Context, nodeIDs []string) (s *blob.QSchedulerPoolSta
 	}
 	err = parallel.WorkPool(10, func(c chan<- func() error) {
 		for _, node := range nodes {
-			node := node
 			c <- func() error {
 				return datastore.Get(ctx, node)
 			}

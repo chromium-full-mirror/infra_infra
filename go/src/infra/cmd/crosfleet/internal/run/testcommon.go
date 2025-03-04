@@ -554,7 +554,6 @@ func (l *ctpRunLauncher) confirmCTPBuildsAsync(ctx context.Context, buildLaunchL
 	waitGroup := sync.WaitGroup{}
 	mutex := sync.Mutex{}
 	for _, buildLaunch := range buildLaunchList.Launches {
-		buildLaunch := buildLaunch
 		// Only wait for builds that were already scheduled without issues.
 		if buildLaunch.Build == nil || buildLaunch.Build.GetId() == 0 || buildLaunch.BuildError != "" {
 			continue

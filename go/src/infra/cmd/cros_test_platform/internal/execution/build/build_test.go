@@ -47,7 +47,6 @@ var testSummaryData = []struct {
 func TestSummary(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testSummaryData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.wantSummary), func(t *testing.T) {
 			t.Parallel()
 			updater := &InvocationStepUpdater{tasks: tt.tasks}
@@ -90,7 +89,6 @@ var testNotifyNewTaskData = []struct {
 func TestNotifyNewTask(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testNotifyNewTaskData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.wantStepSummaryMarkdown), func(t *testing.T) {
 			t.Parallel()
 			updater := &InvocationStepUpdater{

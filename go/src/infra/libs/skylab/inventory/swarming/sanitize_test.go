@@ -80,7 +80,6 @@ func TestSanitize(t *testing.T) {
 		},
 	}
 	for _, c := range cases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			dims := copyDims(c.input)
@@ -118,7 +117,6 @@ func TestDeleteValue(t *testing.T) {
 		{name: "end", input: []string{"1", "2", "3"}, i: 2, want: []string{"1", "2"}},
 	}
 	for _, c := range cases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			s := make([]string, len(c.input))
@@ -144,7 +142,6 @@ func TestIsDupe(t *testing.T) {
 		{name: "start", input: []string{"2", "2", "2"}, i: 0, want: false},
 	}
 	for _, c := range cases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			got := isDupe(c.input, c.i)

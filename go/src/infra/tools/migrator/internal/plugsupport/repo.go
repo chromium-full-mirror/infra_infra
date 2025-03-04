@@ -136,7 +136,6 @@ func visitReposInParallel(ctx context.Context, projectDir ProjectDir, dumpPath s
 
 	parallel.WorkPool(32, func(ch chan<- func() error) {
 		for _, r := range repos {
-			r := r
 			ch <- func() error {
 				ctx := logging.SetField(ctx, "checkout", r.checkoutID)
 				cb(ctx, r)

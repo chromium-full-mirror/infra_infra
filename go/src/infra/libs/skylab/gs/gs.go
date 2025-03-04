@@ -116,8 +116,6 @@ func (w *DirWriter) WriteDir(ctx context.Context, srcDir string, dstDir gs.Path)
 	var terr error
 	err := parallel.WorkPool(w.maxConcurrentUploads, func(items chan<- func() error) {
 		for _, f := range files {
-			// Create a loop-local variable for capture in the lambda.
-			f := f
 			item := func() error {
 				// Check the context timeout when trying to upload.
 				select {

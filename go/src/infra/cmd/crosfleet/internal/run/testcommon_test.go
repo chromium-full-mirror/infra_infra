@@ -212,7 +212,6 @@ missing test arg`,
 func TestValidateArgs(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testValidateArgsData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.wantValidationErrString), func(t *testing.T) {
 			t.Parallel()
 			var flagSet flag.FlagSet
@@ -260,7 +259,6 @@ var testBuildTagsForCTPData = []struct {
 func TestBuildTagsForCTPBuilds(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testBuildTagsForCTPData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.wantTags), func(t *testing.T) {
 			t.Parallel()
 			gotTags := tt.testCommonFlags.buildTagsForCTPBuilds("suite", "sample-suite")
@@ -301,7 +299,6 @@ var testCommonTagsData = []struct {
 func TestCommonTagsForAllBuilds(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testCommonTagsData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.wantTags), func(t *testing.T) {
 			t.Parallel()
 			gotTags := tt.testCommonFlags.commonTagsForAllBuilds("suite", "sample-suite")
@@ -383,7 +380,6 @@ var testTestOrSuiteNamesLabelData = []struct {
 func TestTestOrSuiteNamesLabel(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testTestOrSuiteNamesLabelData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.wantLabel), func(t *testing.T) {
 			t.Parallel()
 			gotLabel := testOrSuiteNamesTag(tt.names)
@@ -571,10 +567,8 @@ var testValidatePublicChromiumOnChromeOsData = []struct {
 func TestValidatePublicChromiumTest(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testValidatePublicChromiumOnChromeOsData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.wantValidationErrString), func(t *testing.T) {
 			t.Parallel()
-
 			ctx := context.Background()
 			if tt.ufsError != "" {
 				ctx = context.WithValue(ctx, "status", tt.ufsError)
@@ -690,7 +684,6 @@ var testGetCustomCTPBuilderData = []struct {
 func TestGetCTPBuilder(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testGetCustomCTPBuilderData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.wantCtpBuilder), func(t *testing.T) {
 			t.Parallel()
 			gotCtpBuilder := tt.testCommonFlags.getCTPBuilder(tt.Environment)

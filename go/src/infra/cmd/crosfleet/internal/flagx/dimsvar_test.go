@@ -30,7 +30,6 @@ var testSplitKeyValData = []struct {
 func TestSplitKeyVal(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testSplitKeyValData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.in), func(t *testing.T) {
 			t.Parallel()
 			want := []string{tt.key, tt.val, tt.err}
@@ -98,7 +97,6 @@ var testDimsVarData = []struct {
 func TestDimsVar(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testDimsVarData {
-		tt := tt
 		t.Run(fmt.Sprintf("(add %s to %v)", tt.keyvals, tt.startingDims), func(t *testing.T) {
 			t.Parallel()
 			m := tt.startingDims

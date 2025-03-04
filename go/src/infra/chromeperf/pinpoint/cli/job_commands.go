@@ -90,7 +90,6 @@ func waitAndDownloadJobList(br *baseCommandRun,
 	jobs []*proto.Job) error {
 	err := parallel.WorkPool(MaxConcurrency, func(workC chan<- func() error) {
 		for _, job := range jobs {
-			job := job
 			workC <- func() error {
 				return waitAndDownloadJob(br, wj, drm, dam, aem, ctx, o, c, job)
 			}

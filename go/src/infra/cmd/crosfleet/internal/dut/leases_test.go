@@ -81,7 +81,6 @@ MINS_REMAINING=10`,
 func TestLeaseInfoAsBashVariables(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testLeaseInfoAsBashVariablesData {
-		tt := tt
 		fakeLeaseBBClient := buildbucket.NewClientForTesting(site.Prod.DUTLeaserBuilder)
 		t.Run(fmt.Sprintf("(%s)", tt.wantBashVars), func(t *testing.T) {
 			t.Parallel()
@@ -144,7 +143,6 @@ var testGetRemainingMinsData = []struct {
 func TestGetRemainingMins(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testGetRemainingMinsData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%d)", tt.wantRemainingMins), func(t *testing.T) {
 			t.Parallel()
 			gotRemainingMins := getRemainingMins(tt.build)

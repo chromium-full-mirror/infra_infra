@@ -70,7 +70,6 @@ func TestRandRange(t *testing.T) {
 		{"0", 0, 2, -2},
 	}
 	for _, c := range cases {
-		c := c
 		t.Run(c.desc, func(t *testing.T) {
 			t.Parallel()
 			got := randRange(stubRander{c.v}, c.x)

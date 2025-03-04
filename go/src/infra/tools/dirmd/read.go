@@ -120,8 +120,6 @@ func ReadMapping(ctx context.Context, form dirmdpb.MappingForm, onlyDirmd bool, 
 	// and mixins they import.
 	var wgReadUpMissing sync.WaitGroup
 	for _, repo := range repos {
-		repo := repo
-
 		relRepoPath, err := filepath.Rel(r.Root, repo.absRoot)
 		if err != nil {
 			return nil, err
@@ -129,7 +127,6 @@ func ReadMapping(ctx context.Context, form dirmdpb.MappingForm, onlyDirmd bool, 
 		r.Repos[filepath.ToSlash(relRepoPath)] = repo.Repo
 
 		for _, dir := range repo.dirs {
-			dir := dir
 			wgReadUpMissing.Add(1)
 			r.eg.Go(func() error {
 				defer wgReadUpMissing.Done()
@@ -146,11 +143,9 @@ func ReadMapping(ctx context.Context, form dirmdpb.MappingForm, onlyDirmd bool, 
 	// If the form isn't sparse, then also read the descendants.
 	if form != dirmdpb.MappingForm_SPARSE {
 		for _, repo := range repos {
-			repo := repo
 			// Remove redundant dirs to avoid reading the same files multiple times.
 			repo.dirs = removeRedundantDirs(repo.dirs...)
 			for _, dir := range repo.dirs {
-				dir := dir
 				r.eg.Go(func() error {
 					err := r.ReadGitFiles(ctx, repo, dir, form == dirmdpb.MappingForm_FULL, onlyDirmd)
 					return errors.Annotate(err, "failed to process %q", dir).Err()
@@ -235,8 +230,6 @@ func dirsByRepoRoot(ctx context.Context, dirs []string) (map[string]*repoInfo, e
 	ret := make(map[string]*repoInfo, len(dirs))
 	eg, ctx := errgroup.WithContext(ctx)
 	for _, dir := range dirs {
-		dir := dir
-
 		// Check if dir is a symlink.
 		p, err := filepath.EvalSymlinks(dir)
 		if err != nil {
@@ -368,7 +361,6 @@ func (r *mappingReader) ReadGitFiles(ctx context.Context, repo *repoInfo, absTre
 
 func (r *mappingReader) handleMixins(repo *repoInfo, absDir string, mixins []string) error {
 	for _, mx := range mixins {
-		mx := mx
 		if strings.Contains(mx, "\\") {
 			return errors.Reason(
 				"%s: mixin path %s contains back slashes; only forward slashes are allowed",

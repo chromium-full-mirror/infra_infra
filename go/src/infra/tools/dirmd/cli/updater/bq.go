@@ -223,7 +223,6 @@ func writeBQRows(ctx context.Context, ins inserter, batchC chan []*bq.Row) error
 	defer eg.Wait()
 
 	for rows := range batchC {
-		rows := rows
 		eg.Go(func() error {
 			err := retry.Retry(ctx, transient.Only(retry.Default), func() error {
 				err := ins.Put(ctx, rows)

@@ -352,8 +352,6 @@ func TestVirtualEnv(t *testing.T) {
 		{"python27", python27},
 		{"python3", python3},
 	} {
-		tc := tc
-
 		t.Run(fmt.Sprintf(`Testing Virtualenv for: %s`, tc.name), func(t *testing.T) {
 			testVirtualEnvWith(t, tc.ri)
 		})

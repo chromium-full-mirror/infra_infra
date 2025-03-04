@@ -243,7 +243,6 @@ func doInsert(ctx context.Context, stderr io.Writer, opts *uploadOpts, inserter 
 	eg, egCtx := errgroup.WithContext(ctx)
 	eg.SetLimit(maxConcurrentInserts)
 	for i := 0; i < len(rows); i += opts.batchSize {
-		i := i
 		eg.Go(func() error {
 			end := i + opts.batchSize
 			if end > len(rows) {

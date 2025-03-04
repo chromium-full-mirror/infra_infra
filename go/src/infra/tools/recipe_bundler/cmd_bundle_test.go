@@ -30,7 +30,6 @@ func TestFlagParse(t *testing.T) {
 
 	ftt.Run(`Test bad flag parsing`, t, func(t *ftt.Test) {
 		for _, tc := range cases {
-			tc := tc
 			t.Run(tc.name, func(t *ftt.Test) {
 				assert.Loosely(t, tc.input.parseFlags(), should.ErrLike(tc.expect))
 			})
@@ -64,7 +63,6 @@ func TestRepoInputParsing(t *testing.T) {
 
 	ftt.Run(`Test bad parseRepoInput`, t, func(t *ftt.Test) {
 		for _, tc := range badCases {
-			tc := tc
 			t.Run(tc.name, func(t *ftt.Test) {
 				_, err := parseRepoInput(tc.input)
 				assert.Loosely(t, err, should.ErrLike(tc.expect))
@@ -100,7 +98,6 @@ func TestRepoInputParsing(t *testing.T) {
 
 	ftt.Run(`Test good parseRepoInput`, t, func(t *ftt.Test) {
 		for _, tc := range goodCases {
-			tc := tc
 			t.Run(tc.name, func(t *ftt.Test) {
 				ret, err := parseRepoInput(tc.input)
 				assert.Loosely(t, err, should.BeNil)

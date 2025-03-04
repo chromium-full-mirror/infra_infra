@@ -57,7 +57,6 @@ duration cannot exceed 1440 minutes (24 hours)`,
 func TestValidate(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testValidateData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.wantValidationErrString), func(t *testing.T) {
 			t.Parallel()
 			gotValidationErr := tt.leaseFlags.validate(&flag.FlagSet{})
@@ -161,7 +160,6 @@ var testBotDimsAndBuildTagsData = []struct {
 func TestBotDimsAndBuildTagsData(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testBotDimsAndBuildTagsData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s, %s)", tt.wantDims, tt.wantTags), func(t *testing.T) {
 			gotDims, gotTags, err := botDimsAndBuildTags(tt.leaseFlags)
 			if err != nil {
@@ -198,7 +196,6 @@ var testLeaseStartStepName = []struct {
 func TestLeaseStartStepName(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testLeaseStartStepName {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.wantStepName), func(t *testing.T) {
 			t.Parallel()
 			leaseRun := &leaseRun{}

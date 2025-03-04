@@ -167,7 +167,6 @@ func TestParseVlanTableTest(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -289,7 +288,6 @@ func TestMakeIPv4sInVlan(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			got, err := makeIPv4sInVlan(tt.vlanName, tt.startIP, tt.length, tt.freeStartIP, tt.freeEndIP)
@@ -387,7 +385,6 @@ func TestMakeReservedIPv4sInVlan(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -441,7 +438,6 @@ func TestIPv4Diff(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			dist, err := ipv4Diff(tt.startIPv4, tt.endIPv4)
@@ -527,7 +523,6 @@ func TestFormatIP(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 

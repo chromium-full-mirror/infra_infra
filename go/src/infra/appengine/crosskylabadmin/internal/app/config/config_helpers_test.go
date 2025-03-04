@@ -54,7 +54,6 @@ func TestValidatePattern(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			e := validatePattern(tt.pattern)
@@ -94,7 +93,6 @@ func TestMatches(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			out, e := matches(tt.pattern, tt.hostname)
@@ -149,7 +147,6 @@ func TestComputePermilleData(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			out, e := tt.config.getLastMatch(tt.hostname)

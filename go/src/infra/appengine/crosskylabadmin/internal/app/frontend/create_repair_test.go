@@ -82,8 +82,6 @@ func TestIsDisjoint(t *testing.T) {
 	}
 
 	for i, tt := range cases {
-		i := i
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			expected := tt.out
@@ -123,8 +121,6 @@ func TestRouteRepairTaskImplDUT(t *testing.T) {
 	}
 
 	for i, tt := range cases {
-		i := i
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
@@ -288,8 +284,6 @@ func TestRouteRepairTaskImplLabstation(t *testing.T) {
 	}
 
 	for i, tt := range cases {
-		i := i
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			ctx := context.Background()
@@ -470,8 +464,6 @@ func TestRouteRepairTask(t *testing.T) {
 	}
 
 	for i, tt := range cases {
-		i := i
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			ctx := testingContext()

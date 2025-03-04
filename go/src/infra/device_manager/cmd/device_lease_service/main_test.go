@@ -70,7 +70,6 @@ func TestLeaseDevice(t *testing.T) {
 		}
 
 		for _, tc := range badRequets {
-			tc := tc
 			t.Run(tc.name, func(t *testing.T) {
 				rsp, err := s.LeaseDevice(ctx, &api.LeaseDeviceRequest{
 					IdempotencyKey:     "c80b7379-3594-4299-abf1-6efef198c900",
@@ -120,7 +119,6 @@ func TestLeaseDevice(t *testing.T) {
 		allowedRange := 50
 
 		for _, tc := range testcases {
-			tc := tc
 			t.Run(tc.name, func(t *testing.T) {
 				// Don't parallel the subtests. They depend on each other.
 				if tc.prepareSQL != "" {
@@ -167,7 +165,6 @@ func TestLeaseDevice(t *testing.T) {
 			},
 		}
 		for _, tc := range testcases {
-			tc := tc
 			query := fmt.Sprintf(`select dut_id from "Devices" where is_active=%t and dut_state='DEVICE_STATE_%s' limit 1;`, tc.isActive, tc.state)
 			var dutID string
 			_ = s.ServiceClients.DBClient.Conn.QueryRow(query).Scan(&dutID)

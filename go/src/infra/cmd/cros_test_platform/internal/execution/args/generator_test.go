@@ -351,7 +351,6 @@ var testDimsWithDUTStateData = []struct {
 func TestDimsWithDUTState(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testDimsWithDUTStateData {
-		tt := tt
 		t.Run(fmt.Sprintf("%v", tt.inputDims), func(t *testing.T) {
 			t.Parallel()
 			gotDims := dimsWithDUTState(tt.inputDims)

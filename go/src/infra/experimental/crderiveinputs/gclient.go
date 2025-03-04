@@ -217,7 +217,6 @@ func (e EmbedTools) ParseDEPS(ctx context.Context, oracle *Oracle, solutionRoot,
 	usedGitDeps := stringset.New(len(parsed.GitDeps))
 
 	for subdir, gitdep := range parsed.GitDeps {
-		subdir, gitdep := subdir, gitdep
 		usedGitDeps.Add(subdir)
 
 		eg.Go(func() error {
@@ -230,7 +229,6 @@ func (e EmbedTools) ParseDEPS(ctx context.Context, oracle *Oracle, solutionRoot,
 	}
 
 	for subdir, cipddeps := range parsed.CipdDeps {
-		subdir, cipddeps := subdir, cipddeps
 		eg.Go(func() error {
 			target := subdir
 			if parsed.UseRelativePaths {
@@ -253,7 +251,6 @@ func (e EmbedTools) ParseDEPS(ctx context.Context, oracle *Oracle, solutionRoot,
 			continue
 		}
 
-		subdir := subdir
 		eg.Go(func() error {
 			target := subdir
 			if parsed.UseRelativePaths {
@@ -271,7 +268,6 @@ func (e EmbedTools) ParseDEPS(ctx context.Context, oracle *Oracle, solutionRoot,
 		hookCwd = solutionRoot
 	}
 	for _, hook := range parsed.Hooks {
-		hook := hook
 
 		eg.Go(func() error {
 			for _, hookImpl := range hookImpls {

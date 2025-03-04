@@ -117,7 +117,6 @@ func (d DownloadFromGCS) HandleHook(oracle *Oracle, cwd string, hook *GclientHoo
 				return true, err
 			}
 			for _, targetSha := range listing {
-				targetSha := targetSha
 				eg.Go(func() error {
 					shaContents, err := oracle.ReadFullString(targetSha)
 					if err != nil {

@@ -97,7 +97,6 @@ func TestStipTime(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		c := c
 		t.Run(c.Tag, func(t *testing.T) {
 			t.Parallel()
 			s := stiptime(c.Time)

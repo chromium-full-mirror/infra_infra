@@ -45,7 +45,6 @@ func TestLooksLikeSatlab(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			expected := tt.out
@@ -84,7 +83,6 @@ func TestLooksLikeValidPool(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			expected := tt.out
@@ -123,7 +121,6 @@ func TestNormalizeTextualData(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			expected := tt.out
@@ -191,7 +188,6 @@ func TestLooksLikeFieldMask(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			expected := tt.out
@@ -231,7 +227,6 @@ var testNormalizeBotNameToDeviceNameData = []struct {
 func TestNormalizeBotNameToDeviceName(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testNormalizeBotNameToDeviceNameData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.startingHostname), func(t *testing.T) {
 			t.Parallel()
 			gotCorrectedHostname := NormalizeBotNameToDeviceName(tt.startingHostname)
@@ -270,7 +265,6 @@ func TestRuncateErrorStringSmokeTest(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			expected := tt.output
@@ -295,7 +289,6 @@ func TestTruncateErrorStringAlwaysShort(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(fmt.Sprintf("prefix of length %d", len(tt)), func(t *testing.T) {
 			t.Parallel()
 
@@ -352,7 +345,6 @@ func TestNormalizeServoNameToDeviceName(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			expected := tt.output

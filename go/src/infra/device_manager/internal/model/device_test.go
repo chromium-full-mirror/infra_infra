@@ -100,7 +100,6 @@ func TestGetDeviceByID(t *testing.T) {
 	}
 
 	for _, tt := range validCases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -187,7 +186,6 @@ func TestGetDeviceByID(t *testing.T) {
 	}
 
 	for _, tt := range failedCases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 

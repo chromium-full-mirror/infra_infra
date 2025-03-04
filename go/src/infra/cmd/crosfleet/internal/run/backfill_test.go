@@ -83,7 +83,6 @@ var testBackfillTagsData = []struct {
 func TestBackfillTags(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testBackfillTagsData {
-		tt := tt
 		t.Run(fmt.Sprintf("(%s)", tt.wantTags), func(t *testing.T) {
 			t.Parallel()
 			r := backfillRun{

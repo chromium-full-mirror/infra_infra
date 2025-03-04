@@ -449,7 +449,6 @@ func TestIsVersionSupported2(t *testing.T) {
 		{name: "unsupported", input: "2000", want: false},
 	}
 	for _, c := range cases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			if supported := isVersionSupported2(ctx, c.input, threshold); supported != c.want {

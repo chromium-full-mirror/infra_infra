@@ -68,7 +68,6 @@ func readHistoryRecords(dir string, callback func(entry []byte) error) error {
 
 	return parallel.WorkPool(100, func(work chan<- func() error) {
 		for _, fileName := range files {
-			fileName := fileName
 			work <- func() error {
 				// Open the file.
 				f, err := os.Open(fileName)

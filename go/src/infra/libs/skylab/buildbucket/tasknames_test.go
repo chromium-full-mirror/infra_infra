@@ -52,7 +52,6 @@ var TaskNameToBuilderPerVersionCases = []struct {
 func TestTaskNameToBuilderPerVersion(t *testing.T) {
 	for i, c := range TaskNameToBuilderPerVersionCases {
 		name := fmt.Sprintf("case: %d", i)
-		c := c
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 			got := TaskNameToBuilderNamePerVersion(c.taskName, c.version)

@@ -27,7 +27,6 @@ func TestReadVersionFile(t *testing.T) {
 		{input: "12212121", want: "12212121"},
 	}
 	for _, c := range cases {
-		c := c
 		t.Run(c.input, func(t *testing.T) {
 			t.Parallel()
 			tmpdir, err := os.MkdirTemp("", c.input)

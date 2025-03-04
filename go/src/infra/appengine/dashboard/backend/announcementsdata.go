@@ -169,8 +169,6 @@ func GetAllAnnouncementsPlatforms(c context.Context, announcements []*Announceme
 	annProtos := make([]*dashpb.Announcement, len(announcements))
 	err := parallel.FanOutIn(func(workC chan<- func() error) {
 		for i, ann := range announcements {
-			i := i
-			ann := ann
 			workC <- func() error {
 				platforms, err := ann.getPlatforms(c)
 				if err != nil {

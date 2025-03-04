@@ -86,7 +86,6 @@ func TestParseJSONProto(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			out, e := ParseJSONProto(tt.in, tt.msg)
@@ -129,7 +128,6 @@ func TestSegmentJSONArray(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.in, func(t *testing.T) {
 			out, err := segmentJSONArray([]byte(tt.in))
 			e := errorToString(err)

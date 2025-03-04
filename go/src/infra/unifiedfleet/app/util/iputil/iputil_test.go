@@ -46,7 +46,6 @@ func TestRawIncr(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -92,7 +91,6 @@ func TestPad(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			got := string(pad([]byte(tt.in), tt.n))
@@ -137,7 +135,6 @@ func TestAddIP(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -182,7 +179,6 @@ func TestValidateSameFamily(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			err := ValidateSameFamily(tt.ips...)
@@ -214,7 +210,6 @@ func TestIPDiff(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			got := IPDiff(tt.x, tt.y).String()

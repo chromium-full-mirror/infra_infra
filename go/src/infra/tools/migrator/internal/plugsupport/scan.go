@@ -210,7 +210,6 @@ func (s *scanner) run(ctx context.Context) error {
 	// contexts.
 	parallel.WorkPool(32, func(ch chan<- func() error) {
 		for _, proj := range projs {
-			proj := proj
 			ch <- func() error {
 				proj.scan()
 				return nil
@@ -221,7 +220,6 @@ func (s *scanner) run(ctx context.Context) error {
 	// Visit all checkouts and either fix problems there or clean them up.
 	parallel.WorkPool(16, func(ch chan<- func() error) {
 		for _, checkout := range checkouts {
-			checkout := checkout
 			ch <- func() error {
 				allGood := true
 				for _, proj := range checkout.projs {

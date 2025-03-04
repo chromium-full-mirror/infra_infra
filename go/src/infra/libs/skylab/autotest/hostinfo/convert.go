@@ -41,7 +41,6 @@ func revertDutAttributes(d *inventory.DeviceUnderTest, hi *HostInfo) {
 	c := d.GetCommon()
 	c.Attributes = nil
 	for k, v := range hi.Attributes {
-		k, v := k, v
 		c.Attributes = append(c.Attributes, &inventory.KeyValue{Key: &k, Value: &v})
 	}
 }

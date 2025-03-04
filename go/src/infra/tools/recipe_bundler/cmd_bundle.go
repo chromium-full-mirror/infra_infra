@@ -399,7 +399,6 @@ func (c *cmdBundle) createBundle(ctx context.Context, pkg packageInfo, spec, res
 func (c *cmdBundle) run(ctx context.Context) error {
 	return parallel.FanOutIn(func(ch chan<- func() error) {
 		for repoName, spec := range c.repos {
-			repoName, spec := repoName, spec
 			ch <- func() error {
 				repoDir, bundleDir, err := c.mkRepoDirs(repoName)
 				if err != nil {
@@ -423,7 +422,6 @@ func (c *cmdBundle) run(ctx context.Context) error {
 						}
 
 						for _, resolvedSpec := range resolvedSpecs {
-							specref, resolvedSpec := specref, resolvedSpec
 							chSpec <- func() error {
 								ctx := logging.SetField(ctx, "resolved", resolvedSpec)
 								var pkg packageInfo

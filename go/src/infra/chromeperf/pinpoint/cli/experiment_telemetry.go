@@ -319,11 +319,8 @@ func runBatchJob(e *experimentTelemetryRun,
 
 	err = parallel.WorkPool(MaxScheduleConcurrency, func(workC chan<- func() error) {
 		for _, config := range batch_experiments {
-			config := config
 			for _, bot_config := range config.Configs {
-				bot_config := bot_config
 				for _, story := range config.Stories {
-					story := story
 					workC <- func() error {
 						j, err := scheduleTelemetryJob(e, ctx,
 							c, batch_id, e.initialAttemptCount,

@@ -38,7 +38,6 @@ func TestGetStateDimension(t *testing.T) {
 		}, fleet.DutState_Ready},
 	}
 	for _, c := range cases {
-		c := c
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			got := GetStateDimension(c.input)
@@ -107,7 +106,6 @@ func TestTimeSinceBotTaskN(t *testing.T) {
 		},
 	}
 	for _, c := range cases {
-		c := c
 		t.Run(c.desc, func(t *testing.T) {
 			t.Parallel()
 			got, err := TimeSinceBotTaskN(c.input, now)
@@ -166,7 +164,6 @@ func TestTaskDoneTime(t *testing.T) {
 		},
 	}
 	for _, c := range cases {
-		c := c
 		t.Run(c.desc, func(t *testing.T) {
 			t.Parallel()
 			got, err := TaskDoneTime(c.input)
@@ -294,7 +291,6 @@ func TestConvertToDimensions(t *testing.T) {
 		},
 	}
 	for _, c := range cases {
-		c := c
 		t.Run(c.desc, func(t *testing.T) {
 			t.Parallel()
 			got, err := convertToDimensions(c.in)
@@ -378,7 +374,6 @@ func TestAsPairs(t *testing.T) {
 	}
 
 	for _, tt := range cases {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 			got := asPairs(tt.input)

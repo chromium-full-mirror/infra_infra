@@ -67,7 +67,6 @@ func TestMainFunc(t *testing.T) {
 
 	// Execute each test case in parallel.
 	for _, tc := range testCases {
-		tc := tc
 		if *vpythonTestCase == "" || tc.name == *vpythonTestCase {
 			t.Run(tc.name, func(t *testing.T) {
 				tc.run(t, env.Clone())

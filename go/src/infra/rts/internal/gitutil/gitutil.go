@@ -86,7 +86,6 @@ func EnsureSameRepo(files ...string) (repoDir string, err error) {
 	}
 	err = parallel.WorkPool(workers, func(work chan<- func() error) {
 		for f := range fileSet {
-			f := f
 			work <- func() error {
 				switch fRepo, err := TopLevel(f); {
 				case err != nil:
