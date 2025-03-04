@@ -38,6 +38,7 @@ class PlatformSpecificSettings:
   is_whql: int
   is_dch: int
   file_extension: str
+  driver_regex: re.Pattern[str]
 
 
 def GetPlatformSpecificSettings() -> PlatformSpecificSettings:
@@ -50,7 +51,9 @@ def GetPlatformSpecificSettings() -> PlatformSpecificSettings:
         is_whql=1,
         # Only look for DCH drivers, which are the newer Windows standard.
         is_dch=1,
-        file_extension='.exe')
+        file_extension='.exe',
+        # NVIDIA driver versions are always in the format 123.45 on Windows.
+        driver_regex=re.compile(r'^\d{3}\.\d{2}$'))
   elif _3pp_platform == 'linux-amd64':
     return PlatformSpecificSettings(
         # Linux 64-bit.
@@ -59,7 +62,13 @@ def GetPlatformSpecificSettings() -> PlatformSpecificSettings:
         is_whql=0,
         # DCH is only relevant for Windows.
         is_dch=0,
-        file_extension='.run')
+        file_extension='.run',
+        # Driver versions on Linux can have more than two digits after the
+        # decimal point. Additionally, the version reported via the endpoint
+        # used in this script differs slightly from the version reported on the
+        # NVIDIA website. For example, 570.124.04 on the website is reported as
+        # 570.1240 via the endpoint.
+        driver_regex=re.compile(r'^\d{3}\.\d{2,}$'))
   else:
     raise RuntimeError(f'Unsupported target platform {_3pp_platform}')
 
@@ -131,9 +140,6 @@ def GetDriverCheckUrl() -> str:
           f'&numberOfResults={NUMBER_OF_RESULTS}')
 
 
-# NVIDIA driver versions are always in the format 123.45
-DRIVER_VERSION_REGEX = re.compile(r'^\d{3}\.\d{2}$')
-
 SUCCESS_KEY = 'Success'
 IDS_KEY = 'IDS'
 DOWNLOAD_INFO_KEY = 'downloadInfo'
@@ -192,7 +198,8 @@ def cmd_get_latest_version() -> None:
   if VERSION_KEY not in download_info:
     raise MalformedJsonError(VERSION_KEY, download_info)
   version = download_info[VERSION_KEY]
-  if not DRIVER_VERSION_REGEX.match(version):
+  platform_settings = GetPlatformSpecificSettings()
+  if not platform_settings.driver_regex.match(version):
     raise RuntimeError('Driver version %s did not match expected format' %
                        version)
   print(version)

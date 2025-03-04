@@ -5,6 +5,7 @@
 
 import json
 import os
+import re
 import unittest
 from unittest import mock
 
@@ -20,6 +21,8 @@ class GetPlatformSpecificSettingsUnittest(unittest.TestCase):
     self.assertEqual(platform_settings.is_whql, 1)
     self.assertEqual(platform_settings.is_dch, 1)
     self.assertEqual(platform_settings.file_extension, '.exe')
+    self.assertEqual(platform_settings.driver_regex,
+                     re.compile(r'^\d{3}\.\d{2}$'))
 
   @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'linux-amd64'}, clear=True)
   def testLinux(self):
@@ -28,6 +31,8 @@ class GetPlatformSpecificSettingsUnittest(unittest.TestCase):
     self.assertEqual(platform_settings.is_whql, 0)
     self.assertEqual(platform_settings.is_dch, 0)
     self.assertEqual(platform_settings.file_extension, '.run')
+    self.assertEqual(platform_settings.driver_regex,
+                     re.compile(r'^\d{3}\.\d{2,}$'))
 
   @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'mac-amd64'}, clear=True)
   def testUnsupported(self):
@@ -263,7 +268,7 @@ class CmdGetLatestVersionUnittest(RequestsMockingUnittest):
         'IDS': [{
             'downloadInfo': {
                 'DownloadURL': 'foo.com/download',
-                'Version': '123.45',
+                'Version': '123.456',
             },
         },],
     }
@@ -288,7 +293,7 @@ class CmdGetLatestVersionUnittest(RequestsMockingUnittest):
       pcnd.cmd_get_latest_version()
 
   @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'windows-amd64'}, clear=True)
-  def test_invalid_version_format(self):
+  def test_invalid_version_format_windows(self):
     """Tests behavior when invalid driver version formats are found."""
     bad_versions = (
         '',
@@ -299,6 +304,44 @@ class CmdGetLatestVersionUnittest(RequestsMockingUnittest):
         # Wrong number of digits after decimal.
         '123.4',
         '123.456',
+        '123.',
+        # Extra decimals.
+        '123.45.67',
+        # Non-numerical.
+        '12a.45',
+        '123.a5',
+        # Whitespace.
+        ' 123.45',
+        '123.45 ',
+    )
+
+    response = {
+        'Success': '1',
+        'IDS': [{
+            'downloadInfo': {
+                'DownloadURL': 'foo.com/download',
+            },
+        },],
+    }
+
+    for bv in bad_versions:
+      response['IDS'][0]['downloadInfo']['Version'] = bv
+      self._setJson(response)
+      with self.assertRaisesRegex(
+          RuntimeError, 'Driver version %s did not match expected format' % bv):
+        pcnd.cmd_get_latest_version()
+
+  @mock.patch.dict(os.environ, {'_3PP_PLATFORM': 'linux-amd64'}, clear=True)
+  def test_invalid_version_format_linux(self):
+    """Tests behavior when invalid driver version formats are found."""
+    bad_versions = (
+        '',
+        # Wrong number of digits before decimal.
+        '12.45',
+        '1234.45',
+        '.45'
+        # Wrong number of digits after decimal.
+        '123.4',
         '123.',
         # Extra decimals.
         '123.45.67',
@@ -353,7 +396,7 @@ class CmdGetUrlUnittest(RequestsMockingUnittest):
   @mock.patch.dict(
       os.environ, {
           '_3PP_PLATFORM': 'linux-amd64',
-          '_3PP_VERSION': '123.45'
+          '_3PP_VERSION': '123.456'
       },
       clear=True)
   def test_success_linux(self):
@@ -364,7 +407,7 @@ class CmdGetUrlUnittest(RequestsMockingUnittest):
         'IDS': [{
             'downloadInfo': {
                 'DownloadURL': 'foo.com/download',
-                'Version': '123.45',
+                'Version': '123.456',
             },
         },],
     }
