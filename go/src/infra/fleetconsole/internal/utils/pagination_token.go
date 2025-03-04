@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/infra/fleetconsole/internal/internalproto"
 )
 
-func OffsetToPageToken(offset int, hashComponents map[string]string) (string, error) {
+func OffsetToPageToken(offset int, hashComponents []string) (string, error) {
 	nextPageToken, err := proto.Marshal(&internalproto.PaginationToken{
 		Offset:     int32(offset),
 		ParamsHash: hashRequest(hashComponents),
@@ -29,7 +29,7 @@ func OffsetToPageToken(offset int, hashComponents map[string]string) (string, er
 	return base64.RawURLEncoding.EncodeToString(nextPageToken), nil
 }
 
-func PageTokenToOffset(pageToken string, hashComponents map[string]string) (int, error) {
+func PageTokenToOffset(pageToken string, hashComponents []string) (int, error) {
 	encodedProto, err := base64.RawURLEncoding.DecodeString(pageToken)
 	if err != nil {
 		return 0, InvalidTokenError(err)
@@ -42,6 +42,7 @@ func PageTokenToOffset(pageToken string, hashComponents map[string]string) (int,
 
 	// Only compare request hashes when a `offset` is provided.
 	offset := tokenProto.GetOffset()
+
 	if offset != 0 && tokenProto.GetParamsHash() != hashRequest(hashComponents) {
 		return 0, InvalidTokenError(errors.New("request message fields do not match fields for the current page"))
 	}
@@ -49,10 +50,9 @@ func PageTokenToOffset(pageToken string, hashComponents map[string]string) (int,
 	return int(offset), nil
 }
 
-func hashRequest(hashComponents map[string]string) string {
+func hashRequest(hashComponents []string) string {
 	hash := fnv.New64a()
-	for key, value := range hashComponents {
-		hash.Write([]byte(key))
+	for _, value := range hashComponents {
 		hash.Write([]byte(value))
 	}
 	return strconv.FormatUint(hash.Sum64(), 36)

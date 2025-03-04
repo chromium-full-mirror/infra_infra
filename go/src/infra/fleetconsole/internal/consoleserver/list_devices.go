@@ -58,15 +58,15 @@ func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *flee
 }
 
 func listDevicesPageTokenToOffset(req *fleetconsolerpc.ListDevicesRequest) (int, error) {
-	return utils.PageTokenToOffset(req.GetPageToken(), map[string]string{
-		"filter":   req.GetFilter(),
-		"order_by": req.GetOrderBy(),
+	return utils.PageTokenToOffset(req.GetPageToken(), []string{
+		req.GetFilter(),
+		req.GetOrderBy(),
 	})
 }
 
 func listDevicesOffsetToPageToken(offset int, req *fleetconsolerpc.ListDevicesRequest) (string, error) {
-	return utils.OffsetToPageToken(offset, map[string]string{
-		"filter":   req.GetFilter(),
-		"order_by": req.GetOrderBy(),
+	return utils.OffsetToPageToken(offset, []string{
+		req.GetFilter(),
+		req.GetOrderBy(),
 	})
 }

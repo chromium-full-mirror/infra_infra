@@ -143,15 +143,15 @@ func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, 
 }
 
 func resourceRequestsPageTokenToOffset(req *fleetconsolerpc.ListResourceRequestsRequest) (int, error) {
-	return utils.PageTokenToOffset(req.GetPageToken(), map[string]string{
-		"filter":   req.GetFilter(),
-		"order_by": req.GetOrderBy(),
+	return utils.PageTokenToOffset(req.GetPageToken(), []string{
+		req.GetFilter(),
+		req.GetOrderBy(),
 	})
 }
 
 func resourceRequestsOffsetToPageToken(offset int, req *fleetconsolerpc.ListResourceRequestsRequest) (string, error) {
-	return utils.OffsetToPageToken(offset, map[string]string{
-		"filter":   req.GetFilter(),
-		"order_by": req.GetOrderBy(),
+	return utils.OffsetToPageToken(offset, []string{
+		req.GetFilter(),
+		req.GetOrderBy(),
 	})
 }
