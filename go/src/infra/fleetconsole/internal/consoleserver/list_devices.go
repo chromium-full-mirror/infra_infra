@@ -15,7 +15,7 @@ import (
 	"go.chromium.org/infra/fleetconsole/internal/utils"
 )
 
-const maxPageSize int = 50
+const maxPageSize int = 100
 
 // ListDevices lists devices from the db.
 func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *fleetconsolerpc.ListDevicesRequest) (_ *fleetconsolerpc.ListDevicesResponse, err error) {
