@@ -8,7 +8,7 @@ package ufs.config;
 
 option go_package = "go.chromium.org/infra/unifiedfleet/app/config";
 
-// Next Tag: 30
+// Next Tag: 31
 // Config is the configuration data served by luci-config for this app.
 message Config {
   string luci_config_service = 1 [deprecated=true];
@@ -65,6 +65,7 @@ message Config {
   // Swarming contains information about the Swarming instance that hosts the
   // bots managed by this app.
   Swarming swarming = 29;
+  MaintenanceConfigs maintenance_configs = 30;
 }
 
 message OSNetworkConfig {
@@ -104,6 +105,20 @@ message OwnershipConfig {
 
   reserved 6;
   reserved "enable_security_config_import";
+}
+
+message MaintenanceConfigs {
+  string gitiles_host = 1;
+  string project = 2;
+  string branch = 3;
+
+  message ConfigFile {
+    string name = 1;
+    string remote_path = 2;
+  }
+
+  // LUCI UFS maintenance config file
+  repeated ConfigFile maintenance_config = 5;
 }
 
 message PubSub {
