@@ -238,7 +238,12 @@ func NewMiddleOutRequestCmd() *MiddleOutRequestCmd {
 // loading is used in lab avalability such that devices with the same HW;
 // but different SW requirements, still share the same pool of physical devices.
 type loading struct {
-	value int
+	// Current count of free devices for this
+	freeDevices int
+	// Count of total devices, including busy. Used to balance EQC distro once all free devices have been used
+	totalDevicesUnAssigned int
+	// Specifically a *static* count of all devices in the lab. Used for bot params rejection checks.
+	staticBotCount int64
 }
 
 type hwInfo struct {
@@ -252,7 +257,6 @@ type hwInfo struct {
 	hwValue            uint64
 	matchingValue      uint64
 	provValue          uint64
-	labDevices         int64
 	shardHarness       string
 	dimsExcludingReady []string
 	publishKeys        []*api.PublishKey
@@ -415,7 +419,7 @@ func createTrRequests(distro map[uint64][][]string, solverData *middleOutData) (
 				Req:    solverData.flatHWUUIDMap[k].oldReq,
 				NewReq: solverData.flatHWUUIDMap[k].req,
 				Tcs:    shardedtcs,
-				DevicesInfo: &data.DevicesInfo{LabDevicesCount: solverData.flatHWUUIDMap[k].labDevices,
+				DevicesInfo: &data.DevicesInfo{LabDevicesCount: solverData.flatHWUUIDMap[k].labLoading.staticBotCount,
 					Dims: solverData.flatHWUUIDMap[k].dimsExcludingReady,
 				},
 			}
@@ -459,7 +463,9 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 			if len(shardedtc) > 0 {
 				harness = getHarness(shardedtc[0])
 			}
+			logging.Infof(ctx, "looking for dut")
 			selectedDevice, expandCurrentShard := getDevices(solverData, len(shardedtc), hwHash, harness)
+			logging.Infof(ctx, "Selected: %s Expand : %s", selectedDevice, expandCurrentShard)
 			assignHardware(solverData, selectedDevice, expandCurrentShard, shardedtc)
 
 		}
@@ -508,8 +514,14 @@ func assignHardware(solverData *middleOutData, selectedDevice uint64, expandCurr
 		solverData.finalAssignments[selectedDevice] = append(solverData.finalAssignments[selectedDevice], shardedtc)
 
 		// Only decrement real devices.
-		if solverData.flatHWUUIDMap[selectedDevice].labLoading.value > NoDevicesInt {
-			solverData.flatHWUUIDMap[selectedDevice].labLoading.value--
+		if solverData.flatHWUUIDMap[selectedDevice].labLoading.staticBotCount > 0 {
+			if solverData.flatHWUUIDMap[selectedDevice].labLoading.freeDevices > 0 {
+				solverData.flatHWUUIDMap[selectedDevice].labLoading.freeDevices--
+
+			}
+			// Always decrement this by 1, even when we sharded to a free device.
+			solverData.flatHWUUIDMap[selectedDevice].labLoading.totalDevicesUnAssigned--
+
 		}
 		// If the shard is not full, mark it as such.
 		if len(shardedtc) != solverData.cfg.maxInShard {
@@ -860,39 +872,59 @@ func getHarness(t string) string {
 	return v[0]
 }
 
+func getDeviceHash(value *hwInfo) uint64 {
+	hash := uint64(0)
+	// TODO remove this if block (keep the else) once hwRequirements has been fully removed.
+	if len(value.oldReq.GetHwDefinition()) > 0 {
+		hash, _ = hashstructure.Hash(value.oldReq.GetHwDefinition()[0].GetDutInfo(), hashstructure.FormatV2, nil)
+	} else {
+		// 0 index is safe as this is coming from the flatHWUUIDMap; which garuntees the list to be flat.
+		// We have to use the `HwOnly` hashfor; as we should consider a variant as the same underlying hardware.
+		// Eg; Brya and brya-kernelnext, are the same underlying DUT.
+		hash = hashForSchedulingUnitHwOnly(value.req.GetSchedulingUnits()[0])
+
+	}
+	return hash
+}
+
 // Will add the amount of devices in the lab to each of the HW items.
 func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 	// toComplete will track what hwInfo will need labAvailibility info to be populated.
 	toComplete := []*hwInfo{}
+
 	hwFound := make(map[uint64]*loading)
+
 	for _, value := range solverData.flatHWUUIDMap {
-		hash := uint64(0)
 
-		// TODO remove this if block (keep the else) once hwRequirements has been fully removed.
-		if len(value.oldReq.GetHwDefinition()) > 0 {
-			hash, _ = hashstructure.Hash(value.oldReq.GetHwDefinition()[0].GetDutInfo(), hashstructure.FormatV2, nil)
-		} else {
+		// This is to ensure when we have to physically identical devices; but which have different software/
+		// runtime adjustable instructions, we properly view them as "1" physical device come labLoading time.
+		hash := getDeviceHash(value)
 
-			// 0 index is safe as this is coming from the flatHWUUIDMap; which garuntees the list to be flat.
-			// We have to use the `HwOnly` hashfor; as we should consider a variant as the same underlying hardware.
-			// Eg; Brya and brya-kernelnext, are the same underlying DUT.
-			hash = hashForSchedulingUnitHwOnly(value.req.GetSchedulingUnits()[0])
-
-		}
+		// We do this check to see if a specific hash has already been discovered. In this case, we'd
+		// want to point them both to the same pointer such that when one of the EQC's pulls a device
+		// its properly removed from all.
 
 		_, exists := hwFound[hash]
 		if exists {
 			value.labLoading = hwFound[hash]
+			// The continue is very intentionally going to skip the `toComplete` amendment.
 			continue
+		} else {
+			ll := &loading{}
+			// Point these to the same object so the `if` above will properly assign pointers
+			hwFound[hash] = ll
+			value.labLoading = ll
 		}
 
 		if solverData.cfg.unitTestDevices != 0 {
-			hwFound[hash] = &loading{value: solverData.cfg.unitTestDevices}
+			// Load items into the pointer.
+			value.labLoading.freeDevices = solverData.cfg.unitTestDevices
+			value.labLoading.totalDevicesUnAssigned = solverData.cfg.unitTestDevices
+			value.labLoading.staticBotCount = int64(solverData.cfg.unitTestDevices)
 		} else {
-			value.labLoading = &loading{value: 5}
+			toComplete = append(toComplete, value)
 		}
-		toComplete = append(toComplete, value)
-		value.labLoading = hwFound[hash]
+
 	}
 
 	if solverData.cfg.unitTestDevices == 0 {
@@ -920,23 +952,13 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 				if err != nil {
 					logging.Infof(ctx, fmt.Sprintf("error found in GetBOTcount: %s", err))
 				}
-
-				// When there are no devices we want to set the max negative amount
-				// thus when we "fill" a device up which has 1 to few DUTs, we still will create a queue
-				// on the real device, and not a device which DNE.
-				if int(botCount) == 0 {
-					// The +1 is needed so that when we distribute tasks (which is checked vs minInt32)
-					// We will still ""assign"" a device; to later be rejected.
-					// Without this clause the tests with no devices would likely be silently rejected;
-					// which while functionally the same, it would be a rough UX for tests to be silently dropped.
-					hwInfoInput.labLoading = &loading{value: NoDevicesInt}
-				} else {
-					hwInfoInput.labLoading = &loading{value: int(botCount)}
-				}
+				hwInfoInput.labLoading.freeDevices = int(botCount)
+				hwInfoInput.labLoading.totalDevicesUnAssigned = int(totalBotCount)
 
 				// Note: This field is reserved for the `bot_params_rejected` check.
-				hwInfoInput.labDevices = totalBotCount
+				hwInfoInput.labLoading.staticBotCount = totalBotCount
 				hwInfoInput.dimsExcludingReady = dimsExcludingReady
+
 				logging.Infof(ctx, "Found for lab devices: %v", botCount)
 
 			}(hwInfoObj)
@@ -1167,7 +1189,6 @@ func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness 
 	// So even when we fully fill a device, or it hasn't been touched, we still check it.
 	// First, try to fill a non-empty shard
 	devices := solverData.hwEquivalenceMap[hwHash]
-
 	for _, device := range devices {
 		// if the shard is empty, we need to use the labloading process block
 		// not the shard filler.
@@ -1181,7 +1202,7 @@ func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness 
 		}
 
 		// Only assign it into a shard if there is actually devices.
-		if solverData.flatHWUUIDMap[device].labLoading.value > NoDevicesInt {
+		if solverData.flatHWUUIDMap[device].labLoading.staticBotCount != 0 {
 			// There are cases where a test requires a device which doesn't exist (to later be rejected)
 			// But in these examples, its viewed as an "open shard", so we toss other tests with overlapping eq classes
 			// into the shard; resulting in those tests being skipped.
@@ -1193,14 +1214,42 @@ func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness 
 	}
 
 	// If that cannot be done, then just pick the device with the most available.
+	selectedDevice = bestChoice(solverData, devices)
+	return selectedDevice, false
+}
+
+// bestChoice is here to try to grab the most free best based on the following:
+// Grab a the most free device
+// If none are free, grab the one which has the most amount of un-assigned work to it in the queue.
+// Its good to note that freeDevices is never expected to go negative, but `totalDevicesUnAssigned` can.
+func bestChoice(solverData *middleOutData, devices []uint64) (selectedDevice uint64) {
 	maxAvalibleFound := math.MinInt32
+
+	// Look through the un-allocated devices for a free one.
 	for _, device := range devices {
-		if solverData.flatHWUUIDMap[device].labLoading.value > maxAvalibleFound {
-			maxAvalibleFound = solverData.flatHWUUIDMap[device].labLoading.value
+		if solverData.flatHWUUIDMap[device].labLoading.freeDevices > maxAvalibleFound {
+			maxAvalibleFound = solverData.flatHWUUIDMap[device].labLoading.freeDevices
 			selectedDevice = device
 		}
 	}
-	return selectedDevice, false
+
+	if maxAvalibleFound > 0 {
+		return selectedDevice
+	}
+
+	// Otherwise, lets just get the one with the most in the Lab.
+	// This will be a self-balancing function as if CTPs build a queue on the more deployed devices
+	// the less deployed devices will start to free up, then other CTPs will grab them in the upper loop.
+
+	maxAvalibleFound = 0
+	for _, device := range devices {
+		if solverData.flatHWUUIDMap[device].labLoading.totalDevicesUnAssigned > maxAvalibleFound {
+			maxAvalibleFound = solverData.flatHWUUIDMap[device].labLoading.totalDevicesUnAssigned
+			selectedDevice = device
+		}
+	}
+
+	return selectedDevice
 }
 
 // hwSearchOrdering: given the flatUUIDLoadingMap, return the order of least common to most common boards/eqs.

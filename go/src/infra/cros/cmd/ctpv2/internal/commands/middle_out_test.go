@@ -415,7 +415,7 @@ func TestAssignHardware(t *testing.T) {
 	expandCurrentShard := false
 	flatUUIDLoadingMap := make(map[uint64]*hwInfo)
 
-	l := &loading{value: 2}
+	l := &loading{freeDevices: 2, totalDevicesUnAssigned: 2, staticBotCount: int64(2)}
 	flatUUIDLoadingMap[selectedDevice] = &hwInfo{
 		req:               vars.SU1,
 		labLoading:        l,
@@ -440,15 +440,15 @@ func TestAssignHardware(t *testing.T) {
 	solverData.flatHWUUIDMap = flatUUIDLoadingMap
 
 	assignHardware(solverData, selectedDevice, expandCurrentShard, shardedtc)
-	if flatUUIDLoadingMap[selectedDevice].labLoading.value != 1 {
-		t.Fatalf("Assigning a device did not reduce its lab loading")
+	if flatUUIDLoadingMap[selectedDevice].labLoading.freeDevices != 1 {
+		t.Fatalf("Assigning a device did not reduce its lab loading :%v", flatUUIDLoadingMap[selectedDevice])
 	}
 	if flatUUIDLoadingMap[selectedDevice].numInCurrentShard != 1 {
 		t.Fatalf("Assigning an empty shard 1 test did not increase its num in shard count")
 	}
 
 	assignHardware(solverData, selectedDevice, true, shardedtc2)
-	if flatUUIDLoadingMap[selectedDevice].labLoading.value != 1 {
+	if flatUUIDLoadingMap[selectedDevice].labLoading.freeDevices != 1 {
 		t.Fatalf("Assigning a device did not reduce its lab loading")
 	}
 	if flatUUIDLoadingMap[selectedDevice].numInCurrentShard != 0 {
@@ -456,7 +456,7 @@ func TestAssignHardware(t *testing.T) {
 	}
 
 	assignHardware(solverData, selectedDevice, false, shardedtc3)
-	if flatUUIDLoadingMap[selectedDevice].labLoading.value != 0 {
+	if flatUUIDLoadingMap[selectedDevice].labLoading.freeDevices != 0 {
 		t.Fatalf("Assigning a device did not reduce its lab loading")
 	}
 	if flatUUIDLoadingMap[selectedDevice].numInCurrentShard != 1 {
@@ -464,7 +464,7 @@ func TestAssignHardware(t *testing.T) {
 	}
 
 	assignHardware(solverData, selectedDevice2, false, shardedtc)
-	if flatUUIDLoadingMap[selectedDevice].labLoading.value != -1 {
+	if flatUUIDLoadingMap[selectedDevice].labLoading.totalDevicesUnAssigned != -1 {
 		t.Fatalf("Same HW; different groupping should share the same lab resource but didn't")
 	}
 	if flatUUIDLoadingMap[selectedDevice].numInCurrentShard != 1 {
@@ -554,7 +554,7 @@ func TestFindMatchesProv(t *testing.T) {
 }
 
 // TODO; once HWRequirements is deprecated; remove this test.
-func TestOldSharedDeviceLabLoadingDifferentProvision(t *testing.T) {
+func TestOldSharedDeviceLabLoadingDifferentProvision2(t *testing.T) {
 	SwarmingDef0 := buildTestProtoWithProvisionInfo("foo", "bar", "prov1")
 	SwarmingDef1 := buildTestProtoWithProvisionInfo("foo", "bar", "prov2")
 	SwarmingDef2 := buildTestProtoWithProvisionInfo("foo", "bar", "prov3")
@@ -618,10 +618,9 @@ func TestOldSharedDeviceLabLoadingDifferentProvision(t *testing.T) {
 
 	// Reset the shard, and reduce the number of devices for this by 1.
 	flatUUIDLoadingMap[selectedDevice].numInCurrentShard = 0
-	flatUUIDLoadingMap[selectedDevice].labLoading.value--
-
+	flatUUIDLoadingMap[selectedDevice].labLoading.freeDevices--
 	for _, v := range flatUUIDLoadingMap {
-		if v.labLoading.value != 1 {
+		if v.labLoading.freeDevices != 1 {
 			t.Fatalf("All devices share same hardware thus all should be reduced by 1")
 		}
 	}
@@ -633,7 +632,7 @@ func TestOldSharedDeviceLabLoadingDifferentProvision(t *testing.T) {
 	}
 }
 
-func TestSharedDeviceLabLoadingDifferentProvision(t *testing.T) {
+func TestSharedDeviceLabLoadingDifferentProvision3(t *testing.T) {
 	vars := buildTestVars()
 	hwEqMap := make(map[uint64][]uint64)
 	hwUUIDMap := make(map[uint64]*api.SchedulingUnitOptions)
@@ -673,7 +672,6 @@ func TestSharedDeviceLabLoadingDifferentProvision(t *testing.T) {
 
 	// Set the # of tests currently in the shard to 1
 	flatUUIDLoadingMap[selectedDevice].numInCurrentShard = 1
-
 	// Adding another test should result in the shard being expanded; and the same device being selected.
 	selectedDevice2, expandCurrentShard := getDevices(solverData, 1, HwHash1, "tast")
 
@@ -687,9 +685,9 @@ func TestSharedDeviceLabLoadingDifferentProvision(t *testing.T) {
 	flatUUIDLoadingMap[selectedDevice].numInCurrentShard = 0
 	// Since each SchedulingUnit in the map is the same underlying hardware; just with different SW vairants
 	// Reducing the count of _one_ device should reduce the count of *ALL* scheduling units.
-	flatUUIDLoadingMap[selectedDevice].labLoading.value--
+	flatUUIDLoadingMap[selectedDevice].labLoading.freeDevices--
 	for _, v := range flatUUIDLoadingMap {
-		if v.labLoading.value != 1 {
+		if v.labLoading.freeDevices != 1 {
 			t.Fatalf("All devices share same hardware thus all should be reduced by 1")
 		}
 	}
@@ -1399,7 +1397,7 @@ func TestGetDevices(t *testing.T) {
 	}
 
 	// Shard is full, so reset it and remove 1 from lab loading.
-	flatUUIDLoadingMap[selectedDevice].labLoading.value--
+	flatUUIDLoadingMap[selectedDevice].labLoading.freeDevices--
 
 	selectedDevice3, expandCurrentShard := getDevices(solverData, 1, vars.HwHash1, "tauto")
 
@@ -1410,7 +1408,7 @@ func TestGetDevices(t *testing.T) {
 
 	// Shard is full, so reset it and remove 1 from lab loading.
 	flatUUIDLoadingMap[selectedDevice].numInCurrentShard = 0
-	flatUUIDLoadingMap[selectedDevice].labLoading.value--
+	flatUUIDLoadingMap[selectedDevice].labLoading.freeDevices--
 
 	selectedDevice4, expandCurrentShard := getDevices(solverData, 1, vars.HwHash1, "tast")
 	if selectedDevice4 == selectedDevice2 {
@@ -1552,7 +1550,7 @@ func validateDistro(finalAssignments map[uint64][][]string, flatUUIDLoadingMap m
 	}
 
 	for hw, hwcount := range hwCount {
-		if flatUUIDLoadingMap[hw].labLoading.value+hwcount != cfg.unitTestDevices {
+		if flatUUIDLoadingMap[hw].labLoading.freeDevices+hwcount != cfg.unitTestDevices {
 			return false, fmt.Sprintf("Lab loading incorrect: %v", flatUUIDLoadingMap[hw].labLoading)
 		}
 	}
