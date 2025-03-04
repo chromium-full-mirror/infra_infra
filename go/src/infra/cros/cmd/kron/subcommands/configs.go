@@ -323,7 +323,7 @@ func fetchNextNHoursDailyConfigs(startTime common.KronTime, hoursAhead int64, co
 		return configs, nil
 	}
 
-	for i := 0; i < int(hoursAhead); i++ {
+	for range hoursAhead {
 		configList, err := configMap.FetchDailyByHour(startTime.Hour)
 		if err != nil {
 			return nil, err
@@ -350,7 +350,7 @@ func fetchNextNHoursConfigsNotDaily(startTime common.KronTime, hoursAhead int64,
 
 	var err error
 	configs := CLIConfigList{}
-	for i := 0; i < int(hoursAhead); i++ {
+	for range hoursAhead {
 		day := startTime.WeeklyDay
 		if isFortnightly {
 			day = startTime.FortnightDay

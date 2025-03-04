@@ -119,7 +119,7 @@ func (p *proxy) handleConn(src net.Conn) error {
 	}()
 
 	var firstErr error
-	for i := 0; i < 2; i++ {
+	for range 2 {
 		if err := <-ch; err != io.EOF && firstErr == nil {
 			firstErr = err
 		}

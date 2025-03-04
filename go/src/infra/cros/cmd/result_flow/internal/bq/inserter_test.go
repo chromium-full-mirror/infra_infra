@@ -56,7 +56,7 @@ func TestRamBufferedBQInserter(t *testing.T) {
 				},
 			}
 			entries := make([]bigquery.ValueSaver, 5)
-			for i := 0; i < 5; i++ {
+			for i := range 5 {
 				entries[i] = mkTestEntry(fmt.Sprintf("given:%d", i))
 			}
 			bi, _ := bq.NewInserter(ctx, fakeOptions)

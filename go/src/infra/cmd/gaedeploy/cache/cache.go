@@ -190,7 +190,7 @@ func (c *Cache) Trim(ctx context.Context, keep int) error {
 	})
 
 	done := 0
-	for i := 0; i < len(entries)-keep; i++ {
+	for i := range len(entries) - keep {
 		e := entries[i]
 		logging.Infof(ctx, "Trimming entry %q (created %s, last touched %s)...",
 			e.name, humanize.Time(e.meta.Created), humanize.Time(e.meta.Touched))

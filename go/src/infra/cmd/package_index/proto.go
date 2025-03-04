@@ -55,7 +55,7 @@ func newProtoTarget(ctx context.Context, t gnTargetInfo, rootDir, outDir,
 		outDir:      outDir,
 	}
 	p.args = t.Args
-	for i := 0; i < len(p.args)-1; i++ {
+	for i := range len(p.args) - 1 {
 		nextArg := p.args[i+1]
 		if p.args[i] == "--proto-in-dir" {
 			norm, err := p.normpath(nextArg)
@@ -105,7 +105,7 @@ func (p protoTarget) getUnit() (*kpb.CompilationUnit, error) {
 	}
 
 	// args are for protoc_wrapper.py and not protoc. Extract only --proto-in-dir.
-	for i := 0; i < len(p.args)-1; i++ {
+	for i := range len(p.args) - 1 {
 		if p.args[i] == "--proto-in-dir" || p.args[i] == "--import-dir" {
 			unitProto.Argument = append(unitProto.Argument, "--proto_path", p.args[i+1])
 		}

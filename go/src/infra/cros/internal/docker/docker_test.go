@@ -143,7 +143,7 @@ func TestRunContainer_WithConfigureDocker(t *testing.T) {
 	}
 
 	containerRunner := docker.NewContainerRunner(cmdRunner)
-	for i := 0; i < 2; i += 1 {
+	for range 2 {
 		err := containerRunner.RunContainer(ctx, containerConfig, hostConfig, containerImageInfo, runtimeOptions)
 		if err != nil {
 			t.Fatalf("RunContainer failed: %s", err)

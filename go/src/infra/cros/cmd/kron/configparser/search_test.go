@@ -78,7 +78,7 @@ func TestFetchConfigTargetOptionsForBoard(t *testing.T) {
 		return
 	}
 
-	for i := 0; i < expectedModels.Len(); i++ {
+	for i := range expectedModels.Len() {
 		if sortedGivenModels[i] != expectedModels[i] {
 			t.Errorf("Model %s expected at position %d, %s given", expectedModels[i], i, sortedGivenModels[i])
 			return

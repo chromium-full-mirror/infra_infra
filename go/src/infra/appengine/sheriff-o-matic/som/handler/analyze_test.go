@@ -219,7 +219,7 @@ func TestAttachLuciBisectionResults(t *testing.T) {
 			bf := []*messages.BuildFailure{}
 			// Create 201 failures, each failure has one failed test.
 			// This will be put into 3 batches 0..99, 100..199, 200 when calling bisection.
-			for i := 0; i < 201; i++ {
+			for i := range 201 {
 				bf = append(bf, &messages.BuildFailure{
 					Builders: []*messages.AlertedBuilder{
 						{

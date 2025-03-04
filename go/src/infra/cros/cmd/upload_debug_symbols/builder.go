@@ -846,7 +846,7 @@ func getBuildId(splitdebugFilepath string) (string, error) {
 func debugIdFromBuildId(id string) (string, error) {
 	// debug id is always 33 characters
 	var b strings.Builder
-	for i := 0; i < 33; i++ {
+	for i := range 33 {
 		// Last byte is always 0
 		if i < len(id) && i < 32 {
 			if err := b.WriteByte(id[i]); err != nil {

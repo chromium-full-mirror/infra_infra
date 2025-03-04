@@ -121,7 +121,7 @@ func getNoEmitStates(keysOnly bool) []*noEmitState {
 
 func outputStateStr(states []*state, keysOnly bool) [][]string {
 	res := make([][]string, len(states))
-	for i := 0; i < len(states); i++ {
+	for i := range len(states) {
 		if keysOnly {
 			res[i] = []string{states[i].Name}
 			continue

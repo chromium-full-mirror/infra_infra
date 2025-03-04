@@ -164,7 +164,7 @@ func getMockInternalTestPlan(targetRequirements []*api.TargetRequirements, sched
 func getMockSchedulingUnits(count, companionCount int) []*api.SchedulingUnit {
 	units := []*api.SchedulingUnit{}
 
-	for i := 0; i < count; i++ {
+	for range count {
 		units = append(units, getMockSchedulingUnit(companionCount))
 	}
 
@@ -180,7 +180,7 @@ func getMockSchedulingUnit(companionCount int) *api.SchedulingUnit {
 		CompanionTargets: []*api.Target{},
 	}
 
-	for i := 0; i < companionCount; i++ {
+	for i := range companionCount {
 		board := fmt.Sprintf("%s_%d", MultiCompanion, i)
 		unit.CompanionTargets = append(unit.CompanionTargets, &api.Target{
 			SwarmingDef: getMockSwarmingDefinition(board),
@@ -193,7 +193,7 @@ func getMockSchedulingUnit(companionCount int) *api.SchedulingUnit {
 func getMockTargetRequirements(count int) []*api.TargetRequirements {
 	requirements := []*api.TargetRequirements{}
 
-	for i := 0; i < count; i++ {
+	for range count {
 		requirements = append(requirements, &api.TargetRequirements{
 			HwRequirements: &api.HWRequirements{
 				HwDefinition: []*api.SwarmingDefinition{

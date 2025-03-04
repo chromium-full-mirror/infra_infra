@@ -47,7 +47,7 @@ type logger interface {
 func (a *Agent) Run(ctx context.Context) {
 	a.log("Agent starting")
 	b := botman.NewBotman(hook{a.droneStarter()})
-	for i := 0; i < a.NumBots; i++ {
+	for i := range a.NumBots {
 		id := a.botIDForIndex(i)
 		b.AddBot(id)
 	}

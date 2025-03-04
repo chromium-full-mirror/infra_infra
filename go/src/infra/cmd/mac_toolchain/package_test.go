@@ -210,7 +210,7 @@ func TestPackageXcode(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, s.Calls, should.HaveLength(2))
 
-			for i := 0; i < 2; i++ {
+			for i := range 2 {
 				assert.Loosely(t, s.Calls[i].Executable, should.Equal("cipd"))
 				assert.Loosely(t, s.Calls[i].Args, should.Contain("create"))
 				assert.Loosely(t, s.Calls[i].Args, should.Contain("-verification-timeout"))
@@ -236,7 +236,7 @@ func TestPackageXcode(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, s.Calls, should.HaveLength(2))
 
-			for i := 0; i < 2; i++ {
+			for i := range 2 {
 				assert.Loosely(t, s.Calls[i].Executable, should.Equal("cipd"))
 				assert.Loosely(t, s.Calls[i].Args, should.Contain("create"))
 				assert.Loosely(t, s.Calls[i].Args, should.Contain("-verification-timeout"))
@@ -261,7 +261,7 @@ func TestPackageXcode(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, s.Calls, should.HaveLength(2))
 
-			for i := 0; i < 2; i++ {
+			for i := range 2 {
 				assert.Loosely(t, s.Calls[i].Executable, should.Equal("cipd"))
 				assert.Loosely(t, s.Calls[i].Args, should.Contain("create"))
 				assert.Loosely(t, s.Calls[i].Args, should.Contain("-verification-timeout"))
@@ -293,7 +293,7 @@ func TestPackageXcode(t *testing.T) {
 			assert.Loosely(t, s.Calls[0].Args, should.Contain(filepath.Join("testdata/outdir", "ios.cipd")))
 			assert.Loosely(t, s.Calls[1].Args, should.Contain(filepath.Join("testdata/outdir", "mac.cipd")))
 
-			for i := 0; i < 2; i++ {
+			for i := range 2 {
 				assert.Loosely(t, s.Calls[i].Executable, should.Equal("cipd"))
 				assert.Loosely(t, s.Calls[i].Args, should.Contain("pkg-build"))
 
@@ -364,7 +364,7 @@ func TestPackageRuntimeAndXcode(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, s.Calls, should.HaveLength(2))
 
-			for i := 0; i < 2; i++ {
+			for i := range 2 {
 				assert.Loosely(t, s.Calls[i].Executable, should.Equal("cipd"))
 				assert.Loosely(t, s.Calls[i].Args, should.Contain("create"))
 				assert.Loosely(t, s.Calls[i].Args, should.Contain("-verification-timeout"))

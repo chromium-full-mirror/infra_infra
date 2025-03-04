@@ -188,7 +188,7 @@ func concurrentList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll
 	var merr sync.Map
 	errs := make(map[string]error)
 	res := make([]proto.Message, 0)
-	for i := 0; i < len(filters); i++ {
+	for i := range len(filters) {
 		// goroutine for each filter
 		go func(i int) {
 			protos, err := DoList(ctx, ic, listFunc, int32(pageSize), filters[i], keysOnly, full, sink)
@@ -280,7 +280,7 @@ func ConcurrentGet(ctx context.Context, ic ufsAPI.FleetClient, names []string, g
 	var wg sync.WaitGroup
 	// number of goroutines/threads in the wait group to run concurrently
 	wg.Add(len(names))
-	for i := 0; i < len(names); i++ {
+	for i := range len(names) {
 		// goroutine for each id/name
 		go func(i int) {
 			// single Get request call to UFS
@@ -325,7 +325,7 @@ func ConcurrentDelete(ctx context.Context, ic ufsAPI.FleetClient, names []string
 	var wg sync.WaitGroup
 	// number of goroutines/threads in the wait group to run concurrently
 	wg.Add(len(names))
-	for i := 0; i < len(names); i++ {
+	for i := range len(names) {
 		// goroutine for each id/name
 		go func(i int) {
 			// single Delete request call to UFS
@@ -467,7 +467,7 @@ func PrintJSON(t interface{}) error {
 	case reflect.Slice:
 		s := reflect.ValueOf(t)
 		fmt.Print("[")
-		for i := 0; i < s.Len(); i++ {
+		for i := range s.Len() {
 			e, err := json.MarshalIndent(s.Index(i).Interface(), "", "\t")
 			if err != nil {
 				return err
@@ -2079,7 +2079,7 @@ func strSlicesToStr(slices []string) string {
 func PrintAllNormal(title []string, res [][]string, keysOnly bool) {
 	defer tw.Flush()
 	PrintTableTitle(title, false, keysOnly)
-	for i := 0; i < len(res); i++ {
+	for i := range len(res) {
 		var out string
 		for _, s := range res[i] {
 			out += fmt.Sprintf("%s\t", s)
@@ -2231,7 +2231,7 @@ func PrettyPrintListOfStruct[X any](xs []*X) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 1, ' ', 0)
 	// Print struct fields as header for the table
 	typeStr := ""
-	for i := 0; i < xtype.NumField(); i++ {
+	for i := range xtype.NumField() {
 		typeStr = typeStr + xtype.Field(i).Name + "\t"
 	}
 	fmt.Fprintln(w, typeStr)
@@ -2239,7 +2239,7 @@ func PrettyPrintListOfStruct[X any](xs []*X) {
 	for _, y := range xs {
 		valStr := ""
 		vy := reflect.Indirect(reflect.ValueOf(y))
-		for i := 0; i < xtype.NumField(); i++ {
+		for i := range xtype.NumField() {
 			valStr = valStr + fmt.Sprintf("%v", vy.Field(i)) + "\t"
 		}
 		fmt.Fprintln(w, valStr)

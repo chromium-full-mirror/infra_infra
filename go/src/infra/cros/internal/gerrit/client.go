@@ -258,7 +258,7 @@ func extractGitilesArchive(ctx context.Context, data []byte, paths []string) (*m
 	res := make(map[string]string)
 	foundPaths := make(map[string]bool)
 	// Do two passes to resolve links.
-	for i := 0; i < 2; i++ {
+	for i := range 2 {
 		abuf := bytes.NewBuffer(data)
 		gr, err := gzip.NewReader(abuf)
 		if err != nil {

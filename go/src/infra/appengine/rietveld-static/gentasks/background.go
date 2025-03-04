@@ -197,7 +197,7 @@ func StartBackgroundProcess(ctx context.Context) {
 	}
 	wgCT := &sync.WaitGroup{}
 	wgCT.Add(cloudTaskGoRoutines)
-	for i := 0; i < cloudTaskGoRoutines; i++ {
+	for range cloudTaskGoRoutines {
 		go func() {
 			tp.process(ctx)
 			wgCT.Done()

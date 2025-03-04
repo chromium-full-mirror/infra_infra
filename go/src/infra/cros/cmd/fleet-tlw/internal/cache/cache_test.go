@@ -83,7 +83,7 @@ func TestAssignBackend_balancedLoad(t *testing.T) {
 	fe := NewFrontend(env)
 	m := make(map[string]int)
 	const dutAddr, filename = "1.1.3.128", "path/to/file"
-	for i := 0; i < 101; i++ {
+	for i := range 101 {
 		p := fmt.Sprintf("%s-%d", filename, i)
 		r, err := fe.AssignBackend(dutAddr, p)
 		if err != nil {

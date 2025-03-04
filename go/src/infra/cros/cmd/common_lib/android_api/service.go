@@ -73,7 +73,7 @@ func retriableError(err error) bool {
 func retry[K comparable](ctx context.Context, fn func(opts ...googleapi.CallOption) (K, error)) (K, error) {
 	var ret K
 	var err error
-	for i := 0; i < maxAttempts; i++ {
+	for i := range maxAttempts {
 		select {
 		case <-ctx.Done():
 			return ret, ctx.Err()

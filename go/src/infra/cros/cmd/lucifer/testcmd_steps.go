@@ -140,7 +140,7 @@ func doParsingStep(ctx context.Context, c *testCmd, ac *api.Client) (err error) 
 	if err != nil {
 		return errors.Wrap(err, "run tko/parse")
 	}
-	for i := 0; i < n; i++ {
+	for range n {
 		event.SendWithMsg(event.TestFailed, "test")
 	}
 	if n > 0 {

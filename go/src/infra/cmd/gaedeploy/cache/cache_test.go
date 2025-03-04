@@ -103,7 +103,7 @@ func TestCache(t *testing.T) {
 
 		t.Run("Trim works", func(t *ftt.Test) {
 			var created []string // oldest to newest
-			for i := 0; i < 3; i++ {
+			for i := range 3 {
 				src := testSrc{
 					data: map[string]string{"file": fmt.Sprintf("file %d", i)},
 				}

@@ -380,7 +380,7 @@ func (ex *CrosVMProvisionExecutor) purgeAuthToken(ctx context.Context) error {
 
 	logging.Infof(ctx, "Starting loop to check if auth token file is removed")
 	// Check if the file exists in 5 loops with an interval of 0.1 seconds
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		time.Sleep(100 * time.Millisecond)
 		if _, err := os.Stat(authFilePath); os.IsNotExist(err) {
 			logging.Infof(ctx, "Auth token file removed from temp dir: %s", authFilePath)

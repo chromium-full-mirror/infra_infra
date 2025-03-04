@@ -46,7 +46,7 @@ func TestRandomWeighted_MixedPriorities(t *testing.T) {
 	)
 
 	counts := make(map[string]int)
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		selected, err := selector.Select(ctx, "DUT_POOL_QUOTA", []string{"boardA", "boardB", "boardC", "boardD", "undefinedBoard"})
 		if err != nil {
 			t.Fatal(err)
@@ -96,7 +96,7 @@ func TestRandomWeighted_AllPositivePriorities(t *testing.T) {
 	)
 
 	counts := make(map[string]int)
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		selected, err := selector.Select(ctx, "DUT_POOL_QUOTA", []string{"boardA", "boardB", "boardC", "undefinedBoard"})
 		if err != nil {
 			t.Fatal(err)
@@ -145,7 +145,7 @@ func TestRandomWeighted_AllNegativePriorities(t *testing.T) {
 	)
 
 	counts := make(map[string]int)
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		selected, err := selector.Select(ctx, "DUT_POOL_QUOTA", []string{"boardA", "boardB", "boardC", "undefinedBoard"})
 		if err != nil {
 			t.Fatal(err)
@@ -258,7 +258,7 @@ func TestRandomWeighted_LargePriorities(t *testing.T) {
 	)
 
 	counts := make(map[string]int)
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		selected, err := selector.Select(ctx, "DUT_POOL_QUOTA", []string{"boardA", "boardB", "boardC", "undefinedBoard"})
 		if err != nil {
 			t.Fatal(err)
@@ -303,7 +303,7 @@ func TestRandomWeighted_UnconfiguredPool(t *testing.T) {
 	)
 
 	counts := make(map[string]int)
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		selected, err := selector.Select(ctx, "unconfiguredpool", []string{"boardA", "boardB", "boardC", "undefinedBoard"})
 		if err != nil {
 			t.Fatal(err)
@@ -353,7 +353,7 @@ func TestRandomWeighted_selectPriority(t *testing.T) {
 	)
 
 	counts := make(map[string]int)
-	for i := 0; i < 1000; i++ {
+	for range 1000 {
 		selected, err := selector.SelectPriority(ctx, "DUT_POOL_QUOTA", []string{"boardA", "boardB", "boardC", "boardD", "boardC", "boardD", "undefinedBoard"})
 		if err != nil {
 			t.Fatal(err)

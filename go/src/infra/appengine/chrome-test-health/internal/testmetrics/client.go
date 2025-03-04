@@ -385,13 +385,13 @@ func (c *Client) createFetchMetricsQuery(req *api.FetchTestMetricsRequest) (*big
 	}
 
 	metricNames := make([]string, len(req.Metrics))
-	for i := 0; i < len(req.Metrics); i++ {
+	for i := range len(req.Metrics) {
 		metricNames[i] = MetricSqlName(req.Metrics[i])
 	}
 
 	// Terms for converting the rolling up the variants
 	metricAggregations := make([]string, len(req.Metrics))
-	for i := 0; i < len(req.Metrics); i++ {
+	for i := range len(req.Metrics) {
 		name := MetricSqlName(req.Metrics[i])
 		if _, ok := weightedAverageMetrics[req.Metrics[i]]; ok {
 			metricAggregations[i] = `SUM(` + name + ` * num_runs) / SUM(num_runs) AS ` + name
@@ -594,19 +594,19 @@ func (c *Client) createDirectoryQuery(req *api.FetchDirectoryMetricsRequest) (*b
 	// Terms to aggregate the metric names between files. This is a sum even
 	// for averaged runtimes
 	fileAggMetricTerms := make([]string, len(req.Metrics))
-	for i := 0; i < len(req.Metrics); i++ {
+	for i := range len(req.Metrics) {
 		fileAggMetricTerms[i] = `SUM(t.` + MetricSqlName(req.Metrics[i]) + `) AS ` + MetricSqlName(req.Metrics[i])
 	}
 	// Terms to aggregate the metric names between components. This is a sum even
 	// for averaged runtimes
 	fileComponentAggTerms := make([]string, len(req.Metrics))
-	for i := 0; i < len(req.Metrics); i++ {
+	for i := range len(req.Metrics) {
 		fileComponentAggTerms[i] = `SUM(` + MetricSqlName(req.Metrics[i]) + `) AS ` + MetricSqlName(req.Metrics[i])
 	}
 
 	// Terms for converting the rolling up the variants
 	metricAggregations := make([]string, len(req.Metrics))
-	for i := 0; i < len(req.Metrics); i++ {
+	for i := range len(req.Metrics) {
 		name := MetricSqlName(req.Metrics[i])
 		if _, ok := weightedAverageMetrics[req.Metrics[i]]; ok {
 			metricAggregations[i] = `SUM(` + name + ` * num_runs) / SUM(num_runs) AS ` + name

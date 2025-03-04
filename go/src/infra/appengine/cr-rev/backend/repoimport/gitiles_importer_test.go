@@ -141,7 +141,7 @@ Cr-Commit-Position: refs/heads/main@{#1}`,
 				"refs/heads/main":          "2",
 			}
 			commits := make([]*git.Commit, 5)
-			for i := 0; i < 5; i++ {
+			for i := range 5 {
 				commits[i] = &git.Commit{
 					Id: strconv.Itoa(i + 1),
 				}
@@ -167,7 +167,7 @@ Cr-Commit-Position: refs/heads/main@{#1}`,
 				"refs/heads/release": "2",
 			}
 			commits := make([]*git.Commit, 5)
-			for i := 0; i < 5; i++ {
+			for i := range 5 {
 				commits[i] = &git.Commit{
 					Id: strconv.Itoa(i + 1),
 				}
@@ -194,7 +194,7 @@ Cr-Commit-Position: refs/heads/main@{#1}`,
 				"refs/heads/release": strconv.Itoa(gitilesLogPageSize + 1),
 			}
 			commits := make([]*git.Commit, gitilesLogPageSize+2)
-			for i := 0; i < gitilesLogPageSize+2; i++ {
+			for i := range gitilesLogPageSize + 2 {
 				commits[i] = &git.Commit{
 					Id: strconv.Itoa(i + 1),
 				}

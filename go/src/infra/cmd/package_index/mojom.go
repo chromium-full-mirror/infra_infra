@@ -84,7 +84,7 @@ func (m *mojomTarget) mergeFeatureArgs(gnTargetDict map[string]gnTargetInfo) []s
 	parserTarget := m.targetName[:len(m.targetName)-len("__generator")] + "__parser"
 	parserTargetDict := gnTargetDict[parserTarget]
 	parserTargetArgs := parserTargetDict.Args
-	for i := 0; i < len(parserTargetArgs)-1; i++ {
+	for i := range len(parserTargetArgs) - 1 {
 		if parserTargetArgs[i] == "--enable_feature" {
 			args = append(args, parserTargetArgs[i:i+2]...)
 		}
@@ -109,7 +109,7 @@ func (m *mojomTarget) findMojomImports() ([]string, error) {
 	importPaths = append(importPaths, imp)
 
 	args := m.target.Args
-	for i := 0; i < len(args)-1; i++ {
+	for i := range len(args) - 1 {
 		if args[i] == "-I" {
 			imp, err := filepath.Abs(filepath.Join(m.rootDir, m.outDir, args[i+1]))
 			if err != nil {
@@ -283,7 +283,7 @@ func isMojomTarget(t *gnTarget) bool {
 	// For now we don't support xrefs for languages other than C++, so
 	// the mojom analyzer only bothers with the C++ output.
 	argsCpp := false
-	for i := 0; i < len(args)-1; i++ {
+	for i := range len(args) - 1 {
 		if args[i] == "-g" && args[i+1] == "c++" {
 			argsCpp = true
 			break

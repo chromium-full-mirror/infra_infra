@@ -192,7 +192,7 @@ func (s *Storage) UpdateMetadata(ctx context.Context, obj *Object, cb func(m *Me
 	}
 	handle := s.client.Bucket(s.bucket).Object(obj.Name).Generation(obj.Generation)
 
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		var meta *Metadata
 		var metaGen int64
 

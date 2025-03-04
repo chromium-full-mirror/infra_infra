@@ -28,7 +28,7 @@ type tsTarget struct {
 }
 
 func getTSConfig(target gnTargetInfo, ctx context.Context, rootDir, outDir string) (string, error) {
-	for i := 0; i < len(target.Args)-1; i++ {
+	for i := range len(target.Args) - 1 {
 		if target.Args[i] == "--tsconfig_output_location" {
 			tsconfig := target.Args[i+1]
 			if strings.HasPrefix(tsconfig, "//") {

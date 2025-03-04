@@ -52,7 +52,7 @@ func GenerateFilterConfigs(ctx context.Context, totalFilters int) *commonconfigs
 	mainConfigs = append(mainConfigs,
 		ContainerReadLogsContainerExecutor)
 
-	for i := 0; i < totalFilters; i++ {
+	for range totalFilters {
 		mainConfigs = append(mainConfigs,
 			ContainerStartContainerExecutor,
 			ExecuteFilterFilterExecutor,

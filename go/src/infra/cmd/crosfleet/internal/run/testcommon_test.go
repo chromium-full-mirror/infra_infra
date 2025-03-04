@@ -353,7 +353,7 @@ var testSoftwareDependenciesData = []struct {
 
 func stringOfLength(length int) string {
 	letters := make([]rune, length)
-	for i := 0; i < length; i++ {
+	for i := range length {
 		letters[i] = 'a'
 	}
 	return string(letters)

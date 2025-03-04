@@ -118,7 +118,7 @@ func TestGetUFSDeviceLicenses(t *testing.T) {
 				Type: tls.License_WINDOWS_10_PRO,
 			},
 		}
-		for i := 0; i < len(got); i++ {
+		for i := range len(got) {
 			if !proto.Equal(want[i], got[i]) {
 				t.Errorf("getUFSDeviceLicenses(fakeClient) returned unexpected diff (-want +got):\n%s\n%s", want[i], got[i])
 			}
@@ -131,7 +131,7 @@ func TestGetUFSDeviceLicenses(t *testing.T) {
 			t.Fatalf("getUFSDeviceLicenses(fakeClient) failed: %s", err)
 		}
 		var want []*tls.License
-		for i := 0; i < len(got); i++ {
+		for i := range len(got) {
 			if !proto.Equal(want[i], got[i]) {
 				t.Errorf("getUFSDeviceLicenses(fakeClient) returned unexpected diff (-want +got):\n%s\n%s", want[i], got[i])
 			}
@@ -145,7 +145,7 @@ func TestGetUFSDeviceLicenses(t *testing.T) {
 			t.Errorf("getUFSDeviceLicenses(fakeClient) succeeded with non existent device %s", hostname)
 		}
 		var want []*tls.License
-		for i := 0; i < len(got); i++ {
+		for i := range len(got) {
 			if !proto.Equal(want[i], got[i]) {
 				t.Errorf("getUFSDeviceLicenses(fakeClient) returned unexpected diff (-want +got):\n%s\n%s", want[i], got[i])
 			}

@@ -640,7 +640,7 @@ func TestGetTargets(t *testing.T) {
 var ninjaLogData []byte
 
 func BenchmarkParse(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		_, err := Parse(".ninja_log", bytes.NewReader(ninjaLogData))
 		if err != nil {
 			b.Errorf(`Parse()=_, %v; want=_, <nil>`, err)
@@ -654,7 +654,7 @@ func BenchmarkDedup(b *testing.B) {
 		b.Errorf(`Parse()=_, %v; want=_, <nil>`, err)
 	}
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		steps := make([]Step, len(njl.Steps))
 		copy(steps, njl.Steps)
 		Dedup(steps)
@@ -668,7 +668,7 @@ func BenchmarkFlow(b *testing.B) {
 	}
 	steps := Dedup(njl.Steps)
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		flowInput := make([]Step, len(steps))
 		copy(flowInput, steps)
 		Flow(flowInput, false)
@@ -683,13 +683,13 @@ func BenchmarkToTraces(b *testing.B) {
 	steps := Dedup(njl.Steps)
 	flow := Flow(steps, false)
 	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		ToTraces(flow, 1)
 	}
 }
 
 func BenchmarkDedupFlowToTraces(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for range b.N {
 		njl, err := Parse(".ninja_log", bytes.NewReader(ninjaLogData))
 		if err != nil {
 			b.Errorf(`Parse()=_, %v; want=_, <nil>`, err)

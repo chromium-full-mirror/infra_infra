@@ -308,7 +308,7 @@ func lineToStep(line string) (Step, error) {
 	// Due to slowness of strings.Split in App Engine Go,
 	// we use more faster implementation.
 	fields := make([]string, 0, 5)
-	for i := 0; i < 5; i++ {
+	for range 5 {
 		m := strings.IndexByte(line, '\t')
 		if m < 0 {
 			m = len(line)

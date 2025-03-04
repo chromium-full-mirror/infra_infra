@@ -264,7 +264,7 @@ func TestDriverToTestsMapping(t *testing.T) {
 		default:
 			t.Fatal("Unexpected driver type returned from driverToTestsMapping: ", d.Name())
 		}
-		for i := 0; i < len(ts); i++ {
+		for i := range len(ts) {
 			if !proto.Equal(ts[i], expected[i]) {
 				t.Errorf("Got unexpected request from driverToTestsMapping (-got +want):\n%v\n--\n%v\n", ts[i], expected[i])
 			}

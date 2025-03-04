@@ -169,7 +169,7 @@ func (sc *swarmingClientImpl) ListAliveIdleBotsInPool(ctx context.Context, pool 
 	cursor := ""
 	var out []*swarmingv2.BotInfo
 
-	for i := 0; i < maxSwarmingIterations; i++ {
+	for range maxSwarmingIterations {
 		resp, err := sc.botsClient.ListBots(ctx, getRequest(cursor))
 		if err != nil {
 			logging.Errorf(ctx, "botsClient.ListBots failed: %s", err)
@@ -204,7 +204,7 @@ func (sc *swarmingClientImpl) ListAliveBotsInPool(ctx context.Context, pool stri
 	cursor := ""
 	var out []*swarmingv2.BotInfo
 
-	for i := 0; i < maxSwarmingIterations; i++ {
+	for range maxSwarmingIterations {
 		resp, err := sc.botsClient.ListBots(ctx, getRequest(cursor))
 		if err != nil {
 			logging.Errorf(ctx, "botsClient.ListBots failed: %s", err)

@@ -184,7 +184,7 @@ func TestRunnerOutputToTestRun(t *testing.T) {
 				if l := len(c.out.testCases); l > 0 {
 					cs := build.ToTestCaseResults()
 					sort.Slice(cs, func(i, j int) bool { return cs[i].Uid < cs[j].Uid })
-					for i := 0; i < l; i++ {
+					for i := range l {
 						checkTestCaseEquality(t, cs[i], c.out.testCases[i])
 					}
 				}

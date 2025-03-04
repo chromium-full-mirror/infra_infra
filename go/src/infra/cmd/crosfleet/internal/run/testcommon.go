@@ -517,7 +517,7 @@ func (l *ctpRunLauncher) scheduleCTPBuildsAsync(ctx context.Context) (buildLaunc
 		allModels = []string{""}
 	}
 	for _, model := range allModels {
-		for i := 0; i < l.cliFlags.repeats; i++ {
+		for range l.cliFlags.repeats {
 			waitGroup.Add(1)
 			model := model
 			go func() {

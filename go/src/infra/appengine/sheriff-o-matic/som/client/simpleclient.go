@@ -21,7 +21,7 @@ type simpleClient struct {
 var retryBaseDelay = time.Second
 
 func retry(f func() (bool, error), maxAttempts int) error {
-	for attempt := 0; attempt < maxAttempts; attempt++ {
+	for attempt := range maxAttempts {
 		again, err := f()
 		if !again {
 			return err

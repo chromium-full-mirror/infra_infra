@@ -133,7 +133,7 @@ func TestPackageIndexUnix(t *testing.T) {
 			clangTargets.DataWg.Add(numRoutines)
 			clangTargets.UnitWg.Add(numRoutines)
 			clangTargets.KzipDataWg.Add(numRoutines)
-			for i := 0; i < numRoutines; i++ {
+			for range numRoutines {
 				go func() {
 					// Process clang files.
 					err := clangTargets.ProcessClangTargets(ip.ctx, ip.rootPath, ip.outDir, ip.corpus,
@@ -151,7 +151,7 @@ func TestPackageIndexUnix(t *testing.T) {
 			gnTargets.UnitWg.Add(numRoutines)
 
 			// Process GN target data files.
-			for i := 0; i < numRoutines; i++ {
+			for range numRoutines {
 				go func() {
 					// Process GN files.
 					err := gnTargets.ProcessGnTargets(ip.ctx, ip.rootPath, ip.outDir, ip.corpus, ip.buildConfig, ip.hashMaps,
@@ -163,7 +163,7 @@ func TestPackageIndexUnix(t *testing.T) {
 			}
 
 			// Convert data files to kzipEntries.
-			for i := 0; i < numRoutines; i++ {
+			for range numRoutines {
 				go func() {
 					ip.dataFileToKzipEntry(ctx, dataFileChannel, kzipEntryChannel)
 
@@ -176,7 +176,7 @@ func TestPackageIndexUnix(t *testing.T) {
 			// Convert unit protos to kzipEntries.
 			var kzipUnitWg sync.WaitGroup
 			kzipUnitWg.Add(numRoutines)
-			for i := 0; i < numRoutines; i++ {
+			for range numRoutines {
 				go func() {
 					ip.unitFileToKzipEntry(ctx, unitProtoChannel, kzipEntryChannel)
 					kzipUnitWg.Done()

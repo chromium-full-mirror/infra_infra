@@ -124,7 +124,7 @@ func (c *ethernetHookRun) innerRun(ctx context.Context, a subcommands.Applicatio
 			IncludeTrailingDelimiter: true,
 		})
 		var state ethernethook.LsState
-		for i := 0; i < scanLimit; i++ {
+		for range scanLimit {
 			if ok := it(&state); !ok {
 				break
 			}
