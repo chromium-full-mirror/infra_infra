@@ -6179,6 +6179,20 @@ wheel: <
 
 * *manylinux-x64-py3.8*
 
+## **mobly-py3**
+
+### 1.12.4
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mobly-py3"
+  version: "version:1.12.4"
+>
+```
+
+
+* *universal*
+
 ## **mock**
 
 ### 2.0.0
@@ -8023,6 +8037,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/portpicker-py2_py3"
   version: "version:1.3.1"
+>
+```
+
+
+* *universal*
+
+## **portpicker-py3**
+
+### 1.6.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/portpicker-py3"
+  version: "version:1.6.0"
 >
 ```
 
@@ -10446,6 +10474,19 @@ wheel: <
 * *windows-x86-py3.11*
 * *windows-x86-py3.8*
 
+### 308
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pywin32/${vpython_platform}"
+  version: "version:308"
+>
+```
+
+
+* *windows-x64-py3.11*
+* *windows-x86-py3.11*
+
 ## **pywinauto**
 
 ### 0.6.8
@@ -11157,6 +11198,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/sniffio-py3"
   version: "version:1.3.0"
+>
+```
+
+
+* *universal*
+
+## **snippet-uiautomator-py3**
+
+### 1.1.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/snippet-uiautomator-py3"
+  version: "version:1.1.2"
 >
 ```
 
