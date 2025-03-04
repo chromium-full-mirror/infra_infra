@@ -66,18 +66,13 @@ func LuciBuildExecution() {
 				defer bqClient.Close()
 			}
 
-			// Fetch the scheduke disallow list and place it in the "read only"
-			// variable in the common package in common_lib.
-			schedukeDisallowList := schedukeDisallowListProps.GetInput(ctx)
-			err := common.SetSchedukeMigrationList(schedukeDisallowList[common.SchedukeDisallowListMapKey])
-			if err != nil {
-				return err
-			}
-			logging.Infof(ctx, "schedukeDisallowList: %+v", common.GetSchedukeMigrationList())
+			// Fetch the scheduke disallow list
+			schedukeDisallowList := schedukeDisallowListProps.GetInput(ctx)[common.SchedukeDisallowListMapKey]
+			logging.Infof(ctx, "schedukeDisallowList: %+v", schedukeDisallowList)
 
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())
-			resp, err := executeRequests(ctx, input, ctrCipdInfo.GetVersion().GetCipdLabel(), st, bqClient, ctpv2CipdInfo.GetVersion().GetCipdLabel(), input.GetPartnerConfig().GetValue())
+			resp, err := executeRequests(ctx, input, ctrCipdInfo.GetVersion().GetCipdLabel(), st, bqClient, ctpv2CipdInfo.GetVersion().GetCipdLabel(), input.GetPartnerConfig().GetValue(), schedukeDisallowList)
 			if err != nil {
 				logging.Infof(ctx, "error found: %s", err)
 				st.SetSummaryMarkdown(err.Error())
@@ -97,7 +92,8 @@ func executeRequests(
 	buildState *build.State,
 	BQClient *bigquery.Client,
 	ctpv2CipdVersion string,
-	isPartnerRun bool) (*steps.CTPv2BinaryBuildOutput, error) {
+	isPartnerRun bool,
+	schedukeDisallowList []string) (*steps.CTPv2BinaryBuildOutput, error) {
 	buildOutput := &steps.CTPv2BinaryBuildOutput{}
 
 	// Validation
@@ -131,6 +127,7 @@ func executeRequests(
 		BQClient:              BQClient,
 		BuildState:            buildState,
 		IsPartnerRun:          isPartnerRun,
+		SchedukeDisallowList:  schedukeDisallowList,
 	}
 
 	ctpv2PreConfig := configs.NewCtpv2ExecutionConfig(0, configs.Ctpv2PreExecutionConfigType, cmdCfg, sk)

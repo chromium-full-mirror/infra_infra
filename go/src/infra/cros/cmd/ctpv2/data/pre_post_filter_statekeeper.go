@@ -28,6 +28,7 @@ type PrePostFilterStateKeeper struct {
 	ExecuteResponses        *steps.ExecuteResponses
 	DddTrackerMap           map[string]bool // v1 request key 3d bool map
 	IsPartnerRun            bool
+	SchedukeDisallowList    []string
 
 	// Al run related
 	AlStateInfo *AlStateInfo

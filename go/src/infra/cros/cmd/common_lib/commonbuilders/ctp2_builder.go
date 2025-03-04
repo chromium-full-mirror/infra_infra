@@ -9,12 +9,8 @@ import (
 
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
-	"go.chromium.org/luci/auth"
-	"go.chromium.org/luci/common/errors"
-	"go.chromium.org/luci/hardcoded/chromeinfra"
 	"go.chromium.org/luci/luciexe/build"
 
-	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 )
 
@@ -23,12 +19,12 @@ type ManifestFetcher func(ctx context.Context, s string) (string, error)
 type CTPV2FromV1 struct {
 	interfaces.CTPv2Builder
 
-	ctx             context.Context
-	v2              *testapi.CTPv2Request
-	v1              map[string]*test_platform.Request
-	manifestFetcher ManifestFetcher
-	buildState      *build.State
-	schedukePools   []string
+	ctx              context.Context
+	v2               *testapi.CTPv2Request
+	v1               map[string]*test_platform.Request
+	manifestFetcher  ManifestFetcher
+	buildState       *build.State
+	nonSchedukePools []string
 }
 
 type V2WithKey struct {
@@ -40,27 +36,16 @@ func NewV2WithKey(key string, v2 *testapi.CTPRequest) *V2WithKey {
 	return &V2WithKey{Key: key, V2: v2}
 }
 
-func NewCTPV2FromV1(ctx context.Context, v1 map[string]*test_platform.Request, buildState *build.State) (*CTPV2FromV1, error) {
-	gerritAuthOpts := chromeinfra.SetDefaultAuthOptions(auth.Options{
-		Scopes: common.GerritAuthScopes,
-	})
-	gc, err := common.SilentLoginHTTPClient(ctx, gerritAuthOpts)
-	if err != nil {
-		return nil, errors.Annotate(err, "NewCTPV2FromV1: setting up Gerrit client").Err()
-	}
-	schedukePools, err := common.GetPoolsFromURL(ctx, gc, common.SchedukePoolsURL)
-	if err != nil {
-		return nil, errors.Annotate(err, "NewCTPV2FromV1: failed to fetch scheduke pools").Err()
-	}
+func NewCTPV2FromV1(ctx context.Context, v1 map[string]*test_platform.Request, buildState *build.State, schedukeDisallowList []string) (*CTPV2FromV1, error) {
 	return &CTPV2FromV1{
 		v1: v1,
 		v2: &testapi.CTPv2Request{
 			Requests: []*testapi.CTPRequest{},
 		},
-		ctx:             ctx,
-		manifestFetcher: GetBuilderManifestFromContainer,
-		buildState:      buildState,
-		schedukePools:   schedukePools,
+		ctx:              ctx,
+		manifestFetcher:  GetBuilderManifestFromContainer,
+		buildState:       buildState,
+		nonSchedukePools: schedukeDisallowList,
 	}, nil
 }
 
@@ -84,7 +69,7 @@ func (builder *CTPV2FromV1) BuildRequest() (map[string]*testapi.CTPRequest, map[
 	reqKeyMap := map[string]*testapi.CTPRequest{}
 	dddTrackerMap := map[string]bool{}
 	for key, v1Request := range builder.v1 {
-		ctpReq := buildCTPRequest(v1Request, builder.schedukePools)
+		ctpReq := buildCTPRequest(v1Request, builder.nonSchedukePools)
 		builder.v2.Requests = append(builder.v2.Requests, ctpReq)
 		v2sWithKeyList = append(v2sWithKeyList, &V2WithKey{Key: key, V2: ctpReq})
 		dddTrackerMap[key] = ctpReq.GetSuiteRequest().GetDddSuite()
