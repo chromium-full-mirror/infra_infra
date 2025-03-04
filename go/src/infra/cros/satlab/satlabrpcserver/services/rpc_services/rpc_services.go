@@ -1829,3 +1829,11 @@ func (s *SatlabRpcServiceServer) AbortJobs(ctx context.Context, in *pb.AbortJobs
 
 	return &pb.AbortJobsResponse{}, nil
 }
+
+func (s *SatlabRpcServiceServer) IsAuth(ctx context.Context, _ *pb.IsAuthRequest) (*pb.IsAuthResponse, error) {
+	if _, err := os.Stat(site.GetServiceAccountPath()); err == nil {
+		return &pb.IsAuthResponse{IsAuth: true}, nil
+	}
+
+	return &pb.IsAuthResponse{IsAuth: false}, nil
+}
