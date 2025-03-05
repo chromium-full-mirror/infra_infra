@@ -217,7 +217,7 @@ func MetricSqlName(metricType api.MetricType) string {
 // available from rowLoader.Error().
 func (r *rowLoader) Metrics(metrics []api.MetricType) []*api.TestMetricsData {
 	retMetrics := make([]*api.TestMetricsData, len(metrics))
-	for metricIndex := range len(metrics) {
+	for metricIndex := range metrics {
 		columnName := MetricSqlName(metrics[metricIndex])
 
 		i, ok := r.fieldIndex(columnName)

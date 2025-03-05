@@ -81,7 +81,7 @@ func TestServoType(t *testing.T) {
 	C2D2_SERVOS := []string{SERVO_C2D2, SERVO_V4_C2D2, SERVO_V4P1_C2D2}
 
 	listContains := func(list []string, str string) bool {
-		for i := range len(list) {
+		for i := range list {
 			if list[i] == str {
 				return true
 			}
@@ -89,7 +89,7 @@ func TestServoType(t *testing.T) {
 		return false
 	}
 
-	for i := range len(VALID_SERVOS) {
+	for i := range VALID_SERVOS {
 		servoStr := VALID_SERVOS[i]
 		servo := NewServoType(servoStr)
 		if servo.IsV2() != listContains(V2_SERVOS, servoStr) {

@@ -298,7 +298,7 @@ func TestTestsReports(t *testing.T) {
 		t.Fatal("Got error from unexpected: ", err)
 	}
 
-	for i := range len(reports) {
+	for i := range reports {
 		if !proto.Equal(reports[i], expectedResults[i]) {
 			t.Errorf("[%v]Got unexpected reports(-got +want):\n%v\n--\n%v\n", i, reports[i], expectedResults[i])
 		}
@@ -398,7 +398,7 @@ func TestTestsReports_BadJson(t *testing.T) {
 
 	reports, _ := TestsReports(resultsDir, tests, testNamesToIds, testNamesToMetadata, missingReason)
 
-	for i := range len(reports) {
+	for i := range reports {
 		if !proto.Equal(reports[i], expectedResults[i]) {
 			t.Errorf("Got unexpected reports(-got +want):\n%v\n--\n%v\n", reports, expectedResults)
 		}
@@ -512,7 +512,7 @@ func TestAbortedResults(t *testing.T) {
 		t.Fatal("Got error from unexpected: ", err)
 	}
 
-	for i := range len(reports) {
+	for i := range reports {
 		if !proto.Equal(reports[i], expectedResults[i]) {
 			t.Errorf("Got unexpected reports(-got +want):\n%v\n--\n%v\n", reports, expectedResults)
 		}
@@ -626,7 +626,7 @@ func TestMalformedResults(t *testing.T) {
 		t.Fatal("Got error from unexpected: ", err)
 	}
 
-	for i := range len(reports) {
+	for i := range reports {
 		if !proto.Equal(reports[i], expectedResults[i]) {
 			t.Errorf("Got unexpected reports(-got +want):\n%v\n--\n%v\n", reports, expectedResults)
 		}

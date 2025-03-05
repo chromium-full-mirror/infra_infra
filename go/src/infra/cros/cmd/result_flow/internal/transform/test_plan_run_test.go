@@ -166,7 +166,7 @@ func TestBuildToTestPlanRuns(t *testing.T) {
 				got := build.ToTestPlanRuns(ctx)
 				sort.Slice(got, func(i, j int) bool { return got[i].Uid < got[j].Uid })
 				assert.Loosely(t, got, should.NotBeNil)
-				for i := range len(got) {
+				for i := range got {
 					checkTestPlanRunEquality(t, genFakeTestPlanRun(c.out[i]), got[i])
 				}
 

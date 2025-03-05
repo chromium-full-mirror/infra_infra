@@ -657,7 +657,7 @@ func TestLuciEXEMain(t *testing.T) {
 
 				clk.SetTimerCallback(func(amt time.Duration, timer clock.Timer) {
 					tags := testclock.GetTags(timer)
-					for i := range len(tags) {
+					for i := range tags {
 						tag := tags[i]
 						if tag == clock.ContextDeadlineTag {
 							return

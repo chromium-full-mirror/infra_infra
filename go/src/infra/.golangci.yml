@@ -9,6 +9,7 @@ linters:
     - gci
     - stylecheck
     - copyloopvar
+    - intrange
 
   disable:
     # Some projects are not ineffassign-clean yet.

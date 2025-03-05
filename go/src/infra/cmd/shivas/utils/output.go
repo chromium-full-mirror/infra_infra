@@ -188,7 +188,7 @@ func concurrentList(ctx context.Context, ic ufsAPI.FleetClient, listFunc listAll
 	var merr sync.Map
 	errs := make(map[string]error)
 	res := make([]proto.Message, 0)
-	for i := range len(filters) {
+	for i := range filters {
 		// goroutine for each filter
 		go func(i int) {
 			protos, err := DoList(ctx, ic, listFunc, int32(pageSize), filters[i], keysOnly, full, sink)
@@ -280,7 +280,7 @@ func ConcurrentGet(ctx context.Context, ic ufsAPI.FleetClient, names []string, g
 	var wg sync.WaitGroup
 	// number of goroutines/threads in the wait group to run concurrently
 	wg.Add(len(names))
-	for i := range len(names) {
+	for i := range names {
 		// goroutine for each id/name
 		go func(i int) {
 			// single Get request call to UFS
@@ -325,7 +325,7 @@ func ConcurrentDelete(ctx context.Context, ic ufsAPI.FleetClient, names []string
 	var wg sync.WaitGroup
 	// number of goroutines/threads in the wait group to run concurrently
 	wg.Add(len(names))
-	for i := range len(names) {
+	for i := range names {
 		// goroutine for each id/name
 		go func(i int) {
 			// single Delete request call to UFS
@@ -2079,7 +2079,7 @@ func strSlicesToStr(slices []string) string {
 func PrintAllNormal(title []string, res [][]string, keysOnly bool) {
 	defer tw.Flush()
 	PrintTableTitle(title, false, keysOnly)
-	for i := range len(res) {
+	for i := range res {
 		var out string
 		for _, s := range res[i] {
 			out += fmt.Sprintf("%s\t", s)

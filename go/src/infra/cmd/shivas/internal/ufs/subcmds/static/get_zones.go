@@ -121,7 +121,7 @@ func getNoEmitZones(keysOnly bool) []*noEmitZone {
 
 func outputZoneStr(zones []*zone, keysOnly bool) [][]string {
 	res := make([][]string, len(zones))
-	for i := range len(zones) {
+	for i := range zones {
 		if keysOnly {
 			res[i] = []string{zones[i].Name}
 			continue
