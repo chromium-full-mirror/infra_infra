@@ -302,7 +302,7 @@ func ProdDefaultPRPCOptions() *prpc.Options {
 }
 
 // CipdInstalledPath is the installed path for shivas package.
-var CipdInstalledPath = "go.chromium.org/infra/shivas/"
+var CipdInstalledPath = "infra/shivas/"
 
 // prpcOptionWithUserAgent create prpc option with custom UserAgent.
 //
