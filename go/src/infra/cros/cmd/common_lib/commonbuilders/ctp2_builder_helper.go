@@ -267,11 +267,11 @@ func removeNonGroupableSuiteFields(suite *testapi.SuiteRequest) *testapi.SuiteRe
 }
 
 // buildCTPRequest converts a v1 ctp request into a v2 CTPRequest.
-func buildCTPRequest(v1 *test_platform.Request, nonSchedukePools []string) *testapi.CTPRequest {
+func buildCTPRequest(v1 *test_platform.Request, schedukePools []string) *testapi.CTPRequest {
 	return &testapi.CTPRequest{
 		SuiteRequest:    buildSuiteRequest(v1),
 		ScheduleTargets: buildScheduleTargets(v1),
-		SchedulerInfo:   buildSchedulerInfo(v1, nonSchedukePools),
+		SchedulerInfo:   buildSchedulerInfo(v1, schedukePools),
 		Pool:            getSchedulingPool(v1),
 		KarbonFilters:   v1.GetParams().GetUserDefinedFilters(),
 		// Reuse translate flag from v1 to signal dynamic run in v2.
@@ -282,13 +282,20 @@ func buildCTPRequest(v1 *test_platform.Request, nonSchedukePools []string) *test
 
 // buildSchedulerInfo produces the scheduling system to be used,
 // as well as the qs account for qs scheduling.
-func buildSchedulerInfo(v1 *test_platform.Request, nonSchedukePools []string) *testapi.SchedulerInfo {
+func buildSchedulerInfo(v1 *test_platform.Request, schedukePools []string) *testapi.SchedulerInfo {
 	dryRun := v1.GetParams().GetDryRunCtpv2()
-	runWithQS := slices.Contains(nonSchedukePools, getSchedulingPool(v1))
+	runWithQS := v1.GetParams().GetRunCtpv2WithQs()
+	if !slices.Contains(schedukePools, getSchedulingPool(v1)) {
+		runWithQS = true
+	} else {
+		runWithQS = false
+	}
 	scheduler := testapi.SchedulerInfo_SCHEDUKE
 	if dryRun {
 		scheduler = testapi.SchedulerInfo_PRINT_REQUEST_ONLY
 	} else if runWithQS || isVmlabPoolReq(v1) {
+		// respect QS flag set from recipes
+		// if VmLab, use QS
 		scheduler = testapi.SchedulerInfo_QSCHEDULER
 	}
 

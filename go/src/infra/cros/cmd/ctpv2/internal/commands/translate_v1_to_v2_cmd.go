@@ -42,8 +42,7 @@ type TranslateV1ToV2Cmd struct {
 
 	AlStateInfo *data.AlStateInfo
 
-	IsPartnerRun         bool
-	SchedukeDisallowList []string
+	IsPartnerRun bool
 }
 
 // ExtractDependencies extracts all the command dependencies from state keeper.
@@ -107,7 +106,6 @@ func (cmd *TranslateV1ToV2Cmd) extractDepsFromFilterStateKeepr(
 			WorkUnitTrees: map[string]*androidapi.WorkUnitTree{},
 		}
 	}
-	cmd.SchedukeDisallowList = sk.SchedukeDisallowList
 
 	cmd.IsPartnerRun = sk.IsPartnerRun
 
@@ -255,7 +253,7 @@ func (cmd *TranslateV1ToV2Cmd) Execute(ctx context.Context) error {
 	common.WriteAnyObjectToStepLog(ctx, step, cmd.CtpV1Requests, "Received CtpV1 Request")
 	v1KeysMap := cmd.CreateKeysForEachV1Request()
 	common.WriteAnyObjectToStepLog(ctx, step, v1KeysMap, "RequestToBMVTargetKeyMap")
-	newCTPV2FromV1, err := commonbuilders.NewCTPV2FromV1(ctx, cmd.CtpV1Requests, cmd.BuildState, cmd.SchedukeDisallowList)
+	newCTPV2FromV1, err := commonbuilders.NewCTPV2FromV1(ctx, cmd.CtpV1Requests, cmd.BuildState)
 	if err != nil {
 		logging.Infof(ctx, "err while constructing newCTPV2FromV1: %s", err.Error())
 		return err
