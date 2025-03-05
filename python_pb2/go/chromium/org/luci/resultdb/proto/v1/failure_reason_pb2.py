@@ -17,9 +17,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='go.chromium.org/luci/resultdb/proto/v1/failure_reason.proto',
   package='luci.resultdb.v1',
   syntax='proto3',
-  serialized_options=b'Z/go.chromium.org/luci/resultdb/proto/v1;resultpb',
+  serialized_options=b'\n\033com.google.luci.resultdb.v1P\001Z/go.chromium.org/luci/resultdb/proto/v1;resultpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n;go.chromium.org/luci/resultdb/proto/v1/failure_reason.proto\x12\x10luci.resultdb.v1\"\x9f\x01\n\rFailureReason\x12\x1d\n\x15primary_error_message\x18\x01 \x01(\t\x12\x35\n\x06\x65rrors\x18\x02 \x03(\x0b\x32%.luci.resultdb.v1.FailureReason.Error\x12\x1e\n\x16truncated_errors_count\x18\x03 \x01(\x05\x1a\x18\n\x05\x45rror\x12\x0f\n\x07message\x18\x01 \x01(\tB1Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
+  serialized_pb=b'\n;go.chromium.org/luci/resultdb/proto/v1/failure_reason.proto\x12\x10luci.resultdb.v1\"\x9f\x01\n\rFailureReason\x12\x1d\n\x15primary_error_message\x18\x01 \x01(\t\x12\x35\n\x06\x65rrors\x18\x02 \x03(\x0b\x32%.luci.resultdb.v1.FailureReason.Error\x12\x1e\n\x16truncated_errors_count\x18\x03 \x01(\x05\x1a\x18\n\x05\x45rror\x12\x0f\n\x07message\x18\x01 \x01(\tBP\n\x1b\x63om.google.luci.resultdb.v1P\x01Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
 )
 
 

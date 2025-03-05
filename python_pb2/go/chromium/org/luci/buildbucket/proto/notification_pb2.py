@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   syntax='proto3',
   serialized_options=b'Z4go.chromium.org/luci/buildbucket/proto;buildbucketpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n9go.chromium.org/luci/buildbucket/proto/notification.proto\x12\x0e\x62uildbucket.v2\x1a\x32go.chromium.org/luci/buildbucket/proto/build.proto\x1a\x33go.chromium.org/luci/buildbucket/proto/common.proto\"=\n\x12NotificationConfig\x12\x14\n\x0cpubsub_topic\x18\x01 \x01(\t\x12\x11\n\tuser_data\x18\x02 \x01(\x0c\"\x84\x01\n\x0e\x42uildsV2PubSub\x12$\n\x05\x62uild\x18\x01 \x01(\x0b\x32\x15.buildbucket.v2.Build\x12\x1a\n\x12\x62uild_large_fields\x18\x02 \x01(\x0c\x12\x30\n\x0b\x63ompression\x18\x03 \x01(\x0e\x32\x1b.buildbucket.v2.Compression\"Y\n\x0ePubSubCallBack\x12\x34\n\x0c\x62uild_pubsub\x18\x01 \x01(\x0b\x32\x1e.buildbucket.v2.BuildsV2PubSub\x12\x11\n\tuser_data\x18\x02 \x01(\x0c\x42\x36Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
+  serialized_pb=b'\n9go.chromium.org/luci/buildbucket/proto/notification.proto\x12\x0e\x62uildbucket.v2\x1a\x32go.chromium.org/luci/buildbucket/proto/build.proto\x1a\x33go.chromium.org/luci/buildbucket/proto/common.proto\"=\n\x12NotificationConfig\x12\x14\n\x0cpubsub_topic\x18\x01 \x01(\t\x12\x11\n\tuser_data\x18\x02 \x01(\x0c\"\xa8\x01\n\x0e\x42uildsV2PubSub\x12$\n\x05\x62uild\x18\x01 \x01(\x0b\x32\x15.buildbucket.v2.Build\x12\x1a\n\x12\x62uild_large_fields\x18\x02 \x01(\x0c\x12\x30\n\x0b\x63ompression\x18\x03 \x01(\x0e\x32\x1b.buildbucket.v2.Compression\x12\"\n\x1a\x62uild_large_fields_dropped\x18\x04 \x01(\x08\"Y\n\x0ePubSubCallBack\x12\x34\n\x0c\x62uild_pubsub\x18\x01 \x01(\x0b\x32\x1e.buildbucket.v2.BuildsV2PubSub\x12\x11\n\tuser_data\x18\x02 \x01(\x0c\x42\x36Z4go.chromium.org/luci/buildbucket/proto;buildbucketpbb\x06proto3'
   ,
   dependencies=[go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_build__pb2.DESCRIPTOR,go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_common__pb2.DESCRIPTOR,])
 
@@ -96,6 +96,13 @@ _BUILDSV2PUBSUB = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='build_large_fields_dropped', full_name='buildbucket.v2.BuildsV2PubSub.build_large_fields_dropped', index=3,
+      number=4, type=8, cpp_type=7, label=1,
+      has_default_value=False, default_value=False,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
   ],
   extensions=[
   ],
@@ -109,7 +116,7 @@ _BUILDSV2PUBSUB = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=246,
-  serialized_end=378,
+  serialized_end=414,
 )
 
 
@@ -147,8 +154,8 @@ _PUBSUBCALLBACK = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=380,
-  serialized_end=469,
+  serialized_start=416,
+  serialized_end=505,
 )
 
 _BUILDSV2PUBSUB.fields_by_name['build'].message_type = go_dot_chromium_dot_org_dot_luci_dot_buildbucket_dot_proto_dot_build__pb2._BUILD

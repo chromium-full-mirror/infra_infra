@@ -17,9 +17,9 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='go.chromium.org/luci/resultdb/proto/v1/experiments.proto',
   package='luci.resultdb.v1',
   syntax='proto3',
-  serialized_options=b'Z/go.chromium.org/luci/resultdb/proto/v1;resultpb',
+  serialized_options=b'\n\033com.google.luci.resultdb.v1P\001Z/go.chromium.org/luci/resultdb/proto/v1;resultpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n8go.chromium.org/luci/resultdb/proto/v1/experiments.proto\x12\x10luci.resultdb.v1\"\x1e\n\x0b\x45\x63hoRequest\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x1f\n\x0c\x45\x63hoResponse\x12\x0f\n\x07message\x18\x01 \x01(\t2V\n\x0b\x45xperiments\x12G\n\x04\x45\x63ho\x12\x1d.luci.resultdb.v1.EchoRequest\x1a\x1e.luci.resultdb.v1.EchoResponse\"\x00\x42\x31Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
+  serialized_pb=b'\n8go.chromium.org/luci/resultdb/proto/v1/experiments.proto\x12\x10luci.resultdb.v1\"\x1e\n\x0b\x45\x63hoRequest\x12\x0f\n\x07message\x18\x01 \x01(\t\"\x1f\n\x0c\x45\x63hoResponse\x12\x0f\n\x07message\x18\x01 \x01(\t2V\n\x0b\x45xperiments\x12G\n\x04\x45\x63ho\x12\x1d.luci.resultdb.v1.EchoRequest\x1a\x1e.luci.resultdb.v1.EchoResponse\"\x00\x42P\n\x1b\x63om.google.luci.resultdb.v1P\x01Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
 )
 
 

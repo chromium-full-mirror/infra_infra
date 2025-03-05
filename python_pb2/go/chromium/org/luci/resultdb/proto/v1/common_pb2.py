@@ -12,17 +12,18 @@ _sym_db = _symbol_database.Default()
 
 
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
+from google.api import field_behavior_pb2 as google_dot_api_dot_field__behavior__pb2
 
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='go.chromium.org/luci/resultdb/proto/v1/common.proto',
   package='luci.resultdb.v1',
   syntax='proto3',
-  serialized_options=b'Z/go.chromium.org/luci/resultdb/proto/v1;resultpb',
+  serialized_options=b'\n\033com.google.luci.resultdb.v1P\001Z/go.chromium.org/luci/resultdb/proto/v1;resultpb',
   create_key=_descriptor._internal_create_key,
-  serialized_pb=b'\n3go.chromium.org/luci/resultdb/proto/v1/common.proto\x12\x10luci.resultdb.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"f\n\x07Variant\x12/\n\x03\x64\x65\x66\x18\x01 \x03(\x0b\x32\".luci.resultdb.v1.Variant.DefEntry\x1a*\n\x08\x44\x65\x66\x45ntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"(\n\nStringPair\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\"b\n\rGitilesCommit\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0f\n\x07project\x18\x02 \x01(\t\x12\x0b\n\x03ref\x18\x03 \x01(\t\x12\x13\n\x0b\x63ommit_hash\x18\x04 \x01(\t\x12\x10\n\x08position\x18\x05 \x01(\x03\"O\n\x0cGerritChange\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0f\n\x07project\x18\x02 \x01(\t\x12\x0e\n\x06\x63hange\x18\x03 \x01(\x03\x12\x10\n\x08patchset\x18\x04 \x01(\x03\"N\n\x0e\x43ommitPosition\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0f\n\x07project\x18\x02 \x01(\t\x12\x0b\n\x03ref\x18\x03 \x01(\t\x12\x10\n\x08position\x18\x04 \x01(\x03\"{\n\x13\x43ommitPositionRange\x12\x32\n\x08\x65\x61rliest\x18\x01 \x01(\x0b\x32 .luci.resultdb.v1.CommitPosition\x12\x30\n\x06latest\x18\x02 \x01(\x0b\x32 .luci.resultdb.v1.CommitPosition\"e\n\tTimeRange\x12,\n\x08\x65\x61rliest\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12*\n\x06latest\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"F\n\tSourceRef\x12/\n\x07gitiles\x18\x01 \x01(\x0b\x32\x1c.luci.resultdb.v1.GitilesRefH\x00\x42\x08\n\x06system\"8\n\nGitilesRef\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0f\n\x07project\x18\x02 \x01(\t\x12\x0b\n\x03ref\x18\x03 \x01(\tB1Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
+  serialized_pb=b'\n3go.chromium.org/luci/resultdb/proto/v1/common.proto\x12\x10luci.resultdb.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1fgoogle/api/field_behavior.proto\"f\n\x07Variant\x12/\n\x03\x64\x65\x66\x18\x01 \x03(\x0b\x32\".luci.resultdb.v1.Variant.DefEntry\x1a*\n\x08\x44\x65\x66\x45ntry\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t:\x02\x38\x01\"(\n\nStringPair\x12\x0b\n\x03key\x18\x01 \x01(\t\x12\r\n\x05value\x18\x02 \x01(\t\"\xd3\x01\n\x15TestVariantIdentifier\x12\x13\n\x0bmodule_name\x18\x01 \x01(\t\x12\x15\n\rmodule_scheme\x18\x02 \x01(\t\x12\x31\n\x0emodule_variant\x18\x03 \x01(\x0b\x32\x19.luci.resultdb.v1.Variant\x12 \n\x13module_variant_hash\x18\x04 \x01(\tB\x03\xe0\x41\x03\x12\x13\n\x0b\x63oarse_name\x18\x05 \x01(\t\x12\x11\n\tfine_name\x18\x06 \x01(\t\x12\x11\n\tcase_name\x18\x07 \x01(\t\"b\n\rGitilesCommit\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0f\n\x07project\x18\x02 \x01(\t\x12\x0b\n\x03ref\x18\x03 \x01(\t\x12\x13\n\x0b\x63ommit_hash\x18\x04 \x01(\t\x12\x10\n\x08position\x18\x05 \x01(\x03\"O\n\x0cGerritChange\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0f\n\x07project\x18\x02 \x01(\t\x12\x0e\n\x06\x63hange\x18\x03 \x01(\x03\x12\x10\n\x08patchset\x18\x04 \x01(\x03\"N\n\x0e\x43ommitPosition\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0f\n\x07project\x18\x02 \x01(\t\x12\x0b\n\x03ref\x18\x03 \x01(\t\x12\x10\n\x08position\x18\x04 \x01(\x03\"{\n\x13\x43ommitPositionRange\x12\x32\n\x08\x65\x61rliest\x18\x01 \x01(\x0b\x32 .luci.resultdb.v1.CommitPosition\x12\x30\n\x06latest\x18\x02 \x01(\x0b\x32 .luci.resultdb.v1.CommitPosition\"e\n\tTimeRange\x12,\n\x08\x65\x61rliest\x18\x01 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12*\n\x06latest\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\"F\n\tSourceRef\x12/\n\x07gitiles\x18\x01 \x01(\x0b\x32\x1c.luci.resultdb.v1.GitilesRefH\x00\x42\x08\n\x06system\"8\n\nGitilesRef\x12\x0c\n\x04host\x18\x01 \x01(\t\x12\x0f\n\x07project\x18\x02 \x01(\t\x12\x0b\n\x03ref\x18\x03 \x01(\tBP\n\x1b\x63om.google.luci.resultdb.v1P\x01Z/go.chromium.org/luci/resultdb/proto/v1;resultpbb\x06proto3'
   ,
-  dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,])
+  dependencies=[google_dot_protobuf_dot_timestamp__pb2.DESCRIPTOR,google_dot_api_dot_field__behavior__pb2.DESCRIPTOR,])
 
 
 
@@ -61,8 +62,8 @@ _VARIANT_DEFENTRY = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=166,
-  serialized_end=208,
+  serialized_start=199,
+  serialized_end=241,
 )
 
 _VARIANT = _descriptor.Descriptor(
@@ -92,8 +93,8 @@ _VARIANT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=106,
-  serialized_end=208,
+  serialized_start=139,
+  serialized_end=241,
 )
 
 
@@ -131,8 +132,82 @@ _STRINGPAIR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=210,
-  serialized_end=250,
+  serialized_start=243,
+  serialized_end=283,
+)
+
+
+_TESTVARIANTIDENTIFIER = _descriptor.Descriptor(
+  name='TestVariantIdentifier',
+  full_name='luci.resultdb.v1.TestVariantIdentifier',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  create_key=_descriptor._internal_create_key,
+  fields=[
+    _descriptor.FieldDescriptor(
+      name='module_name', full_name='luci.resultdb.v1.TestVariantIdentifier.module_name', index=0,
+      number=1, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='module_scheme', full_name='luci.resultdb.v1.TestVariantIdentifier.module_scheme', index=1,
+      number=2, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='module_variant', full_name='luci.resultdb.v1.TestVariantIdentifier.module_variant', index=2,
+      number=3, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='module_variant_hash', full_name='luci.resultdb.v1.TestVariantIdentifier.module_variant_hash', index=3,
+      number=4, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=b'\340A\003', file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='coarse_name', full_name='luci.resultdb.v1.TestVariantIdentifier.coarse_name', index=4,
+      number=5, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='fine_name', full_name='luci.resultdb.v1.TestVariantIdentifier.fine_name', index=5,
+      number=6, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+    _descriptor.FieldDescriptor(
+      name='case_name', full_name='luci.resultdb.v1.TestVariantIdentifier.case_name', index=6,
+      number=7, type=9, cpp_type=9, label=1,
+      has_default_value=False, default_value=b"".decode('utf-8'),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR,  create_key=_descriptor._internal_create_key),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  serialized_options=None,
+  is_extendable=False,
+  syntax='proto3',
+  extension_ranges=[],
+  oneofs=[
+  ],
+  serialized_start=286,
+  serialized_end=497,
 )
 
 
@@ -191,8 +266,8 @@ _GITILESCOMMIT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=252,
-  serialized_end=350,
+  serialized_start=499,
+  serialized_end=597,
 )
 
 
@@ -244,8 +319,8 @@ _GERRITCHANGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=352,
-  serialized_end=431,
+  serialized_start=599,
+  serialized_end=678,
 )
 
 
@@ -297,8 +372,8 @@ _COMMITPOSITION = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=433,
-  serialized_end=511,
+  serialized_start=680,
+  serialized_end=758,
 )
 
 
@@ -336,8 +411,8 @@ _COMMITPOSITIONRANGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=513,
-  serialized_end=636,
+  serialized_start=760,
+  serialized_end=883,
 )
 
 
@@ -375,8 +450,8 @@ _TIMERANGE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=638,
-  serialized_end=739,
+  serialized_start=885,
+  serialized_end=986,
 )
 
 
@@ -412,8 +487,8 @@ _SOURCEREF = _descriptor.Descriptor(
       create_key=_descriptor._internal_create_key,
     fields=[]),
   ],
-  serialized_start=741,
-  serialized_end=811,
+  serialized_start=988,
+  serialized_end=1058,
 )
 
 
@@ -458,12 +533,13 @@ _GITILESREF = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=813,
-  serialized_end=869,
+  serialized_start=1060,
+  serialized_end=1116,
 )
 
 _VARIANT_DEFENTRY.containing_type = _VARIANT
 _VARIANT.fields_by_name['def'].message_type = _VARIANT_DEFENTRY
+_TESTVARIANTIDENTIFIER.fields_by_name['module_variant'].message_type = _VARIANT
 _COMMITPOSITIONRANGE.fields_by_name['earliest'].message_type = _COMMITPOSITION
 _COMMITPOSITIONRANGE.fields_by_name['latest'].message_type = _COMMITPOSITION
 _TIMERANGE.fields_by_name['earliest'].message_type = google_dot_protobuf_dot_timestamp__pb2._TIMESTAMP
@@ -474,6 +550,7 @@ _SOURCEREF.oneofs_by_name['system'].fields.append(
 _SOURCEREF.fields_by_name['gitiles'].containing_oneof = _SOURCEREF.oneofs_by_name['system']
 DESCRIPTOR.message_types_by_name['Variant'] = _VARIANT
 DESCRIPTOR.message_types_by_name['StringPair'] = _STRINGPAIR
+DESCRIPTOR.message_types_by_name['TestVariantIdentifier'] = _TESTVARIANTIDENTIFIER
 DESCRIPTOR.message_types_by_name['GitilesCommit'] = _GITILESCOMMIT
 DESCRIPTOR.message_types_by_name['GerritChange'] = _GERRITCHANGE
 DESCRIPTOR.message_types_by_name['CommitPosition'] = _COMMITPOSITION
@@ -504,6 +581,13 @@ StringPair = _reflection.GeneratedProtocolMessageType('StringPair', (_message.Me
   # @@protoc_insertion_point(class_scope:luci.resultdb.v1.StringPair)
   })
 _sym_db.RegisterMessage(StringPair)
+
+TestVariantIdentifier = _reflection.GeneratedProtocolMessageType('TestVariantIdentifier', (_message.Message,), {
+  'DESCRIPTOR' : _TESTVARIANTIDENTIFIER,
+  '__module__' : 'go.chromium.org.luci.resultdb.proto.v1.common_pb2'
+  # @@protoc_insertion_point(class_scope:luci.resultdb.v1.TestVariantIdentifier)
+  })
+_sym_db.RegisterMessage(TestVariantIdentifier)
 
 GitilesCommit = _reflection.GeneratedProtocolMessageType('GitilesCommit', (_message.Message,), {
   'DESCRIPTOR' : _GITILESCOMMIT,
@@ -557,4 +641,5 @@ _sym_db.RegisterMessage(GitilesRef)
 
 DESCRIPTOR._options = None
 _VARIANT_DEFENTRY._options = None
+_TESTVARIANTIDENTIFIER.fields_by_name['module_variant_hash']._options = None
 # @@protoc_insertion_point(module_scope)
