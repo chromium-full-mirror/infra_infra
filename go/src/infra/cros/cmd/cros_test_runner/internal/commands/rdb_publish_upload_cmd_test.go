@@ -221,6 +221,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						BuildTarget: "hatch",
 						BuildMetadata: &artifactpb.BuildMetadata{
 							Sku: &artifactpb.BuildMetadata_Sku{
+								Hwid:     "GALLIDA360-ROZO B4C-H2Q-F2B-A6K-O6C-X6Y-A9A",
 								HwidSku:  "CRAASK-HULX D4B-F4E-F3F-B2K-L3I-Q6I",
 								DlmSkuId: "16968",
 							},
@@ -389,6 +390,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						{Key: "label-wifi_chip", Value: "INTEL_GFP2_AX211"},
 						{Key: "label-wifi_router_models", Value: "gale"},
 						{Key: "label-dlm_sku_id", Value: "16968"},
+						{Key: "hwid", Value: "GALLIDA360-ROZO B4C-H2Q-F2B-A6K-O6C-X6Y-A9A"},
 						{Key: "label-carrier", Value: "CARRIER_ESIM"},
 						{Key: "drone", Value: "skylab-drone-deployment-prod-6dc79d4f9-czjlj"},
 						{Key: "drone_server", Value: "chromeos4-row4-rack1-drone8"},
@@ -776,6 +778,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 						BuildTarget: "hatch",
 						BuildMetadata: &artifactpb.BuildMetadata{
 							Sku: &artifactpb.BuildMetadata_Sku{
+								Hwid:     "GALLIDA360-ROZO B4C-H2Q-F2B-A6K-O6C-X6Y-A9A",
 								HwidSku:  "CRAASK-HULX D4B-F4E-F3F-B2K-L3I-Q6I",
 								DlmSkuId: "16968",
 							},
@@ -844,6 +847,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 							BuildTarget: "dedede",
 							BuildMetadata: &artifactpb.BuildMetadata{
 								Sku: &artifactpb.BuildMetadata_Sku{
+									Hwid:     "GALLIDA360-ROZO B4C-H2Q-F2B-A6K-O6C-X6Y-A9A",
 									HwidSku:  "CRAASK-HULX D4B-F4E-F3F-B2K-L3I-ABC",
 									DlmSkuId: "16968",
 								},
@@ -986,6 +990,7 @@ func TestRdbPublishPublishCmd_ExtractDepsSuccess(t *testing.T) {
 					{Key: "label-wifi_chip", Value: "INTEL_GFP2_AX211"},
 					{Key: "label-wifi_router_models", Value: "gale"},
 					{Key: "label-dlm_sku_id", Value: "16968"},
+					{Key: "hwid", Value: "GALLIDA360-ROZO B4C-H2Q-F2B-A6K-O6C-X6Y-A9A"},
 					{Key: "label-carrier", Value: "CARRIER_ESIM"},
 					{Key: "drone", Value: "skylab-drone-deployment-prod-6dc79d4f9-czjlj"},
 					{Key: "drone_server", Value: "chromeos4-row4-rack1-drone8"},
