@@ -128,7 +128,9 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 
 func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.WorkUnit, token int64, results []*api.TestCaseResult, buildInfo *atp.BuildDescriptor) ([]*atp.BatchInsertEntry, int64, error) {
 	tcWorkunits := make(map[string]string)
+	createWUs := make(map[string]bool)
 	var entries []*atp.BatchInsertEntry
+
 	for _, result := range results {
 		dutProps, testIdentifierProps, err := aps.testProperties(result)
 		if err != nil {
@@ -141,7 +143,7 @@ func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.Wo
 		if len(names) == 2 {
 			// Add test class name as parent ID for now. This will be later
 			// replaced by the actual id once wu is created.
-			tcWorkunits[names[0]] = ""
+			createWUs[names[0]] = true
 			parentWUID = names[0]
 			testID = &atp.TestIdentifier{
 				Module:           module.Name,
@@ -166,11 +168,19 @@ func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.Wo
 		token = token + 1
 	}
 
-	log.Printf("Create %d parent test class workunits in parallel", len(tcWorkunits))
+	log.Printf("Create %d parent test class workunits in parallel", len(createWUs))
 	var mu sync.Mutex
 	g, _ := errgroup.WithContext(ctx)
-	for wuName := range tcWorkunits {
+	for wuName := range createWUs {
 		g.Go(func() error {
+			// Panics go to stderr and are not captured in container logs. Catch
+			// the panic and log it so that we can capture it before crash.
+			defer func() {
+				if x := recover(); x != nil {
+					log.Printf("run time panic when creating workunit: %v", x)
+				}
+			}()
+
 			parentwu, err := aps.insertModuleWorkUnit(wuName, "TF_TEST_RUN", module.Id)
 			if err != nil {
 				log.Printf("unable to create test run workunit for %s due to %q", wuName, err)
