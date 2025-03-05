@@ -522,6 +522,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 						pbutil.StringPair("gsc_testbed_serial", "123882-0008"),
 						pbutil.StringPair("gsc_testbed_type", "gsc_dt_shield"),
 						pbutil.StringPair("hostname", "chromeos15-row4-rack5-host1"),
+						pbutil.StringPair("hwid", "GALLIDA360-ROZO B4C-H2Q-F2B-A6K-O6C-X6Y-A9A"),
 						pbutil.StringPair("hwid_sku", "katsu_MT8183_0B"),
 						pbutil.StringPair("image", "hatch-cq/R106-15048.0.0"),
 						pbutil.StringPair("is_cft_run", "true"),

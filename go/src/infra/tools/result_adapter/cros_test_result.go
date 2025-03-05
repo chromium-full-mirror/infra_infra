@@ -423,6 +423,7 @@ func configBuildMetaDataTags(tags []*pb.StringPair, buildMetadata *artifactpb.Bu
 
 	sku := buildMetadata.GetSku()
 	if sku != nil {
+		newTags = AppendTags(newTags, "hwid", sku.GetHwid())
 		newTags = AppendTags(newTags, "hwid_sku", sku.GetHwidSku())
 		newTags = AppendTags(newTags, "dlm_sku_id", sku.GetDlmSkuId())
 	}
