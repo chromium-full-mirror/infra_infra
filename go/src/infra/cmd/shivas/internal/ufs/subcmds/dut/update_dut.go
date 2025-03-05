@@ -369,6 +369,7 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 				BBBucket:         c.deployBBBucket,
 				BBBuilderName:    ufsUtil.GetDeployBBBuilderName(req.GetMachineLSE().GetHostname(), deployArgs.deployBuilderHive),
 			}
+
 			utils.ScheduleDeployTask(ctx, deployParams)
 			resTable.RecordResult(swarmOp, req.MachineLSE.GetName(), err)
 
@@ -866,7 +867,6 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 		clearSimInfo := false
 		newSiminfos := make([]*chromeosLab.SIMInfo, 0, len(c.simInfo))
 		for _, s := range c.simInfo {
-			fmt.Println("siminfo: ", s)
 			if s[0] == utils.ClearFieldValue {
 				clearSimInfo = true
 				break
@@ -1175,14 +1175,14 @@ func (c *updateDUT) needToDeploy(ctx context.Context, ic ufsAPI.FleetClient, req
 			// Append any options that were set to force and return.
 			return true, deployBuilderHive, nil
 		}
-		return false, "", nil
+		return false, deployBuilderHive, nil
 	}
 
 	// Check if it's a JSON update and validate full update.
 	if c.newSpecsFile != "" && !utils.IsCSVFile(c.newSpecsFile) {
 		// Fail if the target is not a DUT.
 		if err := utils.IsDUT(oldDut); err != nil {
-			return false, "", errors.Annotate(err, "getDeployActions - %s is not a DUT", oldDut.GetName()).Err()
+			return false, deployBuilderHive, errors.Annotate(err, "getDeployActions - %s is not a DUT", oldDut.GetName()).Err()
 		}
 
 		// Check if asset was updated.
@@ -1262,7 +1262,7 @@ func (c *updateDUT) needToDeploy(ctx context.Context, ic ufsAPI.FleetClient, req
 		}
 	}
 	// Didn't find any reason to run deploy task.
-	return false, "", nil
+	return false, deployBuilderHive, nil
 }
 
 // updateDUTToUFS verifies the request and calls UpdateMachineLSE API with the given request.
