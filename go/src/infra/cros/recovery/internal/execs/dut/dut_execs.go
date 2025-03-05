@@ -135,9 +135,18 @@ func setDutStateReasonExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+func isChromeOSHWExec(ctx context.Context, info *execs.ExecInfo) error {
+	if info.GetChromeos() == nil {
+		return errors.Reason("is chromeos based: not a chromeos device").Err()
+	}
+	log.Infof(ctx, "DUT is Chromeos based device!")
+	return nil
+}
+
 func init() {
 	execs.Register("dut_has_name", hasDutNameActionExec)
 	execs.Register("dut_regex_name_match", regexNameMatchExec)
+	execs.Register("dut_is_chromeos_hw", isChromeOSHWExec)
 	execs.Register("dut_set_state", setDutStateExec)
 	execs.Register("dut_set_state_reason", setDutStateReasonExec)
 	execs.Register("dut_reset_state_reason", resetDutStateReasonExec)

@@ -6150,7 +6150,7 @@ plans:
               exec_name: env_is_not_cloudbot
               docs:
                 - Check that the process is not running on cloudbot.
-            - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
+            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
               exec_name: cros_set_as_chrome_based
               docs:
                 - Mark DUT as Chrome based.
@@ -6179,8 +6179,10 @@ plans:
             - Not applicable for cr50 servos based on b/205728276
             - Action is not critical as it updates own state.
           conditions:
-            - name: Is Chrome based (ALWAYS_RUN)
-              exec_name: cros_is_chrome_based
+            - name: Is ChromeOS based? (ALWAYS_RUN)
+              exec_name: cros_is_not_android_based
+              docs:
+                - Check if device is marked as ChromeOS based
             - name: 'RPM set state: MISSING_CONFIG'
               exec_name: set_rpm_state
               exec_args:

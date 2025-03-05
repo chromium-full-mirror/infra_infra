@@ -74,7 +74,7 @@ func crosRepairActions() map[string]*Action {
 				"Run DUT readiness checks for Chrome based DUTs.",
 			},
 			Conditions: []string{
-				"Is Chrome based",
+				"Is ChromeOS based?",
 			},
 			Dependencies: []string{
 				"Enable verbose network logging for cellular DUTs",
@@ -142,7 +142,7 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Do not run on CloudBot",
 				// Always reset first.
-				"Mark as Chrome based OS",
+				"Mark as ChromeOS based",
 				"DUT is not SSHable (simple)",
 				"ADB Connect DUT",
 			},
@@ -157,7 +157,7 @@ func crosRepairActions() map[string]*Action {
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
-		"Mark as Chrome based OS": {
+		"Mark as ChromeOS based": {
 			Docs: []string{
 				"Mark DUT as Chrome based.",
 			},
@@ -166,10 +166,25 @@ func crosRepairActions() map[string]*Action {
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
-		"Is Chrome based": {
-			ExecName:      "cros_is_chrome_based",
+		"Is ChromeOS based?": {
+			Docs: []string{
+				"Check if device is marked as ChromeOS based",
+			},
+			ExecName:      "cros_is_not_android_based",
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
+		},
+		"Can become ChromeOS-based": {
+			Docs: []string{
+				"Check if DUT can be provisioned to ChromeOS.",
+				"Devices runngin under MH is not allowed.",
+			},
+			Dependencies: []string{
+				"Do not run on Mobile Harness box",
+			},
+			ExecName:      "dut_is_chromeos_hw",
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Mark labstation as servod is in-use": {
 			Docs: []string{
@@ -222,8 +237,10 @@ func crosRepairActions() map[string]*Action {
 				"Power cycle DUT by RPM and wait for ping",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
 				"Restore AC detection by EC console and wait for ping",
+				"Foil: Install Android OS from servo USB-drive",
 				"Install Android OS by booting from servo USB-drive",
 				"Update FW and install Android OS from servo USB-drive",
+				"Force reimage to ChromeOS in DEV mode",
 				"Install OS in recovery mode by booting from servo USB-drive (no storage check)",
 				"Update FW from fw-image by servo and wait for boot",
 				"Update fingerpprint FW from USB drive",
@@ -392,8 +409,8 @@ func crosRepairActions() map[string]*Action {
 				"The request will be applied when plan restarted and reached action to address it.",
 			},
 			Conditions: []string{
-				"Do not run on Mobile Harness box",
-				"Is Android based",
+				"Can become ChromeOS-based",
+				"Is Android based?",
 				"Is a Chromebook",
 				"Recovery version has OS image path",
 				"Recovery version has firmware image path",
@@ -401,7 +418,7 @@ func crosRepairActions() map[string]*Action {
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
-				"Mark as Chrome based OS",
+				"Mark as ChromeOS based",
 				"Mark labstation as servod is in-use",
 				"Flash EC (FW) by servo (allowed failed)",
 				"Sleep 60 seconds",
@@ -423,7 +440,7 @@ func crosRepairActions() map[string]*Action {
 				"Audit DUT internal storage.",
 			},
 			Conditions: []string{
-				"Is Chrome based",
+				"Is ChromeOS based?",
 			},
 			Dependencies: []string{
 				"Device is SSHable (simple)",
@@ -583,7 +600,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			RecoveryActions: []string{
 				// Android actions.
-				"Provision Android OS",
+				"Foil: Install Android OS from servo USB-drive",
 				"Install Android OS by booting from servo USB-drive",
 				"Update FW and install Android OS from servo USB-drive",
 				"Force reimage to ChromeOS in DEV mode",
@@ -604,7 +621,7 @@ func crosRepairActions() map[string]*Action {
 				"requests:PROVISION",
 			},
 			RecoveryActions: []string{
-				"Provision Android OS",
+				"Foil: Install Android OS from servo USB-drive",
 				"Install Android OS by booting from servo USB-drive",
 				"Update FW and install Android OS from servo USB-drive",
 			},
@@ -1524,7 +1541,7 @@ func crosRepairActions() map[string]*Action {
 				"Perform provision OS if device is not running on it.",
 			},
 			Conditions: []string{
-				"Is Chrome based",
+				"Can become ChromeOS-based",
 				"Recovery version has OS image path",
 				"DUT not on stable version",
 			},
@@ -1637,7 +1654,7 @@ func crosRepairActions() map[string]*Action {
 				"Timeout is 1 hour.",
 			},
 			Conditions: []string{
-				"Is Chrome based",
+				"Is ChromeOS based?",
 			},
 			Dependencies: []string{
 				"Device is SSHable (simple)",
@@ -2056,7 +2073,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is a Chromebook",
-				"Is Chrome based",
+				"Is ChromeOS based?",
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
@@ -2080,7 +2097,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_is_not_in_dev_mode",
 			RecoveryActions: []string{
 				"Switch to secure-mode and reboot",
-				"Provision Android OS",
+				"Foil: Install Android OS from servo USB-drive",
 				"Install Android OS by booting from servo USB-drive",
 				"Quick provision OS",
 			},
@@ -2096,7 +2113,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_is_booted_in_secure_mode",
 			RecoveryActions: []string{
 				"Switch to secure-mode and reboot",
-				"Provision Android OS",
+				"Foil: Install Android OS from servo USB-drive",
 				"Install Android OS by booting from servo USB-drive",
 				"Quick provision OS",
 			},
@@ -2154,7 +2171,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is a Chromebook",
-				"Is Chrome based",
+				"Is ChromeOS based?",
 				"Not Satlab device",
 				"Is serial-number empty",
 			},
@@ -2169,7 +2186,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is a Chromebook",
-				"Is Chrome based",
+				"Is ChromeOS based?",
 				"Is serial-number known",
 			},
 			ExecName: "cros_match_serial_number_inventory",
@@ -2290,7 +2307,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that internal storage is responsive",
 			},
 			Dependencies: []string{
-				"Is Chrome based",
+				"Is ChromeOS based?",
 				"Device is SSHable",
 			},
 			ExecName: "cros_is_file_system_writable",
@@ -2724,7 +2741,7 @@ func crosRepairActions() map[string]*Action {
 				"Install stable OS on the device.",
 			},
 			Conditions: []string{
-				"Is Chrome based",
+				"Can become ChromeOS-based",
 				"Recovery version has OS image path",
 				"Device is SSHable",
 				"Internal storage is responsive",
@@ -3046,7 +3063,7 @@ func crosRepairActions() map[string]*Action {
 				"DUT will be booted in recovery mode.",
 			},
 			Conditions: []string{
-				"Is Chrome based",
+				"Can become ChromeOS-based",
 				"Is a Chromebook",
 				"Recovery version has OS image path",
 				"Is servod running",
@@ -3055,7 +3072,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Servo USB-Key needs to be reflashed",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
-				"Mark as Chrome based OS",
+				"Mark as ChromeOS based",
 				"Boot DUT in recovery and install from USB-drive",
 				"Wait to be SSHable (normal boot)",
 				"Remove REIMAGE_BY_USBKEY repair-request",
@@ -3069,6 +3086,7 @@ func crosRepairActions() map[string]*Action {
 				"DUT will be booted in recovery mode.",
 			},
 			Conditions: []string{
+				"Can become ChromeOS-based",
 				"Recovery version has OS image path",
 				"Recovery version has firmware image path",
 				"Is servod running",
@@ -3076,7 +3094,7 @@ func crosRepairActions() map[string]*Action {
 				"Is servo USB key detected",
 			},
 			Dependencies: []string{
-				"Mark as Chrome based OS",
+				"Mark as ChromeOS based",
 				"Flash EC (FW) by servo (allowed failed)",
 				"Sleep 60 seconds",
 				"Disable software write protection via servo",
@@ -3097,7 +3115,7 @@ func crosRepairActions() map[string]*Action {
 				"DUT will be booted in recovery mode.",
 			},
 			Conditions: []string{
-				"Is Chrome based",
+				"Can become ChromeOS-based",
 				"Recovery version has OS image path",
 				"Is servod running",
 				"Is a Chromebook",
@@ -3106,7 +3124,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Servo USB-Key needs to be reflashed",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
-				"Mark as Chrome based OS",
+				"Mark as ChromeOS based",
 				"Boot DUT in recovery and install from USB-drive (no storage check)",
 				"Wait to be SSHable (normal boot)",
 				"Remove REIMAGE_BY_USBKEY repair-request",
@@ -3122,14 +3140,14 @@ func crosRepairActions() map[string]*Action {
 				"When DUT sees USB-key it will always try to boot from it.",
 			},
 			Conditions: []string{
-				"Is Chrome based",
+				"Can become ChromeOS-based",
 				"Is Flex device",
 				"Is servod running",
 				"Is servo USB key detected",
 				"Device has Intel AMT",
 			},
 			Dependencies: []string{
-				"Mark as Chrome based OS",
+				"Mark as ChromeOS based",
 				"Servo USB-Key needs to be reflashed",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Direct USB-drive to DUT",
@@ -3246,7 +3264,7 @@ func crosRepairActions() map[string]*Action {
 				"This action installs the test image on DUT after booking the DUT in dev mode.",
 			},
 			Conditions: []string{
-				"Is Chrome based",
+				"Can become ChromeOS-based",
 				"Is a Chromebook",
 				"Recovery version has OS image path",
 				"Is servod running",
@@ -3254,7 +3272,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Boot DUT from USB in DEV mode",
-				"Mark as Chrome based OS",
+				"Mark as ChromeOS based",
 				"Run install after boot from USB-drive",
 				"Cold reset DUT by servo and wait to boot",
 				"Wait to be SSHable (normal boot)",
@@ -3646,7 +3664,7 @@ func crosRepairActions() map[string]*Action {
 				"Install the stable test image designated for the DUT.",
 			},
 			Conditions: []string{
-				"Is Chrome based",
+				"Can become ChromeOS-based",
 				"Device is SSHable",
 				"Internal storage is responsive",
 			},
@@ -3802,7 +3820,7 @@ func crosRepairActions() map[string]*Action {
 				"actions into a single repair action.",
 			},
 			Conditions: []string{
-				"Is Chrome based",
+				"Can become ChromeOS-based",
 				"Is a Chromebook",
 				"Recovery version has firmware image path",
 				"Is servod running",
@@ -3915,7 +3933,7 @@ func crosRepairActions() map[string]*Action {
 				"The goal to force update fingerprint fw when devices booted from USB-stick",
 			},
 			Conditions: []string{
-				"Is Chrome based",
+				"Can become ChromeOS-based",
 				"Is a Chromebook",
 				"Is servod running",
 				"Is servo USB key detected",
@@ -4050,7 +4068,7 @@ func crosRepairActions() map[string]*Action {
 				"Action is not critical as it updates own state.",
 			},
 			Conditions: []string{
-				"Is Chrome based",
+				"Is ChromeOS based?",
 				// If rpm info is not provided then we just want to set a state and skip verification.
 				"RPM set state: MISSING_CONFIG",
 				"RPM config present",

@@ -13,7 +13,7 @@ func androidActions(actions map[string]*Action) {
 				"Run DUT readiness checks for Android based DUTs.",
 			},
 			Conditions: []string{
-				"Is Android based",
+				"Is Android based?",
 			},
 			Dependencies: []string{
 				"Android is accessable",
@@ -35,7 +35,7 @@ func androidActions(actions map[string]*Action) {
 				"Validate is Andoid OS is accessable by reading data from the host.",
 			},
 			Conditions: []string{
-				"Is Android based",
+				"Is Android based?",
 			},
 			ExecName:    "cros_ssh",
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
@@ -43,7 +43,7 @@ func androidActions(actions map[string]*Action) {
 			RecoveryActions: []string{
 				"Reboot by ADB",
 				"Cold reset by servo and wait for ping",
-				"Provision Android OS",
+				"Foil: Install Android OS from servo USB-drive",
 				"Install Android OS by booting from servo USB-drive",
 				"Reset servo_v4.1 ethernet and wait for ping",
 				"Power cycle DUT by RPM and wait for ping",
@@ -58,22 +58,20 @@ func androidActions(actions map[string]*Action) {
 				"Set Android to be awake always.",
 			},
 			Conditions: []string{
-				"Is Android based",
+				"Is Android based?",
 			},
 			ExecName:   "ctr_make_awake_always",
 			RunControl: RunControl_ALWAYS_RUN,
 			RecoveryActions: []string{
 				"Reboot by ADB",
 				"Cold reset by servo and wait for ping",
-				"Provision Android OS",
+				"Foil: Install Android OS from servo USB-drive",
 				"Install Android OS by booting from servo USB-drive",
-				"Reset servo_v4.1 ethernet and wait for ping",
-				"Power cycle DUT by RPM and wait for ping",
 				"Force reimage to ChromeOS in DEV mode",
 				"Install OS in recovery mode by booting from servo USB-drive",
 			},
 		},
-		"Is Android based": {
+		"Is Android based?": {
 			ExecName:      "cros_is_android_based",
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
@@ -101,7 +99,7 @@ func androidActions(actions map[string]*Action) {
 				"Only executed if DUT is Android based.",
 			},
 			Conditions: []string{
-				"Is Android based",
+				"Is Android based?",
 			},
 			ExecName: "ctr_adb_connect",
 			ExecExtraArgs: []string{
@@ -116,7 +114,7 @@ func androidActions(actions map[string]*Action) {
 				"Reboot by ADB util.",
 			},
 			Conditions: []string{
-				"Is Android based",
+				"Is Android based?",
 			},
 			ExecName: "ctr_adb_command",
 			ExecExtraArgs: []string{
@@ -156,7 +154,7 @@ func androidActions(actions map[string]*Action) {
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
-		"Provision Android OS": {
+		"Foil: Install Android OS from servo USB-drive": {
 			Docs: []string{
 				"The install performs real install Android on the DUT.",
 			},

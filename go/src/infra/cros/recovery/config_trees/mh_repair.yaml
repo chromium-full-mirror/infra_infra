@@ -6786,8 +6786,16 @@ plans:
                 - 'available. This action exists to wrap these component '
                 - actions into a single repair action.
               conditions:
-                - name: Is Chrome based (ALWAYS_RUN)
-                  exec_name: cros_is_chrome_based
+                - name: Can become ChromeOS-based (ALWAYS_RUN)
+                  exec_name: dut_is_chromeos_hw
+                  docs:
+                    - Check if DUT can be provisioned to ChromeOS.
+                    - Devices runngin under MH is not allowed.
+                  dependencies:
+                    - name: Do not run on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                 - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -7040,14 +7048,14 @@ plans:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
                     - Set Android to be awake always.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -7271,14 +7279,14 @@ plans:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
                     - Set Android to be awake always.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -7501,14 +7509,14 @@ plans:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
                     - Set Android to be awake always.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -7732,14 +7740,14 @@ plans:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
                     - Set Android to be awake always.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -7934,14 +7942,14 @@ plans:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
                     - Set Android to be awake always.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -8165,14 +8173,14 @@ plans:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
                     - Set Android to be awake always.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -8191,7 +8199,7 @@ plans:
           docs:
             - Validate is Andoid OS is accessable by reading data from the host.
           conditions:
-            - name: Is Android based (ALWAYS_RUN)
+            - name: Is Android based? (ALWAYS_RUN)
               exec_name: cros_is_android_based
           recoveries:
             - name: Reboot by ADB (Allow to fail) (ALWAYS_RUN)
@@ -8201,7 +8209,7 @@ plans:
               docs:
                 - Reboot by ADB util.
               conditions:
-                - name: Is Android based (ALWAYS_RUN)
+                - name: Is Android based? (ALWAYS_RUN)
                   exec_name: cros_is_android_based
             - name: Cold reset by servo and wait for ping (ALWAYS_RUN)
               exec_name: sample_pass
@@ -8250,7 +8258,7 @@ plans:
                   docs:
                     - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
-            - name: Provision Android OS (ALWAYS_RUN)
+            - name: 'Foil: Install Android OS from servo USB-drive (ALWAYS_RUN)'
               exec_name: sample_pass
               docs:
                 - The install performs real install Android on the DUT.
@@ -8404,14 +8412,14 @@ plans:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
                     - Set Android to be awake always.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -8579,11 +8587,17 @@ plans:
                 - 'Place repair-request: reflash firmware of the DUT and re-image by USB-drive.'
                 - The request will be applied when plan restarted and reached action to address it.
               conditions:
-                - name: Do not run on Mobile Harness box (RUN_ONCE)
-                  exec_name: env_is_not_mh_box
+                - name: Can become ChromeOS-based (ALWAYS_RUN)
+                  exec_name: dut_is_chromeos_hw
                   docs:
-                    - Check that the process is not running on Mobile Harness box.
-                - name: Is Android based (ALWAYS_RUN)
+                    - Check if DUT can be provisioned to ChromeOS.
+                    - Devices runngin under MH is not allowed.
+                  dependencies:
+                    - name: Do not run on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
+                - name: Is Android based? (ALWAYS_RUN)
                   exec_name: cros_is_android_based
                 - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
@@ -8647,7 +8661,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
               dependencies:
-                - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
@@ -8909,8 +8923,16 @@ plans:
                 - This action installs the test image on DUT utilizing the features of servo.
                 - DUT will be booted in recovery mode.
               conditions:
-                - name: Is Chrome based (ALWAYS_RUN)
-                  exec_name: cros_is_chrome_based
+                - name: Can become ChromeOS-based (ALWAYS_RUN)
+                  exec_name: dut_is_chromeos_hw
+                  docs:
+                    - Check if DUT can be provisioned to ChromeOS.
+                    - Devices runngin under MH is not allowed.
+                  dependencies:
+                    - name: Do not run on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                 - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -9086,7 +9108,7 @@ plans:
                         - requests:UPDATE_USBKEY_IMAGE
                       docs:
                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
@@ -9151,7 +9173,7 @@ plans:
           docs:
             - Set Android to be awake always.
           conditions:
-            - name: Is Android based (ALWAYS_RUN)
+            - name: Is Android based? (ALWAYS_RUN)
               exec_name: cros_is_android_based
           recoveries:
             - name: Reboot by ADB (Allow to fail) (ALWAYS_RUN)
@@ -9161,7 +9183,7 @@ plans:
               docs:
                 - Reboot by ADB util.
               conditions:
-                - name: Is Android based (ALWAYS_RUN)
+                - name: Is Android based? (ALWAYS_RUN)
                   exec_name: cros_is_android_based
             - name: Cold reset by servo and wait for ping (ALWAYS_RUN)
               exec_name: sample_pass
@@ -9210,7 +9232,7 @@ plans:
                   docs:
                     - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
-            - name: Provision Android OS (ALWAYS_RUN)
+            - name: 'Foil: Install Android OS from servo USB-drive (ALWAYS_RUN)'
               exec_name: sample_pass
               docs:
                 - The install performs real install Android on the DUT.
@@ -9364,14 +9386,14 @@ plans:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
                     - Set Android to be awake always.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -9379,108 +9401,6 @@ plans:
                     - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
                     - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
-            - name: Reset servo_v4.1 ethernet and wait for ping (ALWAYS_RUN)
-              exec_name: sample_pass
-              docs:
-                - This repair action will reset servo ethernet power and wait for ssh, applicable to servo_v4.1 only
-              conditions:
-                - name: Is servod running (ALWAYS_RUN)
-                  exec_name: sample_pass
-                  docs:
-                    - Verify that servo host specified in setup and servod is running.
-                  dependencies:
-                    - name: Setup has servo info
-                      exec_name: dut_servo_host_present
-                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                      exec_name: servod_echo
-                      exec_args:
-                        - ssh_check:false
-                      conditions:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                - name: is_servo_v4p1_by_serial_number
-                  exec_name: is_servo_v4p1_by_serial_number
-              dependencies:
-                - name: Reset servo_v4.1 ethernet power (ALWAYS_RUN)
-                  exec_name: servo_v4p1_network_reset
-                  exec_args:
-                    - reset_timeout:1
-                  docs:
-                    - Reset servo_v4.1 ethernet power via built-in control
-                  dependencies:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ping
-                  docs:
-                    - Wait DUT to be pingable after some action on it.
-                    - Waiting time 150 seconds.
-            - name: Power cycle DUT by RPM and wait for ping (ALWAYS_RUN)
-              exec_name: sample_pass
-              docs:
-                - Perform RPM cycle and wait to device to boot back.
-              conditions:
-                - name: RPM config present
-                  exec_name: device_has_rpm_info
-                  exec_args:
-                    - device_type:dut
-                  docs:
-                    - Verifies that the RPM configuration provides some data for the hostname and outlet.
-                    - This action does not verify the correctness of the data.
-                - name: rpm_action_enabled
-                  exec_name: rpm_action_enabled
-              dependencies:
-                - name: rpm_power_cycle
-                  exec_name: rpm_power_cycle
-                - name: Set servo PD to src (Allow to fail) (ALWAYS_RUN)
-                  exec_name: servo_set
-                  exec_args:
-                    - command:servo_pd_role
-                    - string_value:src
-                  docs:
-                    - Set servo PD to src to power the DUT.
-                    - If servo is type-c it can switch PD to snk.
-                - name: Try cold reset DUT by servo (Allow to fail) (ALWAYS_RUN)
-                  exec_name: servo_power_state_reset
-                  exec_args:
-                    - timeout:30
-                    - wait_timeout:1
-                    - more_logs:true
-                  docs:
-                    - Try to cold-reset DUT by servo and do not wait.
-                    - The action may fail if the servo is missing or unresponsive.
-                  dependencies:
-                    - name: Is servod running (ALWAYS_RUN)
-                      exec_name: sample_pass
-                      docs:
-                        - Verify that servo host specified in setup and servod is running.
-                      dependencies:
-                        - name: Setup has servo info
-                          exec_name: dut_servo_host_present
-                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
-                          exec_name: servod_echo
-                          exec_args:
-                            - ssh_check:false
-                          conditions:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
-                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ping
-                  docs:
-                    - Wait DUT to be pingable after some action on it.
-                    - Waiting time 150 seconds.
             - name: Force reimage to ChromeOS in DEV mode (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -9488,11 +9408,17 @@ plans:
                 - 'Place repair-request: reflash firmware of the DUT and re-image by USB-drive.'
                 - The request will be applied when plan restarted and reached action to address it.
               conditions:
-                - name: Do not run on Mobile Harness box (RUN_ONCE)
-                  exec_name: env_is_not_mh_box
+                - name: Can become ChromeOS-based (ALWAYS_RUN)
+                  exec_name: dut_is_chromeos_hw
                   docs:
-                    - Check that the process is not running on Mobile Harness box.
-                - name: Is Android based (ALWAYS_RUN)
+                    - Check if DUT can be provisioned to ChromeOS.
+                    - Devices runngin under MH is not allowed.
+                  dependencies:
+                    - name: Do not run on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
+                - name: Is Android based? (ALWAYS_RUN)
                   exec_name: cros_is_android_based
                 - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
@@ -9556,7 +9482,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
               dependencies:
-                - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
@@ -9818,8 +9744,16 @@ plans:
                 - This action installs the test image on DUT utilizing the features of servo.
                 - DUT will be booted in recovery mode.
               conditions:
-                - name: Is Chrome based (ALWAYS_RUN)
-                  exec_name: cros_is_chrome_based
+                - name: Can become ChromeOS-based (ALWAYS_RUN)
+                  exec_name: dut_is_chromeos_hw
+                  docs:
+                    - Check if DUT can be provisioned to ChromeOS.
+                    - Devices runngin under MH is not allowed.
+                  dependencies:
+                    - name: Do not run on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                 - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -9995,7 +9929,7 @@ plans:
                         - requests:UPDATE_USBKEY_IMAGE
                       docs:
                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
@@ -10060,7 +9994,7 @@ plans:
           docs:
             - Check if PROVISION repair-request is present.
           recoveries:
-            - name: Provision Android OS (ALWAYS_RUN)
+            - name: 'Foil: Install Android OS from servo USB-drive (ALWAYS_RUN)'
               exec_name: sample_pass
               docs:
                 - The install performs real install Android on the DUT.
@@ -10214,14 +10148,14 @@ plans:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
                     - Set Android to be awake always.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -10445,14 +10379,14 @@ plans:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
                     - Set Android to be awake always.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -10600,9 +10534,9 @@ plans:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
-            - name: Provision Android OS (ALWAYS_RUN)
+            - name: 'Foil: Install Android OS from servo USB-drive (ALWAYS_RUN)'
               exec_name: sample_pass
               docs:
                 - The install performs real install Android on the DUT.
@@ -10756,14 +10690,14 @@ plans:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
                     - Set Android to be awake always.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -10776,8 +10710,16 @@ plans:
               docs:
                 - Install stable OS on the device.
               conditions:
-                - name: Is Chrome based (ALWAYS_RUN)
-                  exec_name: cros_is_chrome_based
+                - name: Can become ChromeOS-based (ALWAYS_RUN)
+                  exec_name: dut_is_chromeos_hw
+                  docs:
+                    - Check if DUT can be provisioned to ChromeOS.
+                    - Devices runngin under MH is not allowed.
+                  dependencies:
+                    - name: Do not run on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                 - name: Recovery version has OS image path
                   exec_name: has_stable_version_cros_image
                   docs:
@@ -10799,8 +10741,10 @@ plans:
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
-                    - name: Is Chrome based (ALWAYS_RUN)
-                      exec_name: cros_is_chrome_based
+                    - name: Is ChromeOS based? (ALWAYS_RUN)
+                      exec_name: cros_is_not_android_based
+                      docs:
+                        - Check if device is marked as ChromeOS based
                     - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
@@ -10944,9 +10888,9 @@ plans:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
-            - name: Provision Android OS (ALWAYS_RUN)
+            - name: 'Foil: Install Android OS from servo USB-drive (ALWAYS_RUN)'
               exec_name: sample_pass
               docs:
                 - The install performs real install Android on the DUT.
@@ -11100,14 +11044,14 @@ plans:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
                     - Set Android to be awake always.
                   conditions:
-                    - name: Is Android based (ALWAYS_RUN)
+                    - name: Is Android based? (ALWAYS_RUN)
                       exec_name: cros_is_android_based
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -11120,8 +11064,16 @@ plans:
               docs:
                 - Install stable OS on the device.
               conditions:
-                - name: Is Chrome based (ALWAYS_RUN)
-                  exec_name: cros_is_chrome_based
+                - name: Can become ChromeOS-based (ALWAYS_RUN)
+                  exec_name: dut_is_chromeos_hw
+                  docs:
+                    - Check if DUT can be provisioned to ChromeOS.
+                    - Devices runngin under MH is not allowed.
+                  dependencies:
+                    - name: Do not run on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                 - name: Recovery version has OS image path
                   exec_name: has_stable_version_cros_image
                   docs:
@@ -11143,8 +11095,10 @@ plans:
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
-                    - name: Is Chrome based (ALWAYS_RUN)
-                      exec_name: cros_is_chrome_based
+                    - name: Is ChromeOS based? (ALWAYS_RUN)
+                      exec_name: cros_is_not_android_based
+                      docs:
+                        - Check if device is marked as ChromeOS based
                     - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:

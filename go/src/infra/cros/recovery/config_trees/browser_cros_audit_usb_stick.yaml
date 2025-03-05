@@ -6150,7 +6150,7 @@ plans:
               exec_name: env_is_not_cloudbot
               docs:
                 - Check that the process is not running on cloudbot.
-            - name: Mark as Chrome based OS (Allow to fail) (ALWAYS_RUN)
+            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
               exec_name: cros_set_as_chrome_based
               docs:
                 - Mark DUT as Chrome based.
@@ -6181,8 +6181,10 @@ plans:
             - Run badblocks to test USB-drive from DUT side.
             - Timeout is 1 hour.
           conditions:
-            - name: Is Chrome based (ALWAYS_RUN)
-              exec_name: cros_is_chrome_based
+            - name: Is ChromeOS based? (ALWAYS_RUN)
+              exec_name: cros_is_not_android_based
+              docs:
+                - Check if device is marked as ChromeOS based
           dependencies:
             - name: Device is SSHable (simple) (ALWAYS_RUN) (time:'15s')
               exec_name: cros_ssh
@@ -6269,8 +6271,16 @@ plans:
               docs:
                 - Install stable OS on the device.
               conditions:
-                - name: Is Chrome based (ALWAYS_RUN)
-                  exec_name: cros_is_chrome_based
+                - name: Can become ChromeOS-based (ALWAYS_RUN)
+                  exec_name: dut_is_chromeos_hw
+                  docs:
+                    - Check if DUT can be provisioned to ChromeOS.
+                    - Devices runngin under MH is not allowed.
+                  dependencies:
+                    - name: Do not run on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
                 - name: Recovery version has OS image path
                   exec_name: has_stable_version_cros_image
                   docs:
@@ -6292,8 +6302,10 @@ plans:
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
-                    - name: Is Chrome based (ALWAYS_RUN)
-                      exec_name: cros_is_chrome_based
+                    - name: Is ChromeOS based? (ALWAYS_RUN)
+                      exec_name: cros_is_not_android_based
+                      docs:
+                        - Check if device is marked as ChromeOS based
                     - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:

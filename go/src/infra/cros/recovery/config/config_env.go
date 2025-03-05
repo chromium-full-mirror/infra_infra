@@ -12,29 +12,33 @@ func addEnvActions(actions map[string]*Action) {
 				"Check if the process run for partner.",
 				"Detection based on usage namespace of the context.",
 			},
-			ExecName:   "env_is_not_os_partner_namespace",
-			RunControl: RunControl_RUN_ONCE,
+			ExecName:      "env_is_not_os_partner_namespace",
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Do not run on CloudBot": {
 			Docs: []string{
 				"Check that the process is not running on cloudbot.",
 			},
-			ExecName:   "env_is_not_cloudbot",
-			RunControl: RunControl_RUN_ONCE,
+			ExecName:      "env_is_not_cloudbot",
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Execution on Mobile Harness box": {
 			Docs: []string{
 				"Check that the process is running on Mobile Harness box.",
 			},
-			ExecName:   "env_is_mh_box",
-			RunControl: RunControl_RUN_ONCE,
+			ExecName:      "env_is_mh_box",
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Do not run on Mobile Harness box": {
 			Docs: []string{
 				"Check that the process is not running on Mobile Harness box.",
 			},
-			ExecName:   "env_is_not_mh_box",
-			RunControl: RunControl_RUN_ONCE,
+			ExecName:      "env_is_not_mh_box",
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 	}
 	for k, v := range am {

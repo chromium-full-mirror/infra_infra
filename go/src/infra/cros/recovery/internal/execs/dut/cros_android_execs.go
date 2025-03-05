@@ -24,13 +24,13 @@ func isCrosAndroidBasedExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Reason("is cros android based: OS based on Chrome").Err()
 }
 
-// isCrosChromeBasedExec checks if ChromeOS is based on Chrome.
-func isCrosChromeBasedExec(ctx context.Context, info *execs.ExecInfo) error {
+// isNotCrosAndroidBasedExec checks if device is not Android based but based on ChromeOS.
+func isNotCrosAndroidBasedExec(ctx context.Context, info *execs.ExecInfo) error {
 	if info.GetChromeos().GetIsAndroidBased() {
 		log.Infof(ctx, "DUT is Android based device!")
-		return errors.Reason("is cros chrome based: OS based on Android").Err()
+		return errors.Reason("is cros chromeos based: OS based on Android").Err()
 	}
-	log.Infof(ctx, "DUT is Chrome based device!")
+	log.Infof(ctx, "DUT is ChromeOS based device!")
 	return nil
 }
 
@@ -70,7 +70,7 @@ func isAndroidBasedOrPreviousOSTypeExec(ctx context.Context, info *execs.ExecInf
 
 func init() {
 	execs.Register("cros_is_android_based", isCrosAndroidBasedExec)
-	execs.Register("cros_is_chrome_based", isCrosChromeBasedExec)
+	execs.Register("cros_is_not_android_based", isNotCrosAndroidBasedExec)
 	execs.Register("cros_is_previous_android_os_type", isPreviousAndroidOSTypeExec)
 	execs.Register("cros_is_previous_android_based_or_os_type", isAndroidBasedOrPreviousOSTypeExec)
 	execs.Register("cros_set_as_android_based", setCrosAsAndroidBasedExec)
