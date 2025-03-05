@@ -406,6 +406,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 					return nil, fmt.Errorf("exactly one value is expected for test-type, found %d.", len(arg.Values))
 				}
 				testType = TestType(arg.Values[0])
+				executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "test-type", Value: arg.Values[0]})
 			} else {
 				// directly plumb through any other args
 				for _, value := range arg.Values {
