@@ -310,6 +310,9 @@ func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, _ *build.S
 		Scheduler:      "CTP",
 		SchedulerState: androidapi.InvocationRunning.String(),
 		Trigger:        buildTarget,
+		Test: &androidbuildinternal.TestDefinition{
+			Name: "kron_invocation",
+		},
 	})
 	if err != nil {
 		return err
