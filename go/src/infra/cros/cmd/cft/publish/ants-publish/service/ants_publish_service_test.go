@@ -180,27 +180,33 @@ func TestArtifactMetadata(t *testing.T) {
 	testCases := []struct {
 		name      string
 		path      string
+		wantPath  string
 		wantTypes []string
 	}{
 		{
 			name:      "log",
-			path:      "provision/foo/log.txt",
+			path:      "cros-publish-1234/log.txt",
+			wantPath:  "cros-publish-1234_log.txt",
 			wantTypes: []string{"text/plain"},
 		},
 		{
 			name:      "xml",
 			path:      "test/tf/result.xml",
+			wantPath:  "test/tf/result.xml",
 			wantTypes: []string{"application/xml", "text/xml"},
 		},
 	}
 	aps := &AntsPublishService{
-		metadata: &metadata.PublishAntsMetadata{AntsInvocationId: "I123", ParentWorkUnitId: "WU1"},
+		metadata: &metadata.PublishAntsMetadata{
+			AntsInvocationId: "I123",
+			ParentWorkUnitId: "WU1",
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			got := aps.artifactMetadata(tc.path)
-			if got.Name != tc.path {
-				t.Errorf("Unexpected name. want %s got %s", tc.path, got.Name)
+			if got.Name != tc.wantPath {
+				t.Errorf("Unexpected name. want %s got %s", tc.wantPath, got.Name)
 			}
 			if !slices.Contains(tc.wantTypes, got.ContentType) {
 				t.Errorf("Unexpected content type. want %s got %s", tc.wantTypes, got.ContentType)

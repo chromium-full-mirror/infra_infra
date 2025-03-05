@@ -38,6 +38,7 @@ const (
 	defaultChunkSize  = 1000
 	internalAccountID = 1
 	abiKey            = "abi"
+	logFileSuffix     = "log.txt"
 )
 
 var (
@@ -451,9 +452,15 @@ func (aps *AntsPublishService) artifactMetadata(path string) *atp.BuildArtifactM
 	// Mime type is of the form `text/plain; charset utf-8`
 	// Just use the content type from this.
 	contentType := strings.Split(mime.TypeByExtension(filepath.Ext(path)), ";")[0]
+	artName := strings.TrimPrefix(path, artifactsDir)
+
+	// For logs.txt, use the full name as the display name. Context: b/398954496
+	if strings.HasSuffix(artName, logFileSuffix) {
+		artName = strings.ReplaceAll(artName, "/", "_")
+	}
 
 	return &atp.BuildArtifactMetadata{
-		Name:         strings.TrimPrefix(path, artifactsDir),
+		Name:         artName,
 		InvocationId: aps.metadata.AntsInvocationId,
 		WorkUnitId:   aps.metadata.ParentWorkUnitId,
 		ContentType:  contentType,
