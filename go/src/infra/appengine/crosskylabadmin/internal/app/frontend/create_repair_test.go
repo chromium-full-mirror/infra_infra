@@ -17,6 +17,7 @@ import (
 
 	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/config"
 	"go.chromium.org/infra/appengine/crosskylabadmin/internal/app/frontend/routing"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
 	"go.chromium.org/infra/libs/skylab/common/heuristics"
 )
 
@@ -523,4 +524,61 @@ func TestCreateBuildbucketTask(t *testing.T) {
 		_, err := createBuildbucketTask(ctx, nil, createBuildbucketTaskRequest{taskName: "e"})
 		assert.Loosely(t, err, should.ErrLike("unsupported"))
 	})
+}
+
+// TestGetProperBuilderName verifies expected builder name based on different params
+func TestGetProperBuilderName(t *testing.T) {
+	t.Parallel()
+
+	cases := []struct {
+		name        string
+		params      createBuildbucketTaskRequest
+		buildername string
+	}{
+		{
+			name: "happy path for normal deploy task",
+			params: createBuildbucketTaskRequest{
+				builderNameSuffix: "",
+				taskName:          buildbucket.Deploy,
+				taskType:          buildbucket.CIPDProd,
+			},
+			buildername: "deploy",
+		},
+		{
+			name: "happy path for deploy task using latest PARIS",
+			params: createBuildbucketTaskRequest{
+				builderNameSuffix: "",
+				taskName:          buildbucket.Deploy,
+				taskType:          buildbucket.CIPDLatest,
+			},
+			buildername: "deploy-latest",
+		},
+		{
+			name: "happy path for deploy task of clank pool",
+			params: createBuildbucketTaskRequest{
+				builderNameSuffix: "clank",
+				taskName:          buildbucket.Deploy,
+				taskType:          buildbucket.CIPDProd,
+			},
+			buildername: "deploy-clank",
+		},
+		{
+			name: "happy path for deploy task of clank pool using latest PARIS",
+			params: createBuildbucketTaskRequest{
+				builderNameSuffix: "clank",
+				taskName:          buildbucket.Deploy,
+				taskType:          buildbucket.CIPDLatest,
+			},
+			buildername: "deploy-clank",
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			if res := getProperBuilderName(tt.params); res != tt.buildername {
+				t.Errorf("unexpected buildername: want %q, got %q", tt.buildername, res)
+			}
+		})
+	}
 }

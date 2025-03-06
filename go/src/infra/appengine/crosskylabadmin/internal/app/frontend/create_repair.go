@@ -153,14 +153,15 @@ func CreateRepairTask(ctx context.Context, dutName string, expectedState string,
 	}
 
 	r := createBuildbucketTaskRequest{
-		taskName:      buildbucket.Recovery,
-		taskType:      cipdVersion,
-		dutName:       dutName,
-		expectedState: expectedState,
-		builderBucket: poolCfg.GetBuilderBucket(),
-		botPrefix:     poolCfg.GetBotPrefix(),
-		ufsNamespace:  poolCfg.UFSCtxNamespace(),
-		disableCft:    heuristics.LooksLikeLabstation(dutName),
+		taskName:          buildbucket.Recovery,
+		taskType:          cipdVersion,
+		dutName:           dutName,
+		expectedState:     expectedState,
+		builderBucket:     poolCfg.GetBuilderBucket(),
+		builderNameSuffix: poolCfg.GetBuilderNameSuffix(),
+		botPrefix:         poolCfg.GetBotPrefix(),
+		ufsNamespace:      poolCfg.UFSCtxNamespace(),
+		disableCft:        heuristics.LooksLikeLabstation(dutName),
 	}
 
 	karteC, err := createKarteClient(ctx)
@@ -248,6 +249,8 @@ type createBuildbucketTaskRequest struct {
 	expectedState string
 	// Build bucket to be used to schedule swarming task
 	builderBucket string
+	// Builder name suffix for particular swarming pool
+	builderNameSuffix string
 	// Bot prefix of a swarming bot.
 	botPrefix string
 	// UFS namespace to be used for the given bot
@@ -285,7 +288,7 @@ func createBuildbucketTask(ctx context.Context, sc schedulingapi.TaskSchedulingA
 	p := &buildbucket.Params{
 		UnitName:    params.dutName,
 		TaskName:    params.taskName.String(),
-		BuilderName: buildbucket.TaskNameToBuilderNamePerVersion(params.taskName, params.taskType),
+		BuilderName: getProperBuilderName(params),
 		// Set the build bucket information to the swarming task
 		BuilderBucket:  params.builderBucket,
 		EnableRecovery: true,
@@ -310,6 +313,15 @@ func createBuildbucketTask(ctx context.Context, sc schedulingapi.TaskSchedulingA
 		return "", errors.Annotate(err, "create buildbucket repair task").Err()
 	}
 	return url, nil
+}
+
+func getProperBuilderName(params createBuildbucketTaskRequest) string {
+	builderName := buildbucket.TaskNameToBuilderNamePerVersion(params.taskName, params.taskType)
+	if params.builderNameSuffix != "" {
+		// Never use latest PARIS for builder with suffix
+		builderName = fmt.Sprintf("%s-%s", buildbucket.TaskNameToBuilderNamePerVersion(params.taskName, buildbucket.CIPDProd), params.builderNameSuffix)
+	}
+	return builderName
 }
 
 // IsDisjoint returns true if and only if two sequences have no elements in common.

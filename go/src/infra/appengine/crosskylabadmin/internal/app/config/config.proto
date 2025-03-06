@@ -74,6 +74,8 @@ message Swarming {
     string ufs_namespace = 4;
     // AuditEnabled specified is audit tasks is enabled to be scheduled.
     bool audit_enabled = 5;
+    // The suffix of the builder name for this specific swarming pool
+    string builder_name_suffix = 6;
   }
 }
 
