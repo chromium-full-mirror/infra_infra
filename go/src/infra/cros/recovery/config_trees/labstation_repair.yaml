@@ -271,6 +271,10 @@ plans:
                   exec_name: cros_ssh
                   docs:
                     - This verifier checks whether the host is accessible over ssh.
+            - name: Sleep 1 minute (Allow to fail) (ALWAYS_RUN) (time:'1m10s')
+              exec_name: sample_sleep
+              exec_args:
+                - sleep:60
         - name: Clean up logs if necessary (Allow to fail)
           exec_name: cros_log_clean_up
           docs:

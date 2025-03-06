@@ -400,6 +400,8 @@ func LabstationRepairConfig() *Configuration {
 			ExecName: "cros_wait_for_system",
 			RecoveryActions: []string{
 				"Start system services",
+				// In edge cases, labstation may needs a bit more time to wait for system-services to up.
+				"Sleep 1 minute",
 			},
 		},
 		"Start system services": {

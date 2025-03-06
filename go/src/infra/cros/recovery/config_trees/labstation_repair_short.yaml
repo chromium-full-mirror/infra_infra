@@ -81,6 +81,7 @@ plans:
             - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
               dependencies:
                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+            - name: Sleep 1 minute (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
         - name: Clean up logs if necessary (Allow to fail) ('cros_log_clean_up')
         - name: Filesystem is writable (Allow to fail) ('cros_is_file_system_writable')
         - name: Check servod dependencies ('cros_run_command')
