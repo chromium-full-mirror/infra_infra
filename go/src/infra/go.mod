@@ -336,6 +336,6 @@ replace (
 replace (
 	go.chromium.org/chromiumos/ctp => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/ctp v0.0.0-20241114171457-3c3ac99d1157
 	go.chromium.org/chromiumos/lro => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/lro v0.0.0-20241114171457-3c3ac99d1157
-	go.chromium.org/chromiumos/test => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20250228060242-a95b25e2931e
+	go.chromium.org/chromiumos/test => go.chromium.org/chromiumos/platform/dev-util/src/go.chromium.org/chromiumos/test v0.0.0-20250306201559-656e8d760246
 	go.chromium.org/tast => go.chromium.org/tast/src/go.chromium.org/tast v0.0.0-20241114170151-b736fca5c46d
 )
