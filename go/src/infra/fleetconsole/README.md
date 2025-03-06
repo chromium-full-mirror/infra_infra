@@ -26,22 +26,10 @@ go build ./cmd/fleetconsoleserver
 
 ### Connecting to the dev db
 
-Check that you have gcloud ssh keys saved
-```bash
-gcloud compute os-login describe-profile
-```
-otherwise add them via
-```bash
-gcloud compute os-login ssh-keys add --key="$(ssh-add -L | grep publickey)" --project=fleet-console-dev
-```
+Create a tunnel to the dev alloydb vpc 
 
-Create a ssh tunnel inside the db's vpc:
-```bash
-gcloud compute ssh alloydb-bastion \
-    --project fleet-console-dev \
-    --zone us-central1-c \
-    --ssh-flag="-L 5432:10.89.112.2:5432"\
-    -- -o Hostname=nic0.alloydb-bastion.us-central1-c.c.fleet-console-dev.internal.gcpnode.com
+```
+./tools/setup_dev_db_tunnel.sh
 ```
 
 You can now run the web server specifying `-use-dev-db`
@@ -117,22 +105,10 @@ alembic upgrade head
 
 ### Dev
 
-Check that you have gcloud ssh keys saved
-```bash
-gcloud compute os-login describe-profile
-```
-otherwise add them via
-```bash
-gcloud compute os-login ssh-keys add --key="$(ssh-add -L | grep publickey)" --project=fleet-console-dev
-```
+Create a tunnel to the dev db vpc
 
-Create a ssh tunnel inside the db's vpc: [more info](go/gce-beyondcorp-ssh#ssh-tunneling)
-```bash
-gcloud compute ssh alloydb-bastion \
-    --project fleet-console-dev \
-    --zone us-central1-c \
-    --ssh-flag="-L 5432:10.89.112.2:5432"\
-    -- -o Hostname=nic0.alloydb-bastion.us-central1-c.c.fleet-console-dev.internal.gcpnode.com
+```
+./tools/setup_dev_db_tunnel.sh
 ```
 
 Run migrations specifying `env=dev`
@@ -146,23 +122,10 @@ gcloud auth application-default login
 
 ### Prod
 
-Check that you have gcloud ssh keys saved
-```bash
-gcloud compute os-login describe-profile
-```
-otherwise add them via
-```bash
-gcloud compute os-login ssh-keys add --key="$(ssh-add -L | grep publickey)" --project=fleet-console-prod
-```
+Create a tunnel to the prod db vpc
 
-Create a ssh tunnel inside the db's vpc: [more info](go/gce-beyondcorp-ssh#ssh-tunneling)
-```bash
-# gcloud alternative
-gcloud compute ssh alloydb-bastion \
-    --project fleet-console-prod \
-    --zone us-central1-c \
-    --ssh-flag="-L 5432:10.87.208.2:5432"\
-    -- -o Hostname=nic0.alloydb-bastion.us-central1-c.c.fleet-console-prod.internal.gcpnode.com
+```
+./tools/setup_prod_db_tunnel.sh
 ```
 
 Run migrations specifying `env=prod`
