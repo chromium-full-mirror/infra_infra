@@ -301,7 +301,7 @@ func crosProvisionActionsFromUSBDriveInRecoveryModeExec(ctx context.Context, inf
 		if androidInstall {
 			osVersion := recoveryVersion.GetOsVersion()
 			board := dut.GetBoard()
-			installCMD = fmt.Sprintf("al-install android-build/builds/%s/%s-trunk_staging-eng/attempts/latest/artifacts/android-desktop_image.bin.gz %s", osVersion, board, cachingIPAddr)
+			installCMD = fmt.Sprintf("al-install android-build/builds/%s/%s-trunk_staging-userdebug/attempts/latest/artifacts/android-desktop_image.bin.gz %s", osVersion, board, cachingIPAddr)
 		} else if crosInstall {
 			osImagePath := recoveryVersion.GetOsImagePath()
 			installCMD = fmt.Sprintf("cros-install chromeos-image-archive/%s %s", osImagePath, cachingIPAddr)
