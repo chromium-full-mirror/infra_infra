@@ -9,6 +9,7 @@ import (
 
 	"google.golang.org/protobuf/types/known/emptypb"
 
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
 
@@ -22,17 +23,30 @@ func (frontend *FleetConsoleFrontend) GetDeviceDimensions(ctx context.Context, r
 
 	realms, err := devicesdb.GetUserRealms(ctx, frontend.cloudProject)
 	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			return nil, errors.Annotate(err, "failed to fetch user realms").Tag(grpcutil.CanceledTag).Err()
+		}
+
+		logging.Errorf(ctx, "failed to fetch user realms: %s", err)
 		return nil, err
 	}
 
 	labels, err := devicesdb.GetLabels(ctx, frontend.dbConnection, realms)
 	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			return nil, errors.Annotate(err, "failed to fetch label values").Tag(grpcutil.CanceledTag).Err()
+		}
+
 		logging.Errorf(ctx, "failed to fetch label values: %s", err)
 		return nil, err
 	}
 
 	baseDimensions, err := devicesdb.GetBaseDimensions(ctx, frontend.dbConnection, realms)
 	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			return nil, errors.Annotate(err, "failed to fetch base dimension values").Tag(grpcutil.CanceledTag).Err()
+		}
+
 		logging.Errorf(ctx, "failed to fetch base dimension values: %s", err)
 		return nil, err
 	}

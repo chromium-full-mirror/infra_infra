@@ -20,3 +20,7 @@ func InvalidFilterError(err error) error {
 func InvalidOrderByError(err error) error {
 	return errors.Annotate(err, "invalid_order_by").Tag(grpcutil.InvalidArgumentTag).Err()
 }
+
+func BadRequest(err error, reason string, args ...any) error {
+	return errors.Annotate(err, reason, args...).Tag(grpcutil.InvalidArgumentTag).Err()
+}

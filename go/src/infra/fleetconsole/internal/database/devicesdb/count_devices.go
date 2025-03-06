@@ -23,8 +23,7 @@ func CountDevices(ctx context.Context, dbConn *sql.DB, filter string, realms []s
 
 	rows, err := dbConn.QueryContext(ctx, query.Statement, query.Parameters...)
 	if err != nil {
-		logging.Errorf(ctx, "failed to read from the DB: %s", err)
-		return nil, fmt.Errorf("DB QueryContext: %w", err)
+		return nil, fmt.Errorf("failed to count devices: %w", err)
 	}
 	defer rows.Close()
 

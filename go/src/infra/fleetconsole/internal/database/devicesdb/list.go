@@ -11,8 +11,6 @@ import (
 	"fmt"
 	"strconv"
 
-	"go.chromium.org/luci/common/logging"
-
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 	"go.chromium.org/infra/fleetconsole/internal/utils"
 )
@@ -22,14 +20,12 @@ func List(ctx context.Context, dbConn *sql.DB, filter, orderby string, offset, p
 	query, err := buildListDevicesQuery(ctx, offset, pageSize+1, filter, orderby, realms)
 	hasMoreData := false
 	if err != nil {
-		logging.Errorf(ctx, "failed to construct the query: %s", err)
-		return nil, true, err
+		return nil, true, utils.BadRequest(err, "failed to construct the query")
 	}
 
 	rows, err := dbConn.QueryContext(ctx, query.Statement, query.Parameters...)
 	if err != nil {
-		logging.Errorf(ctx, "failed to read from the DB: %s", err)
-		return nil, true, fmt.Errorf("DB QueryContext: %w", err)
+		return nil, true, fmt.Errorf("failed to read devices: %s", err)
 	}
 	defer rows.Close()
 

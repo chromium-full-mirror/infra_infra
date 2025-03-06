@@ -11,8 +11,6 @@ import (
 	"fmt"
 	"slices"
 
-	"go.chromium.org/luci/common/logging"
-
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 	"go.chromium.org/infra/fleetconsole/internal/database/queryutils"
 	"go.chromium.org/infra/fleetconsole/internal/utils"
@@ -26,8 +24,7 @@ func GetLabels(ctx context.Context, dbConn *sql.DB, realms []string) (map[string
 	}
 	rows, err := dbConn.QueryContext(ctx, query.Statement, query.Parameters...)
 	if err != nil {
-		logging.Errorf(ctx, "failed to read from the DB: %s", err)
-		return nil, fmt.Errorf("DB QueryContext: %w", err)
+		return nil, fmt.Errorf("failed to read labels: %w", err)
 	}
 	defer rows.Close()
 
@@ -100,8 +97,7 @@ func GetBaseDimensions(ctx context.Context, dbConn *sql.DB, realms []string) (ma
 
 		rows, err := dbConn.QueryContext(ctx, query.Statement, query.Parameters...)
 		if err != nil {
-			logging.Errorf(ctx, "failed to read from the DB: %s", err)
-			return nil, fmt.Errorf("DB QueryContext: %w", err)
+			return nil, fmt.Errorf("failed to read base dimensions: %w", err)
 		}
 		defer rows.Close()
 

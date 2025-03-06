@@ -7,6 +7,7 @@ package consoleserver
 import (
 	"context"
 
+	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
 
@@ -34,11 +35,21 @@ func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *flee
 
 	realms, err := devicesdb.GetUserRealms(ctx, frontend.cloudProject)
 	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			return nil, errors.Annotate(err, "failed to get user realms").Tag(grpcutil.CanceledTag).Err()
+		}
+
+		logging.Errorf(ctx, "failed to get user realms: %s", err)
 		return nil, err
 	}
 
 	results, hasMoreData, err := devicesdb.List(ctx, frontend.dbConnection, req.Filter, req.OrderBy, offset, pageSize, realms)
 	if err != nil {
+		if errors.Is(err, context.Canceled) {
+			return nil, errors.Annotate(err, "failed to list devices").Tag(grpcutil.CanceledTag).Err()
+		}
+
+		logging.Errorf(ctx, "failed to list devices: %s", err)
 		return nil, err
 	}
 
