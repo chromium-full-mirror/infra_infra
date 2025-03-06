@@ -13,6 +13,7 @@ import argparse
 import os
 import re
 import sys
+from typing import Iterable
 
 import bs4
 import certifi
@@ -92,12 +93,16 @@ def _get_windows_10_driver_group(soup: bs4.BeautifulSoup, url: str) -> bs4.Tag:
   return windows_10_group
 
 
-def _get_download_button(soup: bs4.BeautifulSoup, url: str) -> bs4.Tag:
+def _get_download_button(driver_version: str, soup: bs4.BeautifulSoup,
+                         url: str) -> bs4.Tag:
   """Finds the relevant download button for the driver.
 
   Specifically looks for Windows 10 consumer drivers.
 
   Args:
+    driver_version: The driver version that the download button should be for.
+        Used to ensure that the correct button is retrieved if multiple are
+        available.
     soup: A BeautifulSoup object that has parsed the HTML for an AMD driver
         download page.
     url: A string containing the URL that provided the HTML parsed by |soup|.
@@ -112,7 +117,7 @@ def _get_download_button(soup: bs4.BeautifulSoup, url: str) -> bs4.Tag:
     # Adrenalin is AMD's branding for their consumer driver package.
     # Looking for 'win10' is still necessary to distinguish from the
     # auto-detecting installer that downloads the drivers on the fly.
-    if 'win10' in href and 'adrenalin' in href:
+    if 'win10' in href and 'adrenalin' in href and driver_version in href:
       matching_buttons.append(button)
   if not matching_buttons:
     raise RuntimeError('Unable to find any relevant download buttons on %s' %
@@ -134,36 +139,31 @@ def _get_driver_version(soup: bs4.BeautifulSoup, url: str) -> str:
   Returns:
     A string containing the parsed driver version.
   """
-  # Downloads are organized by OS type with several download options available
-  # for each OS. We look for the Windows 10 consumer drivers.
-  # The revision is a sibling of the first <strong>Revision Number</strong>
-  # tag in the group, so look for that.
-  os_group = _get_windows_10_driver_group(soup, url)
-  # Look for the "Revision Number" <strong>, then grab the sibling <p> which
-  # contains the actual revision number.
-  labels = os_group.find_all('strong')
-  for l in labels:
-    if 'revision' not in l.string.lower():
+  whql_versions = _get_whql_versions(soup, url)
+  # Although uncommon, it is possible for the driver page to contain multiple
+  # WHQL driver downloads. In such cases, look for the highest numbered one.
+  highest_version = whql_versions[0]
+  for i, version in enumerate(whql_versions):
+    if i == 0:
       continue
-    # Check to make sure that this is the correct driver type. Previously,
-    # simply looking for the revision was sufficient, but the auto-detecting
-    # installer added a revision field as well.
-    grandparent = l.parent.parent
-    adrenalin_label = grandparent.find(string=re.compile('Adrenalin Edition'))
-    if adrenalin_label is not None:
-      revision_label = l
-      break
-  else:
-    raise RuntimeError('Unable to find revision label from %s' % url)
-  revision_item = revision_label.parent.find('p')
-  match = DRIVER_VERSION_REGEX.match(revision_item.string)
-  if not match:
-    raise RuntimeError('Unable to extract driver version from %s' % url)
-  return match.group(1)
+    highest_version_parts = [int(p) for p in highest_version.split('.')]
+    version_parts = [int(p) for p in version.split('.')]
+    if len(highest_version_parts) != len(version_parts):
+      raise RuntimeError(
+          'Versioning scheme appears to have changed between %s and %s on %s' %
+          (highest_version, version, url))
+
+    for j, vp in enumerate(version_parts):
+      if vp < highest_version_parts[j]:
+        break
+      if vp > highest_version_parts[j]:
+        highest_version = version
+        break
+  return highest_version
 
 
-def _get_driver_binary(soup: bs4.BeautifulSoup, url: str) -> bytes:
-  """Downloads the driver binary.
+def _get_whql_versions(soup: bs4.BeautifulSoup, url: str) -> Iterable[str]:
+  """Gets all driver versions that are "WHQL Recommended".
 
   Args:
     soup: A BeautifulSoup object that has parsed the HTML for an AMD driver
@@ -171,9 +171,86 @@ def _get_driver_binary(soup: bs4.BeautifulSoup, url: str) -> bytes:
     url: A string containing the URL that provided the HTML parsed by |soup|.
 
   Returns:
+    An Iterable of strings containing all the driver versions which are tagged
+    as WHQL Recommended.
+  """
+  adrenalin_revisions = _get_adrenalin_revisions(soup, url)
+  whql_versions = []
+  for revision in adrenalin_revisions:
+    if 'whql' not in revision.lower():
+      continue
+    match = DRIVER_VERSION_REGEX.match(revision)
+    if not match:
+      raise RuntimeError('Unable to extract driver version from "%s" from %s' %
+                         (revision, url))
+    whql_versions.append(match.group(1))
+
+  if not whql_versions:
+    raise RuntimeError('Unable to find a WHQL driver version from %s' % url)
+  return whql_versions
+
+
+def _get_adrenalin_revisions(soup: bs4.BeautifulSoup,
+                             url: str) -> Iterable[str]:
+  """Gets all tag strings containing Adrenalin driver revision numbers.
+
+  Args:
+    soup: A BeautifulSoup object that has parsed the HTML for an AMD driver
+        download page.
+    url: A string containing the URL that provided the HTML parsed by |soup|.
+
+  Returns:
+    An Iterable containing all the revisions for drivers tagged as
+    "Adrenalin Edition".
+  """
+  # Downloads are organized by OS type with several download options available
+  # for each OS. We look for the Windows 10 consumer drivers.
+  # The revision is a sibling of the first <strong>Revision Number</strong>
+  # tag in the group, so look for that.
+  os_group = _get_windows_10_driver_group(soup, url)
+
+  # Look for the "Revision Number" <strong>, then grab the sibling <p> which
+  # contains the actual revision number.
+  revision_strong_tags = []
+  strong_tags = os_group.find_all('strong')
+  for st in strong_tags:
+    if 'revision' not in st.string.lower():
+      continue
+    # Check to make sure that this is the correct driver type. Previously,
+    # simply looking for the revision was sufficient, but the auto-detecting
+    # installer added a revision field as well.
+    grandparent = st.parent.parent
+    adrenalin_label = grandparent.find(string=re.compile('Adrenalin Edition'))
+    if adrenalin_label is not None:
+      revision_strong_tags.append(st)
+  if not revision_strong_tags:
+    raise RuntimeError('Unable to find revision tag from %s' % url)
+
+  revision_strings = []
+  for st in revision_strong_tags:
+    p_tag = st.parent.find('p')
+    # It is valid for there to not be a revision for certain driver packages,
+    # such as the RGB tool for the RX 7900 XTX.
+    if p_tag:
+      revision_strings.append(p_tag.string)
+  return revision_strings
+
+
+def _get_driver_binary(driver_version: str, soup: bs4.BeautifulSoup,
+                       url: str) -> bytes:
+  """Downloads the driver binary.
+
+  Args:
+    driver_version: The driver version that should be downloaded. Used to ensure
+        that the correct binary is retrieved if multiple are available.
+    soup: A BeautifulSoup object that has parsed the HTML for an AMD driver
+        download page.
+    url: A string containing the URL that provided the HTML parsed by |soup|.
+
+  Returns:
     Bytes containing the downloaded driver binary.
   """
-  download_button = _get_download_button(soup, url)
+  download_button = _get_download_button(driver_version, soup, url)
   download_url = download_button['href']
   r = requests.get(
       download_url,
@@ -220,7 +297,8 @@ def cmd_checkout(args: argparse.Namespace) -> None:
         'Requested driver version %s did not match available version %s' %
         (requested_driver_version, actual_version))
 
-  driver_binary = _get_driver_binary(soup, DRIVER_PAGE_URL)
+  driver_binary = _get_driver_binary(requested_driver_version, soup,
+                                     DRIVER_PAGE_URL)
   # We use the same naming scheme as what get_url produces for consistency
   # across different driver types. This simplifies use in automation slightly.
   filename = 'raw_source_0.exe'
