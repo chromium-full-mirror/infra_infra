@@ -44,7 +44,7 @@ var outputProps = build.RegisterOutputProperty[map[string]string]("ctpv2/sub-bui
 
 var ctrInputVersion = build.RegisterInputProperty[*protos.CipdVersionInfo](common.HwTestCtrInputPropertyName)
 var ctpv2InputVersion = build.RegisterInputProperty[*protos.CipdVersionInfo](common.HwTestCtpv2InputPropertyName)
-var schedukeDisallowListProps = build.RegisterInputProperty[map[string][]string](common.SchedukeDisallowListPropertyName)
+var ctpv2WithFifoProps = build.RegisterInputProperty[map[string][]string](common.Ctpv2WithFifoPropertyName)
 
 // LuciBuildExecution represents build executions.
 //
@@ -68,12 +68,19 @@ func LuciBuildExecution() {
 
 			// Fetch the scheduke disallow list and place it in the "read only"
 			// variable in the common package in common_lib.
-			schedukeDisallowList := schedukeDisallowListProps.GetInput(ctx)
-			err := common.SetSchedukeMigrationList(schedukeDisallowList[common.SchedukeDisallowListMapKey])
+			Ctpv2WithFifoList := ctpv2WithFifoProps.GetInput(ctx)
+
+			// Ensure that the property has the correct key.
+			list, ok := Ctpv2WithFifoList[common.Ctpv2WithFifoMapKey]
+			if !ok {
+				return fmt.Errorf("no Ctpv2WithFifo list was provided")
+			}
+
+			err := common.SetCtpv2WithFifoList(list)
 			if err != nil {
 				return err
 			}
-			logging.Infof(ctx, "schedukeDisallowList: %+v", common.GetSchedukeMigrationList())
+			logging.Infof(ctx, "schedukeDisallowList: %+v", common.GetCtpv2WithFifoList())
 
 			logging.Infof(ctx, "have ctr info: %v", ctrCipdInfo)
 			logging.Infof(ctx, "ctr label: %s", ctrCipdInfo.GetVersion().GetCipdLabel())

@@ -38,8 +38,8 @@ const (
 	HwTestCtrInputPropertyName             = "$chromeos/cros_tool_runner"
 	HwTestTrInputPropertyName              = "$chromeos/cros_test_runner"
 	HwTestCtpv2InputPropertyName           = "$chromeos/ctpv2"
-	SchedukeDisallowListPropertyName       = "$chromeos/migration"
-	SchedukeDisallowListMapKey             = "not_scheduke_pools_list"
+	Ctpv2WithFifoPropertyName              = "$chromeos/migration"
+	Ctpv2WithFifoMapKey                    = "ctpv2_with_fifo"
 	CftServiceMetadataFileName             = ".cftmeta"
 	CftServiceMetadataLineContentSeparator = "="
 	CftServiceMetadataServicePortKey       = "SERVICE_PORT"
@@ -194,18 +194,25 @@ func DockerEnvVarsToPreserve() []string {
 }
 
 var (
-	schedukeMigrationList []string
+	// ctpv2WithFifo stores the pools which are expected to run inside CTPv2 but
+	// not scheduled with Scheduke.
+	ctpv2WithFifo []string
 )
 
-func SetSchedukeMigrationList(list []string) error {
-	if schedukeMigrationList != nil {
-		return fmt.Errorf("schedukeMigrationList list can only be set once")
+// SetCtpv2WithFifoList sets the value of ctpv2WithFifo. It will throw an error
+// if called more than once making the variable like a "read-only" global var.
+func SetCtpv2WithFifoList(list []string) error {
+	if ctpv2WithFifo != nil {
+		return fmt.Errorf("ctpv2WithFifoList list can only be set once")
 	}
 
-	schedukeMigrationList = list
+	ctpv2WithFifo = list
 	return nil
 }
 
-func GetSchedukeMigrationList() []string {
-	return schedukeMigrationList
+// GetCtpv2WithFifoList returns a "read-only" copy of the ctpv2WithFifo list.
+func GetCtpv2WithFifoList() []string {
+	readOnly := make([]string, len(ctpv2WithFifo))
+	copy(readOnly, ctpv2WithFifo)
+	return readOnly
 }
