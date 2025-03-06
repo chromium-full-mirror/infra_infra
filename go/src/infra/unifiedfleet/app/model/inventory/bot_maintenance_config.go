@@ -27,6 +27,7 @@ type BotMaintenanceConfigEntity struct {
 	_kind                string                `gae:"$kind,BotMaintenanceConfig"`
 	Extra                datastore.PropertyMap `gae:",extra"`
 	Id                   string                `gae:"$id"`
+	AssetType            string                `gae:"AssetType"`
 	BotMaintenanceConfig []byte                `gae:",noindex"`
 }
 
@@ -45,7 +46,7 @@ func (e *BotMaintenanceConfigEntity) Validate() error {
 }
 
 // PutBotMaintenanceConfig adds a bot name and its corresponding maintenance config in the datastore.
-func PutBotMaintenanceConfig(ctx context.Context, maintenanceConfig *ufspb.BotMaintenanceConfig, id string) (*BotMaintenanceConfigEntity, error) {
+func PutBotMaintenanceConfig(ctx context.Context, maintenanceConfig *ufspb.BotMaintenanceConfig, id string, assetType string) (*BotMaintenanceConfigEntity, error) {
 	if id == "" {
 		return nil, status.Errorf(codes.Internal, "Empty bot name")
 	}
@@ -55,6 +56,7 @@ func PutBotMaintenanceConfig(ctx context.Context, maintenanceConfig *ufspb.BotMa
 	}
 	entity := &BotMaintenanceConfigEntity{
 		Id:                   id,
+		AssetType:            assetType,
 		BotMaintenanceConfig: maintenanceConfigBytes,
 	}
 	if err := datastore.Put(ctx, entity); err != nil {
@@ -64,7 +66,7 @@ func PutBotMaintenanceConfig(ctx context.Context, maintenanceConfig *ufspb.BotMa
 	return entity, nil
 }
 
-// GetBotMaintenanceConfig returns OwnershipData for the given bot name from datastore.
+// GetBotMaintenanceConfig returns BotMaintenanceConfigEntity for the given bot name from datastore.
 func GetBotMaintenanceConfig(ctx context.Context, id string) (*BotMaintenanceConfigEntity, error) {
 	entity := &BotMaintenanceConfigEntity{
 		Id: id,

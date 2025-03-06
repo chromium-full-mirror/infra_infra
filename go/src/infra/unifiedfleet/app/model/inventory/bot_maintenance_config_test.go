@@ -34,7 +34,7 @@ func TestPutBotMaintenanceConfig(t *testing.T) {
 	t.Run("add non-existent Bot maintenance config", func(t *testing.T) {
 		maintenanceConfig := mockBotMaintenanceConfig()
 		expectedId := "test"
-		got, err := PutBotMaintenanceConfig(ctx, maintenanceConfig, expectedId)
+		got, err := PutBotMaintenanceConfig(ctx, maintenanceConfig, expectedId, "assetType")
 		if err != nil {
 			t.Fatalf("PutBotMaintenanceConfig failed: %s", err)
 		}
@@ -57,7 +57,7 @@ func TestPutBotMaintenanceConfig(t *testing.T) {
 	t.Run("add existing Bot maintenance config", func(t *testing.T) {
 		maintenanceConfig := mockBotMaintenanceConfig()
 		expectedId := "test"
-		got, err := PutBotMaintenanceConfig(ctx, maintenanceConfig, expectedId)
+		got, err := PutBotMaintenanceConfig(ctx, maintenanceConfig, expectedId, "assetType")
 		if err != nil {
 			t.Fatalf("PutBotMaintenanceConfig failed: %s", err)
 		}
@@ -78,7 +78,7 @@ func TestPutBotMaintenanceConfig(t *testing.T) {
 	})
 
 	t.Run("add empty bot name", func(t *testing.T) {
-		_, err := PutBotMaintenanceConfig(ctx, &ufspb.BotMaintenanceConfig{}, "")
+		_, err := PutBotMaintenanceConfig(ctx, &ufspb.BotMaintenanceConfig{}, "", "assetType")
 		if err == nil {
 			t.Errorf("PutBotMaintenanceConfig succeeded with empty name")
 		}
@@ -97,7 +97,7 @@ func TestGetBotMaintenanceConfig(t *testing.T) {
 	t.Run("get BotMaintenanceConfig by existing ID", func(t *testing.T) {
 		maintenanceConfig := mockBotMaintenanceConfig()
 		expectedId := "test"
-		_, err := PutBotMaintenanceConfig(ctx, maintenanceConfig, expectedId)
+		_, err := PutBotMaintenanceConfig(ctx, maintenanceConfig, expectedId, "assetType")
 		if err != nil {
 			t.Fatalf("PutBotMaintenanceConfig failed: %s", err)
 		}
@@ -143,7 +143,7 @@ func TestListBotMaintenanceConfigs(t *testing.T) {
 	t.Run("Get all OwnershipData", func(t *testing.T) {
 		maintenanceConfig := mockBotMaintenanceConfig()
 		expectedId := "test"
-		_, err := PutBotMaintenanceConfig(ctx, maintenanceConfig, expectedId)
+		_, err := PutBotMaintenanceConfig(ctx, maintenanceConfig, expectedId, "assetType")
 		if err != nil {
 			t.Fatalf("PutBotMaintenanceConfig failed: %s", err)
 		}

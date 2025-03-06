@@ -102,7 +102,7 @@ func mockChromeBrowserMachine(id, name string) *ufspb.Machine {
 }
 
 // Dummy MachineLSE
-func mockMachineLSE(id string) *ufspb.MachineLSE {
+func MockMachineLSE(id string) *ufspb.MachineLSE {
 	return &ufspb.MachineLSE{
 		Name: id,
 	}
@@ -310,7 +310,7 @@ func TestImportSecurityConfig(t *testing.T) {
 			ctx = config.Use(ctx, contextConfig)
 			ownershipConfig, gitClient, err := GetConfigAndGitClient(ctx)
 			assert.Loosely(t, err, should.BeNil)
-			resp, err := inventory.CreateMachineLSE(ctx, mockMachineLSE("testLSE1"))
+			resp, err := inventory.CreateMachineLSE(ctx, MockMachineLSE("testLSE1"))
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
 
@@ -537,7 +537,7 @@ func TestGetOwnershipData(t *testing.T) {
 		t.Run("happy path - machineLSE", func(t *ftt.Test) {
 			ctx := encTestingContext()
 			ctx = config.Use(ctx, contextConfig)
-			resp, err := inventory.CreateMachineLSE(ctx, mockMachineLSE("testLSE1"))
+			resp, err := inventory.CreateMachineLSE(ctx, MockMachineLSE("testLSE1"))
 			assert.Loosely(t, resp, should.NotBeNil)
 			assert.Loosely(t, err, should.BeNil)
 

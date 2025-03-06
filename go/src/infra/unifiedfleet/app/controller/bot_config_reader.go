@@ -435,12 +435,12 @@ func isBotOwnershipUpdated(ctx context.Context, botId string, newOwnership *ufsp
 		return true, assetType, err
 	}
 	pm := p.(*ufspb.OwnershipData)
-	if isOwnershipFieldUpdated(pm.GetCustomer(), newOwnership.GetCustomer()) ||
-		isOwnershipFieldUpdated(pm.GetSecurityLevel(), newOwnership.GetSecurityLevel()) ||
-		isOwnershipFieldUpdated(pm.GetPoolName(), newOwnership.GetPoolName()) ||
-		isOwnershipFieldUpdated(pm.GetSwarmingInstance(), newOwnership.GetSwarmingInstance()) ||
-		isOwnershipArrayFieldUpdated(pm.GetPools(), newOwnership.GetPools()) ||
-		isOwnershipArrayFieldUpdated(pm.GetBuilders(), newOwnership.GetBuilders()) {
+	if isStringFieldUpdated(pm.GetCustomer(), newOwnership.GetCustomer()) ||
+		isStringFieldUpdated(pm.GetSecurityLevel(), newOwnership.GetSecurityLevel()) ||
+		isStringFieldUpdated(pm.GetPoolName(), newOwnership.GetPoolName()) ||
+		isStringFieldUpdated(pm.GetSwarmingInstance(), newOwnership.GetSwarmingInstance()) ||
+		isArrayFieldUpdated(pm.GetPools(), newOwnership.GetPools()) ||
+		isArrayFieldUpdated(pm.GetBuilders(), newOwnership.GetBuilders()) {
 		diff := cmp.Diff(pm, newOwnership, protocmp.Transform())
 		logging.Debugf(ctx, "Found ownership diff for bot  %s - %s", botId, diff)
 		return true, assetType, nil
@@ -449,12 +449,12 @@ func isBotOwnershipUpdated(ctx context.Context, botId string, newOwnership *ufsp
 }
 
 // Checks if the Ownership.Builder field was updated, ignoring an empty slice
-func isOwnershipArrayFieldUpdated(oldVal []string, newVal []string) bool {
+func isArrayFieldUpdated(oldVal []string, newVal []string) bool {
 	if len(newVal) != 0 && len(oldVal) != len(newVal) {
 		return true
 	}
 	for i := range newVal {
-		if isOwnershipFieldUpdated(oldVal[i], newVal[i]) {
+		if isStringFieldUpdated(oldVal[i], newVal[i]) {
 			return true
 		}
 	}
@@ -462,7 +462,7 @@ func isOwnershipArrayFieldUpdated(oldVal []string, newVal []string) bool {
 }
 
 // Checks if the ownership field was updated, ignoring empty values
-func isOwnershipFieldUpdated(oldVal string, newVal string) bool {
+func isStringFieldUpdated(oldVal string, newVal string) bool {
 	if (oldVal == "" && newVal != "") || (oldVal != "" && newVal != "" && oldVal != newVal) {
 		return true
 	}

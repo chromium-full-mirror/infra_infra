@@ -293,6 +293,11 @@ func UpdateMachineLSEOwnership(ctx context.Context, id string, ownership *ufspb.
 	return putMachineLSEOwnership(ctx, id, ownership, true)
 }
 
+// UpdateMachineLSEMaintenanceConfig updates machineLSE maintenance config name in datastore.
+func UpdateMachineLSEMaintenanceConfig(ctx context.Context, id string, configName string) (*ufspb.MachineLSE, error) {
+	return putMachineLSEMaintenanceConfig(ctx, id, configName, true)
+}
+
 // GetMachineLSE returns machine for the given id from datastore.
 func GetMachineLSE(ctx context.Context, id string) (*ufspb.MachineLSE, error) {
 	pm, err := ufsds.Get(ctx, &ufspb.MachineLSE{Name: id}, newMachineLSEEntity)
@@ -600,6 +605,21 @@ func putMachineLSEOwnership(ctx context.Context, id string, ownership *ufspb.Own
 		return machineLSE, err
 	}
 	machineLSE.Ownership = ownership
+	machineLSE.UpdateTime = ptypes.TimestampNow()
+	pm, err := ufsds.Put(ctx, machineLSE, newMachineLSEEntity, update)
+	if err == nil {
+		return pm.(*ufspb.MachineLSE), err
+	}
+	return nil, err
+}
+
+// Updates the maintenance config for an existing machineLSE.
+func putMachineLSEMaintenanceConfig(ctx context.Context, id string, configName string, update bool) (*ufspb.MachineLSE, error) {
+	machineLSE, err := GetMachineLSE(ctx, id)
+	if err != nil {
+		return machineLSE, err
+	}
+	machineLSE.MaintenanceConfigName = configName
 	machineLSE.UpdateTime = ptypes.TimestampNow()
 	pm, err := ufsds.Put(ctx, machineLSE, newMachineLSEEntity, update)
 	if err == nil {
