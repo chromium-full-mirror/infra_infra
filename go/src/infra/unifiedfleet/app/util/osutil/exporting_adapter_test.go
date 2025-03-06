@@ -68,6 +68,7 @@ var machine = ufspb.Machine{
 			Sku:         "test_variant",
 			DlmSkuId:    "12345",
 			HasWifiBt:   true,
+			StorageType: labapi.StorageType_SSD,
 		},
 	},
 }
@@ -476,7 +477,7 @@ var DeviceConfig = &deviceconfig.Config{
 		deviceconfig.Config_HARDWARE_FEATURE_FINGERPRINT,
 	},
 	Power:   deviceconfig.Config_POWER_SUPPLY_AC_ONLY,
-	Storage: deviceconfig.Config_STORAGE_SSD,
+	Storage: deviceconfig.Config_STORAGE_UNSPECIFIED,
 	VideoAccelerationSupports: []deviceconfig.Config_VideoAcceleration{
 		deviceconfig.Config_VIDEO_ACCELERATION_ENC_H264,
 		deviceconfig.Config_VIDEO_ACCELERATION_ENC_VP8,

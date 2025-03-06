@@ -376,6 +376,13 @@ func setConfigsFromMachine(l *inventory.SchedulableLabels, machine *ufspb.Machin
 	if machine.GetChromeosMachine().GetHasWifiBt() {
 		c.Bluetooth = &trueValue
 	}
+
+	// Setup storage type
+	if st := machine.GetChromeosMachine().GetStorageType(); st != labapi.StorageType_UNSPECIFIED && st != labapi.StorageType_UNRECOGNIZED {
+		// Extract the storage type, e.g. "STORAGE_SSD" -> "ssd".
+		storage := strings.ToLower(st.String())
+		c.Storage = &storage
+	}
 }
 
 func setHwidData(l *inventory.SchedulableLabels, h *ufspb.HwidData) {
@@ -820,12 +827,13 @@ func adaptV2DutToV1DutSpec(data *ufspb.ChromeOSDeviceData, devConfig *deviceconf
 	setSimInfo(labels, dut.GetSiminfo())
 	setDutPeripherals(labels, p)
 	setDutState(labels, data.GetDutState())
+	// Bluetooth config set here will be overwritten later by DLM configs
+	// Storage Type set here will be overwritten later by auto-detection
 	setDeviceConfig(labels, devConfig)
 	setPower(labels, p, devConfig)
 	setManufacturingConfig(labels, data.GetManufacturingConfig())
 	setHwidData(labels, data.GetHwidData())
 	setCbx(labels, machine)
-	// Bluetooth config will be overwritten here by DLM configs
 	setConfigsFromMachine(labels, machine)
 
 	if strings.HasSuffix(dut.GetHive(), "large") || !strings.HasPrefix(dut.GetHive(), "cloudbots") {
