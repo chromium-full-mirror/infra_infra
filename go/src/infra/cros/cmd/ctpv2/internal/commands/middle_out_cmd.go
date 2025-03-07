@@ -898,12 +898,11 @@ func populateLabAvalability(ctx context.Context, solverData *middleOutData) {
 
 		// This is to ensure when we have to physically identical devices; but which have different software/
 		// runtime adjustable instructions, we properly view them as "1" physical device come labLoading time.
-		hash := getDeviceHash(value)
+		hash := hashWithDeps(value.req.GetSchedulingUnits()[0])
 
 		// We do this check to see if a specific hash has already been discovered. In this case, we'd
 		// want to point them both to the same pointer such that when one of the EQC's pulls a device
 		// its properly removed from all.
-
 		_, exists := hwFound[hash]
 		if exists {
 			value.labLoading = hwFound[hash]
@@ -1320,8 +1319,26 @@ func addHWtoFlatHWUUIDMap(ctx context.Context, flatHWUUIDMap map[uint64]*hwInfo,
 }
 
 type hashHelper struct {
-	S *labapi.Dut
-	V string
+	S    *labapi.Dut
+	V    string
+	Deps []string
+}
+
+func hashWithDeps(unit *api.SchedulingUnit) uint64 {
+	h := hashHelper{S: unit.GetPrimaryTarget().GetSwarmingDef().GetDutInfo(),
+		Deps: unit.GetPrimaryTarget().GetSwarmingDef().GetSwarmingLabels()}
+
+	hasher := []hashHelper{h}
+	for _, secondary := range unit.GetCompanionTargets() {
+
+		if secondary.GetSwarmingDef().GetDutInfo() != nil {
+			sh := hashHelper{S: secondary.GetSwarmingDef().GetDutInfo()}
+
+			hasher = append(hasher, sh)
+		}
+	}
+	hash, _ := hashstructure.Hash(hasher, hashstructure.FormatV2, nil)
+	return hash
 }
 
 func hashForSchedulingUnit(unit *api.SchedulingUnit) uint64 {
