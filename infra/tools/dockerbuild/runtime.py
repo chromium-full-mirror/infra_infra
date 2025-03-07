@@ -268,7 +268,7 @@ class System(object):
       for stdout_line in iter(proc.stdout.readline, b""):
         # TODO: Once ported fully to Python 3 we can specify the encoding in the
         # Popen constructor instead.
-        stdout_line = stdout_line.decode('utf-8').rstrip()
+        stdout_line = stdout_line.decode('utf-8', errors='surrogateescape').rstrip()
         util.LOGGER.debug('STDOUT: "%s"', stdout_line)
         stdout_lines.append(stdout_line)
 
