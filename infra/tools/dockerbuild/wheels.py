@@ -2147,6 +2147,7 @@ SPECS.update({
         Universal('CherryPy', '14.2.0'),
         Universal('Click', '7.0'),
         Universal('Click', '8.0.3', pyversions=['py3']),
+        Universal('ConfigArgParse', '1.7', pyversions=['py3']),
         Universal('Django', '1.9'),
         Universal('GitPython', '2.1.1'),
         Universal('GitPython', '2.1.9'),
