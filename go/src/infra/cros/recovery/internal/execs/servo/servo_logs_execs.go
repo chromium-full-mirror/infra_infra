@@ -151,7 +151,6 @@ func collectServodLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 		log.Debugf("Planning to collect logs since %v", startTime)
 	}
 	for _, lf := range strings.Split(output, "\n") {
-		log.Debugf("Checking servod logs file: %v", lf)
 		t, err := extractTimeFromServoLog(lf, log)
 		if err != nil {
 			log.Debugf("Collect servod logs: %v", err)
@@ -159,7 +158,7 @@ func collectServodLogsExec(ctx context.Context, info *execs.ExecInfo) error {
 		}
 		if startTime != nil {
 			if t.Before(*startTime) {
-				log.Debugf("Collect servod logs: skip as created at %v before start time %v", t, startTime)
+				log.Debugf("Collect servod logs: skip as created at %v before start time", t)
 				continue
 			}
 		}

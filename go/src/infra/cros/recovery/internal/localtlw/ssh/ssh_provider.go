@@ -60,7 +60,7 @@ func (c *sshProviderImpl) Get(ctx context.Context, addr string) (SSHClient, erro
 	}
 	var err error
 	if cl, ok := c.clientPool[addr]; !ok {
-		log.Debugf(ctx, "client not found, creating %q client...", addr)
+		log.Debugf(ctx, "Creating a new client for %q", addr)
 		cl, err = NewClient(ctx, addr, c.username, c.config)
 		if err == nil {
 			c.clientPool[addr] = cl
@@ -87,12 +87,7 @@ func (c *sshProviderImpl) CloseClient(ctx context.Context, cl SSHClient) error {
 		log.Debugf(ctx, "provider uses client pool: connection remains open")
 		return nil
 	}
-	log.Debugf(ctx, "provider closing SSH client connection")
-	err := cl.Close()
-	if err == nil {
-		log.Debugf(ctx, "provider client SSH connection closed")
-	}
-	return err
+	return cl.Close()
 }
 
 // Close closing used resource of the provider.

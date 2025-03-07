@@ -147,7 +147,6 @@ func (ei *ExecInfo) GetAccess() tlw.Access {
 
 // Run runs exec function provided by this package by name.
 func Run(ctx context.Context, ei *ExecInfo) (rErr error) {
-
 	defer func() {
 		// Do not recove from panic only in dev mode.
 		if dev.IsActive(ctx) {

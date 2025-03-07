@@ -38,13 +38,13 @@ func (c *tlwClient) GetDut(ctx context.Context, name string) (*tlw.Dut, error) {
 
 // getDevice receives device from inventory.
 func (c *tlwClient) getDevice(ctx context.Context, name string) (*tlw.Dut, error) {
+	// TODO: remove logic to find device and get it from context.
 	if dutName, ok := c.hostToParents[name]; ok {
 		// the device was previously
 		name = dutName
 	}
 	// First check if device is already in the cache.
 	if d, ok := c.devices[name]; ok {
-		log.Debugf(ctx, "Get device info %q: received from cache.", name)
 		return d, nil
 	}
 	// Ask to read inventory and then get device from the cache.

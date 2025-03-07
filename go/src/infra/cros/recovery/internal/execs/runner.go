@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"unicode"
 
 	"google.golang.org/protobuf/types/known/durationpb"
 
@@ -195,7 +196,7 @@ func (b *hostAccess) run(ctx context.Context, inBackground bool, timeout time.Du
 		})
 	}
 	log.Debugf(ctx, "Run %q completed with exit code %d", fullCmd, res.GetExitCode())
-	log.Debugf(ctx, "Run output:\n%s", strings.TrimSpace(res.GetStdout()))
+	log.Debugf(ctx, "Run output:\n%s", trancateString(res.GetStdout(), 200))
 	if res.GetExitCode() == 0 {
 		// Success execution.
 		return res, nil
@@ -254,4 +255,27 @@ func (r *adbResponse) GetStderr() string {
 func (b *hostAccess) Ping(ctx context.Context, pingCount int) error {
 	log.Debugf(ctx, "Start ping %q %d times", b.host, pingCount)
 	return b.access.Ping(ctx, b.host, pingCount)
+}
+
+// trancateString trancates string
+func trancateString(str string, max int) string {
+	if str == "" || len(str) <= max {
+		return str
+	}
+	lastSpaceIx := -1
+	for i, r := range str {
+		if unicode.IsSpace(r) {
+			lastSpaceIx = i
+		}
+		// We stop when reached max.
+		if i+1 >= max {
+			break
+		}
+	}
+	// If break found then we cut by last one.
+	if lastSpaceIx != -1 {
+		return str[:lastSpaceIx] + "..."
+	}
+	// If there is no breaks then we do just cut by max.
+	return str[:max]
 }

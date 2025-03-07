@@ -104,23 +104,23 @@ func SaveUartStreamToFiles(ctx context.Context, servod components.Servod, dirPat
 	return nil
 }
 
-func saveUARTConsoleContext(ctx context.Context, content, filePath string) error {
+func saveUARTConsoleContext(ctx context.Context, content, desFilePath string) error {
 	if len(content) <= 1 {
 		return nil
 	}
-	f, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, components.DefaultFilePermissions)
+	f, err := os.OpenFile(desFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, components.DefaultFilePermissions)
 	if err != nil {
 		return errors.Annotate(err, "save UART content").Err()
 	}
 	// Ignore close error as it is not critical.
 	defer f.Close()
-	for i, line := range parseUartStreamContent(content) {
-		log.Debugf(ctx, "line %d:%s", i, line)
+	streamContent := parseUartStreamContent(content)
+	for _, line := range streamContent {
 		if _, err := f.Write([]byte(line + "\n")); err != nil {
-
 			return errors.Annotate(err, "save UART content").Err()
 		}
 	}
+	log.Debugf(ctx, "Stored %d lines to %q", len(streamContent), desFilePath)
 	return nil
 }
 

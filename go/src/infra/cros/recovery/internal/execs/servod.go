@@ -6,6 +6,7 @@ package execs
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -45,7 +46,12 @@ func (s *iServod) Call(ctx context.Context, method string, timeout time.Duration
 	if res.Fault {
 		return nil, errors.Reason("call %q: %s", method, res.GetValue().GetScalarOneof()).Err()
 	}
-	log.Debugf(ctx, "Servod call %q with %v: received %#v", method, args, res.GetValue().GetScalarOneof())
+	// Shorten output to reduce logging.
+	v := fmt.Sprintf("%#v", res.GetValue().GetScalarOneof())
+	if len(v) > 20 {
+		v = v[:20] + "..."
+	}
+	log.Debugf(ctx, "Servod call %q with %v: received %s", method, args, v)
 	return res.Value, nil
 }
 
