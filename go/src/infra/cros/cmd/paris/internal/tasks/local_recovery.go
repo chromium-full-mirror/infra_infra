@@ -6,18 +6,22 @@ package tasks
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"path/filepath"
 	"strings"
 	"sync/atomic"
+	"time"
 
 	"github.com/maruel/subcommands"
 
+	luciauth "go.chromium.org/luci/auth"
 	"go.chromium.org/luci/auth/client/authcli"
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/errors"
 	lflag "go.chromium.org/luci/common/flag"
+	lucigs "go.chromium.org/luci/common/gcloud/gs"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
 
@@ -34,6 +38,7 @@ import (
 	"go.chromium.org/infra/cros/recovery/logger/metrics"
 	"go.chromium.org/infra/cros/recovery/namespace"
 	"go.chromium.org/infra/cros/recovery/scopes"
+	"go.chromium.org/infra/cros/recovery/upload"
 	"go.chromium.org/infra/cros/recovery/version"
 	"go.chromium.org/infra/libs/skylab/buildbucket"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
@@ -77,7 +82,7 @@ For now only running in testing mode.`,
 				"The recovery process will then ssh into localhost:2200 when it otherwise would have tried to ssh into chromeos15-row9-rack2-host1. "+
 				"The tunnel should point to port 22 on the target host so that requests are sent to the host's ssh server. "+
 				"For easy tunneling, use labtunnel to create and maintain your tunnels and check the logs it emits for this JSON map (see go/labtunnel for docs).")
-		c.Flags.StringVar(&c.logRoot, "log-root", "", "Path to the custom json config file.")
+		c.Flags.StringVar(&c.logRoot, "log-root", "", "log files dir.")
 		c.Flags.BoolVar(&c.generateLogFiles, "generate-log-files", false, "Generate log files. Default is no.")
 
 		c.Flags.BoolVar(&c.onlyVerify, "only-verify", true, "Enable recovery actions. Default is only run verify.")
@@ -91,6 +96,7 @@ For now only running in testing mode.`,
 		c.Flags.StringVar(&c.adbPort, "adb-port", "", `Specify value for ADB_CONNECTION_PORT.`)
 		c.Flags.StringVar(&c.adbPath, "adb-path", "", `Specify value for ADB_PATH.`)
 		c.Flags.StringVar(&c.swarmingID, "swarming-id", "", "Optional unique Swarming-ID for logging purpose.")
+		c.Flags.BoolVar(&c.isUploadLogs, "upload-logs", false, "Upload recovery logs to google storage")
 		c.Flags.StringVar(&c.bbID, "bb-id", "", "Optional unique buildbucket ID for logging purpose.")
 		return c
 	},
@@ -122,8 +128,9 @@ type localRecoveryRun struct {
 	devPrintProto   bool
 	devOptionActive bool
 
-	swarmingID string
-	bbID       string
+	swarmingID   string
+	bbID         string
+	isUploadLogs bool
 }
 
 // Run initiates execution of local recovery.
@@ -182,7 +189,16 @@ func (c *localRecoveryRun) innerRun(a subcommands.Application, args []string, en
 	if err != nil {
 		return errors.Annotate(err, "local recovery: create logger").Err()
 	}
-	defer logger.Close()
+	defer func() {
+		logger.Close()
+		if c.isUploadLogs {
+			if err := c.uploadLogs(ctx, logRoot, logger); err != nil {
+				logger.Infof("Fail to upload logs ", err)
+			} else {
+				logger.Infof("Successfully upload logs")
+			}
+		}
+	}()
 	ctx = namespace.Set(ctx, c.namespace)
 	hc, err := cmdlib.NewHTTPClient(ctx, &c.authFlags)
 	if err != nil {
@@ -396,4 +412,106 @@ func (d *devOptions) PrintDUTProtos() bool {
 // setDevOptions sets local development options.
 func setDevOptions(ctx context.Context, option dev.ActiveLocalDevOption) context.Context {
 	return dev.WithDevOptions(ctx, option)
+}
+
+// Upload logs to google cloud.
+// This is mostly copied from labpack
+// TODO(401301368): converge paris and labpack uploadLogs code
+func (c *localRecoveryRun) uploadLogs(ctx context.Context, logDir string, lg logger.Logger) (rErr error) {
+	lg.Infof("Beginning to upload logs from ", logDir)
+	defer func() {
+		if r := recover(); r != nil {
+			lg.Debugf("Received panic: %v\n", r)
+			rErr = errors.Reason("panic: %v", r).Err()
+		}
+		lg.Infof("Finished uploading logs: ok=%t.", rErr == nil)
+	}()
+	// Construct the client that we will need to push the logs first.
+	authOptions, err := c.authFlags.Options()
+	if err != nil {
+		lg.Infof("failed to get auth options ", err)
+	}
+	authOptions.Scopes = append(authOptions.Scopes, "https://www.googleapis.com/auth/devstorage.read_write")
+	authenticator := luciauth.NewAuthenticator(
+		ctx,
+		luciauth.SilentLogin,
+		authOptions,
+	)
+	if authenticator != nil {
+		lg.Infof("NewAuthenticator(...): successfully authed!")
+	} else {
+		return errors.Reason("NewAuthenticator(...): did not successfully auth!").Err()
+	}
+	email, err := authenticator.GetEmail()
+	if err != nil {
+		return errors.Annotate(err, "upload logs").Err()
+	}
+	lg.Infof("Auth email is %q", email)
+
+	rt, err := authenticator.Transport()
+	if err != nil {
+		return errors.Annotate(err, "authenticator.Transport(...): error").Err()
+	}
+	// The ProdClient will cache the context, which will be used later to upload files.
+	uploadTimeout := 5 * time.Minute
+	timeoutCtx, cancel := context.WithTimeout(ctx, uploadTimeout)
+	lg.Infof("Set %v timeout for uploading files.", uploadTimeout)
+	defer cancel()
+	client, err := lucigs.NewProdClient(timeoutCtx, rt)
+	if err != nil {
+		return errors.Annotate(err, "failed to create client(...)").Err()
+	}
+	lg.Infof("Persist the swarming logs")
+	// Actually persist the logs.
+	gsURL, err := c.parallelUpload(timeoutCtx, logDir, lg, client)
+	if err != nil {
+		return errors.Annotate(err, "upload logs").Err()
+	}
+	u := strings.TrimPrefix(gsURL, "gs://")
+	u = fmt.Sprintf("https://%s/%s", "stainless.corp.google.com/browse", u)
+	lg.Infof("GS logs upload to ", u)
+	return nil
+}
+
+// parallelUpload performs an upload in parallel to the google-storage bucket.
+//
+// parallelUpload will fail when given invalid arguments. However, it will not fail
+// simply because the upload attempt was unsuccessful.
+// This is mostly copied from labpack
+// TODO(401301368): converge paris and labpack uploadLogs code
+func (c *localRecoveryRun) parallelUpload(ctx context.Context, logDir string, lg logger.Logger, client lucigs.Client) (string, error) {
+	if lg == nil {
+		return "", errors.Reason("parallel-upload: logger cannot be nil").Err()
+	}
+	if client == nil {
+		return "", errors.Reason("paralel-upload: client cannot be nil").Err()
+	}
+	if c.swarmingID == "" {
+		timestamp := fmt.Sprintf("%d", time.Now().Unix())
+		lg.Errorf("Swarming task is empty. Falling back to timestamp %q.", timestamp)
+		c.swarmingID = fmt.Sprintf("LOCAL-RECOVERY-FAKE-ID-%s", timestamp)
+	}
+	// upload.Upload can potentially run for a long time. Set a timeout of 30s.
+	//
+	// upload.Upload does respond to cancellation (which callFuncWithTimeout uses internally), but
+	// the correct of this code does not and should not depend on this fact.
+	//
+	// callFuncWithTimeout synchronously calls a function with a timeout and then unconditionally hands control
+	// back to its caller. The goroutine that's created in the background will not by itself keep the process alive.
+	// TODO(gregorynisbet): Allow this parameter to be overridden from outside.
+	// TODO(crbug/1311842): Switch this bucket back to chromeos-autotest-results.
+	gsURL := fmt.Sprintf("gs://chrome-fleet-karte-autotest-results/swarming-%s", c.swarmingID)
+	lg.Infof("Swarming task %q is non-empty. Uploading to %q", c.swarmingID, gsURL)
+	uploadParams := &upload.Params{
+		SourceDir:         logDir,
+		GSURL:             gsURL,
+		MaxConcurrentJobs: 10,
+	}
+	if err := upload.Upload(ctx, client, uploadParams); err != nil {
+		// TODO: Register error to Karte.
+		lg.Errorf("Upload task error: %s", err)
+	} else {
+		lg.Infof("Upload task finished without erorrs.")
+	}
+	return gsURL, nil
 }
