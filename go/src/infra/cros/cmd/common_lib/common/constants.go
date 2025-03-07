@@ -216,3 +216,13 @@ func GetCtpv2WithFifoList() []string {
 	copy(readOnly, ctpv2WithFifo)
 	return readOnly
 }
+
+// TestType declares whether a test request is intended to test the kernel, OS, etc.
+// It is generally used to communicate between ATP and CTPv2 for AL tests..
+type TestType string
+
+// DO NOT CHANGE THESE STRING VALUES
+const (
+	OSTestType     TestType = "OS"
+	KernelTestType TestType = "KERNEL"
+)

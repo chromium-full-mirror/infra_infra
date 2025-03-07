@@ -120,6 +120,11 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 	if err != nil {
 		log.Printf("Error while modifying provision request, %s", err)
 	}
+
+	if getTestType(req) == common.KernelTestType {
+		// TODO: b/396475422 - Update provisioning request to specify kernel artifacts and partitions.
+		log.Print("This is a kernel test request!")
+	}
 }
 
 func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) {
@@ -236,4 +241,31 @@ func getBranch(su *api.SchedulingUnit, log *log.Logger) string {
 		}
 	}
 	return DefaultBranch
+}
+
+// getTestType returns the test-type argument from the test request's ExecutionMetadata.
+// If no test-type could be found, assume it's an OS test by default.
+func getTestType(req *api.InternalTestplan) common.TestType {
+	const defaultTestType = common.OSTestType
+	args := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
+	if args == nil {
+		log.Printf("InternalTestplan did not contain args: %+v. Defaulting to test-type %s.", req, defaultTestType)
+		return defaultTestType
+	}
+	for _, arg := range args {
+		if arg.GetFlag() != "test-type" {
+			continue
+		}
+		switch arg.GetValue() {
+		case string(common.OSTestType):
+			return common.OSTestType
+		case string(common.KernelTestType):
+			return common.KernelTestType
+		default:
+			log.Printf("Unsure how to parse test-type arg: %s. Defaulting to %s.", arg.GetValue(), defaultTestType)
+			return defaultTestType
+		}
+	}
+	log.Printf("No test-type argument found in args: %+v. Defaulting to %s.", args, defaultTestType)
+	return defaultTestType
 }

@@ -358,14 +358,6 @@ func populateCtpRequest(ctx context.Context, ctpReq *api.CTPRequest, testJobMsg 
 	return nil
 }
 
-type TestType string
-
-// DO NOT CHANGE THESE STRING VALUES
-const (
-	OSTestType     TestType = "OS"
-	KernelTestType TestType = "KERNEL"
-)
-
 func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.State) (*api.SuiteRequest, error) {
 	// Default values
 	suiteName := "adhoc"
@@ -375,7 +367,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 	maxDuration := &durationpb.Duration{Seconds: 40 * 3600}
 	maxInShard := 10
 	dddSuite := false
-	testType := OSTestType // default to OS type testing if not provided by ATP
+	testType := common.OSTestType // default to OS type testing if not provided by ATP
 
 	executionMetadata := &api.ExecutionMetadata{}
 	if testJobMsg.Test != nil {
@@ -403,7 +395,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 				if len(arg.Values) != 1 {
 					return nil, fmt.Errorf("exactly one value is expected for test-type, found %d.", len(arg.Values))
 				}
-				testType = TestType(arg.Values[0])
+				testType = common.TestType(arg.Values[0])
 				executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "test-type", Value: arg.Values[0]})
 			} else {
 				// directly plumb through any other args
@@ -424,7 +416,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 
 	// we want dev and staging tests to pick up latest prod build (through al filter) and hence not providing these intentionally
 	if common.IsProd(buildState.Build().GetBuilder()) {
-		if testType == KernelTestType {
+		if testType == common.KernelTestType {
 			// For kernel test configs, primary build is kernel build. extraBuild[0] is OS and extraBuild[1] is testSuites.
 			populateKernelBuildInfo(testJobMsg.Build, executionMetadata)
 			if len(testJobMsg.ExtraBuilds) == 2 { // For kernel tests we expect exactly 2 extra builds
@@ -433,7 +425,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 			} else {
 				return nil, fmt.Errorf("for %s test-type, exactly 2 extra builds are expected, found %d.", testType, len(testJobMsg.ExtraBuilds))
 			}
-		} else if testType == OSTestType {
+		} else if testType == common.OSTestType {
 			// For OS test configs, primary build is OS, extraBuild[0] is testSuites.
 			populatePrimaryBuildInfo(testJobMsg.Build, executionMetadata)
 			if len(testJobMsg.ExtraBuilds) == 1 { // For OS tests we expect exactly 1 extra build
