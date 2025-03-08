@@ -1,92 +1,7 @@
 use_relative_paths = True
-git_dependencies = 'SYNC'
-vars = {
-  "chromium_git": "https://chromium.googlesource.com",
-  "external_github": "https://chromium.googlesource.com/external/github.com",
-
-  # This can be used to override the python used for generating the ENV python
-  # environment. This is only needed when developing or testing python 2.7
-  # appengine apps.
-  "infra_env_python": "disabled",
-  #
-  # This is used during the transition phase of moving infra repos to git
-  # submodules. To add new deps here check with the Chrome Source Team.
-  "infra_superproject_checkout": False,
-
-  # 'magic' text to tell depot_tools that git submodules should be accepted but
-  # but parity with DEPS file is expected.
-  'SUBMODULE_MIGRATION': 'True'
-}
+git_dependencies = 'SUBMODULES'
 
 deps = {
-  "luci":
-     "{chromium_git}/infra/luci/luci-py@" +
-     "6de8ab0e081df98eb30a18a05ea156972e40e94b",
-
-  "go/src/go.chromium.org/luci":
-     "{chromium_git}/infra/luci/luci-go@" +
-     "c43d78483a0c361624210e4eb63dbf75e55bde10",
-
-  "go/src/go.chromium.org/chromiumos/config":
-     "{chromium_git}/chromiumos/config@" +
-     "bcf420cf083dd2b33536a2e3020abf1e16e583d2",
-
-  "go/src/go.chromium.org/chromiumos/infra/proto":
-     "{chromium_git}/chromiumos/infra/proto@" +
-     "e6917891b7a1f3b87429c8316b883943b8752165",
-
-  # Appengine third_party DEPS
-  "appengine/third_party/bootstrap":
-     "{external_github}/twbs/bootstrap.git@" +
-     "b4895a0d6dc493f17fe9092db4debe44182d42ac",
-
-  "appengine/third_party/cloudstorage":
-     "{external_github}/GoogleCloudPlatform/appengine-gcs-client.git@" +
-     "76162a98044f2a481e2ef34d32b7e8196e534b78",
-
-  "appengine/third_party/six":
-     "{external_github}/benjaminp/six.git@" +
-     "65486e4383f9f411da95937451205d3c7b61b9e1",
-
-  "appengine/third_party/oauth2client":
-     "{external_github}/google/oauth2client.git@" +
-     "e8b1e794d28f2117dd3e2b8feeb506b4c199c533",
-
-  "appengine/third_party/uritemplate":
-     "{external_github}/uri-templates/uritemplate-py.git@" +
-     "1e780a49412cdbb273e9421974cb91845c124f3f",
-
-  "appengine/third_party/httplib2":
-     "{external_github}/jcgregorio/httplib2.git@" +
-     "058a1f9448d5c27c23772796f83a596caf9188e6",
-
-  "appengine/third_party/endpoints-proto-datastore":
-     "{external_github}/GoogleCloudPlatform/endpoints-proto-datastore.git@" +
-     "971bca8e31a4ab0ec78b823add5a47394d78965a",
-
-  "appengine/third_party/difflibjs":
-     "{external_github}/qiao/difflib.js.git@"
-     "e11553ba3e303e2db206d04c95f8e51c5692ca28",
-
-  "appengine/third_party/pipeline":
-     "{external_github}/GoogleCloudPlatform/appengine-pipelines.git@" +
-     "58cf59907f67db359fe626ee06b6d3ac448c9e15",
-
-  "appengine/third_party/google-api-python-client":
-     "{external_github}/google/google-api-python-client.git@" +
-     "49d45a6c3318b75e551c3022020f46c78655f365",
-
-  "appengine/third_party/gae-pytz":
-     "{chromium_git}/external/code.google.com/p/gae-pytz/@" +
-     "4d72fd095c91f874aaafb892859acbe3f927b3cd",
-
-  "appengine/third_party/npm_modules": {
-     "url":
-        "{chromium_git}/infra/third_party/npm_modules.git@" +
-        "81e9eccce6089f4155fdc1935b1d430bd6411b95",
-     "condition": "checkout_linux or checkout_mac",
-  },
-
   "cipd/gcloud": {
     'packages': [
       {
@@ -172,8 +87,5 @@ deps = {
     'dep_type': 'cipd',
   },
 }
-
-hooks = [
-]
 
 recursedeps = ['luci']
