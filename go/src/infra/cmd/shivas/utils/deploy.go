@@ -9,12 +9,14 @@ import (
 	"fmt"
 	"io"
 
+	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cmd/shivas/site"
 	schedulingapi "go.chromium.org/infra/libs/fleet/scheduling/api"
 	"go.chromium.org/infra/libs/skylab/buildbucket"
 	"go.chromium.org/infra/libs/skylab/swarming"
+	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
@@ -43,6 +45,18 @@ type DeployTaskParams struct {
 	BBProject string
 	// BBBuilderName is the name of the builder that deploy build runs.
 	BBBuilderName string
+}
+
+// SelectSchedulingClient select a proper scheduling client based on buildername
+func SelectSchedulingClient(ctx context.Context, buildername string, ufsC ufsAPI.FleetClient, authOpts auth.Options, hostname string) (schedulingapi.TaskSchedulingAPI, error) {
+	if !buildbucket.IfUseScheduke(buildername) {
+		return nil, nil
+	}
+	sc, err := SchedukeClient(ctx, ufsC, authOpts, hostname)
+	if err != nil {
+		return nil, errors.Annotate(err, "creating Scheduke client").Err()
+	}
+	return sc, nil
 }
 
 // ScheduleDeployTask schedules a deploy task by Buildbucket for PARIS.

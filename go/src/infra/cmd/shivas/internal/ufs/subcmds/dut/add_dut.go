@@ -307,17 +307,18 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 				continue
 			}
 		}
-		host := param.DUT.GetName()
-		sc, err := utils.SchedukeClient(ctx, ic, authOpts, host)
-		if err != nil {
-			return errors.Annotate(err, "creating Scheduke client").Err()
-		}
+
 		deployBuilderHive := ufsUtil.GetHiveForDut(param.DUT.GetName(), c.hive)
+		builderName := ufsUtil.GetDeployBBBuilderName(param.DUT.GetName(), deployBuilderHive)
+		sc, err := utils.SelectSchedulingClient(ctx, builderName, ic, authOpts, param.DUT.GetName())
+		if err != nil {
+			return errors.Annotate(err, "creating Scheduling client").Err()
+		}
 		deployParams := utils.DeployTaskParams{
 			Client:           bc,
 			SchedulingClient: sc,
 			Env:              e,
-			Unit:             host,
+			Unit:             param.DUT.GetName(),
 			SessionTag:       sessionTag,
 			UseLatestVersion: c.latestVersion,
 			BBProject:        c.deployBBProject,

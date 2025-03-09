@@ -351,18 +351,18 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 			// Deploy Task not required.
 			continue
 		}
-		host := req.GetMachineLSE().GetHostname()
-		sc, err := utils.SchedukeClient(ctx, ic, authOpts, host)
-		if err != nil {
-			return errors.Annotate(err, "creating Scheduke client").Err()
-		}
 		// Swarm a deploy task if required or enforced.
 		if deployArgs.needToDeploy || c.forceDeploy {
+			builderName := ufsUtil.GetDeployBBBuilderName(req.GetMachineLSE().GetHostname(), deployArgs.deployBuilderHive)
+			sc, err := utils.SelectSchedulingClient(ctx, builderName, ic, authOpts, req.GetMachineLSE().GetHostname())
+			if err != nil {
+				return errors.Annotate(err, "creating Scheduling client").Err()
+			}
 			deployParams := utils.DeployTaskParams{
 				Client:           bc,
 				SchedulingClient: sc,
 				Env:              e,
-				Unit:             host,
+				Unit:             req.GetMachineLSE().GetHostname(),
 				SessionTag:       sessionTag,
 				UseLatestVersion: c.latestVersion,
 				BBProject:        c.deployBBProject,
@@ -370,7 +370,7 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 				BBBuilderName:    ufsUtil.GetDeployBBBuilderName(req.GetMachineLSE().GetHostname(), deployArgs.deployBuilderHive),
 			}
 
-			utils.ScheduleDeployTask(ctx, deployParams)
+			err = utils.ScheduleDeployTask(ctx, deployParams)
 			resTable.RecordResult(swarmOp, req.MachineLSE.GetName(), err)
 
 			// Remove the task entry to avoid triggering multiple tasks.

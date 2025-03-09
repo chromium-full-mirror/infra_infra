@@ -149,6 +149,7 @@ func (c *clientImpl) CreateLabpackTask(ctx context.Context, params *ScheduleLabp
 			if err != nil {
 				return "", -1, errors.Annotate(err, "create labpack task: scheduling task by scheduke").Err()
 			}
+			fmt.Println("Successfully triggered task via scheduling client, taskID:", t.GetId())
 			return t.GetUrl(), 0, nil
 		}
 	}

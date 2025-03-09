@@ -151,7 +151,7 @@ func CreateTask(ctx context.Context, client Client, sc schedulingapi.TaskSchedul
 	default:
 		return "", 0, errors.Reason("scheduling task: unsupported CIPD version %s", v).Err()
 	}
-	if sc == nil {
+	if sc == nil || !IfUseScheduke(p.BuilderName) {
 		// TODO(b:347729967): remove when rollout finished.
 		url, taskID, err = client.ScheduleLabpackTask(ctx, p, serviceName)
 	} else {
@@ -161,4 +161,21 @@ func CreateTask(ctx context.Context, client Client, sc schedulingapi.TaskSchedul
 		return "", 0, errors.Annotate(err, "scheduling task").Err()
 	}
 	return url, taskID, nil
+}
+
+// IfUseScheduke checks whether the builder name is eligible to use scheduke to schedule.
+//
+// For example,
+// - "deploy" -> true
+// - "deploy-latest" -> true
+// - "deploy-clank" -> false
+func IfUseScheduke(buildername string) bool {
+	res := strings.Split(buildername, "-")
+	specialBuilderSuffix := []string{"clank", "perf", "pinpoint"}
+	for _, suffix := range specialBuilderSuffix {
+		if res[len(res)-1] == suffix {
+			return false
+		}
+	}
+	return true
 }
