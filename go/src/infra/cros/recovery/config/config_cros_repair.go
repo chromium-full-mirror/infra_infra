@@ -410,7 +410,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Can become ChromeOS-based",
-				"Is Android based?",
+				"Is Android based by ADB or provision-info",
 				"Is a Chromebook",
 				"Recovery version has OS image path",
 				"Recovery version has firmware image path",

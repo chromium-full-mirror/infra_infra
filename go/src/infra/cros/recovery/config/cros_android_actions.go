@@ -34,9 +34,6 @@ func androidActions(actions map[string]*Action) {
 			Docs: []string{
 				"Validate is Andoid OS is accessable by reading data from the host.",
 			},
-			Conditions: []string{
-				"Is Android based?",
-			},
 			ExecName:    "cros_ssh",
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
 			RunControl:  RunControl_ALWAYS_RUN,
@@ -56,9 +53,6 @@ func androidActions(actions map[string]*Action) {
 		"ADB set Android as always awake": {
 			Docs: []string{
 				"Set Android to be awake always.",
-			},
-			Conditions: []string{
-				"Is Android based?",
 			},
 			ExecName:   "ctr_make_awake_always",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -98,9 +92,6 @@ func androidActions(actions map[string]*Action) {
 				"Connect to DUT by ADB if not connected.",
 				"Only executed if DUT is Android based.",
 			},
-			Conditions: []string{
-				"Is Android based?",
-			},
 			ExecName: "ctr_adb_connect",
 			ExecExtraArgs: []string{
 				"retry_count:3",
@@ -112,9 +103,6 @@ func androidActions(actions map[string]*Action) {
 		"Reboot by ADB": {
 			Docs: []string{
 				"Reboot by ADB util.",
-			},
-			Conditions: []string{
-				"Is Android based?",
 			},
 			ExecName: "ctr_adb_command",
 			ExecExtraArgs: []string{
