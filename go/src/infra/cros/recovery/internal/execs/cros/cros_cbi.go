@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,12 +7,16 @@ package cros
 
 import (
 	"context"
+	"fmt"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
 
+	"go.chromium.org/infra/cros/recovery/internal/components/cros"
 	"go.chromium.org/infra/cros/recovery/internal/components/cros/cbi"
 	"go.chromium.org/infra/cros/recovery/internal/execs"
 	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
 )
 
 // restoreCBIContentsFromUFS restores CBI contents on the DUT by writing the CBI contents stored
@@ -106,6 +110,62 @@ func cbiContentsAreValidExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+func bootIntoRecoveryModeAndResetFirmwareConfig(ctx context.Context, info *execs.ExecInfo) error {
+	am := info.GetActionArgs(ctx)
+	dut := info.GetDut()
+	runner := info.NewRunner(dut.Name)
+	dutHa := info.NewHostAccess(dut.Name)
+	dutBackgroundRun := info.NewBackgroundRunner(dut.Name)
+	dutPing := info.NewPinger(dut.Name)
+	servod := info.NewServod()
+	cmdRunTimeout := time.Second * 10
+	callback := func(_ context.Context) error {
+		fwConfig, err := runner(ctx, cmdRunTimeout, "cros_config /firmware firmware-config")
+		if err != nil {
+			return errors.Annotate(err, "boot in recovery mode and reset firmware config").Err()
+		}
+		log.Debugf(ctx, "firmware config from os image: %s", fwConfig)
+		fwConfigFromCbi, err := runner(ctx, cmdRunTimeout, "ectool cbi get 6 | head -n1 | cut -d' ' -f3")
+		if err != nil {
+			return errors.Annotate(err, "boot in recovery mode and reset firmware config").Err()
+		}
+		log.Debugf(ctx, "firmware config from CBI: %s", fwConfigFromCbi)
+		if fwConfig != fwConfigFromCbi {
+			log.Debugf(ctx, "Setting fw-config from %s to %s", fwConfigFromCbi, fwConfig)
+			if _, err := runner(ctx, cmdRunTimeout, fmt.Sprintf("ectool cbi set 6 %s 4 0", fwConfig)); err != nil {
+				return errors.Annotate(err, "boot in recovery mode and reset firmware config").Err()
+			}
+			info.AddObservation(metrics.NewStringObservation("resetFirmwareConfigCbi", fwConfig))
+		} else {
+			log.Debugf(ctx, "firmware config match between OS and CBI, no action needed")
+		}
+		return nil
+	}
+	req := &cros.BootInRecoveryRequest{
+		DUT:             dut,
+		BootRetry:       am.AsInt(ctx, "boot_retry", 1),
+		BootTimeout:     am.AsDuration(ctx, "boot_timeout", 480, time.Second),
+		BootInterval:    am.AsDuration(ctx, "boot_interval", 10, time.Second),
+		PreventPowerSnk: am.AsBool(ctx, "prevent_power_snk", false),
+		// Register that device booted and sshable.
+		Callback:            callback,
+		AddObservation:      info.AddObservation,
+		IgnoreRebootFailure: am.AsBool(ctx, "ignore_reboot_failure", false),
+		// After reboot action settings.
+		AfterRebootVerify:             am.AsBool(ctx, "after_reboot_check", false),
+		AfterRebootTimeout:            am.AsDuration(ctx, "after_reboot_timeout", 150, time.Second),
+		AfterRebootAllowUseServoReset: am.AsBool(ctx, "after_reboot_allow_use_servo_reset", false),
+	}
+	if err := cros.BootInRecoveryMode(ctx, req, runner, dutBackgroundRun, dutPing, dutHa, servod, log.Get(ctx)); err != nil {
+		return errors.Annotate(err, "boot in recovery mode and reset firmware config").Err()
+	}
+	// Time to wait DUT boot up from post installation.
+	postResetBootTime := am.AsDuration(ctx, "post_reset_boot_time", 60, time.Second)
+	log.Debugf(ctx, "Wait %s for DUT to boot up.", postResetBootTime)
+	time.Sleep(postResetBootTime)
+	return nil
+}
+
 func init() {
 	execs.Register("cros_restore_cbi_contents_from_ufs", restoreCBIContentsFromUFS)
 	execs.Register("cros_ufs_contains_cbi_contents", ufsContainsCBIContents)
@@ -114,4 +174,5 @@ func init() {
 	execs.Register("cros_backup_cbi", backupCBI)
 	execs.Register("cros_invalidate_cbi_cache", invalidateCBICache)
 	execs.Register("cros_cbi_contents_are_valid", cbiContentsAreValidExec)
+	execs.Register("cros_reset_firmware_config_in_cbi", bootIntoRecoveryModeAndResetFirmwareConfig)
 }

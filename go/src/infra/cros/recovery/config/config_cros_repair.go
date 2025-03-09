@@ -5203,6 +5203,25 @@ func crosRepairActions() map[string]*Action {
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
+		"Boot DUT in recovery and reset firmware config in CBI": {
+			Docs: []string{
+				"This boot DUT into recovery mode, and compare firmware config value ",
+				"between OS image and CBI content. It will reset value in CBI based on ",
+				"value from OS image if a mismatch is detected.",
+			},
+			ExecName: "cros_reset_firmware_config_in_cbi",
+			ExecExtraArgs: []string{
+				"boot_timeout:480",
+				"boot_interval:10",
+				"boot_retry:2",
+				"post_reset_boot_time:15",
+				"after_reboot_check:true",
+				"after_reboot_timeout:150",
+				"after_reboot_allow_use_servo_reset:true",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 3000},
+			RunControl:  RunControl_ALWAYS_RUN,
+		},
 	}
 
 	androidActions(actions)
