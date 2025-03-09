@@ -44,7 +44,8 @@ func deepRepairServoPlan() *Plan {
 			"Servo serial is specified",
 			"Device is SSHable",
 			"Power-cycle by smart-hub",
-			"Reboot servo_v4.1",
+			// Disable servo_v4.1 reboot due to b/398198297.
+			// "Reboot servo_v4.1",
 			"Mark labstation as servod is in-use",
 			"Start servod daemon without recovery",
 			"Servod is responsive to dut-control",
@@ -85,10 +86,6 @@ func deepRepairServoPlan() *Plan {
 					"Try to reset(power-cycle) the servo via smart usbhub.",
 				},
 				Conditions: []string{
-					// Disable power-cycle by smart hub for v4p1 due to b/243042046,
-					// The built-in reboot and ethernet power control in v4p1 also
-					// makes power-cycle the entire device unnecessary.
-					"Serial number is not servo_v4p1",
 					// We try restart only if we lost network to the dut.
 					"DUT is not pingable",
 				},
@@ -225,15 +222,6 @@ func deepRepairServoPlan() *Plan {
 				},
 				ExecName:   "sample_fail",
 				RunControl: RunControl_ALWAYS_RUN,
-			},
-			"Serial number is not servo_v4p1": {
-				Docs: []string{
-					"Verify that the servo serial number is not a servo_v4p1 serial number",
-				},
-				Conditions: []string{
-					"is_servo_v4p1_by_serial_number",
-				},
-				ExecName: "sample_fail",
 			},
 			"Create request to reboot labstation": {
 				Docs: []string{
