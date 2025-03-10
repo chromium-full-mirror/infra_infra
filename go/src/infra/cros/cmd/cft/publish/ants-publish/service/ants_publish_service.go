@@ -263,12 +263,9 @@ func (aps *AntsPublishService) uploadResults(ctx context.Context, entries []*atp
 		}
 		g.Go(func() error {
 			log.Printf("worker %d start", i)
-			if _, err := aps.service.TestResultService.BatchInsert(ctx, aps.metadata.AntsInvocationId, request); err != nil {
-				return err
-			}
-
-			log.Printf("worker %d done", i)
-			return nil
+			resp, err := aps.service.TestResultService.BatchInsert(ctx, aps.metadata.AntsInvocationId, request)
+			log.Printf("Response code: %v \n InsertErrors: %v", resp.ServerResponse, resp.InsertErrors)
+			return err
 		})
 	}
 

@@ -13,6 +13,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -613,8 +614,14 @@ func TestUploadResults(t *testing.T) {
 
 	mockCtl := gomock.NewController(t)
 	defer mockCtl.Finish()
-
 	mockTRService := mock_androidapi.NewMockTestResultService(mockCtl)
+
+	trResponse := &atp.TestResultBatchInsertResponse{
+		InsertErrors: []*atp.BatchInsertError{
+			{ErrorCode: 503, ErrorMessage: "err"},
+		},
+		ServerResponse: googleapi.ServerResponse{HTTPStatusCode: 503},
+	}
 	aps := &AntsPublishService{
 		metadata: &metadata.PublishAntsMetadata{AntsInvocationId: invID},
 		service:  &androidlib.Service{TestResultService: mockTRService},
@@ -633,7 +640,7 @@ func TestUploadResults(t *testing.T) {
 			},
 			chunkSize: 1,
 			expectations: func() {
-				mockTRService.EXPECT().BatchInsert(ctx, invID, gomock.Any()).Return(nil, nil).Times(2)
+				mockTRService.EXPECT().BatchInsert(ctx, invID, gomock.Any()).Return(trResponse, nil).Times(2)
 			},
 		},
 		{
@@ -645,7 +652,7 @@ func TestUploadResults(t *testing.T) {
 			},
 			chunkSize: 2,
 			expectations: func() {
-				mockTRService.EXPECT().BatchInsert(ctx, invID, gomock.Any()).Return(nil, nil).Times(2)
+				mockTRService.EXPECT().BatchInsert(ctx, invID, gomock.Any()).Return(trResponse, nil).Times(2)
 			},
 		},
 		{
@@ -657,7 +664,7 @@ func TestUploadResults(t *testing.T) {
 			},
 			chunkSize: 5,
 			expectations: func() {
-				mockTRService.EXPECT().BatchInsert(ctx, invID, gomock.Any()).Return(nil, nil).Times(1)
+				mockTRService.EXPECT().BatchInsert(ctx, invID, gomock.Any()).Return(trResponse, nil).Times(1)
 			},
 		},
 	}
