@@ -42,7 +42,11 @@ func StageAndWriteLocalStableVersion(
 	}
 	buildArtifact, err := service.StageBuild(ctx, rv.Board, rv.Model, fwImageBuildVersion, bucket, build_service.Firmware)
 	if err != nil {
-		return errors.Annotate(err, "stage stable version firmware image to bucket").Err()
+		// Fallback to the release branch for firmware.
+		buildArtifact, err = service.StageBuild(ctx, rv.Board, rv.Model, fwImageBuildVersion, bucket, build_service.Release)
+		if err != nil {
+			return errors.Annotate(err, "stage stable version firmware image to bucket").Err()
+		}
 	}
 	// FwImage can be in different locations, staging will return the correct place.
 	rv.FwImage = buildArtifact.GetPath()
