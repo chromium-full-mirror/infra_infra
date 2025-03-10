@@ -26,7 +26,7 @@ func (c *DockerRun) compose() ([]string, error) {
 		return nil, errors.New("ContainerImage is mandatory")
 	}
 	args := []string{"run", "-d", "--rm", "--cap-add=NET_RAW"}
-	if strings.Contains(c.ContainerImage, "foil-test") {
+	if strings.Contains(c.ContainerImage, "foil-test") || strings.Contains(c.ContainerImage, "tradefed") {
 		args = append(args, "--security-opt", "seccomp=unconfined")
 	}
 	if c.Name != "" {
