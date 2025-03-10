@@ -398,12 +398,12 @@ func TestPartnerFilters(t *testing.T) {
 
 		t.Run("PartnerStagingFilter", func(t *testing.T) {
 			t.Parallel()
-			assertFilter(t, filters[0], "partner-staging", "prod_partner-staging")
+			assertFilter(t, filters[0], "cros-test-finder", "nami-release.R134-16182.0.0")
 		})
 
 		t.Run("CrosTestFinderFilter", func(t *testing.T) {
 			t.Parallel()
-			assertFilter(t, filters[1], "cros-test-finder", "nami-release.R134-16182.0.0")
+			assertFilter(t, filters[1], "partner-staging", "prod_partner-staging")
 		})
 	})
 
@@ -419,6 +419,11 @@ func TestPartnerFilters(t *testing.T) {
 		if got, want := len(filters), 1; got != want {
 			t.Errorf("expected %d filter, got %d", want, got)
 		}
+
+		t.Run("PartnerStagingFilter", func(t *testing.T) {
+			t.Parallel()
+			assertFilter(t, filters[0], "cros-test-finder", "AOSP-Prod")
+		})
 	})
 
 	t.Run("EmptyBoard", func(t *testing.T) {
@@ -435,7 +440,7 @@ func TestPartnerFilters(t *testing.T) {
 		}
 		t.Run("FallbackCrosTestFinderFilter", func(t *testing.T) {
 			t.Parallel()
-			assertFilter(t, filters[1], "cros-test-finder", "nami-release.R132-16100.0.0")
+			assertFilter(t, filters[0], "cros-test-finder", "nami-release.R132-16100.0.0")
 		})
 	})
 }

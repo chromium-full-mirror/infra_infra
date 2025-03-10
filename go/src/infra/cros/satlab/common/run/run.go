@@ -44,7 +44,7 @@ const (
 	prodTag                     = "prod"
 	desktopPrefix               = "AL."
 	dummySuiteName              = "TestSuite"
-	crosTestProdTag             = "AOSP-Prod"
+	aospProdTag                 = "AOSP-Prod"
 )
 
 // Run holds the arguments that are needed for the run command.
@@ -297,27 +297,21 @@ func (c *Run) userDefinedFilters() []*api.CTPFilter {
 		}, &api.CTPFilter{
 			ContainerInfo: &api.ContainerInfo{
 				Container: &buildapi.ContainerImageInfo{
-					Name: "test-finder",
-				},
-			},
-		}, &api.CTPFilter{
-			ContainerInfo: &api.ContainerInfo{
-				Container: &buildapi.ContainerImageInfo{
 					Name: "ants-publish-filter",
 				},
 			},
 		})
-		foilFilter := &api.CTPFilter{
-			ContainerInfo: &api.ContainerInfo{
-				Container: &buildapi.ContainerImageInfo{
-					Name: "foil-filter",
+		if !site.IsPartner() {
+			userDefinedFilters = append(userDefinedFilters, &api.CTPFilter{
+				ContainerInfo: &api.ContainerInfo{
+					Container: &buildapi.ContainerImageInfo{
+						Name: "test-finder",
+					},
 				},
-			},
+			})
 		}
-		if site.IsPartner() {
-			foilFilter.ContainerInfo.BinaryArgs = []string{"-test-path", fmt.Sprintf("%s/cros-registry/%s/cros-test:%s", hostname, site.GetGCSImageBucket(), crosTestProdTag)}
-		}
-		userDefinedFilters = append(userDefinedFilters, foilFilter)
+
+		userDefinedFilters = append(userDefinedFilters, c.foilFilter())
 	}
 	if site.IsPartner() {
 		userDefinedFilters = append(c.partnerFilters(), userDefinedFilters...)
@@ -328,44 +322,70 @@ func (c *Run) userDefinedFilters() []*api.CTPFilter {
 // partnerFilters returns filters specific to partner.
 // These filters handle partner-specific logic, such as staging and cros-test-finder integration.
 func (c *Run) partnerFilters() []*api.CTPFilter {
-	partnerFilters := []*api.CTPFilter{
-		{
-			ContainerInfo: &api.ContainerInfo{
-				Container: &buildapi.ContainerImageInfo{
-					Name:   "partner-staging",
-					Digest: "sha256:",
-					Repository: &buildapi.GcrRepository{
-						Hostname: hostname,
-						Project:  testServicesPartnerRegistry,
-					},
-					Tags: []string{fmt.Sprintf("%s_partner-staging", prodTag)},
-				},
-			},
-		},
-	}
+	var partnerFilters []*api.CTPFilter
+	partnerFilters = append(partnerFilters, c.partnerCrosTestFinderFilter())
 	if !c.Desktop {
-		partnerFilters = append(partnerFilters, c.crosTestFinderFilter())
+		partnerFilters = append(partnerFilters, c.partnerStagingFilter())
 	}
 	return partnerFilters
 }
 
-// crosTestFinderFilter returns the cros-test-finder filter for partner configurations.
-// It constructs the image tag using the board, milestone, and build, or falls back to the image name.
-func (c *Run) crosTestFinderFilter() *api.CTPFilter {
-	tag := fmt.Sprintf("%s-release.R%s-%s", c.Board, c.Milestone, c.Build)
-	if c.Board == "" || c.Milestone == "" || c.Build == "" {
-		tag = strings.Replace(c.Image, "/", ".", -1)
-	}
+// partnerStagingFilter return partner-staging filter.
+func (c *Run) partnerStagingFilter() *api.CTPFilter {
 	return &api.CTPFilter{
 		ContainerInfo: &api.ContainerInfo{
 			Container: &buildapi.ContainerImageInfo{
-				Name:   "cros-test-finder",
+				Name:   "partner-staging",
 				Digest: "sha256:",
+				Repository: &buildapi.GcrRepository{
+					Hostname: hostname,
+					Project:  testServicesPartnerRegistry,
+				},
+				Tags: []string{fmt.Sprintf("%s_partner-staging", prodTag)},
+			},
+		},
+	}
+}
+
+// foilFilter returns foil-filter. For partners it is updated with 'test-path' binary arg.
+func (c *Run) foilFilter() *api.CTPFilter {
+	foilFilter := &api.CTPFilter{
+		ContainerInfo: &api.ContainerInfo{
+			Container: &buildapi.ContainerImageInfo{
+				Name: "foil-filter",
+			},
+		},
+	}
+	if site.IsPartner() {
+		foilFilter.ContainerInfo.BinaryArgs = []string{"-test-path", fmt.Sprintf("%s/cros-registry/%s/cros-test:%s", hostname, site.GetGCSImageBucket(), aospProdTag)}
+	}
+	return foilFilter
+}
+
+// partnerCrosTestFinderFilter returns the cros-test-finder filter for partner configurations.
+// For classic, it constructs the image tag using the board, milestone, and build, or falls back to the image name.
+// For desktop AOSP Prod tag is used.
+func (c *Run) partnerCrosTestFinderFilter() *api.CTPFilter {
+	var tag string
+	if c.Desktop {
+		tag = aospProdTag
+	} else {
+		tag = fmt.Sprintf("%s-release.R%s-%s", c.Board, c.Milestone, c.Build)
+		if c.Board == "" || c.Milestone == "" || c.Build == "" {
+			tag = strings.Replace(c.Image, "/", ".", -1)
+		}
+	}
+
+	return &api.CTPFilter{
+		ContainerInfo: &api.ContainerInfo{
+			Container: &buildapi.ContainerImageInfo{
 				Repository: &buildapi.GcrRepository{
 					Hostname: hostname,
 					Project:  fmt.Sprintf("cros-registry/%s", site.GetGCSImageBucket()),
 				},
-				Tags: []string{tag},
+				Name:   "cros-test-finder",
+				Digest: "sha256:",
+				Tags:   []string{tag},
 			},
 		},
 	}
