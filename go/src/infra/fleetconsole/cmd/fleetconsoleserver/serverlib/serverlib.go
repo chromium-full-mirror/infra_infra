@@ -58,7 +58,7 @@ var ACLMap rpcacl.Map = map[string]string{
 	"/fleetconsole.FleetConsole/PingBigQuery":         "fleet-console-access",
 	"/fleetconsole.FleetConsole/PingDeviceManager":    "fleet-console-access",
 	"/fleetconsole.FleetConsole/PingUfs":              "fleet-console-access",
-	"/fleetconsole.FleetConsole/RepopulateCache":      "fleet-console-access",
+	"/fleetconsole.FleetConsole/RepopulateCache":      "mdb/fleet-console-eng",
 	"/discovery.Discovery/Describe":                   rpcacl.All,
 	"/grpc.health.v1.Health/Watch":                    rpcacl.All,
 	"/grpc.health.v1.Health/Check":                    rpcacl.All,
