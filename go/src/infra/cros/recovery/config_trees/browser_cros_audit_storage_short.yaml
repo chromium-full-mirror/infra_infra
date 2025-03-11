@@ -191,7 +191,7 @@ plans:
                           conditions:
                             - name: is_servo_type_ccd
                         - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
-                    - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
+                    - name: Update fingerpprint FW from USB drive ('sample_pass') (ALWAYS_RUN)
                       conditions:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                           dependencies:
@@ -212,9 +212,25 @@ plans:
                                   conditions:
                                     - name: Setup has servo info ('dut_servo_host_present')
                       dependencies:
-                        - name: Set fw_wp_state to force_off ('servo_set')
+                        - name: Set fw_wp_state to force_off ('servo_set') (ALWAYS_RUN)
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
+                        - name: Run fingerpprint FW update when booted from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
+                        - name: Set fw_wp_state to force_on ('servo_set') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present')
+                            - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present')
+                                - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                                  conditions:
+                                    - name: Setup has servo info ('dut_servo_host_present')
                     - name: Install OS in recovery mode by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                       conditions:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)

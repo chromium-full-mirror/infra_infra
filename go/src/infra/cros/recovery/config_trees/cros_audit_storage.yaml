@@ -626,25 +626,8 @@ plans:
                           docs:
                             - Try to wait device to be accesable shortly.
                             - Waiting time 30 seconds.
-                    - name: Update fingerpprint FW from USB drive (ALWAYS_RUN) (time:'16m40s')
-                      exec_name: cros_install_in_recovery_mode
-                      exec_args:
-                        - run_custom_commands:true
-                        - custom_command_allowed_to_fail:true
-                        - custom_command_timeout:60
-                        - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
-                        - set_dev_default_boot:true
-                        - run_tpm_reset:false
-                        - run_os_install:false
-                        - boot_timeout:480
-                        - boot_interval:10
-                        - boot_retry:1
-                        - halt_timeout:120
-                        - badblocks_mode:not
-                        - ignore_reboot_failure:true
-                        - after_reboot_check:true
-                        - after_reboot_timeout:150
-                        - after_reboot_allow_use_servo_reset:true
+                    - name: Update fingerpprint FW from USB drive (ALWAYS_RUN)
+                      exec_name: sample_pass
                       docs:
                         - The goal to force update fingerprint fw when devices booted from USB-stick
                       conditions:
@@ -702,16 +685,75 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Set fw_wp_state to force_off
+                        - name: Set fw_wp_state to force_off (ALWAYS_RUN)
                           exec_name: servo_set
                           exec_args:
                             - command:fw_wp_state
                             - string_value:force_off
                           docs:
-                            - Force disable wp of FW by servo.
+                            - Force disable WP of FW by servo.
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                        - name: Run fingerpprint FW update when booted from USB drive (ALWAYS_RUN) (time:'16m40s')
+                          exec_name: cros_install_in_recovery_mode
+                          exec_args:
+                            - run_custom_commands:true
+                            - custom_command_allowed_to_fail:true
+                            - custom_command_timeout:60
+                            - custom_commands:flash_fp_mcu /opt/google/biod/fw/$(cros_config /fingerprint board)*.bin
+                            - set_dev_default_boot:true
+                            - run_tpm_reset:false
+                            - run_os_install:false
+                            - boot_timeout:480
+                            - boot_interval:10
+                            - boot_retry:1
+                            - halt_timeout:120
+                            - badblocks_mode:not
+                            - ignore_reboot_failure:true
+                            - after_reboot_check:true
+                            - after_reboot_timeout:150
+                            - after_reboot_allow_use_servo_reset:true
+                          docs:
+                            - The goal to force update fingerprint fw when devices booted from USB-stick
+                        - name: Set fw_wp_state to force_on (ALWAYS_RUN)
+                          exec_name: servo_set
+                          exec_args:
+                            - command:fw_wp_state
+                            - string_value:force_on
+                          docs:
+                            - Force enable WP of FW by servo.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  conditions:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
                     - name: Install OS in recovery mode by booting from servo USB-drive (ALWAYS_RUN)
                       exec_name: sample_pass
                       docs:
