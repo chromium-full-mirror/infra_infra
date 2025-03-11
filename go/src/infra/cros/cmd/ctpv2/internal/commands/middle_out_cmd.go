@@ -339,6 +339,8 @@ func middleOut(ctx context.Context, resp *api.InternalTestplan, cfg distroCfg) (
 	solverData.cfg = cfg
 	for _, tc := range resp.GetTestCases() {
 		tcUUID := getName(tc)
+		logging.Infof(ctx, fmt.Sprintf("For TC: %s UUID is %s", tc, tcUUID))
+
 		// Drop all of the HW fluff in the TC for memory sakes.
 		tcForMap := &api.CTPTestCase{
 			Name:     tc.GetName(),
@@ -463,9 +465,11 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 			if len(shardedtc) > 0 {
 				harness = getHarness(shardedtc[0])
 			}
-			logging.Infof(ctx, "looking for dut")
+			logging.Infof(ctx, fmt.Sprintf("Looking for Tcs: %s", shardedtc))
+
 			selectedDevice, expandCurrentShard := getDevices(solverData, len(shardedtc), hwHash, harness)
 			logging.Infof(ctx, "Selected: %s Expand : %s", selectedDevice, expandCurrentShard)
+			logging.Infof(ctx, "selected expanded: ", solverData.hwUUIDMap[selectedDevice])
 			assignHardware(solverData, selectedDevice, expandCurrentShard, shardedtc)
 
 		}
@@ -1222,17 +1226,17 @@ func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness 
 // If none are free, grab the one which has the most amount of un-assigned work to it in the queue.
 // Its good to note that freeDevices is never expected to go negative, but `totalDevicesUnAssigned` can.
 func bestChoice(solverData *middleOutData, devices []uint64) (selectedDevice uint64) {
-	maxAvalibleFound := math.MinInt32
+	maxAvailableFound := math.MinInt32
 
 	// Look through the un-allocated devices for a free one.
 	for _, device := range devices {
-		if solverData.flatHWUUIDMap[device].labLoading.freeDevices > maxAvalibleFound {
-			maxAvalibleFound = solverData.flatHWUUIDMap[device].labLoading.freeDevices
+		if solverData.flatHWUUIDMap[device].labLoading.freeDevices > maxAvailableFound {
+			maxAvailableFound = solverData.flatHWUUIDMap[device].labLoading.freeDevices
 			selectedDevice = device
 		}
 	}
 
-	if maxAvalibleFound > 0 {
+	if maxAvailableFound > 0 {
 		return selectedDevice
 	}
 
@@ -1240,14 +1244,35 @@ func bestChoice(solverData *middleOutData, devices []uint64) (selectedDevice uin
 	// This will be a self-balancing function as if CTPs build a queue on the more deployed devices
 	// the less deployed devices will start to free up, then other CTPs will grab them in the upper loop.
 
-	maxAvalibleFound = 0
+	// Reset the selectedDevice.
+	selectedDevice = uint64(0)
+	maxAvailableFound = math.MinInt32
 	for _, device := range devices {
-		if solverData.flatHWUUIDMap[device].labLoading.totalDevicesUnAssigned > maxAvalibleFound {
-			maxAvalibleFound = solverData.flatHWUUIDMap[device].labLoading.totalDevicesUnAssigned
+		if solverData.flatHWUUIDMap[device].labLoading.totalDevicesUnAssigned > maxAvailableFound {
+			// Skip devices which do not actually exist.
+			if solverData.flatHWUUIDMap[device].labLoading.staticBotCount == 0 {
+				continue
+			}
+			maxAvailableFound = solverData.flatHWUUIDMap[device].labLoading.totalDevicesUnAssigned
 			selectedDevice = device
 		}
 	}
 
+	// If a device was found, then return it.
+	if selectedDevice != uint64(0) {
+		return selectedDevice
+
+	}
+
+	// Finally, if we have no free devices, and no busy but real devices, we will select
+	// the device that was requested; and thus will reject the task.
+	maxAvailableFound = math.MinInt32
+	for _, device := range devices {
+		if solverData.flatHWUUIDMap[device].labLoading.totalDevicesUnAssigned > maxAvailableFound {
+			maxAvailableFound = solverData.flatHWUUIDMap[device].labLoading.totalDevicesUnAssigned
+			selectedDevice = device
+		}
+	}
 	return selectedDevice
 }
 
