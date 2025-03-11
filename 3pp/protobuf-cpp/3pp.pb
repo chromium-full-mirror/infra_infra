@@ -12,6 +12,7 @@ create {
   build {
     tool: "tools/cmake"
     tool: "tools/sed"
+    tool: "build_support/ca-bundle"
     dep: "static_libs/zlib"
   }
 }

@@ -26,6 +26,10 @@ fi
 sed -i 's/20250127\.0/5852b47a81e5334a667d1e12dbfa55c0f8111100/' \
        'cmake/dependencies.cmake'
 
+# Use an up-to-date ca bundle to avoid ssl verification error.
+# Remove this when we moved away from centos 7.
+export GIT_SSL_CAINFO="${ca_bundle}/raw_source_0.pem"
+
 mkdir cmake-build
 cd cmake-build
 cmake .. \
