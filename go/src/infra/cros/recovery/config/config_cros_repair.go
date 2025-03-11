@@ -945,7 +945,6 @@ func crosRepairActions() map[string]*Action {
 				"Device not in MP Signed AP FW pool",
 			},
 			Dependencies: []string{
-				"FWMP is force WP enable",
 				"Ensure firmware is in good state",
 				"RO Firmware version matches the recovery-version",
 				"Verify servo keyboard firmware",
@@ -954,24 +953,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
-		"FWMP is force WP enable": {
-			Docs: []string{
-				"If fwmp shows up in the gsctool -aw output, ",
-				"then the fwmp is forcing wp enable. You should report that.",
-			},
-			Conditions: []string{
-				//TODO(b:231609148: Flex device don't have security chip and gsctool.
-				"Is a Chromebook",
-				"DUT has Cr50 phase label",
-				"Is gsctool preent",
-			},
-			ExecName: "cros_is_fwmp_force_wp_enabled",
-			RecoveryActions: []string{
-				"Set fw_wp_state to force_on",
-				"Cleanup the enrollment state and wait for boot",
-			},
-			AllowFailAfterRecovery: true,
 		},
 		"Ensure firmware is in good state": {
 			Docs: []string{
@@ -1581,6 +1562,9 @@ func crosRepairActions() map[string]*Action {
 				"Is a Chromebook",
 				"DUT has Cr50 phase label",
 			},
+			Dependencies: []string{
+				"Read OS version",
+			},
 			ExecName: "cros_run_shell_command",
 			ExecExtraArgs: []string{
 				"gsctool -a -f",
@@ -1592,15 +1576,6 @@ func crosRepairActions() map[string]*Action {
 				"Install OS in DEV mode by USB-drive",
 			},
 			AllowFailAfterRecovery: true,
-		},
-		"Is gsctool preent": {
-			Docs: []string{
-				"Condition to check  the present of gsctool on the DUT.",
-			},
-			ExecName: "cros_run_shell_command",
-			ExecExtraArgs: []string{
-				"gsctool -a -f",
-			},
 		},
 		"Audit battery": {
 			Docs: []string{
@@ -3965,16 +3940,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Set fw_wp_state to force_off",
-				"Run fingerpprint FW update when booted from USB drive",
-				"Set fw_wp_state to force_on",
-			},
-			ExecName:   "sample_pass",
-			RunControl: RunControl_ALWAYS_RUN,
-		},
-		"Run fingerpprint FW update when booted from USB drive": {
-			// Do not add conditin or dependencies as that is just a help action.
-			Docs: []string{
-				"The goal to force update fingerprint fw when devices booted from USB-stick",
 			},
 			ExecName: "cros_install_in_recovery_mode",
 			ExecExtraArgs: []string{
@@ -3995,41 +3960,21 @@ func crosRepairActions() map[string]*Action {
 				"after_reboot_timeout:150",
 				"after_reboot_allow_use_servo_reset:true",
 			},
-			ExecTimeout:   &durationpb.Duration{Seconds: 1000},
-			RunControl:    RunControl_ALWAYS_RUN,
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
+			ExecTimeout: &durationpb.Duration{Seconds: 1000},
+			RunControl:  RunControl_ALWAYS_RUN,
 		},
 		"Set fw_wp_state to force_off": {
 			Docs: []string{
-				"Force disable WP of FW by servo.",
+				"Force disable wp of FW by servo.",
 			},
 			Dependencies: []string{
 				"Setup has servo info",
-				"Is servod running",
 			},
 			ExecName: "servo_set",
 			ExecExtraArgs: []string{
 				"command:fw_wp_state",
 				"string_value:force_off",
 			},
-			RunControl:    RunControl_ALWAYS_RUN,
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
-		},
-		"Set fw_wp_state to force_on": {
-			Docs: []string{
-				"Force enable WP of FW by servo.",
-			},
-			Dependencies: []string{
-				"Setup has servo info",
-				"Is servod running",
-			},
-			ExecName: "servo_set",
-			ExecExtraArgs: []string{
-				"command:fw_wp_state",
-				"string_value:force_on",
-			},
-			RunControl:    RunControl_ALWAYS_RUN,
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
 		"Boot DUT from USB in DEV mode": {
 			Docs: []string{

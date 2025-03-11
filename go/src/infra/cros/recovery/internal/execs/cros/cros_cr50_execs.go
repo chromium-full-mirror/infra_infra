@@ -138,36 +138,8 @@ func reflashCr50FwExec(ctx context.Context, info *execs.ExecInfo) (rErr error) {
 	return nil
 }
 
-// isFwWriteProtectionEnabled check if WP is forced to be enabled.
-// Check if fwmp shows up in the gsctool -aw output as WP being forced enabled.
-// Example output:
-//
-//	Flash WP: fwmp forced enabled
-//	 at boot: fwmp enabled
-func isFWMPForceWPEnabled(ctx context.Context, info *execs.ExecInfo) error {
-	ha := info.NewHostAccess(info.GetDut().Name)
-	res, err := ha.Run(ctx, info.GetExecTimeout(), "gsctool -aw")
-	if err != nil {
-		return errors.Annotate(err, "if FWMP force WP enabled").Err()
-	}
-	out := res.GetStdout()
-	log.Debugf(ctx, "FW WP output from gsctool: \n%s", res.GetStdout())
-	expectedMessages := []string{
-		"Flash WP: fwmp forced enabled",
-		"at boot: fwmp enabled",
-	}
-	for _, msg := range expectedMessages {
-		if !strings.Contains(out, msg) {
-			return errors.Reason("if FWMP force WP enabled: fwmp is not enforce it").Err()
-		}
-	}
-	log.Infof(ctx, "FWMP force WP being enabled!")
-	return nil
-}
-
 func init() {
 	execs.Register("cros_update_cr50_label", updateCr50LabelExec)
 	execs.Register("cros_update_cr50_key_id_label", updateCr50KeyIdLabelExec)
 	execs.Register("cros_reflash_cr50_fw", reflashCr50FwExec)
-	execs.Register("cros_is_fwmp_force_wp_enabled", isFWMPForceWPEnabled)
 }
