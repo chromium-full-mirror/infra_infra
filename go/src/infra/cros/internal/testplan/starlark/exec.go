@@ -238,7 +238,7 @@ func ExecTestPlan(
 	// based on the descriptors in protoLoader, i.e. the Starlark code will look
 	// like
 	// `load('@proto//chromiumos/test/api/v1/plan.proto', plan_pb = 'chromiumos.test.api.v1')`
-	pkgs["proto"] = func(path string) (dict starlark.StringDict, src string, err error) {
+	pkgs["proto"] = func(_ context.Context, path string) (dict starlark.StringDict, src string, err error) {
 		mod, err := protoLoader.Module(path)
 		if err != nil {
 			return nil, "", err
