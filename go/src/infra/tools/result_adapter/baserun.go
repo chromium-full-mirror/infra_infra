@@ -152,7 +152,7 @@ func (r *baseRun) reportException(ctx context.Context, reportErr error) {
 		Datapoints: []*exceptionpb.ExceptionOccurrence{
 			{
 				Name:         reportErr.Error(),
-				Stacktrace:   errors.RenderStack(reportErr),
+				Stacktrace:   strings.Split(errors.RenderStack(reportErr), "\n"),
 				OccurredTime: timestamppb.New(time.Now()),
 			},
 		},

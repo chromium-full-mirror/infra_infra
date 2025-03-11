@@ -72,8 +72,7 @@ func logAnnotatedErr(ctx context.Context, err error) {
 		return
 	}
 
-	log.Errorf(ctx, "Annotated error stack:\n%s",
-		strings.Join(errors.RenderStack(err), "\n"))
+	log.Errorf(ctx, "Annotated error stack:\n%s", errors.RenderStack(err))
 }
 
 // infraFailure converts an error to a build.InfraFailure protobuf message.
@@ -86,7 +85,7 @@ func infraFailure(err error) *build.InfraFailure {
 		failure.Type = build.InfraFailure_CANCELED
 	} else {
 		failure.Type = build.InfraFailure_BOOTSTRAPPER_ERROR
-		failure.BootstrapperCallStack = errors.RenderStack(err)
+		failure.BootstrapperCallStack = strings.Split(errors.RenderStack(err), "\n")
 	}
 
 	return failure
