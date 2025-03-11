@@ -255,7 +255,7 @@ chromium_genfiles(
         "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "android",
     },
-    machine_type = "n1-highmem-8",
+    machine_type = "n1-highmem-8|n2-highmem-8",
 )
 
 chromium_genfiles(
@@ -393,6 +393,7 @@ chromium_genfiles(
         "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "linux",
     },
+    machine_type = "n1-standard-8|n2-standard-8",
 )
 
 chromium_genfiles(
@@ -429,7 +430,7 @@ chromium_genfiles(
     },
     os = "Windows-10",
     cpu_cores = "32",
-    machine_type = "n1-standard-32",
+    machine_type = "n1-standard-32|n2-standard-32",
 )
 
 update_submodules_mirror(
