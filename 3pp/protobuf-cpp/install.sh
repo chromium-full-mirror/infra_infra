@@ -21,20 +21,17 @@ if [[ $_3PP_PLATFORM != $_3PP_TOOL_PLATFORM ]]; then  # cross compiling
   PROTOC_OPT="-Dprotobuf_BUILD_TESTS=OFF -DABSL_BUILD_TESTING=OFF"
 fi
 
-# Ugly Workaround for https://github.com/abseil/abseil-cpp/issues/1528
-# Not sure what changed in cmake but after v3.30.0 targets' dependencies are
-# always expanded, causing absl_cc_library for test targets failed.
-sed -i 's/absl::random_internal_mock_overload_set$//' \
-       'third_party/abseil-cpp/absl/random/CMakeLists.txt'
-sed -i 's/GTest::gmock$//' \
-       'third_party/abseil-cpp/absl/container/CMakeLists.txt'
+# Temporary bump the version for abseil:
+# https://github.com/abseil/abseil-cpp/commit/5852b47a81e5334a667d1e12dbfa55c0f8111100
+sed -i 's/20250127\.0/5852b47a81e5334a667d1e12dbfa55c0f8111100/' \
+       'cmake/dependencies.cmake'
 
 mkdir cmake-build
 cd cmake-build
 cmake .. \
   -DCMAKE_BUILD_TYPE:STRING=Release \
   -DCMAKE_INSTALL_PREFIX:STRING="${PREFIX}" \
-  -DCMAKE_CXX_STANDARD=14 \
+  -DCMAKE_CXX_STANDARD=17 \
   ${PROTOC_OPT}
 
 make -j $(nproc)
