@@ -22,3 +22,11 @@ func getBotConfigs(ctx context.Context) (retErr error) {
 	retErr = controller.ImportBotConfigs(ctx)
 	return retErr
 }
+
+func getMaintenanceConfigs(ctx context.Context) (retErr error) {
+	defer func() {
+		syncMaintenanceConfigsTick.Add(ctx, 1, retErr == nil)
+	}()
+	retErr = controller.ImportBotMaintenanceConfigs(ctx)
+	return retErr
+}

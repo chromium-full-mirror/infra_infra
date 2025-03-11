@@ -45,6 +45,17 @@ func encTestingContext() context.Context {
 				},
 			},
 		},
+		MaintenanceConfigs: &config.MaintenanceConfigs{
+			GitilesHost: "test_gitiles",
+			Project:     "test_project",
+			Branch:      "test_branch",
+			MaintenanceConfig: []*config.MaintenanceConfigs_ConfigFile{
+				{
+					Name:       "test_name",
+					RemotePath: "test_maintenance_git_path",
+				},
+			},
+		},
 	})
 	ctx = external.WithTestingContext(ctx)
 	datastore.GetTestable(ctx).Consistent(true)
@@ -56,9 +67,13 @@ func encTestingContext() context.Context {
 func TestGetEncBotConfigs(t *testing.T) {
 	t.Parallel()
 
-	ftt.Run("Read Bot Configs", t, func(t *ftt.Test) {
-		t.Run("happy path", func(t *ftt.Test) {
+	ftt.Run("Read Configs", t, func(t *ftt.Test) {
+		t.Run("Bot Configs - happy path", func(t *ftt.Test) {
 			err := getBotConfigs(encTestingContext())
+			assert.Loosely(t, err, should.BeNil)
+		})
+		t.Run("Maintenance Configs - happy path", func(t *ftt.Test) {
+			err := getMaintenanceConfigs(encTestingContext())
 			assert.Loosely(t, err, should.BeNil)
 		})
 	})

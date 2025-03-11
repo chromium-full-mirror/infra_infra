@@ -72,6 +72,12 @@ var (
 		nil,
 		field.Bool("success"),
 	)
+	syncMaintenanceConfigsTick = metric.NewCounter(
+		"chromeos/ufs/dumper/sync_maintenance_configs",
+		"sync maintenance configs attempt",
+		nil,
+		field.Bool("success"),
+	)
 	fetchNlyteBigQueryDataTick = metric.NewCounter(
 		"chromeos/ufs/dumper/sync_nlyte_bigquery_data",
 		"getNlyteBigQueryData hourly attempt",

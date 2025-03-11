@@ -103,6 +103,13 @@ var Jobs = []*cron.CronTab{
 		Job:      getBotConfigs,
 	},
 	{
+		// Sync maintenance configs
+		Name:     "ufs.sync_maintenance_config.sync",
+		Time:     10 * time.Minute,
+		TrigType: cron.EVERY,
+		Job:      getMaintenanceConfigs,
+	},
+	{
 		Name:     "ufs.device_config.sync",
 		Time:     1 * time.Hour,
 		TrigType: cron.EVERY,
