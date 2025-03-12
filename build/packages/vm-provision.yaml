@@ -1,0 +1,10 @@
+package: chromiumos/infra/cft/provision/vm-provision/${platform}
+description: vm-provision is the CFT container handling vm provisioning.
+platforms:
+  - linux-amd64
+go_packages:
+  - go.chromium.org/infra/cros/cmd/cft/provision/vm-provision
+root: ../../go/bin
+data:
+  - file: vm-provision${exe_suffix}
+  - version_file: .versions/vm-provision${exe_suffix}.cipd_version

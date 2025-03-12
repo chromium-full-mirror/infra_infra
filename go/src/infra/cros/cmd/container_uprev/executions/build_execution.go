@@ -53,7 +53,7 @@ func LuciBuildExecution(targetConfig string) {
 // LocalBuildExecution performs local building of the images.
 func LocalBuildExecution(cipdLabel, imageTag, targetConfig string, runAsAdmin bool) {
 	execPath, _ := os.Executable()
-	logDir, _ := os.MkdirTemp(path.Dir(execPath), "uprev")
+	logDir, _ := os.MkdirTemp(path.Dir(execPath), "generated/uprev")
 	emptyBuild := &buildbucketpb.Build{}
 	buildState, ctx, err := build.Start(context.Background(), emptyBuild)
 

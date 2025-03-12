@@ -260,6 +260,16 @@ func GetConfigs() []*UprevConfig {
 			},
 		},
 		{
+			Name: "android-provision",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/provision/android-provision/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
+		},
+		{
 			Name: "cros-provision",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/cft/provision/cros-provision/${platform}"),
@@ -279,6 +289,16 @@ func GetConfigs() []*UprevConfig {
 			Name: "foil-provision",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/cft/provision/foil-provision/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
+		},
+		{
+			Name: "vm-provision",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/provision/vm-provision/${platform}"),
 			},
 			Repositories: []*Repository{
 				DefaultRepository,
