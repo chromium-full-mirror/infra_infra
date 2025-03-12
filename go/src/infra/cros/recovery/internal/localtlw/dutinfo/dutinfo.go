@@ -154,9 +154,14 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 	if machine.GetChromeosMachine().GetModel() == "betty" {
 		setup = tlw.DUTSetupType_CROSVM
 	}
+
 	// Check hostname to see if it's DUTs for browser testing
 	if strings.HasPrefix(name, "chrome-") || strings.HasPrefix(name, "chromium-") {
-		setup = tlw.DUTSetupType_CROS_BROWSER
+		if dut.GetHive() == "chrome-clank" {
+			setup = tlw.DUTSetupType_CLANK_ONLY
+		} else {
+			setup = tlw.DUTSetupType_CROS_BROWSER
+		}
 	}
 
 	audio := &tlw.DUTAudio{

@@ -1061,6 +1061,8 @@ enum DUTSetupType {
 	CROSVM = 7;
 	// Special setup for DevBoard devices.
 	DEV_BOARD = 8;
+	// Special setup for CLANK-Only devices.
+	CLANK_ONLY = 9;
 }
 
 // This proto define common version info we want to record from a device.
