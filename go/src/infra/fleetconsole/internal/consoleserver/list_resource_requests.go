@@ -22,13 +22,13 @@ import (
 )
 
 const (
-	ResourceRequestTableName = "fleet_console_bq.resource_requests"
+	ResourceRequestTableName = "fleet_console.resource_requests"
 	RrIDColumn               = "rr_id"
 	ResourceDetailsColumn    = "resource_details"
-	ProcurementDateColumn    = "procurement_end_date"
-	BuildEndDateColumn       = "build_end_date"
-	QAEndDateColumn          = "qa_end_date"
-	ConfigEndDateColumn      = "config_end_date"
+	ProcurementDateColumn    = "material_sourcing_target_end_date"
+	BuildEndDateColumn       = "build_target_end_date"
+	QAEndDateColumn          = "qa_target_end_date"
+	ConfigEndDateColumn      = "config_target_end_date"
 )
 
 // currently we are using big query table names as part of a contract with frontend, which is not a good practice
@@ -59,11 +59,19 @@ func MapOrderBy(orderBy string) (string, error) {
 	return parts[0], nil
 }
 
+func BigQueryValueToDate(value bigquery.Value) (date *fleetconsolerpc.DateOnly) {
+	if value == nil {
+		return nil
+	}
+
+	return utils.FromCivilDate(value.(civil.Date))
+}
+
 // ListResourceRequests lists resource requests.
 func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, req *fleetconsolerpc.ListResourceRequestsRequest) (*fleetconsolerpc.ListResourceRequestsResponse, error) {
 	logging.Infof(ctx, "ListResourceRequests called")
 
-	bqClient, err := bigqueryclient.NewBQClient(ctx, "fleet-console-dev")
+	bqClient, err := bigqueryclient.NewBQClient(ctx, "chrome-fleet-analytics")
 
 	if err != nil {
 		logging.Infof(ctx, "Error instantiating a new BigQuery client")
@@ -114,10 +122,10 @@ func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, 
 				RrId:               rrID,
 				Name:               "resourceRequests/" + rrID,
 				ResourceDetails:    row[ResourceDetailsColumn].(string),
-				ProcurementEndDate: utils.FromCivilDate(row[ProcurementDateColumn].(civil.Date)),
-				BuildEndDate:       utils.FromCivilDate(row[BuildEndDateColumn].(civil.Date)),
-				QaEndDate:          utils.FromCivilDate(row[QAEndDateColumn].(civil.Date)),
-				ConfigEndDate:      utils.FromCivilDate(row[ConfigEndDateColumn].(civil.Date)),
+				ProcurementEndDate: BigQueryValueToDate(row[ProcurementDateColumn]),
+				BuildEndDate:       BigQueryValueToDate(row[BuildEndDateColumn]),
+				QaEndDate:          BigQueryValueToDate(row[QAEndDateColumn]),
+				ConfigEndDate:      BigQueryValueToDate(row[ConfigEndDateColumn]),
 			})
 		} else {
 			break
