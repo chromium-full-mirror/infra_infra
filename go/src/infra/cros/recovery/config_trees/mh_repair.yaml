@@ -8169,6 +8169,11 @@ plans:
                 - command:reboot
               docs:
                 - Reboot by ADB util.
+              conditions:
+                - name: Is Android based on previous DUT OS
+                  exec_name: cros_is_previous_android_os_type
+                  docs:
+                    - Validate that OS on the DUT was provisioned with Android.
             - name: Cold reset by servo and wait for ping (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -9133,6 +9138,11 @@ plans:
                 - command:reboot
               docs:
                 - Reboot by ADB util.
+              conditions:
+                - name: Is Android based on previous DUT OS
+                  exec_name: cros_is_previous_android_os_type
+                  docs:
+                    - Validate that OS on the DUT was provisioned with Android.
             - name: Cold reset by servo and wait for ping (ALWAYS_RUN)
               exec_name: sample_pass
               docs:

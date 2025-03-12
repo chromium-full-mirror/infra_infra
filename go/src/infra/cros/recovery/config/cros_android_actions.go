@@ -104,6 +104,9 @@ func androidActions(actions map[string]*Action) {
 			Docs: []string{
 				"Reboot by ADB util.",
 			},
+			Conditions: []string{
+				"Is Android based on previous DUT OS",
+			},
 			ExecName: "ctr_adb_command",
 			ExecExtraArgs: []string{
 				"command:reboot",

@@ -35381,6 +35381,8 @@ plans:
             - name: Android is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               recoveries:
                 - name: Reboot by ADB (Allow to fail) ('ctr_adb_command') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                 - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -35674,6 +35676,8 @@ plans:
             - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
               recoveries:
                 - name: Reboot by ADB (Allow to fail) ('ctr_adb_command') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                 - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
