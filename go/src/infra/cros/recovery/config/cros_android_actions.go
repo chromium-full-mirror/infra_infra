@@ -246,6 +246,7 @@ func androidActions(actions map[string]*Action) {
 			ExecExtraArgs: []string{
 				"run_android_install:true",
 				"run_cros_install:false",
+				"reset_tpm:true",
 				"boot_timeout:150",
 				"boot_interval:10",
 				"boot_retry:1",
