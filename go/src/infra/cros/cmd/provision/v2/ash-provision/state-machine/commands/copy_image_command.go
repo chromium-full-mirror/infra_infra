@@ -6,13 +6,13 @@
 package commands
 
 import (
-	"go.chromium.org/chromiumos/test/provision/v2/ash-provision/service"
 	"context"
 	"fmt"
 	"log"
 
 	conf "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/test/provision/v2/ash-provision/service"
 )
 
 type CopyImageCommand struct {

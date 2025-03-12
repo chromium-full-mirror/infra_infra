@@ -10,9 +10,8 @@ import (
 	"fmt"
 	"log"
 
-	firmwareservice "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/service"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
+	firmwareservice "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/service"
 )
 
 // FirmwareUpdateRwState updates firmware with write protection disabled.

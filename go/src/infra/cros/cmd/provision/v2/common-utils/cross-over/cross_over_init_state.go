@@ -11,12 +11,12 @@ import (
 	"strings"
 	"time"
 
+	"google.golang.org/protobuf/types/known/anypb"
+
 	storage_path "go.chromium.org/chromiumos/config/go"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
-
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"google.golang.org/protobuf/types/known/anypb"
 )
 
 const (

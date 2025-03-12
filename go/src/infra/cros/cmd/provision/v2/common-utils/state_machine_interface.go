@@ -9,8 +9,9 @@ import (
 	"context"
 	"log"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/protobuf/types/known/anypb"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 // CommandInterface executes a specific step in a state. Note commands are

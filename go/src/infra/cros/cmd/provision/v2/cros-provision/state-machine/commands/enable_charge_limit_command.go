@@ -5,13 +5,13 @@
 package commands
 
 import (
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 	"context"
 	"fmt"
 	"log"
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 )
 
 type EnableChargeLimitCommand struct {

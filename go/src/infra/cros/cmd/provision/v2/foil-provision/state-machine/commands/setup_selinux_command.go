@@ -8,10 +8,9 @@ import (
 	"context"
 	"log"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/test/provision/v2/foil-provision/service"
 	"go.chromium.org/chromiumos/test/util/adb"
-
-	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 type SetSelinuxCommand struct {

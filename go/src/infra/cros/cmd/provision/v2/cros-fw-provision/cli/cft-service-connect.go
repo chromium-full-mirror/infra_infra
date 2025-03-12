@@ -7,8 +7,9 @@ package cli
 
 import (
 	"github.com/pkg/errors"
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 func connectToDutServer(dutServAddr string) (api.DutServiceClient, error) {

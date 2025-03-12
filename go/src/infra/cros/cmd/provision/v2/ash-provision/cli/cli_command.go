@@ -6,10 +6,6 @@
 package cli
 
 import (
-	"go.chromium.org/chromiumos/test/provision/v2/ash-provision/constants"
-	"go.chromium.org/chromiumos/test/provision/v2/ash-provision/service"
-	state_machine "go.chromium.org/chromiumos/test/provision/v2/ash-provision/state-machine"
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 	"context"
 	"errors"
 	"flag"
@@ -19,11 +15,15 @@ import (
 	"path/filepath"
 	"strings"
 
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"google.golang.org/grpc"
+	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/test/provision/v2/ash-provision/constants"
+	"go.chromium.org/chromiumos/test/provision/v2/ash-provision/service"
+	state_machine "go.chromium.org/chromiumos/test/provision/v2/ash-provision/state-machine"
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 )
 
 // CLI command executed the provisioning as a CLI

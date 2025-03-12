@@ -10,11 +10,10 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
-
 	. "github.com/smartystreets/goconvey/convey"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/service"
 	mock_common_utils "go.chromium.org/chromiumos/test/provision/v2/mock-common-utils"
 	"go.chromium.org/luci/common/testing/localonly"

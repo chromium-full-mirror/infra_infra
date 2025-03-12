@@ -5,12 +5,12 @@
 package commands
 
 import (
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 	"context"
 	"log"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 )
 
 type CreateProvisionMarkerCommand struct {

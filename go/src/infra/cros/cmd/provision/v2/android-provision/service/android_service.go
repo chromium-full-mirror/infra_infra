@@ -10,14 +10,14 @@ import (
 	"os"
 	"path/filepath"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/types/known/anypb"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
+	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common/gsstorage"
 	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+	"go.chromium.org/luci/common/errors"
 )
 
 // AndroidPackage contains information about installed Android package.

@@ -18,10 +18,8 @@ import (
 	"strings"
 	"sync"
 
-	"go.chromium.org/chromiumos/test/provision/v2/foil-provision/service"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
-
+	"go.chromium.org/chromiumos/test/provision/v2/foil-provision/service"
 	"go.chromium.org/chromiumos/test/util/adb"
 )
 
@@ -223,7 +221,7 @@ func install(log *log.Logger, lcpid string, addr, localImagePath string) (string
 	logcat(log, lcpid, addr)
 	log.Println("LOGCAT CLOSED!")
 
-	if found1 == true || found2 == true {
+	if found1 || found2 {
 		log.Println("Found success status!")
 		return "", nil
 	}

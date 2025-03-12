@@ -10,13 +10,12 @@ import (
 	"fmt"
 	"strings"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/executor"
 	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 	"go.chromium.org/chromiumos/test/provision/v2/common-utils/metadata"
 	"go.chromium.org/chromiumos/test/provision/v2/common-utils/server"
-
-	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 // ServerCommand executed the provisioning as a Server

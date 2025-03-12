@@ -9,15 +9,15 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+
+	conf "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/test/provision/v2/ash-provision/cli"
 	"go.chromium.org/chromiumos/test/provision/v2/ash-provision/constants"
 	"go.chromium.org/chromiumos/test/provision/v2/ash-provision/service"
 	state_machine "go.chromium.org/chromiumos/test/provision/v2/ash-provision/state-machine"
 	mock_common_utils "go.chromium.org/chromiumos/test/provision/v2/mock-common-utils"
 	"go.chromium.org/luci/common/testing/localonly"
-
-	"github.com/golang/mock/gomock"
-	conf "go.chromium.org/chromiumos/config/go"
 )
 
 type PathExistsCommandStructure struct {

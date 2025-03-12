@@ -5,13 +5,13 @@
 package commands
 
 import (
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 	"context"
 	"fmt"
 	"log"
 	"regexp"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 )
 
 var reBoard = regexp.MustCompile(`CHROMEOS_RELEASE_BOARD=(.*)`)

@@ -13,15 +13,15 @@ import (
 	"strconv"
 	"time"
 
+	"google.golang.org/grpc"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 	cross_over "go.chromium.org/chromiumos/test/provision/v2/common-utils/cross-over"
 	"go.chromium.org/chromiumos/test/provision/v2/foil-provision/service"
 	state_machine "go.chromium.org/chromiumos/test/provision/v2/foil-provision/state-machine"
 	"go.chromium.org/chromiumos/test/util/adb"
-	"google.golang.org/grpc"
-
-	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 type FoilProvisionExecutor struct {
@@ -89,7 +89,7 @@ func (c *FoilProvisionExecutor) crossOverRequired(dut *lab_api.Dut, req *api.Ins
 				return true
 			}
 			c.Logger.Println("Trying to check target version")
-			if targetOlder(dut.GetChromeos().GetSsh().GetAddress(), req.GetImagePath().GetPath(), c.Logger) == true {
+			if targetOlder(dut.GetChromeos().GetSsh().GetAddress(), req.GetImagePath().GetPath(), c.Logger) {
 				c.Logger.Println("Android Detected. However, current image is newer than target, flashing.")
 				return true
 			} else {

@@ -10,14 +10,13 @@ import (
 	"net/url"
 	"regexp"
 
+	conf "go.chromium.org/chromiumos/config/go"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	api1 "go.chromium.org/chromiumos/config/go/test/lab/api"
+	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 	cross_over "go.chromium.org/chromiumos/test/provision/v2/common-utils/cross-over"
 	"go.chromium.org/chromiumos/test/provision/v2/common-utils/metadata"
-
-	conf "go.chromium.org/chromiumos/config/go"
-	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 )
 
 var buildIdPatterns = []*regexp.Regexp{

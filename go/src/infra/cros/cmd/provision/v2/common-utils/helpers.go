@@ -16,11 +16,11 @@ import (
 	"path/filepath"
 	"strings"
 
-	"go.chromium.org/chromiumos/test/execution/errors"
-
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/protobuf/types/known/anypb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/test/execution/errors"
 )
 
 // BucketJoin is equivalent to Path.Join(), but for gs buckets.

@@ -18,15 +18,15 @@ import (
 	"time"
 	"unicode"
 
-	"go.chromium.org/chromiumos/test/provision/lib/servo_lib"
-	"go.chromium.org/chromiumos/test/provision/lib/servoadapter"
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
-
 	"github.com/pkg/errors"
+	"gopkg.in/yaml.v3"
+
 	conf "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"gopkg.in/yaml.v3"
+	"go.chromium.org/chromiumos/test/provision/lib/servo_lib"
+	"go.chromium.org/chromiumos/test/provision/lib/servoadapter"
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 )
 
 // FirmwareVersions holds the ro and rw versions read from a firmware binary.
@@ -259,7 +259,7 @@ func (fws *FirmwareService) WaitForReconnect(ctx context.Context) error {
 	const reconnectAttemptWait = 10 * time.Second
 	const reconnectFailPause = 10 * time.Second
 	var connectErr error
-	for i := 0; i < reconnectRetries; i++ {
+	for range reconnectRetries {
 		reconnectCtx, reconnCancel := context.WithTimeout(ctx, reconnectAttemptWait)
 		defer reconnCancel()
 		_, connectErr = fws.connection.RunCmd(reconnectCtx, "true", nil)

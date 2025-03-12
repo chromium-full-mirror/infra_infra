@@ -14,12 +14,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/encoding/protojson"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
+	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/service"
 	state_machine "go.chromium.org/chromiumos/test/provision/v2/android-provision/state-machine"
@@ -135,12 +135,12 @@ func (cc *CLICommand) Run() error {
 		if err != nil {
 			return fmt.Errorf("failed to create Android service: %s", err)
 		}
-		} else {
-			svc, err = service.NewAndroidServiceFromAndroidProvisionRequest(api.NewDutServiceClient(dutConn), cc.inputProto)
-			if err != nil {
-				return fmt.Errorf("failed to create Android service: %s", err)
-			}
+	} else {
+		svc, err = service.NewAndroidServiceFromAndroidProvisionRequest(api.NewDutServiceClient(dutConn), cc.inputProto)
+		if err != nil {
+			return fmt.Errorf("failed to create Android service: %s", err)
 		}
+	}
 	cc.log.Printf("New AndroidService Created")
 	out := &api.AndroidProvisionCLIResponse{
 		Id: &lab_api.Dut_Id{

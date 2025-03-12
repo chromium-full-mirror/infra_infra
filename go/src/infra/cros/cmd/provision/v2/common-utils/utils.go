@@ -11,8 +11,9 @@ import (
 	"log"
 	"time"
 
-	"go.chromium.org/chromiumos/config/go/longrunning"
 	"google.golang.org/protobuf/types/known/anypb"
+
+	"go.chromium.org/chromiumos/config/go/longrunning"
 )
 
 const (

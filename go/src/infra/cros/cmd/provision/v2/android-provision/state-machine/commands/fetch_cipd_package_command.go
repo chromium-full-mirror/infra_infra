@@ -11,7 +11,6 @@ import (
 	"path/filepath"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common/cipd"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/service"
 )

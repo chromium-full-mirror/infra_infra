@@ -12,8 +12,8 @@ import (
 	"strings"
 	"time"
 
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/service"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/test/provision/v2/android-provision/service"
 	"go.chromium.org/luci/common/errors"
 )
 

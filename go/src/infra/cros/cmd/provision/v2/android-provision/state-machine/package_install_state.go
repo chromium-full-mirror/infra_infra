@@ -9,14 +9,14 @@ import (
 	"fmt"
 	"log"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/protobuf/types/known/anypb"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/service"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/state-machine/commands"
 	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+	"go.chromium.org/luci/common/errors"
 )
 
 type PackageInstallState struct {

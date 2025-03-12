@@ -12,13 +12,13 @@ import (
 	"os"
 	"path/filepath"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/luci/common/errors"
 	"google.golang.org/api/googleapi"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common/gsstorage"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/service"
+	"go.chromium.org/luci/common/errors"
 )
 
 type UploadAPKToGSCommand struct {

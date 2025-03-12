@@ -13,10 +13,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
-
-	"github.com/pkg/errors"
 )
 
 const curlExtractTimeout = 20 * time.Minute

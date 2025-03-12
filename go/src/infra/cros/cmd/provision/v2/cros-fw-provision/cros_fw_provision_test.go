@@ -16,22 +16,21 @@ import (
 	"strings"
 	"testing"
 
-	"go.chromium.org/luci/common/testing/localonly"
-
-	longrunning "go.chromium.org/chromiumos/config/go/longrunning"
-	"go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/cli"
-	firmwareservice "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/service"
-	state_machine "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/state-machine"
-	"go.chromium.org/chromiumos/test/provision/v2/mock_api"
-
 	"github.com/golang/mock/gomock"
-	conf "go.chromium.org/chromiumos/config/go"
-	build_api "go.chromium.org/chromiumos/config/go/build/api"
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
+
+	conf "go.chromium.org/chromiumos/config/go"
+	build_api "go.chromium.org/chromiumos/config/go/build/api"
+	longrunning "go.chromium.org/chromiumos/config/go/longrunning"
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/cli"
+	firmwareservice "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/service"
+	state_machine "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/state-machine"
+	"go.chromium.org/chromiumos/test/provision/v2/mock_api"
+	"go.chromium.org/luci/common/testing/localonly"
 )
 
 type curlMatcher struct {

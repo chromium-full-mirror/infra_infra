@@ -14,10 +14,10 @@ import (
 	"path/filepath"
 	"time"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 	"go.chromium.org/chromiumos/test/util/portdiscovery"
 )

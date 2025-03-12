@@ -14,11 +14,11 @@ import (
 	"strings"
 	"time"
 
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 	"golang.org/x/crypto/ssh"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"google.golang.org/protobuf/types/known/anypb"
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 )
 
 const (

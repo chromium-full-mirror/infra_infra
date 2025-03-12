@@ -11,10 +11,10 @@ import (
 	"log"
 	"time"
 
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"google.golang.org/protobuf/types/known/anypb"
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 )
 
 // TODO: Optimize so that we dont have to write to USB every single time.

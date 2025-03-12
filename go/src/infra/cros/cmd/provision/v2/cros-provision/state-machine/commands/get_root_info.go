@@ -5,9 +5,6 @@
 package commands
 
 import (
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
-	"go.chromium.org/chromiumos/test/provision/v2/common-utils/metadata"
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 	"context"
 	"fmt"
 	"log"
@@ -15,6 +12,9 @@ import (
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+	"go.chromium.org/chromiumos/test/provision/v2/common-utils/metadata"
+	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 )
 
 type GetRootInfoCommand struct {

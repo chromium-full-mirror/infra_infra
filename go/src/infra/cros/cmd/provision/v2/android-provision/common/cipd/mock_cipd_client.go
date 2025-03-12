@@ -8,6 +8,7 @@ import (
 	"reflect"
 
 	"github.com/golang/mock/gomock"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/cipd/client/cipd"
 )

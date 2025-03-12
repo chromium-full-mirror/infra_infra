@@ -10,10 +10,10 @@ import (
 	"log"
 	"strings"
 
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"google.golang.org/protobuf/types/known/anypb"
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 )
 
 // CrossOverTerminateState stops the servod process and downloads the servod logs.

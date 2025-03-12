@@ -13,19 +13,17 @@ import (
 	"net/url"
 	"runtime/debug"
 
-	"go.chromium.org/chromiumos/lro"
-	"go.chromium.org/chromiumos/test/util/portdiscovery"
-
 	"github.com/pkg/errors"
-	"go.chromium.org/chromiumos/config/go/test/api"
-	api1 "go.chromium.org/chromiumos/config/go/test/lab/api"
-
-	firmwareservice "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/service"
-	state_machine "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/state-machine"
-
-	"go.chromium.org/chromiumos/config/go/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
+
+	"go.chromium.org/chromiumos/config/go/longrunning"
+	"go.chromium.org/chromiumos/config/go/test/api"
+	api1 "go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/lro"
+	firmwareservice "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/service"
+	state_machine "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/state-machine"
+	"go.chromium.org/chromiumos/test/util/portdiscovery"
 )
 
 // FWProvisionServer is the top level class for the firmware provisioning server.

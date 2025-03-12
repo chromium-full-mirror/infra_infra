@@ -14,13 +14,13 @@ import (
 	"strings"
 	"time"
 
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
 	"cloud.google.com/go/storage"
+	"golang.org/x/crypto/ssh"
 
 	"go.chromium.org/chromiumos/config/go/test/lab/api"
+	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/retry/transient"
-	"golang.org/x/crypto/ssh"
 )
 
 const (

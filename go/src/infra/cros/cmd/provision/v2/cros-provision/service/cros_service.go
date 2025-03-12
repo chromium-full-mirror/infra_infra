@@ -6,14 +6,14 @@
 package service
 
 import (
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
-	"go.chromium.org/chromiumos/test/provision/v2/common-utils/metadata"
 	"context"
 	"fmt"
 
 	conf "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+	"go.chromium.org/chromiumos/test/provision/v2/common-utils/metadata"
 )
 
 // CrOSService inherits ServiceInterface

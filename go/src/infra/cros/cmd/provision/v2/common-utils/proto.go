@@ -9,6 +9,7 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/pkg/errors"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 )
 

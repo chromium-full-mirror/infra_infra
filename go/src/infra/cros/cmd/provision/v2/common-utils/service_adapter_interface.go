@@ -14,11 +14,11 @@ import (
 	"os"
 	"time"
 
-	"go.chromium.org/chromiumos/test/util/common"
-
 	"github.com/pkg/errors"
+
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/test/util/common"
 )
 
 const (

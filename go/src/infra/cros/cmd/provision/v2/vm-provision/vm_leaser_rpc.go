@@ -5,19 +5,20 @@
 package main
 
 import (
-	"go.chromium.org/chromiumos/lro"
 	"context"
 	"fmt"
 	"log"
 	"os"
 	"strings"
 
-	"go.chromium.org/chromiumos/config/go/longrunning"
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/anypb"
+
+	"go.chromium.org/chromiumos/config/go/longrunning"
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/lro"
 )
 
 // VMLeaserServiceServer is implementation of vm_leaser.proto

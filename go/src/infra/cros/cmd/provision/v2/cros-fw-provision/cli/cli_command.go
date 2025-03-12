@@ -6,7 +6,6 @@
 package cli
 
 import (
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 	"context"
 	"flag"
 	"fmt"
@@ -17,6 +16,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 )
 
 const (

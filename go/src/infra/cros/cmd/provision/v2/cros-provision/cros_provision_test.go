@@ -8,17 +8,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"testing"
+
+	"github.com/golang/mock/gomock"
+
+	conf "go.chromium.org/chromiumos/config/go"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/cli"
 	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/constants"
 	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 	state_machine "go.chromium.org/chromiumos/test/provision/v2/cros-provision/state-machine"
 	mock_common_utils "go.chromium.org/chromiumos/test/provision/v2/mock-common-utils"
-	"testing"
-
-	"github.com/golang/mock/gomock"
-	conf "go.chromium.org/chromiumos/config/go"
-	"go.chromium.org/chromiumos/config/go/test/api"
 )
 
 const (

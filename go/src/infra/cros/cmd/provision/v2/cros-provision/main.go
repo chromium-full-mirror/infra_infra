@@ -5,9 +5,10 @@
 package main
 
 import (
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/cli"
 	"fmt"
 	"os"
+
+	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/cli"
 )
 
 func main() {

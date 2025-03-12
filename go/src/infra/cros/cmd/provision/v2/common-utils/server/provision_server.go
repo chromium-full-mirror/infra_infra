@@ -6,23 +6,21 @@
 package server
 
 import (
+	"context"
 	"errors"
+	"fmt"
+	"net"
 
+	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
+
+	"go.chromium.org/chromiumos/config/go/longrunning"
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/lro"
 	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 	"go.chromium.org/chromiumos/test/provision/v2/common-utils/metadata"
 	"go.chromium.org/chromiumos/test/util/portdiscovery"
-
-	"context"
-	"fmt"
-	"net"
-
-	"go.chromium.org/chromiumos/config/go/test/api"
-
-	"go.chromium.org/chromiumos/config/go/longrunning"
-	"google.golang.org/grpc"
-	"google.golang.org/protobuf/types/known/anypb"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 type ProvisionServer struct {

@@ -8,10 +8,9 @@
 package server
 
 import (
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 )
 
 type ProvisionExecutor interface {

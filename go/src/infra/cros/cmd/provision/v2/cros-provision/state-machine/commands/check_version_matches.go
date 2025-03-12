@@ -5,12 +5,12 @@
 package commands
 
 import (
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 	"context"
 	"errors"
 	"log"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 )
 
 // CheckVersionMatches is the commands interface struct.

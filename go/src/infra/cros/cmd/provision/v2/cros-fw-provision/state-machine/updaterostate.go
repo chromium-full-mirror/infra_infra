@@ -13,9 +13,9 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	firmwareservice "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/service"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	firmwareservice "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/service"
 )
 
 // FirmwareUpdateRoState updates firmware with write protection disabled.
@@ -45,7 +45,7 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 			log.Printf("RO_AT_BOOT is not clear: Rebooting EC")
 			// Ignore the err, because the ssh connection is expected to break
 			firmwareservice.RunDUTCommand(ctx, s.service.DUTServer, time.Minute, "ectool", []string{"reboot_ec"}, nil)
-			for i := 0; i < 20; i++ {
+			for range 20 {
 				_, _, err := firmwareservice.RunDUTCommand(ctx, s.service.DUTServer, time.Minute, "true", nil, nil)
 				if err == nil {
 					break

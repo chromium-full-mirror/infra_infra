@@ -5,9 +5,6 @@
 package commands
 
 import (
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
-
 	"context"
 	"errors"
 	"fmt"
@@ -16,6 +13,8 @@ import (
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 )
 
 type WaitForStickyKernel struct {
@@ -39,7 +38,7 @@ func (c *WaitForStickyKernel) Execute(log *log.Logger) error {
 
 	kernalNum := pi.ActiveKernelNum
 	// Timeout is determined by 4x delay to mark new kernel successful + 10 seconds fuzz.
-	stickyTimeout := (45 * 4 + 10) * time.Second
+	stickyTimeout := (45*4 + 10) * time.Second
 	stickyKernelCtx, cancel := context.WithTimeout(c.ctx, stickyTimeout)
 	defer cancel()
 	if _, err := c.cs.Connection.RunCmd(c.ctx, "cgpt", []string{"repair", c.cs.MachineMetadata.RootInfo.RootDisk}); err != nil {

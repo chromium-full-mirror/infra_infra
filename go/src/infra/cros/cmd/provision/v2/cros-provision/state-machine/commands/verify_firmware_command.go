@@ -5,8 +5,6 @@
 package commands
 
 import (
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -15,6 +13,8 @@ import (
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 )
 
 var firmwareManifestRegexp = regexp.MustCompile("FIRMWARE_MANIFEST_KEY='(.*)'")

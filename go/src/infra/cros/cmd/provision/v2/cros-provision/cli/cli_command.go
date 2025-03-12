@@ -6,10 +6,6 @@
 package cli
 
 import (
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/constants"
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
-	state_machine "go.chromium.org/chromiumos/test/provision/v2/cros-provision/state-machine"
 	"context"
 	"errors"
 	"flag"
@@ -19,11 +15,15 @@ import (
 	"path/filepath"
 	"strings"
 
-	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
-
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/constants"
+	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
+	state_machine "go.chromium.org/chromiumos/test/provision/v2/cros-provision/state-machine"
 )
 
 var statusToResult = map[api.InstallResponse_Status]api.InstallFailure_Reason{

@@ -6,15 +6,16 @@
 package state_machine
 
 import (
-	"go.chromium.org/chromiumos/test/provision/v2/ash-provision/service"
-	"go.chromium.org/chromiumos/test/provision/v2/ash-provision/state-machine/commands"
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 	"context"
 	"fmt"
 	"log"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/protobuf/types/known/anypb"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/test/provision/v2/ash-provision/service"
+	"go.chromium.org/chromiumos/test/provision/v2/ash-provision/state-machine/commands"
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 )
 
 type AShInstallState struct {

@@ -12,9 +12,9 @@ import (
 	"path/filepath"
 	"strings"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"golang.org/x/sync/errgroup"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common/gsstorage"
 	"go.chromium.org/chromiumos/test/provision/v2/android-provision/service"
@@ -120,7 +120,7 @@ func (c *CopyDataCommand) cacheOSFiles(dstPath string, provisionFiles []string) 
 	dut := svc.DUT
 	errs, ctx := errgroup.WithContext(c.ctx)
 	for _, f := range provisionFiles {
-		f := f
+
 		errs.Go(func() error {
 			gsFullPath := gsPath + f
 			return dut.AssociatedHost.CopyData(ctx, gsFullPath, filepath.Join(dstPath, f))

@@ -10,9 +10,8 @@ import (
 	"log"
 	"strings"
 
-	"go.chromium.org/chromiumos/test/provision/v2/foil-provision/service"
-
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/test/provision/v2/foil-provision/service"
 )
 
 type VerifyInstall struct {

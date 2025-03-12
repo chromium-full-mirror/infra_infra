@@ -6,16 +6,17 @@
 package state_machine
 
 import (
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/state-machine/commands"
 	"context"
 	"fmt"
 	"log"
 	"time"
 
-	"go.chromium.org/chromiumos/config/go/test/api"
 	"google.golang.org/protobuf/types/known/anypb"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
+	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/state-machine/commands"
 )
 
 type CrOSInstallState struct {

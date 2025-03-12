@@ -5,7 +5,6 @@
 package commands
 
 import (
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 	"context"
 	"errors"
 	"log"
@@ -13,6 +12,7 @@ import (
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
 )
 
 type WaitForDutToStabilizeCommand struct {
@@ -31,7 +31,7 @@ func (c *WaitForDutToStabilizeCommand) Execute(log *log.Logger) error {
 	log.Printf("Start WaitForDutToStabilizeCommand Execute")
 
 	// Note in CLI mode the context is not built with a timeout, thus we need to check on loop.
-	for start := time.Now(); time.Since(start) < 5 * time.Minute; time.Sleep(2 * time.Second) {
+	for start := time.Now(); time.Since(start) < 5*time.Minute; time.Sleep(2 * time.Second) {
 		select {
 		case <-c.ctx.Done():
 			return errors.New("failed to wait for UI to stablize, likely a bad image")
