@@ -104,8 +104,10 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 	}
 
 	// If EC RW is present, but AP RW is not, and we were going to flash the AP anyway, then run swap_ec_rw on mainRoPath
+	// Unless EC-RW is the same image as AP-RO
 	ecRwMetadata, ok := s.service.GetImageMetadata(s.service.GetEcRwPath())
-	if mainRoPath != "" && s.service.GetMainRwPath() == "" && ok && board != "drallion" && board != "sarien" {
+	if mainRoPath != "" && s.service.GetMainRwPath() == "" && ok && board != "drallion" && board != "sarien" &&
+		s.service.GetMainRoPath() != s.service.GetEcRwPath() {
 		log.Printf("[FW Provisioning: Update RO] extracting EC-RW image to flash\n")
 		ecRwPath, err = firmwareservice.PickAndExtractECImage(ctx, s.service.DUTServer, ecRwMetadata, s.service.GetEcRwPath(), s.service)
 		if err != nil {
