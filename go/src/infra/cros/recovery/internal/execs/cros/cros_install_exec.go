@@ -271,9 +271,11 @@ func crosProvisionActionsFromUSBDriveInRecoveryModeExec(ctx context.Context, inf
 	servod := info.NewServod()
 	bootedInrecoveryMode := "no"
 	finishedOSInstall := "no"
+	finishedTPMReset := "no"
 	defer func() {
 		info.AddObservation(metrics.NewStringObservation("bootedInrecoveryMode", bootedInrecoveryMode))
 		info.AddObservation(metrics.NewStringObservation("finishedOSInstall", finishedOSInstall))
+		info.AddObservation(metrics.NewStringObservation("finishedTPMReset", finishedTPMReset))
 	}()
 
 	androidInstall := am.AsBool(ctx, "run_android_install", false)
@@ -317,6 +319,16 @@ func crosProvisionActionsFromUSBDriveInRecoveryModeExec(ctx context.Context, inf
 		}()
 
 		bootedInrecoveryMode = "yes"
+		if am.AsBool(ctx, "reset_tpm", false) {
+			// Clear TPM is not critical as can fail in some cases.
+			// Rebooting will reset the TPM on the DUT.
+			tpmResetTimeout := am.AsDuration(ctx, "tpm_reset_timeout", 60, time.Second)
+			finishedTPMReset = "yes"
+			if _, err := dutRun(ctx, tpmResetTimeout, "crossystem clear_tpm_owner_request=1"); err != nil {
+				finishedTPMReset = "failed"
+				log.Debugf(ctx, "Install from USB drive: (non-critical) fail to reset tmp: Error: %s", err)
+			}
+		}
 		if androidInstall || crosInstall {
 			installTimeout := am.AsDuration(ctx, "install_timeout", 600, time.Second)
 			if _, err := dutRun(ctx, installTimeout, installCMD); err != nil {
