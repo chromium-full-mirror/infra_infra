@@ -2,28 +2,24 @@
 
 There are several flags that can be passed to the firmware-filter.
 
-<!-- mdformat off(Gitiles doesn't support multi-line tables) -->
-
-| Arg                    | Description                                       |
-| ---------------------- | ------------------------------------------------- |
-| `-ro SPEC,SPEC,...`    | Flash the RO and RW AP firmware from specified location.|
-| `-rw SPEC,SPEC,...`    | Flash the RW AP firmware from specified location. This takes place after the RO flashing.|
-| `-ec-ro SPEC,SPEC,...` | Flash the RO EC firmware from specified location. Defaults to the same as AP RO.|
-| `-ec-rw SPEC,SPEC,...` | Flash the RW EC firmware from specified location. Defaults to the same as AP RW.|
-| `-fallbackToCros`      | Deprecated: If `-ro` or -`rw` is set to `firmwareBoardBranch`, and no branch build can be found, fallback to `cros` instead. This is handy for new boards that don't have a branch yet.|
+Arg                    | Description
+---------------------- | -----------
+`-ro SPEC,SPEC,...`    | Flash the RO and RW AP firmware from specified location.
+`-rw SPEC,SPEC,...`    | Flash the RW AP firmware from specified location. This takes place after the RO flashing.
+`-ec-ro SPEC,SPEC,...` | Flash the RO EC firmware from specified location. Defaults to the same as AP RO.
+`-ec-rw SPEC,SPEC,...` | Flash the RW EC firmware from specified location. Defaults to the same as AP RW.
+`-fallbackToCros`      | Deprecated: If `-ro` or -`rw` is set to `firmwareBoardBranch`, and no branch build can be found, fallback to `cros` instead. This is handy for new boards that don't have a branch yet.
 
 The SPEC arg can be one of the following:
 
-| SPEC                  | Description                                          |
-| --------------------- | ---------------------------------------------------- |
-| `gs://tar.bz2` url    | Specify a specific url to a firmware_from_source.tar.bz2 archive.
-| `firmwareBoardBranch` | Find the latest branch build for the DUT's board.    |
-| `cros`                | Use the firmware_from_source.tar.bz2 from the OS build. NOTE: Many launched devices do not build firmware in the OS build.|
-| `M-1`                 | The newest EC milestone branch. Normally one version below the Chrome OS version at ToT.|
-| `M-2`                 | The 2nd newest EC milestone branch.                  |
-| `M-n`                 | The nth newest EC milestone branch.                  |
-
-<!-- mdformat on -->
+SPEC                  | Description
+--------------------- | -----------
+`gs://tar.bz2` url    | Specify a specific url to a firmware_from_source.tar.bz2 archive.
+`firmwareBoardBranch` | Find the latest branch build for the DUT's board.
+`cros`                | Use the firmware_from_source.tar.bz2 from the OS build. NOTE: Many launched devices do not build firmware in the OS build.
+`M-1`                 | The newest EC milestone branch. Normally one version below the Chrome OS version at ToT.
+`M-2`                 | The 2nd newest EC milestone branch.
+`M-n`                 | The nth newest EC milestone branch.
 
 Specifications can be comma separated
 
