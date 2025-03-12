@@ -74,34 +74,37 @@ func crossOverProvisionState(dut *lab_api.Dut, dutClient api.DutServiceClient, s
 
 func (c *FoilProvisionExecutor) crossOverRequired(dut *lab_api.Dut, req *api.InstallRequest) bool {
 	// Due to ongoing OTA issues; force the flash for now. b/378974495
-	return true
-	osType, err := cross_over.DetectOS(c.Logger, fmt.Sprintf("%v:%v", dut.GetChromeos().GetSsh().GetAddress(), dut.GetChromeos().GetSsh().GetPort()))
-	if err != nil {
-		c.Logger.Println("Could not detect the OS. Will perform CrossOver provision.")
+	if true {
 		return true
-	} else if osType == cross_over.ANDROID {
-		c.Logger.Println("setting up adb")
-		err := adb.RetrySetupAdb(c.Logger, dut.GetChromeos().GetSsh().GetAddress(), 10*time.Second)
-		if err != nil {
-			c.Logger.Println("ADB could not connect after detection. Suspected flaky device. Forcing the flash.")
-			return true
-		}
-		c.Logger.Println("Trying to check target version")
-		if targetOlder(dut.GetChromeos().GetSsh().GetAddress(), req.GetImagePath().GetPath(), c.Logger) == true {
-			c.Logger.Println("Android Detected. However, current image is newer than target, flashing.")
-			return true
-		} else {
-			c.Logger.Println("Android Detected. Will OTA")
-			// Cleanup ADB before the provision so that it can start from a good known state.
-			if err := adb.TeardownAdb(c.Logger, dut.GetChromeos().GetSsh().GetAddress()); err != nil {
-				c.Logger.Println("Warning: TeardownAdb failed: ", err)
-			}
-		}
 	} else {
-		c.Logger.Println("CROS Detected")
-		return true
+		osType, err := cross_over.DetectOS(c.Logger, fmt.Sprintf("%v:%v", dut.GetChromeos().GetSsh().GetAddress(), dut.GetChromeos().GetSsh().GetPort()))
+		if err != nil {
+			c.Logger.Println("Could not detect the OS. Will perform CrossOver provision.")
+			return true
+		} else if osType == cross_over.ANDROID {
+			c.Logger.Println("setting up adb")
+			err := adb.RetrySetupAdb(c.Logger, dut.GetChromeos().GetSsh().GetAddress(), 10*time.Second)
+			if err != nil {
+				c.Logger.Println("ADB could not connect after detection. Suspected flaky device. Forcing the flash.")
+				return true
+			}
+			c.Logger.Println("Trying to check target version")
+			if targetOlder(dut.GetChromeos().GetSsh().GetAddress(), req.GetImagePath().GetPath(), c.Logger) == true {
+				c.Logger.Println("Android Detected. However, current image is newer than target, flashing.")
+				return true
+			} else {
+				c.Logger.Println("Android Detected. Will OTA")
+				// Cleanup ADB before the provision so that it can start from a good known state.
+				if err := adb.TeardownAdb(c.Logger, dut.GetChromeos().GetSsh().GetAddress()); err != nil {
+					c.Logger.Println("Warning: TeardownAdb failed: ", err)
+				}
+			}
+		} else {
+			c.Logger.Println("CROS Detected")
+			return true
+		}
+		return false
 	}
-	return false
 }
 
 func targetOlder(dutAddr string, path string, log *log.Logger) bool {
