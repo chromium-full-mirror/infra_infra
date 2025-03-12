@@ -225,12 +225,13 @@ func (g *Generator) Generate(ctx context.Context, plats generators.Platforms) (*
 	env := g.Env.Clone()
 
 	if g.Source != nil {
-		src, srcsEnv, err := g.fetchSource(plats)
+		srcs, err := g.fetchSources(plats, env)
 		if err != nil {
 			return nil, err
 		}
-		deps = append(deps, generators.Dependency{Type: generators.DepsBuildHost, Generator: src})
-		env.SetEntry(srcsEnv)
+		for _, src := range srcs {
+			deps = append(deps, generators.Dependency{Type: generators.DepsBuildHost, Generator: src})
+		}
 	}
 
 	deps = append(deps, g.Dependencies...)

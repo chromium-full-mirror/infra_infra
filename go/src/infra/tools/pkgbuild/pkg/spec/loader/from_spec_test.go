@@ -584,7 +584,7 @@ func TestLoadDependencies(t *testing.T) {
 		assert.Loosely(t, err, should.BeNil)
 		l, err := NewSpecLoader(root, cfg)
 		assert.Loosely(t, err, should.BeNil)
-		err = l.LoadSourceInfos(ctx, l.ListAllByFullName(), []string{"linux-amd64", "linux-arm64"}, true, false)
+		err = l.LoadSourceInfos(ctx, []string{"linux-amd64", "linux-arm64"}, true, false)
 		assert.Loosely(t, err, should.BeNil)
 
 		assert.Loosely(t, l.ListAllByFullName(), should.Match([]string{

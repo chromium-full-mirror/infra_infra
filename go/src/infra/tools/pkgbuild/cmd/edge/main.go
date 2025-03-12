@@ -88,7 +88,7 @@ func Main(ctx context.Context, app *Application, args []string) error {
 		names = b.SpecLoader.ListAllByFullName()
 	}
 
-	if err := b.SpecLoader.LoadSourceInfos(ctx, names, app.UpdateSourcePlatforms, app.Update, app.UpdateSourceLock); err != nil {
+	if err := b.SpecLoader.LoadSourceInfos(ctx, app.UpdateSourcePlatforms, app.Update, app.UpdateSourceLock); err != nil {
 		return err
 	}
 

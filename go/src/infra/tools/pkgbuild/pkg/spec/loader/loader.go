@@ -106,9 +106,9 @@ func (l *SpecLoader) ListAllByFullName() (names []string) {
 // LoadSourceInfos load the lock file in the spec directory. If update is true,
 // LoadSourceInfos also checks the latest version. If persistent is true, it will
 // update the lock file in the spec directory.
-func (l *SpecLoader) LoadSourceInfos(ctx context.Context, names, cipdHostPlatforms []string, update, persistent bool) error {
+func (l *SpecLoader) LoadSourceInfos(ctx context.Context, cipdHostPlatforms []string, update, persistent bool) error {
 	var errs []error
-	for _, name := range names {
+	for _, name := range l.ListAllByFullName() {
 		spec := l.specs[name]
 		if spec == nil {
 			return fmt.Errorf("package spec not available: %s", name)

@@ -22,57 +22,65 @@ var gitSourceGen = generators.InitEmbeddedFS(
 	"git_source_script", gitSourceEmbed,
 )
 
-func (g *Generator) fetchSource(plats generators.Platforms) (generators.Generator, string, error) {
+func (g *Generator) fetchSources(plats generators.Platforms, tmplEnv environ.Env) ([]generators.Generator, error) {
 	// The name of the source derivation. It's also used in environment variable
 	// srcs to pointing to the location of source file(s), which will be expanded
 	// to absolute path by utilities.BaseGenerator.
 	name := fmt.Sprintf("%s_source", g.Name)
-	srcPath := fmt.Sprintf("{{.%s}}", name)
 	switch s := g.Source.(type) {
 	case *SourceGit:
 		env := environ.New(nil)
 		env.Set("PATH", filepath.Join("{{.stdenv_git}}", "bin"))
-		return &workflow.Generator{
-			Name: name,
-			Metadata: &core.Action_Metadata{
-				Cipd: &core.Action_Metadata_CIPD{
-					Name:    s.CIPDName,
-					Version: s.Version,
+		tmplEnv.Set("srcs", filepath.Join(fmt.Sprintf("{{.%s}}", name), "src.tar"))
+		return []generators.Generator{
+			&workflow.Generator{
+				Name: name,
+				Metadata: &core.Action_Metadata{
+					Cipd: &core.Action_Metadata_CIPD{
+						Name:    s.CIPDName,
+						Version: s.Version,
+					},
+					ContextInfo: g.Name + ":" + plats.Host.String(),
 				},
-				ContextInfo: g.Name + ":" + plats.Host.String(),
+				Args: []string{execPath(plats.Build, "{{.stdenv_python3}}", "bin", "python3"), "-I", "-B", "-u", "-X", "utf8", filepath.Join("{{.git_source_script}}", "git_archive.py"), s.URL, s.Ref},
+				Dependencies: []generators.Dependency{
+					{Type: generators.DepsBuildHost, Generator: git},
+					{Type: generators.DepsBuildHost, Generator: cpython},
+					{Type: generators.DepsBuildHost, Generator: gitSourceGen},
+				},
+				Env: env,
 			},
-			Args: []string{execPath(plats.Build, "{{.stdenv_python3}}", "bin", "python3"), "-I", "-B", "-u", "-X", "utf8", filepath.Join("{{.git_source_script}}", "git_archive.py"), s.URL, s.Ref},
-			Dependencies: []generators.Dependency{
-				{Type: generators.DepsBuildHost, Generator: git},
-				{Type: generators.DepsBuildHost, Generator: cpython},
-				{Type: generators.DepsBuildHost, Generator: gitSourceGen},
-			},
-			Env: env,
-		}, "srcs=" + filepath.Join(srcPath, "src.tar"), nil
+		}, nil
 	case *SourceURLs:
-		urls := generators.FetchURLs{
-			Name: name,
-			Metadata: &core.Action_Metadata{
-				Cipd: &core.Action_Metadata_CIPD{
-					Name:    s.CIPDName,
-					Version: s.Version,
+		var urls []*generators.FetchURL
+		for i, u := range s.URLs {
+			urls = append(urls, &generators.FetchURL{
+				Metadata: &core.Action_Metadata{
+					Cipd: &core.Action_Metadata_CIPD{
+						Name:    s.CIPDName,
+						Version: fmt.Sprintf("%s_%d", s.Version, i),
+					},
+					ContextInfo: g.Name + ":" + plats.Host.String(),
 				},
-				ContextInfo: g.Name + ":" + plats.Host.String(),
-			},
-			URLs: map[string]generators.FetchURL{},
-		}
-		var srcs []string
-		for _, u := range s.URLs {
-			urls.URLs[u.Filename] = generators.FetchURL{
 				URL:           u.URL,
 				HashAlgorithm: u.HashAlgorithm,
 				HashValue:     u.HashValue,
-			}
-			srcs = append(srcs, filepath.Join(srcPath, u.Filename))
+				Filename:      u.Filename,
+			})
 		}
-		return &urls, fmt.Sprintf("srcs=%s", strings.Join(srcs, string(filepath.ListSeparator))), nil
+		gs, err := generators.FetchURLs(name, urls)
+		if err != nil {
+			return nil, err
+		}
+
+		var srcs []string
+		for _, u := range urls {
+			srcs = append(srcs, filepath.Join(fmt.Sprintf("{{.%s}}", u.Name), u.Filename))
+		}
+		tmplEnv.Set("srcs", strings.Join(srcs, string(filepath.ListSeparator)))
+		return gs, nil
 	default:
-		return nil, "", fmt.Errorf("unknown source type %#v:", s)
+		return nil, fmt.Errorf("unknown source type: %#v", s)
 	}
 }
 

@@ -73,7 +73,7 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 
 		loader, err := loader.NewSpecLoader(specs, MockSpecLoaderConfig(cipdPlatform))
 		assert.Loosely(t, err, should.BeNil)
-		err = loader.LoadSourceInfos(ctx, loader.ListAllByFullName(), []string{cipdPlatform}, true, false)
+		err = loader.LoadSourceInfos(ctx, []string{cipdPlatform}, true, false)
 		assert.Loosely(t, err, should.BeNil)
 
 		initStdenv(t, buildPlatform)
@@ -157,7 +157,7 @@ func TestBuildPackagesFromSpec(t *testing.T) {
 
 		loader, err := loader.NewSpecLoader(specs, MockSpecLoaderConfig(cipdTarget))
 		assert.Loosely(t, err, should.BeNil)
-		err = loader.LoadSourceInfos(ctx, loader.ListAllByFullName(), []string{cipdHost, cipdTarget}, true, false)
+		err = loader.LoadSourceInfos(ctx, []string{cipdHost, cipdTarget}, true, false)
 		assert.Loosely(t, err, should.BeNil)
 
 		initStdenv(t, buildPlatform)
@@ -247,7 +247,7 @@ func TestRootPackges(t *testing.T) {
 
 		loader, err := loader.NewSpecLoader(specs, MockSpecLoaderConfig(cipdPlatform))
 		assert.Loosely(t, err, should.BeNil)
-		err = loader.LoadSourceInfos(ctx, loader.ListAllByFullName(), []string{cipdPlatform}, true, false)
+		err = loader.LoadSourceInfos(ctx, []string{cipdPlatform}, true, false)
 		assert.Loosely(t, err, should.BeNil)
 
 		initStdenv(t, buildPlatform)
@@ -316,7 +316,7 @@ func TestRootPackges(t *testing.T) {
 
 		loader, err := loader.NewSpecLoader(specs, MockSpecLoaderConfig(cipdTarget))
 		assert.Loosely(t, err, should.BeNil)
-		err = loader.LoadSourceInfos(ctx, loader.ListAllByFullName(), []string{cipdHost, cipdTarget}, true, false)
+		err = loader.LoadSourceInfos(ctx, []string{cipdHost, cipdTarget}, true, false)
 		assert.Loosely(t, err, should.BeNil)
 
 		initStdenv(t, buildPlatform)
@@ -391,7 +391,7 @@ func TestPackageSources(t *testing.T) {
 
 		loader, err := loader.NewSpecLoader(specs, MockSpecLoaderConfig(cipdPlatform))
 		assert.Loosely(t, err, should.BeNil)
-		err = loader.LoadSourceInfos(ctx, loader.ListAllByFullName(), []string{cipdPlatform}, true, false)
+		err = loader.LoadSourceInfos(ctx, []string{cipdPlatform}, true, false)
 		assert.Loosely(t, err, should.BeNil)
 
 		initStdenv(t, buildPlatform)
@@ -440,7 +440,7 @@ func TestPackageSources(t *testing.T) {
 			verifySource(t, pkgs, &core.Action_Metadata{
 				Cipd: &core.Action_Metadata_CIPD{
 					Name:    "mock/sources/http/static_libs/curl",
-					Version: "3@7.59.0",
+					Version: "3@7.59.0_0",
 				},
 				ContextInfo: "curl:arch=amd64,os=linux",
 			})
@@ -455,7 +455,7 @@ func TestPackageSources(t *testing.T) {
 			verifySource(t, pkgs, &core.Action_Metadata{
 				Cipd: &core.Action_Metadata_CIPD{
 					Name:    "mock/sources/http/tools/go",
-					Version: "3@script-version",
+					Version: "3@script-version_0",
 				},
 				ContextInfo: "go:arch=amd64,os=linux",
 			})
@@ -466,14 +466,14 @@ func TestPackageSources(t *testing.T) {
 func verifySource(t testing.TB, pkgs []actions.Package, metadata *core.Action_Metadata) {
 	t.Helper()
 	pkg := pkgs[len(pkgs)-1]
-	name := fmt.Sprintf("%s_source", pkg.Derivation.Name)
+	prefix := fmt.Sprintf("%s_source", pkg.Derivation.Name)
 	for _, p := range pkg.BuildDependencies {
-		if p.Derivation.Name == name {
+		if strings.HasPrefix(p.Derivation.Name, prefix) {
 			assert.Loosely(t, p.Action.Metadata, should.Match(metadata), truth.LineContext())
 			return
 		}
 	}
-	t.Fatalf("source not found: %s", name)
+	t.Fatalf("source not found: %s", prefix)
 }
 
 type MockSourceResolver struct{}
