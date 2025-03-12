@@ -164,6 +164,10 @@ func leaseInfoAsBashVariables(info *common.LeaseInfo, leasesBBClient buildbucket
 	if device != nil {
 		bashVars = append(bashVars, dutInfoAsBashVariables(device))
 	}
+	if info.RemainingLeaseTime > 0 {
+		bashVars = append(bashVars, fmt.Sprintf("MINS_REMAINING=%0.2f", info.RemainingLeaseTime))
+
+	}
 
 	return strings.Join(bashVars, "\n")
 }

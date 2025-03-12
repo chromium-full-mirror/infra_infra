@@ -36,8 +36,9 @@ type DeviceInfo struct {
 
 // LeaseInfo contains details about a particular lease of a Swarming device.
 type LeaseInfo struct {
-	Device *DeviceInfo
-	Build  *buildbucketpb.Build
+	Device             *DeviceInfo
+	Build              *buildbucketpb.Build
+	RemainingLeaseTime float64 // in minutes
 }
 
 // Abandon sends a cancellation request to Scheduke for the given device names,
@@ -98,7 +99,8 @@ func Leases(ctx context.Context, authOpts auth.Options, dev bool) ([]*LeaseInfo,
 		if ls.State != schedukepb.TaskState_LAUNCHED {
 			continue
 		}
-		li := &LeaseInfo{Device: &DeviceInfo{Name: ls.DeviceName}}
+
+		li := &LeaseInfo{Device: &DeviceInfo{Name: ls.DeviceName}, RemainingLeaseTime: calcRemainingLeaseTime(ls)}
 		// Swallow any UFS errors since at least the device name has been retrieved
 		// at this point.
 		err = addDeviceInfo(ctx, li.Device, authOpts)
@@ -117,4 +119,13 @@ func ShouldUseScheduke(ctx context.Context, pool string, authOpts auth.Options) 
 		return false, errors.Annotate(err, "initializing Gerrit client to read Scheduke pools allowlist").Err()
 	}
 	return AnyStringInGerritList(ctx, gc, []string{pool}, SchedukePoolsURL, nil)
+}
+
+func calcRemainingLeaseTime(ls *schedukepb.TaskWithState) float64 {
+	now := time.Now().Unix()
+	microsecondsToSeconds := float64(ls.GetEndTime()) / 1000000.0
+
+	durationSeconds := microsecondsToSeconds - float64(now)
+	durationMinutes := durationSeconds / 60.0
+	return durationMinutes
 }
