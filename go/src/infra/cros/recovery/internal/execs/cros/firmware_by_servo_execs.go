@@ -96,6 +96,7 @@ func updateFwWithFwImageByServo(ctx context.Context, info *execs.ExecInfo) error
 		UseCacheToExtractor:         am.AsBool(ctx, "use_cache_extractor", false),
 		DownloadImageReattemptCount: am.AsInt(ctx, "reattempt_count", 3),
 		DownloadImageReattemptWait:  am.AsDuration(ctx, "reattempt_wait", 5, time.Second),
+		EcChipType:                  am.AsString(ctx, "ec_chip_override", ""),
 	}
 	if am.AsBool(ctx, "use_fw_targets_from_inventory", false) {
 		req.APTarget = info.GetChromeos().GetFirmwareInfo().GetApTarget()

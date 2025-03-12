@@ -56,23 +56,26 @@ const (
 )
 
 // ProgramEC programs EC firmware to devices by servo.
-func (p *v3Programmer) ProgramEC(ctx context.Context, fwBoard, imagePath string) error {
+func (p *v3Programmer) ProgramEC(ctx context.Context, fwBoard, imagePath string, ecChip string) error {
 	if err := isFileExist(ctx, imagePath, p.run); err != nil {
 		return errors.Annotate(err, "program ec").Err()
 	}
-	return p.programEC(ctx, fwBoard, imagePath)
+	return p.programEC(ctx, fwBoard, imagePath, ecChip)
 }
 
 // programEC programs EC firmware to devices by servo.
 // Extracted for test purpose to avoid file present check.
-func (p *v3Programmer) programEC(ctx context.Context, fwBoard, imagePath string) error {
+func (p *v3Programmer) programEC(ctx context.Context, fwBoard, imagePath string, ecChip string) error {
 	servoType, err := p.servoType(ctx)
 	if err != nil {
 		return errors.Annotate(err, "program ec").Err()
 	}
-	ecChip, err := p.ecChip(ctx)
-	if err != nil {
-		return errors.Annotate(err, "program ec").Err()
+	if ecChip == "" {
+		p.log.Debugf("no ec chip provided, will auto-detect via servo")
+		ecChip, err = p.ecChip(ctx)
+		if err != nil {
+			return errors.Annotate(err, "program ec").Err()
+		}
 	}
 	metrics.DefaultActionAddObservations(ctx, metrics.NewStringObservation("ec_chip", ecChip))
 	var cmd string

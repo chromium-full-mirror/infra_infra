@@ -47,7 +47,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, fwBoard, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath, "")
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
@@ -73,7 +73,32 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, fwBoard, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath, "")
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
+	})
+	ftt.Run("Happy path for chip override", t, func(t *ftt.Test) {
+		ctrl := gomock.NewController(t)
+		defer ctrl.Finish()
+		runRequest := map[string]RunResponse{
+			"which flash_ec": {},
+			"flash_ec --chip=chip_passed_in --image=ec_image.bin --port=96 --verify --verbose": {},
+		}
+		servod := mocks.NewMockServod(ctrl)
+		servod.EXPECT().Has(ctx, "cpu_fw_spi").Return(nil).Times(1)
+		servod.EXPECT().Has(ctx, "ccd_cpu_fw_spi").Return(nil).Times(1)
+		servod.EXPECT().Get(ctx, "cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "ccd_cpu_fw_spi_depends_on_ec_fw").Return(stringValue("no"), nil).Times(1)
+		servod.EXPECT().Get(ctx, "servo_type").Return(stringValue("servo_v4_with_servo_micro_and_ccd_cr50"), nil).Times(1)
+		servod.EXPECT().Port().Return(96).Times(1)
+		run, runCounter := mockRunnerWithCheck(runRequest)
+		p := &v3Programmer{
+			run:    run,
+			servod: servod,
+			log:    logger,
+		}
+
+		err := p.programEC(ctx, fwBoard, imagePath, "chip_passed_in")
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
@@ -99,7 +124,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, fwBoard, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath, "")
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
@@ -125,7 +150,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, fwBoard, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath, "")
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
@@ -151,7 +176,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, fwBoard, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath, "")
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
@@ -178,7 +203,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, fwBoard, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath, "")
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
@@ -204,7 +229,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, fwBoard, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath, "")
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})
@@ -232,7 +257,7 @@ func TestProgrammerV3ProgramEC(t *testing.T) {
 			log:    logger,
 		}
 
-		err := p.programEC(ctx, fwBoard, imagePath)
+		err := p.programEC(ctx, fwBoard, imagePath, "")
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, runCounter(), should.Equal(len(runRequest)))
 	})

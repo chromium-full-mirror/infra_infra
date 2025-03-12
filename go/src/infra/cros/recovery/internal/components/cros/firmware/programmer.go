@@ -19,7 +19,7 @@ type Programmer interface {
 	// Prepare programmer for actions.
 	Prepare(ctx context.Context) error
 	// ProgramEC programs EC firmware to devices by servo.
-	ProgramEC(ctx context.Context, fwBoard, imagePath string) error
+	ProgramEC(ctx context.Context, fwBoard, imagePath string, ecChip string) error
 	// ProgramAP programs AP firmware to devices by servo.
 	ProgramAP(ctx context.Context, imagePath, gbbHex string, force bool) error
 	// Close closes programming resources.

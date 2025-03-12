@@ -121,6 +121,9 @@ type InstallFirmwareImageRequest struct {
 
 	// The wait time before re-attempting the download.
 	DownloadImageReattemptWait time.Duration
+
+	// EC chip type to use in EC flash, will auto-detect via servo if not provided.
+	EcChipType string
 }
 
 // targetHostRunner returns a runner should be used based on FlashThroughServo flag.
@@ -295,7 +298,7 @@ func installFirmwareViaServo(ctx context.Context, req *InstallFirmwareImageReque
 		for ecRetryCount > 0 {
 			ecRetryCount -= 1
 			log.Debugf("Program EC attempt %d, maximum retry: %d", req.UpdateEcAttemptCount-ecRetryCount, req.UpdateEcAttemptCount)
-			ecErr = p.ProgramEC(ctx, fwBoard, ecImage)
+			ecErr = p.ProgramEC(ctx, fwBoard, ecImage, req.EcChipType)
 			if ecErr == nil {
 				break
 			} else if ecRetryCount > 0 {
