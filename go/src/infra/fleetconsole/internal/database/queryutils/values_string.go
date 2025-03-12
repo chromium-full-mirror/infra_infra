@@ -18,9 +18,9 @@ import (
 func ValuesString(lenValues int, numberOfArgs int) string {
 	values := make([]string, lenValues/numberOfArgs)
 
-	for i := 0; i < lenValues/numberOfArgs; i++ {
+	for i := range lenValues / numberOfArgs {
 		inner := make([]string, numberOfArgs)
-		for j := 0; j < numberOfArgs; j++ {
+		for j := range numberOfArgs {
 			inner[j] = fmt.Sprintf("$%d", j+i*numberOfArgs+1)
 		}
 		values[i] = "(" + strings.Join(inner, ", ") + ")"
