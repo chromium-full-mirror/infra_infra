@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"os"
 
-	"go.chromium.org/chromiumos/test/provision/v2/foil-provision/cli"
+	provcli "go.chromium.org/infra/cros/cmd/provision/v2/foil-provision/cli"
 )
 
 func main() {
-	opt, err := cli.ParseInputs()
+	opt, err := provcli.ParseInputs()
 	if err != nil {
 		fmt.Printf("unable to parse inputs: %s", err)
 		os.Exit(2)

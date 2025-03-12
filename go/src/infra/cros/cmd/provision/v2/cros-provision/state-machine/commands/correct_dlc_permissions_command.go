@@ -1,0 +1,59 @@
+// Copyright 2022 The ChromiumOS Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package commands
+
+import (
+	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
+	"context"
+	"fmt"
+	"log"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+)
+
+type CorrectDLCPermissionsCommand struct {
+	ctx context.Context
+	cs  *service.CrOSService
+}
+
+func NewCorrectDLCPermissionsCommand(ctx context.Context, cs *service.CrOSService) *CorrectDLCPermissionsCommand {
+	return &CorrectDLCPermissionsCommand{
+		ctx: ctx,
+		cs:  cs,
+	}
+}
+
+func (c *CorrectDLCPermissionsCommand) Execute(log *log.Logger) error {
+	// CorrectDLCPermissions changes the permission and ownership of DLC cache to
+	// the correct one. As part of the transition to using tmpfiles.d, dlcservice
+	// paths must have correct permissions/owners set. Simply starting the
+	// dlcservice daemon will not fix this due to security concerns.
+	log.Printf("Start CorrectDLCPermissionsCommand Execute")
+
+	if _, err := c.cs.Connection.RunCmd(c.ctx, "chown", []string{"-R", "dlcservice:dlcservice", common_utils.DlcCacheDir}); err != nil {
+		return fmt.Errorf("unable to set owner for DLC cache (%s), %s", common_utils.DlcCacheDir, err)
+	}
+	log.Printf("CorrectDLCPermissionsCommand chown completed")
+
+	if _, err := c.cs.Connection.RunCmd(c.ctx, "chmod", []string{"-R", "0755", common_utils.DlcCacheDir}); err != nil {
+		return fmt.Errorf("unable to set permissions for DLC cache (%s), %s", common_utils.DlcCacheDir, err)
+	}
+	log.Printf("CorrectDLCPermissionsCommand Success")
+
+	return nil
+}
+
+func (c *CorrectDLCPermissionsCommand) Revert() error {
+	return nil
+}
+
+func (c *CorrectDLCPermissionsCommand) GetErrorMessage() string {
+	return "failed to correct DLC permissions"
+}
+
+func (c *CorrectDLCPermissionsCommand) GetStatus() api.InstallResponse_Status {
+	return api.InstallResponse_STATUS_PROVISIONING_FAILED
+}
