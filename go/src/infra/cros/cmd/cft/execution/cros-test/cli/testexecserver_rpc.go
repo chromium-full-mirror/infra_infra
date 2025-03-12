@@ -56,7 +56,7 @@ func NewServer(logger *log.Logger, resultRootDir, tlwAddr string, metadataList *
 // RunTests calls the runTests flow in cros-test.
 func (s *ExecutionServiceServer) RunTests(ctx context.Context, req *api.CrosTestRequest) (*longrunning.Operation, error) {
 	op := s.manager.NewOperation()
-	s.logger.Println("Received api.CacheRequest: ", req)
+	s.logger.Println("Received api.CrosTestRequest: ", req)
 
 	resultsDir, err := s.loadResultsDir(req)
 	if err != nil {
