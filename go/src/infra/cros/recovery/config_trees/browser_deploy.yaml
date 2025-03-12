@@ -7705,7 +7705,7 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Recovery version has firmware image path
+                - name: Is recovery-version has firmware image path
                   exec_name: has_stable_version_fw_image
                   docs:
                     - Verify that recovery version has firmware image path.
@@ -7715,7 +7715,7 @@ plans:
                       docs:
                         - Verify if we have access to the service provided access to the stable version
               dependencies:
-                - name: Flash EC (FW) by servo (time:'1h50m0s')
+                - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) (time:'1h50m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
                   exec_args:
                     - update_ec_attempt_count:5
@@ -7742,7 +7742,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -7774,7 +7774,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
                   exec_args:
                     - update_ap_attempt_count:3
@@ -7802,7 +7802,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -8295,7 +8295,7 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -8346,7 +8346,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -8378,7 +8378,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ap_attempt_count:3
@@ -8406,7 +8406,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -10003,7 +10003,7 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -10054,7 +10054,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -10086,7 +10086,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ap_attempt_count:3
@@ -10114,7 +10114,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -11748,7 +11748,7 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Recovery version has firmware image path
+                - name: Is recovery-version has firmware image path
                   exec_name: has_stable_version_fw_image
                   docs:
                     - Verify that recovery version has firmware image path.
@@ -11758,7 +11758,7 @@ plans:
                       docs:
                         - Verify if we have access to the service provided access to the stable version
               dependencies:
-                - name: Flash EC (FW) by servo (time:'1h50m0s')
+                - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) (time:'1h50m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
                   exec_args:
                     - update_ec_attempt_count:5
@@ -11785,7 +11785,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -11817,7 +11817,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
                   exec_args:
                     - update_ap_attempt_count:3
@@ -11845,7 +11845,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -12594,7 +12594,7 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -12645,7 +12645,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -12677,7 +12677,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ap_attempt_count:3
@@ -12705,7 +12705,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -13751,12 +13751,40 @@ plans:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
           recoveries:
-            - name: Update DUT firmware with factory mode and restart by servo (ALWAYS_RUN)
+            - name: Update FW from fw-image by servo and wait for boot
               exec_name: sample_pass
               docs:
-                - Force update FW on the DUT by factory mode.
-                - Reboot device by servo
+                - 'This action will repair the firmware on the DUT, and '
+                - 'then reboot and wait for the DUT to again become '
+                - 'available. This action exists to wrap these component '
+                - actions into a single repair action.
               conditions:
+                - name: Can become ChromeOS-based (ALWAYS_RUN)
+                  exec_name: dut_is_chromeos_hw
+                  docs:
+                    - Check if DUT can be provisioned to ChromeOS.
+                    - Devices runngin under MH is not allowed.
+                  dependencies:
+                    - name: Do not run on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
+                - name: Is a Chromebook (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Is recovery-version has firmware image path
+                  exec_name: has_stable_version_fw_image
+                  docs:
+                    - Verify that recovery version has firmware image path.
+                  dependencies:
+                    - name: Has a stable-version service (RUN_ONCE)
+                      exec_name: has_stable_version_service_path
+                      docs:
+                        - Verify if we have access to the service provided access to the stable version
                 - name: Is servod running (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -13772,39 +13800,142 @@ plans:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
               dependencies:
+                - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) (time:'1h50m0s')
+                  exec_name: cros_update_fw_with_fw_image_by_servo
+                  exec_args:
+                    - update_ec_attempt_count:5
+                    - download_timeout:600
+                    - use_cache_extractor:true
+                    - use_fw_targets_from_inventory:true
+                  docs:
+                    - Download fw-image specified in stable version and flash EC to the DUT by servo
+                    - Set timeout for 110 minutes for now as = 10m(download)+4*20m(find/extract file)+20m(ec-update with retry).
+                    - We will retry up to 5 times since there is flakiness on flash EC.
+                  conditions:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                  dependencies:
+                    - name: Is recovery-version has firmware image path
+                      exec_name: has_stable_version_fw_image
+                      docs:
+                        - Verify that recovery version has firmware image path.
+                      dependencies:
+                        - name: Has a stable-version service (RUN_ONCE)
+                          exec_name: has_stable_version_service_path
+                          docs:
+                            - Verify if we have access to the service provided access to the stable version
+                - name: Sleep 60 seconds (Allow to fail) (ALWAYS_RUN) (time:'1m10s')
+                  exec_name: sample_sleep
+                  exec_args:
+                    - sleep:60
+                - name: Disable software write protection via servo (Allow to fail) (ALWAYS_RUN) (time:'1m0s')
+                  exec_name: cros_disable_software_write_protection_by_servo
+                  docs:
+                    - Disable software write protection(for flash firmware) via servo.
+                  dependencies:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
+                  exec_name: cros_update_fw_with_fw_image_by_servo
+                  exec_args:
+                    - update_ap_attempt_count:3
+                    - download_timeout:600
+                    - gbb_flags:0x80000018
+                    - use_cache_extractor:true
+                    - use_fw_targets_from_inventory:true
+                  docs:
+                    - Download fw-image specified in stable version and flash AP to the DUT by servo
+                    - Set timeout for 90 minutes for now as = 10m(download)+2*20m(find/extract file)+40m(ap-update with retry).
+                    - We will retry up to 3 times since there may be flakiness on flash AP via servo.
+                  conditions:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                  dependencies:
+                    - name: Is recovery-version has firmware image path
+                      exec_name: has_stable_version_fw_image
+                      docs:
+                        - Verify that recovery version has firmware image path.
+                      dependencies:
+                        - name: Has a stable-version service (RUN_ONCE)
+                          exec_name: has_stable_version_service_path
+                          docs:
+                            - Verify if we have access to the service provided access to the stable version
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
+                  docs:
+                    - Wait DUT to be pingable after some action on it.
+                    - Waiting time 150 seconds.
+                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:REFLASH_FW
+                  docs:
+                    - Remove REFLASH_FW repair-requests.
+            - name: Update firmware with factory mode by host (ALWAYS_RUN)
+              exec_name: sample_pass
+              docs:
+                - 'Force update FW on the DUT by factory mode. Access to the '
+                - 'device under test is required to collect HWID information, '
+                - which is critical to finding the firmware targets for flash.
+              conditions:
+                - name: Is a Chromebook (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Is recovery-version has firmware image path
+                  exec_name: has_stable_version_fw_image
+                  docs:
+                    - Verify that recovery version has firmware image path.
+                  dependencies:
+                    - name: Has a stable-version service (RUN_ONCE)
+                      exec_name: has_stable_version_service_path
+                      docs:
+                        - Verify if we have access to the service provided access to the stable version
                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
                     - Limited to 15 seconds.
-                - name: Collect HWID into inventory (RUN_ONCE)
-                  exec_name: sample_pass
-                  docs:
-                    - Collect DUT hwid and update it into inventory info.
-                  dependencies:
-                    - name: Read HWID from DUT (ALWAYS_RUN)
-                      exec_name: cros_update_hwid_to_inventory
-                      conditions:
-                        - name: Not Satlab device
-                          exec_name: sample_fail
-                          docs:
-                            - Verify that DUT name is not belong Satlab.
-                          conditions:
-                            - name: Is Satlab device
-                              exec_name: dut_regex_name_match
-                              exec_args:
-                                - regex:^satlab
-                              docs:
-                                - Verify that DUT name is belong Satlab.
-                    - name: Read HWID from DUT (Satlab) (Allow to fail) (ALWAYS_RUN)
-                      exec_name: cros_update_hwid_to_inventory
-                      conditions:
-                        - name: Is Satlab device
-                          exec_name: dut_regex_name_match
-                          exec_args:
-                            - regex:^satlab
-                          docs:
-                            - Verify that DUT name is belong Satlab.
+              dependencies:
                 - name: Disable software-controlled write-protect for 'internal' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
                   exec_name: cros_disable_fprom_write_protect
                   exec_args:
@@ -13829,8 +13960,8 @@ plans:
                       docs:
                         - Verify that device is reachable by SSH.
                         - Limited to 15 seconds.
-                - name: Try to update FW from firmware image with factory mode (Allow to fail) (ALWAYS_RUN) (time:'2h0m0s')
-                  exec_name: cros_update_firmware_from_firmware_image
+                - name: Update FW from fw-image with factory mode from DUT (ALWAYS_RUN) (time:'2h0m0s')
+                  exec_name: cros_update_firmware_from_firmware_image_on_dut
                   exec_args:
                     - mode:factory
                     - force:true
@@ -13843,29 +13974,57 @@ plans:
                     - Download firmware image to DUT, and install via firmware updater.
                     - Update firmware from faft stable image with chromeos-firmwareupdate tool
                     - --mode=facotry will be specified when run chromeos-firmwareupdate
-                    - Set timeout to 120 minutes = 10 minutes for download + 100 minutes for find and extract AP/EC images + 10 minutes for run updater.
+                    - 'Set timeout to 120 minutes = 10 minutes for download + 100 minutes '
+                    - for find and extract AP/EC images + 10 minutes for run updater.
                   conditions:
-                    - name: has_stable_version_fw_image
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
-                - name: Try to update FW from OS image with factory mode (Allow to fail) (ALWAYS_RUN) (time:'15m0s')
-                  exec_name: cros_run_firmware_update
-                  exec_args:
-                    - mode:factory
-                    - force:true
-                    - updater_timeout:600
-                  docs:
-                    - Run chromeos-firmwareupdate with factory mode.
-                    - The reboot is not triggered as part of the action.
-                    - The action is not strict to not block repair actions.
-                    - Only runs when the DUT doesn't have a model specific faft stable_version, e.g. it's an early stage device use satlab or flex device.
-                  conditions:
-                    - name: Missing stable fw image
-                      exec_name: sample_fail
                       docs:
-                        - Verify that the DUT doesn't have model specific stable_version record in faft section
-                      conditions:
-                        - name: has_stable_version_fw_image
-                          exec_name: has_stable_version_fw_image
+                        - Verify that recovery version has firmware image path.
+                      dependencies:
+                        - name: Has a stable-version service (RUN_ONCE)
+                          exec_name: has_stable_version_service_path
+                          docs:
+                            - Verify if we have access to the service provided access to the stable version
+                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:REFLASH_FW
+                  docs:
+                    - Remove REFLASH_FW repair-requests.
+                - name: Simple reboot (ALWAYS_RUN)
+                  exec_name: cros_run_command
+                  exec_args:
+                    - host:dut
+                    - command:reboot
+                    - background:true
+                  docs:
+                    - Simple un-blocker reboot.
+                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ssh
+                  docs:
+                    - Try to wait device to be sshable after the device being rebooted.
+                    - Waiting time 150 seconds.
+            - name: Cold reset DUT by servo and wait to boot (ALWAYS_RUN)
+              exec_name: sample_pass
+              docs:
+                - Cold reset device by servo and wait for DUT to become ping-able.
+              conditions:
+                - name: Is servod running (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Verify that servo host specified in setup and servod is running.
+                  dependencies:
+                    - name: Setup has servo info
+                      exec_name: dut_servo_host_present
+                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                      exec_name: servod_echo
+                      exec_args:
+                        - ssh_check:false
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+              dependencies:
                 - name: Cold reset DUT by servo (ALWAYS_RUN)
                   exec_name: servo_power_state_reset
                   exec_args:
@@ -13888,50 +14047,40 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
-            - name: Update DUT firmware with factory mode and restart by host (ALWAYS_RUN)
+            - name: Update firmware with factory mode from host OS (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
-                - Force update FW on the DUT by factory mode.
-                - Reboot device by host
-              dependencies:
+                - 'Force update FW on the DUT by factory mode. Access to the '
+                - 'device under test is required to collect HWID information, '
+                - which is critical to finding the firmware targets for flash.
+              conditions:
+                - name: Is a Chromebook (RUN_ONCE)
+                  exec_name: dut_check_board
+                  exec_args:
+                    - string_values:aurora,reven
+                    - invert_result:true
+                  docs:
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Is recovery-version has firmware image path
+                  exec_name: has_stable_version_fw_image
+                  docs:
+                    - Verify that recovery version has firmware image path.
+                  dependencies:
+                    - name: Has a stable-version service (RUN_ONCE)
+                      exec_name: has_stable_version_service_path
+                      docs:
+                        - Verify if we have access to the service provided access to the stable version
                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
                     - Limited to 15 seconds.
-                - name: Collect HWID into inventory (RUN_ONCE)
-                  exec_name: sample_pass
-                  docs:
-                    - Collect DUT hwid and update it into inventory info.
-                  dependencies:
-                    - name: Read HWID from DUT (ALWAYS_RUN)
-                      exec_name: cros_update_hwid_to_inventory
-                      conditions:
-                        - name: Not Satlab device
-                          exec_name: sample_fail
-                          docs:
-                            - Verify that DUT name is not belong Satlab.
-                          conditions:
-                            - name: Is Satlab device
-                              exec_name: dut_regex_name_match
-                              exec_args:
-                                - regex:^satlab
-                              docs:
-                                - Verify that DUT name is belong Satlab.
-                    - name: Read HWID from DUT (Satlab) (Allow to fail) (ALWAYS_RUN)
-                      exec_name: cros_update_hwid_to_inventory
-                      conditions:
-                        - name: Is Satlab device
-                          exec_name: dut_regex_name_match
-                          exec_args:
-                            - regex:^satlab
-                          docs:
-                            - Verify that DUT name is belong Satlab.
+              dependencies:
                 - name: Disable software-controlled write-protect for 'internal' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
                   exec_name: cros_disable_fprom_write_protect
                   exec_args:
@@ -13956,25 +14105,7 @@ plans:
                       docs:
                         - Verify that device is reachable by SSH.
                         - Limited to 15 seconds.
-                - name: Try to update FW from firmware image with factory mode (Allow to fail) (ALWAYS_RUN) (time:'2h0m0s')
-                  exec_name: cros_update_firmware_from_firmware_image
-                  exec_args:
-                    - mode:factory
-                    - force:true
-                    - updater_timeout:600
-                    - update_ec_attempt_count:1
-                    - update_ap_attempt_count:1
-                    - use_cache_extractor:true
-                    - use_fw_targets_from_inventory:true
-                  docs:
-                    - Download firmware image to DUT, and install via firmware updater.
-                    - Update firmware from faft stable image with chromeos-firmwareupdate tool
-                    - --mode=facotry will be specified when run chromeos-firmwareupdate
-                    - Set timeout to 120 minutes = 10 minutes for download + 100 minutes for find and extract AP/EC images + 10 minutes for run updater.
-                  conditions:
-                    - name: has_stable_version_fw_image
-                      exec_name: has_stable_version_fw_image
-                - name: Try to update FW from OS image with factory mode (Allow to fail) (ALWAYS_RUN) (time:'15m0s')
+                - name: Update FW from host OS image with factory mode (ALWAYS_RUN) (time:'15m0s')
                   exec_name: cros_run_firmware_update
                   exec_args:
                     - mode:factory
@@ -13984,15 +14115,33 @@ plans:
                     - Run chromeos-firmwareupdate with factory mode.
                     - The reboot is not triggered as part of the action.
                     - The action is not strict to not block repair actions.
-                    - Only runs when the DUT doesn't have a model specific faft stable_version, e.g. it's an early stage device use satlab or flex device.
+                    - 'Only runs when recovery-version does not have firmware '
+                    - image path, e.g. it's an early stage devices.
                   conditions:
-                    - name: Missing stable fw image
+                    - name: Recovery version misses fw-image path
                       exec_name: sample_fail
                       docs:
                         - Verify that the DUT doesn't have model specific stable_version record in faft section
                       conditions:
-                        - name: has_stable_version_fw_image
+                        - name: Has a stable-version service (RUN_ONCE)
+                          exec_name: has_stable_version_service_path
+                          docs:
+                            - Verify if we have access to the service provided access to the stable version
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
+                          docs:
+                            - Verify that recovery version has firmware image path.
+                          dependencies:
+                            - name: Has a stable-version service (RUN_ONCE)
+                              exec_name: has_stable_version_service_path
+                              docs:
+                                - Verify if we have access to the service provided access to the stable version
+                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:REFLASH_FW
+                  docs:
+                    - Remove REFLASH_FW repair-requests.
                 - name: Simple reboot (ALWAYS_RUN)
                   exec_name: cros_run_command
                   exec_args:
@@ -14091,7 +14240,7 @@ plans:
                   exec_name: has_stable_version_service_path
                   docs:
                     - Verify if we have access to the service provided access to the stable version
-            - name: Recovery version has firmware image path
+            - name: Is recovery-version has firmware image path
               exec_name: has_stable_version_fw_image
               docs:
                 - Verify that recovery version has firmware image path.
@@ -14413,7 +14562,7 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -14464,7 +14613,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -14496,7 +14645,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ap_attempt_count:3
@@ -14524,7 +14673,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -15582,7 +15731,7 @@ plans:
                     - Update firmware from the host and reboot, then wait for host be available for SSH.
                   dependencies:
                     - name: Fix FW on the DUT to match stable-version (Allow to fail) (time:'2h0m0s')
-                      exec_name: cros_update_firmware_from_firmware_image
+                      exec_name: cros_update_firmware_from_firmware_image_on_dut
                       exec_args:
                         - mode:recovery
                         - force:true
@@ -15606,7 +15755,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -15717,7 +15866,7 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -15768,7 +15917,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -15800,7 +15949,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ap_attempt_count:3
@@ -15828,7 +15977,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -15861,7 +16010,7 @@ plans:
                     - Update firmware from the host and reboot, then wait for host be available for SSH.
                   dependencies:
                     - name: Fix FW on the DUT to match stable-version (Allow to fail) (time:'2h0m0s')
-                      exec_name: cros_update_firmware_from_firmware_image
+                      exec_name: cros_update_firmware_from_firmware_image_on_dut
                       exec_args:
                         - mode:recovery
                         - force:true
@@ -15885,7 +16034,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -15996,7 +16145,7 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -16047,7 +16196,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -16079,7 +16228,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ap_attempt_count:3
@@ -16107,7 +16256,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -16807,7 +16956,7 @@ plans:
                             - invert_result:true
                           docs:
                             - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -16858,7 +17007,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -16890,7 +17039,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                        - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                           exec_name: cros_update_fw_with_fw_image_by_servo
                           exec_args:
                             - update_ap_attempt_count:3
@@ -16918,7 +17067,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -18320,7 +18469,7 @@ plans:
                                     - invert_result:true
                                   docs:
                                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -18371,7 +18520,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -18403,7 +18552,7 @@ plans:
                                           dependencies:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
-                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                                   exec_name: cros_update_fw_with_fw_image_by_servo
                                   exec_args:
                                     - update_ap_attempt_count:3
@@ -18431,7 +18580,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -19884,7 +20033,7 @@ plans:
                                     - invert_result:true
                                   docs:
                                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -19935,7 +20084,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -19967,7 +20116,7 @@ plans:
                                           dependencies:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
-                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                                   exec_name: cros_update_fw_with_fw_image_by_servo
                                   exec_args:
                                     - update_ap_attempt_count:3
@@ -19995,7 +20144,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -21187,7 +21336,7 @@ plans:
                     - invert_result:true
                   docs:
                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                - name: Recovery version has firmware image path
+                - name: Is recovery-version has firmware image path
                   exec_name: has_stable_version_fw_image
                   docs:
                     - Verify that recovery version has firmware image path.
@@ -21238,7 +21387,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -21270,7 +21419,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
                   exec_args:
                     - update_ap_attempt_count:3
@@ -21298,7 +21447,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -21584,7 +21733,7 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Recovery version has firmware image path
+                - name: Is recovery-version has firmware image path
                   exec_name: has_stable_version_fw_image
                   docs:
                     - Verify that recovery version has firmware image path.
@@ -21668,7 +21817,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -21700,7 +21849,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
                   exec_args:
                     - update_ap_attempt_count:3
@@ -21728,7 +21877,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -23228,7 +23377,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                - name: Recovery version has firmware image path
+                - name: Is recovery-version has firmware image path
                   exec_name: has_stable_version_fw_image
                   docs:
                     - Verify that recovery version has firmware image path.
@@ -23284,7 +23433,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -23316,7 +23465,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
                   exec_args:
                     - update_ap_attempt_count:3
@@ -23344,7 +23493,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -23442,7 +23591,7 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Recovery version has firmware image path
+                - name: Is recovery-version has firmware image path
                   exec_name: has_stable_version_fw_image
                   docs:
                     - Verify that recovery version has firmware image path.
@@ -23528,7 +23677,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -23560,7 +23709,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                - name: Flash AP (FW) and set GBB to enable dev mode and boot from usb from fw-image by servo (without reboot) (time:'1h30m0s')
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (allowed failed) (time:'1h30m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
                   exec_args:
                     - update_ec_attempt_count:0
@@ -23591,7 +23740,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -24003,7 +24152,7 @@ plans:
                     - invert_result:true
                   docs:
                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                - name: Recovery version has firmware image path
+                - name: Is recovery-version has firmware image path
                   exec_name: has_stable_version_fw_image
                   docs:
                     - Verify that recovery version has firmware image path.
@@ -24054,7 +24203,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -24086,7 +24235,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
                   exec_args:
                     - update_ap_attempt_count:3
@@ -24114,7 +24263,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -25571,7 +25720,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -25622,7 +25771,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -25654,7 +25803,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -25682,7 +25831,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -27046,7 +27195,7 @@ plans:
                                     - invert_result:true
                                   docs:
                                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -27097,7 +27246,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -27129,7 +27278,7 @@ plans:
                                           dependencies:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
-                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                                   exec_name: cros_update_fw_with_fw_image_by_servo
                                   exec_args:
                                     - update_ap_attempt_count:3
@@ -27157,7 +27306,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -28521,7 +28670,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -28572,7 +28721,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -28604,7 +28753,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -28632,7 +28781,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -29996,7 +30145,7 @@ plans:
                                     - invert_result:true
                                   docs:
                                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -30047,7 +30196,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -30079,7 +30228,7 @@ plans:
                                           dependencies:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
-                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                                   exec_name: cros_update_fw_with_fw_image_by_servo
                                   exec_args:
                                     - update_ap_attempt_count:3
@@ -30107,7 +30256,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -31568,7 +31717,7 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -31619,7 +31768,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -31651,7 +31800,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ap_attempt_count:3
@@ -31679,7 +31828,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -33096,7 +33245,7 @@ plans:
                             - invert_result:true
                           docs:
                             - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -33147,7 +33296,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -33179,7 +33328,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                        - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                           exec_name: cros_update_fw_with_fw_image_by_servo
                           exec_args:
                             - update_ap_attempt_count:3
@@ -33207,7 +33356,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -35118,7 +35267,7 @@ plans:
                             - invert_result:true
                           docs:
                             - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -35169,7 +35318,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -35201,7 +35350,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                        - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                           exec_name: cros_update_fw_with_fw_image_by_servo
                           exec_args:
                             - update_ap_attempt_count:3
@@ -35229,7 +35378,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -38754,7 +38903,7 @@ plans:
                             - invert_result:true
                           docs:
                             - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -38805,7 +38954,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -38837,7 +38986,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                        - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                           exec_name: cros_update_fw_with_fw_image_by_servo
                           exec_args:
                             - update_ap_attempt_count:3
@@ -38865,7 +39014,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -40759,7 +40908,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -40810,7 +40959,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -40842,7 +40991,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -40870,7 +41019,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -42735,7 +42884,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -42791,7 +42940,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -42823,7 +42972,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ap_attempt_count:3
@@ -42851,7 +43000,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -42949,7 +43098,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -43035,7 +43184,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -43067,7 +43216,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) and set GBB to enable dev mode and boot from usb from fw-image by servo (without reboot) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (allowed failed) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ec_attempt_count:0
@@ -43098,7 +43247,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -43566,7 +43715,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -43650,7 +43799,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -43682,7 +43831,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ap_attempt_count:3
@@ -43710,7 +43859,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -44894,7 +45043,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -44945,7 +45094,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -44977,7 +45126,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -45005,7 +45154,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -46914,7 +47063,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -46998,7 +47147,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -47030,7 +47179,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ap_attempt_count:3
@@ -47058,7 +47207,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -48827,7 +48976,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -48878,7 +49027,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -48910,7 +49059,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -48938,7 +49087,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -51297,7 +51446,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -51348,7 +51497,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -51380,7 +51529,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -51408,7 +51557,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -55141,7 +55290,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -55192,7 +55341,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -55224,7 +55373,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -55252,7 +55401,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -57690,7 +57839,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -57741,7 +57890,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -57773,7 +57922,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -57801,7 +57950,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -60718,7 +60867,7 @@ plans:
                             - invert_result:true
                           docs:
                             - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -60769,7 +60918,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -60801,7 +60950,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                        - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                           exec_name: cros_update_fw_with_fw_image_by_servo
                           exec_args:
                             - update_ap_attempt_count:3
@@ -60829,7 +60978,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -62241,7 +62390,7 @@ plans:
                             - invert_result:true
                           docs:
                             - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -62292,7 +62441,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -62324,7 +62473,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                        - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                           exec_name: cros_update_fw_with_fw_image_by_servo
                           exec_args:
                             - update_ap_attempt_count:3
@@ -62352,7 +62501,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -63765,7 +63914,7 @@ plans:
                             - invert_result:true
                           docs:
                             - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -63816,7 +63965,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -63848,7 +63997,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                        - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                           exec_name: cros_update_fw_with_fw_image_by_servo
                           exec_args:
                             - update_ap_attempt_count:3
@@ -63876,7 +64025,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -65318,7 +65467,7 @@ plans:
                                     - invert_result:true
                                   docs:
                                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -65369,7 +65518,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -65401,7 +65550,7 @@ plans:
                                           dependencies:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
-                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                                   exec_name: cros_update_fw_with_fw_image_by_servo
                                   exec_args:
                                     - update_ap_attempt_count:3
@@ -65429,7 +65578,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -66869,7 +67018,7 @@ plans:
                                     - invert_result:true
                                   docs:
                                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -66920,7 +67069,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -66952,7 +67101,7 @@ plans:
                                           dependencies:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
-                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                                   exec_name: cros_update_fw_with_fw_image_by_servo
                                   exec_args:
                                     - update_ap_attempt_count:3
@@ -66980,7 +67129,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -68433,7 +68582,7 @@ plans:
                                         - invert_result:true
                                       docs:
                                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -68484,7 +68633,7 @@ plans:
                                                 - name: Setup has servo info
                                                   exec_name: dut_servo_host_present
                                       dependencies:
-                                        - name: Recovery version has firmware image path
+                                        - name: Is recovery-version has firmware image path
                                           exec_name: has_stable_version_fw_image
                                           docs:
                                             - Verify that recovery version has firmware image path.
@@ -68516,7 +68665,7 @@ plans:
                                               dependencies:
                                                 - name: Setup has servo info
                                                   exec_name: dut_servo_host_present
-                                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                                       exec_name: cros_update_fw_with_fw_image_by_servo
                                       exec_args:
                                         - update_ap_attempt_count:3
@@ -68544,7 +68693,7 @@ plans:
                                                 - name: Setup has servo info
                                                   exec_name: dut_servo_host_present
                                       dependencies:
-                                        - name: Recovery version has firmware image path
+                                        - name: Is recovery-version has firmware image path
                                           exec_name: has_stable_version_fw_image
                                           docs:
                                             - Verify that recovery version has firmware image path.
@@ -69986,7 +70135,7 @@ plans:
                                     - invert_result:true
                                   docs:
                                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -70037,7 +70186,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -70069,7 +70218,7 @@ plans:
                                           dependencies:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
-                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                                   exec_name: cros_update_fw_with_fw_image_by_servo
                                   exec_args:
                                     - update_ap_attempt_count:3
@@ -70097,7 +70246,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -71535,7 +71684,7 @@ plans:
                                         - invert_result:true
                                       docs:
                                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -71586,7 +71735,7 @@ plans:
                                                 - name: Setup has servo info
                                                   exec_name: dut_servo_host_present
                                       dependencies:
-                                        - name: Recovery version has firmware image path
+                                        - name: Is recovery-version has firmware image path
                                           exec_name: has_stable_version_fw_image
                                           docs:
                                             - Verify that recovery version has firmware image path.
@@ -71618,7 +71767,7 @@ plans:
                                               dependencies:
                                                 - name: Setup has servo info
                                                   exec_name: dut_servo_host_present
-                                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                                       exec_name: cros_update_fw_with_fw_image_by_servo
                                       exec_args:
                                         - update_ap_attempt_count:3
@@ -71646,7 +71795,7 @@ plans:
                                                 - name: Setup has servo info
                                                   exec_name: dut_servo_host_present
                                       dependencies:
-                                        - name: Recovery version has firmware image path
+                                        - name: Is recovery-version has firmware image path
                                           exec_name: has_stable_version_fw_image
                                           docs:
                                             - Verify that recovery version has firmware image path.
@@ -73085,7 +73234,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -73136,7 +73285,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -73168,7 +73317,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -73196,7 +73345,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -74572,7 +74721,7 @@ plans:
                                     - invert_result:true
                                   docs:
                                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -74623,7 +74772,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -74655,7 +74804,7 @@ plans:
                                           dependencies:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
-                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                                   exec_name: cros_update_fw_with_fw_image_by_servo
                                   exec_args:
                                     - update_ap_attempt_count:3
@@ -74683,7 +74832,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -76108,7 +76257,7 @@ plans:
                                     - invert_result:true
                                   docs:
                                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -76159,7 +76308,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -76191,7 +76340,7 @@ plans:
                                           dependencies:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
-                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                                   exec_name: cros_update_fw_with_fw_image_by_servo
                                   exec_args:
                                     - update_ap_attempt_count:3
@@ -76219,7 +76368,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -77595,7 +77744,7 @@ plans:
                                         - invert_result:true
                                       docs:
                                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -77646,7 +77795,7 @@ plans:
                                                 - name: Setup has servo info
                                                   exec_name: dut_servo_host_present
                                       dependencies:
-                                        - name: Recovery version has firmware image path
+                                        - name: Is recovery-version has firmware image path
                                           exec_name: has_stable_version_fw_image
                                           docs:
                                             - Verify that recovery version has firmware image path.
@@ -77678,7 +77827,7 @@ plans:
                                               dependencies:
                                                 - name: Setup has servo info
                                                   exec_name: dut_servo_host_present
-                                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                                       exec_name: cros_update_fw_with_fw_image_by_servo
                                       exec_args:
                                         - update_ap_attempt_count:3
@@ -77706,7 +77855,7 @@ plans:
                                                 - name: Setup has servo info
                                                   exec_name: dut_servo_host_present
                                       dependencies:
-                                        - name: Recovery version has firmware image path
+                                        - name: Is recovery-version has firmware image path
                                           exec_name: has_stable_version_fw_image
                                           docs:
                                             - Verify that recovery version has firmware image path.
@@ -79138,7 +79287,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -79189,7 +79338,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -79221,7 +79370,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -79249,7 +79398,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -80648,7 +80797,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -80699,7 +80848,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -80731,7 +80880,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -80759,7 +80908,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -82128,7 +82277,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -82179,7 +82328,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -82211,7 +82360,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -82239,7 +82388,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -83618,7 +83767,7 @@ plans:
                             - invert_result:true
                           docs:
                             - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -83669,7 +83818,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -83701,7 +83850,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                        - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                           exec_name: cros_update_fw_with_fw_image_by_servo
                           exec_args:
                             - update_ap_attempt_count:3
@@ -83729,7 +83878,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -85195,7 +85344,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -85246,7 +85395,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -85278,7 +85427,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -85306,7 +85455,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -86906,7 +87055,7 @@ plans:
                     - Update firmware from the host and reboot, then wait for host be available for SSH.
                   dependencies:
                     - name: Fix FW on the DUT to match stable-version (Allow to fail) (time:'2h0m0s')
-                      exec_name: cros_update_firmware_from_firmware_image
+                      exec_name: cros_update_firmware_from_firmware_image_on_dut
                       exec_args:
                         - mode:recovery
                         - force:true
@@ -86930,7 +87079,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -87041,7 +87190,7 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -87092,7 +87241,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -87124,7 +87273,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ap_attempt_count:3
@@ -87152,7 +87301,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -87212,7 +87361,7 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Recovery version has firmware image path
+                - name: Is recovery-version has firmware image path
                   exec_name: has_stable_version_fw_image
                   docs:
                     - Verify that recovery version has firmware image path.
@@ -87560,7 +87709,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -87611,7 +87760,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -87643,7 +87792,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -87671,7 +87820,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -89271,7 +89420,7 @@ plans:
                     - Update firmware from the host and reboot, then wait for host be available for SSH.
                   dependencies:
                     - name: Fix FW on the DUT to match stable-version (Allow to fail) (time:'2h0m0s')
-                      exec_name: cros_update_firmware_from_firmware_image
+                      exec_name: cros_update_firmware_from_firmware_image_on_dut
                       exec_args:
                         - mode:recovery
                         - force:true
@@ -89295,7 +89444,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -89406,7 +89555,7 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -89457,7 +89606,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -89489,7 +89638,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ap_attempt_count:3
@@ -89517,7 +89666,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -90161,7 +90310,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -90212,7 +90361,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -90244,7 +90393,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -90272,7 +90421,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -93288,7 +93437,7 @@ plans:
                             - invert_result:true
                           docs:
                             - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -93339,7 +93488,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -93371,7 +93520,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                        - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                           exec_name: cros_update_fw_with_fw_image_by_servo
                           exec_args:
                             - update_ap_attempt_count:3
@@ -93399,7 +93548,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -94806,7 +94955,7 @@ plans:
                                     - invert_result:true
                                   docs:
                                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -94857,7 +95006,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -94889,7 +95038,7 @@ plans:
                                           dependencies:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
-                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                                   exec_name: cros_update_fw_with_fw_image_by_servo
                                   exec_args:
                                     - update_ap_attempt_count:3
@@ -94917,7 +95066,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -97853,7 +98002,7 @@ plans:
                             - invert_result:true
                           docs:
                             - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -97904,7 +98053,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -97936,7 +98085,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                        - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                           exec_name: cros_update_fw_with_fw_image_by_servo
                           exec_args:
                             - update_ap_attempt_count:3
@@ -97964,7 +98113,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -99532,7 +99681,7 @@ plans:
                             - invert_result:true
                           docs:
                             - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -99583,7 +99732,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -99615,7 +99764,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                        - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                           exec_name: cros_update_fw_with_fw_image_by_servo
                           exec_args:
                             - update_ap_attempt_count:3
@@ -99643,7 +99792,7 @@ plans:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -101384,7 +101533,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -101435,7 +101584,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -101467,7 +101616,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -101495,7 +101644,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -102889,7 +103038,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -102940,7 +103089,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -102972,7 +103121,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -103000,7 +103149,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -104364,7 +104513,7 @@ plans:
                                     - invert_result:true
                                   docs:
                                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -104415,7 +104564,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -104447,7 +104596,7 @@ plans:
                                           dependencies:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
-                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                                   exec_name: cros_update_fw_with_fw_image_by_servo
                                   exec_args:
                                     - update_ap_attempt_count:3
@@ -104475,7 +104624,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -105839,7 +105988,7 @@ plans:
                                 - invert_result:true
                               docs:
                                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                            - name: Recovery version has firmware image path
+                            - name: Is recovery-version has firmware image path
                               exec_name: has_stable_version_fw_image
                               docs:
                                 - Verify that recovery version has firmware image path.
@@ -105890,7 +106039,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -105922,7 +106071,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                            - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                            - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                               exec_name: cros_update_fw_with_fw_image_by_servo
                               exec_args:
                                 - update_ap_attempt_count:3
@@ -105950,7 +106099,7 @@ plans:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                               dependencies:
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -107314,7 +107463,7 @@ plans:
                                     - invert_result:true
                                   docs:
                                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                                - name: Recovery version has firmware image path
+                                - name: Is recovery-version has firmware image path
                                   exec_name: has_stable_version_fw_image
                                   docs:
                                     - Verify that recovery version has firmware image path.
@@ -107365,7 +107514,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -107397,7 +107546,7 @@ plans:
                                           dependencies:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
-                                - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                                   exec_name: cros_update_fw_with_fw_image_by_servo
                                   exec_args:
                                     - update_ap_attempt_count:3
@@ -107425,7 +107574,7 @@ plans:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                   dependencies:
-                                    - name: Recovery version has firmware image path
+                                    - name: Is recovery-version has firmware image path
                                       exec_name: has_stable_version_fw_image
                                       docs:
                                         - Verify that recovery version has firmware image path.
@@ -109418,7 +109567,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -109504,7 +109653,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -109536,7 +109685,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) and set GBB to enable dev mode and boot from usb from fw-image by servo (without reboot) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (allowed failed) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ec_attempt_count:0
@@ -109567,7 +109716,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -110234,7 +110383,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -110320,7 +110469,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -110352,7 +110501,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) and set GBB to enable dev mode and boot from usb from fw-image by servo (without reboot) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (allowed failed) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ec_attempt_count:0
@@ -110383,7 +110532,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -111009,7 +111158,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -111065,7 +111214,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -111097,7 +111246,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ap_attempt_count:3
@@ -111125,7 +111274,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -111223,7 +111372,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -111309,7 +111458,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -111341,7 +111490,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) and set GBB to enable dev mode and boot from usb from fw-image by servo (without reboot) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (allowed failed) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ec_attempt_count:0
@@ -111372,7 +111521,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -111840,7 +111989,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Recovery version has firmware image path
+                    - name: Is recovery-version has firmware image path
                       exec_name: has_stable_version_fw_image
                       docs:
                         - Verify that recovery version has firmware image path.
@@ -111924,7 +112073,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.
@@ -111956,7 +112105,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                       exec_name: cros_update_fw_with_fw_image_by_servo
                       exec_args:
                         - update_ap_attempt_count:3
@@ -111984,7 +112133,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Recovery version has firmware image path
+                        - name: Is recovery-version has firmware image path
                           exec_name: has_stable_version_fw_image
                           docs:
                             - Verify that recovery version has firmware image path.

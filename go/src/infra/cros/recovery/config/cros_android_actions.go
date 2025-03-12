@@ -173,7 +173,7 @@ func androidActions(actions map[string]*Action) {
 				"Is servod running",
 				"Is Android based by ADB or provision-info",
 				"Is servo USB key detected",
-				"Recovery version has firmware image path",
+				"Is recovery-version has firmware image path",
 			},
 			Dependencies: []string{
 				"Mark as Android based",
@@ -183,7 +183,7 @@ func androidActions(actions map[string]*Action) {
 				"Flash EC (FW) by servo (allowed failed)",
 				"Sleep 10 seconds",
 				"Disable software write protection via servo",
-				"Flash AP (FW) with GBB enable dev mode and boot from usb by servo",
+				"Flash AP (FW) by servo with GBB (dev mode + USB boot)",
 				"Sleep 10 seconds",
 				// Reimage the DUT
 				"Boot on USB-key and install AndroidOS",

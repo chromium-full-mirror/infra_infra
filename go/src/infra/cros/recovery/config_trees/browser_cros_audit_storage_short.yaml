@@ -130,7 +130,7 @@ plans:
                           dependencies:
                             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
-                        - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                        - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -149,7 +149,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info ('dut_servo_host_present')
                           dependencies:
-                            - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                            - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                         - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
@@ -161,7 +161,7 @@ plans:
                                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                                   dependencies:
                                     - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                        - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                           conditions:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                               dependencies:
@@ -170,7 +170,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info ('dut_servo_host_present')
                           dependencies:
-                            - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                            - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
@@ -671,11 +671,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                    - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                   dependencies:
-                    - name: Flash EC (FW) by servo ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
+                    - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -684,7 +684,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info ('dut_servo_host_present')
                       dependencies:
-                        - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                        - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                     - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
@@ -696,7 +696,7 @@ plans:
                             - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                               dependencies:
                                 - name: Setup has servo info ('dut_servo_host_present')
-                    - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
+                    - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h30m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                           dependencies:
@@ -705,7 +705,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info ('dut_servo_host_present')
                       dependencies:
-                        - name: Recovery version has firmware image path ('has_stable_version_fw_image')
+                        - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                     - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')

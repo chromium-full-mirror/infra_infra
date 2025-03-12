@@ -67,7 +67,6 @@ func deployActions() map[string]*Action {
 				"Verify that FW on the DUT has dev keys.",
 			},
 			Conditions: []string{
-				//TODO(b:231627918): Flex does not have own firmware for EC/AP
 				"Is a Chromebook",
 				"Device not in MP Signed AP FW pool",
 			},
@@ -77,8 +76,11 @@ func deployActions() map[string]*Action {
 			ExecName:    "cros_has_dev_signed_firmware",
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
 			RecoveryActions: []string{
-				"Update DUT firmware with factory mode and restart by servo",
-				"Update DUT firmware with factory mode and restart by host",
+				"Update FW from fw-image by servo and wait for boot",
+				"Update firmware with factory mode by host",
+				// IF DUT failed too boot after reboot then hard rebboot it.
+				"Cold reset DUT by servo and wait to boot",
+				"Update firmware with factory mode from host OS",
 			},
 		},
 		"DUT has expected firmware version": {
@@ -87,14 +89,13 @@ func deployActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is it first deployment task",
-				//TODO(b:231627918): Flex does not have own firmware for EC/AP
 				"Is a Chromebook",
 				// Some model depends on hwid to differentiate firmware target, so we need collect this info before firmware update.
 				"Collect HWID into inventory",
 				"Device not in MP Signed AP FW pool",
 				"Has a stable-version service",
 				"Check stable firmware version exists",
-				"Recovery version has firmware image path",
+				"Is recovery-version has firmware image path",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
@@ -132,90 +133,49 @@ func deployActions() map[string]*Action {
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
-		"Update DUT firmware with factory mode and restart by servo": {
+		"Update firmware with factory mode by host": {
 			Docs: []string{
-				"Force update FW on the DUT by factory mode.",
-				"Reboot device by servo",
+				"Force update FW on the DUT by factory mode. Access to the ",
+				"device under test is required to collect HWID information, ",
+				"which is critical to finding the firmware targets for flash.",
 			},
 			Conditions: []string{
-				"Is servod running",
+				"Is a Chromebook",
+				"Is recovery-version has firmware image path",
+				"Device is SSHable",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
-				// Some model depends on hwid to differentiate firmware target, so we need collect this info before firmware update.
-				"Collect HWID into inventory",
 				"Disable software-controlled write-protect for 'internal'",
 				"Disable software-controlled write-protect for 'ec'",
-				"Try to update FW from firmware image with factory mode",
-				"Try to update FW from OS image with factory mode",
-				"Cold reset DUT by servo",
-				"Wait to be SSHable (normal boot)",
-			},
-			ExecName:   "sample_pass",
-			RunControl: RunControl_ALWAYS_RUN,
-		},
-		"Update DUT firmware with factory mode and restart by host": {
-			Docs: []string{
-				"Force update FW on the DUT by factory mode.",
-				"Reboot device by host",
-			},
-			Dependencies: []string{
-				"Device is SSHable",
-				// Some model depends on hwid to differentiate firmware target, so we need collect this info before firmware update.
-				"Collect HWID into inventory",
-				"Disable software-controlled write-protect for 'internal'",
-				"Disable software-controlled write-protect for 'ec'",
-				"Try to update FW from firmware image with factory mode",
-				"Try to update FW from OS image with factory mode",
+				"Update FW from fw-image with factory mode from DUT",
+				"Remove REFLASH_FW repair-request",
 				"Simple reboot",
 				"Wait to be SSHable (normal boot)",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
-		"Try to update FW from firmware image with factory mode": {
+		"Update firmware with factory mode from host OS": {
 			Docs: []string{
-				"Download firmware image to DUT, and install via firmware updater.",
-				"Update firmware from faft stable image with chromeos-firmwareupdate tool",
-				"--mode=facotry will be specified when run chromeos-firmwareupdate",
-				"Set timeout to 120 minutes = 10 minutes for download + 100 minutes for find and extract AP/EC images + 10 minutes for run updater.",
+				"Force update FW on the DUT by factory mode. Access to the ",
+				"device under test is required to collect HWID information, ",
+				"which is critical to finding the firmware targets for flash.",
 			},
 			Conditions: []string{
-				"has_stable_version_fw_image",
+				"Is a Chromebook",
+				"Is recovery-version has firmware image path",
+				"Device is SSHable",
 			},
-			ExecName: "cros_update_firmware_from_firmware_image",
-			ExecExtraArgs: []string{
-				"mode:factory",
-				"force:true",
-				"updater_timeout:600",
-				"update_ec_attempt_count:1",
-				"update_ap_attempt_count:1",
-				"use_cache_extractor:true",
-				"use_fw_targets_from_inventory:true",
+			Dependencies: []string{
+				"Disable software-controlled write-protect for 'internal'",
+				"Disable software-controlled write-protect for 'ec'",
+				"Update FW from host OS image with factory mode",
+				"Remove REFLASH_FW repair-request",
+				"Simple reboot",
+				"Wait to be SSHable (normal boot)",
 			},
-			ExecTimeout:            &durationpb.Duration{Seconds: 7200},
-			RunControl:             RunControl_ALWAYS_RUN,
-			AllowFailAfterRecovery: true,
-		},
-		"Try to update FW from OS image with factory mode": {
-			Docs: []string{
-				"Run chromeos-firmwareupdate with factory mode.",
-				"The reboot is not triggered as part of the action.",
-				"The action is not strict to not block repair actions.",
-				"Only runs when the DUT doesn't have a model specific faft stable_version, e.g. it's an early stage device use satlab or flex device.",
-			},
-			Conditions: []string{
-				"Missing stable fw image",
-			},
-			ExecTimeout: &durationpb.Duration{Seconds: 900},
-			ExecName:    "cros_run_firmware_update",
-			ExecExtraArgs: []string{
-				"mode:factory",
-				"force:true",
-				"updater_timeout:600",
-			},
-			RunControl:             RunControl_ALWAYS_RUN,
-			AllowFailAfterRecovery: true,
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Deployment checks": {
 			Docs: []string{
@@ -364,16 +324,6 @@ func deployActions() map[string]*Action {
 				//"Check stable faft version exists",
 			},
 			ExecName:      "sample_pass",
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
-		"Missing stable fw image": {
-			Docs: []string{
-				"Verify that the DUT doesn't have model specific stable_version record in faft section",
-			},
-			Conditions: []string{
-				"has_stable_version_fw_image",
-			},
-			ExecName:      "sample_fail",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Collect HWID into inventory": {

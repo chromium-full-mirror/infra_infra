@@ -154,8 +154,8 @@ func hasDevSignedFirmwareExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Reason("has dev signed firmware: dev signed key not found").Err()
 }
 
-// updateFirmwareFromFirmwareImage update RW/RO firmware to a given firmwarm image(stable_version by default).
-func updateFirmwareFromFirmwareImage(ctx context.Context, info *execs.ExecInfo) error {
+// updateFirmwareFromFirmwareImageOnDUT update RW/RO firmware to a given version from DUT.
+func updateFirmwareFromFirmwareImageOnDUT(ctx context.Context, info *execs.ExecInfo) error {
 	sv, err := version.ByDut(ctx, info.GetDut())
 	if err != nil {
 		return errors.Annotate(err, "update firmware image").Err()
@@ -233,6 +233,6 @@ func init() {
 	execs.Register("cros_has_dev_signed_firmware", hasDevSignedFirmwareExec)
 	execs.Register("cros_run_firmware_update", runFirmwareUpdaterExec)
 	execs.Register("cros_disable_fprom_write_protect", runDisableFPROMWriteProtectExec)
-	execs.Register("cros_update_firmware_from_firmware_image", updateFirmwareFromFirmwareImage)
+	execs.Register("cros_update_firmware_from_firmware_image_on_dut", updateFirmwareFromFirmwareImageOnDUT)
 	execs.Register("cros_is_hardware_write_protection_disabled", isHardwareWriteProtectionDisabled)
 }
