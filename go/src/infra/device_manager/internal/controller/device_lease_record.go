@@ -278,7 +278,7 @@ func ExtendLease(ctx context.Context, db *sql.DB, r *api.ExtendLeaseRequest) (*a
 		return &api.ExtendLeaseResponse{
 			LeaseId:        r.GetLeaseId(),
 			ExpirationTime: timestamppb.New(record.ExpirationTime),
-		}, errors.New("ExtendLease: lease is already expired")
+		}, status.Errorf(codes.InvalidArgument, "ExtendLease: lease is already expired")
 	}
 
 	tx, err := db.BeginTx(ctx, nil)

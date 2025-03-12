@@ -194,7 +194,7 @@ func (s *Server) ExtendLease(ctx context.Context, r *api.ExtendLeaseRequest) (*a
 func (s *Server) GetDevice(ctx context.Context, r *api.GetDeviceRequest) (*api.Device, error) {
 	logging.Debugf(ctx, "GetDevice: received GetDeviceRequest %v", r)
 	if r.Name == "" {
-		return nil, status.Errorf(codes.Internal, "GetDevice: request has no device name")
+		return nil, status.Errorf(codes.InvalidArgument, "GetDevice: request has no device name")
 	}
 
 	// Default to using hostname as the query ID type.
