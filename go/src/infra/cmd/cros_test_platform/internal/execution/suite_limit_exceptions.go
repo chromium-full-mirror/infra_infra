@@ -14,159 +14,155 @@ type suiteFilter struct {
 }
 
 var (
-	// After end of Q1 2025
-	standardExemption = time.Date(2025, time.March, 20, 0, 0, 0, 0, time.UTC)
-
-	// Date beyond the lifetime of this builder to ensure no lapse in coverage
-	releaseLongTerm = time.Date(2025, time.July, 30, 0, 0, 0, 0, time.UTC)
+	permanentExemption = time.Date(2050, time.July, 30, 0, 0, 0, 0, time.UTC)
 )
 
-// exceptions stores all granted exceptions from the SuiteLimits project. go/sl-tracking-sheet for more information.
+// exceptions stores all granted exemptions from the SuiteLimits project. go/sl-tracking-sheet for more information.
 var exceptions = []suiteFilter{
 	{
 		suiteName:  "arc-cts-long",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "arc-cts-camera-opendut",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "arc-cts-hardware",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "arc-cts-qual-long",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "arc-cts-vm-stable",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "arc-cts-vm-stable-long",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "arc-gts-long",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "arc-gts-qual-long",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "arc-sts-full",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "arc-sts-full-r",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "arc-sts-full-t",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "bvt-perbuild",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "bvt-tast-arc",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "bvt-tast-cq",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "bvt-tast-cq-cft-crostini",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "bvt-tast-cq-crostini",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "bvt-tast-cq-hw",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "bvt-tast-criticalstaging",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "bvt-tast-informational",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "bvt-tast-cq-non-arc-non-crostini",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "bvt-tast-parallels-informational",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "fieldtrial-testing-config-on-weekly",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "crosbolt_perf_nightly",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "crosbolt_perf_perbuild",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "crosbolt_perf_weekly",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "flex-perbuild",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "chrome-uprev-hw",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "graphics_per-build",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "graphics_per-day",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "graphics_per-week",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "dma-per-build",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 	// Release specific exemptions, giving an extra year of time so the
 	// exemption doesn't unexpectedly expire.
 	{
 		suiteName:  "paygen_au_stable",
-		expiration: releaseLongTerm,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "paygen_au_dev",
-		expiration: releaseLongTerm,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "paygen_au_beta",
-		expiration: releaseLongTerm,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "paygen_au_canary",
-		expiration: releaseLongTerm,
+		expiration: permanentExemption,
 	},
 	{
 		suiteName:  "cq-medium",
-		expiration: standardExemption,
+		expiration: permanentExemption,
 	},
 }
