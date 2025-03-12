@@ -2114,7 +2114,7 @@ plans:
               dependencies:
                 - name: Setup has servo info ('dut_servo_host_present')
                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
-                  conditions:
+                  dependencies:
                     - name: Setup has servo info ('dut_servo_host_present')
             - name: Device NOT booted from USB-drive ('sample_fail') (ALWAYS_RUN)
               conditions:

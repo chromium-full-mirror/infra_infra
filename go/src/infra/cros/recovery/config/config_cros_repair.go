@@ -84,12 +84,17 @@ func crosRepairActions() map[string]*Action {
 				"Device Uptime",
 				"Verify access to cache",
 				"Set dev_boot_usb is enabled",
-				"Verify internal storage",
+				"Internal storage is responsive",
+				"Kernel does not know issues",
+				"Stateful partition has enough free index nodes",
+				"Stateful partition has enough free space",
+				"Stateful partition (encrypted) has enough free space",
 				"Verify if booted from priority kernel",
 				"Verify rootfs is on fs-verity",
 				"Check KVM is enabled",
 				"Has repair-request for re-provision",
 				"Check if last provision was good",
+				"Read OS version",
 				"Python is present",
 				"Verify that device is not enrolled",
 				"Check power sources",
@@ -106,7 +111,12 @@ func crosRepairActions() map[string]*Action {
 				"Audit cellular",
 				"Audit cellular modem on non-cellular pools",
 				"Stop if DUT needs replacement",
-				"Firmware validations",
+				"FWMP is overriding WP",
+				"Ensure firmware is in good state",
+				"RO Firmware version matches the recovery-version",
+				"Verify servo keyboard firmware",
+				"FPMCU is working",
+				"FW WP is disabled",
 				"Check if OS on required version for camerabox tablet",
 				"Check audio latency toolkit state",
 				"Collect audio beamforming type",
@@ -342,20 +352,6 @@ func crosRepairActions() map[string]*Action {
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
-		"Verify internal storage": {
-			Docs: []string{
-				"Verify DUT internal storage",
-			},
-			Dependencies: []string{
-				"Internal storage is responsive",
-				"Kernel does not know issues",
-				"Stateful partition has enough free index nodes",
-				"Stateful partition has enough free space",
-				"Stateful partition (encrypted) has enough free space",
-			},
-			ExecName:      "sample_pass",
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
 		"Stop if DUT needs replacement": {
 			Docs: []string{
 				"Plan stopper if the DUT has state 'needs_replacement'.",
@@ -526,9 +522,6 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Read and log current OS version.",
 			},
-			Dependencies: []string{
-				"Internal storage is responsive",
-			},
 			ExecName: "cros_read_os_version",
 			RecoveryActions: []string{
 				"Quick provision OS",
@@ -543,7 +536,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
-				"Read OS version",
 			},
 			ExecName: "cros_has_python_interpreter_working",
 			RecoveryActions: []string{
@@ -558,7 +550,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
-				"Read OS version",
 			},
 			ExecName: "cros_is_last_provision_successful",
 			RecoveryActions: []string{
@@ -933,30 +924,31 @@ func crosRepairActions() map[string]*Action {
 				"min_version:101",
 			},
 		},
-		"Firmware validations": {
+		"FWMP is overriding WP": {
 			Docs: []string{
-				"Group action to combine all firmware checks in one place.",
+				"if FWMP is override WP then GSC can not manage it.",
+				"It will be shown in gsctool -aw output, the fix is remove it.",
 			},
 			Conditions: []string{
+				//TODO(b:231609148: Flex device don't have security chip and gsctool.
 				"Is a Chromebook",
-				// The firmware validation only applies to dev signed AP firmware
-				// currently. Depending on how widespread MP signed AP firmware
-				// testing is, we could add a parallel validation for MP AP firmware.
 				"Device not in MP Signed AP FW pool",
+				"DUT has Cr50 phase label",
+				"Is gsctool present on the host",
 			},
-			Dependencies: []string{
-				"Ensure firmware is in good state",
-				"RO Firmware version matches the recovery-version",
-				"Verify servo keyboard firmware",
-				"FPMCU is working",
-				"FW WP is disabled",
+			ExecName: "cros_is_fwmp_override_wp",
+			RecoveryActions: []string{
+				"Cleanup the enrollment state and wait for boot",
 			},
-			ExecName:      "sample_pass",
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			AllowFailAfterRecovery: true,
 		},
 		"Ensure firmware is in good state": {
 			Docs: []string{
 				"Ensure that firmware is in good state.",
+			},
+			Conditions: []string{
+				"Is a Chromebook",
+				"Device not in MP Signed AP FW pool",
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
@@ -1216,6 +1208,8 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Verify servo keyboard firmware": {
 			Conditions: []string{
+				"Is a Chromebook",
+				"Device not in MP Signed AP FW pool",
 				"Is servod running",
 				"is_servo_keyboard_image_tool_present",
 			},
@@ -1469,6 +1463,8 @@ func crosRepairActions() map[string]*Action {
 				"Check if the version of RO firmware on DUT matches the stable firmware version.",
 			},
 			Conditions: []string{
+				"Is a Chromebook",
+				"Device not in MP Signed AP FW pool",
 				"Check stable firmware version exists",
 				"Recovery version has firmware image path",
 				"Pools required to manage FW on the device",
@@ -1563,7 +1559,7 @@ func crosRepairActions() map[string]*Action {
 				"DUT has Cr50 phase label",
 			},
 			Dependencies: []string{
-				"Read OS version",
+				"Device is SSHable (simple)",
 			},
 			ExecName: "cros_run_shell_command",
 			ExecExtraArgs: []string{
@@ -2447,7 +2443,7 @@ func crosRepairActions() map[string]*Action {
 				"The action working as condition. Please do not exclude based on labels.",
 			},
 			Dependencies: []string{
-				"Read OS version",
+				"Device is SSHable (simple)",
 			},
 			ExecName: "cros_run_shell_command",
 			ExecExtraArgs: []string{
@@ -3543,7 +3539,10 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Device not in MP Signed AP FW pool": {
 			Docs: []string{
-				"Verify that DUT is not in the pool that requires MP signed AP firmware",
+				"Verify that DUT is not in the pool that requires MP signed AP firmware.",
+				"The firmware validation only applies to dev signed AP firmware",
+				"currently. Depending on how widespread MP signed AP firmware",
+				"testing is, we could add a parallel validation for MP AP firmware.",
 			},
 			ExecName: "dut_not_in_pool",
 			ExecExtraArgs: []string{
@@ -3965,16 +3964,18 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Set fw_wp_state to force_off": {
 			Docs: []string{
-				"Force disable wp of FW by servo.",
+				"Force disable WP of FW by servo.",
 			},
 			Dependencies: []string{
-				"Setup has servo info",
+				"Verify servod is responsive",
 			},
 			ExecName: "servo_set",
 			ExecExtraArgs: []string{
 				"command:fw_wp_state",
 				"string_value:force_off",
 			},
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
 		"Boot DUT from USB in DEV mode": {
 			Docs: []string{
@@ -4100,7 +4101,7 @@ func crosRepairActions() map[string]*Action {
 			},
 		},
 		"Verify servod is responsive": {
-			Conditions: []string{
+			Dependencies: []string{
 				"Setup has servo info",
 			},
 			ExecName:    "servod_echo",
@@ -4108,10 +4109,8 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"ssh_check:false",
 			},
-			RunControl: RunControl_ALWAYS_RUN,
-			MetricsConfig: &MetricsConfig{
-				UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR,
-			},
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
 		"Verify RO_VPD dsm_calib": {
 			Docs: []string{
@@ -4219,7 +4218,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Internal storage is responsive",
-				"Read OS version",
 			},
 			Conditions: []string{
 				"is_camerabox_tablet_pool",
@@ -5157,6 +5155,8 @@ func crosRepairActions() map[string]*Action {
 				"Check FPMCU is working and can provide version info.",
 			},
 			Conditions: []string{
+				"Is a Chromebook",
+				"Device not in MP Signed AP FW pool",
 				"Has valid Fingerprint board value",
 			},
 			ExecName: "cros_run_command",
@@ -5192,8 +5192,9 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Validate if WP is enabled or not.",
 			},
-			Dependencies: []string{
-				"Servo-state:WORKING",
+			Conditions: []string{
+				"Is a Chromebook",
+				"Device not in MP Signed AP FW pool",
 			},
 			ExecName: "servo_check_servod_control",
 			ExecExtraArgs: []string{

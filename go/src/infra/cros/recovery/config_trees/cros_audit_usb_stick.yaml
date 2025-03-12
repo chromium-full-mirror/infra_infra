@@ -6208,7 +6208,7 @@ plans:
                   exec_name: servod_echo
                   exec_args:
                     - ssh_check:false
-                  conditions:
+                  dependencies:
                     - name: Setup has servo info
                       exec_name: dut_servo_host_present
             - name: Device NOT booted from USB-drive (ALWAYS_RUN)

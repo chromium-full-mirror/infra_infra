@@ -154,7 +154,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
@@ -177,7 +177,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                         - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
@@ -221,7 +221,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                         - name: Is a Chromebook (RUN_ONCE)
@@ -250,7 +250,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                       dependencies:
@@ -300,7 +300,7 @@ plans:
                                           exec_name: servod_echo
                                           exec_args:
                                             - ssh_check:false
-                                          conditions:
+                                          dependencies:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                 - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
@@ -363,7 +363,7 @@ plans:
                                       exec_name: servod_echo
                                       exec_args:
                                         - ssh_check:false
-                                      conditions:
+                                      dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                             - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
@@ -464,7 +464,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
@@ -491,7 +491,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
@@ -524,7 +524,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                         - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
@@ -551,7 +551,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
@@ -598,7 +598,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                         - name: is_servo_type_ccd
@@ -676,7 +676,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                         - name: Is servo USB key detected
@@ -698,20 +698,25 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                       dependencies:
-                        - name: Set fw_wp_state to force_off
+                        - name: Set fw_wp_state to force_off (ALWAYS_RUN)
                           exec_name: servo_set
                           exec_args:
                             - command:fw_wp_state
                             - string_value:force_off
                           docs:
-                            - Force disable wp of FW by servo.
+                            - Force disable WP of FW by servo.
                           dependencies:
-                            - name: Setup has servo info
-                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
                     - name: Install OS in recovery mode by booting from servo USB-drive (ALWAYS_RUN)
                       exec_name: sample_pass
                       docs:
@@ -755,7 +760,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                         - name: Is servo USB key detected
@@ -777,7 +782,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                       dependencies:
@@ -827,7 +832,7 @@ plans:
                                           exec_name: servod_echo
                                           exec_args:
                                             - ssh_check:false
-                                          conditions:
+                                          dependencies:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                 - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
@@ -890,7 +895,7 @@ plans:
                                       exec_name: servod_echo
                                       exec_args:
                                         - ssh_check:false
-                                      conditions:
+                                      dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                             - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
@@ -981,7 +986,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                         - name: Is servo USB key detected
@@ -1003,7 +1008,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                         - name: Device has Intel AMT
@@ -1082,7 +1087,7 @@ plans:
                                           exec_name: servod_echo
                                           exec_args:
                                             - ssh_check:false
-                                          conditions:
+                                          dependencies:
                                             - name: Setup has servo info
                                               exec_name: dut_servo_host_present
                                 - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
@@ -1145,7 +1150,7 @@ plans:
                                       exec_name: servod_echo
                                       exec_args:
                                         - ssh_check:false
-                                      conditions:
+                                      dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                             - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
@@ -1177,7 +1182,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                         - name: Power-off the DUT using AMT (ALWAYS_RUN)
@@ -1353,7 +1358,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                         - name: Power-on the DUT using AMT (ALWAYS_RUN)
@@ -1441,7 +1446,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                         - name: Is servo USB key detected
@@ -1463,7 +1468,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                       dependencies:
@@ -1504,7 +1509,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
@@ -1527,7 +1532,7 @@ plans:
                                       exec_name: servod_echo
                                       exec_args:
                                         - ssh_check:false
-                                      conditions:
+                                      dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                             - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
@@ -1564,7 +1569,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
@@ -1587,7 +1592,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                         - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
@@ -1668,7 +1673,7 @@ plans:
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
-                          conditions:
+                          dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                     - name: Is a Chromebook (RUN_ONCE)
@@ -1697,7 +1702,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                     - name: Recovery version has OS image path
@@ -1729,7 +1734,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                     - name: Install OS in DEV mode by USB-drive (ALWAYS_RUN)
@@ -1774,7 +1779,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                         - name: Is servo USB key detected
@@ -1796,7 +1801,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                       dependencies:
@@ -1837,7 +1842,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
@@ -1860,7 +1865,7 @@ plans:
                                       exec_name: servod_echo
                                       exec_args:
                                         - ssh_check:false
-                                      conditions:
+                                      dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                             - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
@@ -1895,7 +1900,7 @@ plans:
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
-                          conditions:
+                          dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                     - name: Is a Chromebook (RUN_ONCE)
@@ -1924,7 +1929,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                     - name: Recovery version has OS image path
@@ -1967,7 +1972,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                         - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
@@ -2022,7 +2027,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                         - name: Is servo USB key detected
@@ -2044,7 +2049,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                       dependencies:
@@ -2085,7 +2090,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
@@ -2108,7 +2113,7 @@ plans:
                                       exec_name: servod_echo
                                       exec_args:
                                         - ssh_check:false
-                                      conditions:
+                                      dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                             - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
@@ -2143,7 +2148,7 @@ plans:
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
-                          conditions:
+                          dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                     - name: Is a Chromebook (RUN_ONCE)
@@ -2172,7 +2177,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                     - name: Recovery version has OS image path
@@ -2217,7 +2222,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
@@ -2250,7 +2255,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                     - name: Flash AP (FW) with GBB enable dev mode and boot from usb by servo (Allow to fail) (time:'1h30m0s')
@@ -2277,7 +2282,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                       dependencies:
@@ -2336,7 +2341,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                         - name: Is servo USB key detected
@@ -2358,7 +2363,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                       dependencies:
@@ -2399,7 +2404,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                           dependencies:
@@ -2422,7 +2427,7 @@ plans:
                                       exec_name: servod_echo
                                       exec_args:
                                         - ssh_check:false
-                                      conditions:
+                                      dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                             - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
@@ -2490,7 +2495,7 @@ plans:
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
-                          conditions:
+                          dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
                     - name: Is servo USB key detected
@@ -2512,7 +2517,7 @@ plans:
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
-                              conditions:
+                              dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                   dependencies:
@@ -2562,7 +2567,7 @@ plans:
                                       exec_name: servod_echo
                                       exec_args:
                                         - ssh_check:false
-                                      conditions:
+                                      dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
                             - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
@@ -2625,7 +2630,7 @@ plans:
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
-                                  conditions:
+                                  dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
                         - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')

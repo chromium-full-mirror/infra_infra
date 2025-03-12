@@ -138,8 +138,30 @@ func reflashCr50FwExec(ctx context.Context, info *execs.ExecInfo) (rErr error) {
 	return nil
 }
 
+// isFWMPOverrideWPExec check if FWMP is override WP.
+// Check if fwmp shows up in the gsctool -aw output.
+// Bad examples:
+//
+//	Flash WP: fwmp forced enabled
+//	 at boot: fwmp enabled
+func isFWMPOverrideWPExec(ctx context.Context, info *execs.ExecInfo) error {
+	ha := info.NewHostAccess(info.GetDut().Name)
+	res, err := ha.Run(ctx, info.GetExecTimeout(), "gsctool -aw")
+	if err != nil {
+		return errors.Annotate(err, "is fwmp override wp").Err()
+	}
+	out := res.GetStdout()
+	log.Debugf(ctx, "gsctool output: \n%s", res.GetStdout())
+	if strings.Contains(out, "fwmp") {
+		return errors.Reason("is fwmp override wp: found fwmp in the output").Err()
+	}
+	log.Infof(ctx, "FWMP not found in wp output. GSC can change it.")
+	return nil
+}
+
 func init() {
 	execs.Register("cros_update_cr50_label", updateCr50LabelExec)
 	execs.Register("cros_update_cr50_key_id_label", updateCr50KeyIdLabelExec)
 	execs.Register("cros_reflash_cr50_fw", reflashCr50FwExec)
+	execs.Register("cros_is_fwmp_override_wp", isFWMPOverrideWPExec)
 }
