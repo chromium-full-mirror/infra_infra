@@ -157,7 +157,9 @@ func makeAwakeAlwaysExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	timeout := argsMap.AsDuration(ctx, "timeout", 10, time.Second)
 	run := info.NewRunner(info.GetDut().Name)
-	_, err := run(ctx, timeout, "settings", "put", "global", "stay_on_while_plugged_in", "3")
+	// go/android-dev/reference/android/provider/Settings.Global#STAY_ON_WHILE_PLUGGED_IN
+	// The value 7 indicates that the screen will stay on at all times when plugged in.
+	_, err := run(ctx, timeout, "settings", "put", "global", "stay_on_while_plugged_in", "7")
 	return errors.Annotate(err, "make awake always").Err()
 }
 
