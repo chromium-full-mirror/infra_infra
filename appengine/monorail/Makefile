@@ -10,39 +10,20 @@ STAGEID= monorail-staging
 PRODID= monorail-prod
 
 GAE_PY?= vpython3 gae.py
-DEV_APPSERVER_FLAGS?= --python_virtualenv_path venv --watcher_ignore_re="(.*/lib|.*/node_modules|.*/venv)"
 
 FRONTEND_MODULES?= default
 
 BRANCH_NAME := $(shell git rev-parse --abbrev-ref HEAD)
 
-PY_DIRS = api,businesslogic,features,framework,project,mrproto,search,services,sitewide,testing,tracker
-
-default: help
-
 help:
 	@echo "Available commands:"
 	@sed -n '/^[a-zA-Z0-9_.]*:/s/:.*//p' <Makefile
 
-# Commands for running locally using dev_appserver.
-# devserver requires an application ID (-A) to be specified.
-# We are using `-A monorail-staging` because ml spam code is set up
-# to impersonate monorail-staging in the local environment.
 serve:
-	@echo "---[Starting SDK AppEngine Server]---"
-	$(GAE_PY) devserver -A monorail-staging -- $(DEV_APPSERVER_FLAGS) 2>&1
-
-# The _remote commands expose the app on 0.0.0.0, so that it is externally
-# accessible by hostname:port, rather than just localhost:port.
-serve_remote:
-	@echo "---[Starting SDK AppEngine Server]---"
-	$(GAE_PY) devserver -A monorail-staging -o -- $(DEV_APPSERVER_FLAGS)
+	vpython3 main.py
 
 pytest:
 	vpython3 -m pytest
-
-pylint:
-	pylint --py3k *py {$(PY_DIRS)}{/,/test/}*py
 
 generate_requirements_txt:
 	vpython3 -m pip freeze > requirements.txt

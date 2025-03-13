@@ -6,3 +6,6 @@
 from redirect import redirect
 
 app = redirect.GenerateRedirectApp()
+
+if __name__ == '__main__':
+  app.run(debug=True)

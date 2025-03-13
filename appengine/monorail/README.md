@@ -11,6 +11,8 @@ that dynamically generates these redirects.
 
 ## Testing
 
+To run all tests:
+
 ```
 make pytest
 ```
@@ -18,9 +20,38 @@ make pytest
 To run a single test:
 
 ```
-vpython3 -m pytest services/test/issue_svc_test.py::IssueServiceTest::testUpdateIssues_Normal
+vpython3 -m pytest redirect/test/redirect_test.py::TestRedirectApp::testNoRedirectIssueList
+```
+
+## Local Development Server
+
+One-time setup:
+
+```
+gcloud init
+gcloud config set project monorail-dev
+gcloud auth application-default login
+```
+
+To run:
+
+```
+make serve
 ```
 
 ## Release process
 
-See: [Monorail Deployment](http://go/monorail-deploy)
+Monorail Redirect is deployed automatically to monorail-dev and
+monorail-staging using LUCI CD. To promote to prod:
+
+```
+# Assume you have an infra_internal checkout.
+cd ../../../data/gae
+git new-branch monorail-deploy
+./scripts/promote.py --canary --stable --commit monorail
+git cl upload
+```
+
+Review the CL and land it. LUCI CD will pick up the change and deploy to prod.
+You may check on the deployment status using the
+[LUCI UI](https://ci.chromium.org/ui/p/infradata-gae/builders/ci/gae-deploy).
