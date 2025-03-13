@@ -670,9 +670,11 @@ with open("`)
 		exitCodeRe := regexp.MustCompile(`EXIT CODE: (-?\d+)`)
 		csmeLockedRe := regexp.MustCompile(`The CSME was already locked`)
 		logfileLen := 0
+		ignoreTimeout := false
+		endTime := startTime.Add(10 * time.Minute)
 
 		// Poll every 10s for the log file to appear and have the "EXIT CODE:" string in it.
-		for time.Since(startTime) < 10*time.Minute {
+		for time.Now().Before(endTime) {
 			time.Sleep(10 * time.Second)
 			catCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 			defer cancel()
@@ -691,6 +693,13 @@ with open("`)
 			} else {
 				if logfileLen > len(buf) {
 					log.Printf("Logfile shrank! Might be an EC crash. Was %d, now %d", logfileLen, len(buf))
+					ignoreTimeout = true
+					// Wait just a little longer to see if we get an EXIT CODE
+					newTimeout := time.Now().Add(30 * time.Second)
+					if newTimeout.Before(endTime) {
+						endTime = newTimeout
+					}
+
 					log.Printf("Futility output:\n%s", buf)
 					logfileLen = len(buf)
 				} else {
@@ -712,6 +721,10 @@ with open("`)
 				}
 				return errors.Errorf("futility failed: %q", buf)
 			}
+		}
+		if ignoreTimeout {
+			log.Printf("Timeout waiting for futility, but logfile was truncated, so hope for the best and check if the versions match.")
+			return nil
 		}
 		return errors.New("Timeout waiting for futility")
 	} else {
