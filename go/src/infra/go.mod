@@ -120,7 +120,7 @@ require (
 	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
 	golang.org/x/mod v0.22.0
-	golang.org/x/net v0.34.0
+	golang.org/x/net v0.36.0
 	golang.org/x/oauth2 v0.25.0
 	golang.org/x/perf v0.0.0-20250106172127-400946f43c82
 	golang.org/x/sync v0.11.0
