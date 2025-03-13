@@ -118,6 +118,7 @@ const (
 	CrosProvision    = "cros-provision"
 	AndroidProvision = "android-provision"
 	FwProvision      = "cros-fw-provision"
+	VmProvision      = "vm-provision"
 	CrosDut          = "cros-dut"
 	CrosTest         = "cros-test"
 	CrosPublish      = "cros-publish"

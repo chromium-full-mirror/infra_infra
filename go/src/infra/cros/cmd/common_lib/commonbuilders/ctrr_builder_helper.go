@@ -31,6 +31,9 @@ var (
 	PullFromFirestore = []string{
 		common.CrosDut,
 		common.CrosProvision,
+		common.FwProvision,
+		common.AndroidProvision,
+		common.VmProvision,
 		common.ServoNexus,
 	}
 )
