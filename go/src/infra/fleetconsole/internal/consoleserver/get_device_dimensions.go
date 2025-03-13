@@ -12,6 +12,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
+	"go.chromium.org/luci/server/sqldb"
 
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 	"go.chromium.org/infra/fleetconsole/internal/database/devicesdb"
@@ -31,7 +32,7 @@ func (frontend *FleetConsoleFrontend) GetDeviceDimensions(ctx context.Context, r
 		return nil, err
 	}
 
-	labels, err := devicesdb.GetLabels(ctx, frontend.dbConnection, realms)
+	labels, err := devicesdb.GetLabels(ctx, sqldb.MustGetDB(ctx), realms)
 	if err != nil {
 		if errors.Is(err, context.Canceled) {
 			return nil, errors.Annotate(err, "failed to fetch label values").Tag(grpcutil.CanceledTag).Err()
@@ -41,7 +42,7 @@ func (frontend *FleetConsoleFrontend) GetDeviceDimensions(ctx context.Context, r
 		return nil, err
 	}
 
-	baseDimensions, err := devicesdb.GetBaseDimensions(ctx, frontend.dbConnection, realms)
+	baseDimensions, err := devicesdb.GetBaseDimensions(ctx, sqldb.MustGetDB(ctx), realms)
 	if err != nil {
 		if errors.Is(err, context.Canceled) {
 			return nil, errors.Annotate(err, "failed to fetch base dimension values").Tag(grpcutil.CanceledTag).Err()

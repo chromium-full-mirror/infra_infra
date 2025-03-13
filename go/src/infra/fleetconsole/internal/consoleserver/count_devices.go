@@ -10,6 +10,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
+	"go.chromium.org/luci/server/sqldb"
 
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 	"go.chromium.org/infra/fleetconsole/internal/database/devicesdb"
@@ -28,7 +29,7 @@ func (frontend *FleetConsoleFrontend) CountDevices(ctx context.Context, req *fle
 		return nil, err
 	}
 
-	result, err := devicesdb.CountDevices(ctx, frontend.dbConnection, req.GetFilter(), realms)
+	result, err := devicesdb.CountDevices(ctx, sqldb.MustGetDB(ctx), req.GetFilter(), realms)
 	if err != nil {
 		if errors.Is(err, context.Canceled) {
 			return nil, errors.Annotate(err, "failed to count devices").Tag(grpcutil.CanceledTag).Err()

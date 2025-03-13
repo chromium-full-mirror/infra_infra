@@ -11,6 +11,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
+	"go.chromium.org/luci/server/sqldb"
 
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 )
@@ -19,11 +20,10 @@ import (
 func (frontend *FleetConsoleFrontend) PingDB(ctx context.Context, req *fleetconsolerpc.PingDBRequest) (_ *fleetconsolerpc.PingDBResponse, err error) {
 	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
 	logging.Infof(ctx, "beginning of ping db call")
-	logging.Infof(ctx, "db secret source: %q", frontend.dbConnectionSource)
 
 	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(5*time.Second))
 	defer cancel()
-	if err := frontend.dbConnection.PingContext(ctx); err != nil {
+	if err := sqldb.MustGetDB(ctx).PingContext(ctx); err != nil {
 		logging.Errorf(ctx, "ping db call failed: %s", err)
 		return nil, errors.Annotate(err, "pinging db").Err()
 	}

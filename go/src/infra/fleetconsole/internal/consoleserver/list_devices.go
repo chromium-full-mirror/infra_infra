@@ -10,6 +10,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
+	"go.chromium.org/luci/server/sqldb"
 
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 	"go.chromium.org/infra/fleetconsole/internal/database/devicesdb"
@@ -43,7 +44,7 @@ func (frontend *FleetConsoleFrontend) ListDevices(ctx context.Context, req *flee
 		return nil, err
 	}
 
-	results, hasMoreData, err := devicesdb.List(ctx, frontend.dbConnection, req.Filter, req.OrderBy, offset, pageSize, realms)
+	results, hasMoreData, err := devicesdb.List(ctx, sqldb.MustGetDB(ctx), req.Filter, req.OrderBy, offset, pageSize, realms)
 	if err != nil {
 		if errors.Is(err, context.Canceled) {
 			return nil, errors.Annotate(err, "failed to list devices").Tag(grpcutil.CanceledTag).Err()

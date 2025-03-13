@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/grpcutil"
+	"go.chromium.org/luci/server/sqldb"
 
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 	"go.chromium.org/infra/fleetconsole/internal/database/devicesdb"
@@ -50,9 +51,9 @@ func (frontend *FleetConsoleFrontend) RepopulateCache(ctx context.Context, req *
 	}
 	logging.Infof(ctx, "Got %d devices", len(devices))
 
-	saveDevices(ctx, frontend.dbConnection, devices)
+	saveDevices(ctx, sqldb.MustGetDB(ctx), devices)
 
-	err = deleteOtherDevices(ctx, frontend.dbConnection, devices)
+	err = deleteOtherDevices(ctx, sqldb.MustGetDB(ctx), devices)
 	if err != nil {
 		logging.Warningf(ctx, "Error while deleting old devices", err)
 	}

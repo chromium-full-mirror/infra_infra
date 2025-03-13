@@ -12,6 +12,8 @@ import (
 	"strconv"
 	"strings"
 
+	_ "github.com/jackc/pgx/v5/stdlib"
+
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/grpc/prpc"
@@ -22,6 +24,7 @@ import (
 	"go.chromium.org/luci/server/gaeemulation"
 	"go.chromium.org/luci/server/module"
 	"go.chromium.org/luci/server/secrets"
+	"go.chromium.org/luci/server/sqldb"
 
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 	"go.chromium.org/infra/fleetconsole/cmd/fleetconsoleserver/flags"
@@ -44,6 +47,7 @@ func Modules() []module.Module {
 		// For the database info and password.
 		secrets.NewModuleFromFlags(),
 		cron.NewModuleFromFlags(),
+		sqldb.NewModuleFromFlags(),
 	}
 }
 
@@ -74,7 +78,6 @@ func ServerMain(srv *server.Server) error {
 	consoleserver.InstallServices(consoleFrontend, srv)
 	consoleserver.SetDeviceManagerClient(consoleFrontend, GetDeviceManagerClient)
 	consoleserver.SetUFSClient(consoleFrontend, GetUfsClient)
-	consoleserver.MustSetDBConnection(srv.Context, consoleFrontend)
 
 	cron.RegisterHandler("ping-db", func(ctx context.Context) error {
 		_, err := consoleFrontend.PingDB(ctx, &fleetconsolerpc.PingDBRequest{})
