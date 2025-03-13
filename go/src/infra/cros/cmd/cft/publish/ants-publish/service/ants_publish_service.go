@@ -264,7 +264,13 @@ func (aps *AntsPublishService) uploadResults(ctx context.Context, entries []*atp
 		g.Go(func() error {
 			log.Printf("worker %d start", i)
 			resp, err := aps.service.TestResultService.BatchInsert(ctx, aps.metadata.AntsInvocationId, request)
-			log.Printf("Response code: %v \n InsertErrors: %v", resp.ServerResponse, resp.InsertErrors)
+			// Nil responses were causing panics and killing the CFT container.
+			if resp == nil {
+				log.Printf("response was nil")
+			} else {
+				log.Printf("Response code: %v \n InsertErrors: %v", resp.ServerResponse, resp.InsertErrors)
+			}
+
 			return err
 		})
 	}
