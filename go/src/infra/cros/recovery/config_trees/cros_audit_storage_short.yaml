@@ -370,7 +370,7 @@ plans:
                                 - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                                   conditions:
                                     - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                        - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                        - name: Sleep 30 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'31s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Print active devices (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                         - name: Is Flex booted from USB-drive ('cros_run_command') (ALWAYS_RUN)
@@ -388,6 +388,7 @@ plans:
                                 - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                                   conditions:
                                     - name: Is Flex device ('dut_check_board') (RUN_ONCE)
+                        - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
                         - name: Direct USB-drive to servo host ('servo_set') (ALWAYS_RUN) (time:'20s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
