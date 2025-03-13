@@ -173,6 +173,16 @@ func assertIgnoreFilePresent(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+func restartNetworkingServiceExec(ctx context.Context, info *execs.ExecInfo) error {
+	sshRunner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
+	if _, err := sshRunner.Run(ctx, time.Minute, "service networking restart"); err != nil {
+		return errors.Annotate(err, "failed to restart networking service").Err()
+	}
+
+	log.Debugf(ctx, "Networking service were restarted")
+	return nil
+}
+
 func init() {
 	execs.Register("btpeer_state_broken", setStateBrokenExec)
 	execs.Register("btpeer_state_working", setStateWorkingExec)
@@ -180,4 +190,5 @@ func init() {
 	execs.Register("btpeer_assert_uptime_is_less_than_duration", assertUptimeIsLessThanDurationExec)
 	execs.Register("btpeer_assert_release_process_matches", assertReleaseProcessMatchesExec)
 	execs.Register("btpeer_assert_ignore_file_present", assertIgnoreFilePresent)
+	execs.Register("btpeer_restart_networking_service", restartNetworkingServiceExec)
 }

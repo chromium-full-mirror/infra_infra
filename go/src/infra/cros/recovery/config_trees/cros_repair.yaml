@@ -6237,6 +6237,11 @@ plans:
           exec_name: btpeer_image_fetch_release_config
           docs:
             - Retrieves the production btpeer image config from GCS and stores it in the exec state for later reference.
+          recoveries:
+            - name: Restart networking service on btpeer
+              exec_name: btpeer_restart_networking_service
+              docs:
+                - Restart networking service on btpeer to prevent fails while downloading image and configs from GCS
         - name: OS image is up to date
           exec_name: btpeer_image_assert_expected_installed
           docs:

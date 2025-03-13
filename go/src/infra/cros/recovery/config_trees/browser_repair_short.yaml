@@ -2133,6 +2133,8 @@ plans:
         - name: Device is pingable ('cros_ping') (ALWAYS_RUN) (time:'15s')
         - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN)
         - name: Fetch btpeer image release config from GCS ('btpeer_image_fetch_release_config') (RUN_ONCE)
+          recoveries:
+            - name: Restart networking service on btpeer ('btpeer_restart_networking_service')
         - name: OS image is up to date ('btpeer_image_assert_expected_installed')
           conditions:
             - name: Btpeer release process should be image-based ('btpeer_assert_release_process_matches') (RUN_ONCE)

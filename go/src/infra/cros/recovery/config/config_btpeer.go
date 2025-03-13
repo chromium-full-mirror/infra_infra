@@ -175,6 +175,9 @@ func btpeerRepairPlan() *Plan {
 				},
 				ExecName:   "btpeer_image_fetch_release_config",
 				RunControl: RunControl_RUN_ONCE,
+				RecoveryActions: []string{
+					"Restart networking service on btpeer",
+				},
 			},
 			"Btpeer release process should be image-based": {
 				Docs: []string{
@@ -434,6 +437,12 @@ func btpeerRepairPlan() *Plan {
 					"allow_legacy_image:false",
 				},
 				RunControl: RunControl_ALWAYS_RUN,
+			},
+			"Restart networking service on btpeer": {
+				Docs: []string{
+					"Restart networking service on btpeer to prevent fails while downloading image and configs from GCS",
+				},
+				ExecName: "btpeer_restart_networking_service",
 			},
 		},
 	}
