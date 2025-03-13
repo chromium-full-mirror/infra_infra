@@ -27,6 +27,7 @@ const (
 	ResourceDetailsColumn                   = "resource_details"
 	ResourceRequestActualDeliveryDateColumn = "resource_request_actual_delivery_date"
 	ResourceRequestTargetDeliveryDateColumn = "resource_request_target_delivery_date"
+	FulfillmentStatusColumn                 = "fulfillment_status"
 	ProcurementDateColumn                   = "material_sourcing_target_end_date"
 	BuildEndDateColumn                      = "build_target_end_date"
 	QAEndDateColumn                         = "qa_target_end_date"
@@ -69,6 +70,34 @@ func BigQueryValueToDate(value bigquery.Value) (date *fleetconsolerpc.DateOnly) 
 	return utils.FromCivilDate(value.(civil.Date))
 }
 
+func MapFulfillmentStatus(status bigquery.Value) *fleetconsolerpc.ResourceRequest_Status {
+	if status == nil {
+		return nil
+	}
+
+	switch status.(string) {
+	case "NOT_STARTED":
+		{
+			status := fleetconsolerpc.ResourceRequest_NOT_STARTED
+			return &status
+		}
+	case "INPROGRESS":
+		{
+			status := fleetconsolerpc.ResourceRequest_IN_PROGRESS
+			return &status
+		}
+	case "COMPLETE":
+		{
+			status := fleetconsolerpc.ResourceRequest_COMPLETED
+			return &status
+		}
+	default:
+		{
+			return nil
+		}
+	}
+}
+
 func MapRow(row map[string]bigquery.Value) *fleetconsolerpc.ResourceRequest {
 	rrID := row[RrIDColumn].(string)
 	actualDeliveryDate := BigQueryValueToDate(row[ResourceRequestActualDeliveryDateColumn])
@@ -87,6 +116,7 @@ func MapRow(row map[string]bigquery.Value) *fleetconsolerpc.ResourceRequest {
 		Name:               "resourceRequests/" + rrID,
 		ResourceDetails:    row[ResourceDetailsColumn].(string),
 		ExpectedEta:        expectedEta,
+		FulfillmentStatus:  MapFulfillmentStatus(row[FulfillmentStatusColumn]),
 		ProcurementEndDate: BigQueryValueToDate(row[ProcurementDateColumn]),
 		BuildEndDate:       BigQueryValueToDate(row[BuildEndDateColumn]),
 		QaEndDate:          BigQueryValueToDate(row[QAEndDateColumn]),

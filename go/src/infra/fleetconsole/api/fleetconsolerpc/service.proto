@@ -226,6 +226,12 @@ message ListResourceRequestsResponse {
 }
 
 message ResourceRequest {
+  enum Status {
+    NOT_STARTED = 0;
+    IN_PROGRESS = 1;
+    COMPLETED = 2;
+  }
+
   // The resource name of the resource request.
   // Format: resourceRequests/{rr_id}
   string name = 1;
@@ -237,17 +243,20 @@ message ResourceRequest {
   string resource_details = 3;
 
   // The procurement end date of the resource request.
-  DateOnly procurement_end_date = 4;
+  optional DateOnly procurement_end_date = 4;
 
   // The build end date of the resource request.
-  DateOnly build_end_date = 5;
+  optional DateOnly build_end_date = 5;
 
   // The QA end date of the resource request.
-  DateOnly qa_end_date = 6;
+  optional DateOnly qa_end_date = 6;
 
   // The config end date of the resource request.
-  DateOnly config_end_date = 7;
+  optional DateOnly config_end_date = 7;
 
   // Expected ETA for the resource request.
-  DateOnly expected_eta = 8;
+  optional DateOnly expected_eta = 8;
+
+  // Status of the Fulfillment bug for the resource request.
+  optional Status fulfillment_status = 9;
 }
