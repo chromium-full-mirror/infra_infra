@@ -268,6 +268,11 @@ type kv struct {
 	value int
 }
 
+type pkTestCaseData struct {
+	publishKey *api.PublishKey
+	testCases  []string
+}
+
 type distroCfg struct {
 	pool                  string
 	isUnitTest            bool
@@ -299,6 +304,8 @@ type middleOutData struct {
 	tcUUIDMap map[string]*api.CTPTestCase
 
 	finalAssignments map[uint64][][]string
+
+	lookBack map[uint64]map[string]*api.SchedulingUnitOptions
 }
 
 // newMiddleOutData returns a struct of the middleOutData with the data init'd but empty.
@@ -348,39 +355,18 @@ func middleOut(ctx context.Context, resp *api.InternalTestplan, cfg distroCfg) (
 		}
 		solverData.tcUUIDMap[tcUUID] = tcForMap
 
-		// TODO; when HwRequirements is fully deprecated, remove this.
-		if oldProto(tc.HwRequirements) {
-			for _, hw := range tc.HwRequirements {
-				// Note: Each `hw` is still a repeated list of HW *options* for the test.
-				hash := oldAddHWtohwUUIDMap(solverData.oldhwUUIDMap, hw)
-				for k, v := range oldFlattenList(ctx, []*api.HWRequirements{hw}) {
-					err := addHWtoFlatHWUUIDMap(ctx, solverData.flatHWUUIDMap, k, v)
-					if err != nil {
-						logging.Infof(ctx, fmt.Sprintf("error found in addHWtoFlatHWUUIDMap: %s", err))
-						return nil, err
-					}
+		for _, hw := range tc.SchedulingUnitOptions {
+			// Note: Each `hw` is still a repeated list of HW *options* for the test.
+			hash := addHWtohwUUIDMap(solverData.hwUUIDMap, hw)
+			for k, v := range flattenList(ctx, []*api.SchedulingUnitOptions{hw}) {
+				err := addHWtoFlatHWUUIDMap(ctx, solverData.flatHWUUIDMap, k, v)
+				if err != nil {
+					logging.Infof(ctx, fmt.Sprintf("error found in addHWtoFlatHWUUIDMap: %s", err))
+					return nil, err
 				}
-				solverData.hwToTCMap[hash] = append(solverData.hwToTCMap[hash], tcUUID)
-
 			}
-		} else
-		// tc.HwRequirements example:
-		// [[hw1] && [hw2] && [hw3]]
-		// OR [[hw1 || hw2] && [hw3 || hw4]]
-		{
-			for _, hw := range tc.SchedulingUnitOptions {
-				// Note: Each `hw` is still a repeated list of HW *options* for the test.
-				hash := addHWtohwUUIDMap(solverData.hwUUIDMap, hw)
-				for k, v := range flattenList(ctx, []*api.SchedulingUnitOptions{hw}) {
-					err := addHWtoFlatHWUUIDMap(ctx, solverData.flatHWUUIDMap, k, v)
-					if err != nil {
-						logging.Infof(ctx, fmt.Sprintf("error found in addHWtoFlatHWUUIDMap: %s", err))
-						return nil, err
-					}
-				}
-				solverData.hwToTCMap[hash] = append(solverData.hwToTCMap[hash], tcUUID)
+			solverData.hwToTCMap[hash] = append(solverData.hwToTCMap[hash], tcUUID)
 
-			}
 		}
 	}
 
@@ -397,38 +383,123 @@ func middleOut(ctx context.Context, resp *api.InternalTestplan, cfg distroCfg) (
 		}
 	}
 
-	return createTrRequests(greedyDistro(ctx, solverData), solverData)
+	return createTrRequests(ctx, greedyDistro(ctx, solverData), solverData)
 }
 
 // createTrRequests translates a final {hw:[[shard], [shard]]} map into a flat list of TrRequests.
-func createTrRequests(distro map[uint64][][]string, solverData *middleOutData) ([]*data.TrRequest, error) {
+func createTrRequests(ctx context.Context, distro map[uint64][][]string, solverData *middleOutData) ([]*data.TrRequest, error) {
 	TrRequests := []*data.TrRequest{}
-	for k, shards := range distro {
+
+	for hwHash, shards := range distro {
 		for _, tcs := range shards {
-			shardedtcs := []*api.TestCase_Id{}
-			for _, tc := range tcs {
-				lltc, ok := solverData.tcUUIDMap[tc]
-				if !ok {
-					return TrRequests, fmt.Errorf("tc assigned but was not given, something critically wrong happened to end up here")
-				}
-				shardedtcs = append(shardedtcs, getTCId(lltc))
-			}
-
-			// TODO; when HwRequirements is fully deprecated, remove `Req`.
-
-			solverData.flatHWUUIDMap[k].req.PublishKeys = solverData.flatHWUUIDMap[k].publishKeys
-			trReq := &data.TrRequest{
-				Req:    solverData.flatHWUUIDMap[k].oldReq,
-				NewReq: solverData.flatHWUUIDMap[k].req,
-				Tcs:    shardedtcs,
-				DevicesInfo: &data.DevicesInfo{LabDevicesCount: solverData.flatHWUUIDMap[k].labLoading.staticBotCount,
-					Dims: solverData.flatHWUUIDMap[k].dimsExcludingReady,
-				},
+			trReq, err := createTrRequest(ctx, solverData, tcs, hwHash)
+			if err != nil {
+				return []*data.TrRequest{}, err
 			}
 			TrRequests = append(TrRequests, trReq)
 		}
 	}
 	return TrRequests, nil
+}
+
+func createTrRequest(ctx context.Context, solverData *middleOutData, testCases []string, hwHash uint64) (*data.TrRequest, error) {
+	testCaseIds, err := getTestCaseIds(testCases, solverData)
+	if err != nil {
+		return &data.TrRequest{}, err
+	}
+	mergedPublishKeys, err := mergePublishKeys(ctx, testCases, solverData, hwHash)
+	if err != nil {
+		return &data.TrRequest{}, err
+	}
+	newReq := *solverData.flatHWUUIDMap[hwHash].req
+	newReq.PublishKeys = mergedPublishKeys
+
+	trReq := &data.TrRequest{
+		Req:    solverData.flatHWUUIDMap[hwHash].oldReq,
+		NewReq: &newReq,
+		Tcs:    testCaseIds,
+		DevicesInfo: &data.DevicesInfo{LabDevicesCount: solverData.flatHWUUIDMap[hwHash].labLoading.staticBotCount,
+			Dims: solverData.flatHWUUIDMap[hwHash].dimsExcludingReady,
+		},
+	}
+	return trReq, nil
+}
+
+func getTestCaseIds(testCases []string, solverData *middleOutData) ([]*api.TestCase_Id, error) {
+	testCaseIds := []*api.TestCase_Id{}
+	for _, tc := range testCases {
+		lltc, ok := solverData.tcUUIDMap[tc]
+		if !ok {
+			return []*api.TestCase_Id{}, fmt.Errorf("tc assigned but was not given, something critically wrong happened to end up here")
+		}
+		testCaseIds = append(testCaseIds, getTCId(lltc))
+	}
+	return testCaseIds, nil
+}
+
+func TestCasesGroupByPublishKeys(testCases []string, solverData *middleOutData, hwOptionHash uint64) (map[string]*pkTestCaseData, error) {
+	// Goal here is to group a list of tcs to a shard and associate the tests
+	// from that group to 3D/EqC data (if applicable) via a EqC hash map.
+	eqcToPkTcs := map[string]*pkTestCaseData{}
+
+	for _, testCase := range testCases {
+		// First get the SchedulingUnitOptions (hw option) data for a testCase
+		tcToHwOptionMap, ok := solverData.lookBack[hwOptionHash]
+		if !ok {
+			return map[string]*pkTestCaseData{}, fmt.Errorf("Could not find SchedulingUnitOption for hw option")
+		}
+		hwOption, ok := tcToHwOptionMap[testCase]
+		if !ok {
+			return map[string]*pkTestCaseData{}, fmt.Errorf("Could not find SchedulingUnitOption for test case %s", testCase)
+		}
+		// Then filter out the 3D publish keys of hw option
+		// and update the Eqc-To-PublishKeysTestData map with key eqcHash
+		for _, pk := range hwOption.PublishKeys {
+			if pk.Subject == "3D" {
+				eqcHash := pk.KeyValues["eqcHash"]
+				eqcData, exists := eqcToPkTcs[eqcHash]
+				if exists {
+					eqcData.testCases = append(eqcData.testCases, testCase)
+				} else {
+					eqcData = &pkTestCaseData{
+						publishKey: pk,
+						testCases:  []string{testCase},
+					}
+				}
+				eqcToPkTcs[eqcHash] = eqcData
+			}
+		}
+	}
+	return eqcToPkTcs, nil
+}
+
+func mergePublishKeys(ctx context.Context, testCases []string, solverData *middleOutData, hwOptionHash uint64) ([]*api.PublishKey, error) {
+	// Goal here is to generate a group tests by 3D PublishKeys for a given hw option
+	// The end result will be a slice of 3D PublishKeys, each containing the list
+	// of tests that map to it (determined by the hw Option).
+	mergedPublishKeys := []*api.PublishKey{}
+
+	eqcToPkTcs, err := TestCasesGroupByPublishKeys(testCases, solverData, hwOptionHash)
+	if err != nil {
+		return []*api.PublishKey{}, err
+	}
+
+	for _, value := range eqcToPkTcs {
+		testCases, err := json.Marshal(value.testCases)
+		if err != nil {
+			logging.Infof(ctx, "Error marshaling JSON: %s", err)
+		}
+		newPk := &api.PublishKey{
+			Subject:   value.publishKey.Subject,
+			KeyValues: map[string]string{},
+		}
+		for pkKey, pkVal := range value.publishKey.KeyValues {
+			newPk.KeyValues[pkKey] = pkVal
+		}
+		newPk.KeyValues["eqcTests"] = string(testCases)
+		mergedPublishKeys = append(mergedPublishKeys, newPk)
+	}
+	return mergedPublishKeys, nil
 }
 
 // Given the class map, and the tc map, gather the lab loading for the devices, and make our best guess at assigning tests to HW.
@@ -470,8 +541,7 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 			selectedDevice, expandCurrentShard := getDevices(solverData, len(shardedtc), hwHash, harness)
 			logging.Infof(ctx, "Selected: %s Expand : %s", selectedDevice, expandCurrentShard)
 			logging.Infof(ctx, "selected expanded: ", solverData.hwUUIDMap[selectedDevice])
-			assignHardware(solverData, selectedDevice, expandCurrentShard, shardedtc)
-
+			assignHardware(solverData, selectedDevice, expandCurrentShard, shardedtc, hwHash)
 		}
 	}
 	return solverData.finalAssignments
@@ -501,7 +571,7 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 
 // assignHardware will add the tests to the selectedDevice, being aware if it should go into a non-filled hard, or a new one.
 // assignHardware will also decrement the number of devices remaining every time device is assigned tests.
-func assignHardware(solverData *middleOutData, selectedDevice uint64, expandCurrentShard bool, shardedtc []string) {
+func assignHardware(solverData *middleOutData, selectedDevice uint64, expandCurrentShard bool, shardedtc []string, hash uint64) {
 	if expandCurrentShard {
 		lastElement := len(solverData.finalAssignments[selectedDevice])
 		solverData.finalAssignments[selectedDevice][lastElement-1] = append(solverData.finalAssignments[selectedDevice][lastElement-1], shardedtc...)
@@ -533,6 +603,27 @@ func assignHardware(solverData *middleOutData, selectedDevice uint64, expandCurr
 			solverData.flatHWUUIDMap[selectedDevice].shardHarness = getHarness(shardedtc[0])
 		}
 	}
+	if solverData.lookBack == nil {
+		solverData.lookBack = make(map[uint64]map[string]*api.SchedulingUnitOptions)
+	}
+
+	lbd := createLookback(solverData, shardedtc, hash)
+	if solverData.lookBack[selectedDevice] == nil || len(solverData.lookBack[selectedDevice]) == 0 {
+		solverData.lookBack[selectedDevice] = lbd
+	} else {
+		for tc, hwid := range lbd {
+			solverData.lookBack[selectedDevice][tc] = hwid
+		}
+	}
+}
+
+func createLookback(solverData *middleOutData, shardedtc []string, hash uint64) map[string]*api.SchedulingUnitOptions {
+	lookback := make(map[string]*api.SchedulingUnitOptions)
+	for _, tc := range shardedtc {
+		og := solverData.hwUUIDMap[hash]
+		lookback[tc] = og
+	}
+	return lookback
 }
 
 type helper struct {

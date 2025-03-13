@@ -439,7 +439,7 @@ func TestAssignHardware(t *testing.T) {
 	solverData.cfg = cfg
 	solverData.flatHWUUIDMap = flatUUIDLoadingMap
 
-	assignHardware(solverData, selectedDevice, expandCurrentShard, shardedtc)
+	assignHardware(solverData, selectedDevice, expandCurrentShard, shardedtc, selectedDevice)
 	if flatUUIDLoadingMap[selectedDevice].labLoading.freeDevices != 1 {
 		t.Fatalf("Assigning a device did not reduce its lab loading :%v", flatUUIDLoadingMap[selectedDevice])
 	}
@@ -447,7 +447,7 @@ func TestAssignHardware(t *testing.T) {
 		t.Fatalf("Assigning an empty shard 1 test did not increase its num in shard count")
 	}
 
-	assignHardware(solverData, selectedDevice, true, shardedtc2)
+	assignHardware(solverData, selectedDevice, true, shardedtc2, selectedDevice)
 	if flatUUIDLoadingMap[selectedDevice].labLoading.freeDevices != 1 {
 		t.Fatalf("Assigning a device did not reduce its lab loading")
 	}
@@ -455,7 +455,7 @@ func TestAssignHardware(t *testing.T) {
 		t.Fatalf("Filling a shard did not reset the count")
 	}
 
-	assignHardware(solverData, selectedDevice, false, shardedtc3)
+	assignHardware(solverData, selectedDevice, false, shardedtc3, selectedDevice)
 	if flatUUIDLoadingMap[selectedDevice].labLoading.freeDevices != 0 {
 		t.Fatalf("Assigning a device did not reduce its lab loading")
 	}
@@ -463,7 +463,7 @@ func TestAssignHardware(t *testing.T) {
 		t.Fatalf("Filling a shard did not reset the count")
 	}
 
-	assignHardware(solverData, selectedDevice2, false, shardedtc)
+	assignHardware(solverData, selectedDevice2, false, shardedtc, selectedDevice)
 	if flatUUIDLoadingMap[selectedDevice].labLoading.totalDevicesUnAssigned != -1 {
 		t.Fatalf("Same HW; different groupping should share the same lab resource but didn't")
 	}
@@ -1417,37 +1417,39 @@ type allowedAssignment struct {
 	nwHw *api.SchedulingUnitOptions
 }
 
-// // Intentionally commented out. This is a helpful method for debugging e2e flow.
-// func parseTestPlan(source string) *pb.InternalTestplan {
-// 	unmarshalOptions := protojson.UnmarshalOptions{
-// 		AllowPartial:   false,
-// 		DiscardUnknown: false,
-// 	}
-// 	testPlan := pb.InternalTestplan{}
-// 	err := unmarshalOptions.Unmarshal([]byte(source), &testPlan)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-// 	return &testPlan
-// }
+//// Intentionally commented out. This is a helpful method for debugging e2e flow.
+//func parseTestPlan(source string) *api.InternalTestplan {
+//	unmarshalOptions := protojson.UnmarshalOptions{
+//		AllowPartial:   false,
+//		DiscardUnknown: false,
+//	}
+//	testPlan := api.InternalTestplan{}
+//	err := unmarshalOptions.Unmarshal([]byte(source), &testPlan)
+//	if err != nil {
+//		log.Fatal(err)
+//	}
+//	return &testPlan
+//}
 
-// // Intentionally commented out. This is a helpful method for debugging e2e flow.
-// func TestExecute(t *testing.T) {
-// 	data, err := ioutil.ReadFile("test.json")
-// 	if err != nil {
-// 		fmt.Println("Error reading file:", err)
-// 		return
-// 	}
-
-// 	jsonString := string(data)
-// 	testPlan := parseTestPlan(jsonString)
-
-// 	cfg := distroCfg{
-// 		maxInShard:      150,
-// 		pool:            "wificell",
-// 		isUnitTest:      true,
-// 		unitTestDevices: 1,
-// 	}
-// 	req, err := middleOut(makeCtx(), testPlan, cfg)
-
-// }
+//// Intentionally commented out. This is a helpful method for debugging e2e flow.
+//func TestExecute(t *testing.T) {
+//	data, err := ioutil.ReadFile("test.json")
+//	if err != nil {
+//		fmt.Println("Error reading file:", err)
+//		t.Fatal("err", err)
+//	}
+//
+//	jsonString := string(data)
+//	testPlan := parseTestPlan(jsonString)
+//
+//	cfg := distroCfg{
+//		maxInShard:      150,
+//		pool:            "wificell",
+//		isUnitTest:      true,
+//		unitTestDevices: 1,
+//	}
+//
+//	out, err := middleOut(makeCtx(), testPlan, cfg)
+//	println(out)
+//	t.Fatal("o")
+//}
