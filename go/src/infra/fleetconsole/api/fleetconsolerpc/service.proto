@@ -247,4 +247,7 @@ message ResourceRequest {
 
   // The config end date of the resource request.
   DateOnly config_end_date = 7;
+
+  // Expected ETA for the resource request.
+  DateOnly expected_eta = 8;
 }

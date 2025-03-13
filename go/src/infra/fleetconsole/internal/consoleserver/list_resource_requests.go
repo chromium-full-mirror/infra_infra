@@ -22,13 +22,15 @@ import (
 )
 
 const (
-	ResourceRequestTableName = "fleet_console.resource_requests"
-	RrIDColumn               = "rr_id"
-	ResourceDetailsColumn    = "resource_details"
-	ProcurementDateColumn    = "material_sourcing_target_end_date"
-	BuildEndDateColumn       = "build_target_end_date"
-	QAEndDateColumn          = "qa_target_end_date"
-	ConfigEndDateColumn      = "config_target_end_date"
+	ResourceRequestTableName                = "fleet_console.resource_requests"
+	RrIDColumn                              = "rr_id"
+	ResourceDetailsColumn                   = "resource_details"
+	ResourceRequestActualDeliveryDateColumn = "resource_request_actual_delivery_date"
+	ResourceRequestTargetDeliveryDateColumn = "resource_request_target_delivery_date"
+	ProcurementDateColumn                   = "material_sourcing_target_end_date"
+	BuildEndDateColumn                      = "build_target_end_date"
+	QAEndDateColumn                         = "qa_target_end_date"
+	ConfigEndDateColumn                     = "config_target_end_date"
 )
 
 // currently we are using big query table names as part of a contract with frontend, which is not a good practice
@@ -65,6 +67,31 @@ func BigQueryValueToDate(value bigquery.Value) (date *fleetconsolerpc.DateOnly) 
 	}
 
 	return utils.FromCivilDate(value.(civil.Date))
+}
+
+func MapRow(row map[string]bigquery.Value) *fleetconsolerpc.ResourceRequest {
+	rrID := row[RrIDColumn].(string)
+	actualDeliveryDate := BigQueryValueToDate(row[ResourceRequestActualDeliveryDateColumn])
+	targetDeliveryDate := BigQueryValueToDate(row[ResourceRequestTargetDeliveryDateColumn])
+
+	var expectedEta *fleetconsolerpc.DateOnly
+
+	if actualDeliveryDate != nil {
+		expectedEta = actualDeliveryDate
+	} else if targetDeliveryDate != nil {
+		expectedEta = targetDeliveryDate
+	}
+
+	return &fleetconsolerpc.ResourceRequest{
+		RrId:               row[RrIDColumn].(string),
+		Name:               "resourceRequests/" + rrID,
+		ResourceDetails:    row[ResourceDetailsColumn].(string),
+		ExpectedEta:        expectedEta,
+		ProcurementEndDate: BigQueryValueToDate(row[ProcurementDateColumn]),
+		BuildEndDate:       BigQueryValueToDate(row[BuildEndDateColumn]),
+		QaEndDate:          BigQueryValueToDate(row[QAEndDateColumn]),
+		ConfigEndDate:      BigQueryValueToDate(row[ConfigEndDateColumn]),
+	}
 }
 
 // ListResourceRequests lists resource requests.
@@ -115,21 +142,11 @@ func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, 
 	for {
 		var row map[string]bigquery.Value
 		err := it.Next(&row)
-		if err == nil {
-			rrID := row[RrIDColumn].(string)
-
-			resourceRequests = append(resourceRequests, &fleetconsolerpc.ResourceRequest{
-				RrId:               rrID,
-				Name:               "resourceRequests/" + rrID,
-				ResourceDetails:    row[ResourceDetailsColumn].(string),
-				ProcurementEndDate: BigQueryValueToDate(row[ProcurementDateColumn]),
-				BuildEndDate:       BigQueryValueToDate(row[BuildEndDateColumn]),
-				QaEndDate:          BigQueryValueToDate(row[QAEndDateColumn]),
-				ConfigEndDate:      BigQueryValueToDate(row[ConfigEndDateColumn]),
-			})
-		} else {
+		if err != nil {
 			break
 		}
+
+		resourceRequests = append(resourceRequests, MapRow(row))
 	}
 
 	nextPageToken := ""
