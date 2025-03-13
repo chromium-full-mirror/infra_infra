@@ -265,7 +265,6 @@
       "vpython3",
       "RECIPE_REPO[depot_tools]/gerrit_client.py",
       "changes",
-      "--verbose",
       "--host",
       "otherhost",
       "--json_file",
@@ -275,7 +274,8 @@
       "-p",
       "status=open",
       "-p",
-      "uploader=self"
+      "uploader=self",
+      "--verbose"
     ],
     "env": {
       "CIPD_CACHE_DIR": "[CLEANUP]/tmp_tmp_1",

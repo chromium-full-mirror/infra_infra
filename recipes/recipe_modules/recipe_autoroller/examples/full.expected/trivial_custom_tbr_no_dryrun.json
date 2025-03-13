@@ -286,7 +286,6 @@
       "vpython3",
       "RECIPE_REPO[depot_tools]/gerrit_client.py",
       "changes",
-      "--verbose",
       "--host",
       "https://example.com",
       "--json_file",
@@ -300,7 +299,8 @@
       "-p",
       "project=build",
       "-p",
-      "hashtag=recipe-dep-roll"
+      "hashtag=recipe-dep-roll",
+      "--verbose"
     ],
     "env": {
       "PATH": "<PATH>:RECIPE_REPO[depot_tools]"
