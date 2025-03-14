@@ -1,4 +1,4 @@
-// Copyright 2023 The ChromiumOS Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -91,7 +91,7 @@ func (c *FlashOsCommand) flashPartition(partition string) error {
 			return err
 		}
 	}
-	return errors.Reason("cannot find '" + partition + "' image").Err()
+	return errors.Reason("cannot find '%s' image", partition).Err()
 }
 
 func (c *FlashOsCommand) flashAll() error {

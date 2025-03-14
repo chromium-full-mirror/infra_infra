@@ -1,4 +1,4 @@
-// Copyright 2024 The ChromiumOS Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -258,7 +258,7 @@ func callServodGET(ctx context.Context, log *log.Logger, key string, params *Cro
 	}
 	switch result := response.GetResult().(type) {
 	case *api.CallServodResponse_Failure_:
-		return "", fmt.Errorf("Call Servod failed error: " + result.Failure.ErrorMessage)
+		return "", fmt.Errorf("Call Servod failed error: %s", result.Failure.ErrorMessage)
 	case *api.CallServodResponse_Success_:
 		output := result.Success.GetResult().GetString_()
 		replacer := strings.NewReplacer(`\n`, "\n", `\r`, "\r", `\t`, "\t")

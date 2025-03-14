@@ -1,4 +1,4 @@
-// Copyright 2022 The ChromiumOS Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -175,7 +175,7 @@ func (s ServiceAdapter) Restart(ctx context.Context) error {
 	switch x := op.Result.(type) {
 	case *longrunning.Operation_Error:
 		log.Printf("<cros-provision>: ServiceAdaptor: Restart LRO ERROR %s", x.Error.Message)
-		return fmt.Errorf(x.Error.Message)
+		return fmt.Errorf("%s", x.Error.Message)
 	case *longrunning.Operation_Response:
 		log.Printf("<cros-provision>: ServiceAdaptor: Restart LRO RESPONSE")
 
@@ -229,7 +229,7 @@ func (s ServiceAdapter) PipeData(ctx context.Context, sourceUrl string, pipeComm
 
 	switch x := op.Result.(type) {
 	case *longrunning.Operation_Error:
-		return fmt.Errorf(x.Error.Message)
+		return fmt.Errorf("%s", x.Error.Message)
 	case *longrunning.Operation_Response:
 		return nil
 	}
@@ -269,7 +269,7 @@ func (s ServiceAdapter) CopyData(ctx context.Context, sourceUrl string, destPath
 
 	switch x := op.Result.(type) {
 	case *longrunning.Operation_Error:
-		return fmt.Errorf(x.Error.Message)
+		return fmt.Errorf("%s", x.Error.Message)
 	case *longrunning.Operation_Response:
 		return nil
 	}
@@ -324,7 +324,7 @@ loop:
 				switch x := op.Result.(type) {
 				case *longrunning.Operation_Error:
 					log.Printf("<cros-provision>: ServiceAdaptor: ForceReconnectWithBackoff ignoring LRO ERROR %s", x.Error.Message)
-					return fmt.Errorf(x.Error.Message)
+					return fmt.Errorf("%s", x.Error.Message)
 				case *longrunning.Operation_Response:
 					log.Printf("<cros-provision>: ServiceAdaptor: ForceReconnectWithBackoff LRO RESPONSE")
 					return nil
