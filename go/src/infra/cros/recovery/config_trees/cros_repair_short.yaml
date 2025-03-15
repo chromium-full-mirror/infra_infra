@@ -2892,6 +2892,8 @@ plans:
                 - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                 - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
@@ -2958,6 +2960,8 @@ plans:
                 - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                 - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -8651,6 +8655,8 @@ plans:
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
@@ -8717,6 +8723,8 @@ plans:
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -24665,6 +24673,8 @@ plans:
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
                       conditions:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
@@ -24706,6 +24716,8 @@ plans:
                         - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                         - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Quick provision OS ('sample_pass')
@@ -24751,6 +24763,8 @@ plans:
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                         - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
                       conditions:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
@@ -24792,6 +24806,8 @@ plans:
                         - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                          conditions:
+                            - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                         - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Quick provision OS ('sample_pass')
@@ -28308,6 +28324,8 @@ plans:
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Reset servo_v4.1 ethernet and wait for ping ('sample_pass') (ALWAYS_RUN)
@@ -28603,6 +28621,8 @@ plans:
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
@@ -28825,6 +28845,8 @@ plans:
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
@@ -28891,6 +28913,8 @@ plans:
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -29418,6 +29442,8 @@ plans:
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                 - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
                   conditions:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
@@ -29459,6 +29485,8 @@ plans:
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Quick provision OS ('sample_pass')
@@ -29504,6 +29532,8 @@ plans:
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                 - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
                   conditions:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
@@ -29545,6 +29575,8 @@ plans:
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                      conditions:
+                        - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Quick provision OS ('sample_pass')

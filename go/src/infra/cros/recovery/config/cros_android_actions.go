@@ -92,6 +92,9 @@ func androidActions(actions map[string]*Action) {
 				"Connect to DUT by ADB if not connected.",
 				"Only executed if DUT is Android based.",
 			},
+			Conditions: []string{
+				"Is Android based on previous DUT OS",
+			},
 			ExecName: "ctr_adb_connect",
 			ExecExtraArgs: []string{
 				"retry_count:3",

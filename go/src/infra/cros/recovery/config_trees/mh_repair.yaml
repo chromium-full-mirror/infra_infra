@@ -7053,6 +7053,11 @@ plans:
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
@@ -7279,6 +7284,11 @@ plans:
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
@@ -7504,6 +7514,11 @@ plans:
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
@@ -7730,6 +7745,11 @@ plans:
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
@@ -7927,6 +7947,11 @@ plans:
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
@@ -8153,6 +8178,11 @@ plans:
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
@@ -8386,6 +8416,11 @@ plans:
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
@@ -9356,6 +9391,11 @@ plans:
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
@@ -10115,6 +10155,11 @@ plans:
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
@@ -10341,6 +10386,11 @@ plans:
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
@@ -10490,6 +10540,11 @@ plans:
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
             - name: 'Foil: Install Android OS from servo USB-drive (ALWAYS_RUN)'
               exec_name: sample_pass
               docs:
@@ -10644,6 +10699,11 @@ plans:
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
@@ -10836,6 +10896,11 @@ plans:
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
             - name: 'Foil: Install Android OS from servo USB-drive (ALWAYS_RUN)'
               exec_name: sample_pass
               docs:
@@ -10990,6 +11055,11 @@ plans:
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
                 - name: ADB set Android as always awake (ALWAYS_RUN)
                   exec_name: ctr_make_awake_always
                   docs:
