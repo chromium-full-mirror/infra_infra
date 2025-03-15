@@ -169,13 +169,36 @@ func CreateTask(ctx context.Context, client Client, sc schedulingapi.TaskSchedul
 // - "deploy" -> true
 // - "deploy-latest" -> true
 // - "deploy-clank" -> false
+// - "deploy-clank-latest" -> false
 func IfUseScheduke(buildername string) bool {
-	res := strings.Split(buildername, "-")
-	specialBuilderSuffix := []string{"clank", "perf", "pinpoint"}
+	specialBuilderSuffix := []string{"-clank", "-perf", "-pinpoint"}
 	for _, suffix := range specialBuilderSuffix {
-		if res[len(res)-1] == suffix {
+		if strings.Contains(buildername, suffix) {
 			return false
 		}
 	}
 	return true
+}
+
+var specialHivesToSuffix = map[string]string{
+	"chrome-clank": "clank",
+}
+
+// BuilderNamePerHive return builder name based on hive
+//
+// The builder name is decided based on different swarming pools in
+// https://source.corp.google.com/h/chrome-internal/chromeos/codesearch/+/main:infra/config/lab_platform/labpack/main.star;l=96;bpv=1
+func BuilderNamePerHive(builderName, hive string) string {
+	if v, ok := specialHivesToSuffix[hive]; ok {
+		return fmt.Sprintf("%s-%s", builderName, v)
+	}
+	return builderName
+}
+
+// GetCipdVersion returns cipd version to use
+func CipdVersion(useLatest bool) CIPDVersion {
+	if useLatest {
+		return CIPDLatest
+	}
+	return CIPDProd
 }

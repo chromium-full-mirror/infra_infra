@@ -192,29 +192,44 @@ func (c *addLabstation) innerRun(a subcommands.Application, args []string, env s
 		}
 		err := c.addLabstationToUFS(ctx, ic, params)
 		resTable.RecordResult(ufsOp, params.Labstation.GetHostname(), err)
-		host := params.Labstation.GetHostname()
-		sc, err := utils.SchedukeClient(ctx, ic, authOpts, host)
+
+		// Trigger Deployment Job
+		unitName := params.Labstation.GetHostname()
+		deployBuilderHive := ufsUtil.GetHiveForDut(unitName, utils.GetHive(ctx, ic, unitName))
+		realBuilderName := buildbucket.BuilderNamePerHive(utils.DeploymentBuilderName, deployBuilderHive)
+		adminParams, err := utils.PrepareAdminParams(ctx, unitName, realBuilderName, e.AdminService, ic, authOpts)
 		if err != nil {
 			return errors.Annotate(err, "creating Scheduke client").Err()
 		}
-		if err == nil {
-			scheduleDeployParams := utils.DeployTaskParams{
-				Client:           bbClient,
-				SchedulingClient: sc,
-				Env:              e,
-				Unit:             host,
-				SessionTag:       sessionTag,
-				UseLatestVersion: c.latestVersion,
-				BBProject:        c.deployBBProject,
-				BBBucket:         c.deployBBBucket,
-				BBBuilderName:    ufsUtil.GetDeployBBBuilderName(params.Labstation.GetHostname(), ""),
-			}
-			dErr := utils.ScheduleDeployTask(ctx, scheduleDeployParams)
-			resTable.RecordResult(swarmingOp, params.Labstation.GetHostname(), dErr)
-		} else {
-			// Record deploy task skip.
-			resTable.RecordSkip(swarmingOp, params.Labstation.GetHostname(), "")
-		}
+
+		_, _, dErr := buildbucket.CreateTask(
+			ctx,
+			bbClient,
+			adminParams.SchedukeClient,
+			buildbucket.CipdVersion(c.latestVersion),
+			&buildbucket.Params{
+				UnitName:       unitName,
+				TaskName:       string(buildbucket.Deploy),
+				BuilderName:    realBuilderName,
+				BuilderBucket:  c.deployBBBucket,
+				BuilderProject: c.deployBBProject,
+				EnableRecovery: true,
+				AdminService:   adminParams.AdminService,
+				// NOTE: We use the UFS service, not the Inventory service here.
+				InventoryService:   e.UnifiedFleetService,
+				InventoryNamespace: adminParams.ContextNamespace,
+				UpdateInventory:    true,
+				ExtraTags: []string{
+					sessionTag,
+					"task:deploy",
+					utils.ShivasClientTag,
+					fmt.Sprintf("inventory_namespace:%s", adminParams.ContextNamespace),
+					fmt.Sprintf("version:%s", buildbucket.CipdVersion(c.latestVersion)),
+				},
+			},
+			"shivas",
+		)
+		resTable.RecordResult(swarmingOp, unitName, dErr)
 	}
 	// Print session URL if atleast one of the tasks was deployed.
 	if resTable.IsSuccessForAny(swarmingOp) {

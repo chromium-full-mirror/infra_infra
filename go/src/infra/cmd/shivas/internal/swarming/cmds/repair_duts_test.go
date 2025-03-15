@@ -5,46 +5,66 @@
 package tasks
 
 import (
-	"context"
-	"fmt"
 	"testing"
 
-	"github.com/google/go-cmp/cmp"
-
-	"go.chromium.org/luci/common/errors"
-
-	"go.chromium.org/infra/cmd/shivas/site"
-	schedulingapi "go.chromium.org/infra/libs/fleet/scheduling/api"
 	"go.chromium.org/infra/libs/skylab/buildbucket"
 )
 
-// TestScheduleRepairBuilder tests that scheduling a repair builder produces the correct
-// taskID and the right URL. This test does NOT emulate the buildbucket client on a deep level.
-func TestScheduleRepairBuilder(t *testing.T) {
+func TestGetBuilderAndTaskName(t *testing.T) {
 	t.Parallel()
-	ctx := context.Background()
-	client := &fakeClient{}
-	taskURL, err := scheduleRepairBuilder(ctx, client, nil, site.Environment{}, "fake-labstation1", true, true, true, "labpack", "labpack", "os", "admin-session:bla bla")
-	if err != nil {
-		t.Errorf("unexpected error: %s", err)
+	testCases := []struct {
+		name                string
+		cmd                 *repairDuts
+		expectedBuilderName string
+		expectedTaskName    string
+	}{
+		{
+			"normal repair job",
+			&repairDuts{
+				bbBuilder: "repair",
+			},
+			"repair",
+			string(buildbucket.Recovery),
+		},
+		{
+			"verify job",
+			&repairDuts{
+				bbBuilder:  "repair",
+				onlyVerify: true,
+			},
+			"verify",
+			string(buildbucket.Recovery),
+		},
+		{
+			"deep repair job",
+			&repairDuts{
+				bbBuilder:  "repair",
+				deepRepair: true,
+			},
+			"repair",
+			string(buildbucket.DeepRecovery),
+		},
+		{
+			"Verify with deep-repair enabled",
+			&repairDuts{
+				bbBuilder:  "repair",
+				onlyVerify: true,
+				deepRepair: true,
+			},
+			"verify",
+			string(buildbucket.DeepRecovery),
+		},
 	}
-	expected := "https://ci.chromium.org/p/chromeos/builders/labpack/labpack/b1"
-	actual := taskURL
-	if diff := cmp.Diff(expected, actual); diff != "" {
-		t.Errorf("unexpected diff: %s", diff)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			actualBuilderName, actualTaskName := tc.cmd.getBuilderAndTaskName()
+			if actualBuilderName != tc.expectedBuilderName {
+				t.Errorf("unexpected buildername %s (expected %s) for cmd %v", actualBuilderName, tc.expectedBuilderName, tc.cmd)
+			}
+
+			if actualTaskName != tc.expectedTaskName {
+				t.Errorf("unexpected taskname %s (expected %s) for cmd %v", actualTaskName, tc.expectedTaskName, tc.cmd)
+			}
+		})
 	}
-}
-
-// FakeClient is a fake buildbucket client.
-type fakeClient struct{}
-
-// ScheduleLabpackTask is a fake method that returns a fixed buildbucket ID of 1.
-func (c *fakeClient) ScheduleLabpackTask(ctx context.Context, _ *buildbucket.ScheduleLabpackTaskParams, _ string) (string, int64, error) {
-	return fmt.Sprintf(buildbucket.BuildURLFmt, "chromeos", "labpack", "labpack", 1), 1, nil
-}
-
-// CreateLabpackTask is a fake method that returns a fixed buildbucket ID of 1.
-func (c *fakeClient) CreateLabpackTask(ctx context.Context, _ *buildbucket.ScheduleLabpackTaskParams, _ schedulingapi.TaskSchedulingAPI) (string, int64, error) {
-	// TODO copy logic from ScheduleLabpackTask during migration.
-	return "fake", 0, errors.Reason("Not expected to be called").Err()
 }

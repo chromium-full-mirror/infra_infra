@@ -5,7 +5,6 @@
 package tasks
 
 import (
-	"context"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -18,7 +17,6 @@ import (
 
 	"go.chromium.org/infra/cmd/shivas/site"
 	"go.chromium.org/infra/cmd/shivas/utils"
-	schedulingapi "go.chromium.org/infra/libs/fleet/scheduling/api"
 	"go.chromium.org/infra/libs/skylab/buildbucket"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
@@ -57,8 +55,6 @@ var RepairDutsCmd = &subcommands.Command{
 	},
 }
 
-const parisClientTag = "client:shivas"
-
 // Run represent runner for reserve command
 func (c *repairDuts) Run(a subcommands.Application, args []string, env subcommands.Env) int {
 	if err := c.innerRun(a, args, env); err != nil {
@@ -87,7 +83,7 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 	if err != nil {
 		return err
 	}
-	uc := ufsAPI.NewFleetPRPCClient(&prpc.Client{
+	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
 		Options: site.DefaultPRPCOptions(c.envFlags),
@@ -97,17 +93,47 @@ func (c *repairDuts) innerRun(a subcommands.Application, args []string, env subc
 		return errors.Annotate(err, "getting auth opts").Err()
 	}
 	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
-	for _, host := range args {
-		sc, err := utils.SchedukeClient(ctx, uc, authOpts, host)
+	for _, unitName := range args {
+		hive := ufsUtil.GetHiveForDut(unitName, utils.GetHive(ctx, ic, unitName))
+		builderName, taskName := c.getBuilderAndTaskName()
+		realBuilderName := buildbucket.BuilderNamePerHive(builderName, hive)
+		adminParams, err := utils.PrepareAdminParams(ctx, unitName, realBuilderName, e.AdminService, ic, authOpts)
 		if err != nil {
-			fmt.Fprintf(a.GetErr(), "%s: failed to create Scheduke client %s\n", host, err)
+			fmt.Fprintf(a.GetErr(), "%s: failed to create Scheduke client %s\n", unitName, err)
 			continue
 		}
-		taskURL, err := scheduleRepairBuilder(ctx, bc, sc, e, host, !c.onlyVerify, c.latestVersion, c.deepRepair, c.bbBuilder, c.bbBucket, ns, sessionTag)
+
+		url, _, err := buildbucket.CreateTask(
+			ctx,
+			bc,
+			adminParams.SchedukeClient,
+			buildbucket.CipdVersion(c.latestVersion),
+			&buildbucket.Params{
+				UnitName:       unitName,
+				TaskName:       taskName,
+				BuilderName:    realBuilderName,
+				BuilderBucket:  c.bbBucket,
+				EnableRecovery: !c.onlyVerify,
+				AdminService:   adminParams.AdminService,
+				// NOTE: We use the UFS service, not the Inventory service here.
+				InventoryService:   e.UnifiedFleetService,
+				InventoryNamespace: adminParams.ContextNamespace,
+				UpdateInventory:    true,
+				ExtraTags: []string{
+					sessionTag,
+					"task:recovery",
+					utils.ShivasClientTag,
+					"qs_account:unmanaged_p0",
+					fmt.Sprintf("version:%s", buildbucket.CipdVersion(c.latestVersion)),
+				},
+			},
+			"shivas",
+		)
+
 		if err != nil {
-			fmt.Fprintf(a.GetOut(), "%s: %s\n", host, err.Error())
+			fmt.Fprintf(a.GetOut(), "%s: %s\n", unitName, err.Error())
 		} else {
-			fmt.Fprintf(a.GetOut(), "%s: %s\n", host, taskURL)
+			fmt.Fprintf(a.GetOut(), "%s: %s\n", unitName, url)
 		}
 	}
 	utils.PrintTasksBatchLink(a.GetOut(), e.SwarmingService, sessionTag)
@@ -124,40 +150,14 @@ func getNamespace(c *site.EnvFlags) (string, error) {
 	return c.Namespace(site.OSLikeNamespaces, ufsUtil.OSNamespace)
 }
 
-// ScheduleRepairBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run repair.
-func scheduleRepairBuilder(ctx context.Context, bc buildbucket.Client, sc schedulingapi.TaskSchedulingAPI, e site.Environment, host string, runRepair, latestVersion, deepRepair bool, builder string, bucket string, namespace string, adminSession string) (string, error) {
-	v := buildbucket.CIPDProd
-	if latestVersion {
-		v = buildbucket.CIPDLatest
+func (c *repairDuts) getBuilderAndTaskName() (string, string) {
+	builderName := c.bbBuilder
+	if c.onlyVerify {
+		builderName = "verify"
 	}
-	if !runRepair {
-		builder = "verify"
+	taskName := string(buildbucket.Recovery)
+	if c.deepRepair {
+		taskName = string(buildbucket.DeepRecovery)
 	}
-	task := buildbucket.Recovery
-	if deepRepair {
-		task = buildbucket.DeepRecovery
-	}
-	p := &buildbucket.Params{
-		UnitName:       host,
-		TaskName:       string(task),
-		BuilderBucket:  bucket,
-		BuilderName:    builder,
-		EnableRecovery: runRepair,
-		AdminService:   e.AdminService,
-		// Note: UFS service is inventory service for fleet.
-		InventoryService:   e.UnifiedFleetService,
-		InventoryNamespace: namespace,
-		UpdateInventory:    true,
-		// Note: Scheduled tasks are not expected custom configuration.
-		Configuration: "",
-		ExtraTags: []string{
-			adminSession,
-			"task:recovery",
-			parisClientTag,
-			fmt.Sprintf("version:%s", v),
-			"qs_account:unmanaged_p0",
-		},
-	}
-	url, _, err := buildbucket.CreateTask(ctx, bc, sc, v, p, "shivas")
-	return url, err
+	return builderName, taskName
 }

@@ -69,7 +69,7 @@ var AddDUTCmd = &subcommands.Command{
 		// Asset location fields
 		c.Flags.StringVar(&c.zone, "zone", "", "Zone that the asset is in. "+cmdhelp.ZoneFilterHelpText)
 		c.Flags.StringVar(&c.rack, "rack", "", "Rack that the asset is in.")
-		c.Flags.StringVar(&c.hive, "hive", "", "Hive that the DUT belongs to. Example: satlab-abc123")
+		c.Flags.StringVar(&c.hive, "hive", "", "Hive that the DUT belongs to. Example: satlab-abc123. If not provided, it will be inferred from the hostname.")
 
 		// DUT/MachineLSE common fields
 		c.Flags.StringVar(&c.hostname, "name", "", "hostname of the DUT.")
@@ -308,26 +308,47 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 			}
 		}
 
-		deployBuilderHive := ufsUtil.GetHiveForDut(param.DUT.GetName(), c.hive)
-		builderName := ufsUtil.GetDeployBBBuilderName(param.DUT.GetName(), deployBuilderHive)
-		sc, err := utils.SelectSchedulingClient(ctx, builderName, ic, authOpts, param.DUT.GetName())
+		// Trigger Deployment Job
+		unitName := param.DUT.GetName()
+		deployBuilderHive := ufsUtil.GetHiveForDut(unitName, c.hive)
+		realBuilderName := buildbucket.BuilderNamePerHive(utils.DeploymentBuilderName, deployBuilderHive)
+		adminParams, err := utils.PrepareAdminParams(ctx, unitName, realBuilderName, e.AdminService, ic, authOpts)
 		if err != nil {
 			return errors.Annotate(err, "creating Scheduling client").Err()
 		}
-		deployParams := utils.DeployTaskParams{
-			Client:           bc,
-			SchedulingClient: sc,
-			Env:              e,
-			Unit:             param.DUT.GetName(),
-			SessionTag:       sessionTag,
-			UseLatestVersion: c.latestVersion,
-			BBProject:        c.deployBBProject,
-			BBBucket:         c.deployBBBucket,
-			BBBuilderName:    ufsUtil.GetDeployBBBuilderName(param.DUT.GetName(), deployBuilderHive),
-		}
 
-		if err := utils.ScheduleDeployTask(ctx, deployParams); err != nil {
+		url, _, err := buildbucket.CreateTask(
+			ctx,
+			bc,
+			adminParams.SchedukeClient,
+			buildbucket.CipdVersion(c.latestVersion),
+			&buildbucket.Params{
+				UnitName:           unitName,
+				TaskName:           string(buildbucket.Deploy),
+				BuilderName:        realBuilderName,
+				BuilderBucket:      c.deployBBBucket,
+				BuilderProject:     c.deployBBProject,
+				EnableRecovery:     true,
+				AdminService:       adminParams.AdminService,
+				InventoryService:   e.UnifiedFleetService,
+				InventoryNamespace: adminParams.ContextNamespace,
+				UpdateInventory:    true,
+				ExtraTags: []string{
+					sessionTag,
+					"task:deploy",
+					utils.ShivasClientTag,
+					fmt.Sprintf("inventory_namespace:%s", adminParams.ContextNamespace),
+					fmt.Sprintf("version:%s", buildbucket.CipdVersion(c.latestVersion)),
+				},
+			},
+			"shivas",
+		)
+
+		if err != nil {
 			fmt.Printf("Failed to schedule deploy task for DUT %s with error: %s", param.DUT.GetName(), err.Error())
+		}
+		if len(dutParams) <= 1 {
+			fmt.Fprintf(a.GetOut(), "Deployment URL: %s\n", url)
 		}
 	}
 	if len(dutParams) > 1 {

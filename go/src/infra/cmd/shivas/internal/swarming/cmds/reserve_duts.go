@@ -5,7 +5,6 @@
 package tasks
 
 import (
-	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -22,9 +21,9 @@ import (
 	"go.chromium.org/infra/cmd/shivas/site"
 	"go.chromium.org/infra/cmd/shivas/utils"
 	"go.chromium.org/infra/cros/recovery/config"
-	schedulingapi "go.chromium.org/infra/libs/fleet/scheduling/api"
 	"go.chromium.org/infra/libs/skylab/buildbucket"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 type reserveDuts struct {
@@ -92,7 +91,7 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 	if err != nil {
 		return err
 	}
-	uc := ufsAPI.NewFleetPRPCClient(&prpc.Client{
+	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
 		Options: site.DefaultPRPCOptions(c.envFlags),
@@ -105,53 +104,56 @@ func (c *reserveDuts) innerRun(a subcommands.Application, args []string, env sub
 		c.session = uuid.New().String()
 	}
 	c.session = fmt.Sprintf("admin-session:%s", c.session)
-	for _, host := range args {
-		sc, err := utils.SchedukeClient(ctx, uc, authOpts, host)
+	for _, unitName := range args {
+		hive := ufsUtil.GetHiveForDut(unitName, utils.GetHive(ctx, ic, unitName))
+		realBuilderName := buildbucket.BuilderNamePerHive(utils.ReserveBuilderName, hive)
+		adminParams, err := utils.PrepareAdminParams(ctx, unitName, realBuilderName, e.AdminService, ic, authOpts)
 		if err != nil {
-			fmt.Fprintf(a.GetErr(), "%s: failed to create Scheduke client %s\n", host, err)
+			fmt.Fprintf(a.GetErr(), "%s: failed to create Scheduke client %s\n", unitName, err)
 			continue
 		}
-		if url, _, err := c.scheduleReserveBuilder(ctx, bc, sc, e, host, ns); err != nil {
-			fmt.Fprintf(a.GetErr(), "%s: fail with %s\n", host, err)
+
+		tags := []string{
+			c.session,
+			"task:reserve",
+			utils.ShivasClientTag,
+			fmt.Sprintf("version:%s", buildbucket.CIPDProd),
+			fmt.Sprintf("comment:%s", c.comment),
+			"qs_account:unmanaged_p0",
+		}
+		if user, err := user.Current(); err == nil && user != nil && user.Username != "" {
+			tags = append(tags, fmt.Sprintf("user:%s", user.Username))
+		}
+
+		url, _, err := buildbucket.CreateTask(
+			ctx,
+			bc,
+			adminParams.SchedukeClient,
+			buildbucket.CIPDProd,
+			&buildbucket.Params{
+				UnitName:           unitName,
+				TaskName:           string(buildbucket.Custom),
+				BuilderName:        realBuilderName,
+				AdminService:       adminParams.AdminService,
+				InventoryService:   e.UnifiedFleetService,
+				InventoryNamespace: adminParams.ContextNamespace,
+				NoStepper:          false,
+				NoMetrics:          false,
+				UpdateInventory:    true,
+				Configuration:      c.config,
+				ExtraTags:          tags,
+			},
+			"shivas",
+		)
+
+		if err != nil {
+			fmt.Fprintf(a.GetErr(), "%s: fail with %s\n", unitName, err)
 		} else {
-			fmt.Fprintf(a.GetErr(), "%s: %s\n", host, url)
+			fmt.Fprintf(a.GetErr(), "%s: %s\n", unitName, url)
 		}
 	}
 	utils.PrintTasksBatchLink(a.GetErr(), e.SwarmingService, c.session)
 	return nil
-}
-
-// scheduleReserveBuilder schedules a labpack Buildbucket builder/recipe with the necessary arguments to run reserve.
-func (c *reserveDuts) scheduleReserveBuilder(ctx context.Context, bc buildbucket.Client, sc schedulingapi.TaskSchedulingAPI, e site.Environment, host, namespace string) (string, int64, error) {
-	// TODO(b/229896419): refactor to hide labpack.Params struct.
-	v := buildbucket.CIPDProd
-	tags := []string{
-		c.session,
-		"task:reserve",
-		parisClientTag,
-		fmt.Sprintf("version:%s", v),
-		fmt.Sprintf("comment:%s", c.comment),
-		"qs_account:unmanaged_p0",
-	}
-	if user, err := user.Current(); err == nil && user != nil && user.Username != "" {
-		tags = append(tags, fmt.Sprintf("user:%s", user.Username))
-	}
-	p := &buildbucket.Params{
-		UnitName:     host,
-		TaskName:     string(buildbucket.Custom),
-		BuilderName:  "reserve",
-		AdminService: e.AdminService,
-		// NOTE: We use the UFS service, not the Inventory service here.
-		InventoryService:   e.UnifiedFleetService,
-		InventoryNamespace: namespace,
-		NoStepper:          false,
-		NoMetrics:          false,
-		UpdateInventory:    true,
-		Configuration:      c.config,
-		ExtraTags:          tags,
-	}
-	url, taskID, err := buildbucket.CreateTask(ctx, bc, sc, v, p, "shivas")
-	return url, taskID, errors.Annotate(err, "scheduleReserveBuilder").Err()
 }
 
 // initConfig initializes config used for scheduling reserve tasks.

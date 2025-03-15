@@ -127,3 +127,116 @@ func TestCreateTask(t *testing.T) {
 		})
 	})
 }
+
+func TestGetBuilderName(t *testing.T) {
+	t.Parallel()
+	testCases := []struct {
+		name         string
+		builderName  string
+		hive         string
+		expectedName string
+	}{
+		{
+			"normal builder name",
+			"repair",
+			"",
+			"repair",
+		},
+		{
+			"clank builder name",
+			"repair",
+			"chrome-clank",
+			"repair-clank",
+		},
+		{
+			"special hive but not registered",
+			"repair",
+			"chrome-foo",
+			"repair",
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			actualName := BuilderNamePerHive(tc.builderName, tc.hive)
+			if actualName != tc.expectedName {
+				t.Errorf("unexpected builder name %s (expected %s)", actualName, tc.expectedName)
+			}
+		})
+	}
+}
+
+func TestIfUseScheduke(t *testing.T) {
+	t.Parallel()
+	testCases := []struct {
+		name          string
+		builderName   string
+		expectedValue bool
+	}{
+		{
+			"normal builder name",
+			"repair",
+			true,
+		},
+		{
+			"latest builder name",
+			"repair-latest",
+			true,
+		},
+		{
+			"clank builder name",
+			"repair-clank",
+			false,
+		},
+		{
+			"perf builder name",
+			"repair-perf",
+			false,
+		},
+		{
+			"pinpoint builder name",
+			"repair-pinpoint",
+			false,
+		},
+		{
+			"clank-latest builder name",
+			"repair-clank-latest",
+			false,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			actualValue := IfUseScheduke(tc.builderName)
+			if actualValue != tc.expectedValue {
+				t.Errorf("unexpected value %t (expected %t)", actualValue, tc.expectedValue)
+			}
+		})
+	}
+}
+
+func TestGetCipdVersion(t *testing.T) {
+	t.Parallel()
+	testCases := []struct {
+		name          string
+		useLatest     bool
+		expectedValue CIPDVersion
+	}{
+		{
+			"use prod",
+			false,
+			CIPDProd,
+		},
+		{
+			"use latest",
+			true,
+			CIPDLatest,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			actualValue := CipdVersion(tc.useLatest)
+			if actualValue != tc.expectedValue {
+				t.Errorf("unexpected value %s (expected %s)", actualValue, tc.expectedValue)
+			}
+		})
+	}
+}

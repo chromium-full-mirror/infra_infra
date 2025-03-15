@@ -257,23 +257,3 @@ func IsInChromePerfPool(pools []string) bool {
 	}
 	return false
 }
-
-// GetDeployBBBuilderName returns builder name for deployment based on configs.
-//
-// The deploy builder is decided in
-// https://source.corp.google.com/h/chrome-internal/chromeos/codesearch/+/main:infra/config/lab_platform/labpack/main.star;l=96;bpv=1
-// The name is different for different swarming pool, swarming pool is decided by bot prefix,
-// and bot prefix is decided by hostname prefix.
-func GetDeployBBBuilderName(hostname, hive string) string {
-	if hive == chromeClankHive {
-		return "deploy-clank"
-	}
-	if strings.HasPrefix(hostname, ChromePerfPinpointPrefix) {
-		return "deploy-pinpoint"
-	}
-	if strings.HasPrefix(hostname, ChromePerfWaterfallPrefix) {
-		return "deploy-perf"
-	}
-	// Default builder name for all bots in swarming_pool:ChromeOSSkylab
-	return "deploy"
-}

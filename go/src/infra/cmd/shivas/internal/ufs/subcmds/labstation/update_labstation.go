@@ -25,6 +25,7 @@ import (
 	"go.chromium.org/infra/cmd/shivas/utils"
 	"go.chromium.org/infra/cmdsupport/cmdlib"
 	"go.chromium.org/infra/libs/fleet/device/schedulingunit"
+	"go.chromium.org/infra/libs/skylab/buildbucket"
 	"go.chromium.org/infra/libs/skylab/common/heuristics"
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	chromeosLab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
@@ -166,7 +167,6 @@ func (c *updateLabstation) innerRun(a subcommands.Application, args []string, en
 	})
 
 	for _, req := range requests {
-
 		err := c.updateLabstationToUFS(ctx, ic, req)
 		resTable.RecordResult(ufsOp, req.MachineLSE.GetHostname(), err)
 		if err != nil {
@@ -197,28 +197,49 @@ func (c *updateLabstation) innerRun(a subcommands.Application, args []string, en
 		for _, req := range deployTasks {
 			// Check if deploy task is required or force deploy is set.
 			if c.forceDeploy || c.isDeployTaskRequired(req) {
-				host := req.MachineLSE.GetHostname()
-				sc, err := utils.SchedukeClient(ctx, ic, authOpts, host)
+				unitName := req.MachineLSE.GetHostname()
+				deployBuilderHive := ufsUtil.GetHiveForDut(unitName, utils.GetHive(ctx, ic, unitName))
+				if c.hive != "" {
+					deployBuilderHive = c.hive
+				}
+				realBuilderName := buildbucket.BuilderNamePerHive(utils.DeploymentBuilderName, deployBuilderHive)
+				adminParams, err := utils.PrepareAdminParams(ctx, unitName, realBuilderName, e.AdminService, ic, authOpts)
 				if err != nil {
 					return errors.Annotate(err, "creating Scheduke client").Err()
 				}
-				deployParams := utils.DeployTaskParams{
-					Client:           bbClient,
-					SchedulingClient: sc,
-					Env:              e,
-					Unit:             host,
-					SessionTag:       sessionTag,
-					UseLatestVersion: c.latestVersion,
-					BBProject:        c.deployBBProject,
-					BBBucket:         c.deployBBBucket,
-					BBBuilderName:    ufsUtil.GetDeployBBBuilderName(req.MachineLSE.GetHostname(), ""),
-				}
 
-				err = utils.ScheduleDeployTask(ctx, deployParams)
+				_, _, err = buildbucket.CreateTask(
+					ctx,
+					bbClient,
+					adminParams.SchedukeClient,
+					buildbucket.CipdVersion(c.latestVersion),
+					&buildbucket.Params{
+						UnitName:       unitName,
+						TaskName:       string(buildbucket.Deploy),
+						BuilderName:    realBuilderName,
+						BuilderBucket:  c.deployBBBucket,
+						BuilderProject: c.deployBBProject,
+						EnableRecovery: true,
+						AdminService:   adminParams.AdminService,
+						// NOTE: We use the UFS service, not the Inventory service here.
+						InventoryService:   e.UnifiedFleetService,
+						InventoryNamespace: adminParams.ContextNamespace,
+						UpdateInventory:    true,
+						ExtraTags: []string{
+							sessionTag,
+							"task:deploy",
+							utils.ShivasClientTag,
+							fmt.Sprintf("inventory_namespace:%s", adminParams.ContextNamespace),
+							fmt.Sprintf("version:%s", buildbucket.CipdVersion(c.latestVersion)),
+						},
+					},
+					"shivas",
+				)
+
 				if err != nil {
-					c.verbosePrint("Unable to deploy task for %s: %s\n", req.MachineLSE.GetHostname(), err.Error())
+					c.verbosePrint("Unable to deploy task for %s: %s\n", unitName, err.Error())
 				}
-				resTable.RecordResult(swarmingOp, req.MachineLSE.GetHostname(), err)
+				resTable.RecordResult(swarmingOp, unitName, err)
 			} else {
 				resTable.RecordSkip(swarmingOp, req.MachineLSE.GetHostname(), "Deploy task not required")
 			}

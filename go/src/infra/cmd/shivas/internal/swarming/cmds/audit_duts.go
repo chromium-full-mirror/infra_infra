@@ -160,7 +160,7 @@ func scheduleAuditBuilder(ctx context.Context, bc buildbucket.Client, gpc device
 		ExtraTags: []string{
 			adminSession,
 			fmt.Sprintf("task:%s", taskName),
-			parisClientTag,
+			utils.ShivasClientTag,
 			fmt.Sprintf("version:%s", v),
 			"qs_account:unmanaged_p0",
 		},

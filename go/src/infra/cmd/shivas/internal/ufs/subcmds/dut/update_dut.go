@@ -351,28 +351,44 @@ func (c *updateDUT) innerRun(a subcommands.Application, args []string, env subco
 			// Deploy Task not required.
 			continue
 		}
-		// Swarm a deploy task if required or enforced.
+		// Trigger Deployment Job if required or enforced.
 		if deployArgs.needToDeploy || c.forceDeploy {
-			builderName := ufsUtil.GetDeployBBBuilderName(req.GetMachineLSE().GetHostname(), deployArgs.deployBuilderHive)
-			sc, err := utils.SelectSchedulingClient(ctx, builderName, ic, authOpts, req.GetMachineLSE().GetHostname())
+			unitName := req.GetMachineLSE().GetHostname()
+			realBuilderName := buildbucket.BuilderNamePerHive(utils.DeploymentBuilderName, deployArgs.deployBuilderHive)
+			adminParams, err := utils.PrepareAdminParams(ctx, unitName, realBuilderName, e.AdminService, ic, authOpts)
 			if err != nil {
 				return errors.Annotate(err, "creating Scheduling client").Err()
 			}
-			deployParams := utils.DeployTaskParams{
-				Client:           bc,
-				SchedulingClient: sc,
-				Env:              e,
-				Unit:             req.GetMachineLSE().GetHostname(),
-				SessionTag:       sessionTag,
-				UseLatestVersion: c.latestVersion,
-				BBProject:        c.deployBBProject,
-				BBBucket:         c.deployBBBucket,
-				BBBuilderName:    ufsUtil.GetDeployBBBuilderName(req.GetMachineLSE().GetHostname(), deployArgs.deployBuilderHive),
-			}
 
-			err = utils.ScheduleDeployTask(ctx, deployParams)
+			_, _, err = buildbucket.CreateTask(
+				ctx,
+				bc,
+				adminParams.SchedukeClient,
+				buildbucket.CipdVersion(c.latestVersion),
+				&buildbucket.Params{
+					UnitName:       unitName,
+					TaskName:       string(buildbucket.Deploy),
+					BuilderName:    realBuilderName,
+					BuilderProject: c.deployBBProject,
+					BuilderBucket:  c.deployBBBucket,
+					EnableRecovery: true,
+					AdminService:   adminParams.AdminService,
+					// NOTE: We use the UFS service, not the Inventory service here.
+					InventoryService:   e.UnifiedFleetService,
+					InventoryNamespace: adminParams.ContextNamespace,
+					UpdateInventory:    true,
+					ExtraTags: []string{
+						sessionTag,
+						"task:deploy",
+						utils.ShivasClientTag,
+						fmt.Sprintf("inventory_namespace:%s", adminParams.ContextNamespace),
+						fmt.Sprintf("version:%s", buildbucket.CipdVersion(c.latestVersion)),
+					},
+				},
+				"shivas",
+			)
+
 			resTable.RecordResult(swarmOp, req.MachineLSE.GetName(), err)
-
 			// Remove the task entry to avoid triggering multiple tasks.
 			delete(deployTasks, req.MachineLSE.GetName())
 		}

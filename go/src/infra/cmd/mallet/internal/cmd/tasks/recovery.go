@@ -18,14 +18,15 @@ import (
 	"go.chromium.org/luci/grpc/prpc"
 
 	"go.chromium.org/infra/cmd/mallet/internal/site"
+	"go.chromium.org/infra/cmd/shivas/utils"
 	"go.chromium.org/infra/cmdsupport/cmdlib"
 	"go.chromium.org/infra/cros/recovery/namespace"
 	"go.chromium.org/infra/libs/fleet/device"
-	"go.chromium.org/infra/libs/fleet/scheduling/schedulers"
 	"go.chromium.org/infra/libs/skylab/buildbucket"
 	"go.chromium.org/infra/libs/skylab/common/heuristics"
 	"go.chromium.org/infra/libs/skylab/swarming"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // Recovery subcommand: recover the devices.
@@ -48,7 +49,7 @@ var Recovery = &subcommands.Command{
 		c.Flags.BoolVar(&c.latest, "latest", false, "Use latest version of CIPD when scheduling. By default no.")
 		c.Flags.StringVar(&c.adminSession, "admin-session", "", "Admin session used to group created tasks. By default generated.")
 		c.Flags.StringVar(&c.bbBucket, "bucket", "", "Buildbucket bucket to use.")
-		c.Flags.StringVar(&c.bbBuilder, "builder", "", "Buildbucket builder to use.")
+		c.Flags.StringVar(&c.bbBuilder, "builder", "repair", "Buildbucket builder to use.")
 		return c
 	},
 }
@@ -94,7 +95,7 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 	if err != nil {
 		return err
 	}
-	uc := ufsAPI.NewFleetPRPCClient(&prpc.Client{
+	ic := ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    c.envFlags.Env().UFSService,
 		Options: site.UFSPRPCOptions,
@@ -112,8 +113,8 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 	}
 	sessionTag := fmt.Sprintf("admin-session:%s", c.adminSession)
 	e := c.envFlags.Env()
-	for _, unit := range args {
-		unit = heuristics.NormalizeBotNameToDeviceName(unit)
+	for _, unitName := range args {
+		unitName = heuristics.NormalizeBotNameToDeviceName(unitName)
 		var configuration string
 		if c.configFile != "" {
 			b, err := os.ReadFile(c.configFile)
@@ -122,50 +123,43 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 			}
 			configuration = b64.StdEncoding.EncodeToString(b)
 		}
-		task := string(buildbucket.Recovery)
-		if c.deployTask {
-			task = string(buildbucket.Deploy)
-		} else if c.taskName != "" {
-			tn, err := buildbucket.NormalizeTaskName(c.taskName)
-			if err != nil {
-				return errors.Annotate(err, "create recovery task").Err()
-			}
-			task = string(tn)
+		taskName := c.getTaskName()
+		if taskName == "" {
+			return errors.Reason("Wrong task name %s for host %s", c.taskName, unitName).Err()
 		}
 
-		v := buildbucket.CIPDProd
-		if c.latest {
-			v = buildbucket.CIPDLatest
-		}
-		var csaAddr string
-		if c.useCsa {
-			csaAddr = e.AdminService
-		}
-		pools, err := device.GetPools(ctx, uc, unit)
+		pools, err := device.GetPools(ctx, ic, unitName)
 		if err != nil {
-			return errors.Annotate(err, "getting pools for device %s", unit).Err()
+			return errors.Annotate(err, "getting pools for device %s", unitName).Err()
 		}
 		if len(pools) == 0 {
-			return fmt.Errorf("found no pool for device %s", unit)
+			return fmt.Errorf("found no pool for device %s", unitName)
 		}
-		sc, err := schedulers.NewSchedukeClientForCLI(ctx, pools[0], authOpts)
+
+		hive := ufsUtil.GetHiveForDut(unitName, utils.GetHive(ctx, ic, unitName))
+		realBuilderName := buildbucket.BuilderNamePerHive(c.bbBuilder, hive)
+		adminParams, err := utils.PrepareAdminParams(ctx, unitName, realBuilderName, e.AdminService, ic, authOpts)
 		if err != nil {
-			return errors.Annotate(err, "initializing Scheduke client").Err()
+			return errors.Annotate(err, "creating Scheduling client").Err()
 		}
+		if !c.useCsa {
+			adminParams.AdminService = ""
+		}
+
 		url, _, err := buildbucket.CreateTask(
 			ctx,
 			bc,
-			sc,
-			v,
+			adminParams.SchedukeClient,
+			buildbucket.CipdVersion(c.latest),
 			&buildbucket.Params{
-				UnitName:           unit,
-				TaskName:           task,
+				UnitName:           unitName,
+				TaskName:           c.getTaskName(),
+				BuilderName:        realBuilderName,
 				BuilderBucket:      c.bbBucket,
-				BuilderName:        c.bbBuilder,
 				EnableRecovery:     !c.onlyVerify,
-				AdminService:       csaAddr,
+				AdminService:       adminParams.AdminService,
 				InventoryService:   e.UFSService,
-				InventoryNamespace: ns,
+				InventoryNamespace: adminParams.ContextNamespace,
 				UpdateInventory:    c.updateUFS,
 				NoStepper:          c.noStepper,
 				NoMetrics:          false,
@@ -173,9 +167,9 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 				DisableCft:         c.disableCft,
 				ExtraTags: []string{
 					sessionTag,
-					fmt.Sprintf("task:%s", task),
+					fmt.Sprintf("task:%s", taskName),
 					site.ClientTag,
-					fmt.Sprintf("version:%s", v),
+					fmt.Sprintf("version:%s", buildbucket.CipdVersion(c.latest)),
 					"qs_account:unmanaged_p0",
 				},
 			},
@@ -184,8 +178,22 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 		if err != nil {
 			return errors.Annotate(err, "create recovery task").Err()
 		}
-		fmt.Fprintf(a.GetOut(), "Created recovery task for %s: %s\n", unit, url)
+		fmt.Fprintf(a.GetOut(), "Created recovery task for %s: %s\n", unitName, url)
 	}
 	fmt.Fprintf(a.GetOut(), "Created tasks: %s\n", swarming.TaskListURLForTags(e.SwarmingService, []string{sessionTag}))
 	return nil
+}
+
+func (c *recoveryRun) getTaskName() string {
+	task := string(buildbucket.Recovery)
+	if c.deployTask {
+		task = string(buildbucket.Deploy)
+	} else if c.taskName != "" {
+		tn, err := buildbucket.NormalizeTaskName(c.taskName)
+		if err != nil {
+			return ""
+		}
+		task = string(tn)
+	}
+	return task
 }
