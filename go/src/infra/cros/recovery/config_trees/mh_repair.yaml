@@ -974,9 +974,9 @@ plans:
                 - name: Toggle PD once (ALWAYS_RUN)
                   exec_name: servo_servod_toggle_pd_role
                   exec_args:
-                    - toggle_times:1
+                    - retry_count:1
                     - wait_in_retry:5
-                    - wait_before_retry:1
+                    - wait_before_retry:10
                   docs:
                     - Toggle the servod command servo_pd_role only once.
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -1321,9 +1321,9 @@ plans:
                 - name: Toggle PD 5 times (ALWAYS_RUN)
                   exec_name: servo_servod_toggle_pd_role
                   exec_args:
-                    - toggle_times:5
+                    - retry_count:5
                     - wait_in_retry:5
-                    - wait_before_retry:1
+                    - wait_before_retry:10
                   docs:
                     - Toggle the servod command servo_pd_role 5 times.
             - name: Try fake disconnect and stop (ALWAYS_RUN)
@@ -1971,9 +1971,9 @@ plans:
                 - name: Toggle PD once (ALWAYS_RUN)
                   exec_name: servo_servod_toggle_pd_role
                   exec_args:
-                    - toggle_times:1
+                    - retry_count:1
                     - wait_in_retry:5
-                    - wait_before_retry:1
+                    - wait_before_retry:10
                   docs:
                     - Toggle the servod command servo_pd_role only once.
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -2003,9 +2003,9 @@ plans:
                 - name: Toggle PD 5 times (ALWAYS_RUN)
                   exec_name: servo_servod_toggle_pd_role
                   exec_args:
-                    - toggle_times:5
+                    - retry_count:5
                     - wait_in_retry:5
-                    - wait_before_retry:1
+                    - wait_before_retry:10
                   docs:
                     - Toggle the servod command servo_pd_role 5 times.
             - name: Try fake disconnect and stop (ALWAYS_RUN)
@@ -2173,9 +2173,9 @@ plans:
                     - name: Toggle PD once (ALWAYS_RUN)
                       exec_name: servo_servod_toggle_pd_role
                       exec_args:
-                        - toggle_times:1
+                        - retry_count:1
                         - wait_in_retry:5
-                        - wait_before_retry:1
+                        - wait_before_retry:10
                       docs:
                         - Toggle the servod command servo_pd_role only once.
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -2205,9 +2205,9 @@ plans:
                     - name: Toggle PD 5 times (ALWAYS_RUN)
                       exec_name: servo_servod_toggle_pd_role
                       exec_args:
-                        - toggle_times:5
+                        - retry_count:5
                         - wait_in_retry:5
-                        - wait_before_retry:1
+                        - wait_before_retry:10
                       docs:
                         - Toggle the servod command servo_pd_role 5 times.
                 - name: Try fake disconnect and stop (ALWAYS_RUN)
@@ -2528,9 +2528,9 @@ plans:
                     - name: Toggle PD once (ALWAYS_RUN)
                       exec_name: servo_servod_toggle_pd_role
                       exec_args:
-                        - toggle_times:1
+                        - retry_count:1
                         - wait_in_retry:5
-                        - wait_before_retry:1
+                        - wait_before_retry:10
                       docs:
                         - Toggle the servod command servo_pd_role only once.
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -2560,9 +2560,9 @@ plans:
                     - name: Toggle PD 5 times (ALWAYS_RUN)
                       exec_name: servo_servod_toggle_pd_role
                       exec_args:
-                        - toggle_times:5
+                        - retry_count:5
                         - wait_in_retry:5
-                        - wait_before_retry:1
+                        - wait_before_retry:10
                       docs:
                         - Toggle the servod command servo_pd_role 5 times.
                 - name: Try fake disconnect and stop (ALWAYS_RUN)
@@ -2867,9 +2867,9 @@ plans:
                 - name: Toggle PD once (ALWAYS_RUN)
                   exec_name: servo_servod_toggle_pd_role
                   exec_args:
-                    - toggle_times:1
+                    - retry_count:1
                     - wait_in_retry:5
-                    - wait_before_retry:1
+                    - wait_before_retry:10
                   docs:
                     - Toggle the servod command servo_pd_role only once.
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -2899,9 +2899,9 @@ plans:
                 - name: Toggle PD 5 times (ALWAYS_RUN)
                   exec_name: servo_servod_toggle_pd_role
                   exec_args:
-                    - toggle_times:5
+                    - retry_count:5
                     - wait_in_retry:5
-                    - wait_before_retry:1
+                    - wait_before_retry:10
                   docs:
                     - Toggle the servod command servo_pd_role 5 times.
             - name: Try fake disconnect and stop (ALWAYS_RUN)
@@ -3241,9 +3241,9 @@ plans:
                     - name: Toggle PD once (ALWAYS_RUN)
                       exec_name: servo_servod_toggle_pd_role
                       exec_args:
-                        - toggle_times:1
+                        - retry_count:1
                         - wait_in_retry:5
-                        - wait_before_retry:1
+                        - wait_before_retry:10
                       docs:
                         - Toggle the servod command servo_pd_role only once.
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -3273,9 +3273,9 @@ plans:
                     - name: Toggle PD 5 times (ALWAYS_RUN)
                       exec_name: servo_servod_toggle_pd_role
                       exec_args:
-                        - toggle_times:5
+                        - retry_count:5
                         - wait_in_retry:5
-                        - wait_before_retry:1
+                        - wait_before_retry:10
                       docs:
                         - Toggle the servod command servo_pd_role 5 times.
                 - name: Try fake disconnect and stop (ALWAYS_RUN)
@@ -3600,9 +3600,9 @@ plans:
                     - name: Toggle PD once (ALWAYS_RUN)
                       exec_name: servo_servod_toggle_pd_role
                       exec_args:
-                        - toggle_times:1
+                        - retry_count:1
                         - wait_in_retry:5
-                        - wait_before_retry:1
+                        - wait_before_retry:10
                       docs:
                         - Toggle the servod command servo_pd_role only once.
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -3632,9 +3632,9 @@ plans:
                     - name: Toggle PD 5 times (ALWAYS_RUN)
                       exec_name: servo_servod_toggle_pd_role
                       exec_args:
-                        - toggle_times:5
+                        - retry_count:5
                         - wait_in_retry:5
-                        - wait_before_retry:1
+                        - wait_before_retry:10
                       docs:
                         - Toggle the servod command servo_pd_role 5 times.
                 - name: Try fake disconnect and stop (ALWAYS_RUN)
@@ -3960,9 +3960,9 @@ plans:
                     - name: Toggle PD 5 times (ALWAYS_RUN)
                       exec_name: servo_servod_toggle_pd_role
                       exec_args:
-                        - toggle_times:5
+                        - retry_count:5
                         - wait_in_retry:5
-                        - wait_before_retry:1
+                        - wait_before_retry:10
                       docs:
                         - Toggle the servod command servo_pd_role 5 times.
                 - name: Toggle CC line and stop (ALWAYS_RUN)
@@ -4183,9 +4183,9 @@ plans:
                 - name: Toggle PD once (ALWAYS_RUN)
                   exec_name: servo_servod_toggle_pd_role
                   exec_args:
-                    - toggle_times:1
+                    - retry_count:1
                     - wait_in_retry:5
-                    - wait_before_retry:1
+                    - wait_before_retry:10
                   docs:
                     - Toggle the servod command servo_pd_role only once.
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -4215,9 +4215,9 @@ plans:
                 - name: Toggle PD 5 times (ALWAYS_RUN)
                   exec_name: servo_servod_toggle_pd_role
                   exec_args:
-                    - toggle_times:5
+                    - retry_count:5
                     - wait_in_retry:5
-                    - wait_before_retry:1
+                    - wait_before_retry:10
                   docs:
                     - Toggle the servod command servo_pd_role 5 times.
             - name: Try fake disconnect and stop (ALWAYS_RUN)
@@ -4520,9 +4520,9 @@ plans:
                         - name: Toggle PD 5 times (ALWAYS_RUN)
                           exec_name: servo_servod_toggle_pd_role
                           exec_args:
-                            - toggle_times:5
+                            - retry_count:5
                             - wait_in_retry:5
-                            - wait_before_retry:1
+                            - wait_before_retry:10
                           docs:
                             - Toggle the servod command servo_pd_role 5 times.
                     - name: Toggle CC line and stop (ALWAYS_RUN)
@@ -4743,9 +4743,9 @@ plans:
                     - name: Toggle PD once (ALWAYS_RUN)
                       exec_name: servo_servod_toggle_pd_role
                       exec_args:
-                        - toggle_times:1
+                        - retry_count:1
                         - wait_in_retry:5
-                        - wait_before_retry:1
+                        - wait_before_retry:10
                       docs:
                         - Toggle the servod command servo_pd_role only once.
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -4775,9 +4775,9 @@ plans:
                     - name: Toggle PD 5 times (ALWAYS_RUN)
                       exec_name: servo_servod_toggle_pd_role
                       exec_args:
-                        - toggle_times:5
+                        - retry_count:5
                         - wait_in_retry:5
-                        - wait_before_retry:1
+                        - wait_before_retry:10
                       docs:
                         - Toggle the servod command servo_pd_role 5 times.
                 - name: Try fake disconnect and stop (ALWAYS_RUN)
@@ -5066,9 +5066,9 @@ plans:
                 - name: Toggle PD once (ALWAYS_RUN)
                   exec_name: servo_servod_toggle_pd_role
                   exec_args:
-                    - toggle_times:1
+                    - retry_count:1
                     - wait_in_retry:5
-                    - wait_before_retry:1
+                    - wait_before_retry:10
                   docs:
                     - Toggle the servod command servo_pd_role only once.
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -5098,9 +5098,9 @@ plans:
                 - name: Toggle PD 5 times (ALWAYS_RUN)
                   exec_name: servo_servod_toggle_pd_role
                   exec_args:
-                    - toggle_times:5
+                    - retry_count:5
                     - wait_in_retry:5
-                    - wait_before_retry:1
+                    - wait_before_retry:10
                   docs:
                     - Toggle the servod command servo_pd_role 5 times.
             - name: Try fake disconnect and stop (ALWAYS_RUN)
@@ -5570,9 +5570,9 @@ plans:
                     - name: Toggle PD once (ALWAYS_RUN)
                       exec_name: servo_servod_toggle_pd_role
                       exec_args:
-                        - toggle_times:1
+                        - retry_count:1
                         - wait_in_retry:5
-                        - wait_before_retry:1
+                        - wait_before_retry:10
                       docs:
                         - Toggle the servod command servo_pd_role only once.
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -5744,9 +5744,9 @@ plans:
                     - name: Toggle PD once (ALWAYS_RUN)
                       exec_name: servo_servod_toggle_pd_role
                       exec_args:
-                        - toggle_times:1
+                        - retry_count:1
                         - wait_in_retry:5
-                        - wait_before_retry:1
+                        - wait_before_retry:10
                       docs:
                         - Toggle the servod command servo_pd_role only once.
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -5776,9 +5776,9 @@ plans:
                     - name: Toggle PD 5 times (ALWAYS_RUN)
                       exec_name: servo_servod_toggle_pd_role
                       exec_args:
-                        - toggle_times:5
+                        - retry_count:5
                         - wait_in_retry:5
-                        - wait_before_retry:1
+                        - wait_before_retry:10
                       docs:
                         - Toggle the servod command servo_pd_role 5 times.
                 - name: Try fake disconnect and stop (ALWAYS_RUN)

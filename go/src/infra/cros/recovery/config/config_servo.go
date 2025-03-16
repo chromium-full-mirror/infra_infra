@@ -1379,9 +1379,9 @@ func servoPlanActions() map[string]*Action {
 				"Toggle the servod command servo_pd_role only once.",
 			},
 			ExecExtraArgs: []string{
-				"toggle_times:1",
+				"retry_count:1",
 				"wait_in_retry:5",
-				"wait_before_retry:1",
+				"wait_before_retry:10",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 			ExecName:   "servo_servod_toggle_pd_role",
@@ -1405,9 +1405,9 @@ func servoPlanActions() map[string]*Action {
 			},
 			ExecName: "servo_servod_toggle_pd_role",
 			ExecExtraArgs: []string{
-				"toggle_times:5",
+				"retry_count:5",
 				"wait_in_retry:5",
-				"wait_before_retry:1",
+				"wait_before_retry:10",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},
