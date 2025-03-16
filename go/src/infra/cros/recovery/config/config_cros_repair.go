@@ -2308,7 +2308,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_is_file_system_writable",
 			ExecExtraArgs: []string{
-				"paths:/mnt/stateful_partition,/var/tmp,/mnt/stateful_partition/encrypted",
+				"paths:/mnt/stateful_partition,/var/tmp",
 			},
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for ping",

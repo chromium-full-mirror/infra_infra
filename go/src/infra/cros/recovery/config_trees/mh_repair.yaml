@@ -10746,7 +10746,7 @@ plans:
                 - name: Internal storage is responsive
                   exec_name: cros_is_file_system_writable
                   exec_args:
-                    - paths:/mnt/stateful_partition,/var/tmp,/mnt/stateful_partition/encrypted
+                    - paths:/mnt/stateful_partition,/var/tmp
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
@@ -11102,7 +11102,7 @@ plans:
                 - name: Internal storage is responsive
                   exec_name: cros_is_file_system_writable
                   exec_args:
-                    - paths:/mnt/stateful_partition,/var/tmp,/mnt/stateful_partition/encrypted
+                    - paths:/mnt/stateful_partition,/var/tmp
                   docs:
                     - Verify that internal storage is responsive
                   dependencies:
