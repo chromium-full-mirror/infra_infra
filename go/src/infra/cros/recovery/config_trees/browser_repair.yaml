@@ -527,7 +527,7 @@ plans:
                 - state:SERVO_HOST_ISSUE
           recoveries:
             - name: Reboot servo device (RUN_ONCE) (time:'1m10s')
-              exec_name: servo_reboot
+              exec_name: sample_fail
               exec_args:
                 - reboot_timeout:30
                 - wait_timeout:30
@@ -786,7 +786,7 @@ plans:
                     - name: Stop UART capture (Allow to fail)
                       exec_name: servod_stop_uart_capture
             - name: Reboot servo device (RUN_ONCE) (time:'1m10s')
-              exec_name: servo_reboot
+              exec_name: sample_fail
               exec_args:
                 - reboot_timeout:30
                 - wait_timeout:30
@@ -930,7 +930,7 @@ plans:
                     - name: Stop UART capture (Allow to fail)
                       exec_name: servod_stop_uart_capture
             - name: Reboot servo device (RUN_ONCE) (time:'1m10s')
-              exec_name: servo_reboot
+              exec_name: sample_fail
               exec_args:
                 - reboot_timeout:30
                 - wait_timeout:30
@@ -1232,7 +1232,7 @@ plans:
                     - name: Stop UART capture (Allow to fail)
                       exec_name: servod_stop_uart_capture
             - name: Reboot servo device (RUN_ONCE) (time:'1m10s')
-              exec_name: servo_reboot
+              exec_name: sample_fail
               exec_args:
                 - reboot_timeout:30
                 - wait_timeout:30
@@ -1561,7 +1561,7 @@ plans:
                     - name: Stop UART capture (Allow to fail)
                       exec_name: servod_stop_uart_capture
             - name: Reboot servo device (RUN_ONCE) (time:'1m10s')
-              exec_name: servo_reboot
+              exec_name: sample_fail
               exec_args:
                 - reboot_timeout:30
                 - wait_timeout:30
@@ -2129,7 +2129,7 @@ plans:
                         - name: Stop UART capture (Allow to fail)
                           exec_name: servod_stop_uart_capture
                 - name: Reboot servo device (RUN_ONCE) (time:'1m10s')
-                  exec_name: servo_reboot
+                  exec_name: sample_fail
                   exec_args:
                     - reboot_timeout:30
                     - wait_timeout:30
@@ -2484,7 +2484,7 @@ plans:
                         - name: Stop UART capture (Allow to fail)
                           exec_name: servod_stop_uart_capture
                 - name: Reboot servo device (RUN_ONCE) (time:'1m10s')
-                  exec_name: servo_reboot
+                  exec_name: sample_fail
                   exec_args:
                     - reboot_timeout:30
                     - wait_timeout:30
@@ -2823,7 +2823,7 @@ plans:
                     - name: Stop UART capture (Allow to fail)
                       exec_name: servod_stop_uart_capture
             - name: Reboot servo device (RUN_ONCE) (time:'1m10s')
-              exec_name: servo_reboot
+              exec_name: sample_fail
               exec_args:
                 - reboot_timeout:30
                 - wait_timeout:30
@@ -3197,7 +3197,7 @@ plans:
                         - name: Stop UART capture (Allow to fail)
                           exec_name: servod_stop_uart_capture
                 - name: Reboot servo device (RUN_ONCE) (time:'1m10s')
-                  exec_name: servo_reboot
+                  exec_name: sample_fail
                   exec_args:
                     - reboot_timeout:30
                     - wait_timeout:30
@@ -3556,7 +3556,7 @@ plans:
                         - name: Stop UART capture (Allow to fail)
                           exec_name: servod_stop_uart_capture
                 - name: Reboot servo device (RUN_ONCE) (time:'1m10s')
-                  exec_name: servo_reboot
+                  exec_name: sample_fail
                   exec_args:
                     - reboot_timeout:30
                     - wait_timeout:30
@@ -4139,7 +4139,7 @@ plans:
                     - name: Stop UART capture (Allow to fail)
                       exec_name: servod_stop_uart_capture
             - name: Reboot servo device (RUN_ONCE) (time:'1m10s')
-              exec_name: servo_reboot
+              exec_name: sample_fail
               exec_args:
                 - reboot_timeout:30
                 - wait_timeout:30
@@ -4699,7 +4699,7 @@ plans:
                         - name: Stop UART capture (Allow to fail)
                           exec_name: servod_stop_uart_capture
                 - name: Reboot servo device (RUN_ONCE) (time:'1m10s')
-                  exec_name: servo_reboot
+                  exec_name: sample_fail
                   exec_args:
                     - reboot_timeout:30
                     - wait_timeout:30
@@ -5022,7 +5022,7 @@ plans:
                     - name: Stop UART capture (Allow to fail)
                       exec_name: servod_stop_uart_capture
             - name: Reboot servo device (RUN_ONCE) (time:'1m10s')
-              exec_name: servo_reboot
+              exec_name: sample_fail
               exec_args:
                 - reboot_timeout:30
                 - wait_timeout:30
@@ -5380,7 +5380,7 @@ plans:
                     - name: Stop UART capture (Allow to fail)
                       exec_name: servod_stop_uart_capture
             - name: Reboot servo device (RUN_ONCE) (time:'1m10s')
-              exec_name: servo_reboot
+              exec_name: sample_fail
               exec_args:
                 - reboot_timeout:30
                 - wait_timeout:30
@@ -5700,7 +5700,7 @@ plans:
                         - name: Stop UART capture (Allow to fail)
                           exec_name: servod_stop_uart_capture
                 - name: Reboot servo device (RUN_ONCE) (time:'1m10s')
-                  exec_name: servo_reboot
+                  exec_name: sample_fail
                   exec_args:
                     - reboot_timeout:30
                     - wait_timeout:30

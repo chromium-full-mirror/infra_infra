@@ -1962,7 +1962,9 @@ func servoPlanActions() map[string]*Action {
 				"Device is SSHable",
 				"Stop servod",
 			},
-			ExecName: "servo_reboot",
+			// temporarily disable servo built-in reboot due to b/398198297
+			// ExecName: "servo_reboot",
+			ExecName: "sample_fail",
 			ExecExtraArgs: []string{
 				"reboot_timeout:30",
 				"wait_timeout:30",

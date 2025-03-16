@@ -290,7 +290,7 @@ plans:
                 - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
             - name: Set state:SERVO_HOST_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
           recoveries:
-            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+            - name: Reboot servo device ('sample_fail') (RUN_ONCE) (time:'1m10s')
               dependencies:
                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
@@ -383,7 +383,7 @@ plans:
                 - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                   dependencies:
                     - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+            - name: Reboot servo device ('sample_fail') (RUN_ONCE) (time:'1m10s')
               dependencies:
                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
@@ -436,7 +436,7 @@ plans:
                 - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                   dependencies:
                     - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+            - name: Reboot servo device ('sample_fail') (RUN_ONCE) (time:'1m10s')
               dependencies:
                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
@@ -540,7 +540,7 @@ plans:
                 - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                   dependencies:
                     - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+            - name: Reboot servo device ('sample_fail') (RUN_ONCE) (time:'1m10s')
               dependencies:
                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
@@ -652,7 +652,7 @@ plans:
                 - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                   dependencies:
                     - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+            - name: Reboot servo device ('sample_fail') (RUN_ONCE) (time:'1m10s')
               dependencies:
                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
@@ -837,7 +837,7 @@ plans:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                       dependencies:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-                - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+                - name: Reboot servo device ('sample_fail') (RUN_ONCE) (time:'1m10s')
                   dependencies:
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
@@ -959,7 +959,7 @@ plans:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                       dependencies:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-                - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+                - name: Reboot servo device ('sample_fail') (RUN_ONCE) (time:'1m10s')
                   dependencies:
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
@@ -1076,7 +1076,7 @@ plans:
                 - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                   dependencies:
                     - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+            - name: Reboot servo device ('sample_fail') (RUN_ONCE) (time:'1m10s')
               dependencies:
                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
@@ -1205,7 +1205,7 @@ plans:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                       dependencies:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-                - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+                - name: Reboot servo device ('sample_fail') (RUN_ONCE) (time:'1m10s')
                   dependencies:
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
@@ -1329,7 +1329,7 @@ plans:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                       dependencies:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-                - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+                - name: Reboot servo device ('sample_fail') (RUN_ONCE) (time:'1m10s')
                   dependencies:
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
@@ -1525,7 +1525,7 @@ plans:
                 - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                   dependencies:
                     - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+            - name: Reboot servo device ('sample_fail') (RUN_ONCE) (time:'1m10s')
               dependencies:
                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
@@ -1712,7 +1712,7 @@ plans:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                       dependencies:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-                - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+                - name: Reboot servo device ('sample_fail') (RUN_ONCE) (time:'1m10s')
                   dependencies:
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
@@ -1825,7 +1825,7 @@ plans:
                 - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                   dependencies:
                     - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+            - name: Reboot servo device ('sample_fail') (RUN_ONCE) (time:'1m10s')
               dependencies:
                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
@@ -1946,7 +1946,7 @@ plans:
                 - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                   dependencies:
                     - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-            - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+            - name: Reboot servo device ('sample_fail') (RUN_ONCE) (time:'1m10s')
               dependencies:
                 - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
@@ -2062,7 +2062,7 @@ plans:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                       dependencies:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
-                - name: Reboot servo device ('servo_reboot') (RUN_ONCE) (time:'1m10s')
+                - name: Reboot servo device ('sample_fail') (RUN_ONCE) (time:'1m10s')
                   dependencies:
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
