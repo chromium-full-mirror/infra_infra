@@ -14,9 +14,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	"go.chromium.org/luci/common/logging"
+
 	atp "go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
-	"go.chromium.org/infra/cros/servo/logging"
 )
 
 const (
