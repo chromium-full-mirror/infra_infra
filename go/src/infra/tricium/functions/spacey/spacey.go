@@ -221,7 +221,7 @@ func checkTrailingSpace(path, line string, pos int) *tricium.Data_Comment {
 			StartLine: int32(pos),
 			EndLine:   int32(pos),
 			StartChar: int32(start + 1),
-			EndChar:   int32(end),
+			EndChar:   int32(len(line)),
 		}
 
 		comment.Suggestions = []*tricium.Data_Suggestion{
@@ -233,7 +233,7 @@ func checkTrailingSpace(path, line string, pos int) *tricium.Data_Comment {
 						StartLine:   int32(pos),
 						EndLine:     int32(pos),
 						StartChar:   0,
-						EndChar:     int32(len(line) - 1),
+						EndChar:     int32(len(line)),
 					},
 				},
 				Description: "Get rid of trailing space",

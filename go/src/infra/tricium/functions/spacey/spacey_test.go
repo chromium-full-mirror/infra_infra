@@ -203,7 +203,7 @@ func TestCheckTrailingSpace(t *testing.T) {
 			StartLine: 1,
 			EndLine:   1,
 			StartChar: 4,
-			EndChar:   4,
+			EndChar:   5,
 			Suggestions: []*tricium.Data_Suggestion{
 				{
 					Replacements: []*tricium.Data_Replacement{
@@ -213,7 +213,7 @@ func TestCheckTrailingSpace(t *testing.T) {
 							StartLine:   1,
 							EndLine:     1,
 							StartChar:   0,
-							EndChar:     4,
+							EndChar:     5,
 						},
 					},
 					Description: "Get rid of trailing space",
@@ -230,7 +230,7 @@ func TestCheckTrailingSpace(t *testing.T) {
 			StartLine: 1,
 			EndLine:   1,
 			StartChar: 4,
-			EndChar:   5,
+			EndChar:   6,
 			Suggestions: []*tricium.Data_Suggestion{
 				{
 					Replacements: []*tricium.Data_Replacement{
@@ -240,7 +240,7 @@ func TestCheckTrailingSpace(t *testing.T) {
 							StartLine:   1,
 							EndLine:     1,
 							StartChar:   0,
-							EndChar:     5,
+							EndChar:     6,
 						},
 					},
 					Description: "Get rid of trailing space",
