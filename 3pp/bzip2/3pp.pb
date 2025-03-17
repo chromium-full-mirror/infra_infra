@@ -1,8 +1,8 @@
 create {
   source {
     url {
-      download_url: "https://gitlab.com/bzip2/bzip2/-/archive/bzip2-1.0.6/bzip2-bzip2-1.0.6.tar.gz"
-      version: "1.0.6"
+      download_url: "https://gitlab.com/bzip2/bzip2/-/archive/bzip2-1.0.8/bzip2-bzip2-1.0.8.tar.gz"
+      version: "1.0.8"
     }
     unpack_archive: true
     cpe_base_address: "cpe:/a:bzip:bzip2"
