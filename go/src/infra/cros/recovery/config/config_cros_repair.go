@@ -2373,7 +2373,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "cros_has_enough_storage_space",
 			ExecExtraArgs: []string{
-				"/mnt/stateful_partition/encrypted:0.1",
+				"/var/tmp:0.1",
 			},
 			RecoveryActions: []string{
 				"Quick provision OS",

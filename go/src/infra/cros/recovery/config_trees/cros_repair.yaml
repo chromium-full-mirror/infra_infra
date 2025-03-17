@@ -23502,7 +23502,7 @@ plans:
             - name: Stateful partition (encrypted) has enough free space
               exec_name: cros_has_enough_storage_space
               exec_args:
-                - /mnt/stateful_partition/encrypted:0.1
+                - /var/tmp:0.1
               docs:
                 - Check the encrypted stateful partition have enough disk space.
                 - Expected to have free 0.1GB storage unit.
