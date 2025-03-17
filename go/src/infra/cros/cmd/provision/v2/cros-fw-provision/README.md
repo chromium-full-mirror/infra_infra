@@ -228,19 +228,32 @@ export CGO_ENABLED=0 && \
     at
     [us-docker.pkg.dev/cros-registry/test-services/cros-fw-provision](http://us-docker.pkg.dev/cros-registry/test-services/cros-fw-provision)
     and labels it `staging_cros-fw-provision`.
-3.  The CIPD package is tagged `prod` & docker container is tagged `prod_cros-fw-provision` by
+3.  The CIPD package is tagged `prod` & docker container is tagged
+    `prod_cros-fw-provision` by
     [ctp-uprev-prod](https://ci.chromium.org/ui/p/chromeos/builders/infra/ctp-uprev-prod).
     This is started manually by the
     [CTP oncall once a week](go/ctp-oncall#releasing-new-versions-to-production-services)
     following the instructions at go/ctp-release-doc.
-4.  When a Ctpv2 test runs it picks the cros-fw-provision sha256 sum to use by the
-    `prod_cros-fw-provision` label. If a test is run with Ctpv2 non-prod, it uses the `staging_cros-fw-provision`
-    label instead.
+4.  When a Ctpv2 test runs it picks the cros-fw-provision sha256 sum to use by
+    the `prod_cros-fw-provision` label. If a test is run with Ctpv2 non-prod, it
+    uses the `staging_cros-fw-provision` label instead.
 
 ### Finding the current prod version
 
-If you want to know, is my change in production yet? Look at
-[CIPD](https://chrome-infra-packages.appspot.com/p/chromiumos/infra/cft/provision/cros-fw-provision/linux-amd64/+/prod),
-and click on a instance. It will be tagged with all the commit ids that build
-this instance. If one of those commit ids is equal to or later than your change,
-then your change is included in that instance.
+If you want to know, is my change in production yet?
+
+Look at the latest
+[ctp-uprev-prod](https://ci.chromium.org/ui/p/chromeos/builders/infra/ctp-uprev-prod)
+build, and find the `package
+chromiumos/infra/cft/provision/cros-fw-provision/linux-amd64` step.
+
+Open the `stdout` of the `apply the "prod" ref of the
+"chromiumos/infra/cft/provision/cros-fw-provision/linux-amd64" package to
+"staging"` step.
+
+Copy the instance id, and then visit
+[CIPD](https://chrome-infra-packages.appspot.com/p/chromiumos/infra/cft/provision/cros-fw-provision/linux-amd64),
+and click on the instance with the id from the `stdout` file. It will be tagged
+with all the commit ids that build this instance. If one of those commit ids is
+equal to or later than your change, then your change is included in that
+instance.
