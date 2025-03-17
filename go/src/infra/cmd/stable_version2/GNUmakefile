@@ -9,6 +9,7 @@ gen:
 .PHONY: test
 test:
 	go test ./...
+	go test ../../cros/stableversion/...
 
 .PHONY: check
 check: test

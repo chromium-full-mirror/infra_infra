@@ -6,12 +6,10 @@ package gs
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/golang/protobuf/jsonpb"
 
-	sv "go.chromium.org/chromiumos/infra/proto/go/lab_platform"
 	"go.chromium.org/luci/common/gcloud/gs"
 )
 
@@ -30,10 +28,4 @@ func (gsc *Client) Init(ctx context.Context, t http.RoundTripper, unmarshaler js
 	gsc.C = c
 	gsc.unmarshaller = unmarshaler
 	return nil
-}
-
-// MetaFilePath returns gs path for meta file
-func MetaFilePath(crosSV *sv.StableCrosVersion) gs.Path {
-	p := fmt.Sprintf("gs://chromeos-image-archive/%s-release/%s/metadata.json", crosSV.GetKey().GetBuildTarget().GetName(), crosSV.GetVersion())
-	return gs.Path(p)
 }

@@ -14,9 +14,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/common/logging/gologger"
 
-	"go.chromium.org/infra/cmd/stable_version2/internal/cmd/dump"
 	"go.chromium.org/infra/cmd/stable_version2/internal/cmd/meta"
-	"go.chromium.org/infra/cmd/stable_version2/internal/cmd/omaha"
 	"go.chromium.org/infra/cmd/stable_version2/internal/cmd/validateconfig"
 	"go.chromium.org/infra/cmd/stable_version2/internal/site"
 )
@@ -34,15 +32,11 @@ func getApplication() *cli.Application {
 			authcli.SubcommandInfo(site.DefaultAuthOptions, "whoami", false),
 			authcli.SubcommandLogin(site.DefaultAuthOptions, "login", false),
 			authcli.SubcommandLogout(site.DefaultAuthOptions, "logout", false),
-			subcommands.Section("Utility"),
-			dump.Cmd,
 			subcommands.Section("Validation"),
 			validateconfig.Cmd,
 			subcommands.Section("Misc"),
 			meta.Update,
 			meta.Version,
-			subcommands.Section("Internal use (not for direct human use)"),
-			omaha.UpdateWithOmaha,
 		},
 	}
 }
