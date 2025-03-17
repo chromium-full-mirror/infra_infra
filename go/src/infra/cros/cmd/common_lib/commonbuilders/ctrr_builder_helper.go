@@ -33,7 +33,7 @@ var (
 		common.CrosProvision,
 		common.FwProvision,
 		common.AndroidProvision,
-		common.VmProvision,
+		// common.VmProvision,
 		common.ServoNexus,
 	}
 )
