@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/maruel/subcommands"
+	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
@@ -43,6 +44,7 @@ const (
 var (
 	AddPasitHostCmd    = pasitHostCmd(actionAdd, DefaultPasitHostCommand)
 	DeletePasitHostCmd = pasitHostCmd(actionDelete, DefaultPasitHostCommand)
+	GetPasitHostCmd    = pasitHostCmd(actionGet, DefaultPasitHostCommand)
 )
 
 // pasitHostCmd creates command for adding, removing, or replacing a DUTs pasit host topology
@@ -56,6 +58,7 @@ func pasitHostCmd(mode action, command string) *subcommands.Command {
 			c.authFlags.Register(&c.Flags, site.DefaultAuthOptions)
 			c.envFlags.Register(&c.Flags)
 			c.commonFlags.Register(&c.Flags)
+			c.outputFlags.Register(&c.Flags)
 
 			c.Flags.StringVar(&c.dutName, "dut", "", "DUT name to update")
 			c.Flags.StringVar(&c.hostFile, "f", "", "File path to json file containing serialized host proto")
@@ -71,6 +74,7 @@ type managePasitHostCmd struct {
 	authFlags   authcli.Flags
 	envFlags    site.EnvFlags
 	commonFlags site.CommonFlags
+	outputFlags site.OutputFlags
 
 	dutName   string
 	hostFile  string
@@ -129,8 +133,19 @@ func (c *managePasitHostCmd) run(a subcommands.Application, args []string, env s
 	}
 
 	peripherals := lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals()
-	peripherals.PasitHost2 = c.hostObj
+	if c.mode == actionGet {
+		if c.outputFlags.JSON() {
+			utils.PrintProtoJSON(peripherals.PasitHost2, !utils.NoEmitMode(false))
+		} else {
+			data := prototext.MarshalOptions{
+				Multiline: true,
+			}.Format(peripherals.PasitHost2)
+			fmt.Printf("PASIT host data: \n---\n%v---\n", data)
+		}
+		return nil
+	}
 
+	peripherals.PasitHost2 = c.hostObj
 	_, err = client.UpdateMachineLSE(ctx, &rpc.UpdateMachineLSERequest{MachineLSE: lse})
 	return err
 }
@@ -152,6 +167,10 @@ func (c *managePasitHostCmd) cleanAndValidateFlags() error {
 	// If deleting, set host to nil and return.
 	if c.mode == actionDelete {
 		c.hostObj = nil
+		return nil
+	}
+
+	if c.mode == actionGet {
 		return nil
 	}
 

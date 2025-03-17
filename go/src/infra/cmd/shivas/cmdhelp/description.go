@@ -2409,10 +2409,12 @@ Only one PASIT Host is allowed per DUT.
 
 Add adds the specified PASIT Host to the DUT.
 Delete deletes the PASIT Host attached to the DUT.
+Get prints the host info to the screen in .txtproto format and exits.
 
 Examples:
 shivas add peripheral-pasit-host -dut {DUT name} -f {host .json file}
 shivas delete peripheral-pasit-host -dut {DUT name}
+shivas get peripheral-pasit-host -dut {DUT name}
 `
 
 	// ManagePeripheralAMTLongDesc is along description for Intel AMT (vPro) subcommands

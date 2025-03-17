@@ -8,4 +8,5 @@ const (
 	actionAdd action = iota
 	actionReplace
 	actionDelete
+	actionGet
 )

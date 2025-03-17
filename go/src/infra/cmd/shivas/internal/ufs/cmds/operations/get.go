@@ -25,6 +25,7 @@ import (
 	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/machineprototype"
 	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/nic"
 	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/ownership"
+	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/peripherals"
 	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/rack"
 	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/rackprototype"
 	"go.chromium.org/infra/cmd/shivas/internal/ufs/subcmds/rpm"
@@ -106,6 +107,7 @@ func (c getApp) GetCommands() []*subcommands.Command {
 		static.GetZonesCmd,
 		lsedeployment.GetMachineLSEDeploymentCmd,
 		ownership.GetOwnershipDataCmd,
+		peripherals.GetPasitHostCmd,
 	}
 }
 
