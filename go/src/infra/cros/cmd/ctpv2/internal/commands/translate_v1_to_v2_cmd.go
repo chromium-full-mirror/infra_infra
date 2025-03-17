@@ -404,6 +404,9 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 					if arg.Key == "exclude_filters" {
 						executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "cts-params", Value: excludeFormatting(value)})
 						continue
+					} else if arg.Key == common.InvocationDataFlag {
+						executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: arg.Key, Value: value})
+						continue
 					}
 					executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: fmt.Sprintf("driverArg: %s", arg.Key), Value: value})
 				}
