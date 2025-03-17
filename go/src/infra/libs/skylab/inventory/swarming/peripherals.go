@@ -21,6 +21,19 @@ func init() {
 	reverters = append(reverters, otherPeripheralsReverter)
 }
 
+// servoComponentAliases is standardized names for components that vary, but serve the same purpose.
+var servoComponentAliases = map[string]string{
+	"servo_micro": "debug",
+	"c2d2":        "debug",
+	"servo_v4":    "servo_pd",
+	"servo_v4p1":  "servo_pd",
+}
+
+var nonRevertableServoComponents = map[string]bool{
+	"debug":    true,
+	"servo_pd": true,
+}
+
 func boolPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels) {
 	p := ls.GetPeripherals()
 	if p.GetAudioBoard() {
@@ -169,8 +182,17 @@ func otherPeripheralsConverter(dims Dimensions, ls *inventory.SchedulableLabels)
 		dims["label-camerabox_light"] = []string{light.String()}
 	}
 
+	components := make(map[string]bool)
 	for _, v := range p.GetServoComponent() {
+		if components[v] {
+			continue
+		}
+		components[v] = true
 		appendDim(dims, "label-servo_component", v)
+		if alias, ok := servoComponentAliases[v]; ok && !components[alias] {
+			components[alias] = true
+			appendDim(dims, "label-servo_component", alias)
+		}
 	}
 
 	hardwareStatePrefixLength := len("HARDWARE_")
@@ -382,8 +404,11 @@ func otherPeripheralsReverter(ls *inventory.SchedulableLabels, d Dimensions) Dim
 		delete(d, "label-camerabox_light")
 	}
 
-	p.ServoComponent = make([]string, len(d["label-servo_component"]))
-	copy(p.ServoComponent, d["label-servo_component"])
+	for _, v := range d["label-servo_component"] {
+		if !nonRevertableServoComponents[v] {
+			p.ServoComponent = append(p.ServoComponent, v)
+		}
+	}
 	delete(d, "label-servo_component")
 
 	if servoUSBState, ok := getLastStringValue(d, "label-servo_usb_state"); ok {

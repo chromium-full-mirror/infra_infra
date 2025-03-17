@@ -46,7 +46,7 @@ peripherals: {
   wificell: true
   stylus: true
   servo: true
-  servo_component: ["servo_v4", "ccd_cr50"]
+  servo_component: ["servo_v4", "ccd_cr50", "c2d2"]
   servo_state: 1
   servo_type: ""
   servo_usb_state: 3
@@ -233,7 +233,7 @@ peripherals: {
   wificell: true
   stylus: true
   servo: true
-  servo_component: ["servo_v4", "ccd_cr50"]
+  servo_component: ["servo_v4", "ccd_cr50", "c2d2"]
   servo_state: 1
   servo_type: ""
   servo_usb_state: 3
@@ -475,7 +475,7 @@ var fullDimensions = Dimensions{
 	"label-working_sims":            {"1", "2"},
 	"label-starfish_state":          {"BROKEN"},
 	"label-servo_state":             {"WORKING"},
-	"label-servo_component":         {"servo_v4", "ccd_cr50"},
+	"label-servo_component":         {"servo_v4", "servo_pd", "ccd_cr50", "c2d2", "debug"},
 	"label-servo_usb_state":         {"NEED_REPLACEMENT"},
 	"label-sim_1_0_carrier_name":    {"NETWORK_TEST"},
 	"label-sim_1_0_iccid":           {"iccid"},
