@@ -126,6 +126,23 @@ var dutPlansCases = []struct {
 		true,
 	},
 	{
+		"MH recovery",
+		tlw.DUTSetupType_CLANK_ONLY,
+		buildbucket.MHRecovery,
+		[]string{
+			config.PlanCrOSBase,
+			config.PlanDolos,
+			config.PlanServo,
+			config.PlanBluetoothPeer,
+			config.PlanWifiRouter,
+			config.PlanCrOS,
+			config.PlanChameleon,
+			config.PlanHMR,
+			config.PlanAMT,
+			config.PlanClosing},
+		true,
+	},
+	{
 		"cros deploy",
 		tlw.DUTSetupType_CROS,
 		buildbucket.Deploy,

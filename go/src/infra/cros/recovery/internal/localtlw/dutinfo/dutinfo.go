@@ -19,6 +19,7 @@ import (
 	ufslab "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/lab"
 	ufsmake "go.chromium.org/infra/unifiedfleet/api/v1/models/chromeos/manufacturing"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
+	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 // ConvertDut converts USF data to local representation of Dut instance.
@@ -157,7 +158,8 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 
 	// Check hostname to see if it's DUTs for browser testing
 	if strings.HasPrefix(name, "chrome-") || strings.HasPrefix(name, "chromium-") {
-		if dut.GetHive() == "chrome-clank" {
+		hive := ufsUtil.GetHiveForDut(name, dut.GetHive())
+		if hive == "chrome-clank" {
 			setup = tlw.DUTSetupType_CLANK_ONLY
 		} else {
 			setup = tlw.DUTSetupType_CROS_BROWSER

@@ -247,7 +247,7 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 			return config.MHRepairConfig(), nil
 		}
 	case buildbucket.MHRecovery:
-		if ds == tlw.DUTSetupType_CROS {
+		if ds == tlw.DUTSetupType_CROS || ds == tlw.DUTSetupType_CLANK_ONLY {
 			return config.MHRepairConfig(), nil
 		}
 	case buildbucket.DeepRecovery:
