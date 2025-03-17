@@ -121,7 +121,7 @@ func TestScheduleReviews(t *testing.T) {
 			}, nil)
 			gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
 				Number:     00002,
-				RevisionId: "789012",
+				RevisionId: "2",
 				Base:       "1",
 			})).Return(&gerritpb.ListFilesResponse{
 				Files: map[string]*gerritpb.FileInfo{

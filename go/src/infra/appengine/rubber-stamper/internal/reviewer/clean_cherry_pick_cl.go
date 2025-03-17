@@ -32,13 +32,20 @@ func reviewCleanCherryPick(ctx context.Context, cfg *config.Config, gc gerrit.Cl
 		ccpp = repoCfg.GetCleanCherryPickPattern()
 	}
 
-	// Check whether the current revision made any file changes compared with
-	// the initial revision.
-	if t.RevisionsCount > 1 {
+	// Bail if the change has too many patchsets, so we don't overload Gerrit.
+	if t.RevisionsCount > 10 {
+		return fmt.Sprintf("Change has too many patchsets (%d), skipping clean cherry-pick detection.", t.RevisionsCount), nil
+	}
+
+	// Check whether any revision made any file changes other than the commit
+	// message. We need to do this because Gerrit doesn't guarantee that the
+	// first patchset is the clean cherry-pick, so we disallow code changes in
+	// any patchset.
+	for rev := 2; rev <= int(t.RevisionsCount); rev++ {
 		listReq := &gerritpb.ListFilesRequest{
 			Number:     t.Number,
-			RevisionId: t.Revision,
-			Base:       "1",
+			RevisionId: fmt.Sprintf("%d", rev),
+			Base:       fmt.Sprintf("%d", rev-1),
 		}
 		resp, err := gc.ListFiles(ctx, listReq)
 		if err != nil {

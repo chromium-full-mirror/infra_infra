@@ -75,7 +75,7 @@ func TestReviewCleanCherryPick(t *testing.T) {
 				}, nil)
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
 					Number:     tsk.Number,
-					RevisionId: tsk.Revision,
+					RevisionId: "2",
 					Base:       "1",
 				})).Return(&gerritpb.ListFilesResponse{
 					Files: map[string]*gerritpb.FileInfo{
@@ -121,7 +121,7 @@ func TestReviewCleanCherryPick(t *testing.T) {
 				}, nil)
 				gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
 					Number:     tsk.Number,
-					RevisionId: tsk.Revision,
+					RevisionId: "2",
 					Base:       "1",
 				})).Return(&gerritpb.ListFilesResponse{
 					Files: map[string]*gerritpb.FileInfo{
@@ -146,7 +146,7 @@ func TestReviewCleanCherryPick(t *testing.T) {
 			tsk.RevisionsCount = 2
 			gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
 				Number:     tsk.Number,
-				RevisionId: tsk.Revision,
+				RevisionId: "2",
 				Base:       "1",
 			})).Return(&gerritpb.ListFilesResponse{
 				Files: map[string]*gerritpb.FileInfo{
@@ -159,6 +159,34 @@ func TestReviewCleanCherryPick(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, msg, should.Equal("The current revision changed the following files compared with the initial revision: no.txt."))
 		})
+
+		t.Run("decline when any file changes were made", func(t *ftt.Test) {
+			tsk.RevisionsCount = 3
+			gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
+				Number:     tsk.Number,
+				RevisionId: "2",
+				Base:       "1",
+			})).Return(&gerritpb.ListFilesResponse{
+				Files: map[string]*gerritpb.FileInfo{
+					"/COMMIT_MSG": nil,
+				},
+			}, nil)
+			gerritMock.EXPECT().ListFiles(gomock.Any(), proto.MatcherEqual(&gerritpb.ListFilesRequest{
+				Number:     tsk.Number,
+				RevisionId: "3",
+				Base:       "2",
+			})).Return(&gerritpb.ListFilesResponse{
+				Files: map[string]*gerritpb.FileInfo{
+					"/COMMIT_MSG": nil,
+					"no.txt":      nil,
+				},
+			}, nil)
+
+			msg, err := reviewCleanCherryPick(ctx, cfg, gerritMock, tsk)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msg, should.Equal("The current revision changed the following files compared with the initial revision: no.txt."))
+		})
+
 		t.Run("decline when out of configured time window", func(t *ftt.Test) {
 			t.Run("global time window works", func(t *ftt.Test) {
 				gerritMock.EXPECT().GetChange(gomock.Any(), proto.MatcherEqual(&gerritpb.GetChangeRequest{
