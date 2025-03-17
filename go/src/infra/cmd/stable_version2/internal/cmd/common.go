@@ -19,12 +19,6 @@ import (
 // ProgramName is the name of the current executable.
 const ProgramName = "stable_version2"
 
-// OmahaStatusFile is the name of the file with stable version information in it.
-const OmahaStatusFile = "omaha_status.json"
-
-// OmahaGSPath is the full google-storage path to the omaha status file
-const OmahaGSPath = "gs://chromeos-build-release-console/omaha_status.json"
-
 // GerritHost is the Gerrit host that manages the repo with the stable version config file.
 const GerritHost = "chrome-internal-review.googlesource.com"
 

@@ -6,7 +6,6 @@ package validateconfig
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
@@ -104,20 +103,10 @@ func (c *command) innerRun(a subcommands.Application, args []string, env subcomm
 		return fmt.Errorf("initializing Google Storage client: %w", err)
 	}
 
-	res, err := r.ValidateConfig(ctx, sv)
-	if err != nil {
+	if err := r.ValidateConfig(ctx, sv.GetVersions()); err != nil {
 		return fmt.Errorf("valdating config using Google Storage: %w", err)
 	}
-	msg, err := json.MarshalIndent(res, "", "    ")
-	if err != nil {
-		panic("failed to marshal JSON")
-	}
-	if count := res.AnomalyCount(); count > 0 {
-		fmt.Printf("%s\n", msg)
-		return fmt.Errorf("(%d) errors detected", count)
-	}
-
-	fmt.Printf("%s\n", vc.FileSeemsLegit)
+	fmt.Println("File appears to be a valid stable version config file.")
 	return nil
 }
 

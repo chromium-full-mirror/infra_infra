@@ -8,6 +8,10 @@ import (
 	"fmt"
 	"regexp"
 	"strconv"
+
+	"go.chromium.org/chromiumos/infra/proto/go/lab_platform"
+
+	"go.chromium.org/infra/cros/stableversion/keys"
 )
 
 // findMatchMap takes a regexp and a string and returns a map
@@ -28,7 +32,7 @@ func findMatchMap(r *regexp.Regexp, s string) (map[string]string, error) {
 	matchNames := r.SubexpNames()
 	matchValues := r.FindStringSubmatch(s)
 	if len(matchNames) != len(matchValues) {
-		return nil, fmt.Errorf("mismatch between len(matchNames) (%d) and len(matchValues) (%d)", len(matchNames), len(matchValues))
+		return nil, fmt.Errorf("mismatch between len(matchNames) (%d) and len(matchValues) (%d) for: %q", len(matchNames), len(matchValues), s)
 	}
 	for i, name := range matchNames {
 		if name != "" {
@@ -36,14 +40,6 @@ func findMatchMap(r *regexp.Regexp, s string) (map[string]string, error) {
 		}
 	}
 	return out, nil
-}
-
-func asInt(s string) int {
-	i64, err := strconv.ParseInt(s, 10, 32)
-	if err != nil {
-		return 0
-	}
-	return int(i64)
 }
 
 func parseInt(s string) (int, error) {
@@ -69,4 +65,8 @@ func extractString(m map[string]string, k string) (string, error) {
 		return value, nil
 	}
 	return "", fmt.Errorf("key %s must be present", k)
+}
+
+func TargetToKey(v *lab_platform.StableVersion) keys.Builder {
+	return keys.New(v.GetTarget().GetDeviceType(), v.GetTarget().GetBoard(), v.GetTarget().GetModel(), v.GetTarget().GetPool())
 }

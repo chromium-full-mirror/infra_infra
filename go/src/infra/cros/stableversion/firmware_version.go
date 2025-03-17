@@ -9,54 +9,31 @@ import (
 	"regexp"
 )
 
-// capture groups:
-// company, platform, tip, branch, branchbranch
-var firmwareVersionPattern *regexp.Regexp = regexp.MustCompile(`\A(?P<company>[A-Za-z0-9\-]+)_(?P<platform>[A-Za-z0-9_\-]+)\.(?P<tip>[0-9]+)\.(?P<branch>[0-9]+)\.(?P<branchbranch>[0-9_]+)\z`)
+var firmwareVersionPattern *regexp.Regexp = regexp.MustCompile(`Google[-_a-zA-Z0-9]*.(?P<sv>[0-9]+\.[0-9]+\.[_0-9]+).*`)
 
 // ParseFirmwareVersion takes a read-write firmware version and extracts
 // semantically meaningful elements.
-func ParseFirmwareVersion(s string) (string, string, int, int, string, error) {
+func ParseFirmwareVersion(s string) (string, error) {
 	if s == "" {
-		return "", "", 0, 0, "", fmt.Errorf("rw firmware version cannot be empty")
+		return "", fmt.Errorf("firmware version cannot be empty")
 	}
 	if firmwareVersionPattern.FindString(s) == "" {
-		return "", "", 0, 0, "", fmt.Errorf("rw firmware version is not valid")
+		return "", fmt.Errorf("firmware version is not valid: %q", s)
 	}
 	m, err := findMatchMap(firmwareVersionPattern, s)
 	if err != nil {
-		return "", "", 0, 0, "", err
+		return "", err
 	}
-	company, err := extractString(m, "company")
+	version, err := extractString(m, "sv")
 	if err != nil {
-		return "", "", 0, 0, "", err
+		return "", err
 	}
-	platform, err := extractString(m, "platform")
-	if err != nil {
-		return "", "", 0, 0, "", err
-	}
-	tip, err := extractInt(m, "tip")
-	if err != nil {
-		return "", "", 0, 0, "", err
-	}
-	branch, err := extractInt(m, "branch")
-	if err != nil {
-		return "", "", 0, 0, "", err
-	}
-	branchBranch, err := extractString(m, "branchbranch")
-	if err != nil {
-		return "", "", 0, 0, "", err
-	}
-	return company, platform, tip, branch, branchBranch, nil
+	return version, nil
 }
 
 // ValidateFirmwareVersion checks whether a string is a valid read-write
 // firmware version. e.g. Google_Rammus.11275.41.0
 func ValidateFirmwareVersion(r string) error {
-	_, _, _, _, _, err := ParseFirmwareVersion(r)
+	_, err := ParseFirmwareVersion(r)
 	return err
-}
-
-// SerializeFirmwareVersion takes a list of components of a RWFirmwareVersion
-func SerializeFirmwareVersion(company string, platform string, tip int, branch int, branchBranch int) string {
-	return fmt.Sprintf("%s_%s.%d.%d.%d", company, platform, tip, branch, branchBranch)
 }

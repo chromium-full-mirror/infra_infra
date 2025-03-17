@@ -5,6 +5,7 @@
 package querygs
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -23,8 +24,12 @@ func TestMilestonesInOrder(t *testing.T) {
 func TestFindFirmwarePath(t *testing.T) {
 	t.Parallel()
 	var r Reader
-	r.dld = fakeDownloader
-	r.exst = fakeExistenceChecker
+	r.exst = func(gsPath gs.Path) error {
+		if gsPath == "gs://chromeos-image-archive/a-release/R10-11.12.13-aaaaaa/firmware_from_source.tar.bz2" {
+			return nil
+		}
+		return fmt.Errorf("Unexpected")
+	}
 	expected := &FindFirmwarePathResult{
 		Image:    "a-release/R10-11.12.13-aaaaaa",
 		FullPath: "gs://chromeos-image-archive/a-release/R10-11.12.13-aaaaaa/firmware_from_source.tar.bz2",
@@ -37,14 +42,4 @@ func TestFindFirmwarePath(t *testing.T) {
 	if diff := cmp.Diff(expected, actual); diff != "" {
 		t.Errorf("unexpected diff (-want, +got):\n%s", diff)
 	}
-}
-
-// fakeDownloader successfully produces an empty byte slice.
-func fakeDownloader(gsPath gs.Path) ([]byte, error) {
-	return []byte(""), nil
-}
-
-// fakeExistenceChecker always concludes that its argument exists
-func fakeExistenceChecker(gsPath gs.Path) error {
-	return nil
 }

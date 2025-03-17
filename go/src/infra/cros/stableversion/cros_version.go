@@ -48,7 +48,7 @@ func ParseCrOSVersion(v string) (int, int, int, int, error) {
 		return 0, 0, 0, 0, fmt.Errorf("empty version string is invalid")
 	}
 	if crosVersionPattern.FindString(v) == "" {
-		return 0, 0, 0, 0, fmt.Errorf("version string is not valid")
+		return 0, 0, 0, 0, fmt.Errorf("version string is not valid: %q", v)
 	}
 	m, err := findMatchMap(crosVersionPattern, v)
 	if err != nil {
@@ -78,10 +78,4 @@ func ParseCrOSVersion(v string) (int, int, int, int, error) {
 func ValidateCrOSVersion(v string) error {
 	_, _, _, _, err := ParseCrOSVersion(v)
 	return err
-}
-
-// SerializeCrOSVersion takes a CrOSVersion specification
-// and produces a string in the canonical format.
-func SerializeCrOSVersion(release, tip, branch, branchBranch int) string {
-	return fmt.Sprintf("R%d-%d.%d.%d", release, tip, branch, branchBranch)
 }

@@ -133,7 +133,7 @@ func shallowValidateValueFields(os string, fw string, fwImage string) error {
 		}
 	}
 	if fwImage != "" {
-		if err := stableversion.ValidateFaftVersion(fwImage); err != nil {
+		if err := stableversion.ValidateFirmwarePath(fwImage); err != nil {
 			return errors.Annotate(err, "shallow validate value fields").Err()
 		}
 	}

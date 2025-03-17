@@ -29,17 +29,25 @@ const NOERROR = "NO-ERROR--ca5fc27a-4353-478c-bda2-c20519a2e0ff"
 const ANYERROR = "ANY-ERROR--4430e445-67c1-46a7-90b9-fad144490b5d"
 
 var testVerifyCrosImageExistsData = []struct {
-	uuid        string
-	buildTarget string
-	crosVersion string
-	out         *map[string]bool
+	name      string
+	key       string
+	osVersion string
+	out       map[string]bool
 }{
 	{
-		"f959c762-214e-4293-b655-032cd791a85f",
-		"test-target",
-		"R81-12835.0.0",
-		&map[string]bool{
+		"happy path",
+		"board=board;model=model",
+		"test-target-release/R81-12835.0.0",
+		map[string]bool{
 			"gs://chromeos-image-archive/test-target-release/R81-12835.0.0/chromiumos_test_image.tar.xz": true,
+		},
+	},
+	{
+		"happy path 2",
+		"board=board;model=model",
+		"test-target-release/R81-12835.0.0/my_image.tar.xz",
+		map[string]bool{
+			"gs://chromeos-image-archive/test-target-release/R81-12835.0.0/my_image.tar.xz": true,
 		},
 	},
 }
@@ -47,17 +55,22 @@ var testVerifyCrosImageExistsData = []struct {
 func TestVerifyCrosImageExists(t *testing.T) {
 	t.Parallel()
 	for _, tt := range testVerifyCrosImageExistsData {
-		t.Run(tt.uuid, func(t *testing.T) {
+		t.Run(tt.name, func(t *testing.T) {
 			var r Reader
-			r.exst = makeConstantExistenceChecker()
-			e := r.verifyCrosImageExists(context.Background(), tt.buildTarget, DONTCARE, tt.crosVersion)
-			if e != nil {
-				msg := fmt.Sprintf("uuid (%s): unexpected error (%s)", tt.uuid, e.Error())
+			r.exst = func(gsPath gs.Path) error {
+				if tt.out[string(gsPath)] {
+					return nil
+				}
+				return fmt.Errorf("Unexpected path")
+			}
+			err := r.verifyCrosImageExists(context.Background(), tt.key, tt.osVersion)
+			if err != nil {
+				msg := fmt.Sprintf("TestVerifyCrosImageExists (%s): unexpected error (%s)", tt.name, err.Error())
 				t.Error(msg)
 			}
-			diff := cmp.Diff(tt.out, r.cache)
+			diff := cmp.Diff(&tt.out, r.cache)
 			if diff != "" {
-				msg := fmt.Sprintf("uuid (%s): unexpected diff (%s)", tt.uuid, diff)
+				msg := fmt.Sprintf("TestVerifyCrosImageExists (%s): unexpected diff (%s)", tt.name, diff)
 				t.Error(msg)
 			}
 		})
@@ -66,146 +79,82 @@ func TestVerifyCrosImageExists(t *testing.T) {
 
 var testValidateConfigData = []struct {
 	name          string
-	uuid          string
 	in            string
-	out           string
 	errorFragment string
 }{
 	{
 		"empty",
-		"b2b7aa51-3c2b-4c3f-93bf-0b26e6483489",
 		`{}`,
-		`{
-			"missing_boards": null,
-			"failed_to_lookup": null,
-			"invalid_versions": null
-		}`,
 		NOERROR,
 	},
 	{
 		"two present boards",
-		"f63476d1-0382-4098-8a15-18fcb1a2e61a",
 		`{
-			"cros": [
+			"versions": [
 				{
-					"key": {
-						"buildTarget": {"name": "nami"},
-						"modelId": {"value": "akali360"}
+					"target": {
+						"deviceType": "cros",
+						"board": "gale",
+						"model": "gale"
 					},
-					"version": "R81-12835.0.0"
+					"osVersion": "R92-13982.81.0",
+					"osImagePath": "gale-test-ap-tryjob/R92-13982.81"
 				},
 				{
-					"key": {
-						"buildTarget": {"name": "nami"},
-						"modelId": {"value": "sona"}
+					"target": {
+						"deviceType": "cros",
+						"board": "nami",
+						"model": "akali360"
 					},
-					"version": "R81-12835.0.0"
-				}
-			],
-			"firmware": [
-				{
-					"key": {
-						"modelId": {"value": "sona"},
-						"buildTarget": {"name": "nami"}
-					},
-					"version": "Google_Nami.42.43.44"
-				},
-				{
-					"key": {
-						"modelId": {"value": "akali360"},
-						"buildTarget": {"name": "nami"}
-					},
-					"version": "Google_Nami.52.53.54"
+					"osVersion": "R81-12835.0.0",
+					"osImagePath": "nami-release/R81-12835.0.0",
+					"firmwareRoVersion":"Google_Nami.42.43.44"
 				}
 			]
-		}`,
-		`{
-			"missing_boards": null,
-			"failed_to_lookup": null,
-			"invalid_versions": null
 		}`,
 		NOERROR,
 	},
 	{
 		"two present boards with specific CrOS entries",
-		"f63476d1-0382-4098-8a15-18fcb1a2e61a",
 		`{
-			"cros": [
+			"versions": [
 				{
-					"key": {
-						"buildTarget": {"name": "nami"},
-						"modelId": {"value": "sona"}
+					"target": {
+						"deviceType": "cros",
+						"board": "nami",
+						"model": "sona"
 					},
-					"version": "R81-12835.0.0"
+					"osVersion": "R81-12835.0.0",
+					"osImagePath": "nami-release/R81-12835.0.0",
+					"firmwareRoVersion":"Google_Nami.42.43.44"
 				},
 				{
-					"key": {
-						"buildTarget": {"name": "nami"},
-						"modelId": {"value": "akali360"}
+					"target": {
+						"deviceType": "cros",
+						"board": "nami",
+						"model": "akali360"
 					},
-					"version": "R81-12835.0.0"
-				}
-			],
-			"firmware": [
-				{
-					"key": {
-						"modelId": {"value": "sona"},
-						"buildTarget": {"name": "nami"}
-					},
-					"version": "Google_Nami.42.43.44"
-				},
-				{
-					"key": {
-						"modelId": {"value": "akali360"},
-						"buildTarget": {"name": "nami"}
-					},
-					"version": "Google_Nami.52.53.54"
+					"osVersion": "R81-12835.0.0",
+					"osImagePath": "nami-release/R81-12835.0.0",
+					"firmwareRoVersion":"Google_Nami.52.53.54"
 				}
 			]
-		}`,
-		`{
-			"missing_boards": null,
-			"failed_to_lookup": null,
-			"invalid_versions": null
 		}`,
 		NOERROR,
 	},
 	{
 		"one nonexistent chrome os version",
-		"fab84b16-288d-44f0-b489-3712f8c14ad3",
 		`{
-			"cros": [
-				{
-					"key": {
-						"buildTarget": {"name": "nonexistent-build-target"},
-						"modelId": {}
-					},
-					"version": "R81-12835.0.0"
-				}
-			]
+			"versions": [{
+				"target": {
+					"deviceType": "cros",
+					"board": "nami",
+					"model": "nonexistent-model"
+				},
+				"osVersion": "R81-12835.0.0",
+				"osImagePath": "nami-release/R81-12835.0.0"
+			}]
 		}`,
-		`{
-			"missing_boards": ["nonexistent-build-target"],
-			"failed_to_lookup": null,
-			"invalid_versions": null
-		}`,
-		NOERROR,
-	},
-	{
-		"invalid Chrome OS version in config file SHOULD PASS",
-		"e188b8d4-6c2a-4fc1-b525-70144e0d8148",
-		`{
-			"cros": [
-				{
-					"key": {
-						"buildTarget": {"name": "nami"},
-						"modelId": {}
-					},
-					"version": "xxx-fake-version"
-				}
-			]
-		}`,
-		`null`,
 		NOERROR,
 	},
 }
@@ -216,159 +165,16 @@ func TestValidateConfig(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			var r Reader
 			bg := context.Background()
-			r.dld = makeConstantDownloader(DONTCARE)
-			r.exst = makeConstantExistenceChecker()
+			// All paths are valid.
+			r.exst = func(gsPath gs.Path) error {
+				return nil
+			}
 			sv := parseStableVersionsOrPanic(tt.in)
-			expected := parseResultsOrPanic(tt.out)
-			result, e := r.ValidateConfig(bg, sv)
+			e := r.ValidateConfig(bg, sv.GetVersions())
 			if err := validateErrorContainsSubstring(e, tt.errorFragment); err != nil {
 				t.Error(err.Error())
 			}
-			diff := cmp.Diff(expected, result)
-			if diff != "" {
-				msg := fmt.Sprintf("name (%s): uuid (%s): unexpected diff (%s)", tt.name, tt.uuid, diff)
-				t.Error(msg)
-			}
 		})
-	}
-}
-
-func TestNonLowercaseIsMalformed(t *testing.T) {
-	cases := []struct {
-		name         string
-		fileContents string
-		in           string
-		out          string
-	}{
-		{
-			"uppercase buildTarget in cros version",
-			"",
-			`{
-				"cros": [
-					{
-						"key": {
-							"buildTarget": {"name": "naMi"},
-							"modelId": {}
-						},
-						"version": "xxx-fake-version"
-					}
-				]
-			}`,
-			`{
-				"non_lowercase_entries": ["naMi"]
-			}`,
-		},
-	}
-
-	t.Parallel()
-
-	for _, tt := range cases {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			bg := context.Background()
-			var out ValidationResult
-			unmarshalOrPanic(tt.out, &out)
-
-			var r Reader
-			r.dld = makeConstantDownloader(tt.fileContents)
-
-			in := parseStableVersionsOrPanic(tt.in)
-			res, err := r.ValidateConfig(bg, in)
-			if err != nil {
-				t.Errorf("unexpected error %s", err)
-			}
-			if diff := cmp.Diff(&out, res); diff != "" {
-				t.Errorf("comparison failure: %s", diff)
-			}
-		})
-	}
-}
-
-func TestIsLowercase(t *testing.T) {
-	cases := []struct {
-		in  string
-		out bool
-	}{
-		{
-			"",
-			true,
-		},
-		{
-			"a",
-			true,
-		},
-		{
-			"A",
-			false,
-		},
-		{
-			"aA",
-			false,
-		},
-	}
-
-	t.Parallel()
-
-	for _, tt := range cases {
-		t.Run(tt.in, func(t *testing.T) {
-			t.Parallel()
-			if isLowercase(tt.in) != tt.out {
-				t.Errorf("isLowercase(%s) is unexpectedly %v", tt.in, tt.out)
-			}
-		})
-	}
-}
-
-func testCombinedKey(t *testing.T) {
-	t.Parallel()
-	cases := []struct {
-		board string
-		model string
-		out   string
-	}{
-		{
-			"",
-			"",
-			"",
-		},
-		{
-			"a",
-			"",
-			"a",
-		},
-		{
-			"",
-			"b",
-			";b",
-		},
-		{
-			"a",
-			"b",
-			"a;b",
-		},
-	}
-
-	for _, tt := range cases {
-		t.Run(tt.out, func(t *testing.T) {
-			t.Parallel()
-			want := tt.out
-			got := combinedKey(tt.board, tt.model)
-			if diff := cmp.Diff(want, got); diff != "" {
-				t.Errorf("diff (-want +got):\n%s", diff)
-			}
-		})
-	}
-}
-
-func makeConstantDownloader(content string) downloader {
-	return func(gsPath gs.Path) ([]byte, error) {
-		return []byte(content), nil
-	}
-}
-
-func makeConstantExistenceChecker() existenceChecker {
-	return func(gsPath gs.Path) error {
-		return nil
 	}
 }
 
@@ -380,16 +186,6 @@ func parseStableVersionsOrPanic(content string) *labPlatform.StableVersions {
 		panic(err.Error())
 	}
 	return out
-}
-
-// parseStableVersionsOrPanic is a helper function that's used in tests to feed
-// a result file contained in a string literal to a test.
-func parseResultsOrPanic(content string) *ValidationResult {
-	var out ValidationResult
-	if err := json.Unmarshal([]byte(content), &out); err != nil {
-		panic(err.Error())
-	}
-	return &out
 }
 
 // validateErrorContainsSubstring checks whether an error matches a string provided in a table-driven test
