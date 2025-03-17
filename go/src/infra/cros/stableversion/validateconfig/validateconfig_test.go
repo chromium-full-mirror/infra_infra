@@ -144,7 +144,7 @@ var testShallowValidateVersionsData = []struct {
 				OsImagePath: "model1-release/R81-12835.0.4",
 			},
 		},
-		fmt.Sprintf(fileShallowlyDuplicateEntry, 1, "devicetype=cros;board=board1;model=model1;pool="),
+		fmt.Sprintf(fileShallowlyDuplicateEntry, 1, "devicetype=cros;board=board1;model=model1"),
 	},
 }
 

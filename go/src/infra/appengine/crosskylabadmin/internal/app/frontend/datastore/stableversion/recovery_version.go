@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
+	"go.chromium.org/infra/cros/stableversion"
 	"go.chromium.org/infra/cros/stableversion/keys"
 )
 
@@ -78,10 +79,11 @@ func WriteVersions(ctx context.Context, versions []*lab_platform.StableVersion) 
 	}
 	logging.Infof(ctx, "Service has %d version records before update.", len(oldRecords))
 	for _, record := range oldRecords {
-		key := targetToKey(record.Version)
-		v := versionMap[key.String()]
+		// Use the database key for comparison, do not generate a new one.
+		foundKey := record.ID
+		v := versionMap[foundKey]
 		if v == nil {
-			logging.Infof(ctx, "Version: %q doesn't exist anymore! Removing...", key.String())
+			logging.Infof(ctx, "Version: %q doesn't exist anymore! Removing...", foundKey)
 			if err := datastore.Delete(ctx, record); err != nil {
 				return errors.Annotate(err, "write versions: fail to remove expired records").Err()
 			}
@@ -101,10 +103,6 @@ func WriteVersions(ctx context.Context, versions []*lab_platform.StableVersion) 
 	}
 	logging.Infof(ctx, "Finished saving versions!")
 	return nil
-}
-
-func targetToKey(v *lab_platform.StableVersion) keys.Builder {
-	return keys.New(v.GetTarget().GetDeviceType(), v.GetTarget().GetBoard(), v.GetTarget().GetModel(), v.GetTarget().GetPool())
 }
 
 func validateTarget(t *lab_platform.StableVersionTarget) error {
@@ -130,7 +128,6 @@ func validateVersion(v *lab_platform.StableVersion) error {
 	return nil
 }
 
-// removeEmptyKeyOrValue destructively drops empty keys or values from versionMap
 func removeBadVersions(ctx context.Context, versions []*lab_platform.StableVersion) map[string]*lab_platform.StableVersion {
 	resMap := make(map[string]*lab_platform.StableVersion, len(versions))
 	var totalRemovedVersions int
@@ -140,7 +137,7 @@ func removeBadVersions(ctx context.Context, versions []*lab_platform.StableVersi
 			logging.Debugf(ctx, "Skip version due to bad target: %v", v.GetTarget())
 			continue
 		}
-		key := targetToKey(v)
+		key := stableversion.TargetToKey(v)
 		if resMap[key.String()] != nil {
 			totalRemovedVersions++
 			logging.Debugf(ctx, "Skip version due to duplicate target: %q", key.String())

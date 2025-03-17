@@ -1,16 +1,6 @@
-// Copyright 2022 The LUCI Authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package satlab
 
@@ -25,7 +15,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/gae/service/datastore"
 
-	"go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
 )
 
 const SatlabStableVersionKind = "satlab_stable_version"
@@ -91,15 +81,6 @@ func PutSatlabStableVersionEntry(ctx context.Context, entry *SatlabStableVersion
 		return errors.Annotate(err, "put satlab stable version entry").Err()
 	}
 	return nil
-}
-
-// GetSatlabStableVersionEntryByID uses the ID to look up a satlab stable entry.
-func GetSatlabStableVersionEntryByID(ctx context.Context, req *fleet.GetStableVersionRequest) (*SatlabStableVersionEntry, error) {
-	if req == nil {
-		return nil, errors.Reason("get satlab stable version entry by id: request cannot be nil").Err()
-	}
-	id := MakeSatlabStableVersionID(req.GetHostname(), req.GetBuildTarget(), req.GetModel())
-	return GetSatlabStableVersionEntryByRawID(ctx, id)
 }
 
 // GetSatlabStableVersionEntryByRawID uses the ID to look up a satlab stable entry.

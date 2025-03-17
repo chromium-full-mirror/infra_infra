@@ -135,8 +135,8 @@ func TestRemoveBadVersions(t *testing.T) {
 		"devicetype=dt-15;board=board-15;model=model-15;pool=pool-15",
 		"devicetype=dt-16;board=board-16;model=model-16;pool=pool-16",
 		"devicetype=dt-50;board=board-50;model=model-50;pool=pool-50",
-		"devicetype=dt-102;board=board-102;model=model-102;pool=",
-		"devicetype=;board=board-202;model=model-202;pool=",
+		"devicetype=dt-102;board=board-102;model=model-102",
+		"devicetype=;board=board-202;model=model-202",
 	}
 	ctx := context.Background()
 	versionMap := removeBadVersions(ctx, versions)

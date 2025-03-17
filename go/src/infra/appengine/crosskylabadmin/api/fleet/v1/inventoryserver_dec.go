@@ -23,23 +23,6 @@ type DecoratedInventory struct {
 	Postlude func(ctx context.Context, methodName string, rsp proto.Message, err error) error
 }
 
-func (s *DecoratedInventory) GetStableVersion(ctx context.Context, req *GetStableVersionRequest) (rsp *GetStableVersionResponse, err error) {
-	if s.Prelude != nil {
-		var newCtx context.Context
-		newCtx, err = s.Prelude(ctx, "GetStableVersion", req)
-		if err == nil {
-			ctx = newCtx
-		}
-	}
-	if err == nil {
-		rsp, err = s.Service.GetStableVersion(ctx, req)
-	}
-	if s.Postlude != nil {
-		err = s.Postlude(ctx, "GetStableVersion", rsp, err)
-	}
-	return
-}
-
 func (s *DecoratedInventory) GetRecoveryVersion(ctx context.Context, req *GetRecoveryVersionRequest) (rsp *GetRecoveryVersionResponse, err error) {
 	if s.Prelude != nil {
 		var newCtx context.Context

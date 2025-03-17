@@ -17,7 +17,7 @@ import (
 	"go.chromium.org/luci/common/cli"
 	"go.chromium.org/luci/grpc/prpc"
 
-	"go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
+	fleet "go.chromium.org/infra/appengine/crosskylabadmin/api/fleet/v1"
 	"go.chromium.org/infra/cmd/mallet/internal/site"
 	"go.chromium.org/infra/cmdsupport/cmdlib"
 	"go.chromium.org/infra/libs/fleet/buildbucket"
@@ -97,9 +97,9 @@ func (c *LabqualRun) innerRun(a subcommands.Application, args []string, env subc
 
 		_, _ = fmt.Fprintf(a.GetOut(), "Requesting labqual run for host %q\n", host)
 
-		stableReq := &fleet.GetStableVersionRequest{
-			Hostname:                 host,
-			SatlabInformationalQuery: false,
+		stableReq := &fleet.GetRecoveryVersionRequest{
+			DeviceType: "cros",
+			DeviceName: host,
 		}
 
 		out, err := protojson.Marshal(stableReq)
@@ -111,7 +111,7 @@ func (c *LabqualRun) innerRun(a subcommands.Application, args []string, env subc
 
 		stdErrLog.Printf("Stable version request: %s\n", out)
 
-		stableResp, err := invClient.GetStableVersion(ctx, stableReq)
+		stableResp, err := invClient.GetRecoveryVersion(ctx, stableReq)
 		if err != nil {
 			err = fmt.Errorf("failed to get stable version for host %q: %w", host, err)
 			runErrs = append(runErrs, err)
@@ -152,7 +152,7 @@ func (c *LabqualRun) innerRun(a subcommands.Application, args []string, env subc
 
 		if c.imagePath == "" {
 			stdErrLog.Print("No image provided, using lab stable configuration image")
-			c.imagePath = board + "-release/" + stableResp.CrosVersion
+			c.imagePath = board + "-release/" + stableResp.GetVersion().GetOsVersion()
 		}
 
 		pools := lseResponse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPools()
@@ -173,7 +173,7 @@ func (c *LabqualRun) innerRun(a subcommands.Application, args []string, env subc
 			Tests:       []string{"tast.generic"},
 			AddedDims:   dims,
 			// Expected string: tast_expr=\\(\\\"group:labqual_stable\\\"\\) tast.firmware.firmwarePath=firmware-dedede-13606.B-branch-firmware/R89-13606.597.0/dedede
-			TestArgs: fmt.Sprintf("tast_expr=\\(\\\"group:labqual_stable\\\"\\) tast.firmware.firmwarePath=%s", stableResp.FaftVersion),
+			TestArgs: fmt.Sprintf("tast_expr=\\(\\\"group:labqual_stable\\\"\\) tast.firmware.firmwarePath=%s", stableResp.GetVersion().GetFirmwareRoImagePath()),
 			BBClient: bbClient.BuildBucketClient,
 		}
 		url, err := cmd.TriggerRun(ctx)

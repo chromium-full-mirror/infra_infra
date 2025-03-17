@@ -13,11 +13,6 @@ import "google/api/field_behavior.proto";
 
 // Inventory service helps manage ChromeOS DUTs.
 service Inventory {
-  // GetStableVersion reads the stable version for a particular DUT from datastore
-  //
-  // There is intentionally no RPC for overwriting the stable version with arbitrary content.
-  rpc GetStableVersion(GetStableVersionRequest) returns (GetStableVersionResponse);
-
   // GetRecoveryVersion reads the recovery version for a particular board/model/host.
   rpc GetRecoveryVersion(GetRecoveryVersionRequest) returns (GetRecoveryVersionResponse);
 
@@ -32,44 +27,6 @@ service Inventory {
   // DumpStableVersionToDatastore reads the stable version from the LUCI config file
   // and writes it to datastore.
   rpc DumpStableVersionToDatastore(DumpStableVersionToDatastoreRequest) returns (DumpStableVersionToDatastoreResponse);
-}
-
-// next tag: 5
-message GetStableVersionRequest {
-  // TODO(gregorynisbet): remove support for looking up
-  // stable version information by buildTarget + model
-  string buildTarget = 1;
-  string model = 2;
-  // NOTE: {hostname} and {buildTarget, model} are alternatives
-  string hostname = 3;
-  //
-  // SatlabInformationalQuery identifies whether this request is an information-only request coming
-  // from the satlab CLI.
-  //
-  // Supporting `./satlab get-stable-version -model ... -board ...`, which is necessary for users to be
-  // able to how the stable versions are configured for their devices, requires us to be able to identify
-  // requests for board+model that are intended to be associated with satlab devices.
-  //
-  // In the normal flow, which looks at hostnames only, we distinguish a satlab or non-satlab request using
-  // `heuristics.LooksLikeSatlabDevice(hostname)`.
-  //
-  bool satlabInformationalQuery = 4;
-}
-
-// next tag: 6
-message GetStableVersionResponse {
-  string crosVersion = 1;
-  string firmwareVersion = 2;
-  string faftVersion = 3;
-  string servoCrosVersion = 4;
-  // Reason is an explanation of *why* this particular stable version
-  // was picked. Possible values are:
-  //
-  // 1) "host-specific"
-  // 2) "board and model"
-  //
-  // This value is intended to be informational, and either logged or presented to an end user.
-  string reason = 5;
 }
 
 message GetRecoveryVersionRequest {

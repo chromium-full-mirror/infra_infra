@@ -36,10 +36,7 @@ func newApplication() *cli.Application {
 			authcli.SubcommandLogout(site.DefaultAuthOptions, "logout", false),
 			// This section should eventually contain all CrOSSkylabAdmin RPCs.
 			subcommands.Section("CrosAdm RPCs"),
-			cmds.GetStableVersion,
-			cmds.SetStableVersion,
 			cmds.DeleteStableVersion,
-			cmds.PushBotsForAdminTasks,
 			// This section should contain only the UFS RPCs that are realistically needed
 			// to test CrOSSkylabAdmin functionality. If an RPC isn't needed or is no longer
 			// needed for this purpose, remove it.

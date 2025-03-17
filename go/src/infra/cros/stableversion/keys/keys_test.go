@@ -67,12 +67,12 @@ func TestNew(t *testing.T) {
 		pool       string
 		output     string
 	}{
-		{"empty", "", "", "", "", "devicetype=;board=;model=;pool="},
-		{"just device-type", "d1", "", "", "", "devicetype=d1;board=;model=;pool="},
-		{"just board", "", "b1", "", "", "devicetype=;board=b1;model=;pool="},
-		{"just model", "", "", "m1", "", "devicetype=;board=;model=m1;pool="},
+		{"empty", "", "", "", "", "devicetype=;board=;model="},
+		{"just device-type", "d1", "", "", "", "devicetype=d1;board=;model="},
+		{"just board", "", "b1", "", "", "devicetype=;board=b1;model="},
+		{"just model", "", "", "m1", "", "devicetype=;board=;model=m1"},
 		{"just pool", "", "", "", "p1", "devicetype=;board=;model=;pool=p1"},
-		{"just board+model", "cros", "b2", "m2", "", "devicetype=cros;board=b2;model=m2;pool="},
+		{"just board+model", "cros", "b2", "m2", "", "devicetype=cros;board=b2;model=m2"},
 		{"just model+pool", "", "", "m3", "p3", "devicetype=;board=;model=m3;pool=p3"},
 		{"all 1", "", "b4", "m4", "p4", "devicetype=;board=b4;model=m4;pool=p4"},
 		{"all 1", "cros", "b4", "m4", "p4", "devicetype=cros;board=b4;model=m4;pool=p4"},

@@ -1,16 +1,6 @@
-// Copyright 2022 The LUCI Authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package satlab
 
@@ -108,33 +98,34 @@ func TestGetSatlabStableVersionEntryByID(t *testing.T) {
 	t.Parallel()
 
 	cases := []struct {
-		name string
-		in   *SatlabStableVersionEntry
-		req  *fleet.GetStableVersionRequest
+		name     string
+		board    string
+		model    string
+		hostname string
+		in       *SatlabStableVersionEntry
 	}{
 		{
-			name: "hostname",
-			in: &SatlabStableVersionEntry{
+			"hostname",
+			"",
+			"",
+			"aaa-hostname-aaa",
+			&SatlabStableVersionEntry{
 				ID:      "aaa-hostname-aaa",
 				OS:      "AAA-CROS-AAA",
 				FW:      "AAA-FW-AAA",
 				FWImage: "AAA-FWImage-AAA",
 			},
-			req: &fleet.GetStableVersionRequest{
-				Hostname: "aaa-hostname-aaa",
-			},
 		},
 		{
-			name: "hostname",
-			in: &SatlabStableVersionEntry{
+			"hostname",
+			"AAA-BOARD-AAA",
+			"AAA-MODEL-AAA",
+			"",
+			&SatlabStableVersionEntry{
 				ID:      "aaa-board-aaa|aaa-model-aaa",
 				OS:      "AAA-CROS-AAA",
 				FW:      "AAA-FW-AAA",
 				FWImage: "AAA-FWImage-AAA",
-			},
-			req: &fleet.GetStableVersionRequest{
-				BuildTarget: "AAA-BOARD-AAA",
-				Model:       "AAA-MODEL-AAA",
 			},
 		},
 	}
@@ -150,7 +141,8 @@ func TestGetSatlabStableVersionEntryByID(t *testing.T) {
 			if err := PutSatlabStableVersionEntry(ctx, tt.in); err != nil {
 				t.Errorf("unexpected error: %s", err)
 			}
-			actual, err := GetSatlabStableVersionEntryByID(ctx, tt.req)
+			id := MakeSatlabStableVersionID(tt.hostname, tt.board, tt.model)
+			actual, err := GetSatlabStableVersionEntryByRawID(ctx, id)
 			if err != nil {
 				t.Errorf("unexpected error: %s", err)
 			}

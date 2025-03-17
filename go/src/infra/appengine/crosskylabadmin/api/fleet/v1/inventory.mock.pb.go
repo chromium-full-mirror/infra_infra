@@ -165,26 +165,6 @@ func (mr *MockInventoryClientMockRecorder) GetRecoveryVersion(ctx, in interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRecoveryVersion", reflect.TypeOf((*MockInventoryClient)(nil).GetRecoveryVersion), varargs...)
 }
 
-// GetStableVersion mocks base method.
-func (m *MockInventoryClient) GetStableVersion(ctx context.Context, in *GetStableVersionRequest, opts ...grpc.CallOption) (*GetStableVersionResponse, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, in}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "GetStableVersion", varargs...)
-	ret0, _ := ret[0].(*GetStableVersionResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetStableVersion indicates an expected call of GetStableVersion.
-func (mr *MockInventoryClientMockRecorder) GetStableVersion(ctx, in interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, in}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStableVersion", reflect.TypeOf((*MockInventoryClient)(nil).GetStableVersion), varargs...)
-}
-
 // SetSatlabStableVersion mocks base method.
 func (m *MockInventoryClient) SetSatlabStableVersion(ctx context.Context, in *SetSatlabStableVersionRequest, opts ...grpc.CallOption) (*SetSatlabStableVersionResponse, error) {
 	m.ctrl.T.Helper()
@@ -271,21 +251,6 @@ func (m *MockInventoryServer) GetRecoveryVersion(arg0 context.Context, arg1 *Get
 func (mr *MockInventoryServerMockRecorder) GetRecoveryVersion(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRecoveryVersion", reflect.TypeOf((*MockInventoryServer)(nil).GetRecoveryVersion), arg0, arg1)
-}
-
-// GetStableVersion mocks base method.
-func (m *MockInventoryServer) GetStableVersion(arg0 context.Context, arg1 *GetStableVersionRequest) (*GetStableVersionResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetStableVersion", arg0, arg1)
-	ret0, _ := ret[0].(*GetStableVersionResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetStableVersion indicates an expected call of GetStableVersion.
-func (mr *MockInventoryServerMockRecorder) GetStableVersion(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStableVersion", reflect.TypeOf((*MockInventoryServer)(nil).GetStableVersion), arg0, arg1)
 }
 
 // SetSatlabStableVersion mocks base method.

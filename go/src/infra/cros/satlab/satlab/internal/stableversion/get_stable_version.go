@@ -113,12 +113,11 @@ func (c *getStableVersionRun) getStableVersionInternal(ctx context.Context, a su
 			Options: site.DefaultPRPCOptions,
 		},
 	)
-	resp, err := invWithSVClient.GetStableVersion(ctx, &fleet.GetStableVersionRequest{
-		BuildTarget: c.board,
-		Model:       c.model,
-		Hostname:    c.hostname,
-		// Mark ourselves as a satlab informational query so we always get the satlab versions.
-		SatlabInformationalQuery: true,
+	resp, err := invWithSVClient.GetRecoveryVersion(ctx, &fleet.GetRecoveryVersionRequest{
+		DeviceType: "cros",
+		DeviceName: c.hostname,
+		Board:      c.board,
+		Model:      c.model,
 	})
 	if err != nil {
 		return errors.Annotate(err, "get stable version").Err()

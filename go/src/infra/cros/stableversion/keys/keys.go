@@ -24,10 +24,13 @@ type Builder interface {
 // New creates new Builder with provided values.
 func New(deviceType, board, model, pool string) Builder {
 	kb := NewBuilder()
+	// DeviceType, board and model are critical!
 	_ = kb.Add("deviceType", deviceType)
 	_ = kb.Add("board", board)
 	_ = kb.Add("model", model)
-	_ = kb.Add("pool", pool)
+	if pool != "" {
+		_ = kb.Add("pool", pool)
+	}
 	return kb
 }
 
