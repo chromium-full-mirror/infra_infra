@@ -12,6 +12,7 @@ import (
 	"strings"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -30,10 +31,9 @@ type VMLeaserServiceServer struct {
 }
 
 // NewServer creates an execution server
-func NewServer(vmleaserClient api.VMLeaserServiceClient, logger *log.Logger, authTokenFilePath string) (*grpc.Server, func()) {
+func NewServer(logger *log.Logger, authTokenFilePath string) (*grpc.Server, func()) {
 	s := &VMLeaserServiceServer{
 		logger:            logger,
-		vmleaserClient:    vmleaserClient,
 		manager:           lro.New(),
 		authTokenFilePath: authTokenFilePath,
 	}
@@ -79,6 +79,14 @@ func (s *VMLeaserServiceServer) Install(ctx context.Context, req *api.InstallReq
 }
 
 func (s *VMLeaserServiceServer) handleLeaseVMRequest(_ context.Context, op *longrunning.Operation, req *api.InstallRequest) (*longrunning.Operation, error) {
+	s.logger.Printf("Setting up new connection to VM Leaser service")
+	vmleaserClient, closeFunc, err := getVMLeaserClient(s.logger)
+	if err != nil {
+		return nil, err
+	}
+	// close grpc connection
+	defer closeFunc()
+	s.vmleaserClient = vmleaserClient
 	var leaseVMReq api.LeaseVMRequest
 	if err := req.Metadata.UnmarshalTo(&leaseVMReq); err != nil {
 		s.logger.Printf("Invalid request: %s", err)
@@ -115,6 +123,14 @@ func (s *VMLeaserServiceServer) handleLeaseVMRequest(_ context.Context, op *long
 }
 
 func (s *VMLeaserServiceServer) handleReleaseVMRequest(_ context.Context, op *longrunning.Operation, req *api.InstallRequest) (*longrunning.Operation, error) {
+	s.logger.Printf("Setting up new connection to VM Leaser service")
+	vmleaserClient, closeFunc, err := getVMLeaserClient(s.logger)
+	if err != nil {
+		return nil, err
+	}
+	// close grpc connection
+	defer closeFunc()
+	s.vmleaserClient = vmleaserClient
 	var releaseVMReq api.ReleaseVMRequest
 	if err := req.Metadata.UnmarshalTo(&releaseVMReq); err != nil {
 		s.logger.Printf("Invalid request: %s", err)
@@ -159,4 +175,20 @@ func readAuthToken(authTokenFilePath string) (string, error) {
 	token := strings.TrimSpace(string(content))
 
 	return token, nil
+}
+
+// getVMLeaserClient returns a client to communicate with VM Leaser service
+func getVMLeaserClient(logger *log.Logger) (api.VMLeaserServiceClient, func() error, error) {
+	// Set up gRPC connection
+	conn, err := grpc.NewClient(vmLeaserEndPoint, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
+	if err != nil {
+		logger.Fatalln("Failed to connect with VM leaser service: ", err)
+		return nil, nil, err
+	}
+	closeFunc := func() error {
+		return conn.Close()
+
+	}
+
+	return api.NewVMLeaserServiceClient(conn), closeFunc, nil
 }

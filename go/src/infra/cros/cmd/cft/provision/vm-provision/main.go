@@ -14,10 +14,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
-
-	"go.chromium.org/chromiumos/config/go/test/api"
 	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 	"go.chromium.org/chromiumos/test/util/portdiscovery"
 )
@@ -63,16 +59,6 @@ func startServer(d []string) int {
 		authTokenFilePath = a.authFilePath
 	}
 
-	// Set up gRPC connection
-	conn, err := grpc.Dial(vmLeaserEndPoint, grpc.WithTransportCredentials(credentials.NewClientTLSFromCert(nil, "")))
-	if err != nil {
-		logger.Fatalln("Failed to connect: ", err)
-	}
-	defer conn.Close()
-
-	// Create gRPC client
-	client := api.NewVMLeaserServiceClient(conn)
-
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))
 	if err != nil {
 		logger.Fatalln("Failed to create a net listener: ", err)
@@ -81,7 +67,7 @@ func startServer(d []string) int {
 
 	logger.Println("Starting Service on port ", a.port)
 
-	server, closer := NewServer(client, logger, authTokenFilePath)
+	server, closer := NewServer(logger, authTokenFilePath)
 	defer closer()
 
 	// Write port number to ~/.cftmeta for go/cft-port-discovery
