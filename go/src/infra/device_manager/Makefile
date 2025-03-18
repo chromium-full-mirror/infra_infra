@@ -8,6 +8,7 @@ APP_PATH := $(PROJECT_PATH)
 GCP_PROJECT := fleet-device-manager-dev
 GCP_REGION := us-central1
 LUCI_AUTH_SERVICE := chrome-infra-auth-dev.appspot.com
+CURRENT_UID:="$(shell id -u):$(shell id -g)"
 
 # Allow devs to override the command used for docker compose.
 # Most people use `docker compose` some use `docker-compose` or
@@ -51,6 +52,7 @@ build:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o device-lease-service $(PROJECT_PATH)/cmd/device_lease_service
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o notifier-service $(PROJECT_PATH)/cmd/notifier_service
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o expirer-service $(PROJECT_PATH)/cmd/expirer_service
+	chmod o+x device-lease-service notifier-service expirer-service # gLinux umask is 027, which blocks us to run as other users
 
 # Run service locally as a binary
 .PHONY: dev
@@ -69,40 +71,41 @@ dev: build
 # Build Docker compose service
 .PHONY: build-docker-compose
 build-docker-compose: build
+	CURRENT_UID=$(CURRENT_UID) \
 	$(DOCKER_COMPOSE) -f docker-compose.dev.yml build --no-cache
 
 
 # Run Docker service locally using Docker Compose
 .PHONY: docker-service
 docker-service: build-docker-compose
-	CURRENT_UID="$(id -u):$(id -g)" \
+	CURRENT_UID=$(CURRENT_UID) \
 	$(DOCKER_COMPOSE) -f docker-compose.dev.yml up \
 	device_lease_service
 
 # Run Docker notifier service locally using Docker Compose
 .PHONY: docker-notifier
 docker-notifier: build-docker-compose
-	CURRENT_UID="$(id -u):$(id -g)" \
+	CURRENT_UID=$(CURRENT_UID) \
 	$(DOCKER_COMPOSE) -f docker-compose.dev.yml up \
 	notifier_service
 
 # Run Docker expirer service locally using Docker Compose
 .PHONY: docker-expirer
 docker-expirer: build-docker-compose
-	CURRENT_UID="$(id -u):$(id -g)" \
+	CURRENT_UID=$(CURRENT_UID) \
 	$(DOCKER_COMPOSE) -f docker-compose.dev.yml up \
 	expirer_service
 
 # Run Docker Postgres db locally using Docker Compose
 .PHONY: docker-db
 docker-db:
-	CURRENT_UID="$(id -u):$(id -g)" \
+	CURRENT_UID=$(CURRENT_UID) \
 	$(DOCKER_COMPOSE) -f docker-compose.dev.yml up \
 	device_manager_db
 
 # Run Docker PubSub locally using Docker Compose
 .PHONY: docker-pubsub
 docker-pubsub:
-	CURRENT_UID="$(id -u):$(id -g)" \
+	CURRENT_UID=$(CURRENT_UID) \
 	$(DOCKER_COMPOSE) -f docker-compose.dev.yml up \
 	pubsub
