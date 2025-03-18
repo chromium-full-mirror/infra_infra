@@ -77,9 +77,9 @@ func enrollmentCleanupExec(ctx context.Context, info *execs.ExecInfo) error {
 	if _, err := ha.Run(ctx, fileDeletionTimeout, "sync"); err != nil {
 		log.Debugf(ctx, "Fail to run FS sync: %s", err)
 	}
-	rebootTimeout := argsMap.AsDuration(ctx, "reboot_timeout", 10, time.Second)
-	log.Debugf(ctx, "enrollment cleanup: using reboot timeout :%s", rebootTimeout)
-	if err := cros.RebootWithCheck(ctx, ha, cros.WaitTimeToDownAtRestart, rebootTimeout); err != nil {
+	rebootTimeoutToDown := argsMap.AsDuration(ctx, "reboot_timeout_down", 120, time.Second)
+	rebootTimeoutToUp := argsMap.AsDuration(ctx, "reboot_timeout_up", 240, time.Second)
+	if err := cros.RebootWithCheck(ctx, ha, rebootTimeoutToDown, rebootTimeoutToUp); err != nil {
 		return errors.Annotate(err, "enrollment cleanup").Err()
 	}
 	// Finally, we will read the TPM status, and will check whether it

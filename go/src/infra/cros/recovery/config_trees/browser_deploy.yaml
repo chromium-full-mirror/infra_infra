@@ -53275,13 +53275,14 @@ plans:
                           docs:
                             - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
               recoveries:
-                - name: Cleanup the enrollment state and wait for boot (Allow to fail) (time:'10m0s')
+                - name: Cleanup the enrollment state and wait for boot (Allow to fail) (time:'20m0s')
                   exec_name: cros_enrollment_cleanup
                   exec_args:
                     - repair_timeout:120
                     - clear_tpm_owner_timeout:60
                     - file_deletion_timeout:120
-                    - reboot_timeout:10
+                    - reboot_timeout_down:120
+                    - reboot_timeout_up:240
                     - tpm_timeout:150
                     - fwmp_cleanup_enabled:true
                     - owner_detect_timeout:10
@@ -85174,13 +85175,14 @@ plans:
                         - Verify that device is reachable by SSH.
                         - Limited to 15 seconds.
               recoveries:
-                - name: Cleanup the enrollment state and wait for boot (Allow to fail) (time:'10m0s')
+                - name: Cleanup the enrollment state and wait for boot (Allow to fail) (time:'20m0s')
                   exec_name: cros_enrollment_cleanup
                   exec_args:
                     - repair_timeout:120
                     - clear_tpm_owner_timeout:60
                     - file_deletion_timeout:120
-                    - reboot_timeout:10
+                    - reboot_timeout_down:120
+                    - reboot_timeout_up:240
                     - tpm_timeout:150
                     - fwmp_cleanup_enabled:true
                     - owner_detect_timeout:10

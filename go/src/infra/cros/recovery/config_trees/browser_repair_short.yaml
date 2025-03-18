@@ -11726,7 +11726,7 @@ plans:
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
               recoveries:
-                - name: Cleanup the enrollment state and wait for boot (Allow to fail) ('cros_enrollment_cleanup') (time:'10m0s')
+                - name: Cleanup the enrollment state and wait for boot (Allow to fail) ('cros_enrollment_cleanup') (time:'20m0s')
                   dependencies:
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
             - name: Check power sources ('sample_pass')
@@ -21176,7 +21176,7 @@ plans:
                   dependencies:
                     - name: Device is SSHable (simple) ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               recoveries:
-                - name: Cleanup the enrollment state and wait for boot (Allow to fail) ('cros_enrollment_cleanup') (time:'10m0s')
+                - name: Cleanup the enrollment state and wait for boot (Allow to fail) ('cros_enrollment_cleanup') (time:'20m0s')
                   dependencies:
                     - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
             - name: Ensure firmware is in good state ('cros_is_firmware_in_good_state')
