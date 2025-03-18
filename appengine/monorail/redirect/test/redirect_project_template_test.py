@@ -31,6 +31,6 @@ class TestRedirectCustomValue(unittest.TestCase):
 
   @mock.patch('google.cloud.datastore.Client', datastore_stub.Client)
   def testGetRedirectProjectTemplateWithoutValue(self):
-    (t, v) = redirect_project_template.Get('a', 'default template')
+    (t, v) = redirect_project_template.Get('a', 'unknown template')
     self.assertEqual(t, None)
     self.assertEqual(v, None)

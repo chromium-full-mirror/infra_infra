@@ -28,7 +28,7 @@ class TestRedirectCustomLabelsToHotlists(unittest.TestCase):
 
   @mock.patch('google.cloud.datastore.Client', datastore_stub.Client)
   def testGetRedirectCustomValueWithoutValue(self):
-    t = redirect_custom_labels.GetHotlist('a', 'test')
+    t = redirect_custom_labels.GetHotlist('a', 'unknown')
     self.assertEqual(t, None)
 
   @mock.patch(

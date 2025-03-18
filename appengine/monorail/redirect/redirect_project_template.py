@@ -2,9 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import functools
+
 from google.cloud import datastore
 
 
+@functools.lru_cache(maxsize=2000)  # The Datastore has 1,321 entries.
 def Get(project: str, template_name: str) -> tuple[str, str]:
   client = datastore.Client()
   key = project + ':' + template_name

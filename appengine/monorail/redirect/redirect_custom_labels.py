@@ -2,9 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import functools
+
 from google.cloud import datastore
 
 
+@functools.lru_cache(maxsize=1000)  # The Datastore has 598 entries.
 def GetHotlist(project: str, label: str) -> str:
   client = datastore.Client()
   key = project + ':' + label
@@ -14,6 +17,7 @@ def GetHotlist(project: str, label: str) -> str:
   return entity.get('HotlistId')
 
 
+@functools.cache  # There's no parameters, so there's one unique return value.
 def GetCustomFieldMap() -> dict[str, str]:
   custom_fields_map = {}
   client = datastore.Client()
