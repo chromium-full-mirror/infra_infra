@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	provcli "go.chromium.org/infra/cros/cmd/provision/v2/cros-provision/cli"
+	provcli "go.chromium.org/infra/cros/cmd/provision/cros-provision/cli"
 )
 
 func main() {

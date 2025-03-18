@@ -14,8 +14,9 @@ import (
 	"path/filepath"
 	"time"
 
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 	"go.chromium.org/chromiumos/test/util/portdiscovery"
+
+	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
 const (

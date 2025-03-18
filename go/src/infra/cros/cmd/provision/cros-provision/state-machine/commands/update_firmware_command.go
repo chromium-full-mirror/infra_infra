@@ -1,0 +1,52 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package commands
+
+import (
+	"context"
+	"fmt"
+	"log"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+
+	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
+)
+
+type RunFirmwareUpdaterCommand struct {
+	ctx context.Context
+	cs  *service.CrOSService
+}
+
+func NewRunFirmwareUpdaterCommand(ctx context.Context, cs *service.CrOSService) *RunFirmwareUpdaterCommand {
+	return &RunFirmwareUpdaterCommand{
+		ctx: ctx,
+		cs:  cs,
+	}
+}
+
+func (c *RunFirmwareUpdaterCommand) Execute(log *log.Logger) error {
+	log.Printf("Start RunFirmwareUpdaterCommand Execute")
+
+	if _, err := c.cs.Connection.RunCmd(c.ctx, common_utils.FirmwareUpdaterPath, []string{"--wp=1", "--mode=autoupdate"}); err != nil {
+		return fmt.Errorf("run firmware updater: %s", err)
+	}
+
+	log.Printf("RunFirmwareUpdaterCommand Success")
+
+	return nil
+}
+
+func (c *RunFirmwareUpdaterCommand) Revert() error {
+	return nil
+}
+
+func (c *RunFirmwareUpdaterCommand) GetErrorMessage() string {
+	return "failed to run firmware updater"
+}
+
+func (c *RunFirmwareUpdaterCommand) GetStatus() api.InstallResponse_Status {
+	return api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED
+}

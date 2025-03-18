@@ -1,0 +1,50 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package commands
+
+import (
+	"context"
+	"log"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+
+	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
+)
+
+type RebootToBootloaderCommand struct {
+	ctx context.Context
+	svc *service.AndroidService
+}
+
+func NewRebootToBootloaderCommand(ctx context.Context, svc *service.AndroidService) *RebootToBootloaderCommand {
+	return &RebootToBootloaderCommand{
+		ctx: ctx,
+		svc: svc,
+	}
+}
+
+func (c *RebootToBootloaderCommand) Execute(log *log.Logger) error {
+	log.Printf("Start RebootToBootloaderCommand Execute")
+	if osImage := c.svc.OS; osImage != nil && osImage.ImagePath.GsPath != "" {
+		if err := rebootToBootloader(c.ctx, c.svc.DUT, "adb"); err != nil {
+			log.Printf("RebootToBootloaderCommand failed: %v", err)
+			return err
+		}
+	}
+	log.Printf("RebootToBootloaderCommand Success")
+	return nil
+}
+
+func (c *RebootToBootloaderCommand) Revert() error {
+	return nil
+}
+
+func (c *RebootToBootloaderCommand) GetErrorMessage() string {
+	return "failed to reboot to bootloader"
+}
+
+func (c *RebootToBootloaderCommand) GetStatus() api.InstallResponse_Status {
+	return api.InstallResponse_STATUS_PROVISIONING_FAILED
+}

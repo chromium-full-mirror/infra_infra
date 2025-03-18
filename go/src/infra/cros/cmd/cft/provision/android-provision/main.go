@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"go.chromium.org/infra/cros/cmd/provision/v2/android-provision/cli"
+	"go.chromium.org/infra/cros/cmd/provision/android-provision/cli"
 )
 
 func main() {

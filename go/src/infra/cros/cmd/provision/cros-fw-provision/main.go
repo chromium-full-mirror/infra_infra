@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,11 +8,11 @@ import (
 	"fmt"
 	"os"
 
-	provcli "go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/cli"
+	"go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/cli"
 )
 
 func main() {
-	opt, err := provcli.ParseInputs()
+	opt, err := cli.ParseInputs()
 	if err != nil {
 		fmt.Printf("unable to parse inputs: %s\n", err)
 		os.Exit(2)

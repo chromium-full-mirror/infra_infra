@@ -1,0 +1,100 @@
+// Copyright 2022 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package commands
+
+import (
+	"context"
+	"os"
+	"testing"
+
+	"github.com/golang/mock/gomock"
+	. "github.com/smartystreets/goconvey/convey"
+
+	"go.chromium.org/chromiumos/config/go/test/api"
+	"go.chromium.org/luci/common/testing/localonly"
+
+	"go.chromium.org/infra/cros/cmd/provision/android-provision/common"
+	"go.chromium.org/infra/cros/cmd/provision/android-provision/common/cipd"
+	"go.chromium.org/infra/cros/cmd/provision/android-provision/service"
+)
+
+func TestFetchCIPDPackageCommand(t *testing.T) {
+	localonly.Because(t, "b/402551644")
+	t.Parallel()
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+	Convey("FetchCIPDPackageCommand", t, func() {
+		pkgProto := &api.CIPDPackage{
+			Name: "cipd_path/cipd_package_name",
+			VersionOneof: &api.CIPDPackage_InstanceId{
+				InstanceId: "instanceId",
+			},
+			AndroidPackage: api.AndroidPackage_GMS_CORE,
+		}
+		cipdPkg := &service.CIPDPackage{
+			PackageProto: pkgProto,
+			PackageName:  "cipd_package_name",
+			InstanceId:   "instanceId",
+			VersionCode:  "1234567890",
+		}
+		androidPkg := &service.AndroidPackage{
+			PackageName: "android.package.name",
+		}
+		svc, _ := service.NewAndroidServiceFromExistingConnection(
+			nil,
+			"",
+			nil,
+			[]*api.CIPDPackage{pkgProto},
+		)
+		provisionPkg := svc.ProvisionPackages[0]
+		provisionPkg.CIPDPackage = cipdPkg
+		provisionPkg.AndroidPackage = androidPkg
+		provisionDir, _ := os.MkdirTemp("", "testCleanup")
+		defer os.RemoveAll(provisionDir)
+		svc.ProvisionDir = "/tmp/provision_dir"
+
+		cmd := NewFetchCIPDPackageCommand(context.Background(), svc)
+
+		Convey("Execute", func() {
+			mockCIPDClient := cipd.NewMockCIPDClientInterface(ctrl)
+			cmd.cipd = mockCIPDClient
+			provisionPkg.CIPDPackage.PackageProto.AndroidPackage = api.AndroidPackage_GMS_CORE
+			Convey("New Android Package", func() {
+				provisionPkg.AndroidPackage.VersionCode = ""
+				log, _ := common.SetUpLog(provisionDir)
+				mockCIPDClient.EXPECT().FetchInstanceTo(gomock.Eq(pkgProto), gomock.Eq("cipd_package_name"), gomock.Eq("instanceId"), gomock.Eq("/tmp/provision_dir/cipd_package_name.zip")).Times(1)
+				So(cmd.Execute(log), ShouldBeNil)
+			})
+			Convey("Existing Android Package - same version code", func() {
+				provisionPkg.AndroidPackage.VersionCode = "1234567890"
+				log, _ := common.SetUpLog(provisionDir)
+				mockCIPDClient.EXPECT().FetchInstanceTo(gomock.Eq(pkgProto), gomock.Eq("cipd_package_name"), gomock.Eq("instanceId"), gomock.Eq("/tmp/provision_dir/cipd_package_name.zip")).Times(0)
+				So(cmd.Execute(log), ShouldBeNil)
+			})
+			Convey("Existing Android Package - different version code", func() {
+				provisionPkg.AndroidPackage.VersionCode = "1234567889"
+				log, _ := common.SetUpLog(provisionDir)
+				mockCIPDClient.EXPECT().FetchInstanceTo(gomock.Eq(pkgProto), gomock.Eq("cipd_package_name"), gomock.Eq("instanceId"), gomock.Eq("/tmp/provision_dir/cipd_package_name.zip")).Times(1)
+				So(cmd.Execute(log), ShouldBeNil)
+			})
+			Convey("Unknown Android Package type - returns error", func() {
+				provisionPkg.AndroidPackage.VersionCode = ""
+				provisionPkg.CIPDPackage.PackageProto.AndroidPackage = api.AndroidPackage_ANDROID_PACKAGE_UNSPECIFIED
+				log, _ := common.SetUpLog(provisionDir)
+				mockCIPDClient.EXPECT().FetchInstanceTo(gomock.Eq(pkgProto), gomock.Eq("cipd_package_name"), gomock.Eq("instanceId"), gomock.Eq("/tmp/provision_dir/cipd_package_name.zip")).Times(0)
+				So(cmd.Execute(log), ShouldNotBeNil)
+			})
+		})
+		Convey("Revert", func() {
+			So(cmd.Revert(), ShouldBeNil)
+		})
+		Convey("GetErrorMessage", func() {
+			So(cmd.GetErrorMessage(), ShouldEqual, "failed to fetch CIPD package")
+		})
+		Convey("GetStatus", func() {
+			So(cmd.GetStatus(), ShouldEqual, api.InstallResponse_STATUS_CIPD_PACKAGE_FETCH_FAILED)
+		})
+	})
+}
