@@ -41,7 +41,7 @@ services:
     volumes:
       - ~/.config/chrome_infra/auth:/tokens
     depends_on:
-      - device_manager_db
+      - init_db_schema
     stdin_open: true
     tty: true
   notifier_service:
@@ -116,8 +116,25 @@ services:
       POSTGRES_DB: device_manager_db
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 1s
+      timeout: 1s
+      retries: 3
+      start_period: 1s
     volumes:
       - pgdata:/var/lib/postgresql@15/data:rw
+  init_db_schema:
+    build:
+      context: .
+      dockerfile: ./database/Dockerfile
+    depends_on:
+      device_manager_db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql+psycopg2://postgres:password@device_manager_db:5432/device_manager_db"
+    command: alembic upgrade head
+    working_dir: /app
   pubsub:
     container_name: pubsub
     stdin_open: true

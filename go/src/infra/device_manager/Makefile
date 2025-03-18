@@ -72,7 +72,7 @@ dev: build
 .PHONY: build-docker-compose
 build-docker-compose: build
 	CURRENT_UID=$(CURRENT_UID) \
-	$(DOCKER_COMPOSE) -f docker-compose.dev.yml build --no-cache
+	$(DOCKER_COMPOSE) -f docker-compose.dev.yml build
 
 
 # Run Docker service locally using Docker Compose
@@ -109,3 +109,8 @@ docker-pubsub:
 	CURRENT_UID=$(CURRENT_UID) \
 	$(DOCKER_COMPOSE) -f docker-compose.dev.yml up \
 	pubsub
+
+.PHONY: docker-down
+docker-down:
+	CURRENT_UID=$(CURRENT_UID) \
+	$(DOCKER_COMPOSE) -f docker-compose.dev.yml down

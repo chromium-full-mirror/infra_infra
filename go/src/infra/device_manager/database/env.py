@@ -7,7 +7,7 @@ from logging.config import fileConfig
 import urllib.parse
 import os
 
-from sqlalchemy import engine_from_config
+from sqlalchemy import engine_from_config, create_engine
 from sqlalchemy import pool
 
 from alembic import context
@@ -20,13 +20,15 @@ alembic_ini = config.config_ini_section
 # interpolate vars to alembic.ini from config file
 db_config = configparser.ConfigParser()
 db_config.read('./database/db_config.ini')
-db_env = os.environ['ALEMBIC_ENV']
+db_env = os.environ.get('ALEMBIC_ENV', "")
 
-config.set_section_option(alembic_ini, 'DB_USER', db_config[db_env]['DB_USER'])
-config.set_section_option(alembic_ini, 'DB_PASS', db_config[db_env]['DB_PASS'])
-config.set_section_option(alembic_ini, 'DB_HOST', db_config[db_env]['DB_HOST'])
-config.set_section_option(alembic_ini, 'DB_PORT', db_config[db_env]['DB_PORT'])
-config.set_section_option(alembic_ini, 'DB_NAME', db_config[db_env]['DB_NAME'])
+if db_env:
+  section = db_config[db_env]
+  config.set_section_option(alembic_ini, 'DB_USER', section['DB_USER'])
+  config.set_section_option(alembic_ini, 'DB_PASS', section['DB_PASS'])
+  config.set_section_option(alembic_ini, 'DB_HOST', section['DB_HOST'])
+  config.set_section_option(alembic_ini, 'DB_PORT', section['DB_PORT'])
+  config.set_section_option(alembic_ini, 'DB_NAME', section['DB_NAME'])
 
 # Allow user to overwrite the port number from the command line, e.g.
 # ALEMBIC_ENV=foo alembic -x port=<port> upgrade head
@@ -82,11 +84,14 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-  connectable = engine_from_config(
-      config.get_section(config.config_ini_section, {}),
-      prefix="sqlalchemy.",
-      poolclass=pool.NullPool,
-  )
+  if os.environ.get('DATABASE_URL'):
+    connectable = create_engine(os.environ.get("DATABASE_URL"))
+  else:
+    connectable = engine_from_config(
+        config.get_section(config.config_ini_section, {}),
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+    )
 
   with connectable.connect() as connection:
     context.configure(connection=connection, target_metadata=target_metadata)
