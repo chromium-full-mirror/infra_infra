@@ -66,7 +66,7 @@ dev: build
 	--db-port='5432' \
 	--db-name='device_manager_db' \
 	--db-user='postgres' \
-	--db-password-secret="devsecret://cGFzc3dvcmQ"
+	--db-password-secret="devsecret-text://password"
 
 # Build Docker compose service
 .PHONY: build-docker-compose
