@@ -54,7 +54,7 @@ var (
 	MachineLSEPrototypeNameFormat  string = "Invalid input - Entity Name pattern should be machineLSEPrototypes/{machineLSEPrototype}."
 	RackLSEPrototypeNameFormat     string = "Invalid input - Entity Name pattern should be rackLSEPrototypes/{rackLSEPrototype}."
 	DefaultWifiNameFormat          string = "Invalid input - Entity Name pattern should be defaultwifis/{defaultwifi}."
-	DeviceLabelsNameFormat         string = "Invalid input - Entity Name pattern should be defaultwifis/{defaultwifi}."
+	DeviceLabelsNameFormat         string = "Invalid input - Entity Name pattern should be devicelabels/{device}."
 	ResourceFormat                 string = "Invalid input - Entity Name pattern should be in a format of resource_names/XXX, resource_names includes machines/racks/vms/hosts/vlans."
 	EmptyMachineName               string = "Invalid input - Machine name cannot be empty."
 	EmptyHostName                  string = "Invalid input - Host name cannot be empty."
