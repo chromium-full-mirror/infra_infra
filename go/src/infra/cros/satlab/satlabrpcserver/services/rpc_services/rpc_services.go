@@ -1322,7 +1322,13 @@ func (s *SatlabRpcServiceServer) GetCloudConfiguration(ctx context.Context, in *
 
 	f, err := os.Open(p)
 	if err != nil {
-		// If `boto` file doesn't exist, it means the user
+		// If `boto` file doesn't exist, we check the service account.
+		// If service account is exist, it is an internal user.
+		if _, err := os.Stat(site.GetServiceAccountPath()); err == nil {
+			return &pb.GetCloudConfigurationResponse{GcsBucketUrl: bucket}, nil
+		}
+
+		// If `boto` file and `service account` don't exist, it means the user
 		// doesn't login. we return empty information
 		return &pb.GetCloudConfigurationResponse{}, nil
 	}
