@@ -348,13 +348,17 @@ func GetGCSImageBucket() string {
 }
 
 // GetGCSPartnerBucket determines which Google storage image bucket
-// to use, based on the environment.
+// to use, based on the environment. For Partner the value will be
+// the same as GCSImageBucket. The only difference is for internal
+// users.
 func GetGCSPartnerBucket() string {
-	partnerBucket := os.Getenv(GCSPartnerBucketEnv)
-	if partnerBucket == "" {
-		return DefaultGCSPartnerBucket
+	if partnerBucket := os.Getenv(GCSPartnerBucketEnv); partnerBucket != "" {
+		return partnerBucket
 	}
-	return partnerBucket
+	if IsPartner() {
+		return os.Getenv(GCSImageBucketEnv)
+	}
+	return DefaultGCSPartnerBucket
 }
 
 // GetUFSZone determines which ZONE the DUTs belongs to,

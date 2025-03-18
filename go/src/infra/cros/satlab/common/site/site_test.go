@@ -150,3 +150,51 @@ func TestGetDeployBucket(t *testing.T) {
 		})
 	}
 }
+
+func TestGetGCSPartnerBucket(t *testing.T) {
+	tests := []struct {
+		name                 string
+		isPartner            bool
+		envGCSImageBucket    string
+		envGCSPartnerBucket  string
+		wantGCSPartnerBucket string
+	}{
+		{
+			name:                 "No env, internal user",
+			isPartner:            false,
+			envGCSPartnerBucket:  "",
+			wantGCSPartnerBucket: DefaultGCSPartnerBucket,
+		},
+		{
+			name:                 "No env, partner user",
+			isPartner:            true,
+			envGCSImageBucket:    "chromeos-partner-bucket",
+			envGCSPartnerBucket:  "",
+			wantGCSPartnerBucket: "chromeos-partner-bucket",
+		},
+		{
+			name:                 "env, internal user",
+			isPartner:            false,
+			envGCSPartnerBucket:  "chromeos-internal-bucket",
+			wantGCSPartnerBucket: "chromeos-internal-bucket",
+		},
+		{
+			name:                 "env, partner user",
+			isPartner:            true,
+			envGCSPartnerBucket:  "chromeos-partner-bucket",
+			wantGCSPartnerBucket: "chromeos-partner-bucket",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Setenv(GCSPartnerBucketEnv, tt.envGCSPartnerBucket)
+			t.Setenv(GCSImageBucketEnv, tt.envGCSImageBucket)
+			if tt.isPartner {
+				t.Setenv(UFSNamespaceEnv, "os-partner")
+			}
+			if got := GetGCSPartnerBucket(); got != tt.wantGCSPartnerBucket {
+				t.Errorf("GetGCSPartnerBucket() = %v, want %v", got, tt.wantGCSPartnerBucket)
+			}
+		})
+	}
+}
