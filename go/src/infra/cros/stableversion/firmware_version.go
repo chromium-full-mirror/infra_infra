@@ -13,6 +13,8 @@ var firmwareVersionPattern *regexp.Regexp = regexp.MustCompile(`Google[-_a-zA-Z0
 
 // ParseFirmwareVersion takes a read-write firmware version and extracts
 // semantically meaningful elements.
+// Examples:
+// `Google_Rammus.11275.41.0` -> 11275.41.0
 func ParseFirmwareVersion(s string) (string, error) {
 	if s == "" {
 		return "", fmt.Errorf("firmware version cannot be empty")
@@ -29,11 +31,4 @@ func ParseFirmwareVersion(s string) (string, error) {
 		return "", err
 	}
 	return version, nil
-}
-
-// ValidateFirmwareVersion checks whether a string is a valid read-write
-// firmware version. e.g. Google_Rammus.11275.41.0
-func ValidateFirmwareVersion(r string) error {
-	_, err := ParseFirmwareVersion(r)
-	return err
 }

@@ -53,7 +53,7 @@ func InspectBuffer(contents []byte) (*lab_platform.StableVersions, error) {
 	if len(sv.GetVersions()) == 0 {
 		return nil, errors.New("file has no 'versions' entries")
 	}
-	if err := shallowValidateVersions(sv.GetVersions()); err != nil {
+	if err := validateVersions(sv.GetVersions()); err != nil {
 		return nil, err
 	}
 	return sv, nil
@@ -81,11 +81,11 @@ func ParseStableVersions(contents []byte) (*lab_platform.StableVersions, error) 
 }
 
 const (
-	fileShallowlyMalformedEntry = "file has bad version %s position (%d): key=%s: error: %s"
+	fileShallowlyMalformedEntry = "file has bad %s position (%d): key=%s: error: %s"
 	fileShallowlyDuplicateEntry = "file has duplicate version entry position (%d): key=%s"
 )
 
-func shallowValidateVersions(versions []*lab_platform.StableVersion) error {
+func validateVersions(versions []*lab_platform.StableVersion) error {
 	resMap := make(map[string]*lab_platform.StableVersion, len(versions))
 	for index, v := range versions {
 		key := stableversion.TargetToKey(v)
@@ -117,10 +117,12 @@ func validateTarget(t *lab_platform.StableVersionTarget) error {
 }
 
 const (
-	errorBadOSVersion       = "bad OS version: %s"
-	errorBadOSPath          = "bad OS path version: %q as does not contain version %q"
-	errorBadFirmwareVersion = "bad firmware version: %s"
-	errorBadFirmwarePath    = "bad firmware path version: %s"
+	errorBadOSVersion           = "bad OS version: %s"
+	errorBadOSPath              = "bad OS path version: %q as does not contain version %q"
+	errorBadFirmwareVersion     = "bad firmware version: %s"
+	errorBadFirmwarePath        = "bad firmware path: %s"
+	errorUnexpectedFirmwarePath = "unexpected firmware path as version is not specified: %s"
+	errorMismatchFirmwarePath   = "firmware path mismatch sub-version: %q and %q"
 )
 
 func validateVersion(v *lab_platform.StableVersion) error {
@@ -137,14 +139,23 @@ func validateVersion(v *lab_platform.StableVersion) error {
 			}
 		}
 		if v.GetFirmwareRoVersion() != "" {
-			if err := stableversion.ValidateFirmwareVersion(v.GetFirmwareRoVersion()); err != nil {
+			subVersion, err := stableversion.ParseFirmwareVersion(v.GetFirmwareRoVersion())
+			if err != nil {
 				return fmt.Errorf(errorBadFirmwareVersion, err.Error())
+			} else if subVersion == "" {
+				return fmt.Errorf(errorBadFirmwareVersion, "not able extract sub-version")
 			}
-		}
-		if v.GetFirmwareRoImagePath() != "" {
-			if err := stableversion.ValidateFirmwarePath(v.GetFirmwareRoImagePath()); err != nil {
-				return fmt.Errorf(errorBadFirmwarePath, err.Error())
+			if path := v.GetFirmwareRoImagePath(); path != "" {
+				// Custom `*/pinned_firmware.tar.bz2` path can mismatches with version.
+				if !strings.HasSuffix(path, "pinned_firmware.tar.bz2") && !strings.Contains(path, subVersion) {
+					return fmt.Errorf(errorMismatchFirmwarePath, subVersion, path)
+				}
+				if _, err := stableversion.ParseFirmwarePath(path); err != nil {
+					return fmt.Errorf(errorBadFirmwarePath, err.Error())
+				}
 			}
+		} else if v.GetFirmwareRoImagePath() != "" {
+			return fmt.Errorf(errorUnexpectedFirmwarePath, v.GetFirmwareRoImagePath())
 		}
 	}
 	return nil

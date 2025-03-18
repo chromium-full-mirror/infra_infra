@@ -146,20 +146,35 @@ var testShallowValidateVersionsData = []struct {
 		},
 		fmt.Sprintf(fileShallowlyDuplicateEntry, 1, "devicetype=cros;board=board1;model=model1"),
 	},
+	{
+		"firmware mismatch",
+		[]*lab_platform.StableVersion{
+			{
+				Target: &lab_platform.StableVersionTarget{
+					DeviceType: "cros",
+					Board:      "board1",
+					Model:      "model1"},
+				OsVersion:   "R81-12835.0.1",
+				OsImagePath: "model1-release/R81-12835.0.2",
+			},
+		},
+		fmt.Sprintf(fileShallowlyMalformedEntry, "version", 0, "devicetype=cros;board=board1;model=model1",
+			fmt.Sprintf(errorBadOSPath, "model1-release/R81-12835.0.2", "R81-12835.0.1")),
+	},
 }
 
-func TestShallowValidateVersions(t *testing.T) {
+func TestValidateVersions(t *testing.T) {
 	for _, tt := range testShallowValidateVersionsData {
 		t.Run(tt.name, func(t *testing.T) {
-			err := shallowValidateVersions(tt.in)
+			err := validateVersions(tt.in)
 			if tt.errMsg == "" && err != nil {
-				t.Errorf("TestShallowValidateVersions %s: unexpected error: %s", tt.name, err)
+				t.Errorf("TestValidateVersions %s: unexpected error: %s", tt.name, err)
 			} else if tt.errMsg != "" && err != nil {
 				if diff := cmp.Diff(tt.errMsg, err.Error()); diff != "" {
-					t.Errorf("TestShallowValidateVersions %s: diff: %s", tt.name, diff)
+					t.Errorf("TestValidateVersions %s: diff: %s", tt.name, diff)
 				}
 			} else if tt.errMsg != "" && err == nil {
-				t.Errorf("TestShallowValidateVersions %s: error expected but got none", tt.name)
+				t.Errorf("TestValidateVersions %s: error expected but got none", tt.name)
 			}
 		})
 	}

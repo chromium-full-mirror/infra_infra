@@ -128,12 +128,12 @@ func shallowValidateValueFields(os string, fw string, fwImage string) error {
 		return status.Error(codes.InvalidArgument, "fw version is not specified")
 	}
 	if fw != "" {
-		if err := stableversion.ValidateFirmwareVersion(fw); err != nil {
+		if _, err := stableversion.ParseFirmwareVersion(fw); err != nil {
 			return errors.Annotate(err, "shallow validate value fields").Err()
 		}
 	}
 	if fwImage != "" {
-		if err := stableversion.ValidateFirmwarePath(fwImage); err != nil {
+		if _, err := stableversion.ParseFirmwarePath(fwImage); err != nil {
 			return errors.Annotate(err, "shallow validate value fields").Err()
 		}
 	}

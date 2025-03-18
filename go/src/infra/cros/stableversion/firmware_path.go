@@ -11,15 +11,11 @@ import (
 
 var firmwarePathPattern *regexp.Regexp = regexp.MustCompile(`.*/R[0-9]+-(?P<sv>[0-9]+\.[0-9]+\.[0-9]+).*`)
 
-// ValidateFirmwarePath checks that a given firmware path is well-formed
-// such as "octopus-firmware/R72-11297.75.0"
-// or      "octopus-release/R72-11297.75.0"
-func ValidateFirmwarePath(path string) error {
-	_, err := parseFirmwarePath(path)
-	return err
-}
-
-func parseFirmwarePath(s string) (string, error) {
+// ParseFirmwarePath extract subversion from the version
+// Examples:
+// "octopus-firmware/R72-11297.75.0" -> R72-11297.75.0
+// "octopus-release/R72-88888.99.0" -> 88888.99.0
+func ParseFirmwarePath(s string) (string, error) {
 	if s == "" {
 		return "", fmt.Errorf("firmware path cannot be empty")
 	}
