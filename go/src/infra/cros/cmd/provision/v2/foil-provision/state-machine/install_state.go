@@ -13,10 +13,11 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
-	cross_over "go.chromium.org/chromiumos/test/provision/v2/common-utils/cross-over"
-	"go.chromium.org/chromiumos/test/provision/v2/foil-provision/service"
-	"go.chromium.org/chromiumos/test/provision/v2/foil-provision/state-machine/commands"
+
+	common_utils "go.chromium.org/infra/cros/cmd/provision/v2/common-utils"
+	cross_over "go.chromium.org/infra/cros/cmd/provision/v2/common-utils/cross-over"
+	"go.chromium.org/infra/cros/cmd/provision/v2/foil-provision/service"
+	"go.chromium.org/infra/cros/cmd/provision/v2/foil-provision/state-machine/commands"
 )
 
 // FoilInstallState can be thought of as the constructor state, which initializes

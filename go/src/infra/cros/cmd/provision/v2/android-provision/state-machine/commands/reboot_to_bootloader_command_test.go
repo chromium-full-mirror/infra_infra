@@ -13,9 +13,10 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/service"
-	mock_common_utils "go.chromium.org/chromiumos/test/provision/v2/mock-common-utils"
+
+	"go.chromium.org/infra/cros/cmd/provision/v2/android-provision/common"
+	"go.chromium.org/infra/cros/cmd/provision/v2/android-provision/service"
+	mock_common_utils "go.chromium.org/infra/cros/cmd/provision/v2/mock-common-utils"
 )
 
 func TestRebootToBootloaderCommand(t *testing.T) {

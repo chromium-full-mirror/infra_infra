@@ -26,11 +26,12 @@ import (
 	build_api "go.chromium.org/chromiumos/config/go/build/api"
 	longrunning "go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/cli"
-	firmwareservice "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/service"
-	state_machine "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/state-machine"
-	"go.chromium.org/chromiumos/test/provision/v2/mock_api"
 	"go.chromium.org/luci/common/testing/localonly"
+
+	"go.chromium.org/infra/cros/cmd/provision/v2/cros-fw-provision/cli"
+	firmwareservice "go.chromium.org/infra/cros/cmd/provision/v2/cros-fw-provision/service"
+	state_machine "go.chromium.org/infra/cros/cmd/provision/v2/cros-fw-provision/state-machine"
+	"go.chromium.org/infra/cros/cmd/provision/v2/mock_api"
 )
 
 type curlMatcher struct {

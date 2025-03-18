@@ -85,7 +85,6 @@ func startServer(d []string) int {
 }
 
 func mainInternal(ctx context.Context) int {
-
 	return startServer(os.Args[1:])
 }
 

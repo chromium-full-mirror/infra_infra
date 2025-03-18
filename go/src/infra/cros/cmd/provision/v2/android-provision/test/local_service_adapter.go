@@ -18,9 +18,10 @@ import (
 	"golang.org/x/crypto/ssh"
 
 	"go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
 	"go.chromium.org/luci/common/retry"
 	"go.chromium.org/luci/common/retry/transient"
+
+	"go.chromium.org/infra/cros/cmd/provision/v2/android-provision/common"
 )
 
 const (

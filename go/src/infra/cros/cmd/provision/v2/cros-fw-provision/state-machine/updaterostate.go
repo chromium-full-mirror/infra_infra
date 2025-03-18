@@ -15,7 +15,8 @@ import (
 	"github.com/pkg/errors"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	firmwareservice "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/service"
+
+	firmwareservice "go.chromium.org/infra/cros/cmd/provision/v2/cros-fw-provision/service"
 )
 
 // FirmwareUpdateRoState updates firmware with write protection disabled.

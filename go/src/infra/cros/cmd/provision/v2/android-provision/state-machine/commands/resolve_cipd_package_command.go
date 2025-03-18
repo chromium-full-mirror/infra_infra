@@ -12,10 +12,11 @@ import (
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common/cipd"
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/service"
 	"go.chromium.org/luci/common/errors"
+
+	"go.chromium.org/infra/cros/cmd/provision/v2/android-provision/common"
+	"go.chromium.org/infra/cros/cmd/provision/v2/android-provision/common/cipd"
+	"go.chromium.org/infra/cros/cmd/provision/v2/android-provision/service"
 )
 
 type ResolveCIPDPackageCommand struct {

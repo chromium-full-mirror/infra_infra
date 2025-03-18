@@ -212,7 +212,7 @@ Run the test with go test:
 ```
 eval `~/infra/infra/go/env.py` && \
 export CGO_ENABLED=0 && \
-(cd ~/infra/infra/go/src/infra && go test go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/...)
+(cd ~/infra/infra/go/src/infra && go test go.chromium.org/infra/cros/cmd/provision/v2/cros-fw-provision/...)
 ```
 
 ## Production deployment

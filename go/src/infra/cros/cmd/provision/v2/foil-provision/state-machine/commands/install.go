@@ -19,8 +19,9 @@ import (
 	"sync"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/provision/v2/foil-provision/service"
 	"go.chromium.org/chromiumos/test/util/adb"
+
+	"go.chromium.org/infra/cros/cmd/provision/v2/foil-provision/service"
 )
 
 var launchTargetPatterns = []*regexp.Regexp{

@@ -15,7 +15,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
+	"go.chromium.org/infra/cros/cmd/provision/v2/android-provision/common"
 )
 
 // GsClient specifies the APIs between provisioning service and storage client.

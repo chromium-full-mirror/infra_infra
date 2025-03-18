@@ -16,7 +16,8 @@ import (
 	storage_path "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+
+	common_utils "go.chromium.org/infra/cros/cmd/provision/v2/common-utils"
 )
 
 const (

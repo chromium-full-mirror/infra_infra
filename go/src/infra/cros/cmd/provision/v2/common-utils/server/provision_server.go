@@ -18,9 +18,10 @@ import (
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/lro"
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
-	"go.chromium.org/chromiumos/test/provision/v2/common-utils/metadata"
 	"go.chromium.org/chromiumos/test/util/portdiscovery"
+
+	common_utils "go.chromium.org/infra/cros/cmd/provision/v2/common-utils"
+	"go.chromium.org/infra/cros/cmd/provision/v2/common-utils/metadata"
 )
 
 type ProvisionServer struct {

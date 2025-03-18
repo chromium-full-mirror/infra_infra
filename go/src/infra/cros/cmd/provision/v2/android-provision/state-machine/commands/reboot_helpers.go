@@ -9,8 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/service"
 	"go.chromium.org/luci/common/errors"
+
+	"go.chromium.org/infra/cros/cmd/provision/v2/android-provision/service"
 )
 
 // rebootToBootloader reboots DUT into bootloader mode.

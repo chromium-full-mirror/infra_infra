@@ -17,11 +17,12 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
-	cross_over "go.chromium.org/chromiumos/test/provision/v2/common-utils/cross-over"
-	"go.chromium.org/chromiumos/test/provision/v2/foil-provision/service"
-	state_machine "go.chromium.org/chromiumos/test/provision/v2/foil-provision/state-machine"
 	"go.chromium.org/chromiumos/test/util/adb"
+
+	common_utils "go.chromium.org/infra/cros/cmd/provision/v2/common-utils"
+	cross_over "go.chromium.org/infra/cros/cmd/provision/v2/common-utils/cross-over"
+	"go.chromium.org/infra/cros/cmd/provision/v2/foil-provision/service"
+	state_machine "go.chromium.org/infra/cros/cmd/provision/v2/foil-provision/state-machine"
 )
 
 type FoilProvisionExecutor struct {

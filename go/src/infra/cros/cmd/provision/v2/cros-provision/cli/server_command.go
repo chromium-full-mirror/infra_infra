@@ -12,11 +12,12 @@ import (
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
-	"go.chromium.org/chromiumos/test/provision/v2/common-utils/metadata"
-	"go.chromium.org/chromiumos/test/provision/v2/common-utils/server"
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/constants"
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/executor"
+
+	common_utils "go.chromium.org/infra/cros/cmd/provision/v2/common-utils"
+	"go.chromium.org/infra/cros/cmd/provision/v2/common-utils/metadata"
+	"go.chromium.org/infra/cros/cmd/provision/v2/common-utils/server"
+	"go.chromium.org/infra/cros/cmd/provision/v2/cros-provision/constants"
+	"go.chromium.org/infra/cros/cmd/provision/v2/cros-provision/executor"
 )
 
 // ServerCommand executed the provisioning as a Server

@@ -24,9 +24,11 @@ import (
 	conf "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+	// TODO(juahurta): Migrate all code from dev-util/test
 	"go.chromium.org/chromiumos/test/provision/lib/servo_lib"
 	"go.chromium.org/chromiumos/test/provision/lib/servoadapter"
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+
+	common_utils "go.chromium.org/infra/cros/cmd/provision/v2/common-utils"
 )
 
 // FirmwareVersions holds the ro and rw versions read from a firmware binary.

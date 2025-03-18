@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"strings"
 
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/service"
+	"go.chromium.org/infra/cros/cmd/provision/v2/android-provision/service"
 )
 
 var reVersionCode = regexp.MustCompile(`^versionCode=(\d+).+`)

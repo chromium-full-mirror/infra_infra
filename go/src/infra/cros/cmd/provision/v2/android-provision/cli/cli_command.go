@@ -20,11 +20,12 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/service"
-	state_machine "go.chromium.org/chromiumos/test/provision/v2/android-provision/state-machine"
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/test"
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+
+	"go.chromium.org/infra/cros/cmd/provision/v2/android-provision/common"
+	"go.chromium.org/infra/cros/cmd/provision/v2/android-provision/service"
+	state_machine "go.chromium.org/infra/cros/cmd/provision/v2/android-provision/state-machine"
+	"go.chromium.org/infra/cros/cmd/provision/v2/android-provision/test"
+	common_utils "go.chromium.org/infra/cros/cmd/provision/v2/common-utils"
 )
 
 var statusToResult = map[api.InstallResponse_Status]api.InstallFailure_Reason{

@@ -14,10 +14,11 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common"
-	"go.chromium.org/chromiumos/test/provision/v2/android-provision/common/gsstorage"
-	common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
 	"go.chromium.org/luci/common/errors"
+
+	"go.chromium.org/infra/cros/cmd/provision/v2/android-provision/common"
+	"go.chromium.org/infra/cros/cmd/provision/v2/android-provision/common/gsstorage"
+	common_utils "go.chromium.org/infra/cros/cmd/provision/v2/common-utils"
 )
 
 // AndroidPackage contains information about installed Android package.

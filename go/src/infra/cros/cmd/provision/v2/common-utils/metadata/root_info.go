@@ -5,7 +5,7 @@
 // Plain Old Go Object for root disk information
 package metadata
 
-import common_utils "go.chromium.org/chromiumos/test/provision/v2/common-utils"
+import common_utils "go.chromium.org/infra/cros/cmd/provision/v2/common-utils"
 
 // RootInfo stores Root information pertaining to a DUT
 type RootInfo struct {

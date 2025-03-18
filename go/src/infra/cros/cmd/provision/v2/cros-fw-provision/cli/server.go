@@ -21,9 +21,10 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	api1 "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/lro"
-	firmwareservice "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/service"
-	state_machine "go.chromium.org/chromiumos/test/provision/v2/cros-fw-provision/state-machine"
 	"go.chromium.org/chromiumos/test/util/portdiscovery"
+
+	firmwareservice "go.chromium.org/infra/cros/cmd/provision/v2/cros-fw-provision/service"
+	state_machine "go.chromium.org/infra/cros/cmd/provision/v2/cros-fw-provision/state-machine"
 )
 
 // FWProvisionServer is the top level class for the firmware provisioning server.

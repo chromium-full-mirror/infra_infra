@@ -10,7 +10,8 @@ import (
 	"log"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
+
+	"go.chromium.org/infra/cros/cmd/provision/v2/cros-provision/service"
 )
 
 type InstallPartitionsCommand struct {

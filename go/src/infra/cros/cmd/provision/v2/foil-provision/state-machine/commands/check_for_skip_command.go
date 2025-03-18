@@ -10,7 +10,8 @@ import (
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/provision/v2/foil-provision/service"
+
+	"go.chromium.org/infra/cros/cmd/provision/v2/foil-provision/service"
 )
 
 type CheckForSkip struct {

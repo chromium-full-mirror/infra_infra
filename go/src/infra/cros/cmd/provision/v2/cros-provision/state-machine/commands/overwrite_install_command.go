@@ -11,7 +11,8 @@ import (
 
 	conf "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/provision/v2/cros-provision/service"
+
+	"go.chromium.org/infra/cros/cmd/provision/v2/cros-provision/service"
 )
 
 type OverwriteInstalCommand struct {

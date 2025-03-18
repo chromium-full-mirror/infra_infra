@@ -10,10 +10,10 @@ import (
 	"fmt"
 	"strings"
 
-	"go.chromium.org/chromiumos/test/provision/v2/common-utils/metadata"
-	"go.chromium.org/chromiumos/test/provision/v2/common-utils/server"
-	"go.chromium.org/chromiumos/test/provision/v2/foil-provision/constants"
-	"go.chromium.org/chromiumos/test/provision/v2/foil-provision/executor"
+	"go.chromium.org/infra/cros/cmd/provision/v2/common-utils/metadata"
+	"go.chromium.org/infra/cros/cmd/provision/v2/common-utils/server"
+	"go.chromium.org/infra/cros/cmd/provision/v2/foil-provision/constants"
+	"go.chromium.org/infra/cros/cmd/provision/v2/foil-provision/executor"
 )
 
 // ServerCommand executed the provisioning as a Server
