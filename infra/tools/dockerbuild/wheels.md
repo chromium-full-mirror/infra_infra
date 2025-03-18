@@ -100,6 +100,20 @@ wheel: <
 
 * *universal*
 
+## **ConfigArgParse-py3**
+
+### 1.7
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/configargparse-py3"
+  version: "version:1.7"
+>
+```
+
+
+* *universal*
+
 ## **Django**
 
 ### 1.5.1
@@ -12318,6 +12332,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/urllib3-py2_py3"
   version: "version:1.26.16"
+>
+```
+
+
+* *universal*
+
+### 1.26.20
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/urllib3-py2_py3"
+  version: "version:1.26.20"
 >
 ```
 

@@ -2760,6 +2760,7 @@ SPECS.update({
         Universal('urllib3', '1.26.4'),
         Universal('urllib3', '1.26.6'),
         Universal('urllib3', '1.26.16'),
+        Universal('urllib3', '1.26.20'),
         Universal('urllib3', '2.0.3',  pyversions=['py3']),
         Universal('urllib3', '2.0.7',  pyversions=['py3']),
         Universal('urllib3', '2.1.0',  pyversions=['py3']),
