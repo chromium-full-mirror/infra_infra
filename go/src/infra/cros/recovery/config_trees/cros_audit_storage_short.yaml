@@ -19,7 +19,7 @@ plans:
         - name: Mark DUT as Android if applicable ('cros_set_as_android_based')
           conditions:
             - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
-            - name: Mark as ChromeOS based (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+            - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
             - name: DUT is not SSHable (simple) ('sample_fail') (ALWAYS_RUN)
               conditions:
                 - name: Device is SSHable (simple) ('cros_ssh') (ALWAYS_RUN) (time:'15s')
@@ -120,7 +120,7 @@ plans:
                                         - name: Setup has servo info ('dut_servo_host_present')
                             - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
                             - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-                        - name: Mark as ChromeOS based (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                         - name: Boot DUT in recovery and install from USB-drive (no storage check) ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -277,7 +277,7 @@ plans:
                                         - name: Setup has servo info ('dut_servo_host_present')
                             - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
                             - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-                        - name: Mark as ChromeOS based (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                         - name: Boot DUT in recovery and install from USB-drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
                         - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -308,7 +308,7 @@ plans:
                               conditions:
                                 - name: Is Flex device ('dut_check_board') (RUN_ONCE)
                       dependencies:
-                        - name: Mark as ChromeOS based (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                         - name: Servo USB-Key needs to be reflashed ('sample_pass')
                           conditions:
                             - name: It is time to update USB-drive image ('cros_is_time_to_force_download_image_to_usbkey')
@@ -434,7 +434,7 @@ plans:
                         - name: Boot DUT from USB in DEV mode ('cros_dev_mode_boot_from_servo_usb_drive') (ALWAYS_RUN) (time:'10m50s')
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Mark as ChromeOS based (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                         - name: Run install after boot from USB-drive ('cros_run_chromeos_install_command_after_boot_usbdrive') (ALWAYS_RUN) (time:'20m0s')
                         - name: Cold reset DUT by servo and wait to boot ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -547,7 +547,7 @@ plans:
                         - name: Boot DUT from USB in DEV mode ('cros_dev_mode_boot_from_servo_usb_drive') (ALWAYS_RUN) (time:'10m50s')
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Mark as ChromeOS based (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                         - name: Run install after boot from USB-drive ('cros_run_chromeos_install_command_after_boot_usbdrive') (ALWAYS_RUN) (time:'20m0s')
                         - name: Cold reset DUT by servo and wait to boot ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -630,7 +630,7 @@ plans:
                         - name: Boot DUT from USB in DEV mode ('cros_dev_mode_boot_from_servo_usb_drive') (ALWAYS_RUN) (time:'10m50s')
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Mark as ChromeOS based (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                         - name: Run install after boot from USB-drive ('cros_run_chromeos_install_command_after_boot_usbdrive') (ALWAYS_RUN) (time:'20m0s')
                         - name: Cold reset DUT by servo and wait to boot ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -737,7 +737,7 @@ plans:
                         - name: Boot DUT from USB in DEV mode ('cros_dev_mode_boot_from_servo_usb_drive') (ALWAYS_RUN) (time:'10m50s')
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present')
-                        - name: Mark as ChromeOS based (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                         - name: Run install after boot from USB-drive ('cros_run_chromeos_install_command_after_boot_usbdrive') (ALWAYS_RUN) (time:'20m0s')
                         - name: Cold reset DUT by servo and wait to boot ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -820,7 +820,7 @@ plans:
                                     - name: Setup has servo info ('dut_servo_host_present')
                         - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
                         - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-                    - name: Mark as ChromeOS based (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                     - name: Boot DUT in recovery and install from USB-drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)

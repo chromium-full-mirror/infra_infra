@@ -7130,7 +7130,7 @@ plans:
                         - requests:UPDATE_USBKEY_IMAGE
                       docs:
                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
@@ -7251,7 +7251,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
               dependencies:
-                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
@@ -7604,7 +7604,7 @@ plans:
                           docs:
                             - Check that DUT is a Flex board
               dependencies:
-                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
@@ -8136,7 +8136,7 @@ plans:
                       dependencies:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -9118,7 +9118,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
               dependencies:
-                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
@@ -9565,7 +9565,7 @@ plans:
                         - requests:UPDATE_USBKEY_IMAGE
                       docs:
                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
@@ -10046,7 +10046,7 @@ plans:
                         - requests:UPDATE_USBKEY_IMAGE
                       docs:
                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
@@ -10175,7 +10175,7 @@ plans:
                           docs:
                             - Check that DUT is a Flex board
               dependencies:
-                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
@@ -10627,7 +10627,7 @@ plans:
                   dependencies:
                     - name: Setup has servo info
                       exec_name: dut_servo_host_present
-                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
@@ -10837,7 +10837,7 @@ plans:
               exec_name: env_is_not_cloudbot
               docs:
                 - Check that the process is not running on cloudbot.
-            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+            - name: Mark as ChromeOS based (ALWAYS_RUN)
               exec_name: cros_set_as_chrome_based
               docs:
                 - Mark DUT as Chrome based.
@@ -10869,6 +10869,14 @@ plans:
               docs:
                 - Check if device is marked as ChromeOS based
           dependencies:
+            - name: Mark as ChromeOS based (ALWAYS_RUN)
+              exec_name: cros_set_as_chrome_based
+              docs:
+                - Mark DUT as Chrome based.
+            - name: Reset provisioned info (ALWAYS_RUN)
+              exec_name: cros_reset_provision_info
+              docs:
+                - Reset all provision info.
             - name: Enable verbose network logging for cellular DUTs (Allow to fail)
               exec_name: sample_pass
               docs:
@@ -11137,7 +11145,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -11669,7 +11677,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -11798,7 +11806,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -12250,7 +12258,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -12616,7 +12624,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -13148,7 +13156,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -13277,7 +13285,7 @@ plans:
                                           docs:
                                             - Check that DUT is a Flex board
                               dependencies:
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -13729,7 +13737,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -14095,7 +14103,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -14627,7 +14635,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -14756,7 +14764,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -15208,7 +15216,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -15574,7 +15582,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -16106,7 +16114,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -16235,7 +16243,7 @@ plans:
                                           docs:
                                             - Check that DUT is a Flex board
                               dependencies:
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -16687,7 +16695,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -17150,7 +17158,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -17682,7 +17690,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -17811,7 +17819,7 @@ plans:
                               docs:
                                 - Check that DUT is a Flex board
                   dependencies:
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -18263,7 +18271,7 @@ plans:
                       dependencies:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -18682,7 +18690,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -19214,7 +19222,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -19343,7 +19351,7 @@ plans:
                                   docs:
                                     - Check that DUT is a Flex board
                       dependencies:
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -19795,7 +19803,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -20269,7 +20277,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -20392,7 +20400,7 @@ plans:
                       dependencies:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -20708,7 +20716,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -21240,7 +21248,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -21369,7 +21377,7 @@ plans:
                                   docs:
                                     - Check that DUT is a Flex board
                       dependencies:
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -21821,7 +21829,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -22295,7 +22303,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -22418,7 +22426,7 @@ plans:
                       dependencies:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -22802,7 +22810,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -22925,7 +22933,7 @@ plans:
                       dependencies:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -23310,7 +23318,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -23433,7 +23441,7 @@ plans:
                       dependencies:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -23818,7 +23826,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -23941,7 +23949,7 @@ plans:
                       dependencies:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -24348,7 +24356,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -24880,7 +24888,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -25009,7 +25017,7 @@ plans:
                                   docs:
                                     - Check that DUT is a Flex board
                       dependencies:
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -25461,7 +25469,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -25824,7 +25832,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -26027,7 +26035,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -26357,7 +26365,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -26889,7 +26897,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -27018,7 +27026,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -27470,7 +27478,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -27944,7 +27952,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -28067,7 +28075,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -28677,7 +28685,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -29180,7 +29188,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -29301,7 +29309,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -29654,7 +29662,7 @@ plans:
                               docs:
                                 - Check that DUT is a Flex board
                   dependencies:
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -30186,7 +30194,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -30512,7 +30520,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -31044,7 +31052,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -31173,7 +31181,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -31625,7 +31633,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -32099,7 +32107,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -32222,7 +32230,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -32536,7 +32544,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -32657,7 +32665,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -33010,7 +33018,7 @@ plans:
                               docs:
                                 - Check that DUT is a Flex board
                   dependencies:
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -33542,7 +33550,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -33924,7 +33932,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -34127,7 +34135,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -34453,7 +34461,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -34985,7 +34993,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -35114,7 +35122,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -35566,7 +35574,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -36040,7 +36048,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -36163,7 +36171,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -36477,7 +36485,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -36601,7 +36609,7 @@ plans:
                       dependencies:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -36927,7 +36935,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -37459,7 +37467,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -37588,7 +37596,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -38040,7 +38048,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -38514,7 +38522,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -38637,7 +38645,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -39101,7 +39109,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -39224,7 +39232,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -39766,7 +39774,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -39889,7 +39897,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -40290,7 +40298,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -40413,7 +40421,7 @@ plans:
                       dependencies:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -40775,7 +40783,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -41307,7 +41315,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -41436,7 +41444,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -41888,7 +41896,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -42362,7 +42370,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -42485,7 +42493,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -42806,7 +42814,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -42929,7 +42937,7 @@ plans:
                       dependencies:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -43328,7 +43336,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -43860,7 +43868,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -43989,7 +43997,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -44441,7 +44449,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -44915,7 +44923,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -45038,7 +45046,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -45303,7 +45311,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -45426,7 +45434,7 @@ plans:
                       dependencies:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -45829,7 +45837,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -45952,7 +45960,7 @@ plans:
                       dependencies:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -46360,7 +46368,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -46892,7 +46900,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -47021,7 +47029,7 @@ plans:
                                   docs:
                                     - Check that DUT is a Flex board
                       dependencies:
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -47473,7 +47481,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -47887,7 +47895,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -48419,7 +48427,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -48548,7 +48556,7 @@ plans:
                                   docs:
                                     - Check that DUT is a Flex board
                       dependencies:
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -49000,7 +49008,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -49415,7 +49423,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -49947,7 +49955,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -50076,7 +50084,7 @@ plans:
                                   docs:
                                     - Check that DUT is a Flex board
                       dependencies:
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -50528,7 +50536,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -50972,7 +50980,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -51504,7 +51512,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -51633,7 +51641,7 @@ plans:
                                           docs:
                                             - Check that DUT is a Flex board
                               dependencies:
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -52085,7 +52093,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -52527,7 +52535,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -53059,7 +53067,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -53188,7 +53196,7 @@ plans:
                                           docs:
                                             - Check that DUT is a Flex board
                               dependencies:
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -53640,7 +53648,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -54095,7 +54103,7 @@ plans:
                                             - requests:UPDATE_USBKEY_IMAGE
                                           docs:
                                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                                       exec_name: cros_set_as_chrome_based
                                       docs:
                                         - Mark DUT as Chrome based.
@@ -54627,7 +54635,7 @@ plans:
                                             - requests:UPDATE_USBKEY_IMAGE
                                           docs:
                                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                                       exec_name: cros_set_as_chrome_based
                                       docs:
                                         - Mark DUT as Chrome based.
@@ -54756,7 +54764,7 @@ plans:
                                               docs:
                                                 - Check that DUT is a Flex board
                                   dependencies:
-                                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                                       exec_name: cros_set_as_chrome_based
                                       docs:
                                         - Mark DUT as Chrome based.
@@ -55208,7 +55216,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                                       exec_name: cros_set_as_chrome_based
                                       docs:
                                         - Mark DUT as Chrome based.
@@ -55652,7 +55660,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -56184,7 +56192,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -56313,7 +56321,7 @@ plans:
                                           docs:
                                             - Check that DUT is a Flex board
                               dependencies:
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -56765,7 +56773,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -57205,7 +57213,7 @@ plans:
                                             - requests:UPDATE_USBKEY_IMAGE
                                           docs:
                                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                                       exec_name: cros_set_as_chrome_based
                                       docs:
                                         - Mark DUT as Chrome based.
@@ -57737,7 +57745,7 @@ plans:
                                             - requests:UPDATE_USBKEY_IMAGE
                                           docs:
                                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                                       exec_name: cros_set_as_chrome_based
                                       docs:
                                         - Mark DUT as Chrome based.
@@ -57866,7 +57874,7 @@ plans:
                                               docs:
                                                 - Check that DUT is a Flex board
                                   dependencies:
-                                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                                       exec_name: cros_set_as_chrome_based
                                       docs:
                                         - Mark DUT as Chrome based.
@@ -58318,7 +58326,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                                       exec_name: cros_set_as_chrome_based
                                       docs:
                                         - Mark DUT as Chrome based.
@@ -58759,7 +58767,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -59291,7 +59299,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -59420,7 +59428,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -59872,7 +59880,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -60250,7 +60258,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -60782,7 +60790,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -60911,7 +60919,7 @@ plans:
                                           docs:
                                             - Check that DUT is a Flex board
                               dependencies:
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -61363,7 +61371,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -61790,7 +61798,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -62322,7 +62330,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -62451,7 +62459,7 @@ plans:
                                           docs:
                                             - Check that DUT is a Flex board
                               dependencies:
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -62903,7 +62911,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -63281,7 +63289,7 @@ plans:
                                             - requests:UPDATE_USBKEY_IMAGE
                                           docs:
                                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                                       exec_name: cros_set_as_chrome_based
                                       docs:
                                         - Mark DUT as Chrome based.
@@ -63813,7 +63821,7 @@ plans:
                                             - requests:UPDATE_USBKEY_IMAGE
                                           docs:
                                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                                       exec_name: cros_set_as_chrome_based
                                       docs:
                                         - Mark DUT as Chrome based.
@@ -63942,7 +63950,7 @@ plans:
                                               docs:
                                                 - Check that DUT is a Flex board
                                   dependencies:
-                                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                                       exec_name: cros_set_as_chrome_based
                                       docs:
                                         - Mark DUT as Chrome based.
@@ -64394,7 +64402,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info
                                           exec_name: dut_servo_host_present
-                                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                                       exec_name: cros_set_as_chrome_based
                                       docs:
                                         - Mark DUT as Chrome based.
@@ -64828,7 +64836,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -65360,7 +65368,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -65489,7 +65497,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -65941,7 +65949,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -66342,7 +66350,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -66874,7 +66882,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -67003,7 +67011,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -67455,7 +67463,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -67826,7 +67834,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -68358,7 +68366,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -68487,7 +68495,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -68939,7 +68947,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -69320,7 +69328,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -69852,7 +69860,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -69981,7 +69989,7 @@ plans:
                                   docs:
                                     - Check that DUT is a Flex board
                       dependencies:
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -70433,7 +70441,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -70901,7 +70909,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -71433,7 +71441,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -71562,7 +71570,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -72014,7 +72022,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -72488,7 +72496,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -72611,7 +72619,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -73270,7 +73278,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -73802,7 +73810,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -73931,7 +73939,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -74383,7 +74391,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -74857,7 +74865,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -74980,7 +74988,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -75875,7 +75883,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -76407,7 +76415,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -76536,7 +76544,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -76988,7 +76996,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -77462,7 +77470,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -77585,7 +77593,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -78035,7 +78043,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -78158,7 +78166,7 @@ plans:
                       dependencies:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -78637,7 +78645,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -79006,7 +79014,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -79538,7 +79546,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -79667,7 +79675,7 @@ plans:
                                   docs:
                                     - Check that DUT is a Flex board
                       dependencies:
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -80119,7 +80127,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -80528,7 +80536,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -81060,7 +81068,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -81189,7 +81197,7 @@ plans:
                                           docs:
                                             - Check that DUT is a Flex board
                               dependencies:
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -81641,7 +81649,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -82115,7 +82123,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -82238,7 +82246,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -83601,7 +83609,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -84133,7 +84141,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -84262,7 +84270,7 @@ plans:
                                   docs:
                                     - Check that DUT is a Flex board
                       dependencies:
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -84714,7 +84722,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -85284,7 +85292,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -85816,7 +85824,7 @@ plans:
                                 - requests:UPDATE_USBKEY_IMAGE
                               docs:
                                 - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -85945,7 +85953,7 @@ plans:
                                   docs:
                                     - Check that DUT is a Flex board
                       dependencies:
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -86397,7 +86405,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -87140,7 +87148,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -87672,7 +87680,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -87801,7 +87809,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -88253,7 +88261,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -88649,7 +88657,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -89181,7 +89189,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -89310,7 +89318,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -89762,7 +89770,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -90128,7 +90136,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -90660,7 +90668,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -90789,7 +90797,7 @@ plans:
                                           docs:
                                             - Check that DUT is a Flex board
                               dependencies:
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -91241,7 +91249,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -91607,7 +91615,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -92139,7 +92147,7 @@ plans:
                                     - requests:UPDATE_USBKEY_IMAGE
                                   docs:
                                     - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -92268,7 +92276,7 @@ plans:
                                       docs:
                                         - Check that DUT is a Flex board
                           dependencies:
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -92720,7 +92728,7 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
-                            - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                            - name: Mark as ChromeOS based (ALWAYS_RUN)
                               exec_name: cros_set_as_chrome_based
                               docs:
                                 - Mark DUT as Chrome based.
@@ -93086,7 +93094,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -93618,7 +93626,7 @@ plans:
                                         - requests:UPDATE_USBKEY_IMAGE
                                       docs:
                                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -93747,7 +93755,7 @@ plans:
                                           docs:
                                             - Check that DUT is a Flex board
                               dependencies:
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -94199,7 +94207,7 @@ plans:
                                   dependencies:
                                     - name: Setup has servo info
                                       exec_name: dut_servo_host_present
-                                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                                - name: Mark as ChromeOS based (ALWAYS_RUN)
                                   exec_name: cros_set_as_chrome_based
                                   docs:
                                     - Mark DUT as Chrome based.
@@ -94569,7 +94577,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -94772,7 +94780,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.
@@ -95314,7 +95322,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -95761,7 +95769,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -96136,7 +96144,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -96583,7 +96591,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -97137,7 +97145,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -97640,7 +97648,7 @@ plans:
                             - requests:UPDATE_USBKEY_IMAGE
                           docs:
                             - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -97761,7 +97769,7 @@ plans:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
                   dependencies:
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -98114,7 +98122,7 @@ plans:
                               docs:
                                 - Check that DUT is a Flex board
                   dependencies:
-                    - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
                       exec_name: cros_set_as_chrome_based
                       docs:
                         - Mark DUT as Chrome based.
@@ -98646,7 +98654,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
-                        - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
                           exec_name: cros_set_as_chrome_based
                           docs:
                             - Mark DUT as Chrome based.

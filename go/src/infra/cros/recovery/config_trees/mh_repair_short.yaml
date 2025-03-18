@@ -2847,7 +2847,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present')
               dependencies:
-                - name: Mark as ChromeOS based (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                 - name: Mark labstation as servod is in-use (Allow to fail) ('cros_create_servo_in_use')
                   conditions:
                     - name: Is labstation ('servo_host_is_labstation') (ALWAYS_RUN)
@@ -2988,7 +2988,7 @@ plans:
                                 - name: Setup has servo info ('dut_servo_host_present')
                     - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
                     - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-                - name: Mark as ChromeOS based (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                 - name: Boot DUT in recovery and install from USB-drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -3093,7 +3093,7 @@ plans:
                           dependencies:
                             - name: Setup has servo info ('dut_servo_host_present')
               dependencies:
-                - name: Mark as ChromeOS based (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                 - name: Mark labstation as servod is in-use (Allow to fail) ('cros_create_servo_in_use')
                   conditions:
                     - name: Is labstation ('servo_host_is_labstation') (ALWAYS_RUN)
@@ -3234,7 +3234,7 @@ plans:
                                 - name: Setup has servo info ('dut_servo_host_present')
                     - name: Call servod to download image to USB-key ('servo_download_image_to_usb') (ALWAYS_RUN) (time:'50m0s')
                     - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-                - name: Mark as ChromeOS based (Allow to fail) ('cros_set_as_chrome_based') (ALWAYS_RUN)
+                - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                 - name: Boot DUT in recovery and install from USB-drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)

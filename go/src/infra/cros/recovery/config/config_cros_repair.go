@@ -77,6 +77,9 @@ func crosRepairActions() map[string]*Action {
 				"Is ChromeOS based?",
 			},
 			Dependencies: []string{
+				"Mark as ChromeOS based",
+				// Clear provisioning to prevent Android recovery.
+				"Reset provisioned info",
 				"Enable verbose network logging for cellular DUTs",
 				"Collect logs and crashinfo",
 				"Device is SSHable",
@@ -171,10 +174,9 @@ func crosRepairActions() map[string]*Action {
 			Docs: []string{
 				"Mark DUT as Chrome based.",
 			},
-			ExecName:               "cros_set_as_chrome_based",
-			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-			RunControl:             RunControl_ALWAYS_RUN,
-			AllowFailAfterRecovery: true,
+			ExecName:      "cros_set_as_chrome_based",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			RunControl:    RunControl_ALWAYS_RUN,
 		},
 		"Is ChromeOS based?": {
 			Docs: []string{

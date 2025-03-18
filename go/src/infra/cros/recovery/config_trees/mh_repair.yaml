@@ -8667,7 +8667,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
               dependencies:
-                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
@@ -9114,7 +9114,7 @@ plans:
                         - requests:UPDATE_USBKEY_IMAGE
                       docs:
                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
@@ -9489,7 +9489,7 @@ plans:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
               dependencies:
-                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
@@ -9936,7 +9936,7 @@ plans:
                         - requests:UPDATE_USBKEY_IMAGE
                       docs:
                         - Remove UPDATE_USBKEY_IMAGE from repair-requests.
-                - name: Mark as ChromeOS based (Allow to fail) (ALWAYS_RUN)
+                - name: Mark as ChromeOS based (ALWAYS_RUN)
                   exec_name: cros_set_as_chrome_based
                   docs:
                     - Mark DUT as Chrome based.
