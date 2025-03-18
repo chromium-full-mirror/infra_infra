@@ -1,8 +1,8 @@
 create {
   source {
     url {
-      download_url: "https://zlib.net/fossils/zlib-1.2.12.tar.gz"
-      version: "1.2.12"
+      download_url: "https://zlib.net/fossils/zlib-1.3.1.tar.gz"
+      version: "1.3.1"
     }
     unpack_archive: true
     cpe_base_address: "cpe:/a:zlib:zlib"
