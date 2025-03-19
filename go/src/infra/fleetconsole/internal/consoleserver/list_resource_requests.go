@@ -6,9 +6,6 @@ package consoleserver
 
 import (
 	"context"
-	"fmt"
-	"slices"
-	"strings"
 	"time"
 
 	"cloud.google.com/go/bigquery"
@@ -18,49 +15,36 @@ import (
 
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 	"go.chromium.org/infra/fleetconsole/internal/bigqueryclient"
+	"go.chromium.org/infra/fleetconsole/internal/database/queryutils"
 	"go.chromium.org/infra/fleetconsole/internal/utils"
 )
 
 const (
-	ResourceRequestTableName                = "fleet_console.resource_requests"
+	ResourceRequestTableName                = "resource_delivery_dev.resource_requests"
 	RrIDColumn                              = "rr_id"
 	ResourceDetailsColumn                   = "resource_details"
 	ResourceRequestActualDeliveryDateColumn = "resource_request_actual_delivery_date"
 	ResourceRequestTargetDeliveryDateColumn = "resource_request_target_delivery_date"
 	FulfillmentStatusColumn                 = "fulfillment_status"
-	ProcurementDateColumn                   = "material_sourcing_target_end_date"
-	BuildEndDateColumn                      = "build_target_end_date"
-	QAEndDateColumn                         = "qa_target_end_date"
-	ConfigEndDateColumn                     = "config_target_end_date"
+	ProcurementDateColumn                   = "material_sourcing_target_delivery_date"
+	BuildEndDateColumn                      = "build_target_delivery_date"
+	QAEndDateColumn                         = "qa_target_delivery_date"
+	ConfigEndDateColumn                     = "config_target_delivery_date"
+
+	DefaultPageSize = 10
 )
 
-// currently we are using big query table names as part of a contract with frontend, which is not a good practice
-// in future this method should perform an actual mapping from the contract to the big query name
-// this method serves us as a guard from SQL Injection, since BigQuery API doesn't allow for parametrized ORDER BY
-func MapOrderBy(orderBy string) (string, error) {
-	if orderBy == "" {
-		return RrIDColumn, nil
-	}
-
-	parts := strings.Split(orderBy, " ")
-
-	if !slices.Contains([]string{RrIDColumn, ResourceDetailsColumn, ProcurementDateColumn, BuildEndDateColumn, QAEndDateColumn, ConfigEndDateColumn}, parts[0]) {
-		return "", fmt.Errorf("invalid order_by field: %s", orderBy)
-	}
-
-	if len(parts) > 1 {
-		if len(parts) > 2 {
-			return "", fmt.Errorf("invalid order_by field: %s", orderBy)
-		}
-		direction := strings.ToUpper(parts[1])
-		if direction != "ASC" && direction != "DESC" {
-			return "", fmt.Errorf("invalid order_by field: %s", orderBy)
-		}
-		return parts[0] + " " + direction, nil
-	}
-
-	return parts[0], nil
-}
+var resourceRequestsTable = queryutils.NewTableBuilder(ResourceRequestTableName).WithColumns(
+	queryutils.NewColumn(RrIDColumn).Build(),
+	queryutils.NewColumn(ResourceDetailsColumn).Build(),
+	queryutils.NewColumn(ResourceRequestActualDeliveryDateColumn).Build(),
+	queryutils.NewColumn(ResourceRequestTargetDeliveryDateColumn).Build(),
+	queryutils.NewColumn(FulfillmentStatusColumn).Build(),
+	queryutils.NewColumn(ProcurementDateColumn).Build(),
+	queryutils.NewColumn(BuildEndDateColumn).Build(),
+	queryutils.NewColumn(QAEndDateColumn).Build(),
+	queryutils.NewColumn(ConfigEndDateColumn).Build(),
+).Build()
 
 func BigQueryValueToDate(value bigquery.Value) (date *fleetconsolerpc.DateOnly) {
 	if value == nil {
@@ -129,35 +113,29 @@ func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, 
 	logging.Infof(ctx, "ListResourceRequests called")
 
 	bqClient, err := bigqueryclient.NewBQClient(ctx, "chrome-fleet-analytics")
-
 	if err != nil {
 		logging.Infof(ctx, "Error instantiating a new BigQuery client")
 		return nil, err
 	}
 
-	offset, err := resourceRequestsPageTokenToOffset(req)
+	if req.GetPageSize() == 0 {
+		req.PageSize = DefaultPageSize
+	}
 
+	offset, err := resourceRequestsPageTokenToOffset(req)
 	if err != nil {
 		logging.Errorf(ctx, "failed to extract page token: %s", err)
 		return nil, err
 	}
 
-	orderBy, err := MapOrderBy(req.GetOrderBy())
+	query, err := buildListResourceRequestsQuery(ctx, req, offset)
 	if err != nil {
-		logging.Errorf(ctx, "failed to extract order by: %s", err)
+		logging.Errorf(ctx, "failed to build query: %s", err)
 		return nil, err
 	}
 
-	// seems like ORDER BY doesn't support parameters, so we need to make sure the column name is correct ourselves
-	q := bqClient.Query("SELECT * FROM " + ResourceRequestTableName + " ORDER BY " + orderBy + " LIMIT @limit OFFSET @offset")
-	q.Parameters = []bigquery.QueryParameter{
-		{
-			Name: "limit", Value: int(req.GetPageSize()) + 1,
-		},
-		{
-			Name: "offset", Value: offset,
-		},
-	}
+	q := bqClient.Query(query.Statement)
+	q.Parameters = convertQueryParameters(query.Parameters)
 
 	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(5*time.Second))
 	defer cancel()
@@ -175,7 +153,6 @@ func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, 
 		if err != nil {
 			break
 		}
-
 		resourceRequests = append(resourceRequests, MapRow(row))
 	}
 
@@ -190,6 +167,8 @@ func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, 
 
 		resourceRequests = resourceRequests[:req.PageSize]
 	}
+
+	logging.Debugf(ctx, "%v", resourceRequests)
 
 	return &fleetconsolerpc.ListResourceRequestsResponse{
 		ResourceRequests: resourceRequests,
@@ -209,4 +188,45 @@ func resourceRequestsOffsetToPageToken(offset int, req *fleetconsolerpc.ListReso
 		req.GetFilter(),
 		req.GetOrderBy(),
 	})
+}
+
+// convertQueryParameters converts a slice of query parameters from the
+// queryutils format to the format bigquery.QueryParameter).
+//
+// Note: This function assumes that all parameters are strings. If other
+// types are needed, this function will need to be updated.
+func convertQueryParameters(params []any) []bigquery.QueryParameter {
+	bqParams := make([]bigquery.QueryParameter, len(params))
+	for i, p := range params {
+		bqParams[i] = bigquery.QueryParameter{
+			Value: p,
+		}
+	}
+	return bqParams
+}
+
+// buildListResourceRequestsQuery uses queryutils to build a query for listing
+// resource requests.
+func buildListResourceRequestsQuery(ctx context.Context, req *fleetconsolerpc.ListResourceRequestsRequest, offset int) (*queryutils.Query, error) {
+	queryBuilder := queryutils.NewQueryBuilder(resourceRequestsTable)
+	queryBuilder = queryBuilder.SetSqlLangType(queryutils.BigQueryLangType)
+	queryBuilder = queryBuilder.WithSelectAllClause().WithFromClause()
+
+	queryBuilder, err := queryBuilder.WithWhereClause(req.GetFilter())
+	if err != nil {
+		logging.Errorf(ctx, "failed to build where clause: %s", err)
+		return nil, err
+	}
+
+	// ORDER BY doesn't support parameters, so we need to make sure the column
+	// name is correct.
+	queryBuilder, err = queryBuilder.WithOrderByClause(req.GetOrderBy(), "rr_id")
+	if err != nil {
+		logging.Errorf(ctx, "failed to build order by clause: %s", err)
+		return nil, err
+	}
+
+	queryBuilder = queryBuilder.WithOffsetPagination(offset, int(req.GetPageSize()))
+
+	return queryBuilder.Build(nil)
 }
