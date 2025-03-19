@@ -39,6 +39,9 @@ message Config {
 
   // karte is the configuration settings for Karte.
   KarteConfig karte = 12;
+
+  // scheduke_config is the config for scheduke (retries and delays).
+  SchedukeConfig scheduke_config = 13;
 }
 
 // Swarming contains information about the Swarming instance that hosts the bots
@@ -274,4 +277,14 @@ message SmartSchedulingConfig {
 
   // maximum devices controls how many devices total can use the new flow to limit the rollout.
   int32 maximum_devices = 3;
+}
+
+message SchedukeConfig {
+  bool enabled = 1;
+
+  // scheduke_retries is the number of times to retry calling scheduke for repair tasks.
+  int32 scheduke_retries = 2;
+
+  // scheduke_retry_delay_seconds is the number of seconds to wait after a single failed scheduke test before retrying.
+  int32 scheduke_retry_delay_seconds = 3;
 }
