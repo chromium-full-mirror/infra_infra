@@ -690,7 +690,7 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 
 		// If the context has been closed then exit early.
 		if err = ctx.Err(); err != nil {
-			err = fmt.Errorf("user configured maximum duration exceeded. Cancelling")
+			err = fmt.Errorf("user configured maximum duration exceeded. Cancelling - %s", fmt.Sprintf("* [latest attempt](%s)", common.BBUrl(builderID, scheduledBuild.GetId())))
 			setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, scheduledBuild, bbClient)
 			return
 		}
