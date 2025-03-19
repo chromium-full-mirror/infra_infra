@@ -12,20 +12,11 @@ import (
 	"path"
 	"time"
 
-	gax "github.com/googleapis/gax-go/v2"
 	moblabpb "google.golang.org/genproto/googleapis/chromeos/moblab/v1beta1"
-
-	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
 )
 
-// MoblabClient interface provides subset of Moblab API methods relevant to CTPV2
-type MoblabClient interface {
-	StageBuild(ctx context.Context, req *moblabpb.StageBuildRequest, opts ...gax.CallOption) (*moblab.StageBuildOperation, error)
-	CheckBuildStageStatus(ctx context.Context, req *moblabpb.CheckBuildStageStatusRequest, opts ...gax.CallOption) (*moblabpb.CheckBuildStageStatusResponse, error)
-}
-
 // MaxStageTime is the maximum time allowed for staging a build.
-const MaxStageTime = 120 * time.Second
+const MaxStageTime = 180 * time.Second
 
 // The type of the build artifact
 type BuildType string
@@ -51,7 +42,7 @@ type StageImageParams struct {
 }
 
 // StageImageToBucket stages the specified Chrome OS image to the user GCS bucket
-func StageImageToBucket(ctx context.Context, moblabClient MoblabClient, stageImageParams *StageImageParams, cft bool, log *log.Logger) error {
+func StageImageToBucket(ctx context.Context, moblabClient MobLabAPI, stageImageParams *StageImageParams, cft bool, log *log.Logger) error {
 	buildTarget := fmt.Sprintf("buildTargets/%s/models/%s", stageImageParams.Board, stageImageParams.Model)
 	artifactName := fmt.Sprintf("%s/builds/%s/artifacts/%s", buildTarget, stageImageParams.BuildVersion, stageImageParams.Bucket)
 	stageReq := &moblabpb.StageBuildRequest{
@@ -60,26 +51,27 @@ func StageImageToBucket(ctx context.Context, moblabClient MoblabClient, stageIma
 	}
 
 	log.Printf("Staging: %s, Filter: %s\n", artifactName, stageImageParams.BuildType.String())
-	if _, err := moblabClient.StageBuild(ctx, stageReq); err != nil {
+	stageBuildResponse, err := moblabClient.StageBuild(ctx, stageReq)
+	if err != nil {
 		log.Printf("Failed to stage %s: %v\n", artifactName, err)
 		return err
 	}
 
+	req := &moblabpb.CheckBuildStageStatusRequest{Name: artifactName}
+	if cloudBuild := stageBuildResponse.CloudBuild; cloudBuild != nil {
+		req.Filter = fmt.Sprintf("cloud_build_id=%s", cloudBuild.Id)
+	}
 	var stageStatus *moblabpb.CheckBuildStageStatusResponse
-	var err error
 	var delay = 1 * time.Second
 	maxDelay := 10 * time.Second
 	totalElapsedTime := time.Duration(0)
 
 	for {
-		req := &moblabpb.CheckBuildStageStatusRequest{
-			Name: artifactName,
-		}
 		stageStatus, err = moblabClient.CheckBuildStageStatus(ctx, req)
 		if err != nil {
 			return err
 		}
-		if stageStatus.IsBuildStaged {
+		if stageStatus.IsBuildStaged && (stageStatus.CloudBuild == nil || stageStatus.CloudBuild.Status == moblabpb.CloudBuild_SUCCEEDED) {
 			break
 		}
 		if totalElapsedTime >= MaxStageTime {
@@ -98,12 +90,5 @@ func StageImageToBucket(ctx context.Context, moblabClient MoblabClient, stageIma
 
 	destPath := stageStatus.StagedBuildArtifact.Path
 	log.Printf("Artifacts staged to %s\n", path.Join(stageImageParams.Bucket, destPath))
-
-	// TODO(b/343738269) Replace this sleep step with call to MoblabAPI
-	// check Staging status once MoblabAPI is updated to include container staging status.
-	if cft {
-		log.Println("Waiting for CFT container to be staged...")
-		time.Sleep(MaxStageTime)
-	}
 	return nil
 }
