@@ -3425,6 +3425,18 @@ wheel: <
 
 * *universal*
 
+### 2.24.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-api-core-py3"
+  version: "version:2.24.2"
+>
+```
+
+
+* *universal*
+
 ## **google-api-python-client**
 
 ### 1.6.2
@@ -3779,6 +3791,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/google-cloud-bigquery-storage-py3"
   version: "version:2.27.0"
+>
+```
+
+
+* *universal*
+
+### 2.29.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/google-cloud-bigquery-storage-py3"
+  version: "version:2.29.1"
 >
 ```
 
@@ -4530,6 +4554,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/googleapis-common-protos-py2_py3"
   version: "version:1.66.0"
+>
+```
+
+
+* *universal*
+
+### 1.69.3
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/googleapis-common-protos-py2_py3"
+  version: "version:1.69.3"
 >
 ```
 
@@ -8141,6 +8177,18 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/proto-plus-py3"
   version: "version:1.26.0"
+>
+```
+
+
+* *universal*
+
+### 1.26.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/proto-plus-py3"
+  version: "version:1.26.1"
 >
 ```
 
