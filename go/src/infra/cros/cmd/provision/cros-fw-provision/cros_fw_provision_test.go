@@ -293,7 +293,7 @@ func TestDetailedRequestSSHStates(t *testing.T) {
 				}}).MinTimes(1).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil),
 				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
 					Command: "crosid",
-				}}).MinTimes(1).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil),
+				}}).MinTimes(1).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}, Stdout: []byte("CONFIG_INDEX='0'")}), nil),
 				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
 					Args: []string{"[", "-e", "/usr/share/chromeos-config/yaml/config.yaml", "]", "&&", "echo", "-n", "1", "||", "echo", "-n", "0"},
 				}}).MinTimes(1).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}, Stdout: []byte("0")}), nil),
@@ -317,7 +317,7 @@ func TestDetailedRequestSSHStates(t *testing.T) {
 				}}).MinTimes(1).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil),
 				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
 					Command: "crosid",
-				}}).MinTimes(1).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil),
+				}}).MinTimes(1).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}, Stdout: []byte("CONFIG_INDEX='0'")}), nil),
 				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
 					Args: []string{"[", "-e", "/usr/share/chromeos-config/yaml/config.yaml", "]", "&&", "echo", "-n", "1", "||", "echo", "-n", "0"},
 				}}).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}, Stdout: []byte("1")}), nil),

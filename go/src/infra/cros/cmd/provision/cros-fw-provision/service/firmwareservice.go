@@ -840,19 +840,21 @@ func (fws *FirmwareService) ReadConfigYAML(ctx context.Context) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to run crosid")
 	}
-	re, err := regexp.Compile(`^SKU='([^']*)'`)
+	re, err := regexp.Compile(`CONFIG_INDEX='([^']*)'`)
 	if err != nil {
-		return errors.Wrap(err, "sku regex failed")
+		return errors.Wrap(err, "config index regex failed")
 	}
 	m := re.FindStringSubmatch(out)
-	sku := -1
-	if m != nil && m[1] != "none" {
-		sku, err = strconv.Atoi(m[1])
-		if err != nil {
-			return errors.Wrapf(err, "parse of SKU %q failed", m[1])
-		}
-		log.Printf("DUT sku = %d", sku)
+	if m == nil {
+		log.Printf("regexp match of CONFIG_INDEX failed on %q", out)
+		return errors.Wrapf(err, "regexp match of CONFIG_INDEX failed on %q", out)
 	}
+	configIndex, err := strconv.Atoi(m[1])
+	if err != nil {
+		log.Printf("parse of CONFIG_INDEX %q failed", m[1])
+		return errors.Wrapf(err, "parse of CONFIG_INDEX %q failed", m[1])
+	}
+	log.Printf("DUT configIndex = %d", configIndex)
 
 	yamlPath := "/usr/share/chromeos-config/yaml/config.yaml"
 	ok, err := fws.connection.PathExists(ctx, yamlPath)
@@ -863,60 +865,33 @@ func (fws *FirmwareService) ReadConfigYAML(ctx context.Context) error {
 		return nil
 	}
 
-	config, err := fws.connection.FetchFile(ctx, yamlPath)
+	configFile, err := fws.connection.FetchFile(ctx, yamlPath)
 	if err != nil {
 		return errors.Wrapf(err, "failed to read %q", yamlPath)
 	}
-	defer config.Close()
+	defer configFile.Close()
 	configYaml := configData{}
-	parser := yaml.NewDecoder(config)
+	parser := yaml.NewDecoder(configFile)
 	err = parser.Decode(&configYaml)
 	if err != nil {
 		return errors.Wrap(err, "failed to parse config.yaml")
 	}
-	model := fws.GetModel()
-	for _, config := range configYaml.ChromeOS.Configs {
-		// Wilco devices have _signed suffixes on the model name.
-		if config.Name == model || config.Name == model+"_signed" {
-			// Treat config.Identity.SKUID <= 0 as a wildcard that matches any SKU.
-			if sku >= 0 && config.Identity.SKUID > 0 && config.Identity.SKUID != sku {
-				log.Printf("Incorrect SKU: sku=%+v config.Identity.SKUID=%+v", sku, config.Identity.SKUID)
-				continue
-			}
-			log.Printf("config entry: %+v", config)
-			thisAPName := config.Firmware.BuildTargets.Coreboot
-			if thisAPName == "" {
-				thisAPName = config.Firmware.ImageName
-			}
-			if thisAPName != "" {
-				if fws.CorebootName != "" && fws.CorebootName != thisAPName {
-					return errors.Errorf("ambiguous AP name for model %q sku %d, could be %q or %q", model, sku, fws.CorebootName, thisAPName)
-				}
-				fws.CorebootName = thisAPName
-			}
-			var thisECName string
-			var legacyECName string
-			// Bizarrely, zephyr builders use the coreboot name for the ec.bin file.
-			if config.Firmware.BuildTargets.ZephyrEC != "" {
-				thisECName = config.Firmware.BuildTargets.ZephyrEC
-				legacyECName = thisAPName
-			} else {
-				thisECName = config.Firmware.BuildTargets.EC
-				legacyECName = config.Firmware.BuildTargets.EC
-			}
-			if thisECName != "" {
-				if fws.StandaloneECName != "" && fws.StandaloneECName != thisECName {
-					return errors.Errorf("ambiguous EC name for model %q sku %d, could be %q or %q", model, sku, fws.StandaloneECName, thisECName)
-				}
-				fws.StandaloneECName = thisECName
-			}
-			if legacyECName != "" {
-				if fws.LegacyECName != "" && fws.LegacyECName != legacyECName {
-					return errors.Errorf("ambiguous legacy EC name for model %q sku %d, could be %q or %q", model, sku, fws.LegacyECName, legacyECName)
-				}
-				fws.LegacyECName = legacyECName
-			}
-		}
+	config := configYaml.ChromeOS.Configs[configIndex]
+	log.Printf("config entry: %+v", config)
+	thisAPName := config.Firmware.BuildTargets.Coreboot
+	if thisAPName == "" {
+		thisAPName = config.Firmware.ImageName
+	}
+	if thisAPName != "" {
+		fws.CorebootName = thisAPName
+	}
+	// Bizarrely, firmware branch builders use the coreboot name for the ec.bin file for zephyr binaries.
+	if config.Firmware.BuildTargets.ZephyrEC != "" {
+		fws.StandaloneECName = config.Firmware.BuildTargets.ZephyrEC
+		fws.LegacyECName = thisAPName
+	} else {
+		fws.StandaloneECName = config.Firmware.BuildTargets.EC
+		fws.LegacyECName = config.Firmware.BuildTargets.EC
 	}
 	// Special case for reef boards. See b/398900326
 	if fws.CorebootName != fws.LegacyECName && fws.LegacyECName == "reef" {
