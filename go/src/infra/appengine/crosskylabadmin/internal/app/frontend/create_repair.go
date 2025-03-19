@@ -10,6 +10,7 @@ import (
 	"math"
 	"net/http"
 	"strings"
+	"time"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -131,6 +132,12 @@ func GetPoolCfg(ctx context.Context, poolName string) *config.Swarming_PoolCfg {
 // This function will either schedule a legacy repair task or a PARIS repair task.
 // Note that the ufs client can be nil.
 func CreateRepairTask(ctx context.Context, dutName string, expectedState string, pools []string, randFloat float64, poolCfg *config.Swarming_PoolCfg) (string, error) {
+	schedukeRetries := 1
+	var schedukeRetryDelay time.Duration
+	if config.Get(ctx).GetSchedukeConfig().GetEnabled() {
+		schedukeRetries = int(config.Get(ctx).GetSchedukeConfig().GetSchedukeRetries())
+		schedukeRetryDelay = time.Duration(time.Duration(config.Get(ctx).GetSchedukeConfig().GetSchedukeRetryDelaySeconds())) * time.Second
+	}
 	logging.Infof(ctx, "Creating repair task for %q expected state %q with random input %f", dutName, expectedState, randFloat)
 	// If we encounter an error picking paris or legacy, do the safe thing and use legacy.
 	taskType, err := RouteTask(
@@ -177,7 +184,20 @@ func CreateRepairTask(ctx context.Context, dutName string, expectedState string,
 		sc = nil
 		// return "", errors.Annotate(err, "create repair task").Err()
 	}
-	url, err := createBuildbucketTask(ctx, sc, r)
+	url := ""
+	for i := range schedukeRetries {
+		if i != 0 {
+			time.Sleep(schedukeRetryDelay)
+		}
+		attemptNumber := i + 1
+		logging.Infof(ctx, "trying scheduke attempt %d/%d", attemptNumber, schedukeRetries)
+		url, err = createBuildbucketTask(ctx, sc, r)
+		if err == nil {
+			return url, nil
+		} else {
+			logging.Errorf(ctx, "scheduke attempt %d/%d failed with error %s", attemptNumber, schedukeRetries, err)
+		}
+	}
 	return url, errors.Annotate(err, "create repair task").Err()
 }
 
