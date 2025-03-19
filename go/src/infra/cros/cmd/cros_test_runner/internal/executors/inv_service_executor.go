@@ -21,6 +21,7 @@ import (
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 	"go.chromium.org/infra/cros/cmd/cros_test_runner/internal/commands"
+	"go.chromium.org/infra/libs/skylab/common/heuristics"
 )
 
 const (
@@ -127,7 +128,7 @@ func (ex *InvServiceExecutor) invServiceStartCommandExecution(
 
 func getDUTHostnameAndContextForInventory(ctx context.Context, hostname string) (context.Context, string, error) {
 	botPrefix := os.Getenv("DRONE_AGENT_BOT_PREFIX")
-	if botPrefix != "" && botPrefix != "crossk-" {
+	if botPrefix != "" && !common.StringInSlice(botPrefix, heuristics.HwSwarmingBotIDPrefixes) {
 		var found bool
 		hostname, found = strings.CutPrefix(hostname, botPrefix)
 		if found {
