@@ -108,7 +108,8 @@ To find the cache server on a lab machine:
 ssh $DUT_HOSTNAME 'for devserver in 192.168.100.1 100.115.168.190 10.128.176.210 100.115.21.212 100.115.245.199 100.115.245.200 100.115.219.131 100.115.219.132 100.115.219.133 100.115.219.134 100.115.219.137; do if curl -f --connect-timeout 3 "http://${devserver?}:8082/check_health" >/dev/null ; then echo CACHE_SERVER=${devserver?} ; fi; done'
 ```
 
-Run cros-fw-provision outside chroot
+Run cros-fw-provision outside chroot. The binary package name should match the
+one in `build/packages/cros-fw-provision.yaml`.
 
 ```
 CACHE_SERVER=192.168.100.1
@@ -179,7 +180,7 @@ cat >install.json <<INSTALL
 INSTALL
 eval `~/infra/infra/go/env.py` && \
 export CGO_ENABLED=0 && \
-(cd ~/infra/infra/go/src/infra && go install go.chromium.org/infra/cros/cmd/provision/cros-fw-provision) && \
+(cd ~/infra/infra/go/src/infra && go install go.chromium.org/infra/cros/cmd/cft/provision/cros-fw-provision) && \
 ~/infra/infra/go/bin/cros-fw-provision cli -startup startup.json -install install.json
 ```
 
@@ -212,7 +213,8 @@ Run the test with go test:
 ```
 eval `~/infra/infra/go/env.py` && \
 export CGO_ENABLED=0 && \
-(cd ~/infra/infra/go/src/infra && go test go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/...)
+(cd ~/infra/infra/go/src/infra && go test go.chromium.org/infra/cros/cmd/cft/provision/cros-fw-provision/... \
+go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/...)
 ```
 
 ## Production deployment
