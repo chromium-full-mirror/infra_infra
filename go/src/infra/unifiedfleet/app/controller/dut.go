@@ -1296,9 +1296,18 @@ func renameDUT(ctx context.Context, oldName, newName string, lse *ufspb.MachineL
 	if err := hc.stUdt.deleteLseStateHelper(ctx, lse, nil); err != nil {
 		return nil, errors.Annotate(err, "Fail to delete lse-related states").Err()
 	}
+	// Delete device labels
+	deviceLabelsName := util.AddPrefix(util.MachineLSECollection, oldName)
+	_, err := inventory.GetDeviceLabels(ctx, deviceLabelsName)
+	if err != nil {
+		logging.Warningf(ctx, "Error getting device labels during renameDUT: %s", err)
+	} else if err := inventory.DeleteDeviceLabels(ctx, deviceLabelsName); err != nil {
+		return nil, errors.Annotate(err, "Failed to delete labels").Err()
+	}
 	if err := hc.SaveChangeEvents(ctx); err != nil {
 		return nil, errors.Annotate(err, "Failed to log changes").Err()
 	}
+
 	// Update the host name
 	newLse.Name = newName
 	newLse.Hostname = newName
@@ -1310,6 +1319,10 @@ func renameDUT(ctx context.Context, oldName, newName string, lse *ufspb.MachineL
 	// Update states
 	if err := hc.stUdt.addLseStateHelper(ctx, newLse, machine); err != nil {
 		return nil, err
+	}
+	// Update corresponding device labels
+	if err := updateChromeOSDeviceLabels(ctx, hc, newLse, machine, false); err != nil {
+		return nil, errors.Annotate(err, "Error creating device labels").Err()
 	}
 
 	hc.LogMachineLSEChanges(lse, newLse)
