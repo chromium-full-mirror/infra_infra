@@ -7266,20 +7266,6 @@ plans:
                                 - name: Setup has servo info ('dut_servo_host_present')
                     - name: cros_is_battery_expected
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
-            - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
-              conditions:
-                - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
-              dependencies:
-                - name: Detect CacheService address ('cache_service_address_detection')
-                  conditions:
-                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                - name: Start Foil-provision ('ctr_start_foil_provision_container')
-                  conditions:
-                    - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
-                    - name: CrosToolRunner is up ('ctr_is_up')
-                - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
-                - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -7311,6 +7297,20 @@ plans:
                     - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                 - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+            - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
+              conditions:
+                - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+              dependencies:
+                - name: Detect CacheService address ('cache_service_address_detection')
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                  conditions:
+                    - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                    - name: CrosToolRunner is up ('ctr_is_up')
+                - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -13031,20 +13031,6 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Has repair-request for re-provision ('dut_has_any_repair_requests')
               recoveries:
-                - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
-                  conditions:
-                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
-                  dependencies:
-                    - name: Detect CacheService address ('cache_service_address_detection')
-                      conditions:
-                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
-                      conditions:
-                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
-                        - name: CrosToolRunner is up ('ctr_is_up')
-                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
-                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -13076,6 +13062,20 @@ plans:
                         - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                      conditions:
+                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: CrosToolRunner is up ('ctr_is_up')
+                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -29092,20 +29092,6 @@ plans:
                         - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                           conditions:
                             - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
-                    - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
-                      conditions:
-                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                        - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Detect CacheService address ('cache_service_address_detection')
-                          conditions:
-                            - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                        - name: Start Foil-provision ('ctr_start_foil_provision_container')
-                          conditions:
-                            - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
-                            - name: CrosToolRunner is up ('ctr_is_up')
-                        - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
-                        - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                       conditions:
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -29137,6 +29123,20 @@ plans:
                             - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                         - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                        - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Detect CacheService address ('cache_service_address_detection')
+                          conditions:
+                            - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                        - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                          conditions:
+                            - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                            - name: CrosToolRunner is up ('ctr_is_up')
+                        - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                        - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Quick provision OS ('sample_pass')
                       conditions:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
@@ -29182,20 +29182,6 @@ plans:
                         - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                           conditions:
                             - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
-                    - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
-                      conditions:
-                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                        - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
-                      dependencies:
-                        - name: Detect CacheService address ('cache_service_address_detection')
-                          conditions:
-                            - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                        - name: Start Foil-provision ('ctr_start_foil_provision_container')
-                          conditions:
-                            - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
-                            - name: CrosToolRunner is up ('ctr_is_up')
-                        - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
-                        - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                       conditions:
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -29227,6 +29213,20 @@ plans:
                             - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                         - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                    - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                        - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Detect CacheService address ('cache_service_address_detection')
+                          conditions:
+                            - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                        - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                          conditions:
+                            - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                            - name: CrosToolRunner is up ('ctr_is_up')
+                        - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                        - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Quick provision OS ('sample_pass')
                       conditions:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
@@ -32700,20 +32700,6 @@ plans:
                               dependencies:
                                 - name: Setup has servo info ('dut_servo_host_present')
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
-                - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
-                  conditions:
-                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
-                  dependencies:
-                    - name: Detect CacheService address ('cache_service_address_detection')
-                      conditions:
-                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
-                      conditions:
-                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
-                        - name: CrosToolRunner is up ('ctr_is_up')
-                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
-                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -32745,6 +32731,20 @@ plans:
                         - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                      conditions:
+                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: CrosToolRunner is up ('ctr_is_up')
+                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Reset servo_v4.1 ethernet and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -32997,20 +32997,6 @@ plans:
                               dependencies:
                                 - name: Setup has servo info ('dut_servo_host_present')
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
-                - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
-                  conditions:
-                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
-                  dependencies:
-                    - name: Detect CacheService address ('cache_service_address_detection')
-                      conditions:
-                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
-                      conditions:
-                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
-                        - name: CrosToolRunner is up ('ctr_is_up')
-                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
-                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -33042,6 +33028,20 @@ plans:
                         - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                      conditions:
+                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: CrosToolRunner is up ('ctr_is_up')
+                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Force reimage to ChromeOS in DEV mode ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
@@ -33221,20 +33221,6 @@ plans:
             - name: Device Uptime (Allow to fail) ('cros_uptime_print')
             - name: Has repair-request for re-provision ('dut_has_any_repair_requests')
               recoveries:
-                - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
-                  conditions:
-                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
-                  dependencies:
-                    - name: Detect CacheService address ('cache_service_address_detection')
-                      conditions:
-                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
-                      conditions:
-                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
-                        - name: CrosToolRunner is up ('ctr_is_up')
-                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
-                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -33266,6 +33252,20 @@ plans:
                         - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                      conditions:
+                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: CrosToolRunner is up ('ctr_is_up')
+                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Update FW and install Android OS from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -33861,20 +33861,6 @@ plans:
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                       conditions:
                         - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
-                - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
-                  conditions:
-                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
-                  dependencies:
-                    - name: Detect CacheService address ('cache_service_address_detection')
-                      conditions:
-                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
-                      conditions:
-                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
-                        - name: CrosToolRunner is up ('ctr_is_up')
-                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
-                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -33906,6 +33892,20 @@ plans:
                         - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                      conditions:
+                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: CrosToolRunner is up ('ctr_is_up')
+                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Quick provision OS ('sample_pass')
                   conditions:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
@@ -33951,20 +33951,6 @@ plans:
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
                       conditions:
                         - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
-                - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
-                  conditions:
-                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
-                  dependencies:
-                    - name: Detect CacheService address ('cache_service_address_detection')
-                      conditions:
-                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
-                      conditions:
-                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
-                        - name: CrosToolRunner is up ('ctr_is_up')
-                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
-                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -33996,6 +33982,20 @@ plans:
                         - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
                     - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+                - name: 'Foil: Install Android OS from servo USB-drive (''sample_pass'') (ALWAYS_RUN)'
+                  conditions:
+                    - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Detect CacheService address ('cache_service_address_detection')
+                      conditions:
+                        - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Start Foil-provision ('ctr_start_foil_provision_container')
+                      conditions:
+                        - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
+                        - name: CrosToolRunner is up ('ctr_is_up')
+                    - name: Foil-provision install OS ('ctr_foil_provision_install') (ALWAYS_RUN) (time:'1h0m0s')
+                    - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Quick provision OS ('sample_pass')
                   conditions:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)

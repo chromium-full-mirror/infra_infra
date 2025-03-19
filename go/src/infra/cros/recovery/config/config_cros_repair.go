@@ -249,8 +249,8 @@ func crosRepairActions() map[string]*Action {
 				"Power cycle DUT by RPM and wait for ping",
 				"Trigger kernel panic to reset the whole board and try ssh to DUT",
 				"Restore AC detection by EC console and wait for ping",
-				"Foil: Install Android OS from servo USB-drive",
 				"Install Android OS by booting from servo USB-drive",
+				"Foil: Install Android OS from servo USB-drive",
 				"Update FW and install Android OS from servo USB-drive",
 				"Force reimage to ChromeOS in DEV mode",
 				"Install OS in recovery mode by booting from servo USB-drive (no storage check)",
@@ -593,8 +593,8 @@ func crosRepairActions() map[string]*Action {
 			},
 			RecoveryActions: []string{
 				// Android actions.
-				"Foil: Install Android OS from servo USB-drive",
 				"Install Android OS by booting from servo USB-drive",
+				"Foil: Install Android OS from servo USB-drive",
 				"Update FW and install Android OS from servo USB-drive",
 				"Force reimage to ChromeOS in DEV mode",
 				// Legacy actions.
@@ -614,8 +614,8 @@ func crosRepairActions() map[string]*Action {
 				"requests:PROVISION",
 			},
 			RecoveryActions: []string{
-				"Foil: Install Android OS from servo USB-drive",
 				"Install Android OS by booting from servo USB-drive",
+				"Foil: Install Android OS from servo USB-drive",
 				"Update FW and install Android OS from servo USB-drive",
 			},
 		},
@@ -2096,8 +2096,8 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_is_not_in_dev_mode",
 			RecoveryActions: []string{
 				"Switch to secure-mode and reboot",
-				"Foil: Install Android OS from servo USB-drive",
 				"Install Android OS by booting from servo USB-drive",
+				"Foil: Install Android OS from servo USB-drive",
 				"Quick provision OS",
 			},
 		},
@@ -2112,8 +2112,8 @@ func crosRepairActions() map[string]*Action {
 			ExecName: "cros_is_booted_in_secure_mode",
 			RecoveryActions: []string{
 				"Switch to secure-mode and reboot",
-				"Foil: Install Android OS from servo USB-drive",
 				"Install Android OS by booting from servo USB-drive",
+				"Foil: Install Android OS from servo USB-drive",
 				"Quick provision OS",
 			},
 		},

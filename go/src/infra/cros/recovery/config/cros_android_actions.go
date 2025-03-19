@@ -40,8 +40,8 @@ func androidActions(actions map[string]*Action) {
 			RecoveryActions: []string{
 				"Reboot by ADB",
 				"Cold reset by servo and wait for ping",
-				"Foil: Install Android OS from servo USB-drive",
 				"Install Android OS by booting from servo USB-drive",
+				"Foil: Install Android OS from servo USB-drive",
 				"Reset servo_v4.1 ethernet and wait for ping",
 				"Power cycle DUT by RPM and wait for ping",
 				"Try fake disconnect and wait to be access",
@@ -59,8 +59,8 @@ func androidActions(actions map[string]*Action) {
 			RecoveryActions: []string{
 				"Reboot by ADB",
 				"Cold reset by servo and wait for ping",
-				"Foil: Install Android OS from servo USB-drive",
 				"Install Android OS by booting from servo USB-drive",
+				"Foil: Install Android OS from servo USB-drive",
 				"Force reimage to ChromeOS in DEV mode",
 				"Install OS in recovery mode by booting from servo USB-drive",
 			},
