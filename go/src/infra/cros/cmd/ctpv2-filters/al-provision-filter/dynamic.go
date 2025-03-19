@@ -138,60 +138,66 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 	if suiteMetadata == nil {
 		log.Printf("suite Metadata found nil")
 	}
-	schedulingUnits := suiteMetadata.GetSchedulingUnits()
-	updateSchedulingUnits(schedulingUnits, updater, log)
 
-	// handle schedulingOptions as well
-	for _, option := range suiteMetadata.GetSchedulingUnitOptions() {
-		schedUnits := option.GetSchedulingUnits()
-		updateSchedulingUnits(schedUnits, updater, log)
+	for _, schedulingUnit := range getAllSchedulingUnits(suiteMetadata) {
+		updateSchedulingUnit(schedulingUnit, updater, log)
 	}
 }
 
-func updateSchedulingUnits(schedulingUnits []*api.SchedulingUnit, updater *ALProvisionRequestUpdater, log *log.Logger) {
-	if schedulingUnits == nil || len(schedulingUnits) == 0 {
-		log.Printf("scheduling Units found nil or empty")
-		return
+// getAllSchedulingUnits returns a list of all the SchedulingUnits, including those found in suiteMetadata.schedulingUnits and the ones found in suiteMetadata.schedulingUnitOptions.schedulingUnits.
+func getAllSchedulingUnits(metadata *api.SuiteMetadata) []*api.SchedulingUnit {
+	combined := []*api.SchedulingUnit{}
+	if units := metadata.GetSchedulingUnits(); units != nil {
+		combined = append(combined, units...)
 	}
-	for _, su := range schedulingUnits {
-		gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath()
-		if strings.HasPrefix(gcsPath, "android-build") {
-			buildId, _ := applyBuildInfoFromInstallPathToTarget(su.GetPrimaryTarget(), gcsPath)
-			su.DynamicUpdateLookupTable["buildNumber"] = buildId
-			su.DynamicUpdateLookupTable["installPath"] = gcsPath
-			continue
-		}
-		// Look up latest for board as not provided in gcs path.
-		if su.GetDynamicUpdateLookupTable() == nil {
-			log.Printf("dynamic lookup table is nil")
-		}
-		board, ok := su.GetDynamicUpdateLookupTable()["board"]
-		if !ok {
-			log.Printf("board not found")
-		}
-		branch := getBranch(su, log)
-		var latestGreenBuild int
-		var err error
-		if latestGreenBuild, ok = updater.LatestBuildsByBoard[board]; !ok {
-			latestGreenBuild, err = androidapi.GetLatestGreenBuildNumber(androidapi.ContainerGce, buildGetReq(board, branch))
-			if err != nil {
-				log.Printf("Error getting latest green build number: %v", err)
-				continue
+	if options := metadata.GetSchedulingUnitOptions(); options != nil {
+		for _, option := range options {
+			if units := option.GetSchedulingUnits(); units != nil {
+				combined = append(combined, units...)
 			}
 		}
-		su.DynamicUpdateLookupTable["buildNumber"] = fmt.Sprint(latestGreenBuild)
-		log.Printf("Latest green build number: %d\n", latestGreenBuild)
-
-		log.Println("Setting build target and latest green build number")
-		boardTarget := board + "-trunk_staging-userdebug"
-		installPath := fmt.Sprintf(
-			common.AndroidBuildPrefix+"%s/%s/%s-ota-%s.zip",
-			strconv.Itoa(latestGreenBuild), boardTarget, board, strconv.Itoa(latestGreenBuild))
-		log.Printf("InstallPath value: %s", installPath)
-		su.DynamicUpdateLookupTable["installPath"] = installPath
-		su.GetPrimaryTarget().GetSwReq().GcsPath = installPath
-		applyBuildInfoFromInstallPathToTarget(su.GetPrimaryTarget(), installPath)
 	}
+	return combined
+}
+
+func updateSchedulingUnit(su *api.SchedulingUnit, updater *ALProvisionRequestUpdater, log *log.Logger) {
+	gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath()
+	if strings.HasPrefix(gcsPath, "android-build") {
+		buildId, _ := applyBuildInfoFromInstallPathToTarget(su.GetPrimaryTarget(), gcsPath)
+		su.DynamicUpdateLookupTable["buildNumber"] = buildId
+		su.DynamicUpdateLookupTable["installPath"] = gcsPath
+		return
+	}
+	// Look up latest for board as not provided in gcs path.
+	if su.GetDynamicUpdateLookupTable() == nil {
+		log.Printf("dynamic lookup table is nil")
+	}
+	board, ok := su.GetDynamicUpdateLookupTable()["board"]
+	if !ok {
+		log.Printf("board not found")
+	}
+	branch := getBranch(su, log)
+	var latestGreenBuild int
+	var err error
+	if latestGreenBuild, ok = updater.LatestBuildsByBoard[board]; !ok {
+		latestGreenBuild, err = androidapi.GetLatestGreenBuildNumber(androidapi.ContainerGce, buildGetReq(board, branch))
+		if err != nil {
+			log.Printf("Error getting latest green build number: %v", err)
+			return
+		}
+	}
+	su.DynamicUpdateLookupTable["buildNumber"] = fmt.Sprint(latestGreenBuild)
+	log.Printf("Latest green build number: %d\n", latestGreenBuild)
+
+	log.Println("Setting build target and latest green build number")
+	boardTarget := board + "-trunk_staging-userdebug"
+	installPath := fmt.Sprintf(
+		common.AndroidBuildPrefix+"%s/%s/%s-ota-%s.zip",
+		strconv.Itoa(latestGreenBuild), boardTarget, board, strconv.Itoa(latestGreenBuild))
+	log.Printf("InstallPath value: %s", installPath)
+	su.DynamicUpdateLookupTable["installPath"] = installPath
+	su.GetPrimaryTarget().GetSwReq().GcsPath = installPath
+	applyBuildInfoFromInstallPathToTarget(su.GetPrimaryTarget(), installPath)
 }
 
 // applyBuildInfoFromInstallPathToTarget extracts the buildId and buildTarget

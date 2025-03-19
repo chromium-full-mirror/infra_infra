@@ -5,6 +5,7 @@
 package main
 
 import (
+	"reflect"
 	"testing"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -98,5 +99,58 @@ func TestGetTestType_DefaultToOS(t *testing.T) {
 	}
 	if got := getTestType(reqNoArgs); got != common.OSTestType {
 		t.Errorf("getTestType() with no args = %v, want %v", got, common.OSTestType)
+	}
+}
+
+func TestGetAllSchedulingUnits_NotNil(t *testing.T) {
+	su1 := &api.SchedulingUnit{}
+	su2 := &api.SchedulingUnit{}
+	su3 := &api.SchedulingUnit{}
+	su4 := &api.SchedulingUnit{}
+	su5 := &api.SchedulingUnit{}
+	metadata := &api.SuiteMetadata{
+		SchedulingUnits: []*api.SchedulingUnit{su1, su2},
+		SchedulingUnitOptions: []*api.SchedulingUnitOptions{
+			{
+				SchedulingUnits: []*api.SchedulingUnit{su3, su4},
+			},
+			{
+				SchedulingUnits: []*api.SchedulingUnit{su5},
+			},
+		},
+	}
+	expected := []*api.SchedulingUnit{su1, su2, su3, su4, su5}
+	if got := getAllSchedulingUnits(metadata); !reflect.DeepEqual(got, expected) {
+		t.Errorf("getAllSchedulingUnits(%+v) = %+v, want %+v", metadata, got, expected)
+	}
+}
+
+func TestGetAllSchedulingUnits_SchedulingUnitsAreNil(t *testing.T) {
+	su := &api.SchedulingUnit{}
+	metadata := &api.SuiteMetadata{
+		// SchedulingUnits here is unset, and therefore nil.
+		SchedulingUnitOptions: []*api.SchedulingUnitOptions{
+			// This SchedulingUnitOptions's SchedulingUnits is unset, and therefore nil.
+			{},
+			{
+				SchedulingUnits: []*api.SchedulingUnit{su},
+			},
+		},
+	}
+	expected := []*api.SchedulingUnit{su}
+	if got := getAllSchedulingUnits(metadata); !reflect.DeepEqual(got, expected) {
+		t.Errorf("getAllSchedulingUnits(%+v) = %+v, want %+v", metadata, got, expected)
+	}
+}
+
+func TestGetAllSchedulingUnits_SchedulingUnitOptionsIsNil(t *testing.T) {
+	su := &api.SchedulingUnit{}
+	metadata := &api.SuiteMetadata{
+		SchedulingUnits: []*api.SchedulingUnit{su},
+		// SchedulingUnitOptions is unset, and therefore nil.
+	}
+	expected := []*api.SchedulingUnit{su}
+	if got := getAllSchedulingUnits(metadata); !reflect.DeepEqual(got, expected) {
+		t.Errorf("getAllSchedulingUnits(%+v) = %+v, want %+v", metadata, got, expected)
 	}
 }
