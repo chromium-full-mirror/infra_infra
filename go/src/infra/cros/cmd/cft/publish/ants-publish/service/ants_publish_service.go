@@ -261,18 +261,27 @@ func (aps *AntsPublishService) uploadResults(ctx context.Context, entries []*atp
 			TestResults:     chunk,
 			InsertBatchSize: int64(len(chunk)),
 		}
-		g.Go(func() error {
-			log.Printf("worker %d start", i)
-			resp, err := aps.service.TestResultService.BatchInsert(ctx, aps.metadata.AntsInvocationId, request)
-			// Nil responses were causing panics and killing the CFT container.
-			if resp == nil {
-				log.Printf("response was nil")
-			} else {
-				log.Printf("Response code: %v \n InsertErrors: %v", resp.ServerResponse, resp.InsertErrors)
-			}
+		if aps.metadata.GetAtpEnvironment() == metadata.PublishAntsMetadata_ENV_PROD {
+			g.Go(func() error {
+				log.Printf("worker %d start", i)
+				resp, err := aps.service.TestResultService.BatchInsert(ctx, aps.metadata.AntsInvocationId, request)
+				// Nil responses were causing panics and killing the CFT container.
+				if resp == nil {
+					log.Printf("response was nil")
+				} else {
+					log.Printf("Response code: %v \n InsertErrors: %v", resp.ServerResponse, resp.InsertErrors)
+				}
 
-			return err
-		})
+				return err
+			})
+		} else {
+			log.Printf("Non-Prod env. Making requests one by one so as to not overload the android service.")
+			_, err := aps.service.TestResultService.BatchInsert(ctx, aps.metadata.AntsInvocationId, request)
+			if err != nil {
+				return err
+			}
+		}
+
 	}
 
 	return g.Wait()
