@@ -31,7 +31,7 @@ if env not in ("local", "dev", "prod"):
 if env == 'local':
   config.set_main_option(
       "sqlalchemy.url",
-      "postgresql://postgres:password@localhost:5432/fleet_console_db")
+      "postgresql://postgres:password@localhost:5432/postgres")
 else:
   # Expecting there to be an ssh tunnel to the db.
   # See README.md on how to do that
