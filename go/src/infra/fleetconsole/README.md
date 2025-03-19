@@ -20,8 +20,8 @@ If this is your first time you will have to [run migrations](#migrations-local)
 
 You can now run the web server:
 ```sh
-go build ./cmd/fleetconsoleserver
-./fleetconsoleserver
+make build
+make run-local-db
 ```
 
 ### Connecting to the dev db
@@ -32,10 +32,10 @@ Create a tunnel to the dev alloydb vpc
 ./tools/setup_dev_db_tunnel.sh
 ```
 
-You can now run the web server specifying `-use-dev-db`
+You can now run the web server
 ```bash
-go build ./cmd/fleetconsoleserver/main.go
-./fleetconsoleserver -use-dev-db
+make build
+make run-dev-db
 ```
 
 ### Run the web client
