@@ -197,6 +197,7 @@ def update_submodules_mirror(
         triggered_by = None,
         ref_patterns = None,
         push_to_refs_cs = False,
+        machine_type = None,
         execution_timeout = time.hour):
     properties = {
         "source_repo": source_repo,
@@ -216,6 +217,7 @@ def update_submodules_mirror(
         category = "update-submodules-mirror",
         short_name = short_name,
         triggered_by = triggered_by,
+        machine_type = machine_type or "n1-standard-8",
     )
 
 # Runs every four hours (at predictable times).
@@ -240,6 +242,7 @@ builder(
     execution_timeout = 5 * time.hour,
     category = "gen|init",
     schedule = "0 */4 * * *",
+    machine_type = "n1-standard-8|n2-standard-8",
 )
 
 chromium_genfiles(
@@ -280,6 +283,7 @@ chromium_genfiles(
         "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "cronet",
     },
+    machine_type = "n1-standard-8|n2-standard-8",
 )
 
 chromium_genfiles(
@@ -295,6 +299,7 @@ chromium_genfiles(
         "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "webview",
     },
+    machine_type = "n1-standard-8|n2-standard-8",
 )
 
 chromium_genfiles(
@@ -343,6 +348,7 @@ chromium_genfiles(
         "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "chromeos",
     },
+    machine_type = "n1-standard-8|n2-standard-8",
 )
 
 chromium_genfiles(
@@ -358,6 +364,7 @@ chromium_genfiles(
         "corpus": "chromium.googlesource.com/codesearch/chromium/src//main",
         "build_config": "fuchsia",
     },
+    machine_type = "n1-standard-8|n2-standard-8",
 )
 
 chromium_genfiles(
@@ -448,4 +455,5 @@ update_submodules_mirror(
         repo = "https://chromium.googlesource.com/chromium/src",
     ),
     execution_timeout = 4 * time.hour,
+    machine_type = "n1-standard-8|n2-standard-8",
 )
