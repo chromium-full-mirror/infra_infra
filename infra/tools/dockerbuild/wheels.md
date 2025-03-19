@@ -8377,6 +8377,16 @@ wheel: <
 ```
 
 
+### 6.30.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/protobuf-py3"
+  version: "version:6.30.1"
+>
+```
+
+
 * *universal*
 
 ## **protobuf-to-dict**
