@@ -37,7 +37,7 @@ func FlashImage(ctx context.Context, runner components.Runner, timeout time.Dura
 		return errors.Annotate(err, "flash image: failed to unmount destination device before flashing").Err()
 	}
 
-	cmd := fmt.Sprintf("dd if=%q of=%q", input, outputDev)
+	cmd := fmt.Sprintf("dd if=%q of=%q bs=4M", input, outputDev)
 	if _, err := runner(ctx, timeout, cmd); err != nil {
 		return errors.Annotate(err, "flash image: failed to flash image with dd").Err()
 	}
