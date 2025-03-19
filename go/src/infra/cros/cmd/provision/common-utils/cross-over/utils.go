@@ -65,11 +65,11 @@ func checkSSH(logger *log.Logger, dutAddress string, retryCount int, retryInterv
 	logger.Println("Checking for ssh connection. w. retry count: ", retryCount)
 	config := GetSSHConfig()
 	for ; retryCount >= 0; retryCount-- {
-		logger.Println("attempting to SSH dail the device")
+		logger.Println("attempting to SSH dial the device")
 
 		client, err := connectWithTimeout(dutAddress, config, 5*time.Second)
 		if err == nil {
-			logger.Println("SSH dail the device successfull")
+			logger.Println("SSH dialed the device successfully")
 			return client
 		}
 		logger.Println("Got error while ssh. Retrying...:", retryInterval)

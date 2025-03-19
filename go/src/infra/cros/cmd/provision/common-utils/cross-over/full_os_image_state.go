@@ -25,16 +25,17 @@ import (
 const (
 	// sshMsgIgnore is the SSH global message sent to ping the host.
 	// See RFC 4253 11.2, "Ignored Data Message".
-	sshMsgIgnore    = "SSH_MSG_IGNORE"
-	pingTimeout     = time.Second
-	pingRetryDelay  = 2 * time.Second
-	pingRetryCount  = 20
-	networkWaitTime = 1 * time.Minute
-	powerResetDelay = 10 * time.Second
-	networkErrMsg   = "Network is unreachable"
-	cpuUartCapture  = "cpu_uart_capture"
-	engImg          = "-eng"
-	androidBuild    = "android-build"
+	sshMsgIgnore       = "SSH_MSG_IGNORE"
+	pingTimeout        = time.Second
+	pingRetryDelay     = 2 * time.Second
+	pingRetryCount     = 20
+	networkWaitTime    = 1 * time.Minute
+	powerResetDelay    = 10 * time.Second
+	networkErrMsg      = "Network is unreachable"
+	cpuUartCapture     = "cpu_uart_capture"
+	engImg             = "-eng"
+	androidBuild       = "android-build"
+	checkSSHRetryCount = 3
 )
 
 var launchTargetPatterns = []*regexp.Regexp{
@@ -56,14 +57,50 @@ func NewFullOSImageState(params *CrossOverParameters) common_utils.ServiceState 
 	}
 }
 
+// reboot restarts the DUT using the servo.
+func reboot(ctx context.Context, log *log.Logger, params *CrossOverParameters) error {
+	if err := callServodRetry(ctx, log, "power_state", "off", params); err != nil {
+		setPDRole(ctx, log, "src", params)
+		return fmt.Errorf("INFRA: unable to set turn off USB: %w", err)
+	}
+	log.Printf("\nWaiting for the power state to turn off.")
+	// TODO: Instead of fixed wait time, use a poll based status checker. Refer WaitForPowerStates and GetECSystemPowerState in firmware code.
+	time.Sleep(waitForPowerOff)
+	if err := callServodRetry(ctx, log, "power_state", "rec", params); err != nil {
+		setPDRole(ctx, log, "src", params)
+		// A hard failure isn't necessary at this point, as subsequent checks will identify servod call failures and system state problems.
+		log.Printf("Letting passthrough from failed rec mode boot: %s", err)
+	}
+	return nil
+}
+
 func (s FullOSImageState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
 	log.Println("Executing " + s.Name())
 	dutAddress := fmt.Sprintf("%s:%v", s.params.Dut.GetChromeos().GetSsh().GetAddress(), s.params.Dut.GetChromeos().GetSsh().GetPort())
 	var client *ssh.Client
-	if client = checkSSH(log, dutAddress, bootWaitRetryCount, bootWaitRetryInterval); client == nil {
+
+	// f calls the checkSSH function and returns an error on a nil client. This
+	// will be used as the UDF for the generic retry function.
+	f := func() error {
+		if client = checkSSH(log, dutAddress, bootWaitRetryCount, bootWaitRetryInterval); client == nil {
+			setPDRole(ctx, log, "src", s.params)
+			err := reboot(ctx, log, s.params)
+			if err != nil {
+				return err
+			}
+
+			return fmt.Errorf("cannot SSH onto DUT booted from USB common provision image")
+		}
+
+		return nil
+	}
+
+	// Attempt to connect to the DUT post boot from USB. Retry
+	// checkSSHRetryCount times using the common retry function.
+	if err := common_utils.Retry(log, checkSSHRetryCount, "checkSSH", f); err != nil {
 		setPDRole(ctx, log, "src", s.params)
-		errMsg := "cannot SSH onto DUT booted from USB common provision image"
-		return common_utils.WrapStringInAny(s.errStatus(errMsg)), api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED, errors.New(errMsg)
+		return common_utils.WrapStringInAny(s.errStatus(err.Error())), api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED, errors.New(err.Error())
+
 	}
 	defer client.Close()
 	setPDRole(ctx, log, "src", s.params)

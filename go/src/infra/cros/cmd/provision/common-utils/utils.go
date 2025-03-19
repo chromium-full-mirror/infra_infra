@@ -39,3 +39,22 @@ func WaitLongRunningOp(ctx context.Context, log *log.Logger, operation *longrunn
 		return nil, fmt.Errorf("unexpected result type for long running operation")
 	}
 }
+
+// Retry implements a basic retrier that will attempt up to retryCount times
+// before returning an error.
+func Retry(logger *log.Logger, retryCount int, funcName string, f func() error) error {
+	var err error
+	for attempt := range retryCount {
+		logger.Printf("%s: attempt #%d...\n", funcName, attempt)
+		// If f() succeeds then we do not need to retry again.
+		err = f()
+		if err == nil {
+			logger.Printf("%s: attempt #%d...SUCCESS\n", funcName, attempt)
+			break
+		}
+
+		logger.Printf("%s: attempt #%d...FAILED: %s\n", funcName, attempt, err.Error())
+	}
+
+	return err
+}
