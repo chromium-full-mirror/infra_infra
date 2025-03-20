@@ -82,18 +82,6 @@ _NUMPY_MAC_ARM = [
     'macosx_11_0_arm64',
 ]
 
-# Override build dependencies for old versions of numpy because old setuptools
-# not working properly on newer version of Mac (crbug/1368909).
-# These dependencies are from numpy v1.23.3.
-_NUMPY_BUILD_DEPS = BuildDependencies(
-    remote=[
-        'setuptools==59.2.0',
-        'wheel==0.37.0',
-        'Cython>=0.29.30,<3.0',
-    ],
-    local=[],
-)
-
 # Workaround for windows to avoid file paths exceeding 260 limit.
 # These samples are not required for building opencv.
 _OPENCV_SRC_RE = re.compile('opencv-python-[0-9.]+/opencv/samples/.*')
@@ -133,55 +121,6 @@ SPECS = {}
 from .wheel_wheel import ConditionalWheel
 
 
-# Select Numpy version based on platform. Accelerate framework on old macOS
-# releases is buggy and prebuilt numpy 1.20.x disabled it. For version after
-# 1.21.0 it's re-enabled which is causing numpy breaking on old macOS.
-# We need numpy 1.21.0 or later to support mac-arm.
-# See also: https://crbug.com/1223517#c10
-def select_numpy(_system, wheel):
-  # Use prebuilt numpy~=1.20.0 for mac-x64, which runs old macOS.
-  if wheel.plat.name.startswith('mac-x64'):
-    return Prebuilt(
-        'numpy',
-        '1.20.3',
-        ['mac-x64-py3.8'],
-        arch_map={
-            'mac-x64-py3.8': _NUMPY_MAC_x64,
-        },
-        pyversions=['py3'],
-    )
-  # Use numpy>=1.21.0 for all other platforms to include support for mac-arm.
-  return SourceOrPrebuilt(
-      'numpy',
-      '1.21.1',
-      build_deps=_NUMPY_BUILD_DEPS,
-      packaged=[
-          'mac-arm64-py3.8',
-      ],
-      arch_map={
-          'mac-arm64-py3.8': _NUMPY_MAC_ARM,
-      },
-      skip_plat=[
-          'mac-x64-py3.8',
-      ] + build_platform.ALL_PY311,
-      patch_version='chromium.1',
-      pyversions=['py3'],
-  )
-
-
-SPECS.update({
-    s.spec.tag: s for s in assert_sorted(
-        'ConditionalWheel',
-        ConditionalWheel(
-            'numpy',
-            '1.20',
-            select_numpy,
-            skip_plat=build_platform.ALL_PY311,
-            patch_version='supported.2',
-        ),
-    )
-})
-
 # When adding a wheel, please add it to the appropriate section.
 
 # SourceOrPrebuilts. These are for packages on PyPi which have prebuilts for
@@ -195,8 +134,6 @@ _CFFI_DEPENDENCY = SourceOrPrebuilt(
     patch_version='chromium.7',
     packaged=(),
 )
-
-_NUMPY_DEPENDENCY = SPECS['numpy-1.20.supported.2']
 
 
 def _NumPyTppLibs(w):
@@ -305,24 +242,6 @@ SPECS.update({
         ),
         SourceOrPrebuilt(
             'PyYAML',
-            '3.12',
-            patch_version='cbuildbot',
-            skip_auditwheel=True,
-            packaged=(),
-            # Pin build dependencies, newer cython has broken this build.
-            build_deps=BuildDependencies(
-                remote=[
-                    'setuptools',
-                    'wheel',
-                    'Cython<3.0.0a10',
-                ],
-                local=[],
-            ),
-            only_plat=list(
-                set(build_platform.ALL_LINUX) - set(build_platform.ALL_PY311)),
-        ),
-        SourceOrPrebuilt(
-            'PyYAML',
             '5.4.1',
             patch_version='chromium.2',
             skip_auditwheel=True,
@@ -336,14 +255,6 @@ SPECS.update({
                 ],
                 local=[],
             ),
-        ),
-        SourceOrPrebuilt(
-            'SQLAlchemy',
-            '1.0.15',
-            packaged=(),
-            pyversions=['py3'],
-            only_plat=list(
-                set(build_platform.ALL_LINUX) - set(build_platform.ALL_PY311)),
         ),
         SourceOrPrebuilt(
             'SQLAlchemy',
@@ -399,32 +310,6 @@ SPECS.update({
             packaged=(),
             pyversions=['py3'],
         ),
-        # cffi versions before 1.15.1 don't support python 3.11.
-        SourceOrPrebuilt(
-            'cffi',
-            '1.14.3',
-            pyversions=['py3'],
-            skip_plat=list(
-                sorted(
-                    set(build_platform.ALL_MAC)
-                    | set(build_platform.ALL_PY311)))),
-        SourceOrPrebuilt(
-            'cffi',
-            '1.14.5',
-            packaged=(),
-            pyversions=['py2', 'py3'],
-            skip_plat=build_platform.ALL_PY311,
-            # patch_version is incremented to force a rebuild when fixes are
-            # made to the build environment.
-            patch_version='chromium.7',
-        ),
-        SourceOrPrebuilt(
-            'cffi',
-            '1.15.0',
-            packaged=(),
-            pyversions=['py2', 'py3'],
-            skip_plat=build_platform.ALL_PY311,
-        ),
         SourceOrPrebuilt(
             'cffi',
             '1.15.1',
@@ -432,22 +317,6 @@ SPECS.update({
             pyversions=['py2', 'py3'],
             tpp_libs_cb=_CffiTppLibs,
             patch_version='chromium.2',
-        ),
-        SourceOrPrebuilt(
-            'coverage',
-            '5.1',
-            packaged=(),
-            pyversions=['py3'],
-            only_plat=list(
-                set(build_platform.ALL_LINUX) - set(build_platform.ALL_PY311)),
-        ),
-        SourceOrPrebuilt(
-            'coverage',
-            '5.5',
-            packaged=(),
-            pyversions=['py2', 'py3'],
-            patch_version='chromium.3',  # Rebuild for crbug/1233745
-            skip_plat=build_platform.ALL_PY311  # doesn't build
         ),
         SourceOrPrebuilt(
             'coverage',
@@ -461,34 +330,6 @@ SPECS.update({
             pyversions=['py2', 'py3'],
             patch_version='chromium.4',  # Rebuild for https://crbug.com/1233745
             packaged=(),
-        ),
-        # Old cryptography versions are not guaranteed to build, and are left
-        # here to keep these wheels in the markdown.
-        SourceOrPrebuilt(
-            'cryptography',
-            '2.6.1',
-            pyversions=['py2', 'py3'],
-            packaged=(),
-            default=False,
-            only_plat=['manylinux-x64-py3.8'],
-        ),
-        SourceOrPrebuilt(
-            'cryptography',
-            '2.9.2',
-            pyversions=['py2', 'py3'],
-            packaged=['windows-x86-py3.8', 'windows-x64-py3.8'],
-            patch_version='chromium.1',
-            default=False,
-            skip_plat=build_platform.ALL_PY311,
-        ),
-        SourceOrPrebuilt(
-            'cryptography',
-            '3.3.1',
-            pyversions=['py2', 'py3'],
-            packaged=['windows-x86-py3.8', 'windows-x64-py3.8'],
-            patch_version='chromium.1',
-            default=False,
-            skip_plat=build_platform.ALL_PY311,
         ),
         SourceOrPrebuilt(
             'cryptography',
@@ -519,34 +360,6 @@ SPECS.update({
         ),
         SourceOrPrebuilt(
             'debugpy',
-            '1.5.1',
-            only_plat=[
-                'mac-x64-py3.8',
-                'mac-arm64-py3.8',
-                'manylinux-x64-py3.8',
-                'linux-arm64-py3.8',
-                'linux-armv6-py3.8',
-                'windows-x86-py3.8',
-                'windows-x64-py3.8',
-            ],
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'debugpy',
-            '1.6.7',
-            only_plat=[
-                'mac-x64-py3.8',
-                'mac-arm64-py3.8',
-                'manylinux-x64-py3.8',
-                'linux-arm64-py3.8',
-                'linux-armv6-py3.8',
-                'windows-x86-py3.8',
-                'windows-x64-py3.8',
-            ],
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'debugpy',
             '1.8.0',
             only_plat=[
                 'mac-x64-py3.11',
@@ -564,7 +377,7 @@ SPECS.update({
             '2.2.0',
             # The bundled freetype build script seems to not work for building
             # a 64-bit Windows library, so use prebuilt for now.
-            packaged=['windows-x64-py3.8', 'windows-x64-py3.11'],
+            packaged=['windows-x64-py3.11'],
             pyversions=['py3'],
             patches=('mac-arm64', 'mirror'),
             patch_version='chromium.6',
@@ -576,11 +389,8 @@ SPECS.update({
             # The freetype build script does not correctly support
             # cross-compiling, and there is also no 32-bit Windows wheel.
             skip_plat=[
-                'linux-armv6-py3.8',
                 'linux-armv6-py3.11',
-                'linux-arm64-py3.8',
                 'linux-arm64-py3.11',
-                'windows-x86-py3.8',
                 'windows-x86-py3.11',
             ],
             build_deps=BuildDependencies(
@@ -594,32 +404,6 @@ SPECS.update({
                 local=[],
             ),
             default=False,  # source for c code unavailable
-        ),
-        SourceOrPrebuilt(
-            'gevent',
-            '1.5.0',
-            build_deps=BuildDependencies(
-                remote=[
-                    'setuptools >= 40.8.0',
-                    'wheel',
-                    'Cython == 3.0a1',
-                ],
-                local=[
-                    _CFFI_DEPENDENCY,
-                    SourceOrPrebuilt(
-                        'greenlet',
-                        '0.4.16',
-                        packaged=[
-                            'windows-x86-py3.8',
-                            'windows-x64-py3.8',
-                        ],
-                    ),
-                ],
-            ),
-            packaged=[],
-            skip_plat=build_platform.ALL_PY311,
-            pyversions=['py3'],
-            patch_version='chromium.1',
         ),
         SourceOrPrebuilt(
             'gevent',
@@ -706,22 +490,16 @@ SPECS.update({
             '1.1.2',
             packaged=[],
             # Other platforms not yet tested.
-            only_plat=['manylinux-x64-py3.8', 'manylinux-x64-py3.11'],
+            only_plat=['manylinux-x64-py3.11'],
             pyversions=['py3'],
             skip_auditwheel=True,
         ),
         SourceOrPrebuilt(
             'google-crc32c',
             '1.3.0',
-            packaged=[
-                'windows-x86-py3.8',
-                'windows-x64-py3.8',
-            ],
             skip_plat=[
                 'linux-arm64-py3.11',
-                'linux-arm64-py3.8',
                 'linux-armv6-py3.11',
-                'linux-armv6-py3.8',
                 'windows-x86-py3.11',
                 'windows-x64-py3.11',
             ],
@@ -734,48 +512,18 @@ SPECS.update({
             '1.5.0',
             packaged=[
                 'linux-arm64-py3.11',
-                'linux-arm64-py3.8',
-                'windows-x86-py3.8',
-                'windows-x64-py3.8',
                 'windows-x86-py3.11',
                 'windows-x64-py3.11',
             ],
             skip_plat=[
                 'linux-armv6-py3.11',
-                'linux-armv6-py3.8',
             ],
             arch_map={
                 'linux-arm64-py3.11': ['manylinux2014_aarch64'],
-                'linux-arm64-py3.8': ['manylinux2014_aarch64'],
             },
             pyversions=['py3'],
             patch_version='chromium.1',
             skip_auditwheel=True,
-        ),
-        SourceOrPrebuilt(
-            'greenlet',
-            '0.4.15',
-            packaged=(),
-            skip_plat=build_platform.ALL_PY311,
-            pyversions=['py2', 'py3'],
-            patch_version='chromium.1',
-        ),
-        SourceOrPrebuilt(
-            'greenlet',
-            '0.4.16',
-            packaged=(),
-            skip_plat=build_platform.ALL_PY311,
-            pyversions=['py2', 'py3'],
-        ),
-        SourceOrPrebuilt(
-            'greenlet',
-            '1.0.0',
-            packaged=[
-                'windows-x86-py3.8',
-                'windows-x64-py3.8',
-            ],
-            skip_plat=build_platform.ALL_PY311,
-            patch_version='chromium.1',
         ),
         SourceOrPrebuilt(
             'greenlet',
@@ -801,112 +549,36 @@ SPECS.update({
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
-            'grpcio',
-            '1.32.0',
-            skip_plat=[
-                'linux-armv6-py3.8',
-                'linux-arm64-py3.8',
-                # grpcio does not yet support Mac ARM64, but work is underway.
-                # See https://github.com/grpc/grpc/issues/24002
-                'mac-arm64-py3.8',
-            ] + build_platform.ALL_PY311,
-            pyversions=['py3']),
-        SourceOrPrebuilt(
-            'grpcio',
-            '1.34.1',
-            skip_plat=[
-                'linux-armv6-py3.8',
-                'linux-arm64-py3.8',
-                # grpcio does not yet support Mac ARM64, but work is underway.
-                # See https://github.com/grpc/grpc/issues/24002
-                'mac-arm64-py3.8',
-            ] + build_platform.ALL_PY311,
-            pyversions=['py3']),
-        SourceOrPrebuilt(
-            'grpcio',
-            '1.39.0',
-            skip_plat=[
-                'linux-armv6-py3.8',
-                'linux-arm64-py3.8',
-            ] + build_platform.ALL_PY311,
-            pyversions=['py3']),
-        SourceOrPrebuilt(
-            'grpcio',
-            '1.44.0',
-            pyversions=['py3'],
-            env_cb=_GrpcEnv,
-            skip_plat=build_platform.ALL_PY311),
-        SourceOrPrebuilt(
             'grpcio', '1.54.2', pyversions=['py3'], env_cb=_GrpcEnv),
         SourceOrPrebuilt(
             'grpcio', '1.57.0', pyversions=['py3'], env_cb=_GrpcEnv),
         SourceOrPrebuilt(
             'grpcio',
             '1.59.3',
-            skip_plat=[
-                'linux-armv6-py3.8',
-                'linux-arm64-py3.8',
-                'mac-arm64-py3.8',
-                'mac-x64-py3.8',
-            ],
             pyversions=['py3'],
             env_cb=_GrpcEnv),
         SourceOrPrebuilt(
             'grpcio',
             '1.69.0',
-            skip_plat=['mac-arm64-py3.8', 'mac-x64-py3.8'],
             pyversions=['py3'],
             env_cb=_GrpcEnv),
         SourceOrPrebuilt(
             'grpcio-tools',
-            '1.32.0',
-            skip_plat=[
-                'linux-armv6-py3.8',
-                'linux-arm64-py3.8',
-                'mac-arm64-py3.8',
-            ] + build_platform.ALL_PY311,
-            pyversions=['py3']),
-        SourceOrPrebuilt(
-            'grpcio-tools',
-            '1.39.0',
-            skip_plat=[
-                'linux-armv6-py3.8',
-                'linux-arm64-py3.8',
-            ] + build_platform.ALL_PY311,
-            pyversions=['py3'],
-            default=False),
-        SourceOrPrebuilt(
-            'grpcio-tools',
             '1.57.0',
-            skip_plat=[
-                'linux-armv6-py3.8',
-                'linux-arm64-py3.8',
-            ],
             pyversions=['py3']),
         SourceOrPrebuilt(
             'grpcio-tools',
             '1.59.3',
-            skip_plat=[
-                'linux-armv6-py3.8',
-                'linux-arm64-py3.8',
-            ],
             pyversions=['py3']),
         SourceOrPrebuilt(
             'grpcio-tools',
             '1.69.0',
-            skip_plat=[
-                'linux-armv6-py3.8',
-                'linux-arm64-py3.8',
-                'mac-arm64-py3.8',
-                'mac-x64-py3.8',
-            ],
             pyversions=['py3']),
         SourceOrPrebuilt(
             'ijson',
             '3.1.4',
             packaged=(),
             only_plat=[
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
             ],
             tpp_libs_cb=lambda w:
@@ -923,30 +595,12 @@ SPECS.update({
             'lazy-object-proxy',
             '1.3.1',
             packaged=(),
-            skip_plat=[
-                'linux-arm64-py3.8',
-                'mac-x64-py3.8',
-            ],
             pyversions=['py2', 'py3'],
         ),
         SourceOrPrebuilt(
             'lazy-object-proxy',
             '1.4.3',
             packaged=(),
-            skip_plat=[
-                'linux-arm64-py3.8',
-            ],
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'lxml',
-            '4.6.3',
-            env_cb=_LxmlEnv,
-            packaged=[
-                'windows-x86-py3.8',
-                'windows-x64-py3.8',
-            ],
-            skip_plat=build_platform.ALL_PY311,
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
@@ -954,9 +608,7 @@ SPECS.update({
             '4.9.3',
             env_cb=_LxmlEnv,
             packaged=[
-                'windows-x86-py3.8',
                 'windows-x86-py3.11',
-                'windows-x64-py3.8',
                 'windows-x64-py3.11',
             ],
             pyversions=['py3'],
@@ -966,11 +618,8 @@ SPECS.update({
             '0.18.6',
             packaged=(),
             only_plat=[
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'mac-x64-py3.8',
                 'mac-x64-py3.11',
-                'mac-arm64-py3.8',
                 'mac-arm64-py3.11',
                 'windows-x64-py3.11',
             ],
@@ -983,22 +632,12 @@ SPECS.update({
         ),
         SourceOrPrebuilt(
             'mysqlclient',
-            '1.3.14',
-            packaged=(),
-            only_plat=list(
-                set(build_platform.ALL_LINUX) - set(build_platform.ALL_PY311)),
-        ),
-        SourceOrPrebuilt(
-            'mysqlclient',
             '2.1.1',
             packaged=(),
             patches=('static',),
             only_plat=[
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'mac-x64-py3.8',
                 'mac-x64-py3.11',
-                'mac-arm64-py3.8',
                 'mac-arm64-py3.11',
             ],
             tpp_libs_cb=lambda w: [
@@ -1009,32 +648,16 @@ SPECS.update({
         ),
         SourceOrPrebuilt(
             'ninja',
-            '1.10.0.post2',
-            packaged=(),
-            only_plat=['manylinux-x64-py3.8'],
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'ninja',
             '1.10.2.4',
             packaged=(
-                'mac-x64-py3.8',
-                'mac-arm64-py3.8',
-                'windows-x86-py3.8',
                 'windows-x86-py3.11',
-                'windows-x64-py3.8',
                 'windows-x64-py3.11',
-                'linux-arm64-py3.8',
                 'linux-arm64-py3.11',
             ),
             arch_map={
-                'mac-x64-py3.8': ['macosx_10_9_x86_64'],
-                'mac-arm64-py3.8': ['macosx_11_0_arm64'],
-                'linux-arm64-py3.8': ['manylinux2014_aarch64'],
                 'linux-arm64-py3.11': ['manylinux2014_aarch64'],
             },
             skip_plat=[
-                'linux-armv6-py3.8',
                 'linux-armv6-py3.11',
             ],
             patch_version='chromium.1',
@@ -1045,84 +668,7 @@ SPECS.update({
                 TppTool('infra/3pp/tools/cmake', 'version:2@3.26.0.chromium.7'),
             ],
         ),
-        SourceOrPrebuilt(
-            'numpy',
-            '1.16.6',
-            packaged=(),
-            only_plat=list(
-                set(build_platform.ALL_LINUX) - set(build_platform.ALL_PY311)),
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'numpy',
-            '1.20.3',
-            build_deps=_NUMPY_BUILD_DEPS,
-            packaged=[
-                'mac-x64-py3.8',
-            ],
-            arch_map={'mac-x64-py3.8': _NUMPY_MAC_x64},
-            skip_plat=[
-                'mac-arm64-py3.8',
-            ] + build_platform.ALL_PY311,
-            patch_version='chromium.1',
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'numpy',
-            '1.21.1',
-            build_deps=_NUMPY_BUILD_DEPS,
-            packaged=[
-                'mac-arm64-py3.8',
-            ],
-            arch_map={
-                'mac-arm64-py3.8': _NUMPY_MAC_ARM,
-            },
-            skip_plat=build_platform.ALL_PY311,
-            patch_version='chromium.1',
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'numpy',
-            '1.22.1',
-            build_deps=_NUMPY_BUILD_DEPS,
-            packaged=[
-                'mac-arm64-py3.8',
-            ],
-            arch_map={
-                'mac-arm64-py3.8': _NUMPY_MAC_ARM,
-            },
-            skip_plat=[
-                'linux-armv6-py3.8',
-                'linux-arm64-py3.8',
-            ] + build_platform.ALL_PY311,
-            patch_version='chromium.1',
-            pyversions=['py3'],
-        ),
         _LATEST_NUMPY,
-        SourceOrPrebuilt(
-            'opencv_python',
-            '4.5.3.56',
-            build_deps=BuildDependencies(
-                remote=[
-                    'setuptools==44.1.1',
-                    'wheel==0.37.1',
-                    'scikit-build==0.13.1',
-                    'cmake==3.22.4',
-                ],
-                local=[
-                    _NUMPY_DEPENDENCY,
-                ]),
-            packaged=[
-                'linux-arm64-py3.8',
-            ],
-            skip_plat=[
-                'linux-armv6-py3.8',
-            ] + build_platform.ALL_PY311,  # requires a newer numpy
-            patch_version='chromium.4',
-            pyversions=['py3'],
-            src_filter=lambda path: not _OPENCV_SRC_RE.match(path),
-            arch_map={'linux-arm64-py3.8': ['manylinux2014_aarch64']},
-        ),
         SourceOrPrebuilt(
             'opencv_python',
             '4.8.1.78',
@@ -1136,63 +682,20 @@ SPECS.update({
                 local=[_LATEST_NUMPY],
             ),
             packaged=[
-                'linux-arm64-py3.8',
                 'linux-arm64-py3.11',
                 # TODO(https://crbug.com/1502028): Build with VS2022.
-                'windows-x64-py3.8',
                 'windows-x64-py3.11',
-                'windows-x86-py3.8',
                 'windows-x86-py3.11',
             ],
             skip_plat=[
-                'linux-armv6-py3.8',
                 'linux-armv6-py3.11',
             ],
             pyversions=['py3'],
             src_filter=lambda path: not _OPENCV_SRC_RE.match(path),
             arch_map={
-                'linux-arm64-py3.8': ['manylinux2014_aarch64'],
                 'linux-arm64-py3.11': ['manylinux2014_aarch64']
             },
             patch_version='chromium.1',
-        ),
-        SourceOrPrebuilt(
-            'pandas',
-            '1.1.3',
-            packaged=[],
-            skip_plat=[
-                'mac-x64-py3.8',
-                'mac-arm64-py3.8',
-                'windows-x86-py3.8',
-                'windows-x64-py3.8',
-            ] + build_platform.ALL_PY311,
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'pandas',
-            '1.3.2',
-            build_deps=BuildDependencies(
-                remote=[
-                    'setuptools>=51.0.0',
-                    'wheel',
-                    'Cython>=0.29.21,<3',
-                ],
-                local=[
-                    _NUMPY_DEPENDENCY,
-                ],
-            ),
-            packaged=[
-                # TODO(fancl): We should copy msvcp140.dll and
-                # msvcp140_1.dll for windows build. See also:
-                # https://github.com/MacPython/pandas-wheels/blob/master/azure/windows.yml
-                'windows-x86-py3.8',
-                'windows-x64-py3.8',
-            ],
-            skip_plat=[
-                'linux-armv6-py3.8',
-            ] + build_platform.ALL_PY311,  # Requires a newer numpy
-            patch_version='chromium.1',
-            pyversions=['py3'],
         ),
         SourceOrPrebuilt(
             'pandas',
@@ -1205,16 +708,6 @@ SPECS.update({
                 ],
                 local=[_LATEST_NUMPY],
             ),
-            packaged=[
-                # TODO(fancl): We should copy msvcp140.dll and
-                # msvcp140_1.dll for windows build. See also:
-                # https://github.com/MacPython/pandas-wheels/blob/master/azure/windows.yml
-                'windows-x86-py3.8',
-                'windows-x64-py3.8',
-            ],
-            skip_plat=[
-                'linux-armv6-py3.8',
-            ],
             pyversions=['py3'],
             patch_version='chromium.1',
         ),
@@ -1250,16 +743,6 @@ SPECS.update({
             only_plat=list(
                 set(build_platform.ALL_LINUX) - set(build_platform.ALL_PY311)),
             pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'psutil',
-            '5.6.2',
-            packaged=(),
-            skip_plat=[
-                'linux-arm64-py3.8',
-                'manylinux-x64-py3.8',
-            ] + build_platform.ALL_PY311,
-            pyversions=['py2', 'py3'],
         ),
         SourceOrPrebuilt(
             'psutil',
@@ -1303,27 +786,18 @@ SPECS.update({
             # CMake configuration files for Arrow, so use packaged versions for
             # now.
             packaged=[
-                'linux-arm64-py3.8',
                 'linux-arm64-py3.11',
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'mac-x64-py3.8',
                 'mac-x64-py3.11',
-                'mac-arm64-py3.8',
                 'mac-arm64-py3.11',
-                'windows-x64-py3.8',
                 'windows-x64-py3.11',
             ],
             skip_plat=[
                 'linux-armv6-py3.11',
-                'linux-armv6-py3.8',
-                'windows-x86-py3.8',
                 'windows-x86-py3.11',
             ],
             arch_map={
-                'linux-arm64-py3.8': ['manylinux2014_aarch64'],
                 'linux-arm64-py3.11': ['manylinux2014_aarch64'],
-                'mac-x64-py3.8': ['macosx_10_15_x86_64'],
                 'mac-x64-py3.11': ['macosx_10_15_x86_64'],
             },
             pyversions=['py3'],
@@ -1335,27 +809,18 @@ SPECS.update({
             # CMake configuration files for Arrow, so use packaged versions for
             # now.
             packaged=[
-                'linux-arm64-py3.8',
                 'linux-arm64-py3.11',
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'mac-x64-py3.8',
                 'mac-x64-py3.11',
-                'mac-arm64-py3.8',
                 'mac-arm64-py3.11',
-                'windows-x64-py3.8',
                 'windows-x64-py3.11',
             ],
             skip_plat=[
                 'linux-armv6-py3.11',
-                'linux-armv6-py3.8',
-                'windows-x86-py3.8',
                 'windows-x86-py3.11',
             ],
             arch_map={
-                'linux-arm64-py3.8': ['manylinux2014_aarch64'],
                 'linux-arm64-py3.11': ['manylinux2014_aarch64'],
-                'mac-x64-py3.8': ['macosx_10_15_x86_64'],
                 'mac-x64-py3.11': ['macosx_10_15_x86_64'],
             },
             pyversions=['py3'],
@@ -1367,27 +832,18 @@ SPECS.update({
             # CMake configuration files for Arrow, so use packaged versions for
             # now.
             packaged=[
-                'linux-arm64-py3.8',
                 'linux-arm64-py3.11',
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'mac-x64-py3.8',
                 'mac-x64-py3.11',
-                'mac-arm64-py3.8',
                 'mac-arm64-py3.11',
-                'windows-x64-py3.8',
                 'windows-x64-py3.11',
             ],
             skip_plat=[
                 'linux-armv6-py3.11',
-                'linux-armv6-py3.8',
-                'windows-x86-py3.8',
                 'windows-x86-py3.11',
             ],
             arch_map={
-                'linux-arm64-py3.8': ['manylinux2014_aarch64'],
                 'linux-arm64-py3.11': ['manylinux2014_aarch64'],
-                'mac-x64-py3.8': ['macosx_10_15_x86_64'],
                 'mac-x64-py3.11': ['macosx_10_15_x86_64'],
             },
             pyversions=['py3'],
@@ -1401,7 +857,6 @@ SPECS.update({
             '2.6.1',
             packaged=(),
             only_plat=[
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
             ],
             pyversions=['py2', 'py3'],
@@ -1410,7 +865,7 @@ SPECS.update({
             'pycryptodome',
             '3.10.1',
             packaged=(),
-            only_plat=['manylinux-x64-py3.8', 'manylinux-x64-py3.11'],
+            only_plat=['manylinux-x64-py3.11'],
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
@@ -1431,7 +886,6 @@ SPECS.update({
             '1.2.1',
             packaged=(),
             only_plat=[
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
             ],
             pyversions=['py3'],
@@ -1449,74 +903,12 @@ SPECS.update({
                 ],
             ),
             packaged=(
-                'windows-x86-py3.8',
                 'windows-x86-py3.11',
-                'windows-x64-py3.8',
                 'windows-x64-py3.11',
             ),
             skip_plat=[
-                'linux-armv6-py3.8',
                 'linux-armv6-py3.11',
-                'linux-arm64-py3.8',
                 'linux-arm64-py3.11',
-            ],
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'pyre2',
-            '0.3.6',
-            packaged=(),
-            only_plat=['manylinux-x64-py3.8'],
-            pyversions=['py3'],
-            tpp_libs_cb=lambda w: [
-                TppLib('infra/3pp/static_libs/re2',
-                       'version:2@2022-12-01.chromium.1')
-            ],
-        ),
-        SourceOrPrebuilt(
-            'pytype',
-            '2021.2.9',
-            packaged=(),
-            only_plat=['manylinux-x64-py3.8'],
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'pytype',
-            '2021.11.2',
-            packaged=(),
-            only_plat=['manylinux-x64-py3.8'],
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'pytype',
-            '2022.5.5',
-            packaged=(),
-            only_plat=[
-                'manylinux-x64-py3.8',
-                'mac-x64-py3.8',
-                'mac-arm64-py3.8',
-            ],
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'pytype',
-            '2022.12.15',
-            packaged=(),
-            only_plat=[
-                'manylinux-x64-py3.8',
-                'mac-x64-py3.8',
-                'mac-arm64-py3.8',
-            ],
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'pytype',
-            '2023.6.2',
-            packaged=(),
-            only_plat=[
-                'manylinux-x64-py3.8',
-                'mac-x64-py3.8',
-                'mac-arm64-py3.8',
             ],
             pyversions=['py3'],
         ),
@@ -1525,11 +917,8 @@ SPECS.update({
             '2023.10.17',
             packaged=(),
             only_plat=[
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'mac-x64-py3.8',
                 'mac-x64-py3.11',
-                'mac-arm64-py3.8',
                 'mac-arm64-py3.11',
             ],
             pyversions=['py3'],
@@ -1539,11 +928,8 @@ SPECS.update({
             '2024.1.24',
             packaged=(),
             only_plat=[
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'mac-x64-py3.8',
                 'mac-x64-py3.11',
-                'mac-arm64-py3.8',
                 'mac-arm64-py3.11',
             ],
             pyversions=['py3'],
@@ -1553,20 +939,10 @@ SPECS.update({
             '2024.9.13',
             packaged=(),
             only_plat=[
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'mac-x64-py3.8',
                 'mac-x64-py3.11',
-                'mac-arm64-py3.8',
                 'mac-arm64-py3.11',
             ],
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'ruamel.yaml.clib',
-            '0.2.6',
-            packaged=(),
-            skip_plat=build_platform.ALL_PY311,
             pyversions=['py3'],
         ),
         SourceOrPrebuilt(
@@ -1575,54 +951,6 @@ SPECS.update({
             packaged=(),
             pyversions=['py3'],
         ),
-        # typed-ast will not be available for python 3.11.
-        # Users should switch the native ast module instead.
-        SourceOrPrebuilt(
-            'typed-ast',
-            '1.4.2',
-            packaged=(),
-            only_plat=['manylinux-x64-py3.8'],
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'typed-ast',
-            '1.5.3',
-            packaged=(),
-            skip_plat=build_platform.ALL_PY311,
-            pyversions=['py3'],
-        ),
-        SourceOrPrebuilt(
-            'wrapt',
-            '1.10.11',
-            packaged=(),
-            only_plat=[
-                'manylinux-x64-py3.8',
-                'mac-x64-py3.8',
-                'windows-x64-py3.8',
-            ],
-            pyversions=['py2', 'py3']),
-        SourceOrPrebuilt(
-            'wrapt',
-            '1.12.1',
-            packaged=(),
-            only_plat=[
-                'manylinux-x64-py3.8',
-                'mac-x64-py3.8',
-                'mac-arm64-py3.8',
-                'windows-x64-py3.8',
-            ],
-            pyversions=['py3']),
-        SourceOrPrebuilt(
-            'wrapt',
-            '1.13.3',
-            packaged=(),
-            only_plat=[
-                'manylinux-x64-py3.8',
-                'mac-x64-py3.8',
-                'mac-arm64-py3.8',
-                'windows-x64-py3.8',
-            ],
-            pyversions=['py3']),
         SourceOrPrebuilt(
             'yarl',
             '1.8.1',
@@ -1648,126 +976,54 @@ SPECS.update({
             'cryptography',
             '43.0.0',
             [
-                'mac-arm64-py3.8',
                 'mac-arm64-py3.11',
-                'mac-x64-py3.8',
                 'mac-x64-py3.11',
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'linux-arm64-py3.8',
                 'linux-arm64-py3.11',
-                'windows-x64-py3.8',
                 'windows-x64-py3.11',
-                'windows-x86-py3.8',
                 'windows-x86-py3.11',
             ],
             arch_map={
-                'linux-arm64-py3.8': ['manylinux2014_aarch64'],
                 'linux-arm64-py3.11': ['manylinux2014_aarch64'],
-                'mac-arm64-py3.8': ['macosx_10_9_arm64'],
                 'mac-arm64-py3.11': ['macosx_10_9_arm64'],
             },
             pyversions=['py3'],
-        ),
-        # We can't build this ourselves as the build depends on Bazel.
-        # dm-tree 0.1.8 needed for python 3.11.
-        Prebuilt(
-            'dm-tree',
-            '0.1.6',
-            # TODO: The prebuilt Mac wheel is built against 10.14, but we
-            # require 10.11 or earlier. We'll need to do something else to get
-            # it working.
-            ['manylinux-x64-py3.8', 'windows-x64-py3.8'],
         ),
         Prebuilt(
             'dm-tree',
             '0.1.8',
             [
-                'mac-x64-py3.8',
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'windows-x64-py3.8',
             ],
         ),
         Prebuilt(
             'freetype-py',
             '2.1.0.post1',
             [
-                'mac-x64-py3.8',
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'windows-x86-py3.8',
-                'windows-x64-py3.8',
             ],
             pyversions=['py2', 'py3'],
             default=False,
         ),
         Prebuilt(
-            'grpcio',
-            '1.64.1',
-            ['manylinux-x64-py3.8'],
-        ),
-        # We can't build this ourselves as the build depends on libhdf5.
-        Prebuilt(
-            'h5py',
-            '2.10.0',
-            ['manylinux-x64-py3.8', 'windows-x64-py3.8', 'mac-x64-py3.8'],
-        ),
-        Prebuilt(
-            'h5py',
-            '3.1.0',
-            ['manylinux-x64-py3.8', 'windows-x64-py3.8', 'mac-x64-py3.8'],
-        ),
-        Prebuilt(
-            'h5py',
-            '3.6.0',
-            ['manylinux-x64-py3.8', 'windows-x64-py3.8', 'mac-x64-py3.8'],
-        ),
-        Prebuilt(
             'h5py',
             '3.11.0',
             [
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'windows-x64-py3.8',
                 'windows-x64-py3.11',
-                'mac-x64-py3.8',
                 'mac-x64-py3.11',
-                'mac-arm64-py3.8',
                 'mac-arm64-py3.11',
             ],
-        ),
-        Prebuilt(
-            'libclang',
-            '11.1.0',
-            ['manylinux-x64-py3.8', 'windows-x64-py3.8', 'mac-x64-py3.8'],
-        ),
-        Prebuilt(
-            'libclang',
-            '12.0.0',
-            ['manylinux-x64-py3.8', 'windows-x64-py3.8', 'mac-x64-py3.8'],
-        ),
-        Prebuilt(
-            'libclang',
-            '18.1.1',
-            only_plat=['manylinux-x64-py3.8'],
-            arch_map={'manylinux-x64-py3.8': ['manylinux2010_x86_64']},
         ),
         Prebuilt(
             'libcst',
             '0.4.9',
             [
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'linux-arm64-py3.8',
                 'linux-arm64-py3.11',
-                'mac-x64-py3.8',
-                'mac-arm64-py3.8',
-                'windows-x64-py3.8',
                 'windows-x64-py3.11',
             ],
             arch_map={
-                'linux-arm64-py3.8': ['manylinux2014_aarch64'],
                 'linux-arm64-py3.11': ['manylinux2014_aarch64'],
             },
             pyversions=['py3'],
@@ -1776,75 +1032,29 @@ SPECS.update({
             'libcst',
             '1.1.0',
             [
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'linux-arm64-py3.8',
                 'linux-arm64-py3.11',
-                'mac-x64-py3.8',
                 'mac-x64-py3.11',
-                'mac-arm64-py3.8',
                 'mac-arm64-py3.11',
-                'windows-x64-py3.8',
                 'windows-x64-py3.11',
             ],
             arch_map={
-                'linux-arm64-py3.8': ['manylinux2014_aarch64'],
                 'linux-arm64-py3.11': ['manylinux2014_aarch64'],
             },
             pyversions=['py3'],
         ),
         Prebuilt(
-            'lxml',
-            '4.6.2',
-            ['manylinux-x64-py3.8'],
-        ),
-        Prebuilt(
-            'ml_dtypes',
-            '0.2.0',
-            ['manylinux-x64-py3.8'],
-        ),
-        Prebuilt(
-            'pillow',
-            '8.1.2',
-            ['manylinux-x64-py3.8', 'windows-x64-py3.8'],
-        ),
-        Prebuilt(
-            'pillow',
-            '8.2.0',
-            ['manylinux-x64-py3.8', 'mac-x64-py3.8', 'windows-x64-py3.8'],
-        ),
-        Prebuilt(
-            'pillow',
-            '8.3.1',
-            [
-                'manylinux-x64-py3.8',
-                'linux-arm64-py3.8',
-                'mac-x64-py3.8',
-                'mac-arm64-py3.8',
-                'windows-x64-py3.8',
-                'windows-x86-py3.8',
-            ],
-            arch_map={'linux-arm64-py3.8': ['manylinux2014_aarch64']},
-        ),
-        Prebuilt(
             'pillow',
             '9.5.0',
             [
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'linux-arm64-py3.8',
                 'linux-arm64-py3.11',
-                'mac-x64-py3.8',
                 'mac-x64-py3.11',
-                'mac-arm64-py3.8',
                 'mac-arm64-py3.11',
-                'windows-x64-py3.8',
                 'windows-x64-py3.11',
-                'windows-x86-py3.8',
                 'windows-x86-py3.11',
             ],
             arch_map={
-                'linux-arm64-py3.8': ['manylinux_2_17_aarch64'],
                 'linux-arm64-py3.11': ['manylinux_2_17_aarch64']
             },
         ),
@@ -1852,36 +1062,22 @@ SPECS.update({
             'pillow',
             '10.4.0',
             [
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'linux-arm64-py3.8',
                 'linux-arm64-py3.11',
-                'mac-x64-py3.8',
                 'mac-x64-py3.11',
-                'mac-arm64-py3.8',
                 'mac-arm64-py3.11',
-                'windows-x64-py3.8',
                 'windows-x64-py3.11',
-                'windows-x86-py3.8',
                 'windows-x86-py3.11',
             ],
             arch_map={
-                'linux-arm64-py3.8': ['manylinux_2_17_aarch64'],
                 'linux-arm64-py3.11': ['manylinux_2_17_aarch64']
             },
         ),
         Prebuilt(
             'pywin32',
-            '300',
-            ['windows-x86-py3.8', 'windows-x64-py3.8'],
-            pyversions=['py3'],
-        ),
-        Prebuilt(
-            'pywin32',
             '306',
             [
-                'windows-x86-py3.8', 'windows-x86-py3.11', 'windows-x64-py3.8',
-                'windows-x64-py3.11'
+                'windows-x86-py3.11', 'windows-x64-py3.11'
             ],
             pyversions=['py3'],
         ),
@@ -1893,104 +1089,16 @@ SPECS.update({
         ),
         Prebuilt(
             'scipy',
-            '1.6.0',
-            ['manylinux-x64-py3.8'],
-            pyversions=['py3'],
-        ),
-        Prebuilt(
-            'scipy',
-            '1.6.2',
-            ['manylinux-x64-py3.8', 'mac-x64-py3.8', 'windows-x64-py3.8'],
-            pyversions=['py3'],
-        ),
-        Prebuilt(
-            'scipy',
-            '1.7.1',
-            ['manylinux-x64-py3.8', 'mac-x64-py3.8', 'windows-x64-py3.8'],
-            pyversions=['py3'],
-        ),
-        Prebuilt(
-            'scipy',
-            '1.7.3',
-            [
-                'manylinux-x64-py3.8', 'mac-x64-py3.8', 'mac-arm64-py3.8',
-                'windows-x64-py3.8'
-            ],
-            pyversions=['py3'],
-            arch_map={'mac-arm64-py3.8': ['macosx_12_0_arm64']},
-        ),
-        Prebuilt(
-            'scipy',
             '1.10.1', [
-                'manylinux-x64-py3.8',
                 'manylinux-x64-py3.11',
-                'mac-x64-py3.8',
                 'mac-x64-py3.11',
-                'mac-arm64-py3.8',
                 'mac-arm64-py3.11',
-                'windows-x64-py3.8',
                 'windows-x64-py3.11',
             ],
             pyversions=['py3'],
             arch_map={
-                'mac-arm64-py3.8': ['macosx_12_0_arm64'],
                 'mac-arm64-py3.11': ['macosx_12_0_arm64'],
             }),
-        Prebuilt(
-            'tensorflow',
-            '2.4.1',
-            ['manylinux-x64-py3.8', 'mac-x64-py3.8', 'windows-x64-py3.8'],
-            pyversions=['py3'],
-        ),
-        Prebuilt(
-            'tensorflow',
-            '2.5.0',
-            ['manylinux-x64-py3.8', 'mac-x64-py3.8', 'windows-x64-py3.8'],
-            pyversions=['py3'],
-        ),
-        Prebuilt(
-            'tensorflow',
-            '2.6.0',
-            ['manylinux-x64-py3.8', 'mac-x64-py3.8', 'windows-x64-py3.8'],
-            pyversions=['py3'],
-        ),
-        Prebuilt(
-            'tensorflow',
-            '2.7.0',
-            ['manylinux-x64-py3.8', 'mac-x64-py3.8', 'windows-x64-py3.8'],
-            pyversions=['py3'],
-        ),
-        Prebuilt(
-            'tensorflow',
-            '2.12.0',
-            ['manylinux-x64-py3.8'],
-            pyversions=['py3'],
-        ),
-        Prebuilt(
-            'tensorflow-decision-forests',
-            '0.2.4',
-            ['manylinux-x64-py3.8'],
-            pyversions=['py3'],
-        ),
-        Prebuilt(
-            'tensorflow-io-gcs-filesystem',
-            '0.23.1',
-            ['manylinux-x64-py3.8', 'mac-x64-py3.8', 'windows-x64-py3.8'],
-            pyversions=['py3'],
-            arch_map={'mac-x64-py3.8': ['macosx_10_14_x86_64']},
-        ),
-        Prebuilt(
-            'tensorflow-io-gcs-filesystem',
-            '0.34.0',
-            only_plat=['manylinux-x64-py3.8'],
-            pyversions=['py3'],
-            arch_map={'manylinux-x64-py3.8': ['manylinux2010_x86_64']},
-        ),
-        Prebuilt(
-            'wrapt',
-            '1.14.1',
-            ['manylinux-x64-py3.8'],
-        ),
     )
 })
 
@@ -2819,44 +1927,6 @@ SPECS.update({
         'MultiWheel',
         MultiWheel(
             'pathos',
-            '0.2.7',
-            ([
-                Universal('dill', '0.3.3'),
-                Universal('klepto', '0.2.0', default=False),
-                SourceOrPrebuilt(
-                    'mpi4py',
-                    '3.0.3',
-                    packaged=[
-                        'windows-x86-py3.8',
-                        'windows-x64-py3.8',
-                    ],
-                    tpp_libs_cb=lambda w: [
-                        TppLib('infra/3pp/static_libs/mpich',
-                               'version:2@3.4.1.chromium.6')
-                    ],
-                    env_cb=lambda w: {
-                        'MPICC': 'mpicc',  # provided by mpich package
-                    },
-                ),
-                SourceOrPrebuilt(
-                    'multiprocess',
-                    '0.70.11.1',
-                    pyversions=['py2', 'py3'],
-                    patch_version='chromium.1',
-                    skip_auditwheel=True,
-                    packaged=(),
-                ),
-                Universal('pathos', '0.2.7'),
-                Universal('pox', '0.2.9'),
-                Universal('ppft', '1.6.6.4', pyversions=['py3']),
-                Universal('pyina', '0.2.4'),
-            ]),
-            pyversions=['py3'],
-            skip_plat=build_platform.ALL_PY311,
-            patch_version='chromium.6',
-        ),
-        MultiWheel(
-            'pathos',
             '0.3.0',
             ([
                 Universal('dill', '0.3.6'),
@@ -2882,143 +1952,6 @@ SPECS.update({
                 Universal('ptyprocess', '0.7.0'),
             ]),
             patch_version='chromium.1',
-        ),
-        # List cultivated from "pyobjc-7.3"'s "setup.py" as a superset of
-        # available packages.
-        #
-        # This package is designed to be built on 10.15 (x86_64) or
-        # 11.x (arm64).
-        MultiWheel(
-            'pyobjc',
-            '7.3',
-            ([
-                SourceOrPrebuilt(
-                    name,
-                    '7.3',
-                    pyversions=['py3'],
-                    packaged=[],
-                    patch_base='pyobjc-framework' if name
-                    .startswith('pyobjc-framework') else None,
-                    patches=('setup',)) for name in ['pyobjc-core'] + [
-                        'pyobjc-framework-%s' % (v,) for v in [
-                            'libdispatch',
-                            'AdSupport',
-                            'AuthenticationServices',
-                            'AutomaticAssessmentConfiguration',
-                            'AVKit',
-                            'AVFoundation',
-                            'Accounts',
-                            'AddressBook',
-                            'AppleScriptKit',
-                            'AppleScriptObjC',
-                            'ApplicationServices',
-                            'Automator',
-                            'BusinessChat',
-                            'CFNetwork',
-                            'CalendarStore',
-                            'CloudKit',
-                            'Cocoa',
-                            'Collaboration',
-                            'ColorSync',
-                            'Contacts',
-                            'ContactsUI',
-                            'CoreAudio',
-                            'CoreAudioKit',
-                            'CoreBluetooth',
-                            'CoreData',
-                            'CoreHaptics',
-                            'CoreLocation',
-                            'CoreMedia',
-                            'CoreMediaIO',
-                            'CoreML',
-                            'CoreMotion',
-                            'CoreServices',
-                            'CoreSpotlight',
-                            'CoreText',
-                            'CoreWLAN',
-                            'CryptoTokenKit',
-                            'DeviceCheck',
-                            'DictionaryServices',
-                            'DiscRecording',
-                            'DiscRecordingUI',
-                            'DiskArbitration',
-                            'DVDPlayback',
-                            'EventKit',
-                            'ExceptionHandling',
-                            'ExecutionPolicy',
-                            'ExternalAccessory',
-                            'FileProvider',
-                            'FileProviderUI',
-                            'FSEvents',
-                            'FinderSync',
-                            'GameCenter',
-                            'GameController',
-                            'IMServicePlugIn',
-                            'InputMethodKit',
-                            'ImageCaptureCore',
-                            'Intents',
-                            'InstallerPlugins',
-                            'InstantMessage',
-                            'IOSurface',
-                            'LatentSemanticMapping',
-                            'LaunchServices',
-                            'LinkPresentation',
-                            'LocalAuthentication',
-                            'MapKit',
-                            'MediaAccessibility',
-                            'MediaLibrary',
-                            'MediaPlayer',
-                            'MediaToolbox',
-                            'Metal',
-                            'MetalKit',
-                            'ModelIO',
-                            'MultipeerConnectivity',
-                            'NaturalLanguage',
-                            'NetFS',
-                            'Network',
-                            'NetworkExtension',
-                            'NotificationCenter',
-                            'OpenDirectory',
-                            'OSAKit',
-                            'OSLog',
-                            'PencilKit',
-                            'Photos',
-                            'PhotosUI',
-                            'PreferencePanes',
-                            'PushKit',
-                            'Quartz',
-                            'QuickLookThumbnailing',
-                            'SafariServices',
-                            'ScreenSaver',
-                            'ScriptingBridge',
-                            'Security',
-                            'SecurityFoundation',
-                            'SecurityInterface',
-                            'SearchKit',
-                            'ServiceManagement',
-                            'Social',
-                            'Speech',
-                            'SpriteKit',
-                            'StoreKit',
-                            'SyncServices',
-                            'SystemConfiguration',
-                            'WebKit',
-                            'GameKit',
-                            'GameplayKit',
-                            'SceneKit',
-                            'SoundAnalysis',
-                            'SystemExtensions',
-                            'UserNotifications',
-                            'VideoSubscriberAccount',
-                            'VideoToolbox',
-                            'Vision',
-                            'iTunesLibrary',
-                        ]
-                    ]
-            ]),
-            only_plat=['mac-x64-py3.8', 'mac-arm64-py3.8'],
-            pyversions=['py3'],
-            patch_version='chromium.1',  # Rebuild for crbug/1233745
         ),
         # List cultivated from "pyobjc-10.0"'s "setup.py" as a superset of
         # available packages.
