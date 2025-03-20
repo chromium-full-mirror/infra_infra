@@ -50,6 +50,7 @@ var Recovery = &subcommands.Command{
 		c.Flags.StringVar(&c.adminSession, "admin-session", "", "Admin session used to group created tasks. By default generated.")
 		c.Flags.StringVar(&c.bbBucket, "bucket", "", "Buildbucket bucket to use.")
 		c.Flags.StringVar(&c.bbBuilder, "builder", "repair", "Buildbucket builder to use.")
+		c.Flags.BoolVar(&c.skipScheduke, "skip-scheduke", false, "Skip use of scheduke. By default no.")
 		return c
 	},
 }
@@ -71,6 +72,7 @@ type recoveryRun struct {
 	disableCft   bool
 	bbBucket     string
 	bbBuilder    string
+	skipScheduke bool
 }
 
 func (c *recoveryRun) Run(a subcommands.Application, args []string, env subcommands.Env) int {
@@ -144,6 +146,9 @@ func (c *recoveryRun) innerRun(a subcommands.Application, args []string, env sub
 		}
 		if !c.useCsa {
 			adminParams.AdminService = ""
+		}
+		if c.skipScheduke {
+			adminParams.SchedukeClient = nil
 		}
 
 		url, _, err := buildbucket.CreateTask(
