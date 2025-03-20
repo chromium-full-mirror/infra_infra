@@ -103,15 +103,20 @@ func AddContainerArg(req *api.InternalTestplan, gcu *PreTestContainerUpdater, lo
 	generator := generators.NewModifyGenerator(dynamic_common.FindByDynamicIdentifier(common.CrosTest))
 
 	if isAlRun(req) {
-		// If using AL, then we need to pass the argument as -extra-test-params.
+		// If using AL, then we need to pass the argument as a "param"
 		// We also need to pass host/port separately as args are expected to be
 		// delimited by :.
+		paramName := fmt.Sprintf("extra-test-params_%s", gcu.ContainerName)
+		if gcu.TestParamName != "" {
+			paramName = gcu.TestParamName
+		}
+
 		log.Printf("AL run detected")
 		err := generator.AddModification(
 			&api.DynamicDep{
 				Key: "testRequest.testSuites.0.executionMetadata.args",
-				Value: fmt.Sprintf(`JSON={"flag":"extra-test-params_%s","value":"%s_host:${%s.address},%s_port:${%s.port}"}`,
-					gcu.ContainerName, cliArgName, gcu.ContainerName, cliArgName, gcu.ContainerName),
+				Value: fmt.Sprintf(`JSON={"flag":"%s","value":"%s_host:${%s.address},%s_port:${%s.port}"}`,
+					paramName, cliArgName, gcu.ContainerName, cliArgName, gcu.ContainerName),
 			},
 			map[string]string{
 				"test.dynamicDeps": "",

@@ -23,6 +23,7 @@ type PreTestContainerUpdater struct {
 	ContainerRunCmd string
 	Volumes         string
 	TestCLIArg      string
+	TestParamName   string
 }
 
 func (gcu *PreTestContainerUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
@@ -62,6 +63,7 @@ func main() {
 	fs.StringVar(&containerUpdater.ContainerRunCmd, "run-cmd", "", "the command to be used when launching the container")
 	fs.StringVar(&containerUpdater.Volumes, "volumes", "", "volumes to be mounted in the container")
 	fs.StringVar(&containerUpdater.TestCLIArg, "test-cli-arg", "", "name of the argument to use when appending the container address to execution metadata")
+	fs.StringVar(&containerUpdater.TestParamName, "test-param-name", "", "the name of the 'params' that the test-cli-args apply to (Mobly only)")
 
 	log.Printf("containerUpdater %+v", containerUpdater)
 
