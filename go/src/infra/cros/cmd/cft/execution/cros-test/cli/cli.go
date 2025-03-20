@@ -166,8 +166,7 @@ func startServer(d []string) int {
 
 	metadata, err := metadata.ReadDir(a.metadataDirPath)
 	if err != nil {
-		log.Fatalf("Failed to read metadata input: %s", err)
-		return 2
+		log.Println("Failed to read metadata input: ", err)
 	}
 
 	server, closer := NewServer(logger, a.resultsDirPath, a.tlwAddr, metadata)

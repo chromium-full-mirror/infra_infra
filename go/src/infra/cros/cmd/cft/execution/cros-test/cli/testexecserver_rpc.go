@@ -8,6 +8,7 @@ import (
 	"context"
 	"log"
 	"path"
+	"runtime/debug"
 
 	"google.golang.org/grpc"
 
@@ -56,6 +57,17 @@ func NewServer(logger *log.Logger, resultRootDir, tlwAddr string, metadataList *
 // RunTests calls the runTests flow in cros-test.
 func (s *ExecutionServiceServer) RunTests(ctx context.Context, req *api.CrosTestRequest) (*longrunning.Operation, error) {
 	op := s.manager.NewOperation()
+
+	defer func() {
+		if r := recover(); r != nil {
+			s.logger.Println("Recovered from panic: ", r)
+
+			stack := string(debug.Stack())
+
+			s.logger.Println(stack)
+		}
+	}()
+
 	s.logger.Println("Received api.CrosTestRequest: ", req)
 
 	resultsDir, err := s.loadResultsDir(req)

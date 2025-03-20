@@ -199,17 +199,22 @@ func (td *TradefedDriver) RunTests(ctx context.Context, resultsDir string, req *
 	}
 	args := getArgs(req)
 
-	_ = runTradefedTest(ctx, td.logger, tests, serials, resultsDir, executionMD,
+	err = runTradefedTest(ctx, td.logger, tests, serials, resultsDir, executionMD,
 		req.GetPrimary().GetDut().GetChromeos().GetDutModel().GetBuildTarget(),
 		args,
 		req.GetPrimary().GetDut().GetChromeos().GetDutModel().GetModelName(),
 		req.GetPrimary().GetDut().GetChromeos().GetServo())
-	// TODO determine what we want to do with an error _and_ possibly having results
-	// In general I'd say just spit out the results.
-	// One difference between Tast/Autotest and this is that the test case given will likely result in many
-	// testcases; where T/AT were normally 1:1
 
-	results, artifacts := buildTradefedResult(td.logger, testType, req)
+	var results *api.CrosTestResponse
+	var artifacts []string
+	if err != nil {
+		// Error in test setup, DUT initialization or starting Tradefed command.
+		// In all these cases, we report each request test as "Failed" with
+		// an appropriate error message.
+		results = buildErrorResult(td.logger, testType, req, err)
+	} else {
+		results, artifacts = buildTradefedResult(td.logger, testType, req)
+	}
 	if results.GetTestCaseResults() != nil {
 		allRspn.TestCaseResults = append(allRspn.TestCaseResults, results.TestCaseResults...)
 		allRspn.GivenTestResults = append(allRspn.GivenTestResults, results.GivenTestResults...)
@@ -283,7 +288,7 @@ func launchAndRead(cmd *exec.Cmd, logger *log.Logger) error {
 		return fmt.Errorf("StdoutPipe failed")
 	}
 	if err := cmd.Start(); err != nil {
-		return fmt.Errorf("failed to run Tauto: %w", err)
+		return fmt.Errorf("failed to run Tradefed: %w", err)
 	}
 	var wg sync.WaitGroup
 	wg.Add(2)

@@ -16,6 +16,7 @@ import (
 	"sync"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
+	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 	c "go.chromium.org/chromiumos/test/util/adb"
 
 	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/common"
@@ -67,8 +68,9 @@ func buildMoblyCommand(logger *log.Logger, test *api.TestCaseMetadata) (*exec.Cm
 }
 
 // runMoblyTest executes a Mobly test.
-func runMoblyTest(ctx context.Context, logger *log.Logger, test *api.TestCaseMetadata, serials []string, metadata []*api.Arg) error {
-	if err := GenerateMoblyConfig(logger, "/usr/local/mobly", serials, metadata); err != nil {
+func runMoblyTest(ctx context.Context, logger *log.Logger, test *api.TestCaseMetadata, serials []string, metadata []*api.Arg, devices []*labapi.Dut) error {
+	config := NewMoblyConfig(logger, serials, metadata, devices)
+	if err := config.Write(logger, "/usr/local/mobly"); err != nil {
 		return fmt.Errorf("generating Mobly config: %w", err)
 	}
 
@@ -139,7 +141,7 @@ func (md *MoblyDriver) RunTests(ctx context.Context, resultsDir string, req *api
 		resDir := filepath.Join("/tmp", "test", "results", "mobly", test.GetTestCase().GetName())
 		os.Setenv("MOBLY_LOGPATH", resDir)
 
-		if err := runMoblyTest(ctx, md.logger, test, serials, metadata); err != nil {
+		if err := runMoblyTest(ctx, md.logger, test, serials, metadata, device.Devices(req)); err != nil {
 			return nil, fmt.Errorf("running Mobly test: %w", err)
 		}
 

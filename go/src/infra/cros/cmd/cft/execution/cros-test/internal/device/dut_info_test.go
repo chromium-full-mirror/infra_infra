@@ -77,6 +77,7 @@ func TestFillDUTInfo(t *testing.T) {
 								Address: "c6-r9-r7-labstation",
 								Port:    9996,
 							},
+							State: labapi.PeripheralState_WORKING,
 						},
 						Cellular: &labapi.Cellular{
 							Carrier: "VERIZON",
@@ -132,6 +133,7 @@ func TestFillDUTInfo(t *testing.T) {
 								Address: "c6-r8-r7-labstation",
 								Port:    9999,
 							},
+							State: labapi.PeripheralState_WORKING,
 						},
 					},
 				},
@@ -151,6 +153,7 @@ func TestFillDUTInfo(t *testing.T) {
 								Address: "c6-r7-r7-labstation",
 								Port:    9999,
 							},
+							State: labapi.PeripheralState_WORKING,
 						},
 					},
 				},
@@ -279,6 +282,7 @@ func TestFillDUTInfoExtended(t *testing.T) {
 						Port:    1337,
 					},
 					Serial: "8675309",
+					State:  labapi.PeripheralState_WORKING,
 				},
 				DutModel: &labapi.DutModel{
 					BuildTarget: "Fred",

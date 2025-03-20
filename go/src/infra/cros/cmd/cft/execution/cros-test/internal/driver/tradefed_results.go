@@ -28,6 +28,7 @@ import (
 const (
 	tfStageLogsPath      = "/tmp/stage-android-build-api/stub"
 	tfStageResultPattern = "subprocess-test_result.xml_*.xml.gz"
+	tfStageLogPattern    = "subprocess-host_log_*"
 	tfAospResultPattern  = "android-%s/results/latest/test_result.xml"
 	tfLuciResultPattern  = "LUCIResult_*.json"
 	incompleteError      = "Module is missing from results or skipped by exclude filter"
@@ -385,6 +386,12 @@ func parseLuciJSONResults(logger *log.Logger, testType string, req *api.CrosTest
 
 	allTestCases, givenTestCases := generateTestCaseResult(logger, testType, R, req)
 
+	// Save location of additional (staged) logs.
+	stagedLogFile, err := selectFileByPattern(filepath.Join(tfStageLogsPath, "*", "*", tfStageLogPattern))
+	if err == nil {
+		logsDir = append(logsDir, filepath.Join(filepath.Dir(stagedLogFile), "*"))
+	}
+
 	return allTestCases, givenTestCases, logsDir, nil
 }
 
@@ -505,6 +512,27 @@ func getAllModulesFromReq(req *api.CrosTestRequest) map[string]struct{} {
 	return modules
 }
 
+func buildErrorResult(logger *log.Logger, testType string, req *api.CrosTestRequest, err error) *api.CrosTestResponse {
+	f := &api.CrosTestResponse{}
+	if req == nil || req.GetTestSuites() == nil {
+		return f
+	}
+	errMsg := fmt.Sprintf("Failed test setup/command: %s", err)
+
+	for _, suites := range req.GetTestSuites() {
+		for _, testCaseIds := range suites.GetTestCaseIds().GetTestCaseIds() {
+			testCaseResult := buildTcResult(testCaseIds.GetValue(), "", "FAILED", time.Now().Add(-1*time.Second), 1, errMsg)
+			f.TestCaseResults = append(f.TestCaseResults, testCaseResult)
+			f.GivenTestResults = append(f.GivenTestResults, &api.CrosTestResponse_GivenTestResult{
+				ParentTest:           testCaseIds.GetValue(),
+				ChildTestCaseResults: []*api.TestCaseResult{testCaseResult},
+			})
+		}
+	}
+
+	return f
+}
+
 func buildTradefedResult(logger *log.Logger, testType string, req *api.CrosTestRequest) (*api.CrosTestResponse, []string) {
 	// List of glob patterns of artifacts that should be saved in test results.
 	var logsToSave []string
@@ -569,6 +597,14 @@ func buildTcResult(testName string, abi string, testStatus string, startTime tim
 	default:
 		tcResult.Verdict = &api.TestCaseResult_Fail_{Fail: &api.TestCaseResult_Fail{}}
 		tcResult.Errors = []*api.TestCaseResult_Error{testError}
+	}
+
+	tcResult.TestCaseMetadata = &api.TestCaseMetadata{
+		TestCase: &api.TestCase{
+			Id:   tcResult.TestCaseId,
+			Name: extractTestCaseName(tcResult.TestCaseId.Value),
+		},
+		TestCaseExec: &api.TestCaseExec{TestHarness: tcResult.TestHarness},
 	}
 
 	return tcResult

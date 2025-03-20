@@ -208,3 +208,13 @@ func buildResultReportingArgs(logger *log.Logger, metadata *api.ExecutionMetadat
 
 	return cmd
 }
+
+func extractTestCaseName(testName string) string {
+	testCaseName := testName
+	if strings.HasPrefix(testCaseName, tfprefix) {
+		testCaseName = strings.TrimPrefix(testCaseName, tfprefix)
+		// Also trimming the suite name.
+		testCaseName = strings.TrimLeft(testCaseName, ".")
+	}
+	return testCaseName
+}

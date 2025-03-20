@@ -152,8 +152,8 @@ func FillDUTInfo(device *api.CrosTestRequest_Device, role string) (*DutInfo, err
 	var servoHostname string
 	var servoPort string
 	var servoSerial string
-	if chromeOS.GetServo().GetServodAddress() != nil {
-
+	if chromeOS.GetServo().GetServodAddress() != nil &&
+		chromeOS.GetServo().GetState() != labapi.PeripheralState_BROKEN {
 		servo = joinHostAndPort(chromeOS.GetServo().GetServodAddress())
 		servoHostname = strings.ToLower(chromeOS.GetServo().GetServodAddress().GetAddress())
 		if chromeOS.GetServo().GetServodAddress().GetPort() != 0 {
@@ -524,6 +524,18 @@ func GenLabConfig(primary *DutInfo, companions []*DutInfo, androidCompanion []*A
 		DevboardDUTLabConfig: devboardDUTLabConfig,
 	}, nil
 
+}
+
+// Returns a list of all devices in a request, both companion and primary.
+func Devices(req *api.CrosTestRequest) []*labapi.Dut {
+	devices := []*labapi.Dut{}
+	if req.GetPrimary().GetDut() != nil {
+		devices = append(devices, req.GetPrimary().GetDut())
+	}
+	for _, c := range req.GetCompanions() {
+		devices = append(devices, c.GetDut())
+	}
+	return devices
 }
 
 // DerviceSerials extracts serial information of all devices from a requests test.

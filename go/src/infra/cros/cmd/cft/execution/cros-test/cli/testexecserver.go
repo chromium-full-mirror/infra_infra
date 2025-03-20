@@ -88,10 +88,22 @@ func runTests(ctx context.Context, logger *log.Logger, resultRootDir, tlwAddr st
 
 	}
 
-	matchedMdList, err := finder.MatchedTestsForSuites(metadataList.Values, req.TestSuites)
+	matchedMdList, err := finder.MatchedTestsForSuites(md, req.TestSuites)
 	if err != nil {
 		return nil, statuserrors.NewStatusError(statuserrors.InvalidArgument,
 			fmt.Errorf("failed to match test metadata: %w", err))
+	}
+
+	uniqueParfiles, err := finders.GetUniqueParfiles(matchedMdList)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get unique parfiles: %v", err)
+	}
+
+	// only fetch if there are unique parfiles.
+	if len(uniqueParfiles) > 0 {
+		if err := finders.FetchAndInstallParfiles(ctx, logger, "mobly_priv_artifacts/out", uniqueParfiles); err != nil {
+			return nil, fmt.Errorf("failed to fetch and install parfiles: %v", err)
+		}
 	}
 
 	// Write all matching test metadata to the results directory.

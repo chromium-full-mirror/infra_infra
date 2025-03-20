@@ -175,14 +175,12 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 		cmd = append(cmd, "-s", s)
 	}
 
-	// TODO (b/388901383), currently these are breaking DTS. Removing them until rootcause is addressed.
-	// // Add servod arguments
-	// if servo != nil && servo.ServodAddress != nil && servo.ServodAddress.Address != "" && servo.ServodAddress.Port != 0 {
-	// 	cmd = append(cmd,
-	// 		"--cts-params", fmt.Sprintf("--test-arg=com.android.tradefed.testtype.HostTest:set-option:servo_host:%s", servo.ServodAddress.Address),
-	// 		"--cts-params", fmt.Sprintf("--test-arg=com.android.tradefed.testtype.HostTest:set-option:servo_port:%d", servo.ServodAddress.Port),
-	// 	)
-	// }
+	if servo != nil && servo.ServodAddress != nil && servo.ServodAddress.Address != "" && servo.ServodAddress.Port != 0 {
+		cmd = append(cmd,
+			"--invocation-data", fmt.Sprintf("servo.host=%s", servo.ServodAddress.Address),
+			"--invocation-data", fmt.Sprintf("servo.port=%d", servo.ServodAddress.Port),
+		)
+	}
 
 	return cmd
 }
