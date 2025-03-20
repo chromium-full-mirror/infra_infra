@@ -37,7 +37,7 @@ const (
 var (
 	ExcludedChromeosBuildPrefixes  = []string{"staging", "dev"}
 	ExcludedChromeosBuildPostfixes = []string{"main"}
-	ExcludedVariantPostfixes       = []string{"sdknext", "vmtest"}
+	ExcludedVariantPostfixes       = []string{"sdknext", "vmtest", "public"}
 	ExcludedRegexes                = []*regexp.Regexp{
 		// Exclude if numbers included.
 		regexp.MustCompile("[0-9]+"),
