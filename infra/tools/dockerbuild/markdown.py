@@ -29,6 +29,9 @@ If there's a wheel you need which is missing, please [file a bug][bug].
 [bug]: https://bugs.chromium.org/p/chromium/issues/entry?template=+Vpython+Wheel+Request
 [VPython and You]: https://chromium.googlesource.com/infra/infra/+/master/doc/users/vpython_one_page.md
 
+Archived Wheel Lists:
+- [Python 3.8 wheels](./legacy_wheels_38.md).
+
 [TOC]
 
 # Wheel List
