@@ -17,8 +17,6 @@ type QueryParameters struct {
 
 // QueryBuilder is a helper to create an sql query
 type QueryBuilder struct {
-	sqlLangType SqlLangType
-
 	table      *Table
 	parameters *QueryParameters
 
@@ -42,18 +40,6 @@ func NewQueryBuilder(t *Table) *QueryBuilder {
 		table:      t,
 		parameters: &QueryParameters{nextValueName: 1},
 	}
-}
-
-type SqlLangType string
-
-const (
-	BigQueryLangType SqlLangType = "bigquery"
-	PostgresLangType SqlLangType = "postgres"
-)
-
-func (q *QueryBuilder) SetSqlLangType(sqlLangType SqlLangType) *QueryBuilder {
-	q.sqlLangType = sqlLangType
-	return q
 }
 
 // WithSelectAllClause adds a select clause with all the columns to the query.
@@ -87,7 +73,7 @@ func (q *QueryBuilder) WithCustomSelectClause(selectClause string) *QueryBuilder
 
 // WithFromClause adds a from clause to the query.
 func (q *QueryBuilder) WithFromClause() *QueryBuilder {
-	q.fromClause = fmt.Sprintf("FROM `%s`", q.table.name)
+	q.fromClause = fmt.Sprintf("FROM \"%s\"", q.table.name)
 	return q
 }
 
@@ -126,12 +112,7 @@ func (q *QueryBuilder) Build(realms []string) (*Query, error) {
 // the name of the parameter.
 // The returned string is an injection-safe SQL expression.
 func (q *QueryBuilder) bind(value string) string {
-	var name string
-	if q.sqlLangType == BigQueryLangType {
-		name = "?"
-	} else {
-		name = fmt.Sprintf("$%d", q.parameters.nextValueName)
-	}
+	name := fmt.Sprintf("$%d", q.parameters.nextValueName)
 	q.parameters.nextValueName += 1
 	q.parameters.values = append(q.parameters.values, value)
 	return name

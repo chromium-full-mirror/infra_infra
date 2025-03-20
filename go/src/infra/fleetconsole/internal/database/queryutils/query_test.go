@@ -40,14 +40,14 @@ func TestQueryBuilder(t *testing.T) {
 				"available",
 				"my-realm",
 			}))
-			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels, realm\nFROM `Devices`\nWHERE (dut_state = $1)\n AND (realm IN ($2) OR realm is NULL)\nORDER BY id DESC\nLIMIT 10\nOFFSET 20;"))
+			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels, realm\nFROM \"Devices\"\nWHERE (dut_state = $1)\n AND (realm IN ($2) OR realm is NULL)\nORDER BY id DESC\nLIMIT 10\nOFFSET 20;"))
 		})
 
 		t.Run("query for a specific column's distinct values", func(t *ftt.Test) {
 			q, err := NewQueryBuilder(table).WithSelectClause(true, dutStateColumn).WithFromClause().Build(nil)
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, q.Parameters, should.BeEmpty)
-			assert.Loosely(t, q.Statement, should.Equal("SELECT DISTINCT dut_state\nFROM `Devices`\n\n\n;"))
+			assert.Loosely(t, q.Statement, should.Equal("SELECT DISTINCT dut_state\nFROM \"Devices\"\n\n\n;"))
 		})
 	})
 }

@@ -26,7 +26,7 @@ make run-local-db
 
 ### Connecting to the dev db
 
-Create a tunnel to the dev alloydb vpc
+Create a tunnel to the dev alloydb vpc 
 
 ```
 ./tools/setup_dev_db_tunnel.sh
@@ -36,15 +36,6 @@ You can now run the web server
 ```bash
 make build
 make run-dev-db
-```
-
-### Making calls to the local service
-
-To make calls to your local service, you can use `prpc` command line tool.
-```
-prpc call localhost:8800 fleetconsole.FleetConsole.PingDB <<EOF
-{}
-EOF
 ```
 
 ### Run the web client
@@ -219,3 +210,4 @@ From here you can simply make the required edits and submit a new cl
 * Prod instance URL: <https://fleet-console-prod-1012156191214.us-central1.run.app>
 
 [fleet-console-prod](https://pantheon.corp.google.com/run/detail/us-central1/fleet-console-prod/metrics?inv=1&invt=Abh2rA&project=fleet-console-prod) must have deployment triggered using a CL.
+
