@@ -1142,6 +1142,9 @@ func createSwarmingTags(ctx context.Context, trHelper *TrV2ReqHelper) ([]string,
 	// add scheduler info
 	tags = append(tags, "scheduler:"+trHelper.suiteInfo.GetSuiteMetadata().GetSchedulerInfo().GetScheduler().String())
 
+	// add tag with default value as false to identify auto vm runs
+	tags = append(tags, "auto_vm_run:false")
+
 	// TODO(dbeckett) THESE BELOW:
 	reprName := fmt.Sprintf("shard-%v", trHelper.shardNum)
 	tags = append(tags, "display_name:"+makeDisplayName(trHelper.builderStr, trHelper.suiteName, reprName))

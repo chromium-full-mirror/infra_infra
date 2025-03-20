@@ -39,6 +39,12 @@ import (
 	dm "go.chromium.org/infra/device_manager/client"
 )
 
+const (
+	testRunnerGceBuilderName = "test_runner_gce"
+	autoVMRun                = "auto_vm_run"
+	scheduler                = "scheduler"
+)
+
 // getBuildFieldMask is the list of buildbucket fields that are needed.
 var getBuildFieldMask = []string{
 	"id",
@@ -55,10 +61,11 @@ type ScheduleTasksCmd struct {
 	*interfaces.AbstractSingleCmdByNoExecutor
 
 	// Deps
-	BuildState      *build.State
-	Scheduler       interfaces.SchedulerInterface
-	DynamicRun      bool
-	CredentialsFile string
+	BuildState        *build.State
+	Scheduler         interfaces.SchedulerInterface
+	directBBScheduler interfaces.SchedulerInterface
+	DynamicRun        bool
+	CredentialsFile   string
 	// EnvVersion denotes whether the environment
 	// is prod or something else.
 	EnvVersion      string
@@ -175,6 +182,7 @@ func (cmd *ScheduleTasksCmd) extractDepsFromFilterStateKeeper(
 	cmd.BuildState = sk.BuildState
 	cmd.Config = sk.Config
 	cmd.AlStateInfo = sk.AlStateInfo
+	cmd.directBBScheduler = schedulers.NewDirectBBScheduler()
 	// Assign scheduler
 	switch s := sk.Scheduler; s {
 	case api.SchedulerInfo_QSCHEDULER:
@@ -322,6 +330,7 @@ func (cmd *ScheduleTasksCmd) Execute(ctx context.Context) error {
 		logging.Infof(ctx, "%s: %s", errmsg, err)
 		return errors.Annotate(err, "%s", errmsg).Err()
 	}
+	cmd.directBBScheduler.Setup(pool)
 	dmc, err := dm.NewClient(ctx, pool)
 	if err != nil {
 		return errors.Annotate(err, "error while connecting to Device Manager").Err()
@@ -604,14 +613,39 @@ func (cmd *ScheduleTasksCmd) ScheduleAndMonitor(rootCtx context.Context, key str
 	trSchedulingStart := time.Now()
 	cmd.ObserveTrSchedulingStart(ctx, buildReq)
 
-	// BQ TODO log the request is in the scheduling tool (ie log the scheduke ID if possible?)
-	scheduledBuild, leaseID, err := cmd.Scheduler.ScheduleRequest(ctx, req, step)
-	if err != nil {
-		err = fmt.Errorf("error while scheduling req: %w", err)
-		cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error(), trSchedulingStart)
-		setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
-		return
+	var scheduledBuild *buildbucketpb.Build
+	var leaseID string
+
+	// if filter updated scheduling unit to vm then schedule via direct bb scheduler and update tags
+	if req.GetBuilder().Builder == testRunnerGceBuilderName && cmd.Scheduler.GetSchedulerType() == schedulers.SchedukeSchedulerType {
+		// update tags info for the test runner gce build
+		for _, v := range req.GetTags() {
+			if v.GetKey() == scheduler {
+				v.Value = api.SchedulerInfo_QSCHEDULER.String()
+			}
+			if v.GetKey() == autoVMRun {
+				v.Value = "true"
+			}
+		}
+		scheduledBuild, leaseID, err = cmd.directBBScheduler.ScheduleRequest(ctx, req, step)
+
+		if err != nil {
+			err = fmt.Errorf("error while scheduling req: %w", err)
+			cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error(), trSchedulingStart)
+			setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
+			return
+		}
+	} else {
+		// BQ TODO log the request is in the scheduling tool (ie log the scheduke ID if possible?)
+		scheduledBuild, leaseID, err = cmd.Scheduler.ScheduleRequest(ctx, req, step)
+		if err != nil {
+			err = fmt.Errorf("error while scheduling req: %w", err)
+			cmd.ObserveTrSchedulingFail(ctx, buildReq, err.Error(), trSchedulingStart)
+			setTopLevelError(ctx, step, result, resultsChan, err, attemptNode, nil, bbClient)
+			return
+		}
 	}
+
 	if leaseID != "" {
 		step.Log(fmt.Sprintf("Device Manager lease ID: %s", leaseID))
 	}
