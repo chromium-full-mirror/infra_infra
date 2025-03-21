@@ -725,7 +725,7 @@ func TestUpdateParentWorkUnitProperties(t *testing.T) {
 	defer mockCtl.Finish()
 	mockWU := mock_androidapi.NewMockWorkUnitService(mockCtl)
 	wuID := "WU123"
-	ctx := context.Background()
+
 	testCases := []struct {
 		name    string
 		props   []*atp.Property
@@ -777,7 +777,7 @@ func TestUpdateParentWorkUnitProperties(t *testing.T) {
 			} else {
 				mockWU.EXPECT().Update(wuID, wantWU).Return(wu, nil)
 			}
-			err := aps.updateParentWorkUnitProperties(ctx)
+			err := aps.updateParentWorkUnitProperties()
 			if tc.wantErr != (err != nil) {
 				t.Errorf("Unexpected error: %v", err)
 			}

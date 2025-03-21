@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"io/fs"
+	"log"
 	"mime"
 	"os"
 	"path/filepath"
@@ -24,7 +25,6 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/luci/common/logging"
 
 	androidlib "go.chromium.org/infra/cros/cmd/common_lib/android_api"
 	atp "go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
@@ -80,9 +80,9 @@ func NewAntsPublishService(ctx context.Context, req *api.PublishRequest) (*AntsP
 	var buildInfo *atp.BuildDescriptor
 	inv, err := s.InvocationService.Get(ctx, m.AntsInvocationId)
 	if err != nil {
-		logging.Infof(ctx, "Could not get invocation id. Skipping adding build info to results due to: %s. ", err)
+		log.Printf("Could not get invocation id. Skipping adding build info to results due to: %s. ", err)
 	} else if common.InvocationSealed(inv) {
-		logging.Infof(ctx, "Invocation %s is already sealed. Nothing to do. Invocation State: %s", inv.InvocationId, inv.SchedulerState)
+		log.Printf("Invocation %s is already sealed. Nothing to do. Invocation State: %s", inv.InvocationId, inv.SchedulerState)
 		return nil, &InvocationSealedError{InvocationID: inv.InvocationId, State: inv.SchedulerState}
 	} else {
 		buildInfo = inv.PrimaryBuild
@@ -97,19 +97,19 @@ func NewAntsPublishService(ctx context.Context, req *api.PublishRequest) (*AntsP
 }
 
 func androidService(ctx context.Context, env metadata.PublishAntsMetadata_ATPEnvironment) (*androidlib.Service, error) {
-	logging.Infof(ctx, "Getting android service for env: %s", env.String())
+	log.Printf("Getting android service for env: %s", env.String())
 	switch env {
 	case metadata.PublishAntsMetadata_ENV_STAGING:
-		logging.Infof(ctx, "Getting android service for staging env.")
+		log.Printf("Getting android service for staging env.")
 		return androidlib.NewAndroidBuildService(ctx, androidlib.ServiceAccount, common.Staging)
 	default:
 		return androidlib.NewAndroidBuildService(ctx, androidlib.ServiceAccount, common.Prod)
 	}
 }
 
-func (aps *AntsPublishService) insertModuleWorkUnit(ctx context.Context, name string, wuType string, parent string) (*atp.WorkUnit, error) {
+func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, parent string) (*atp.WorkUnit, error) {
 	start := time.Now()
-	defer timeTrack(ctx, start, fmt.Sprintf("insert workunit with name: %s type: %s", name, wuType))
+	defer timeTrack(start, fmt.Sprintf("insert workunit with name: %s type: %s", name, wuType))
 
 	dutProps, _, err := aps.testProperties(nil)
 	if err != nil {
@@ -135,7 +135,7 @@ func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.Wo
 	for _, result := range results {
 		dutProps, testIdentifierProps, err := aps.testProperties(result)
 		if err != nil {
-			logging.Infof(ctx, "Cannot find dut properties due to: %q", err)
+			log.Printf("Cannot find dut properties due to: %q", err)
 		}
 
 		names := strings.SplitN(result.GetTestCaseId().GetValue(), "#", 2)
@@ -169,7 +169,7 @@ func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.Wo
 		token = token + 1
 	}
 
-	logging.Infof(ctx, "Create %d parent test class workunits in parallel", len(createWUs))
+	log.Printf("Create %d parent test class workunits in parallel", len(createWUs))
 	var mu sync.Mutex
 	g, _ := errgroup.WithContext(ctx)
 	for wuName := range createWUs {
@@ -178,13 +178,13 @@ func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.Wo
 			// the panic and log it so that we can capture it before crash.
 			defer func() {
 				if x := recover(); x != nil {
-					logging.Infof(ctx, "run time panic when creating workunit: %v", x)
+					log.Printf("run time panic when creating workunit: %v", x)
 				}
 			}()
 
-			parentwu, err := aps.insertModuleWorkUnit(ctx, wuName, "TF_TEST_RUN", module.Id)
+			parentwu, err := aps.insertModuleWorkUnit(wuName, "TF_TEST_RUN", module.Id)
 			if err != nil {
-				logging.Infof(ctx, "unable to create test run workunit for %s due to %q", wuName, err)
+				log.Printf("unable to create test run workunit for %s due to %q", wuName, err)
 				return err
 			}
 
@@ -199,7 +199,7 @@ func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.Wo
 		return nil, token, err
 	}
 
-	logging.Infof(ctx, "Replace parent names with workunit ids.")
+	log.Print("Replace parent names with workunit ids.")
 	for _, entry := range entries {
 		if v, ok := tcWorkunits[entry.TestResult.WorkUnitId]; ok {
 			entry.TestResult.WorkUnitId = v
@@ -244,7 +244,7 @@ func (aps *AntsPublishService) antsResult(result *api.TestCaseResult, props []*a
 
 func (aps *AntsPublishService) uploadResults(ctx context.Context, entries []*atp.BatchInsertEntry, chunkSize int) error {
 	start := time.Now()
-	defer timeTrack(ctx, start, "upload test results")
+	defer timeTrack(start, "upload test results")
 
 	var chunks [][]*atp.BatchInsertEntry
 	for i := 0; i < len(entries); i += chunkSize {
@@ -263,32 +263,33 @@ func (aps *AntsPublishService) uploadResults(ctx context.Context, entries []*atp
 		}
 		if aps.metadata.GetAtpEnvironment() == metadata.PublishAntsMetadata_ENV_PROD {
 			g.Go(func() error {
-				logging.Infof(ctx, "worker %d start", i)
+				log.Printf("worker %d start", i)
 				resp, err := aps.service.TestResultService.BatchInsert(ctx, aps.metadata.AntsInvocationId, request)
 				// Nil responses were causing panics and killing the CFT container.
 				if resp == nil {
-					logging.Infof(ctx, "response was nil")
+					log.Printf("response was nil")
 				} else {
-					logging.Infof(ctx, "Response code: %v \n InsertErrors: %v", resp.ServerResponse, resp.InsertErrors)
+					log.Printf("Response code: %v \n InsertErrors: %v", resp.ServerResponse, resp.InsertErrors)
 				}
 
 				return err
 			})
 		} else {
-			logging.Infof(ctx, "Non-Prod env. Making requests one by one so as to not overload the android service.")
+			log.Printf("Non-Prod env. Making requests one by one so as to not overload the android service.")
 			_, err := aps.service.TestResultService.BatchInsert(ctx, aps.metadata.AntsInvocationId, request)
 			if err != nil {
 				return err
 			}
 		}
+
 	}
 
 	return g.Wait()
 }
 
-func (aps *AntsPublishService) updateParentWorkUnitProperties(ctx context.Context) error {
+func (aps *AntsPublishService) updateParentWorkUnitProperties() error {
 	start := time.Now()
-	defer timeTrack(ctx, start, "Parent WU props update")
+	defer timeTrack(start, "Parent WU props update")
 	pwu, err := aps.service.WorkUnitService.Get(aps.metadata.ParentWorkUnitId)
 	if err != nil {
 		return err
@@ -322,34 +323,34 @@ func (aps *AntsPublishService) removeModulePrefix(moduleName string) string {
 
 // UploadToAnts uploads test results to Ants.
 func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
-	logging.Infof(ctx, "Uploading to AnTS: %+v", aps.results)
+	log.Printf("Uploading to AnTS: %+v", aps.results)
 
-	if !isInternalAccount(ctx, aps.metadata.GetAccountId()) {
+	if !isInternalAccount(aps.metadata.GetAccountId()) {
 		return nil
 	}
 
 	if len(aps.results) == 0 {
-		logging.Infof(ctx, "no given test results to upload. Skipping results upload")
+		log.Println("no given test results to upload. Skipping results upload")
 		return nil
 	}
 
-	logging.Infof(ctx, "Update parent workunit properties.")
-	if err := aps.updateParentWorkUnitProperties(ctx); err != nil {
+	log.Printf("Update parent workunit properties.")
+	if err := aps.updateParentWorkUnitProperties(); err != nil {
 		return err
 	}
 
 	// Track time taken to upload results
 	start := time.Now()
-	defer timeTrack(ctx, start, "Overall result upload")
+	defer timeTrack(start, "Overall result upload")
 
 	var entries []*atp.BatchInsertEntry
 	token := int64(0)
 	for _, result := range aps.results {
-		logging.Infof(ctx, "looking at result: %+v", result)
+		log.Printf("looking at result: %+v", result)
 
 		// Add a module workunit
 		moduleName := aps.removeModulePrefix(result.GetParentTest())
-		mwu, err := aps.insertModuleWorkUnit(ctx, moduleName, "TF_MODULE", aps.metadata.GetParentWorkUnitId())
+		mwu, err := aps.insertModuleWorkUnit(moduleName, "TF_MODULE", aps.metadata.GetParentWorkUnitId())
 		if err != nil {
 			return err
 		}
@@ -412,24 +413,24 @@ func (aps *AntsPublishService) testProperties(result *api.TestCaseResult) ([]*at
 }
 
 func (aps *AntsPublishService) UploadArtifacts(ctx context.Context) error {
-	if !isInternalAccount(ctx, aps.metadata.GetAccountId()) {
+	if !isInternalAccount(aps.metadata.GetAccountId()) {
 		return nil
 	}
 
 	if _, err := os.Stat(artifactsDir); err != nil {
-		logging.Infof(ctx, "%s does not exists. Skipping artifacts upload.", artifactsDir)
+		log.Printf("%s does not exists. Skipping artifacts upload.", artifactsDir)
 		return nil
 	}
 
-	logging.Infof(ctx, "Uploading artifacts from: %s", artifactsDir)
+	log.Printf("Uploading artifacts from: %s", artifactsDir)
 
 	// Track time taken to upload artifacts
 	start := time.Now()
-	defer timeTrack(ctx, start, "Overall artifacts upload")
+	defer timeTrack(start, "Overall artifacts upload")
 
 	return filepath.Walk(artifactsDir, func(path string, info fs.FileInfo, err error) error {
 		if err != nil {
-			logging.Infof(ctx, "Error walking artifactsDir: %q", err)
+			log.Printf("Error walking artifactsDir: %q", err)
 			return err
 		}
 
@@ -440,9 +441,9 @@ func (aps *AntsPublishService) UploadArtifacts(ctx context.Context) error {
 
 		artifactMetadata, err := aps.uploadArtifact(path)
 		if err != nil {
-			logging.Infof(ctx, "Cannot open file: %s due to error: %q. Skipping upload", path, err)
+			log.Printf("Cannot open file: %s due to error: %q. Skipping upload", path, err)
 		} else {
-			logging.Infof(ctx, "Uploaded artifact for: %s", artifactMetadata.Name)
+			log.Printf("Uploaded artifact for: %s", artifactMetadata.Name)
 		}
 		return nil
 	})
@@ -532,26 +533,26 @@ func validateAntsPublishRequest(req *api.PublishRequest) error {
 	return nil
 }
 
-func timeTrack(ctx context.Context, start time.Time, msg string) {
+func timeTrack(start time.Time, msg string) {
 	elapsed := time.Since(start)
-	logging.Infof(ctx, "%s took: %s", msg, elapsed)
+	log.Printf("%s took: %s", msg, elapsed)
 }
 
-func isInternalAccount(ctx context.Context, accountID string) bool {
+func isInternalAccount(accountID string) bool {
 	// Sometimes, we do not have accountId for internal users.
 	if accountID == "" {
-		logging.Infof(ctx, "accountID is empty")
+		log.Printf("accountID is empty")
 		return true
 	}
 
 	id, err := strconv.Atoi(accountID)
 	if err != nil {
-		logging.Infof(ctx, "Cannot convert accountID %s to int", accountID)
+		log.Printf("Cannot convert accountID %s to int", accountID)
 		return false
 	}
 
 	if id < 1 {
-		logging.Infof(ctx, "Account ID %s not supported", accountID)
+		log.Printf("Account ID %s not supported", accountID)
 		return false
 	}
 
