@@ -263,11 +263,13 @@ func getNewSchedulingTargetsBasedOnBotAvailability(ctx context.Context, schedTar
 				if target.HwTarget.GetLegacyHw().GetModel() != "" {
 					dims = append(dims, fmt.Sprintf("label-model:%s", strings.ToLower(target.HwTarget.GetLegacyHw().GetModel())))
 				}
+				logging.Infof(ctx, fmt.Sprintf("checking bot availability for dims: %s", strings.Join(dims, ",")))
 				botCount, err := common.GetBotCount(ctx, dims, swarmingServ)
 				if err != nil {
 					logging.Infof(ctx, fmt.Sprintf("error found while getting bot count: %s", err))
 					// add target instead of stopping execution
 					newTargets = append(newTargets, target)
+					continue
 				}
 				// only add if bots available
 				if botCount > 0 {
