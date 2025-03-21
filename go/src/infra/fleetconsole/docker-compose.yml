@@ -11,11 +11,46 @@ services:
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
-      POSTGRES_DB: fleet_console_db
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data:rw
 
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4:9.1
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=pgadmin4@pgadmin.org
+      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_CONFIG_SERVER_MODE=False
+      - PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED=False
+    ports:
+      - "5050:80"
+    entrypoint: /bin/sh -c "chmod 600 /pgpass; /entrypoint.sh;"
+    user: root
+    configs:
+      - source: servers.json
+        target: /pgadmin4/servers.json
+      - source: pgpass
+        target: /pgpass
+    depends_on:
+      - fleet_console_db
+
 volumes:
   pgdata: {}
+
+configs:
+  pgpass:
+    content: fleet_console_db:5432:*:postgres:password
+  servers.json:
+    content: |
+      {"Servers": {"1": {
+        "Group": "Servers",
+        "Name": "Fleet Console",
+        "Host": "fleet_console_db",
+        "Port": 5432,
+        "MaintenanceDB": "postgres",
+        "Username": "postgres",
+        "PassFile": "/pgpass",
+        "SSLMode": "prefer"
+      }}}

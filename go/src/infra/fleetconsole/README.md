@@ -16,6 +16,9 @@ First start the db using docker docker:
 docker compose up -d
 ```
 
+It also runs pgadmin so if you want to connect to the db via pgadmin visit
+`localhost:5050` (no login should be required).
+
 If this is your first time you will have to [run migrations](#migrations-local)
 
 You can now run the web server:
