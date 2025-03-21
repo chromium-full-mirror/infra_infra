@@ -70,6 +70,11 @@ def GenerateRedirectApp():
     flask.abort(404)
   redirect_app.route('/<string:project_name>/<int:local_id>')(MappingApi)
 
+  def Warmup() -> str:
+    return ''
+
+  redirect_app.route('/_ah/warmup')(Warmup)
+
   def Handle404(e):
     return flask.render_template('404.html'), 404
 

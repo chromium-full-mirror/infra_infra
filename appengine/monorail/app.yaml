@@ -10,6 +10,7 @@ default_expiration: "10d"
 
 automatic_scaling:
   min_idle_instances: ${MIN_IDLE_INSTANCES}
+  min_instances: ${MIN_INSTANCES}
   max_instances: ${MAX_INSTANCES}
   max_pending_latency: ${MAX_PENDING_LATENCY}
 
@@ -20,17 +21,20 @@ automatic_scaling:
 luci_gae_vars:
   monorail-dev:
     WORKERS: "2"
-    MIN_IDLE_INSTANCES: "1"
+    MIN_IDLE_INSTANCES: "0"
+    MIN_INSTANCES: "0"
     MAX_INSTANCES: "2"
     MAX_PENDING_LATENCY: "automatic"
   monorail-staging:
     WORKERS: "2"
-    MIN_IDLE_INSTANCES: "1"
+    MIN_IDLE_INSTANCES: "0"
+    MIN_INSTANCES: "0"
     MAX_INSTANCES: "5"
-    MAX_PENDING_LATENCY: "0.2s"
+    MAX_PENDING_LATENCY: "automatic"
   monorail-prod:
     WORKERS: "2"
-    MIN_IDLE_INSTANCES: "3"
+    MIN_IDLE_INSTANCES: "1"
+    MIN_INSTANCES: "2"
     MAX_INSTANCES: "10"
     MAX_PENDING_LATENCY: "0.2s"
 

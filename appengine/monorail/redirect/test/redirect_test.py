@@ -68,3 +68,17 @@ class TestRedirectApp(unittest.TestCase):
     client = self.app.test_client()
     response = client.get('/p/project1/issues/detail?id=1')
     self.assertEqual(response.status_code, 200)
+
+  @mock.patch('redirect.redirectissue.Get')
+  def testMappingApi(self, fake_redirectIssue):
+    fake_redirectIssue.return_value = 1234
+    client = self.app.test_client()
+    response = client.get('/project1/1')
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(response.data, b'1234')
+
+  def testWarmup(self):
+    client = self.app.test_client()
+    response = client.get('/_ah/warmup')
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(response.data, b'')
