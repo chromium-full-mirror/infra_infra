@@ -43,6 +43,24 @@ func TestQueryBuilder(t *testing.T) {
 			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels, realm\nFROM \"Devices\"\nWHERE (dut_state = $1)\n AND (realm IN ($2) OR realm is NULL)\nORDER BY id DESC\nLIMIT 10\nOFFSET 20;"))
 		})
 
+		t.Run("query with all the clauses (bigquery)", func(t *ftt.Test) {
+			builder := NewQueryBuilder(table)
+			builder.sqlLangType = BigQueryLangType
+			assert.Loosely(t, builder.sqlLangType, should.Equal(BigQueryLangType))
+			builder = builder.WithSelectAllClause().WithFromClause().WithOffsetPagination(20, 10)
+			builder, err := builder.WithWhereClause("dut_state = available")
+			assert.Loosely(t, err, should.BeNil)
+			builder, err = builder.WithOrderByClause("id desc", "")
+			assert.Loosely(t, err, should.BeNil)
+			q, err := builder.Build([]string{"my-realm"})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, q.Parameters, should.Match([]any{
+				"available",
+				"my-realm",
+			}))
+			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels, realm\nFROM `Devices`\nWHERE (dut_state = ?)\n AND (realm IN (?) OR realm is NULL)\nORDER BY id DESC\nLIMIT 10\nOFFSET 20;"))
+		})
+
 		t.Run("query for a specific column's distinct values", func(t *ftt.Test) {
 			q, err := NewQueryBuilder(table).WithSelectClause(true, dutStateColumn).WithFromClause().Build(nil)
 			assert.Loosely(t, err, should.BeNil)
