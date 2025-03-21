@@ -217,17 +217,14 @@ func main() {
 		// Set summary markdown.
 		var sb strings.Builder
 		if spec != nil {
-			needNewLine := false
-			if spec.goSrc != nil {
-				fmt.Fprintf(&sb, "* %s\n", spec.goSrc.asMarkdown())
-				needNewLine = true
-			}
-			if spec.subrepoSrc != nil {
-				fmt.Fprintf(&sb, "* %s\n", spec.subrepoSrc.asMarkdown())
-				needNewLine = true
-			}
-			if needNewLine {
-				fmt.Fprintln(&sb)
+			if spec.goSrc != nil || spec.subrepoSrc != nil {
+				if spec.goSrc != nil {
+					fmt.Fprintf(&sb, "* %s", spec.goSrc.asMarkdown())
+				}
+				if spec.subrepoSrc != nil {
+					fmt.Fprintf(&sb, " / %s", spec.subrepoSrc.asMarkdown())
+				}
+				fmt.Fprint(&sb, "\n\n")
 			}
 			extraLogLinks := topLevelLogLinks(ctx)
 			if len(extraLogLinks) != 0 {
@@ -241,7 +238,6 @@ func main() {
 		if runErr != nil {
 			testsFailed := errorTestsFailed(runErr)
 			if testsFailed {
-				fmt.Fprintf(&sb, "[Build or test failure, click here for results.](%s)\n\n", testResultsURL(st.Build().Id))
 				fmt.Fprintf(&sb, "To reproduce, try `gomote repro %d`.\n\n", st.Build().Id)
 			} else {
 				if e := runErr.Error(); !strings.ContainsAny(e, "\n`") {

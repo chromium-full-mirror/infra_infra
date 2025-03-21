@@ -52,7 +52,7 @@ func cmdStepRun(ctx context.Context, stepName string, cmd *exec.Cmd, infra bool,
 	cmdErr := cmd.Run()
 	if cmdErr != nil {
 		cmdErr = fmt.Errorf("failed to run %s: %w", stepName, cmdErr)
-		cmdErr = attachLinks(cmdErr, fmt.Sprintf("Output for %s", stepName), output.UILink())
+		cmdErr = attachLinks(cmdErr, fmt.Sprintf("%s output", stepName), output.UILink())
 	}
 
 	// Log extra files.
@@ -106,8 +106,8 @@ func cmdStepOutput(ctx context.Context, stepName string, cmd *exec.Cmd, infra bo
 	if err != nil {
 		err = fmt.Errorf("failed to run %s: %w", stepName, err)
 		err = attachLinks(err,
-			fmt.Sprintf("Stdout for %s", stepName), stdout.UILink(),
-			fmt.Sprintf("Stderr for %s", stepName), stderr.UILink(),
+			fmt.Sprintf("%s stdout", stepName), stdout.UILink(),
+			fmt.Sprintf("%s stderr", stepName), stderr.UILink(),
 		)
 		return output, err
 	}
@@ -143,7 +143,7 @@ func cmdStepTest(ctx context.Context, spec *buildSpec, stepName, testID string, 
 		cmdErr = fmt.Errorf("failed to run %s: %w", stepName, cmdErr)
 		cmdErr = attachTestsFailed(cmdErr)
 		cmdErr = attachLinks(cmdErr,
-			fmt.Sprintf("Output for %s", stepName), log.UILink(),
+			fmt.Sprintf("%s output", stepName), log.UILink(),
 		)
 	}
 

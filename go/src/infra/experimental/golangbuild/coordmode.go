@@ -346,7 +346,7 @@ func waitOnBuilds(ctx context.Context, spec *buildSpec, stepName string, buildID
 	// Presentation state.
 	var summary strings.Builder
 	writeSummaryLine := func(shardID int, buildID int64, result string) {
-		summary.WriteString(fmt.Sprintf("[shard %d %s](%s)\n", shardID, result, buildURL(buildID)))
+		summary.WriteString(fmt.Sprintf("* [shard %d %s](%s)\n", shardID, result, buildURL(buildID)))
 	}
 
 	// Parse the protojson output: one per line.
@@ -375,8 +375,8 @@ func waitOnBuilds(ctx context.Context, spec *buildSpec, stepName string, buildID
 			failed = true
 			foundInfraFailure = true
 		case bbpb.Status_CANCELED:
-			// Build got cancelled, which is very unexpected. Call it out.
-			writeSummaryLine(i+1, build.Id, "cancelled")
+			// Build got canceled, which is very unexpected. Call it out.
+			writeSummaryLine(i+1, build.Id, "canceled")
 			failed = true
 			foundInfraFailure = true
 		default:
@@ -451,9 +451,4 @@ func errorFromOutputProperties(props *golangbuildpb.Outputs, detail string) erro
 // buildURL is a helper that produces a build page URL from a buildbucket build ID.
 func buildURL(buildID int64) string {
 	return fmt.Sprintf("https://ci.chromium.org/b/%d", buildID)
-}
-
-// testResultsURL is a helper that produces a test results page URL from a buildbucket build ID.
-func testResultsURL(buildID int64) string {
-	return fmt.Sprintf("https://ci.chromium.org/ui/inv/build-%d", buildID)
 }
