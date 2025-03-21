@@ -333,16 +333,19 @@ func GetConfigs() []*UprevConfig {
 				PartnerRepository,
 			},
 		},
-		// {
-		// 	Name: "tradefed",
-		// 	CIPDPackages: []*CIPDPackage{
-		// 		NewCIPDPackage("chromiumos/infra/cft/execution/cros-test/${platform}"),
-		// 	},
-		// 	Repositories: []*Repository{
-		// 		DefaultRepository,
-		// 	},
-		// 	Prepper: preppers.InternalTF,
-		// },
+		{
+			Name: "foil-test",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/execution/cros-test/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+			},
+			Resources: []string{
+				"tradefed_runner.sh",
+			},
+			Prepper: preppers.PrepFoilTestInternal,
+		},
 	}
 
 	return CleanConfigs(configs)

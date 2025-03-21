@@ -1,0 +1,81 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+FROM gcr.io/dockerized-tradefed/tradefed:latest
+
+ARG ARTIFACT_DIR="tf_artifact"
+
+USER root
+
+RUN export DEBIAN_FRONTEND=noninteractive && apt-get update \
+    && apt-get install -y \
+      attr \
+      ca-certificates \
+      iproute2 \
+      python-pip \
+      xxd
+
+# grab gsutil
+RUN echo \
+    "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] \
+    http://packages.cloud.google.com/apt cloud-sdk main" | \
+    tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
+    apt-key --keyring /usr/share/keyrings/cloud.google.gpg  \
+    add - && apt-get update -y && apt-get install google-cloud-sdk=369.0.0-0 -y && \
+    rm -rf /usr/lib/google-cloud-sdk/bin/anthoscli \
+    /usr/lib/google-cloud-sdk/bin/kuberun
+
+# Point /usr/bin/python3 to usr/local/bin/python3. See b/191884161
+RUN sudo rm /usr/bin/python3*; exit 0
+RUN sudo ln -s /usr/local/bin/python3 /usr/bin/python3
+
+# Config the user
+# dialout added for b/273797484
+RUN useradd -m chromeos-test -G dialout
+RUN echo 'chromeos-test ALL=NOPASSWD:ALL' > /etc/sudoers.d/chromeos-test
+
+# Cros-test binary is static across boards.
+COPY --chown=chromeos-test:chromeos-test cros-test /usr/bin/
+
+RUN groupadd nobody
+
+# Install the GRTE binary
+COPY --chown=chromeos-test:chromeos-test ${ARTIFACT_DIR}/grte*.deb /tmp/
+RUN dpkg -i /tmp/grte*.deb && rm /tmp/grte*.deb
+# ###############################################################################
+# Everything above this point should not be changing often (ie not every build)
+# Everything below this point is possible/likely to change per build
+# ###############################################################################
+
+RUN mkdir -p /tmp/test/logs
+
+COPY --chown=chromeos-test:chromeos-test tradefed_runner.sh /tradefed
+
+# Do a final chmod and chown
+RUN chmod 755 /usr/bin/cros-test
+RUN chown -R chromeos-test:chromeos-test /tmp/test/
+RUN chmod -R a+rwx /tradefed
+RUN chown -R chromeos-test:chromeos-test /tradefed
+
+# Create mobly directory
+ARG MOBLY_DIR="/usr/local/mobly"
+RUN mkdir -p ${MOBLY_DIR}
+RUN chown -R chromeos-test:chromeos-test ${MOBLY_DIR}
+RUN chmod -R 755 ${MOBLY_DIR}
+
+USER chromeos-test
+
+# Configure TradeFed environment.
+ENV JSON_KEY_PATH=/creds/service_accounts/skylab-drone.json
+ENV GOOGLE_APPLICATION_CREDENTIALS=/creds/service_accounts/skylab-drone.json
+ENV TZ=Etc/UTC
+ENV USE_HOST_ADB=true
+ENV TF_GLOBAL_CONFIG=configs/cluster/ate/common.xml
+ENV TF_GLOBAL_CONFIG_SERVER_CONFIG=google/atp/gcs-lab-config-server-config
+ENV GLOBAL_LOG_PATH=/tmp/test/logs
+
+ENV PATH=/tradefed:$PATH
+
+ENTRYPOINT []

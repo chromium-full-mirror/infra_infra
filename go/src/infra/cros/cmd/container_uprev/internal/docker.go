@@ -117,7 +117,7 @@ func login(ctx context.Context, registry, password string) (stdout string, stder
 
 // buildImage runs the `docker build` command.
 func buildImage(ctx context.Context, dir, fullname string) (stdout string, stderr string, err error) {
-	args := []string{"build", "-t", fullname, "."}
+	args := []string{"build", "--progress=plain", "-t", fullname, "."}
 	return execCommand(ctx, "Build Image", "docker", args, "", dir)
 }
 

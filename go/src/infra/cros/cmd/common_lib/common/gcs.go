@@ -18,6 +18,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/protobuf/encoding/protojson"
 
@@ -77,6 +78,23 @@ func GetURLPath(gsURL string) (string, error) {
 	return gsURL[len("gs://"):], nil
 }
 
+func DownloadFolder(ctx context.Context, client *storage.Client, gsUrl, destLocalPath string) error {
+	logging.Infof(ctx, "Starting download of %s to %s", gsUrl, destLocalPath)
+	object, err := ParseGSURL(gsUrl)
+	if err != nil {
+		return fmt.Errorf("unable to parse gs url, %w", err)
+	}
+	logging.Infof(ctx, "Parsed URL: %s", object)
+	err = ReadFolder(ctx, client, object, destLocalPath)
+	if errors.Is(err, ErrBucketNotExist) {
+		return ErrBucketNotExist
+	}
+	if err != nil {
+		return fmt.Errorf("reading folder: %w", err)
+	}
+	return nil
+}
+
 // DownloadFile downloads a file from a designated gsURL to a given
 // path on the local file system. If the bucket does not exist,
 // returns ErrBucketNotExist. If the object does not exist,
@@ -107,6 +125,43 @@ func NewStorageClientWithDefaultAccount(ctx context.Context, clientOpts ...optio
 		return nil, err
 	}
 	return client, nil
+}
+
+func ReadFolder(ctx context.Context, client *storage.Client, gsObject GSObject, destFolderPath string) (retErr error) {
+	ctx, cancel := context.WithTimeout(ctx, actionTimeout)
+	defer cancel()
+
+	objects := client.Bucket(gsObject.Bucket).Objects(ctx, &storage.Query{
+		Prefix: gsObject.Object,
+	})
+	for {
+		object, err := objects.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		relativeName := strings.TrimPrefix(object.Name, gsObject.Object)
+		if strings.HasSuffix(object.Name, "/") {
+			err = os.MkdirAll(filepath.Join(destFolderPath, relativeName), os.ModePerm)
+			if err != nil {
+				return err
+			}
+			continue
+		}
+		logging.Infof(ctx, "Read in folder: %s", object.Name)
+		fileGsObject := GSObject{
+			Bucket: gsObject.Bucket,
+			Object: object.Name,
+		}
+		err = Read(ctx, client, fileGsObject, filepath.Join(destFolderPath, relativeName))
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 // Read downloads a file from GCS to the given local path. If the bucket does
@@ -210,6 +265,29 @@ func DownloadGcsFileToLocal(ctx context.Context, gcsPath string, tempRootDir str
 		return "", err
 	}
 	return localFilePath, nil
+}
+
+func DownloadGcsFolderAsLocal(ctx context.Context, gcsPath string, localFolderPath string, clientOpts ...option.ClientOption) error {
+	client, err := NewStorageClientWithDefaultAccount(ctx, clientOpts...)
+	if err != nil {
+		logging.Infof(ctx, "error while creating new storage client: %s", err)
+		return err
+	}
+	if localFolderPath == "" {
+		return errors.Reason("localFilePath is not defined").Err()
+	}
+	if err := os.MkdirAll(localFolderPath, os.ModePerm); err != nil {
+		logging.Infof(ctx, "error while making local dir: %s", err)
+		return err
+	}
+	logging.Infof(ctx, "Download gcs folder %q as %q", gcsPath, localFolderPath)
+	err = DownloadFolder(ctx, client, gcsPath, localFolderPath)
+	if err != nil {
+		logging.Infof(ctx, "error while downloading folder: %s", err)
+		return err
+	}
+
+	return nil
 }
 
 // DownloadGcsFileAsLocalFile downloads gcs file as specific local file if it doesn't exist.
