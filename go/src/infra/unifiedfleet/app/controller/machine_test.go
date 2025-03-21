@@ -20,6 +20,7 @@ import (
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
 	ufsAPI "go.chromium.org/infra/unifiedfleet/api/v1/rpc"
 	"go.chromium.org/infra/unifiedfleet/app/config"
+	"go.chromium.org/infra/unifiedfleet/app/external"
 	"go.chromium.org/infra/unifiedfleet/app/model/configuration"
 	. "go.chromium.org/infra/unifiedfleet/app/model/datastore"
 	"go.chromium.org/infra/unifiedfleet/app/model/history"
@@ -1662,6 +1663,75 @@ func TestRenameMachine(t *testing.T) {
 			_, err = RenameMachine(ctx, "machine-13", "machine-313")
 			assert.Loosely(t, err, should.NotBeNil)
 			assert.Loosely(t, err.Error(), should.ContainSubstring(PermissionDenied))
+		})
+	})
+}
+
+func TestRenameMachineDeviceLabels(t *testing.T) {
+	t.Parallel()
+	ctx := testingContext()
+	ctx = external.WithTestingContext(ctx)
+	ctx = useTestingCfg(ctx)
+
+	ftt.Run("RenameMachine with DeviceLabels", t, func(t *ftt.Test) {
+		t.Run("Rename a Machine with device labels happy path", func(t *ftt.Test) {
+			// Setup
+			machine1 := &ufspb.Machine{
+				Name: "machine-rename-with-devicelabels-1",
+				Location: &ufspb.Location{
+					Zone: ufspb.Zone_ZONE_CHROMEOS5,
+					Rack: "chromeos5-test",
+				},
+				Device: &ufspb.Machine_ChromeosMachine{
+					ChromeosMachine: &ufspb.ChromeOSMachine{
+						ReferenceBoard: "test",
+						BuildTarget:    "test",
+						Model:          "test",
+						Hwid:           "test",
+						Sku:            "100",
+					},
+				},
+			}
+			_, err := registration.CreateMachine(ctx, machine1)
+			assert.NoErr(t, err)
+
+			lse1 := mockDutMachineLSE("machine-rename-with-devicelabels-lse-1")
+			lse1.Machines = []string{"machine-rename-with-devicelabels-1"}
+			host, err := inventory.CreateMachineLSE(ctx, lse1)
+			assert.NoErr(t, err)
+			assert.That(t, host.GetMachines()[0], should.Equal("machine-rename-with-devicelabels-1"))
+
+			// RenameMachine
+			ctx := initializeFakeAuthDB(ctx, "user:user@example.com", util.RegistrationsUpdate, util.AcsLabAdminRealm)
+			res, err := RenameMachine(ctx, "machine-rename-with-devicelabels-1", "machine-rename-with-devicelabels-1-renamed")
+			assert.NoErr(t, err)
+			assert.That(t, res.Name, should.Equal("machine-rename-with-devicelabels-1-renamed"))
+
+			// Validate label change
+			_, err = registration.GetMachine(ctx, "machine-rename-with-devicelabels-1")
+			assert.ErrIsLike(t, err, NotFound)
+			host, err = inventory.GetMachineLSE(ctx, "machine-rename-with-devicelabels-lse-1")
+			assert.NoErr(t, err)
+			assert.That(t, host.GetMachines(), should.Match([]string{"machine-rename-with-devicelabels-1-renamed"}))
+			resp, err := inventory.GetDeviceLabels(ctx, util.AddPrefix(util.MachineLSECollection, "machine-rename-with-devicelabels-lse-1"))
+			assert.NoErr(t, err)
+			assert.Loosely(t, resp, should.NotBeNil)
+			labels := resp.GetLabels()
+			assert.Loosely(t, labels, should.NotBeNil)
+			assert.Loosely(t, labels["dut_id"], should.NotBeNil)
+			assert.Loosely(t, labels["dut_id"].GetLabelValues(), should.NotBeEmpty)
+			assert.That(t, labels["dut_id"].GetLabelValues()[0], should.Equal("machine-rename-with-devicelabels-1-renamed"))
+
+			changes, err := history.QueryChangesByPropertyName(ctx, "name", "devicelabels/machineLSEs/machine-rename-with-devicelabels-lse-1")
+			assert.NoErr(t, err)
+			assert.Loosely(t, changes, should.HaveLength(1))
+			assert.Loosely(t, changes[0].GetEventLabel(), should.Equal("device_labels"))
+			assert.Loosely(t, changes[0].GetOldValue(), should.Equal(LifeCycleRegistration))
+			assert.Loosely(t, changes[0].GetNewValue(), should.Equal(LifeCycleRegistration))
+			msgs, err := history.QuerySnapshotMsgByPropertyName(ctx, "resource_name", "devicelabels/machineLSEs/machine-rename-with-devicelabels-lse-1")
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, msgs, should.HaveLength(1))
+			assert.Loosely(t, msgs[0].Delete, should.BeFalse)
 		})
 	})
 }

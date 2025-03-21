@@ -257,19 +257,9 @@ func UpdateMachine(ctx context.Context, machine *ufspb.Machine, mask *field_mask
 			return errors.Annotate(err, "unable to batch update machine %s", machine.Name).Err()
 		}
 
-		// Update corresponding device labels for DUTs if applicable
-		if machine.GetChromeosMachine() != nil {
-			machinelses, err := inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", machine.GetName(), false)
-			if err != nil {
-				logging.Infof(ctx, "fail to get hosts for machine %s", machine.GetName())
-			} else if len(machinelses) != 0 {
-				if err = updateChromeOSDeviceLabels(ctx, hc, machinelses[0], machine, true); err != nil {
-					return errors.Annotate(err, "Error updating device labels").Err()
-				}
-				if err = updateSchedulingUnitDeviceLabels(ctx, hc, machinelses[0], true); err != nil {
-					return errors.Annotate(err, "Error updating device labels").Err()
-				}
-			}
+		// update device labels if applicable.
+		if err := updateDeviceLabelsForMachine(ctx, machine, machine.GetName(), hc); err != nil {
+			return err
 		}
 
 		updatedMachine = machine
@@ -935,6 +925,12 @@ func renameMachineInner(ctx context.Context, oldMachineName, newMachineName stri
 		return
 	}
 
+	// update device labels if applicable
+	err = updateDeviceLabelsForMachine(ctx, machine, oldMachineName, hc)
+	if err != nil {
+		return
+	}
+
 	// Log history change events
 	hc.LogMachineChanges(oldMachineCopy, machine)
 	err = hc.SaveChangeEvents(ctx)
@@ -1449,6 +1445,26 @@ func validateUniqueSerial(ctx context.Context, serialNumber string) error {
 		if len(res) > 0 {
 			errorMsg := fmt.Sprintf("machine %q contains the same serial number %q", res[0].Name, serialNumber)
 			return status.Errorf(codes.FailedPrecondition, errorMsg)
+		}
+	}
+	return nil
+}
+
+// Update corresponding device labels based on the machine if applicable.
+// Right now, this is limited to ChromeOS devices.
+// Must be called inside a transaction.
+func updateDeviceLabelsForMachine(ctx context.Context, machine *ufspb.Machine, machineId string, hc *HistoryClient) error {
+	if machine.GetChromeosMachine() != nil {
+		machinelses, err := inventory.QueryMachineLSEByPropertyName(ctx, "machine_ids", machineId, false)
+		if err != nil {
+			logging.Infof(ctx, "fail to get hosts for machine %s", machineId)
+		} else if len(machinelses) != 0 {
+			if err = updateChromeOSDeviceLabels(ctx, hc, machinelses[0], machine, true); err != nil {
+				return errors.Annotate(err, "Error updating device labels").Err()
+			}
+			if err = updateSchedulingUnitDeviceLabels(ctx, hc, machinelses[0], true); err != nil {
+				return errors.Annotate(err, "Error updating device labels").Err()
+			}
 		}
 	}
 	return nil
