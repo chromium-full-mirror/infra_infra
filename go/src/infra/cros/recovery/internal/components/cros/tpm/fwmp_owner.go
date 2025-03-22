@@ -62,7 +62,7 @@ func (c *fwmpCleaner) IsClean(ctx context.Context, ha components.HostAccess) (is
 		return false, errors.Reason("is clean up FWMP: fail to read flags, value is missed %q", out).Err()
 	}
 	hexString := parts[1]
-	flags, err := strconv.ParseInt(hexString, 16, 64)
+	flags, err := strconv.ParseInt(hexString, 0, 64)
 	if err != nil {
 		return false, errors.Annotate(err, "is clean up FWMP: fail to parse flags").Err()
 	} else if flags == 0 {
