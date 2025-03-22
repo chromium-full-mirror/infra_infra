@@ -74,7 +74,7 @@ func IsEnrollmentInClean(ctx context.Context, ha components.HostAccess, timeout 
 	log.Debugf(ctx, "Enrollment state: %s", result)
 	if result == "0" {
 		// We are good!.
-		log.Errorf(ctx, "Device is not enrolled.")
+		log.Debugf(ctx, "Device is not enrolled.")
 		return true, nil
 	}
 	log.Errorf(ctx, "Device is enrolled!")

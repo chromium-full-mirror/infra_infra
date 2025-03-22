@@ -37,7 +37,7 @@ const (
 // NewFWMPCleaner creates a new FWMP cleaner.
 func NewFWMPCleaner(ctx context.Context, ha components.HostAccess, timeout time.Duration) *fwmpCleaner {
 	client := fwmpNewClient
-	if _, err := ha.Run(ctx, timeout, client); err != nil {
+	if _, err := ha.Run(ctx, timeout, "test -f "+client); err != nil {
 		client = fwmpOldClient
 	}
 	log.Debugf(ctx, "Use %q client for FWMP!", client)

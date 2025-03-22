@@ -732,7 +732,7 @@ func crosRepairActions() map[string]*Action {
 		"Cleanup the enrollment state and wait for boot": {
 			Docs: []string{
 				"Cleanup the enrollment state.",
-				"The recovery process can fail but still fix the issue.",
+				"The recovery process may fail, but it may still solve the problem.",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
@@ -746,9 +746,9 @@ func crosRepairActions() map[string]*Action {
 				"reboot_timeout_up:240",
 				"tpm_timeout:150",
 				"fwmp_cleanup_enabled:true",
-				"owner_detect_timeout:10",
 				"fwmp_skip_error:false",
 				"owner_detect_timeout:10",
+				"fwmp_skip_reboot:true",
 			},
 			ExecTimeout:            &durationpb.Duration{Seconds: 1200},
 			AllowFailAfterRecovery: true,
