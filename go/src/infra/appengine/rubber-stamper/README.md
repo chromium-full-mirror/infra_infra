@@ -109,7 +109,7 @@ host-level (by modifying `clean_revert_time_window` in `host_configs`) or
 repo-level (by modifying `time_window` in `clean_revert_pattern` of
 `repo_configs`). It is always the more granular level that is applied. For
 example, in the following config, the global `7d`, host-level `1h` will all be
-overriden by repo-level `5m`.
+overridden by repo-level `5m`.
 
     default_time_window: "7d"
 
@@ -196,5 +196,5 @@ Here is an example of clean cherry-pick pattern with a bypassFileCheck rule.
 
 ## Found a bug?
 
-Please file a bug at [go/peepsec-bug](https://goto.google.com/peepsec-bug)
+Please file a bug at [go/pdeiosec-bug](https://goto.google.com/pdeiosec-bug)
 for support.
