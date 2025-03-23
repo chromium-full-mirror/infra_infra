@@ -2,8 +2,8 @@ create {
   platform_re: "linux-.*|mac-.*"
   source {
     url {
-      download_url: "https://sourceforge.net/projects/pcre/files/pcre/8.41/pcre-8.41.tar.gz/download"
-      version: "8.41"
+      download_url: "https://sourceforge.net/projects/pcre/files/pcre/8.45/pcre-8.45.tar.gz/download"
+      version: "8.45"
     }
     unpack_archive: true
     patch_dir: "patches"
