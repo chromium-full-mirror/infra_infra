@@ -40,7 +40,7 @@ func (s FirmwareUpdateRwState) Execute(ctx context.Context, log *log.Logger) (*a
 
 	// Get EC Image
 	ecRwMetadata, ok := s.service.GetImageMetadata(s.service.GetEcRwPath())
-	if ok {
+	if ok && s.service.GetMainRwPath() != s.service.GetEcRwPath() {
 		log.Printf("[FW Provisioning: Update RW] extracting EC-RW image to flash\n")
 		ecRwPath, err = firmwareservice.PickAndExtractECImage(ctx, s.service.DUTServer, ecRwMetadata, s.service.GetEcRwPath(), s.service)
 		if err != nil {
@@ -57,8 +57,27 @@ func (s FirmwareUpdateRwState) Execute(ctx context.Context, log *log.Logger) (*a
 		}
 	}
 
-	// TODO: Call fws.ExtractFirmwareVersions & fws.ActiveFirmwareVersions, and if they match, then skip flashing.
-	// TODO: Remove fws.ExtractFirmwareVersions from fws.FlashWithFutility
+	log.Printf("[FW Provisioning: Update RW] checking versions")
+	if err := s.service.ExtractFirmwareVersions(ctx, true /* WP */, futilityImageArgs, mainRwPath); err != nil {
+		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+	}
+	versions, err := s.service.ActiveFirmwareVersions(ctx)
+	if err != nil {
+		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+	}
+	expected := &firmwareservice.FirmwareVersions{}
+	expected.AP.Versions.RW = s.service.ExpectedVersions.AP.Versions.RW
+	expected.EC.Versions.RW = s.service.ExpectedVersions.EC.Versions.RW
+	expected.EC.Versions.RWHash = s.service.ExpectedVersions.EC.Versions.RWHash
+	ok, err = s.service.CompareVersions(ctx, versions, expected)
+	if err != nil {
+		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+	}
+	if ok {
+		log.Printf("[FW Provisioning: Update RW] Existing version is correct, skipping flashing")
+		return nil, api.InstallResponse_STATUS_SUCCESS, nil
+	}
+
 	log.Printf("[FW Provisioning: Update RW] flashing RW firmware with futility\n")
 	err = s.service.FlashWithFutility(ctx, true /* WP */, futilityImageArgs, mainRwPath, "")
 	if err != nil {

@@ -36,7 +36,8 @@ main_ro + ec_ro + ec_rw           | main_ro | ec_ro | main_ro | ec_rw   | Typica
 main_rw                           | -       | -     | main_rw | main_rw |
 main_rw + ec_rw                   | -       | -     | main_rw | ec_rw   |
 
-After the firmware is updated, the version numbers will be checked to ensure the
+If the version number are already correct, no flashing will occur. After the
+firmware is updated, the version numbers will be checked (again) to ensure the
 update was successful. The AP firmware version for the inactive bank (A or B)
 will not be checked, only the active firmware.
 

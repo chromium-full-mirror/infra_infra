@@ -52,32 +52,17 @@ func (s FirmwarePostInstallState) Execute(ctx context.Context, log *log.Logger) 
 		fwMetadata.EcRwVersion = versions.EC.Versions.RW
 	}
 
-	if s.service.ExpectedVersions.AP.Versions.RO != "" && s.service.ExpectedVersions.AP.Versions.RO != versions.AP.Versions.RO {
+	ok, err := s.service.CompareVersions(ctx, versions, &s.service.ExpectedVersions)
+	if err != nil {
+		return fwMetadata, api.InstallResponse_STATUS_FIRMWARE_MISMATCH_POST_FIRMWARE_UPDATE,
+			firmwareservice.FirmwareMismatchPostProvisionErr(err)
+	}
+	if !ok {
 		return fwMetadata, api.InstallResponse_STATUS_FIRMWARE_MISMATCH_POST_FIRMWARE_UPDATE,
 			firmwareservice.FirmwareMismatchPostProvisionErr(errors.Errorf(
-				"incorrect ap ro version got %q, want %q", versions.AP.Versions.RO, s.service.ExpectedVersions.AP.Versions.RO))
+				"incorrect fw version got %+v want %+v", versions, s.service.ExpectedVersions))
 	}
-	if s.service.ExpectedVersions.EC.Versions.RO != "" && s.service.ExpectedVersions.EC.Versions.RO != versions.EC.Versions.RO {
-		return fwMetadata, api.InstallResponse_STATUS_FIRMWARE_MISMATCH_POST_FIRMWARE_UPDATE,
-			firmwareservice.FirmwareMismatchPostProvisionErr(errors.Errorf(
-				"incorrect ec ro version got %q, want %q", versions.EC.Versions.RO, s.service.ExpectedVersions.EC.Versions.RO))
-	}
-	if s.service.ExpectedVersions.AP.Versions.RW != "" && s.service.ExpectedVersions.AP.Versions.RW != versions.AP.Versions.RW {
-		return fwMetadata, api.InstallResponse_STATUS_FIRMWARE_MISMATCH_POST_FIRMWARE_UPDATE,
-			firmwareservice.FirmwareMismatchPostProvisionErr(errors.Errorf(
-				"incorrect ap rw version got %q, want %q", versions.AP.Versions.RW, s.service.ExpectedVersions.AP.Versions.RW))
-	}
-	if s.service.ExpectedVersions.EC.Versions.RWHash != "" && s.service.ExpectedVersions.EC.Versions.RWHash != versions.EC.Versions.RWHash {
-		return fwMetadata, api.InstallResponse_STATUS_FIRMWARE_MISMATCH_POST_FIRMWARE_UPDATE,
-			firmwareservice.FirmwareMismatchPostProvisionErr(errors.Errorf(
-				"incorrect ec rw hash got %q, want %q", versions.EC.Versions.RWHash, s.service.ExpectedVersions.EC.Versions.RWHash))
-	}
-	// If the hash is present, then don't check the RW version at all, because it's unreliable as it comes from the ec.bin, but the actual binary comes from the AP RW cbfs.
-	if s.service.ExpectedVersions.EC.Versions.RWHash == "" && s.service.ExpectedVersions.EC.Versions.RW != "" && s.service.ExpectedVersions.EC.Versions.RW != versions.EC.Versions.RW {
-		return fwMetadata, api.InstallResponse_STATUS_FIRMWARE_MISMATCH_POST_FIRMWARE_UPDATE,
-			firmwareservice.FirmwareMismatchPostProvisionErr(errors.Errorf(
-				"incorrect ec rw version got %q, want %q", versions.EC.Versions.RW, s.service.ExpectedVersions.EC.Versions.RW))
-	}
+
 	// Since the EC RWHash was verified, overwrite the expected EC RW version with the actual version, just in case we had the wrong one.
 	fwMetadata.EcRwVersion = versions.EC.Versions.RW
 

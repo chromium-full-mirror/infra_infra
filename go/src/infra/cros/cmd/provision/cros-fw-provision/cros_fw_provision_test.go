@@ -477,6 +477,21 @@ func TestDetailedRequestSSHStates(t *testing.T) {
 						}
 					}
 				}`)}), nil),
+				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
+					Command: "crossystem",
+					Args:    []string{"ro_fwid", "fwid"},
+				}}).Return(newResponse(&api.ExecCommandResponse{
+					ExitInfo: &api.ExecCommandResponse_ExitInfo{}, Stdout: []byte("old_roversion old_rwversion")}), nil),
+				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
+					Command: "ectool",
+					Args:    []string{"version"},
+				}}).Return(newResponse(&api.ExecCommandResponse{
+					ExitInfo: &api.ExecCommandResponse_ExitInfo{}, Stdout: []byte("RO version: oldecroversion\nRW version: oldecrwversion\n")}), nil),
+				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
+					Command: "ectool",
+					Args:    []string{"echash"},
+				}}).Return(newResponse(&api.ExecCommandResponse{
+					ExitInfo: &api.ExecCommandResponse_ExitInfo{}, Stdout: []byte("status:  done\ntype:    SHA-256\noffset:  0x00040000\nsize:    0x00033b80\nhash:    4873526f4ff3af9062687c30911309ee12a5ceec235519a8baf6cdbe6361ba92\n")}), nil),
 			)
 			if testCase.mainRo {
 				gomock.InOrder(
@@ -559,6 +574,21 @@ func TestDetailedRequestSSHStates(t *testing.T) {
 					Args:    []string{"-A", "n", "-t", "x1", "'/var/tmp/some TempDir/bios.bin-ecrw.hash'"},
 				}}).Return(newResponse(&api.ExecCommandResponse{
 					ExitInfo: &api.ExecCommandResponse_ExitInfo{}, Stdout: []byte(" 38 73 52 6f 4f f3 af 90 62 68 7c 30 91 13 09 ee\n 12 a5 ce ec 23 55 19 a8 ba f6 cd be 63 61 ba 92\n")}), nil),
+				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
+					Command: "crossystem",
+					Args:    []string{"ro_fwid", "fwid"},
+				}}).Return(newResponse(&api.ExecCommandResponse{
+					ExitInfo: &api.ExecCommandResponse_ExitInfo{}, Stdout: []byte("old_roversion old_rwversion")}), nil),
+				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
+					Command: "ectool",
+					Args:    []string{"version"},
+				}}).Return(newResponse(&api.ExecCommandResponse{
+					ExitInfo: &api.ExecCommandResponse_ExitInfo{}, Stdout: []byte("RO version: ecroversion\nRW version: oldecrwversion\n")}), nil),
+				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
+					Command: "ectool",
+					Args:    []string{"echash"},
+				}}).Return(newResponse(&api.ExecCommandResponse{
+					ExitInfo: &api.ExecCommandResponse_ExitInfo{}, Stdout: []byte("status:  done\ntype:    SHA-256\noffset:  0x00040000\nsize:    0x00033b80\nhash:    4873526f4ff3af9062687c30911309ee12a5ceec235519a8baf6cdbe6361ba92\n")}), nil),
 				dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
 					Command: "futility",
 					Args:    expectedFutilityArgs,

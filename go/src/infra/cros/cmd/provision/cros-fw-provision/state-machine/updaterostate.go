@@ -57,7 +57,7 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 			out, _, err := firmwareservice.RunDUTCommand(ctx, s.service.DUTServer, time.Minute, "ectool", []string{"flashprotect", "now", "disable"}, nil)
 			log.Printf("flashprotect after reboot: %s %s", out, err)
 		}
-		log.Printf("[FW Provisioning: Update RO] extracting EC image to flash\n")
+		log.Printf("[FW Provisioning: Update RO] extracting EC image to flash")
 
 		_, _, err = firmwareservice.RunDUTCommand(ctx, s.service.DUTServer, time.Minute, "mkdir", []string{"-p", firmwareservice.Escape(ecRoMetadata.ArchiveDir)}, nil)
 		if err != nil {
@@ -69,7 +69,7 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
 		}
 		if s.service.IsServoUsed() {
-			log.Printf("[FW Provisioning: Update RO] separately flashing EC over Servo with flash_ec\n")
+			log.Printf("[FW Provisioning: Update RO] separately flashing EC over Servo with flash_ec")
 			// futility refuses to flash EC over servod as a separate image and only
 			// accepts single image: http://shortn/_dtaO92HvqW. So, for servod, we
 			// use flash_ec script that to flash the EC separately.
@@ -89,7 +89,7 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 
 	mainRoMetadata, ok := s.service.GetImageMetadata(s.service.GetMainRoPath())
 	if ok {
-		log.Printf("[FW Provisioning: Update RO] extracting AP image to flash\n")
+		log.Printf("[FW Provisioning: Update RO] extracting AP image to flash")
 		mainRoPath, err = firmwareservice.PickAndExtractMainImage(ctx, s.service.DUTServer, mainRoMetadata, s.service.GetMainRoPath(), s.service)
 		if err != nil {
 			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
@@ -109,7 +109,7 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 	ecRwMetadata, ok := s.service.GetImageMetadata(s.service.GetEcRwPath())
 	if mainRoPath != "" && s.service.GetMainRwPath() == "" && ok && board != "drallion" && board != "sarien" &&
 		s.service.GetMainRoPath() != s.service.GetEcRwPath() {
-		log.Printf("[FW Provisioning: Update RO] extracting EC-RW image to flash\n")
+		log.Printf("[FW Provisioning: Update RO] extracting EC-RW image to flash")
 		ecRwPath, err = firmwareservice.PickAndExtractECImage(ctx, s.service.DUTServer, ecRwMetadata, s.service.GetEcRwPath(), s.service)
 		if err != nil {
 			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
@@ -123,9 +123,33 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 		}
 	}
 
-	// TODO: Call fws.ExtractFirmwareVersions & fws.ActiveFirmwareVersions, and if they match, then skip flashing.
-	// TODO: Remove fws.ExtractFirmwareVersions from fws.FlashWithFutility
-	log.Printf("[FW Provisioning: Update RO] flashing RO/RW firmware with futility\n")
+	log.Printf("[FW Provisioning: Update RO] checking versions")
+	if err := s.service.ExtractFirmwareVersions(ctx, false /* WP */, futilityImageArgs, mainRoPath); err != nil {
+		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+	}
+	versions, err := s.service.ActiveFirmwareVersions(ctx)
+	if err != nil {
+		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+	}
+	expected := &firmwareservice.FirmwareVersions{}
+	expected.AP.Versions.RO = s.service.ExpectedVersions.AP.Versions.RO
+	expected.EC.Versions.RO = s.service.ExpectedVersions.EC.Versions.RO
+	// If we are not flashing RW, then verify those also.
+	if s.service.GetMainRwPath() == "" {
+		expected.AP.Versions.RW = s.service.ExpectedVersions.AP.Versions.RW
+		expected.EC.Versions.RW = s.service.ExpectedVersions.EC.Versions.RW
+		expected.EC.Versions.RWHash = s.service.ExpectedVersions.EC.Versions.RWHash
+	}
+	ok, err = s.service.CompareVersions(ctx, versions, expected)
+	if err != nil {
+		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+	}
+	if ok {
+		log.Printf("[FW Provisioning: Update RO] Existing version is correct, skipping flashing")
+		return nil, api.InstallResponse_STATUS_SUCCESS, nil
+	}
+
+	log.Printf("[FW Provisioning: Update RO] flashing RO/RW firmware with futility")
 	err = s.service.FlashWithFutility(ctx, false /* WP */, futilityImageArgs, mainRoPath, ecRoPath)
 	if err != nil {
 		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)

@@ -270,7 +270,7 @@ func (fws *FirmwareService) WaitForReconnect(ctx context.Context) error {
 		}
 		time.Sleep(reconnectFailPause)
 	}
-	log.Printf("Timed out waiting for DUT to connect: %v\n", connectErr)
+	log.Printf("Timed out waiting for DUT to connect: %v", connectErr)
 	return connectErr
 }
 
@@ -286,7 +286,7 @@ func (fws *FirmwareService) RestartDut(ctx context.Context, requireServoReset bo
 	}
 	// over Servo first
 	if fws.servoConnection != nil {
-		log.Printf("[FW Provisioning: Restart DUT] restarting DUT with \"dut-control power_state:reset\" over servo.\n")
+		log.Printf("[FW Provisioning: Restart DUT] restarting DUT with \"dut-control power_state:reset\" over servo.")
 		servoRestartErr := fws.servoConnection.RunDutControl(ctx, []string{"power_state:reset"})
 		if servoRestartErr == nil {
 			if fws.connection != nil {
@@ -294,17 +294,17 @@ func (fws *FirmwareService) RestartDut(ctx context.Context, requireServoReset bo
 				return fws.WaitForReconnect(ctx)
 			}
 			waitDuration := 30 * time.Second
-			log.Printf("[FW Provisioning: Restart DUT] waiting for %v for DUT to finish rebooting.\n", waitDuration.String())
+			log.Printf("[FW Provisioning: Restart DUT] waiting for %v for DUT to finish rebooting.", waitDuration.String())
 			time.Sleep(waitDuration)
 			powerState, getPowerStateErr := fws.servoConnection.GetVariable(ctx, "ec_system_powerstate")
 			if getPowerStateErr != nil {
-				log.Printf("[FW Provisioning: Restart DUT] failed to get power state after reboot: %v\n", getPowerStateErr)
+				log.Printf("[FW Provisioning: Restart DUT] failed to get power state after reboot: %v", getPowerStateErr)
 			} else {
-				log.Printf("[FW Provisioning: Restart DUT] DUT power state after reboot: %v\n", powerState)
+				log.Printf("[FW Provisioning: Restart DUT] DUT power state after reboot: %v", powerState)
 			}
 			return getPowerStateErr
 		}
-		log.Printf("[FW Provisioning: Restart DUT] failed to restart DUT via Servo: %v.\n", servoRestartErr)
+		log.Printf("[FW Provisioning: Restart DUT] failed to restart DUT via Servo: %v.", servoRestartErr)
 		if requireServoReset {
 			return servoRestartErr
 		}
@@ -383,11 +383,6 @@ func (fws *FirmwareService) ServodDockerContainerName() string {
 // If flashing over ssh, simply calls runFutility().
 // If flashing over servo, also runs pre- and post-flashing dut-controls.
 func (fws *FirmwareService) FlashWithFutility(ctx context.Context, rwOnly bool, futilityImageArgs []string, apImagePath, ecImagePath string) error {
-	// TODO: Remove this and move to call sites.
-	if err := fws.ExtractFirmwareVersions(ctx, rwOnly, futilityImageArgs, apImagePath); err != nil {
-		return errors.Wrap(err, "extract versions")
-	}
-
 	err := fws.sshFlash(ctx, rwOnly, futilityImageArgs, ecImagePath)
 	if err != nil && strings.Contains(err.Error(), "CSME_LOCKED") {
 		if fws.servoClient != nil {
@@ -598,6 +593,35 @@ func (fws *FirmwareService) ActiveFirmwareVersions(ctx context.Context) (*Firmwa
 	return &versions, nil
 }
 
+// CompareVersions returns true if the versions match, or false otherwise.
+func (fws *FirmwareService) CompareVersions(ctx context.Context, activeVersion, expectedVersion *FirmwareVersions) (bool, error) {
+	log.Printf("[CompareVersions] want firmware version ap:%+v ec:%+v", expectedVersion.AP.Versions, expectedVersion.EC.Versions)
+	log.Printf("[CompareVersions]  got firmware version ap:%+v ec:%+v", activeVersion.AP.Versions, activeVersion.EC.Versions)
+
+	if expectedVersion.AP.Versions.RO != "" && expectedVersion.AP.Versions.RO != activeVersion.AP.Versions.RO {
+		log.Printf("[CompareVersions] incorrect ap ro version")
+		return false, nil
+	}
+	if expectedVersion.EC.Versions.RO != "" && expectedVersion.EC.Versions.RO != activeVersion.EC.Versions.RO {
+		log.Printf("[CompareVersions] incorrect ec ro version")
+		return false, nil
+	}
+	if expectedVersion.AP.Versions.RW != "" && expectedVersion.AP.Versions.RW != activeVersion.AP.Versions.RW {
+		log.Printf("[CompareVersions] incorrect ap rw version")
+		return false, nil
+	}
+	if expectedVersion.EC.Versions.RWHash != "" && expectedVersion.EC.Versions.RWHash != activeVersion.EC.Versions.RWHash {
+		log.Printf("[CompareVersions] incorrect ec rw hash")
+		return false, nil
+	}
+	// If the hash is present, then don't check the RW version at all, because it's unreliable as it comes from the ec.bin, but the actual binary comes from the AP RW cbfs.
+	if expectedVersion.EC.Versions.RWHash == "" && expectedVersion.EC.Versions.RW != "" && expectedVersion.EC.Versions.RW != activeVersion.EC.Versions.RW {
+		log.Printf("[CompareVersions] incorrect ec rw version")
+		return false, nil
+	}
+	return true, nil
+}
+
 func (fws *FirmwareService) sshFlash(ctx context.Context, rwOnly bool, futilityImageArgs []string, ecImagePath string) error {
 	return fws.runFutility(ctx, rwOnly, futilityImageArgs, ecImagePath)
 }
@@ -766,11 +790,11 @@ func (fws *FirmwareService) CheckForCSMESections(ctx context.Context, imagePath 
 	for sc.Scan() {
 		cfg, value, _ := strings.Cut(sc.Text(), "=")
 		if cfg == "CONFIG_IFD_CHIPSET" || (cfg == "CONFIG_IFD_BIN_PATH" && strings.Contains(value, "/nissa/")) {
-			log.Printf("Image %s has %s\n", imagePath, cfg)
+			log.Printf("Image %s has %s", imagePath, cfg)
 			return true, nil
 		}
 	}
-	log.Printf("Image %s has no CONFIG_IFD_CHIPSET\n", imagePath)
+	log.Printf("Image %s has no CONFIG_IFD_CHIPSET", imagePath)
 	return false, nil
 }
 
