@@ -444,9 +444,9 @@ func addGoWasmExecToPath(ctx context.Context, spec *buildSpec, m module) (contex
 	// If GOTOOLCHAIN isn't set to local, then a different toolchain
 	// version may end up being used while running tests in module m.
 	//
-	// Add go_*_wasm_exec and the appropriate Wasm runtime to PATH
-	// that correspond to that particular version, overriding what
-	// setupEnv already did for the common case.
+	// Add go_*_wasm_exec to PATH which corresponds to the toolchain
+	// version that's used, overriding what setupEnv already did for
+	// the common case.
 
 	envCmd := spec.goCmd(ctx, m.RootDir, "env", "-json", "GOROOT")
 	envOutput, err := cmdStepOutput(ctx, fmt.Sprintf("determine toolchain root for %s module", m.Path), envCmd, true)
