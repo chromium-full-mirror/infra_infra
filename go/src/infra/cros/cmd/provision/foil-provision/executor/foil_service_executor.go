@@ -69,6 +69,7 @@ func crossOverProvisionState(dut *lab_api.Dut, dutClient api.DutServiceClient, s
 		TargetImagePath:  req.GetImagePath(),
 		ServoNexusClient: servoNexusClient,
 		PartnerMetadata:  req.GetPartnerMetadata(),
+		KernelPrebuilts:  req.GetKernelPrebuilts(),
 	}
 	return cross_over.NewCrossOverInitState(params), nil
 }

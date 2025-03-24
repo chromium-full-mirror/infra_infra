@@ -1,0 +1,5 @@
+# Kernel team owners
+# Eventually set no-parent on this file so that only the Kernel team is
+# owners of the kernel-provision service.
+engeg@google.com
+gredelston@google.com

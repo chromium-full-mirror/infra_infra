@@ -37,6 +37,7 @@ type CrossOverParameters struct {
 	PrevError          string
 	StopServo          bool
 	PartnerMetadata    *api.PartnerMetadata
+	KernelPrebuilts    *api.KernelPrebuilts
 }
 
 // CrossOverInitState starts the servod process.

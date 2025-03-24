@@ -15,6 +15,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	kernelprovision "go.chromium.org/infra/cros/cmd/provision/kernel-provision/state-machine"
 )
 
 // CrossOverTerminateState stops the servod process and downloads the servod logs.
@@ -56,6 +57,11 @@ func (s CrossOverTerminateState) Execute(ctx context.Context, log *log.Logger) (
 }
 
 func (s CrossOverTerminateState) Next() common_utils.ServiceState {
+	// TODO(b/405174207): Move Kernel-prebuilts to it's own container.
+	if s.params.KernelPrebuilts != nil {
+		return kernelprovision.NewKernelProvisionInitState(nil)
+	}
+
 	return s.params.PostProvisionState
 }
 
