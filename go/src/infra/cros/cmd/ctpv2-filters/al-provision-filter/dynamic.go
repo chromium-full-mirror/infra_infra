@@ -227,12 +227,13 @@ func applyBuildInfoFromInstallPathToTarget(target *api.Target, installPath strin
 
 func buildGetReq(board string, branch string) androidapi.BuildGetRequest {
 	return androidapi.BuildGetRequest{
-		BuildType:   "submitted",
-		Board:       board,
-		MaxResults:  "1",
-		Branch:      branch,
-		SortingType: "creationTimestamp",
-		Successful:  "true",
+		BuildType:          "submitted",
+		Board:              board,
+		MaxResults:         "1",
+		Branch:             branch,
+		SortingType:        "creationTimestamp",
+		Successful:         "true",
+		BuildAttemptStatus: "complete",
 	}
 }
 

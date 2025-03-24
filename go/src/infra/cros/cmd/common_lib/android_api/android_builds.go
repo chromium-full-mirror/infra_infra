@@ -21,12 +21,13 @@ const (
 
 // BuildGetRequest defines get request params for builds endpoint
 type BuildGetRequest struct {
-	BuildType   string
-	Branch      string
-	MaxResults  string
-	SortingType string
-	Successful  string
-	Board       string
+	BuildType          string
+	Branch             string
+	MaxResults         string
+	SortingType        string
+	Successful         string
+	Board              string
+	BuildAttemptStatus string
 }
 
 // formURL forms a URL with the given base URL and query parameters
@@ -39,12 +40,13 @@ func formURLForBuildAPI(req BuildGetRequest) (string, error) {
 	query := parsedURL.Query()
 
 	queryParams := map[string]string{
-		"buildType":   req.BuildType,
-		"branch":      req.Branch,
-		"maxResults":  req.MaxResults,
-		"sortingType": req.SortingType,
-		"successful":  req.Successful,
-		"target":      req.Board + targetType,
+		"buildType":          req.BuildType,
+		"branch":             req.Branch,
+		"maxResults":         req.MaxResults,
+		"sortingType":        req.SortingType,
+		"successful":         req.Successful,
+		"target":             req.Board + targetType,
+		"buildAttemptStatus": req.BuildAttemptStatus,
 	}
 
 	// Add query params
