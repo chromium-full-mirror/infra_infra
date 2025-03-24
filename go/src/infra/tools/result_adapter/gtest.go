@@ -243,7 +243,8 @@ func (r *GTestResults) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, erro
 			Status:   pb.TestStatus_SKIP,
 			Tags: pbutil.StringPairs(
 				// Store the original Gtest test name.
-				"test_name", name,
+				// Tag value size is limited to 256 bytes.
+				"test_name", truncateString(name, 256),
 				"disabled_test", "true",
 			),
 			TestMetadata: &pb.TestMetadata{Name: name},
@@ -533,7 +534,8 @@ func (r *GTestResults) convertTestResult(ctx context.Context, buf *bytes.Buffer,
 		Status:   status,
 		Tags: pbutil.StringPairs(
 			// Store the original Gtest test name.
-			"test_name", name,
+			// Tag value size is limited to 256 bytes.
+			"test_name", truncateString(name, 256),
 			// Store the original GTest status.
 			"gtest_status", result.Status,
 			// Store the correct output snippet.
