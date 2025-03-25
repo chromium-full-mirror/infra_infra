@@ -11,9 +11,9 @@ import (
 	"os"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
 const (
@@ -32,7 +32,7 @@ type ALProvisionRequestUpdater struct {
 	LatestBuildsByBoard map[string]int
 }
 
-func (pru *ALProvisionRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
+func (pru *ALProvisionRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
 	log.Println("Executing AL provision Filter - Updates provision request.")
 	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VMLabDockerKeyFileLocation})
 	if err != nil {
@@ -65,7 +65,7 @@ func main() {
 	fs := flag.NewFlagSet("Run Al provision filter", flag.ExitOnError)
 	fs.StringVar(&provisionRequestUpdater.ProvisionPath, "prov-path", "", "SHA256 value for provision container")
 	fs.StringVar(&provisionRequestUpdater.ServoPath, "servo-path", "", "SHA256 value for servo-nexus container")
-	err := server.ServerWithFlagSet(fs, provisionRequestUpdater.executor, "request-updater")
+	err := servertemplate.ServerWithFlagSet(fs, provisionRequestUpdater.executor, "request-updater")
 	if err != nil {
 		os.Exit(2)
 	}

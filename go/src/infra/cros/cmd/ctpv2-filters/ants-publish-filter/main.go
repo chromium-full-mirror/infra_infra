@@ -16,9 +16,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	artifact "go.chromium.org/chromiumos/config/go/test/artifact"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
 type ANTSPublishUpdater struct {
@@ -72,7 +72,7 @@ func suiteExecutionMetadataArgValue(req *api.InternalTestplan, flag string) stri
 	return ""
 }
 
-func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
+func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
 	ctx := context.Background()
 
 	log.Println("Executing ants publish request-updater filter")
@@ -109,7 +109,7 @@ func main() {
 	log.Printf("publishRequestUpdater %+v", publishRequestUpdater)
 
 	//  Start the server
-	err := server.ServerWithFlagSet(fs, publishRequestUpdater.executor, "request-updater")
+	err := servertemplate.ServerWithFlagSet(fs, publishRequestUpdater.executor, "request-updater")
 	if err != nil {
 		log.Println(fmt.Errorf("error when running server, %w", err))
 		os.Exit(2)

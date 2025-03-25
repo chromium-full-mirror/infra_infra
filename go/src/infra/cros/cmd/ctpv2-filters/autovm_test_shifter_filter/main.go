@@ -13,7 +13,8 @@ import (
 	goconfig "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
+
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
 const (
@@ -141,7 +142,7 @@ func updateSchedulingUnitOptions(req *api.InternalTestplan, board string, versio
 	return nil
 }
 
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
+func executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
 
 	available, board, version := isAnyVMImageAvailable(context.Background(), req, log)
 
@@ -159,7 +160,7 @@ func executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.C
 }
 
 func main() {
-	err := server.Server(executor, binName)
+	err := servertemplate.Server(executor, binName)
 	if err != nil {
 		os.Exit(2)
 	}

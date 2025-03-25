@@ -11,8 +11,8 @@ import (
 	"os"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/pre_process_filter/interfaces"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/pre_process_filter/policies"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/pre_process_filter/structs"
@@ -216,12 +216,12 @@ func innerMain(req *api.InternalTestplan, log *log.Logger) *api.InternalTestplan
 	return req
 }
 
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
+func executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
 	return innerMain(req, log), nil
 }
 
 func main() {
-	err := server.Server(executor, binName)
+	err := servertemplate.Server(executor, binName)
 	if err != nil {
 		os.Exit(2)
 	}

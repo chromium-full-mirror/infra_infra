@@ -14,9 +14,10 @@ import (
 
 	buildapi "go.chromium.org/chromiumos/config/go/build/api"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
+
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
 var (
@@ -314,7 +315,7 @@ func isSuiteSchedulerConfig(suiteReq *api.SuiteRequest) bool {
 
 // ProcessContainerPath processes a provided path and determines whether it needs to
 // pull from the firestoreDatabase provided.
-func ProcessContainerPath(ctx context.Context, commonParams *server.CommonFilterParams, creds, path, firestoreName string) (processedPath string, err error) {
+func ProcessContainerPath(ctx context.Context, commonParams *servertemplate.CommonFilterParams, creds, path, firestoreName string) (processedPath string, err error) {
 	if path != "" {
 		return path, nil
 	}

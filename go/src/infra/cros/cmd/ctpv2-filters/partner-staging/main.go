@@ -15,8 +15,8 @@ import (
 	"google.golang.org/api/option"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/site"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/tools"
 )
@@ -29,7 +29,7 @@ const (
 )
 
 func main() {
-	if err := server.Server(executor, BinName); err != nil {
+	if err := servertemplate.Server(executor, BinName); err != nil {
 		os.Exit(2)
 	}
 	os.Exit(0)
@@ -37,7 +37,7 @@ func main() {
 
 // executor is the main function that processes the InternalTestplan request.
 // It extracts the builds to stage, creates a Moblab client, and stages the builds.
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
+func executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
 	buildsToStage, cft := extractBuildsToStage(req)
 	log.Printf("Found builds to stage: %d\n", len(buildsToStage))
 	ctx := context.Background()

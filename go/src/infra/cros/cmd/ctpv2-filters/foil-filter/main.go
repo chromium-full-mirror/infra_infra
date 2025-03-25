@@ -12,9 +12,9 @@ import (
 	"os"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
 type FoilRequestUpdater struct {
@@ -25,7 +25,7 @@ type FoilRequestUpdater struct {
 	EnableXtsArchiver bool
 }
 
-func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
+func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
 	log.Println("Executing request-updater filter.")
 
 	ctx := context.Background()
@@ -81,7 +81,7 @@ func main() {
 	fs.BoolVar(&requestUpdater.FilterTests, "filter-tests", false, "Filter out known faulty tests due to their device breaking behavior")
 	fs.BoolVar(&requestUpdater.EnableXtsArchiver, "enable-xts-archiver", false, "Whether to archive xTS results for release qualification")
 
-	err := server.ServerWithFlagSet(fs, requestUpdater.executor, "request-updater")
+	err := servertemplate.ServerWithFlagSet(fs, requestUpdater.executor, "request-updater")
 	if err != nil {
 		os.Exit(2)
 	}

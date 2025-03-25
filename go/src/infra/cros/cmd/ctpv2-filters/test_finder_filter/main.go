@@ -12,9 +12,9 @@ import (
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 
 	"go.chromium.org/infra/cros/cmd/cft/cros-test-finder/test_finder"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
 const (
@@ -70,7 +70,7 @@ func fillTestCases(ctx context.Context, testPlan *api.InternalTestplan, resp *ap
 	return nil
 }
 
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
+func executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
 	ctx := context.Background()
 
 	testFinderResponse, err := startAndRunTestFinder(req, log)
@@ -111,7 +111,7 @@ func startAndRunTestFinder(testPlan *api.InternalTestplan, log *log.Logger) (*ap
 }
 
 func main() {
-	err := server.Server(executor, binName)
+	err := servertemplate.Server(executor, binName)
 	if err != nil {
 		os.Exit(2)
 	}

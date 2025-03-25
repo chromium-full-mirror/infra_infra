@@ -14,10 +14,11 @@ import (
 	conf "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
-	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
+
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
+func executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
 	// Will be the map of hardware which we can make provisionInfo for directly
 	foundHW := make(map[string]bool)
 
@@ -309,7 +310,7 @@ func generateProvisionInfoOld(current []*api.ProvisionInfo, path string) []*api.
 }
 
 func main() {
-	err := server.Server(executor, "provision_filter")
+	err := servertemplate.Server(executor, "provision_filter")
 	if err != nil {
 		os.Exit(2)
 	}

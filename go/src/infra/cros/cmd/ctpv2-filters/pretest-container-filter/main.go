@@ -12,9 +12,9 @@ import (
 	"os"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
 type PreTestContainerUpdater struct {
@@ -26,7 +26,7 @@ type PreTestContainerUpdater struct {
 	TestParamName   string
 }
 
-func (gcu *PreTestContainerUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
+func (gcu *PreTestContainerUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
 	log.Println("Executing request-updater filter.")
 
 	ctx := context.Background()
@@ -68,7 +68,7 @@ func main() {
 	log.Printf("containerUpdater %+v", containerUpdater)
 
 	//  Start the server
-	err := server.ServerWithFlagSet(fs, containerUpdater.executor, "request-updater")
+	err := servertemplate.ServerWithFlagSet(fs, containerUpdater.executor, "request-updater")
 	if err != nil {
 		log.Println(fmt.Errorf("error when running server, %w", err))
 		os.Exit(2)

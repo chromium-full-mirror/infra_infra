@@ -11,7 +11,8 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
+
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
 const (
@@ -137,7 +138,7 @@ func tcDepsToSwarmingLabels(tcDeps []string) []string {
 	return swarmingLabels
 }
 
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (*api.InternalTestplan, error) {
+func executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
 	// Step 1. Get all the HWTargets from the suite metadata
 	// these might contain provision info.
 	hwTargets := req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnitOptions()
@@ -184,7 +185,7 @@ func generateTcHwReqsLegacy2(hwTargets []*api.SwarmingDefinition, tcDeps []strin
 }
 
 func main() {
-	err := server.Server(executor, binName)
+	err := servertemplate.Server(executor, binName)
 	if err != nil {
 		os.Exit(2)
 	}

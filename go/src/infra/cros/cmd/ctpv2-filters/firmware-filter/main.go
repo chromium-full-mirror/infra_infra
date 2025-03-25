@@ -22,7 +22,8 @@ import (
 	"google.golang.org/api/option"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	server "go.chromium.org/chromiumos/test/ctpv2/common/server_template"
+
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
 // FirmwareSpecs contains the flags necessary for the
@@ -63,7 +64,7 @@ const saProject = "chromeos-bot"
 
 var saFile string
 
-func (specs *FirmwareSpecs) executor(req *api.InternalTestplan, log *log.Logger, commonParams *server.CommonFilterParams) (ret *api.InternalTestplan, retErr error) {
+func (specs *FirmwareSpecs) executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (ret *api.InternalTestplan, retErr error) {
 	defer func() {
 		if r := recover(); r != nil {
 			stack := string(debug.Stack())
@@ -229,7 +230,7 @@ func main() {
 	fs.BoolVar(&firmwareSpecs.FallbackToCros, "fallbackToCros", false,
 		"Fallback to the OS firmware_from_source archive if there is no branch build. (deprecated)")
 
-	err := server.ServerWithFlagSet(fs, firmwareSpecs.executor, "fw_filter")
+	err := servertemplate.ServerWithFlagSet(fs, firmwareSpecs.executor, "fw_filter")
 	if err != nil {
 		os.Exit(2)
 	}
