@@ -8,16 +8,19 @@ package driver
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
+
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/common"
 )
 
 const (
 	planMetadataFlag   = "plan"
 	tfGoogleTestRunner = "google/cts/google-cts-launcher-for-aosp"
-	tfAospTestRunner   = "common-compatibility-config"
+	tfAospTestRunner   = "tf-common-compatibility-config"
 	DTS                = "dts"
 )
 
@@ -62,7 +65,8 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 		cmd = append(cmd, "--plan", plan, "--log-level-display", "VERBOSE",
 			"--test-tag", fmt.Sprintf("cros-%s-test", testType),
 			"--use-device-build-info", "--primary-abi-only", "--stage-remote-file",
-			"--load-configs-with-include-filters", "--no-skip-staging-artifacts")
+			"--load-configs-with-include-filters", "--no-skip-staging-artifacts",
+			"--result-reporter:use-log-saver", "--result-reporter:no-compress-logs")
 	} else {
 		cmd = append(cmd, "--config-name", plan,
 			"--test-tag", fmt.Sprintf("cros-%s-test", testType),
@@ -146,6 +150,9 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 				cmd = append(cmd, "--branch", ctsBranch, "--build-flavor", ctsTarget,
 					"--build-id", ctsBuild)
 				invocationInfoReported = true
+				branch = ctsBranch
+				target = ctsTarget
+				build = ctsBuild
 			}
 
 			if !isAospTradefed() {
@@ -173,6 +180,21 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 	// Add devices
 	for _, s := range serials {
 		cmd = append(cmd, "-s", s)
+	}
+
+	if isAospTradefed() {
+		buildId, err := strconv.Atoi(build)
+		if err != nil {
+			logger.Println("Unable to parse build id: ", build)
+		}
+
+		mountPoint, err := common.FetchXtsSuite(testType, branch, target, buildId)
+		if err != nil {
+			logger.Printf("Unable to fetch tests for suite: %s, branch: %s, target: %s, build: %s, %s\n", testType, branch, target, build, err)
+			return nil
+		} else {
+			logger.Printf("Fetched tests for suite: %s, to mount point: %s\n", testType, mountPoint)
+		}
 	}
 
 	if servo != nil && servo.ServodAddress != nil && servo.ServodAddress.Address != "" && servo.ServodAddress.Port != 0 {

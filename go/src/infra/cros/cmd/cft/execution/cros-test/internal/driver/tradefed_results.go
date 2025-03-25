@@ -29,7 +29,7 @@ const (
 	tfStageLogsPath      = "/tmp/stage-android-build-api/stub"
 	tfStageResultPattern = "subprocess-test_result.xml_*.xml.gz"
 	tfStageLogPattern    = "passed_tests_*.txt"
-	tfAospResultPattern  = "android-%s/results/latest/test_result.xml"
+	tfAospResultPath     = "/tmp/xts_results/latest/test_result.xml"
 	tfLuciResultPattern  = "LUCIResult_*.json"
 	incompleteError      = "Module is missing from results or skipped by exclude filter"
 
@@ -189,15 +189,14 @@ func parseCompatibilityXMLResults(logger *log.Logger, testType string, req *api.
 	var logsDir []string
 	allTestCases := []*api.TestCaseResult{}
 
-	aospResultXMLFile := filepath.Join(tradefedDir, fmt.Sprintf(tfAospResultPattern, testType))
-	xmlResultFile, err := selectFileByPattern(aospResultXMLFile)
+	xmlResultFile, err := selectFileByPattern(tfAospResultPath)
 	if err != nil {
 		// Fallback to stub location for XML result file.
 		xmlResultFile, err = selectFileByPattern(filepath.Join(tfStageLogsPath, "*", "*", tfStageResultPattern))
 		if err != nil {
 			return allTestCases, nil, logsDir, fmt.Errorf("failed to locate result file: %w", err)
 		} else {
-			standardResultFileName := filepath.Join(filepath.Dir(xmlResultFile), filepath.Base(aospResultXMLFile))
+			standardResultFileName := filepath.Join(filepath.Dir(xmlResultFile), filepath.Base(tfAospResultPath))
 			// Unzip stub location XML result file to the standard file name.
 			// This is required by CTS Archiver.
 			logger.Printf("Extracting stub XML result file: %s to: %s",

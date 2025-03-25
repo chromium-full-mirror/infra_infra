@@ -126,7 +126,7 @@ func formatTestName(fqTestName string) string {
 	}
 
 	// We do not need to strip any other info as we force the naming schema via test-finder.
-	return fmt.Sprintf("\"%s\"", testName)
+	return testName
 }
 
 func extractMetadataFlag(metadata *api.ExecutionMetadata, flagName string) (string, error) {
