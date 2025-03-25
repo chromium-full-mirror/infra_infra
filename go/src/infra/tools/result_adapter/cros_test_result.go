@@ -244,7 +244,7 @@ func genTestResultTags(ctx context.Context, testRun *artifactpb.TestRun, testInv
 		is3DRun := strconv.FormatBool(testInvocation.Is_3DRun)
 		tags = AppendTags(tags, "is_3d_run", is3DRun)
 		if is3DRun == "true" {
-			eqcInfo := testInvocation.GetEqcInfo()
+			eqcInfo := testRun.GetEqcInfo()
 			if eqcInfo != nil {
 				tags = AppendTags(tags, "eqc_hash", eqcInfo.GetEqcHash())
 			}

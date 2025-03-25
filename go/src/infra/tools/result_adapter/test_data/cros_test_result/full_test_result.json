@@ -136,10 +136,7 @@
         },
         "is_cft_run": true,
         "is_trv2_run": true,
-        "is_3d_run": true,
-        "eqc_info": {
-            "eqc_hash": "11716238995695631838"
-        }
+        "is_3d_run": true
     },
     "test_runs":[
         {
@@ -232,6 +229,9 @@
                     "bug_id": "12345",
                     "qual_run_id": "1712172839652"
                 }
+            },
+            "eqc_info": {
+                "eqc_hash": "11716238995695631838"
             }
         }
     ]
