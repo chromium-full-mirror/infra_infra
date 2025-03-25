@@ -8,6 +8,7 @@ package driver
 import (
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"os/exec"
@@ -29,6 +30,7 @@ const (
 	tradefedAospBinary   = "tradefed.sh"
 	tradefedGoogleBinary = "tradefed_runner.sh"
 	tradefedGlobalLogs   = "tradefed_global_log_*.txt"
+	crossDeviceErr       = "invalid cross-device link"
 )
 
 // List of xTS & non-xTS test suites supported by this driver.
@@ -270,12 +272,36 @@ func (td *TradefedDriver) moveArtifacts(resultsDir string, artifacts string) {
 	}
 }
 
-func moveSingleArtifact(resultsDir string, artifact string) error {
-	err := os.Rename(artifact, filepath.Join(resultsDir, filepath.Base(artifact)))
-	if err != nil {
-		return fmt.Errorf("error moving file: %w", err)
+func moveSingleArtifact(resultsDir string, artifactPath string) error {
+	destPath := filepath.Join(resultsDir, filepath.Base(artifactPath))
+	err := os.Rename(artifactPath, destPath)
+	if err == nil {
+		return nil
 	}
-	return nil
+
+	// Copy-paste file contents in case of cross-device link error
+	if linkErr, ok := err.(*os.LinkError); ok && linkErr.Err.Error() == crossDeviceErr {
+		sourceFile, err := os.Open(artifactPath)
+		if err != nil {
+			return err
+		}
+		defer sourceFile.Close()
+
+		destinationFile, err := os.Create(destPath)
+		if err != nil {
+			return err
+		}
+		defer destinationFile.Close()
+
+		if _, err = io.Copy(destinationFile, sourceFile); err != nil {
+			return err
+		}
+
+		return os.Remove(artifactPath)
+	}
+
+	// Return the original error if it's not a cross-device link error
+	return err
 }
 
 func launchAndRead(cmd *exec.Cmd, logger *log.Logger) error {
