@@ -1179,13 +1179,14 @@ func TestListEnrolledDutsShouldSuccess(t *testing.T) {
 	expected := &pb.ListEnrolledDutsResponse{
 		Duts: []*pb.Dut{
 			{
-				Name:     "satlab-0wgatfqi21498062-jeff137-c",
-				Hostname: "satlab-0wgatfqi21498062-jeff137-c",
-				Address:  "192.168.231.222",
-				Pools:    []string{"jev-satlab"},
-				Model:    "atlas",
-				Board:    "atlas",
-				State:    "unknown",
+				Name:          "satlab-0wgatfqi21498062-jeff137-c",
+				Hostname:      "satlab-0wgatfqi21498062-jeff137-c",
+				Address:       "192.168.231.222",
+				Pools:         []string{"jev-satlab"},
+				Model:         "atlas",
+				Board:         "atlas",
+				State:         "unknown",
+				HasPermission: true,
 			},
 		},
 	}
@@ -1235,6 +1236,7 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything).Return(true, "SERVOSERIAL", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
+	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return([]string{}, nil)
 
 	s.commandExecutor = shivasTestHelper(true)
 
@@ -1252,33 +1254,35 @@ func TestListConnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 	expected := &pb.ListDutsResponse{
 		Duts: []*pb.Dut{
 			{
-				Name:         "satlab-0wgatfqi21498062-jeff137-c",
-				Hostname:     "satlab-0wgatfqi21498062-jeff137-c",
-				Address:      "192.168.231.222",
-				Pools:        []string{"jev-satlab"},
-				Model:        "atlas",
-				Board:        "atlas",
-				IsPingable:   true,
-				HasTestImage: true,
-				MacAddress:   "00:14:3d:14:c4:02",
-				State:        "unknown",
-				BotInfo:      nil,
-				CcdStatus:    "Unknown",
+				Name:          "satlab-0wgatfqi21498062-jeff137-c",
+				Hostname:      "satlab-0wgatfqi21498062-jeff137-c",
+				Address:       "192.168.231.222",
+				Pools:         []string{"jev-satlab"},
+				Model:         "atlas",
+				Board:         "atlas",
+				IsPingable:    true,
+				HasTestImage:  true,
+				MacAddress:    "00:14:3d:14:c4:02",
+				State:         "unknown",
+				BotInfo:       nil,
+				CcdStatus:     "Unknown",
+				HasPermission: true,
 			},
 			{
-				Name:         "",
-				Hostname:     "",
-				Address:      "192.168.231.2",
-				Pools:        nil,
-				Model:        "model",
-				Board:        "board",
-				MacAddress:   "e8:9f:80:83:3d:c8",
-				ServoSerial:  "SERVOSERIAL",
-				IsPingable:   true,
-				HasTestImage: true,
-				State:        "",
-				BotInfo:      nil,
-				CcdStatus:    "Opened",
+				Name:          "",
+				Hostname:      "",
+				Address:       "192.168.231.2",
+				Pools:         nil,
+				Model:         "model",
+				Board:         "board",
+				MacAddress:    "e8:9f:80:83:3d:c8",
+				ServoSerial:   "SERVOSERIAL",
+				IsPingable:    true,
+				HasTestImage:  true,
+				State:         "",
+				BotInfo:       nil,
+				CcdStatus:     "Opened",
+				HasPermission: false,
 			},
 		},
 	}
@@ -1310,6 +1314,7 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, "192.168.231.2").Return("", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
+	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return([]string{}, nil)
 
 	s.commandExecutor = shivasTestHelper(true)
 
@@ -1328,29 +1333,31 @@ func TestListDisconnectedAndEnrolledDutsShouldSuccess(t *testing.T) {
 	expected := &pb.ListDutsResponse{
 		Duts: []*pb.Dut{
 			{
-				Name:         "satlab-0wgatfqi21498062-jeff137-c",
-				Hostname:     "satlab-0wgatfqi21498062-jeff137-c",
-				Address:      "192.168.231.222",
-				Pools:        []string{"jev-satlab"},
-				Model:        "atlas",
-				Board:        "atlas",
-				IsPingable:   false,
-				HasTestImage: false,
-				MacAddress:   "00:14:3d:14:c4:02",
-				State:        "unknown",
-				CcdStatus:    "Unknown",
+				Name:          "satlab-0wgatfqi21498062-jeff137-c",
+				Hostname:      "satlab-0wgatfqi21498062-jeff137-c",
+				Address:       "192.168.231.222",
+				Pools:         []string{"jev-satlab"},
+				Model:         "atlas",
+				Board:         "atlas",
+				IsPingable:    false,
+				HasTestImage:  false,
+				MacAddress:    "00:14:3d:14:c4:02",
+				State:         "unknown",
+				CcdStatus:     "Unknown",
+				HasPermission: true,
 			},
 			{
-				Name:         "",
-				Hostname:     "",
-				Address:      "192.168.231.2",
-				Pools:        nil,
-				Model:        "",
-				Board:        "",
-				MacAddress:   "e8:9f:80:83:3d:c8",
-				IsPingable:   false,
-				HasTestImage: false,
-				State:        "",
+				Name:          "",
+				Hostname:      "",
+				Address:       "192.168.231.2",
+				Pools:         nil,
+				Model:         "",
+				Board:         "",
+				MacAddress:    "e8:9f:80:83:3d:c8",
+				IsPingable:    false,
+				HasTestImage:  false,
+				State:         "",
+				HasPermission: false,
 			},
 		},
 	}
@@ -1384,6 +1391,8 @@ func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2").Return(true, "SERVOSERIAL", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
+	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return([]string{}, nil)
+
 	s.commandExecutor = shivasTestHelper(false)
 	req := &pb.ListDutsRequest{}
 	resp, err := s.ListDuts(ctx, req)
@@ -1400,29 +1409,31 @@ func TestListConnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 	expected := &pb.ListDutsResponse{
 		Duts: []*pb.Dut{
 			{
-				Name:         "",
-				Hostname:     "",
-				Address:      "192.168.231.222",
-				Pools:        nil,
-				Model:        "model",
-				Board:        "board",
-				IsPingable:   true,
-				HasTestImage: true,
-				MacAddress:   "00:14:3d:14:c4:02",
-				CcdStatus:    "Unknown",
+				Name:          "",
+				Hostname:      "",
+				Address:       "192.168.231.222",
+				Pools:         nil,
+				Model:         "model",
+				Board:         "board",
+				IsPingable:    true,
+				HasTestImage:  true,
+				MacAddress:    "00:14:3d:14:c4:02",
+				CcdStatus:     "Unknown",
+				HasPermission: false,
 			},
 			{
-				Name:         "",
-				Hostname:     "",
-				Address:      "192.168.231.2",
-				Pools:        nil,
-				Model:        "model",
-				Board:        "board",
-				MacAddress:   "e8:9f:80:83:3d:c8",
-				IsPingable:   true,
-				HasTestImage: true,
-				ServoSerial:  "SERVOSERIAL",
-				CcdStatus:    "Opened",
+				Name:          "",
+				Hostname:      "",
+				Address:       "192.168.231.2",
+				Pools:         nil,
+				Model:         "model",
+				Board:         "board",
+				MacAddress:    "e8:9f:80:83:3d:c8",
+				IsPingable:    true,
+				HasTestImage:  true,
+				ServoSerial:   "SERVOSERIAL",
+				CcdStatus:     "Opened",
+				HasPermission: false,
 			},
 		},
 	}
@@ -1453,6 +1464,7 @@ func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 	s.dutService.(*mk.MockDUTServices).On("GetModel", ctx, mock.Anything).Return("", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
+	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return([]string{}, nil)
 
 	s.commandExecutor = shivasTestHelper(false)
 
@@ -1471,26 +1483,28 @@ func TestListDisconnectedAndUnenrolledDutsShouldSuccess(t *testing.T) {
 	expected := &pb.ListDutsResponse{
 		Duts: []*pb.Dut{
 			{
-				Name:         "",
-				Hostname:     "",
-				Address:      "192.168.231.222",
-				Pools:        nil,
-				Model:        "",
-				Board:        "",
-				IsPingable:   false,
-				HasTestImage: false,
-				MacAddress:   "00:14:3d:14:c4:02",
+				Name:          "",
+				Hostname:      "",
+				Address:       "192.168.231.222",
+				Pools:         nil,
+				Model:         "",
+				Board:         "",
+				IsPingable:    false,
+				HasTestImage:  false,
+				MacAddress:    "00:14:3d:14:c4:02",
+				HasPermission: false,
 			},
 			{
-				Name:         "",
-				Hostname:     "",
-				Address:      "192.168.231.2",
-				Pools:        nil,
-				Model:        "",
-				Board:        "",
-				MacAddress:   "e8:9f:80:83:3d:c8",
-				IsPingable:   false,
-				HasTestImage: false,
+				Name:          "",
+				Hostname:      "",
+				Address:       "192.168.231.2",
+				Pools:         nil,
+				Model:         "",
+				Board:         "",
+				MacAddress:    "e8:9f:80:83:3d:c8",
+				IsPingable:    false,
+				HasTestImage:  false,
+				HasPermission: false,
 			},
 		},
 	}
@@ -1522,8 +1536,9 @@ func TestListConnectedAndEnrolledDutsWithoutGetBoardAndModelInformationShouldSuc
 	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything).Return(true, "SERVOSERIAL", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
-	s.commandExecutor = shivasTestHelper(true)
+	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return([]string{}, nil)
 
+	s.commandExecutor = shivasTestHelper(true)
 	req := &pb.ListDutsRequest{}
 	resp, err := s.ListDuts(ctx, req)
 
@@ -1538,31 +1553,33 @@ func TestListConnectedAndEnrolledDutsWithoutGetBoardAndModelInformationShouldSuc
 	expected := &pb.ListDutsResponse{
 		Duts: []*pb.Dut{
 			{
-				Name:         "satlab-0wgatfqi21498062-jeff137-c",
-				Hostname:     "satlab-0wgatfqi21498062-jeff137-c",
-				Address:      "192.168.231.222",
-				Pools:        []string{"jev-satlab"},
-				Model:        "atlas",
-				Board:        "atlas",
-				IsPingable:   true,
-				HasTestImage: true,
-				MacAddress:   "00:14:3d:14:c4:02",
-				State:        "unknown",
-				CcdStatus:    "Unknown",
+				Name:          "satlab-0wgatfqi21498062-jeff137-c",
+				Hostname:      "satlab-0wgatfqi21498062-jeff137-c",
+				Address:       "192.168.231.222",
+				Pools:         []string{"jev-satlab"},
+				Model:         "atlas",
+				Board:         "atlas",
+				IsPingable:    true,
+				HasTestImage:  true,
+				MacAddress:    "00:14:3d:14:c4:02",
+				State:         "unknown",
+				CcdStatus:     "Unknown",
+				HasPermission: true,
 			},
 			{
-				Name:         "",
-				Hostname:     "",
-				Address:      "192.168.231.2",
-				Pools:        nil,
-				Model:        "",
-				Board:        "",
-				MacAddress:   "e8:9f:80:83:3d:c8",
-				IsPingable:   true,
-				HasTestImage: true,
-				ServoSerial:  "SERVOSERIAL",
-				State:        "",
-				CcdStatus:    "Opened",
+				Name:          "",
+				Hostname:      "",
+				Address:       "192.168.231.2",
+				Pools:         nil,
+				Model:         "",
+				Board:         "",
+				MacAddress:    "e8:9f:80:83:3d:c8",
+				IsPingable:    true,
+				HasTestImage:  true,
+				ServoSerial:   "SERVOSERIAL",
+				State:         "",
+				CcdStatus:     "Opened",
+				HasPermission: false,
 			},
 		},
 	}
@@ -1597,6 +1614,7 @@ func TestListConnectedDutsShouldFail(t *testing.T) {
 	}
 	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
+	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return([]string{}, nil)
 
 	req := &pb.ListDutsRequest{}
 	resp, err := s.ListDuts(ctx, req)
@@ -2170,6 +2188,7 @@ func TestListConnectedAndEnrolledDutsShouldSuccessWithBotInfo(t *testing.T) {
 	s.dutService.(*mk.MockDUTServices).On("GetServoSerial", ctx, "192.168.231.2", mock.Anything).Return(true, "SERVOSERIAL", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.2").Return("Opened", nil)
 	s.dutService.(*mk.MockDUTServices).On("GetCCDStatus", ctx, "192.168.231.222").Return("Unknown", nil)
+	s.buildService.(*build_service.MockBuildService).On("ListBuildTargets", ctx).Return([]string{}, nil)
 
 	s.commandExecutor = shivasTestHelper(true)
 
@@ -2208,22 +2227,24 @@ func TestListConnectedAndEnrolledDutsShouldSuccessWithBotInfo(t *testing.T) {
 						},
 					},
 				},
-				CcdStatus: "Unknown",
+				CcdStatus:     "Unknown",
+				HasPermission: true,
 			},
 			{
-				Name:         "",
-				Hostname:     "",
-				Address:      "192.168.231.2",
-				Pools:        nil,
-				Model:        "model",
-				Board:        "board",
-				MacAddress:   "e8:9f:80:83:3d:c8",
-				ServoSerial:  "SERVOSERIAL",
-				IsPingable:   true,
-				HasTestImage: true,
-				State:        "",
-				BotInfo:      nil,
-				CcdStatus:    "Opened",
+				Name:          "",
+				Hostname:      "",
+				Address:       "192.168.231.2",
+				Pools:         nil,
+				Model:         "model",
+				Board:         "board",
+				MacAddress:    "e8:9f:80:83:3d:c8",
+				ServoSerial:   "SERVOSERIAL",
+				IsPingable:    true,
+				HasTestImage:  true,
+				State:         "",
+				BotInfo:       nil,
+				CcdStatus:     "Opened",
+				HasPermission: false,
 			},
 		},
 	}

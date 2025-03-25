@@ -16,6 +16,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/golang/protobuf/ptypes/timestamp"
@@ -905,13 +906,14 @@ func (s *SatlabRpcServiceServer) GetConnectedDuts(ctx context.Context, executor 
 
 	for _, dut := range duts {
 		e := &pb.Dut{
-			Name:        dut.Name,
-			Hostname:    dut.Hostname,
-			Pools:       dut.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools,
-			ServoSerial: dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoSerial(),
-			ServoType:   dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoType(),
-			ServoPort:   dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoPort(),
-			State:       dutstate.ConvertFromUFSState(dut.GetResourceState()).String(),
+			Name:          dut.Name,
+			Hostname:      dut.Hostname,
+			Pools:         dut.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools,
+			ServoSerial:   dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoSerial(),
+			ServoType:     dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoType(),
+			ServoPort:     dut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetPeripherals().GetServo().GetServoPort(),
+			State:         dutstate.ConvertFromUFSState(dut.GetResourceState()).String(),
+			HasPermission: true,
 		}
 
 		address := HostMap[dut.Hostname]
@@ -963,6 +965,21 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 		return nil, err
 	}
 
+	var wg sync.WaitGroup
+	var grantedBoards []string
+	var listBuildTargetsError error
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		grantedBoards, listBuildTargetsError = s.buildService.ListBuildTargets(ctx)
+	}()
+
+	if listBuildTargetsError != nil {
+		logging.Infof(ctx, "can't fetch the build targets, got an error: %s", listBuildTargetsError.Error())
+		return nil, listBuildTargetsError
+	}
+
 	connectedDevices, err := s.dutService.GetConnectedIPs(ctx)
 	if err != nil {
 		logging.Errorf(ctx, "gRPC Service error: list_duts: %w", err)
@@ -1004,6 +1021,8 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 		return a.IP == b
 	})
 
+	wg.Wait()
+
 	for _, device := range unenrolledDevices {
 
 		// TODO optimize we don't need to wait for
@@ -1038,15 +1057,17 @@ func (s *SatlabRpcServiceServer) ListDuts(ctx context.Context, in *pb.ListDutsRe
 				ccdStatus = "Unknown"
 			}
 		}
+		accessGranted := collection.Contains(grantedBoards, board)
 		duts = append(duts, &pb.Dut{
-			Board:        board,
-			Model:        model,
-			Address:      device.IP,
-			MacAddress:   device.MACAddress,
-			IsPingable:   device.IsPingable,
-			HasTestImage: device.HasTestImage,
-			ServoSerial:  servoSerial,
-			CcdStatus:    ccdStatus,
+			Board:         board,
+			Model:         model,
+			Address:       device.IP,
+			MacAddress:    device.MACAddress,
+			IsPingable:    device.IsPingable,
+			HasTestImage:  device.HasTestImage,
+			ServoSerial:   servoSerial,
+			CcdStatus:     ccdStatus,
+			HasPermission: accessGranted,
 		})
 	}
 
