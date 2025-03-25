@@ -6,11 +6,11 @@ package mock_androidapi
 
 import (
 	context "context"
-	androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api"
-	androidbuildinternal "go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
+	androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api"
+	androidbuildinternal "go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 )
 
 // MockWorkUnitService is a mock of WorkUnitService interface.
@@ -52,18 +52,18 @@ func (mr *MockWorkUnitServiceMockRecorder) Get(resourceID interface{}) *gomock.C
 }
 
 // Insert mocks base method.
-func (m *MockWorkUnitService) Insert(workunit *androidbuildinternal.WorkUnit) (*androidbuildinternal.WorkUnit, error) {
+func (m *MockWorkUnitService) Insert(ctx context.Context, workunit *androidbuildinternal.WorkUnit) (*androidbuildinternal.WorkUnit, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Insert", workunit)
+	ret := m.ctrl.Call(m, "Insert", ctx, workunit)
 	ret0, _ := ret[0].(*androidbuildinternal.WorkUnit)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // Insert indicates an expected call of Insert.
-func (mr *MockWorkUnitServiceMockRecorder) Insert(workunit interface{}) *gomock.Call {
+func (mr *MockWorkUnitServiceMockRecorder) Insert(ctx, workunit interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockWorkUnitService)(nil).Insert), workunit)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Insert", reflect.TypeOf((*MockWorkUnitService)(nil).Insert), ctx, workunit)
 }
 
 // List mocks base method.

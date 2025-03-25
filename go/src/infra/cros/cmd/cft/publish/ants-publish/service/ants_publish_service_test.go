@@ -587,7 +587,7 @@ func TestResultEntries(t *testing.T) {
 					ParentId:   tc.expectWU.ParentId,
 					Properties: tc.expectWU.Properties,
 				}
-				mockWU.EXPECT().Insert(tc.expectWU).Return(returnWU, nil)
+				mockWU.EXPECT().Insert(ctx, tc.expectWU).Return(returnWU, nil)
 			}
 			gotEntries, gotToken, err := aps.resultEntries(ctx, parentWU, 0, tc.results, buildInfo)
 			if err != nil {

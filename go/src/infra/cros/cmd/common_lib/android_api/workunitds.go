@@ -254,7 +254,7 @@ func NewWorkUnitNode(ctx context.Context, parentWUId, invocationID string, nodeT
 	// will return a WU that has a registered WUID. We do not set that in code
 	// here.
 	workUnit := NewWorkUnit(parentWUId, invocationID, name, childRunNumber, childShardNumber, childAttemptNumber)
-	workUnit, err = service.WorkUnitService.Insert(workUnit)
+	workUnit, err = service.WorkUnitService.Insert(ctx, workUnit)
 	if err != nil {
 		return nil, err
 	}

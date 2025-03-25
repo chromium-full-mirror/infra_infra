@@ -7,14 +7,13 @@ package androidapi
 import (
 	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-
-	"go.chromium.org/luci/common/logging"
 
 	atp "go.chromium.org/infra/cros/cmd/common_lib/ants/androidbuildinternal/v3"
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
@@ -86,10 +85,10 @@ func retry[K comparable](ctx context.Context, fn func(opts ...googleapi.CallOpti
 		}
 
 		if !retriableError(err) {
-			logging.Infof(ctx, "Found unretriable error: %v", err)
+			log.Printf("Found unretriable error: %v", err)
 		}
 
-		logging.Infof(ctx, "Retry request %d for error: %v", i, err)
+		log.Printf("Retry request %d for error: %v", i, err)
 		time.Sleep(delayTime)
 	}
 

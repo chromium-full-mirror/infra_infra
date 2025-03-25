@@ -107,7 +107,7 @@ func androidService(ctx context.Context, env metadata.PublishAntsMetadata_ATPEnv
 	}
 }
 
-func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, parent string) (*atp.WorkUnit, error) {
+func (aps *AntsPublishService) insertModuleWorkUnit(ctx context.Context, name string, wuType string, parent string) (*atp.WorkUnit, error) {
 	start := time.Now()
 	defer timeTrack(start, fmt.Sprintf("insert workunit with name: %s type: %s", name, wuType))
 
@@ -124,7 +124,7 @@ func (aps *AntsPublishService) insertModuleWorkUnit(name string, wuType string, 
 		Properties:   dutProps,
 	}
 
-	return aps.service.WorkUnitService.Insert(wu)
+	return aps.service.WorkUnitService.Insert(ctx, wu)
 }
 
 func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.WorkUnit, token int64, results []*api.TestCaseResult, buildInfo *atp.BuildDescriptor) ([]*atp.BatchInsertEntry, int64, error) {
@@ -182,7 +182,7 @@ func (aps *AntsPublishService) resultEntries(ctx context.Context, module *atp.Wo
 				}
 			}()
 
-			parentwu, err := aps.insertModuleWorkUnit(wuName, "TF_TEST_RUN", module.Id)
+			parentwu, err := aps.insertModuleWorkUnit(ctx, wuName, "TF_TEST_RUN", module.Id)
 			if err != nil {
 				log.Printf("unable to create test run workunit for %s due to %q", wuName, err)
 				return err
@@ -350,7 +350,7 @@ func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 
 		// Add a module workunit
 		moduleName := aps.removeModulePrefix(result.GetParentTest())
-		mwu, err := aps.insertModuleWorkUnit(moduleName, "TF_MODULE", aps.metadata.GetParentWorkUnitId())
+		mwu, err := aps.insertModuleWorkUnit(ctx, moduleName, "TF_MODULE", aps.metadata.GetParentWorkUnitId())
 		if err != nil {
 			return err
 		}

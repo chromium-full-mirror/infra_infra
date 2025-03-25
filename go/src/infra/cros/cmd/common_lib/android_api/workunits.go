@@ -49,7 +49,7 @@ const (
 // WorkUnitService handles API calls related to workunits.
 type WorkUnitService interface {
 	Get(resourceID string) (*atp.WorkUnit, error)
-	Insert(workunit *atp.WorkUnit) (*atp.WorkUnit, error)
+	Insert(ctx context.Context, workunit *atp.WorkUnit) (*atp.WorkUnit, error)
 	Update(resourceID string, workunit *atp.WorkUnit) (*atp.WorkUnit, error)
 	Patch(resourceID string, workunit *atp.WorkUnit) (*atp.WorkUnit, error)
 	List(ctx context.Context, invocationID string, options AndroidBuildAPIOptions) (*atp.WorkUnitListResponse, error)
@@ -72,14 +72,14 @@ func (w *WorkUnitServiceImpl) Get(resourceID string) (*atp.WorkUnit, error) {
 }
 
 // Insert implementation for workunits.
-func (w *WorkUnitServiceImpl) Insert(workunit *atp.WorkUnit) (*atp.WorkUnit, error) {
+func (w *WorkUnitServiceImpl) Insert(ctx context.Context, workunit *atp.WorkUnit) (*atp.WorkUnit, error) {
 	if w.client == nil {
 		return nil, errInit
 	}
 
 	call := w.client.Insert(workunit)
 
-	return call.Do()
+	return retry(ctx, call.Do)
 }
 
 // Update implementation for workunits.
