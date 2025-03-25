@@ -84,4 +84,12 @@ var (
 		nil,
 		field.Bool("success"),
 	)
+	pipeSnapshotToBQSuccess = metric.NewCounter(
+		"chromeos/ufs/dumper/bq_updates",
+		"Sucess rate of snapshot writes to BQ",
+		nil,
+		field.Bool("success"),
+		field.String("namespace"),
+		field.String("tablename"),
+	)
 )

@@ -288,6 +288,7 @@ func dumpTables(ctx context.Context, bqClient *bigquery.Client, curTimeStr strin
 	var errs []error
 	for k, f := range funcs {
 		logging.Infof(ctx, "dumping %s", k)
+		ns := util.GetNamespaceFromCtx(ctx)
 		msgs, err := f(ctx)
 		if err != nil {
 			errs = append(errs, err)
@@ -295,6 +296,8 @@ func dumpTables(ctx context.Context, bqClient *bigquery.Client, curTimeStr strin
 		name := k
 		if len(msgs) == 0 {
 			logging.Infof(ctx, "0 records found for %s table", name)
+			// Update the metric, if we had an error with the getAllFunc.
+			pipeSnapshotToBQSuccess.Add(ctx, 1, err == nil, ns, name)
 			continue
 		}
 		switch frequency {
@@ -303,11 +306,16 @@ func dumpTables(ctx context.Context, bqClient *bigquery.Client, curTimeStr strin
 		case dumperFrequencyHourly:
 			name = fmt.Sprintf("%s_hourly", k)
 		default:
+			// Update the metric, if we had an error with the frequency.
+			pipeSnapshotToBQSuccess.Add(ctx, 1, false, ns, name)
 			return errors.Reason("Dumper frequency %v is invalid", frequency).Err()
 		}
-		if err := uploadDumpToBQ(ctx, bqClient, msgs, name); err != nil {
+		err = uploadDumpToBQ(ctx, bqClient, msgs, name)
+		if err != nil {
 			errs = append(errs, err)
 		}
+		// Update the metric, if we had an error with writing to BQ.
+		pipeSnapshotToBQSuccess.Add(ctx, 1, err == nil, ns, name)
 	}
 	return errors.Join(errs...)
 }
