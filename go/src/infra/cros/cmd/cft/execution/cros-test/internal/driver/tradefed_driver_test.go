@@ -212,6 +212,20 @@ func TestDetectTestType(t *testing.T) {
 				},
 				expectedTestType: "general",
 			},
+			{
+				name: "Custom tests by name",
+				testCaseMetadata: []*api.TestCaseMetadata{
+					createMetadataMessage("custom.CustomTestCase", ""),
+				},
+				expectedTestType: "custom",
+			},
+			{
+				name: "Custom tests type by tag",
+				testCaseMetadata: []*api.TestCaseMetadata{
+					createMetadataMessage("SomeTestCase", "suite:custom"),
+				},
+				expectedTestType: "custom",
+			},
 		}
 
 		for _, tc := range testCases {

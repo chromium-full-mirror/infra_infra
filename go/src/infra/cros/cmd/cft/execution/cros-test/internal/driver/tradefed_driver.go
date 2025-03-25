@@ -35,7 +35,7 @@ const (
 
 // List of xTS & non-xTS test suites supported by this driver.
 // Not all suites are supported for each Tradefed type.
-var knownSuites = []string{"cts", "dts", "gts", "vts", "sts", "general"}
+var knownSuites = []string{"cts", "dts", "gts", "vts", "sts", "general", "custom"}
 var nonXtsSuites = []string{"general"}
 
 var testType = "cts"
@@ -167,6 +167,9 @@ func runTradefedTest(ctx context.Context, logger *log.Logger, tests []*api.TestC
 	baseArgs := []string{"run", "commandAndExit"}
 	if isNonXtsTest(testType) {
 		baseArgs = append(baseArgs, BuildNonXtsTestCommand(logger, testType, tests,
+			serials, metadata, board, args, model, servo)...)
+	} else if testType == "custom" {
+		baseArgs = append(baseArgs, BuildCustomTestCommand(logger, testType, tests,
 			serials, metadata, board, args, model, servo)...)
 	} else {
 		baseArgs = append(baseArgs, BuildXtsTestCommand(logger, testType, tests,

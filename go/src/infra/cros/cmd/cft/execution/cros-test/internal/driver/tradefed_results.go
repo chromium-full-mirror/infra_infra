@@ -28,7 +28,7 @@ import (
 const (
 	tfStageLogsPath      = "/tmp/stage-android-build-api/stub"
 	tfStageResultPattern = "subprocess-test_result.xml_*.xml.gz"
-	tfStageLogPattern    = "subprocess-host_log_*"
+	tfStageLogPattern    = "passed_tests_*.txt"
 	tfAospResultPattern  = "android-%s/results/latest/test_result.xml"
 	tfLuciResultPattern  = "LUCIResult_*.json"
 	incompleteError      = "Module is missing from results or skipped by exclude filter"
@@ -541,13 +541,19 @@ func buildTradefedResult(logger *log.Logger, testType string, req *api.CrosTestR
 	f := &api.CrosTestResponse{}
 
 	var err error
-	if isNonXtsTest(testType) {
+	if testType == "custom" {
+		// For custom tests, we need to try parsing all possible outputs.
+		f.TestCaseResults, f.GivenTestResults, logsToSave, err = parseLuciJSONResults(logger, testType, req)
+		if err != nil {
+			f.TestCaseResults, f.GivenTestResults, logsToSave, err = parseCompatibilityXMLResults(logger, testType, req)
+		}
+	} else if isNonXtsTest(testType) {
 		f.TestCaseResults, f.GivenTestResults, logsToSave, err = parseLuciJSONResults(logger, testType, req)
 	} else {
 		f.TestCaseResults, f.GivenTestResults, logsToSave, err = parseCompatibilityXMLResults(logger, testType, req)
 	}
 	if err != nil {
-		logger.Println("Failed to locate or parse Tradefed compatibility result file: ", err)
+		logger.Println("Failed to locate or parse Tradefed result file: ", err)
 		return testResponseNoXMLFound(req), logsToSave
 	}
 	logger.Println("Found n case results:", len(f.TestCaseResults))
