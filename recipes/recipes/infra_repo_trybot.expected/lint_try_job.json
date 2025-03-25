@@ -595,7 +595,7 @@
       "@@@STEP_LOG_LINE@findings.json@          \"start_line\": 20@@@",
       "@@@STEP_LOG_LINE@findings.json@        }@@@",
       "@@@STEP_LOG_LINE@findings.json@      },@@@",
-      "@@@STEP_LOG_LINE@findings.json@      \"message\": \"\\nImport order is not sorted.\\nRun `golangci-lint run --fix auth_service/impl/model` to fix this.\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@      \"message\": \"\\nImport order is not sorted or file is not proerly formatted.\\nRun `golangci-lint run --fix auth_service/impl/model` to fix this.\",@@@",
       "@@@STEP_LOG_LINE@findings.json@      \"severity_level\": \"SEVERITY_LEVEL_WARNING\"@@@",
       "@@@STEP_LOG_LINE@findings.json@    }@@@",
       "@@@STEP_LOG_LINE@findings.json@  ]@@@",
@@ -649,7 +649,7 @@
       }
     },
     "name": "upload 2 findings to ResultDB.upload_invocation_artifacts",
-    "stdin": "{\"requests\": [{\"artifact\": {\"artifactId\": \"findings-00000000-0000-0000-0000-000000001337\", \"contentType\": \"application/vnd.google.protobuf+gzip\", \"contents\": \"H4sIAAAAAAAC/5WOMU7EMBBFlRViV0Y00RZRqqEncUPFDZCouECSHU+SkWzPynZW3IeLUHAH7rIVDlQrREHzi/+l/556K9TtJHbwE3Jj2afSqUZVOAdxvLh2EpksRQlILYorb9iPYdDfWb1/bGFbPkyiY8CfTqNl8kmjM5pjPk6kLR/0YUg4d0PAmU+UX+vr3bmozkV995yhFB7B0GBQDCnVjyI9cITFL5EMbNTnL0v8r+X9heWwpLmLFE6MpNkdrXYZbfPKabW72u2rfd2pJ3eUkECCobAaeUmQMYlMq14WD/2FFYRcNc3Ir/AHoIcksO5p5tjC5gvk1PSggAEAAA==\"}, \"parent\": \"invocations/build:8945511751514863184\"}]}",
+    "stdin": "{\"requests\": [{\"artifact\": {\"artifactId\": \"findings-00000000-0000-0000-0000-000000001337\", \"contentType\": \"application/vnd.google.protobuf+gzip\", \"contents\": \"H4sIAAAAAAAC/5XOsU7DMBAGYKVCtDJiqTpEmY69iRcm3gCJiRdoXOeSnGT7qrNTwca78CIMvBSdcEAMFWJgueG/0/2fei3U9cDOhMFS7SiktVe1Ku0o7GnyzcA8OIwsFhvLfn1FoRejv2b59r6E5fp2YB3FfmfaOsKQtPWdppgfJ9SO9npvkh13RuxIR8xfq8vVqShPRXXzkEtR7qBD01nuUKm2Z26BIkxhitjBQn38Utr/KrdnSjOlcRdRjmRRkz847XO1y1tKs+5itSk31Uuh7v2BJQFLhzKTAifIPSmzWKAnhz/pQRjFPUPP4k3KB416nAK0Z26QHNV1T0/wB6GFxDDv00ixgcUnLa9doqIBAAA=\"}, \"parent\": \"invocations/build:8945511751514863184\"}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{}@@@",
@@ -660,7 +660,7 @@
       "@@@STEP_LOG_LINE@json.input@      \"artifact\": {@@@",
       "@@@STEP_LOG_LINE@json.input@        \"artifactId\": \"findings-00000000-0000-0000-0000-000000001337\",@@@",
       "@@@STEP_LOG_LINE@json.input@        \"contentType\": \"application/vnd.google.protobuf+gzip\",@@@",
-      "@@@STEP_LOG_LINE@json.input@        \"contents\": \"H4sIAAAAAAAC/5WOMU7EMBBFlRViV0Y00RZRqqEncUPFDZCouECSHU+SkWzPynZW3IeLUHAH7rIVDlQrREHzi/+l/556K9TtJHbwE3Jj2afSqUZVOAdxvLh2EpksRQlILYorb9iPYdDfWb1/bGFbPkyiY8CfTqNl8kmjM5pjPk6kLR/0YUg4d0PAmU+UX+vr3bmozkV995yhFB7B0GBQDCnVjyI9cITFL5EMbNTnL0v8r+X9heWwpLmLFE6MpNkdrXYZbfPKabW72u2rfd2pJ3eUkECCobAaeUmQMYlMq14WD/2FFYRcNc3Ir/AHoIcksO5p5tjC5gvk1PSggAEAAA==\"@@@",
+      "@@@STEP_LOG_LINE@json.input@        \"contents\": \"H4sIAAAAAAAC/5XOsU7DMBAGYKVCtDJiqTpEmY69iRcm3gCJiRdoXOeSnGT7qrNTwca78CIMvBSdcEAMFWJgueG/0/2fei3U9cDOhMFS7SiktVe1Ku0o7GnyzcA8OIwsFhvLfn1FoRejv2b59r6E5fp2YB3FfmfaOsKQtPWdppgfJ9SO9npvkh13RuxIR8xfq8vVqShPRXXzkEtR7qBD01nuUKm2Z26BIkxhitjBQn38Utr/KrdnSjOlcRdRjmRRkz847XO1y1tKs+5itSk31Uuh7v2BJQFLhzKTAifIPSmzWKAnhz/pQRjFPUPP4k3KB416nAK0Z26QHNV1T0/wB6GFxDDv00ixgcUnLa9doqIBAAA=\"@@@",
       "@@@STEP_LOG_LINE@json.input@      },@@@",
       "@@@STEP_LOG_LINE@json.input@      \"parent\": \"invocations/build:8945511751514863184\"@@@",
       "@@@STEP_LOG_LINE@json.input@    }@@@",

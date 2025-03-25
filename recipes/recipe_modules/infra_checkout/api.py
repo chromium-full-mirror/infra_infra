@@ -362,7 +362,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
       text = issue['Text']
       if (fromLinter := issue['FromLinter']) == 'gci':
         text = textwrap.dedent('''
-        Import order is not sorted.
+        Import order is not sorted or file is not proerly formatted.
         Run `golangci-lint run --fix %s` to fix this.''' %
                                self.m.path.dirname(pos['Filename']))
       else:
