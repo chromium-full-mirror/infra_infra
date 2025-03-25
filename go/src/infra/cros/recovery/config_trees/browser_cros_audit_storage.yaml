@@ -1217,6 +1217,36 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_flex_amt_available
+                              docs:
+                                - Ping the AMT interface until it responds to pings.
+                              dependencies:
+                                - name: Device has Intel AMT
+                                  exec_name: sample_pass
+                                  docs:
+                                    - DUT is a Flex device with the AMT manager peripheral.
+                                  dependencies:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Are AMT details known (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_known
+                                      docs:
+                                        - Check if the DUT has the AMT manager peripheral.
+                                        - Does not verify the health of AMT itself.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                         - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
@@ -1253,6 +1283,36 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_flex_amt_available
+                              docs:
+                                - Ping the AMT interface until it responds to pings.
+                              dependencies:
+                                - name: Device has Intel AMT
+                                  exec_name: sample_pass
+                                  docs:
+                                    - DUT is a Flex device with the AMT manager peripheral.
+                                  dependencies:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Are AMT details known (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_known
+                                      docs:
+                                        - Check if the DUT has the AMT manager peripheral.
+                                        - Does not verify the health of AMT itself.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                         - name: Sleep 30 seconds (Allow to fail) (ALWAYS_RUN) (time:'31s')
                           exec_name: sample_sleep
                           exec_args:
@@ -1339,6 +1399,36 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_flex_amt_available
+                              docs:
+                                - Ping the AMT interface until it responds to pings.
+                              dependencies:
+                                - name: Device has Intel AMT
+                                  exec_name: sample_pass
+                                  docs:
+                                    - DUT is a Flex device with the AMT manager peripheral.
+                                  dependencies:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Are AMT details known (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_known
+                                      docs:
+                                        - Check if the DUT has the AMT manager peripheral.
+                                        - Does not verify the health of AMT itself.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                         - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
@@ -1397,6 +1487,36 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'30s')
+                              exec_name: cros_flex_amt_available
+                              docs:
+                                - Ping the AMT interface until it responds to pings.
+                              dependencies:
+                                - name: Device has Intel AMT
+                                  exec_name: sample_pass
+                                  docs:
+                                    - DUT is a Flex device with the AMT manager peripheral.
+                                  dependencies:
+                                    - name: Is Flex device (RUN_ONCE)
+                                      exec_name: dut_check_board
+                                      exec_args:
+                                        - string_values:aurora,reven
+                                        - invert_result:false
+                                      docs:
+                                        - Check that DUT is a Flex board
+                                    - name: Are AMT details known (ALWAYS_RUN)
+                                      exec_name: cros_flex_amt_known
+                                      docs:
+                                        - Check if the DUT has the AMT manager peripheral.
+                                        - Does not verify the health of AMT itself.
+                                      conditions:
+                                        - name: Is Flex device (RUN_ONCE)
+                                          exec_name: dut_check_board
+                                          exec_args:
+                                            - string_values:aurora,reven
+                                            - invert_result:false
+                                          docs:
+                                            - Check that DUT is a Flex board
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:

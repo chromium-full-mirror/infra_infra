@@ -5142,6 +5142,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Device has Intel AMT",
+				"Intel AMT is available",
 			},
 			ExecName: "cros_flex_set_amt_power_state",
 			ExecExtraArgs: []string{
@@ -5156,6 +5157,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Device has Intel AMT",
+				"Intel AMT is available",
 			},
 			ExecName: "cros_flex_set_amt_power_state",
 			ExecExtraArgs: []string{
@@ -5197,6 +5199,18 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:      "sample_fail",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Intel AMT is available": {
+			Docs: []string{
+				"Ping the AMT interface until it responds to pings.",
+			},
+			Dependencies: []string{
+				"Device has Intel AMT",
+			},
+			ExecName:      "cros_flex_amt_available",
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			RunControl:    RunControl_ALWAYS_RUN,
+			ExecTimeout:   &durationpb.Duration{Seconds: 30},
 		},
 		"FPMCU is working": {
 			Docs: []string{
