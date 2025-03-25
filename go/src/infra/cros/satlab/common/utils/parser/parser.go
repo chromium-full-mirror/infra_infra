@@ -9,7 +9,7 @@ import (
 	"go.chromium.org/infra/cros/satlab/common/utils/errors"
 )
 
-var deployRe = regexp.MustCompile(`Follow the deploy job at (?P<URL>(?:(?:https?):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+)`)
+var deployRe = regexp.MustCompile(`Deployment URL: (?P<URL>(?:(?:https?):\/\/)?[\w/\-?=%.]+\.[\w/\-&?=%.]+)`)
 
 // RarseDeployURL parse the deploy URL from data.
 func ParseDeployURL(s string) (string, error) {

@@ -156,7 +156,7 @@ Warning: Could not verify zone from DUT name "satlab-0wgtfqin1846803b-dedede-sas
 	"realm": "chromeos:ufs/sfp_6"
 }
 Successfully added DUT to UFS: satlab-0wgtfqin1846803b-dedede-sasukette-137
-Triggered Deploy task satlab-0wgtfqin1846803b-dedede-sasukette-137. Follow the deploy job at https://ci.chromium.org/p/chromeos/builders/external-cienet/deploy/b8766285423942274257
+Deployment URL: https://ci.chromium.org/p/chromeos/builders/external-cienet/deploy/b8766285423942274257
 `
 
 	// Act
