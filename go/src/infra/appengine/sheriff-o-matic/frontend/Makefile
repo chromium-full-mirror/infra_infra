@@ -14,9 +14,6 @@ node_deps:
 bower_deps: node_deps
 	npx bower install
 
-lint:
-	polylint -i elements/som-app/som-app.html
-
 build_polymer: bower_deps
 	$(VULCANIZE_PATH) elements/som-app/som-app.html -o elements/som-app/som-app.vulcanized.html --inline-scripts
 
