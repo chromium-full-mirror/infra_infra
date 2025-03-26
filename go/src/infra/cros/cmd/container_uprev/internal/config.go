@@ -343,6 +343,7 @@ func GetConfigs() []*UprevConfig {
 			},
 			Resources: []string{
 				"tradefed_runner.sh",
+				"wellknown_ssh_key",
 			},
 			Prepper: preppers.PrepFoilTestInternal,
 		},
