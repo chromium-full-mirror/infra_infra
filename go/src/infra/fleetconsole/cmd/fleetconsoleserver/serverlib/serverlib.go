@@ -54,6 +54,7 @@ func Modules() []module.Module {
 var ACLMap rpcacl.Map = map[string]string{
 	"/fleetconsole.FleetConsole/CleanExit":            "googlers",
 	"/fleetconsole.FleetConsole/CountDevices":         "googlers",
+	"/fleetconsole.FleetConsole/ExportDevicesToCSV":   "googlers",
 	"/fleetconsole.FleetConsole/GetDeviceDimensions":  "googlers",
 	"/fleetconsole.FleetConsole/ListDevices":          "googlers",
 	"/fleetconsole.FleetConsole/ListResourceRequests": "googlers",
