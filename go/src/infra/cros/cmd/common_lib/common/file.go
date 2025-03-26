@@ -35,9 +35,6 @@ import (
 
 var GlobalTempDir = os.Getenv("TEMPDIR")
 
-// ContainerMetadataCache already fetched container metadata info from gcs
-var ContainerMetadataCache sync.Map
-
 // CreateUniquePrefixedName creates a unique name with provided pattern
 func CreateUniquePrefixedName(pattern string) string {
 	if pattern == "" {
@@ -426,12 +423,6 @@ func Decompress(from string) ([]byte, error) {
 
 // FetchContainerMetadata retrieves the container metadata from the provided gcs path.
 func FetchContainerMetadata(ctx context.Context, containerGcsPath string) (*buildapi.ContainerMetadata, error) {
-	// Check cache.
-	if cachedMetadata, found := ContainerMetadataCache.Load(containerGcsPath); found {
-		logging.Infof(ctx, "Cache hit: container metadata for path: %s", containerGcsPath)
-		return cachedMetadata.(*buildapi.ContainerMetadata), nil
-	}
-
 	tempRootDir := os.Getenv("TEMPDIR")
 
 	// Just here to prevent race conditions of shards fighting over a file.
@@ -452,8 +443,6 @@ func FetchContainerMetadata(ctx context.Context, containerGcsPath string) (*buil
 		logging.Infof(ctx, "error while reading proto json file: %s", err)
 		return nil, err
 	}
-	// Cache the metadata.
-	ContainerMetadataCache.Store(containerGcsPath, containerMetadata)
 
 	return containerMetadata, nil
 }

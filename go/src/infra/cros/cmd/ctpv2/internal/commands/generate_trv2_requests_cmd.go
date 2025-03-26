@@ -247,6 +247,8 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateRequests(ctx context.Context, step *
 	errCount := 0
 	buildMap := map[string]*data.BuildRequest{}
 	shardMap := map[string]int{}
+	var wg sync.WaitGroup
+	var mu sync.Mutex
 	for _, trReq := range cmd.MiddledOutResp.TrReqs {
 		key, err := GetBoardModelVariantKey(ctx, trReq)
 		if err != nil {
@@ -263,17 +265,27 @@ func (cmd *GenerateTrv2RequestsCmd) GenerateRequests(ctx context.Context, step *
 
 		modifiedKey := fmt.Sprintf("%s-shard-%d", key, shardMap[key])
 		buildReq := &data.BuildRequest{Key: modifiedKey, OriginalTrReq: trReq, ShardNum: shardMap[key], SuiteInfo: cmd.MiddledOutResp.SuiteInfo}
-		req, err := cmd.GenerateReq(ctx, trReq, modifiedKey, shardMap[key])
-		if err != nil {
-			buildReq.Err = err
-			errCount++
-			logging.Infof(ctx, "error while generating trv2 req for %s: %s", modifiedKey, err)
-		} else {
-			buildReq.ScheduleBuildRequest = req
-		}
 
-		buildMap[modifiedKey] = buildReq
+		wg.Add(1)
+		go func(trReq *data.TrRequest, modifiedKey string, shardNum int, buildReq *data.BuildRequest) {
+			defer wg.Done()
+			req, err := cmd.GenerateReq(ctx, trReq, modifiedKey, shardNum)
+			if err != nil {
+				buildReq.Err = err
+				logging.Infof(ctx, "error while generating trv2 req for %s: %s", modifiedKey, err)
+				mu.Lock()
+				errCount++
+				mu.Unlock()
+			} else {
+				buildReq.ScheduleBuildRequest = req
+			}
+			mu.Lock()
+			buildMap[modifiedKey] = buildReq
+			mu.Unlock()
+
+		}(trReq, modifiedKey, shardMap[key], buildReq)
 	}
+	wg.Wait()
 
 	if errCount == 0 {
 		step.SetSummaryMarkdown("all test requests were generated successfully")
