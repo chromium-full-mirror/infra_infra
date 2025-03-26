@@ -14,7 +14,9 @@ export default function createInnerHTMLSanitizingPolicy() {
 
   window.trustedTypes!.createPolicy('default', {
     createHTML: (string) => DOMPurify.sanitize(string, {
-      RETURN_TRUSTED_TYPE: true,
+      // createHTML expects a "string" return type rather than
+      // a TrustedType object return type.
+      RETURN_TRUSTED_TYPE: false,
       FORBID_TAGS: ['style'],
     }),
   });
