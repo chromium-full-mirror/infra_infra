@@ -361,7 +361,7 @@ plans:
                                 - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                                   conditions:
                                     - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                            - name: Intel AMT is available ('cros_flex_amt_available') (ALWAYS_RUN) (time:'30s')
+                            - name: Intel AMT is available ('cros_flex_amt_available') (ALWAYS_RUN) (time:'1m1s')
                               dependencies:
                                 - name: Device has Intel AMT ('sample_pass')
                                   dependencies:
@@ -378,7 +378,7 @@ plans:
                                 - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                                   conditions:
                                     - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                            - name: Intel AMT is available ('cros_flex_amt_available') (ALWAYS_RUN) (time:'30s')
+                            - name: Intel AMT is available ('cros_flex_amt_available') (ALWAYS_RUN) (time:'1m1s')
                               dependencies:
                                 - name: Device has Intel AMT ('sample_pass')
                                   dependencies:
@@ -404,7 +404,7 @@ plans:
                                 - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                                   conditions:
                                     - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                            - name: Intel AMT is available ('cros_flex_amt_available') (ALWAYS_RUN) (time:'30s')
+                            - name: Intel AMT is available ('cros_flex_amt_available') (ALWAYS_RUN) (time:'1m1s')
                               dependencies:
                                 - name: Device has Intel AMT ('sample_pass')
                                   dependencies:
@@ -429,7 +429,7 @@ plans:
                                 - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                                   conditions:
                                     - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                            - name: Intel AMT is available ('cros_flex_amt_available') (ALWAYS_RUN) (time:'30s')
+                            - name: Intel AMT is available ('cros_flex_amt_available') (ALWAYS_RUN) (time:'1m1s')
                               dependencies:
                                 - name: Device has Intel AMT ('sample_pass')
                                   dependencies:

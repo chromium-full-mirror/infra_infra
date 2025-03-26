@@ -84,7 +84,8 @@ func flexAMTRespondsToPingExec(ctx context.Context, info *execs.ExecInfo) error 
 	if err != nil {
 		return err
 	}
-	return errors.Annotate(flexPingAMT(amtHostname, 30), "flex AMT responds to ping").Err()
+	// Ping for up to a minute.
+	return errors.Annotate(flexPingAMT(amtHostname, 60), "flex AMT responds to ping").Err()
 }
 
 func init() {
