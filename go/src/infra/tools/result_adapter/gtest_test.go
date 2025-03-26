@@ -987,5 +987,47 @@ Backtrace:
 				assert.Loosely(t, testResults[i], should.Resemble(expected[i]))
 			}
 		})
+
+		t.Run("omits test_name tag if too long", func(t *ftt.Test) {
+			// Tag value size is limited to 256 bytes.
+			longTestName := "LongNameTest."
+			for range 300 {
+				longTestName += "a"
+			}
+
+			perIterationData := make([]map[string][]*GTestRunResult, 0)
+			datum := make(map[string][]*GTestRunResult)
+			datum[longTestName] = []*GTestRunResult{{Status: "SUCCESS"}}
+			perIterationData = append(perIterationData, datum)
+
+			results := &GTestResults{
+				PerIterationData: perIterationData,
+			}
+
+			testResults, err := results.ToProtos(ctx)
+			assert.Loosely(t, err, should.BeNil)
+
+			expected := []*sinkpb.TestResult{
+				{
+					TestId:   longTestName,
+					Expected: true,
+					Status:   pb.TestStatus_PASS,
+					Tags: pbutil.StringPairs(
+						"test_name_omitted_for_brevity", "true",
+						"gtest_status", "SUCCESS",
+						"lossless_snippet", "false",
+						"orig_format", "chromium_gtest",
+					),
+					TestMetadata: &pb.TestMetadata{
+						Name: longTestName,
+					},
+				},
+			}
+
+			assert.Loosely(t, testResults, should.HaveLength(len(expected)))
+			for i := range testResults {
+				assert.Loosely(t, testResults[i], should.Resemble(expected[i]))
+			}
+		})
 	})
 }

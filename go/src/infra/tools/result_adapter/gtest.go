@@ -241,12 +241,11 @@ func (r *GTestResults) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, erro
 			TestId:   testID,
 			Expected: true,
 			Status:   pb.TestStatus_SKIP,
-			Tags: pbutil.StringPairs(
+			Tags: []*pb.StringPair{
 				// Store the original Gtest test name.
-				// Tag value size is limited to 256 bytes.
-				"test_name", truncateString(name, 256),
-				"disabled_test", "true",
-			),
+				maybeTestNameTag(name),
+				pbutil.StringPair("disabled_test", "true"),
+			},
 			TestMetadata: &pb.TestMetadata{Name: name},
 		}
 		tr.Tags = append(tr.Tags, globalTags...)
@@ -367,6 +366,17 @@ func extractGTestParameters(testID string) (baseID string, err error) {
 	}
 
 	return
+}
+
+// maybeTestNameTag produces the test_name tag if the test name fits in a tag,
+// i.e. it is at most 256 bytes long. Otherwise, produce a special tag that
+// communicates that the test_name tag was omitted.
+func maybeTestNameTag(name string) *pb.StringPair {
+	if len(name) <= 256 {
+		return pbutil.StringPair("test_name", name)
+	} else {
+		return pbutil.StringPair("test_name_omitted_for_brevity", "true")
+	}
 }
 
 // truncateString truncates a UTF-8 string to the given number of bytes.
@@ -532,15 +542,14 @@ func (r *GTestResults) convertTestResult(ctx context.Context, buf *bytes.Buffer,
 		TestId:   testID,
 		Expected: expected,
 		Status:   status,
-		Tags: pbutil.StringPairs(
+		Tags: []*pb.StringPair{
 			// Store the original Gtest test name.
-			// Tag value size is limited to 256 bytes.
-			"test_name", truncateString(name, 256),
+			maybeTestNameTag(name),
 			// Store the original GTest status.
-			"gtest_status", result.Status,
+			pbutil.StringPair("gtest_status", result.Status),
 			// Store the correct output snippet.
-			"lossless_snippet", strconv.FormatBool(result.LosslessSnippet),
-		),
+			pbutil.StringPair("lossless_snippet", strconv.FormatBool(result.LosslessSnippet)),
+		},
 		TestMetadata:  &pb.TestMetadata{Name: name},
 		FailureReason: extractFailureReasonFromResultParts(ctx, result.ResultParts),
 	}
