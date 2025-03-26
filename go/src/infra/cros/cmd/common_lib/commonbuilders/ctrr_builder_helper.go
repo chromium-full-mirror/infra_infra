@@ -117,6 +117,7 @@ func (builder *DynamicTrv2FromCft) tryAppendPublishTasks(dynamic *DynamicTrv2Bui
 
 	builder.tryAppendRdbPublishTask(dynamic)
 	builder.tryAppendGcsPublishTask(dynamic)
+	builder.tryAppendCpconPublishTask(dynamic)
 }
 
 // tryAppendRdbPublishTask enforces the SkipRdbPublish field and attempts
@@ -143,6 +144,17 @@ func (builder *DynamicTrv2FromCft) tryAppendGcsPublishTask(dynamic *DynamicTrv2B
 
 	dynamic.OrderedTaskBuilders = append(dynamic.OrderedTaskBuilders,
 		DefaultDynamicGcsPublishTask)
+}
+
+// tryAppendGcsPublishTask enforces the SkipGcsPublish field and attempts
+// to add the gcs publish step to the ordered task list.
+func (builder *DynamicTrv2FromCft) tryAppendCpconPublishTask(dynamic *DynamicTrv2Builder) {
+	if !builder.Cft.GetStepsConfig().GetHwTestConfig().GetRunCpconPublish() {
+		return
+	}
+
+	dynamic.OrderedTaskBuilders = append(dynamic.OrderedTaskBuilders,
+		DefaultDynamicCpconPublish)
 }
 
 func (builder *DynamicTrv2Builder) buildCrosTestMetadata() (metadata *anypb.Any) {
@@ -874,6 +886,78 @@ func DefaultDynamicGcsPublishTask(builder *DynamicTrv2Builder) []*api.CrosTestRu
 					{
 						Key:   "publishRequest.metadata.xtsArchiverMetadata.apfeGcsPrefix",
 						Value: common.XTSArchiverAPFEGCS,
+					},
+				}, builder.Is3DRun),
+			},
+			Required: true,
+		},
+	}
+}
+
+func DefaultDynamicCpconPublish(builder *DynamicTrv2Builder) []*api.CrosTestRunnerDynamicRequest_Task {
+	cpconMetadata, _ := anypb.New(&api.PublishCpconMetadata{
+		GcsPath: &_go.StoragePath{
+			HostType: _go.StoragePath_GS,
+		},
+		ServiceAccountCredsFilePath: &_go.StoragePath{
+			HostType: _go.StoragePath_LOCAL,
+			Path:     "/keys/skylab-drone.json",
+		},
+	})
+	return []*api.CrosTestRunnerDynamicRequest_Task{
+		{
+			OrderedContainerRequests: []*api.ContainerRequest{
+				{
+					DynamicIdentifier: common.CpconPublish,
+					Container: &api.Template{
+						Container: &api.Template_Generic{
+							Generic: &api.GenericTemplate{
+								BinaryName:        "cpcon-publish",
+								DockerArtifactDir: "/tmp/cpcon-publish",
+								BinaryArgs:        []string{"server", "--port", "0"},
+								AdditionalVolumes: []string{"/creds/service_accounts:/keys/"},
+								Env:               []string{""},
+							},
+						},
+					},
+					ContainerImageKey: common.CrosPublish,
+					DynamicDeps: []*api.DynamicDep{
+						{
+							Key:   "generic.env.0",
+							Value: "FMT=PUBLISH_HOSTNAME=${env-DRONE_AGENT_HIVE}",
+						},
+						{
+							Key:   "generic.additionalVolumes",
+							Value: "FMT=${env-TEMPDIR}:" + common.CpconPublishTestArtifactsDir,
+						},
+					},
+				},
+			},
+			Task: &api.CrosTestRunnerDynamicRequest_Task_Publish{
+				Publish: BuildPublishRequest(common.CpconPublish, common.CpconPublishTestArtifactsDir, cpconMetadata, []*api.DynamicDep{
+					{
+						Key:   common.ServiceAddress,
+						Value: common.CpconPublish,
+					},
+					{
+						Key:   "publishRequest.metadata.gcsPath.path",
+						Value: "gcs-url",
+					},
+					{
+						Key:   "publishRequest.metadata.parentSwarmingTaskId",
+						Value: "schedulingMetadata.schedulingArgs.parent_task_id",
+					},
+					{
+						Key:   "publishRequest.metadata.build",
+						Value: "schedulingMetadata.schedulingArgs.label-image",
+					},
+					{
+						Key:   "publishRequest.metadata.build",
+						Value: "schedulingMetadata.schedulingArgs.build",
+					},
+					{
+						Key:   "publishRequest.metadata.suite",
+						Value: "schedulingMetadata.schedulingArgs.label-suite",
 					},
 				}, builder.Is3DRun),
 			},

@@ -731,6 +731,17 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*te
 		gsSourcePath = path + "/metadata/sources.jsonpb"
 	}
 
+	orderedTaskBuilders := []commonbuilders.DynamicTaskBuilder{
+		commonbuilders.DefaultDynamicTestTaskWrapper(common.CrosTest),
+		commonbuilders.DefaultDynamicPostProcessTaskWrapper(),
+		commonbuilders.DefaultDynamicRdbPublishTaskWrapper(gsSourcePath, false, trHelper.is3DRun),
+		commonbuilders.DefaultDynamicGcsPublishTask,
+	}
+
+	if trHelper.isPartnerRun {
+		orderedTaskBuilders = append(orderedTaskBuilders, commonbuilders.DefaultDynamicCpconPublish)
+	}
+
 	primary, companions := createDutModelFromTargets(trHelper.primaryTarget, trHelper.secondaryTargets)
 	deadline := time.Now().UTC().Add(trHelper.maxDuration)
 	botDims, _ := protoutil.BotDimensions(trHelper.build.Build())
@@ -748,16 +759,12 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*te
 		PrimaryDut:           primary,
 		CompanionDuts:        companions,
 		Keyvals:              keyvals,
-		OrderedTaskBuilders: []commonbuilders.DynamicTaskBuilder{
-			commonbuilders.DefaultDynamicTestTaskWrapper(common.CrosTest),
-			commonbuilders.DefaultDynamicPostProcessTaskWrapper(),
-			commonbuilders.DefaultDynamicRdbPublishTaskWrapper(gsSourcePath, false, trHelper.is3DRun),
-			commonbuilders.DefaultDynamicGcsPublishTask,
-		},
-		IsALRun:          trHelper.isAlRun,
-		BotDims:          botDims,
-		BuildExperiments: trHelper.build.Build().GetInput().GetExperiments(),
-		PublishKeys:      trHelper.publishKeys,
+		OrderedTaskBuilders:  orderedTaskBuilders,
+		IsALRun:              trHelper.isAlRun,
+		Is3DRun:              trHelper.is3DRun,
+		BotDims:              botDims,
+		BuildExperiments:     trHelper.build.Build().GetInput().GetExperiments(),
+		PublishKeys:          trHelper.publishKeys,
 	}
 
 	dynamicRequest, err := builder.BuildRequest(ctx, trHelper.isAlRun)
