@@ -378,7 +378,7 @@ func setConfigsFromMachine(l *inventory.SchedulableLabels, machine *ufspb.Machin
 	}
 
 	// Setup storage type
-	if st := machine.GetChromeosMachine().GetStorageType(); st != labapi.StorageType_UNSPECIFIED && st != labapi.StorageType_UNRECOGNIZED {
+	if st := machine.GetChromeosMachine().GetStorageType(); st != labapi.StorageType_UNSPECIFIED && st != labapi.StorageType_NOT_RECOGNIZED {
 		// Extract the storage type, e.g. "STORAGE_SSD" -> "ssd".
 		storage := strings.ToLower(st.String())
 		c.Storage = &storage
