@@ -86,7 +86,7 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 	if !isAospTradefed() {
 
 		cmd = append(cmd, "--cts-use-partial-download", "--cts-version", "2",
-			"--no-bugreport-on-invocation-ended", "--gdevice-flash:disable",
+			"--gdevice-flash:disable",
 			"--android-build-api-log-saver:no-remove-staged-files", "--no-use-event-streaming",
 			"--google-device-setup:set-global-setting", "verifier_verify_adb_installs=0",
 			"--reporter-template", "template/reporters/subprocess-reporter",
