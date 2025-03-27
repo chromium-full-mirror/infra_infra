@@ -31,8 +31,8 @@ SELECT
   output.gitiles_commit AS output_commit,
   JSON_EXTRACT_SCALAR(input.properties,
     "$.builder_group") AS buildergroup,
-  JSON_EXTRACT_STRING_ARRAY(input.properties,
-    "$.sheriff_rotations") AS sheriff_rotations,
+  IFNULL(JSON_EXTRACT_STRING_ARRAY(input.properties, "$.gardener_rotations"),
+    JSON_EXTRACT_STRING_ARRAY(input.properties, "$.sheriff_rotations")) AS sheriff_rotations,
   steps
 FROM
   `cr-buildbucket.raw.completed_builds`
@@ -40,7 +40,7 @@ WHERE
   NOT input.experimental
   AND ((REGEXP_CONTAINS(builder.`project`, "^((chrome|chromium)(-m[0-9]+(-.*)?)?)$")
       AND JSON_EXTRACT_STRING_ARRAY(input.properties,
-        "$.sheriff_rotations") IS NOT NULL
+        "$.gardener_rotations") IS NOT NULL
       AND ARRAY_LENGTH(JSON_EXTRACT_STRING_ARRAY(input.properties,
-          "$.sheriff_rotations")) > 0 )
+          "$.gardener_rotations")) > 0 )
     OR NOT REGEXP_CONTAINS(builder.`project`, "^((chrome|chromium)(-m[0-9]+(-.*)?)?)$"))
