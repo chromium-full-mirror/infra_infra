@@ -116,14 +116,18 @@ func (ps *ProvisionServer) Install(ctx context.Context, req *api.InstallRequest)
 		ps.options.Log.Printf("failed provision, %s", err)
 	}
 
-	ps.options.Log.Printf("Raw Status: %s", md)
 	fv := ""
-	stringValue := &wrapperspb.StringValue{}
-	if err := md.UnmarshalTo(stringValue); err != nil {
-		ps.options.Log.Printf("Error unmarshalling: %s", err.Error())
-		fv = "No Status"
+	if md != nil {
+		ps.options.Log.Printf("Raw Status: %s", md)
+		stringValue := &wrapperspb.StringValue{}
+		if err := md.UnmarshalTo(stringValue); err != nil {
+			ps.options.Log.Printf("Error unmarshalling: %s", err.Error())
+			fv = "No Status"
+		} else {
+			fv = stringValue.GetValue()
+		}
 	} else {
-		fv = stringValue.GetValue()
+		fv = "No Metadata"
 	}
 
 	response.Status = installResp
