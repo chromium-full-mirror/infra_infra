@@ -7,7 +7,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"strconv"
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
@@ -194,9 +193,7 @@ func updateSchedulingUnit(su *api.SchedulingUnit, updater *ALProvisionRequestUpd
 
 		log.Println("Setting build target and latest green build number")
 		buildTarget = board + "-trunk_staging-userdebug"
-		installPath = fmt.Sprintf(
-			common.AndroidBuildPrefix+"%s/%s/%s-ota-%s.zip",
-			strconv.Itoa(latestGreenBuild), buildTarget, board, strconv.Itoa(latestGreenBuild))
+		installPath = getOTAPath(buildId, buildTarget, board)
 		log.Printf("InstallPath value: %s", installPath)
 		su.GetPrimaryTarget().GetSwReq().GcsPath = installPath
 	}
@@ -233,6 +230,16 @@ func applyBuildInfoToTarget(buildId, buildTarget string, target *api.Target) {
 		},
 	}...)
 	return
+}
+
+// getOTAPath returns the Android Build path to the *-ota-*.zip artifact.
+// buildTarget is the full target name in Android Build, such as
+// brya-trunk_staging-userdebug, whereas board is the short name of the board,
+// such as brya.
+func getOTAPath(buildId, buildTarget, board string) string {
+	return fmt.Sprintf(
+		common.AndroidBuildPrefix+"%s/%s/%s-ota-%s.zip",
+		buildId, buildTarget, board, buildId)
 }
 
 // buildGetReq constructs a BuildGetRequest for the board.
