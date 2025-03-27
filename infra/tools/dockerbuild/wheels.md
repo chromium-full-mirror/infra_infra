@@ -4182,12 +4182,12 @@ wheel: <
 
 * *universal*
 
-### 1.69.3
+### 1.69.2
 
 ```protobuf
 wheel: <
   name: "infra/python/wheels/googleapis-common-protos-py2_py3"
-  version: "version:1.69.3"
+  version: "version:1.69.2"
 >
 ```
 
@@ -7386,6 +7386,8 @@ wheel: <
 ```
 
 
+* *universal*
+
 ### 6.30.1
 
 ```protobuf
@@ -8559,6 +8561,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/pyperclip-py2_py3"
   version: "version:1.8.0"
+>
+```
+
+
+* *universal*
+
+## **pyproject-api-py3**
+
+### 1.9.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/pyproject-api-py3"
+  version: "version:1.9.0"
 >
 ```
 

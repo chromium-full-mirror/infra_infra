@@ -1716,6 +1716,7 @@ SPECS.update({
         Universal('pyparsing', '3.0.7', pyversions=['py3']),
         Universal('pyparsing', '3.1.1', pyversions=['py3']),
         Universal('pyparsing', '3.2.0', pyversions=['py3']),
+        Universal('pyproject-api', '1.9.0', pyversions=['py3']),
         Universal('pyserial', '3.4'),
         Universal('pytest', '3.5.0'),
         Universal('pytest', '3.6.2'),
