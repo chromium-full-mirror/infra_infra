@@ -63,6 +63,7 @@ const (
 	LabelPool                              = "label-pool"
 	LabelSuite                             = "label-suite"
 	Suite                                  = "suite"
+	Branch                                 = "branch"
 	AnalyticsName                          = "analytics_name"
 	BotParamsRejectedErrKey                = "Bot Params Rejected"
 	EnumerationErrKey                      = "Enumeration Error"

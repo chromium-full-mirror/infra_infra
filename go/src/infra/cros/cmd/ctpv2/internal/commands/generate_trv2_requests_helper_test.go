@@ -127,3 +127,41 @@ func fakeAPITarget(board, model, variant string) *api.Target {
 		},
 	}
 }
+
+func TestGetBranchFromTestArg(t *testing.T) {
+	testCases := []struct {
+		name           string
+		testArgs       []*api.Arg
+		expectedBranch string
+	}{
+		{
+			name: "valid branch in test args",
+			testArgs: []*api.Arg{
+				{Flag: "pool", Value: "chromeos-testing"},
+				{Flag: "branch", Value: "release-R120-15662.B"},
+			},
+			expectedBranch: "release-R120-15662.B",
+		},
+		{
+			name: "empty branch in test args",
+			testArgs: []*api.Arg{
+				{Flag: "branch", Value: ""},
+			},
+			expectedBranch: "",
+		},
+		{
+			name:           "no branch in test args",
+			testArgs:       []*api.Arg{},
+			expectedBranch: "",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			branch := GetBranchFromTestArg(tc.testArgs)
+			if branch != tc.expectedBranch {
+				t.Errorf("getBranchFromTestArg(%v) returned unexpected branch: got %v, want %v", tc.testArgs, branch, tc.expectedBranch)
+			}
+		})
+	}
+}

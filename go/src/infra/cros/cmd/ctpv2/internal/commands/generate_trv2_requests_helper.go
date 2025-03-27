@@ -704,6 +704,7 @@ func getModelFromSchedulingTarget(target *testapi.Target) string {
 }
 
 func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*testapi.CrosTestRunnerDynamicRequest, error) {
+	executionMetadata := getExecutionMetadata(trHelper)
 	testSuites := []*testapi.TestSuite{
 		{
 			Name: trHelper.suiteName,
@@ -712,7 +713,7 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*te
 					TestCaseIds: trHelper.testCases,
 				},
 			},
-			ExecutionMetadata: getExecutionMetadata(trHelper),
+			ExecutionMetadata: executionMetadata,
 		},
 	}
 
@@ -725,6 +726,11 @@ func createDynamicTrv2Request(ctx context.Context, trHelper *TrV2ReqHelper) (*te
 	keyvals["build_target"] = trHelper.primaryTarget.board
 	keyvals["parent_job_id"] = trHelper.currSwarmingID
 	keyvals[common.LabelPool] = trHelper.pool
+
+	branch := GetBranchFromTestArg(executionMetadata.GetArgs())
+	if branch != "" {
+		keyvals[common.Branch] = branch
+	}
 
 	gsSourcePath := ""
 	if path, ok := trHelper.lookupTable["installPath"]; ok {
@@ -800,6 +806,7 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 		return nil, err
 	}
 
+	executionMetadata := getExecutionMetadata(trHelper)
 	testSuites := []*testapi.TestSuite{
 		{
 			Name: trHelper.suiteName,
@@ -808,7 +815,7 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 					TestCaseIds: trHelper.testCases,
 				},
 			},
-			ExecutionMetadata: getExecutionMetadata(trHelper),
+			ExecutionMetadata: executionMetadata,
 		},
 	}
 
@@ -820,6 +827,11 @@ func createCftTestRequest(ctx context.Context, trHelper *TrV2ReqHelper) (*skylab
 	keyvals["build"] = trHelper.builderStr                                                                                              // Required for rdb-publish
 	keyvals["build_target"] = trHelper.primaryTarget.board
 	keyvals["parent_job_id"] = trHelper.currSwarmingID
+
+	branch := GetBranchFromTestArg(executionMetadata.GetArgs())
+	if branch != "" {
+		keyvals[common.Branch] = branch
+	}
 
 	primaryDut, err := createCftDeviceRequestFromTarget(trHelper.primaryTarget)
 	if err != nil {
@@ -979,6 +991,16 @@ func getBuildFromGcsPath(gcsPath string) string {
 		return ""
 	}
 	return dirNames[len(dirNames)-2] + "/" + dirNames[len(dirNames)-1]
+}
+
+// GetBranchFromTestArg gets branch from the test args.
+func GetBranchFromTestArg(testArgs []*testapi.Arg) string {
+	for _, arg := range testArgs {
+		if arg.GetFlag() == common.Branch {
+			return arg.GetValue()
+		}
+	}
+	return ""
 }
 
 // createLabels creates labels.
