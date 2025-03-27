@@ -99,6 +99,7 @@ Host * \n\
 # Configure TradeFed environment.
 ENV JSON_KEY_PATH=/creds/service_accounts/skylab-drone.json
 ENV GOOGLE_APPLICATION_CREDENTIALS=/creds/service_accounts/skylab-drone.json
+ENV APE_API_KEY=/tmp/test/gts-arc.json
 ENV TZ=Etc/UTC
 ENV USE_HOST_ADB=true
 ENV TF_GLOBAL_CONFIG=configs/cluster/ate/common.xml

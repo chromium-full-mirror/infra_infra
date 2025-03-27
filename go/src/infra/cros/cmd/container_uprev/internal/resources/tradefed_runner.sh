@@ -19,7 +19,7 @@ else
   fi
 fi
 export GOOGLE_APPLICATION_CREDENTIALS="${TF_KEY_FILE}"
-export APE_API_KEY="${TF_KEY_FILE}"
+# export APE_API_KEY="${TF_KEY_FILE}"
 
 # Set adb vendor keys
 ADB_VENDOR_KEYS=$(find /tradefed/android_vendor_keys/ -name ".adb_key*" | tr '\n' ':')
