@@ -309,6 +309,12 @@ func (pr *PackageRecord) toTestProtos(ctx context.Context) []*sinkpb.TestResult 
 	// setup/teardown that is not covered by the individual test results.
 	packageResult := &sinkpb.TestResult{}
 	packageResult.TestId = pr.PackageName
+	packageResult.TestIdStructured = &sinkpb.TestIdentifier{
+		CoarseName:         "",
+		FineName:           pr.PackageName,
+		CaseNameComponents: []string{"*fixture"},
+	}
+
 	switch pr.Result {
 	case "pass", "bench":
 		packageResult.Status = resultpb.TestStatus_PASS
@@ -392,8 +398,39 @@ func (tr *TestRecord) ingest(te *GoTestEvent) {
 func (tr *TestRecord) toProto(ctx context.Context, packagePassed bool) *sinkpb.TestResult {
 	result := &sinkpb.TestResult{}
 
+	// The test name reported by golang is a concatenation of the names
+	// of the different nested test scopes, separated by a slash '/':
+	// A
+	// A/B
+	// A/B/C
+	//
+	// Currently, we report each as a different test case. If tests are retried
+	// in future, it is anticipated this will cause problems, as we could have
+	// the following situation.
+	//
+	// Test -> result (VERDICT)
+	// =======================
+	// A -> failed because of A/A on try 1 and failed because of A/B on try 2 (FAILED)
+	// A/A -> failed on try 1 only (FLAKY)
+	// A/B -> failed on try 2 only (FLAKY)
+	//
+	// In this case, test A is surfaced to the user but the interesting failure logs
+	// are on A/A and A/B.
+	//
+	// In this case, we will need to collect all logs under the base test (A in this case)
+	// and possibly cease to report the subtests as separate tests.
+	// See go/resultdb-subtest-support-evaluation for discussion.
+	//
+	// Caveat: the parts between slashes are not encoded by go so extraction of
+	// this structure is not necessarily reliable...
+
 	testID := fmt.Sprintf("%s.%s", tr.PackageName, tr.TestName)
 	result.TestId = testID
+	result.TestIdStructured = &sinkpb.TestIdentifier{
+		CoarseName:         "",
+		FineName:           tr.PackageName,
+		CaseNameComponents: []string{tr.TestName},
+	}
 
 	switch tr.Result {
 	case "pass", "bench":

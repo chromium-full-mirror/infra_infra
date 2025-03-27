@@ -82,6 +82,10 @@ func TestGenerateTestResults(t *testing.T) {
 		assert.Loosely(t, trs, should.HaveLength(2))
 		assert.That(t, trs[0], should.Match(mustParseTestResult(
 			`test_id:  "go.chromium.org/infra/tools/result_adapter"
+			test_id_structured: {
+					fine_name: "go.chromium.org/infra/tools/result_adapter"
+					case_name_components: "*fixture"
+			}
 			expected:  true
 			status:  PASS
 			summary_html:  "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
@@ -100,6 +104,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[1], should.Match(mustParseTestResult(
 			`test_id:  "go.chromium.org/infra/tools/result_adapter.TestEnsureArgsValid"
+			test_id_structured: {
+					fine_name: "go.chromium.org/infra/tools/result_adapter"
+					case_name_components: "TestEnsureArgsValid"
+			}
 			expected:  true
 			status:  PASS
 			summary_html:  "<p><text-artifact artifact-id=\"output\"></p>"
@@ -168,6 +176,10 @@ func TestGenerateTestResults(t *testing.T) {
 		assert.Loosely(t, trs, should.HaveLength(4))
 		assert.That(t, trs[0], should.Match(mustParseTestResult(
 			`test_id: "example/pkg"
+			test_id_structured: {
+					fine_name: "example/pkg"
+					case_name_components: "*fixture"
+			}
 			expected: true
 			status: PASS
 			summary_html:  "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
@@ -186,6 +198,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[1], should.Match(mustParseTestResult(
 			`test_id: "example/pkg.TestA"
+			test_id_structured: {
+					fine_name: "example/pkg"
+					case_name_components: "TestA"
+			}
 			expected: true
 			status: PASS
 			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
@@ -202,6 +218,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[2], should.Match(mustParseTestResult(
 			`test_id: "example/pkg.TestB"
+			test_id_structured: {
+					fine_name: "example/pkg"
+					case_name_components: "TestB"
+			}
 			expected: true
 			status: PASS
 			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
@@ -218,6 +238,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[3], should.Match(mustParseTestResult(
 			`test_id:  "example/pkg.TestAB"
+			test_id_structured: {
+					fine_name: "example/pkg"
+					case_name_components: "TestAB"
+			}
 			expected:  true
 			status:  PASS
 			summary_html:  "<p><text-artifact artifact-id=\"output\"></p>"
@@ -240,6 +264,10 @@ func TestGenerateTestResults(t *testing.T) {
 		assert.Loosely(t, trs, should.HaveLength(7))
 		assert.That(t, trs[0], should.Match(mustParseTestResult(
 			`test_id: "test/a"
+			test_id_structured: {
+					fine_name: "test/a"
+					case_name_components: "*fixture"
+			}
 			expected: true
 			status: PASS
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
@@ -258,6 +286,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[1], should.Match(mustParseTestResult(
 			`test_id: "test/a.TestA"
+			test_id_structured: {
+					fine_name: "test/a"
+					case_name_components: "TestA"
+			}
 			expected: true
 			status: PASS
 			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
@@ -274,6 +306,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[2], should.Match(mustParseTestResult(
 			`test_id: "test/b"
+			test_id_structured: {
+					fine_name: "test/b"
+					case_name_components: "*fixture"
+			}
 			status: FAIL
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
@@ -289,6 +325,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[3], should.Match(mustParseTestResult(
 			`test_id: "test/c"
+			test_id_structured: {
+					fine_name: "test/c"
+					case_name_components: "*fixture"
+			}
 			status: FAIL
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
@@ -304,6 +344,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[4], should.Match(mustParseTestResult(
 			`test_id: "test/c2"
+			test_id_structured: {
+					fine_name: "test/c2"
+					case_name_components: "*fixture"
+			}
 			status: FAIL
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
@@ -319,6 +363,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[5], should.Match(mustParseTestResult(
 			`test_id: "test/d"
+			test_id_structured: {
+					fine_name: "test/d"
+					case_name_components: "*fixture"
+			}
 			expected: true
 			status: PASS
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
@@ -337,6 +385,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[6], should.Match(mustParseTestResult(
 			`test_id: "test/d.TestD"
+			test_id_structured: {
+					fine_name: "test/d"
+					case_name_components: "TestD"
+			}
 			expected: true
 			status: PASS
 			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
@@ -358,6 +410,10 @@ func TestGenerateTestResults(t *testing.T) {
 		assert.Loosely(t, trs, should.HaveLength(7))
 		assert.That(t, trs[0], should.Match(mustParseTestResult(
 			`test_id: "test/a"
+			test_id_structured: {
+					fine_name: "test/a"
+					case_name_components: "*fixture"
+			}
 			expected: true
 			status: PASS
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
@@ -376,6 +432,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[1], should.Match(mustParseTestResult(
 			`test_id: "test/a.TestA"
+			test_id_structured: {
+					fine_name: "test/a"
+					case_name_components: "TestA"
+			}
 			expected: true
 			status: PASS
 			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
@@ -392,6 +452,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[2], should.Match(mustParseTestResult(
 			`test_id: "test/b"
+			test_id_structured: {
+					fine_name: "test/b"
+					case_name_components: "*fixture"
+			}
 			status: FAIL
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
@@ -407,6 +471,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[3], should.Match(mustParseTestResult(
 			`test_id: "test/c"
+			test_id_structured: {
+					fine_name: "test/c"
+					case_name_components: "*fixture"
+			}
 			status: FAIL
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
@@ -422,6 +490,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[4], should.Match(mustParseTestResult(
 			`test_id: "test/c2"
+			test_id_structured: {
+					fine_name: "test/c2"
+					case_name_components: "*fixture"
+			}
 			status: FAIL
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
 			start_time: {
@@ -437,6 +509,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[5], should.Match(mustParseTestResult(
 			`test_id: "test/d"
+			test_id_structured: {
+					fine_name: "test/d"
+					case_name_components: "*fixture"
+			}
 			expected: true
 			status: PASS
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
@@ -455,6 +531,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[6], should.Match(mustParseTestResult(
 			`test_id: "test/d.TestD"
+			test_id_structured: {
+					fine_name: "test/d"
+					case_name_components: "TestD"
+			}
 			expected: true
 			status: PASS
 			summary_html: "<p><text-artifact artifact-id=\"output\"></p>"
@@ -477,6 +557,10 @@ func TestGenerateTestResults(t *testing.T) {
 		assert.Loosely(t, trs, should.HaveLength(2))
 		assert.That(t, trs[0], should.Match(mustParseTestResult(
 			`test_id: "test"
+			test_id_structured: {
+					fine_name: "test"
+					case_name_components: "*fixture"
+			}
 			expected: true
 			status: PASS
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
@@ -495,6 +579,10 @@ func TestGenerateTestResults(t *testing.T) {
 			}`)))
 		assert.That(t, trs[1], should.Match(mustParseTestResult(
 			`test_id: "test.test"
+			test_id_structured: {
+					fine_name: "test.test"
+					case_name_components: "*fixture"
+			}
 			expected: true
 			status: PASS
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
@@ -512,6 +600,10 @@ func TestGenerateTestResults(t *testing.T) {
 		assert.Loosely(t, trs, should.HaveLength(1))
 		assert.That(t, trs[0], should.Match(mustParseTestResult(
 			`test_id: "test"
+			test_id_structured: {
+					fine_name: "test"
+					case_name_components: "*fixture"
+			}
 			expected: true
 			status: PASS
 			summary_html: "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
@@ -539,6 +631,10 @@ func TestGenerateTestResults(t *testing.T) {
 		assert.Loosely(t, trs, should.HaveLength(1))
 		assert.That(t, trs[0], should.Match(mustParseTestResult(
 			`test_id: "go.chromium.org/luci/resultdb/internal/permissions"
+			test_id_structured: {
+					fine_name: "go.chromium.org/luci/resultdb/internal/permissions"
+					case_name_components: "*fixture"
+			}
 			expected: true
 			status: SKIP
 			summary_html:  "<p>Result only captures package setup and teardown. Tests within the package have their own result.</p><p><text-artifact artifact-id=\"output\"></p>"
