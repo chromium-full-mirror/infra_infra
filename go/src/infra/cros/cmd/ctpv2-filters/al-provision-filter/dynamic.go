@@ -164,9 +164,8 @@ func getAllSchedulingUnits(metadata *api.SuiteMetadata) []*api.SchedulingUnit {
 
 // updateSchedulingUnit sets the SchedulingUnit's install path and associated metadata.
 func updateSchedulingUnit(su *api.SchedulingUnit, updater *ALProvisionRequestUpdater, log *log.Logger) {
-	gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath()
 	var buildId, buildTarget, installPath string
-	if strings.HasPrefix(gcsPath, "android-build") {
+	if gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath(); strings.HasPrefix(gcsPath, "android-build") {
 		buildId, buildTarget = extractBuildInfoFromInstallPath(gcsPath)
 		installPath = gcsPath
 	} else {
