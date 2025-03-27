@@ -231,7 +231,7 @@ func ExecTestPlan(
 	planDir, planBasename := filepath.Split(planFilename)
 
 	pkgs := map[string]interpreter.Loader{
-		interpreter.MainPkg: interpreter.FileSystemLoader(planDir),
+		"__main__": interpreter.FileSystemLoader(planDir),
 	}
 
 	// Create a loader for proto constructors, using protoLoader. The paths are
@@ -256,14 +256,11 @@ func ExecTestPlan(
 				starlarkstruct.Default.GoString(), starlarkstruct.Make,
 			),
 		},
-		Packages: pkgs,
+		Packages:    pkgs,
+		MainPackage: "__main__",
 	}
 
-	if err := intr.Init(ctx); err != nil {
-		return nil, nil, err
-	}
-
-	if _, err := intr.ExecModule(ctx, interpreter.MainPkg, planBasename); err != nil {
+	if _, err := intr.ExecModule(ctx, "__main__", planBasename); err != nil {
 		return nil, nil, fmt.Errorf("failed executing Starlark file %q: %w", planFilename, err)
 	}
 
