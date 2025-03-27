@@ -33,6 +33,8 @@ func GenerateDynamicProvisionUpdates(req *api.InternalTestplan, updater *ALProvi
 	return nil
 }
 
+// modifyProvisionRequest adds dynamic updates to the InternalTestplan request
+// to configure provisioning containers and associated metadata.
 func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) {
 	log.Printf("Adding AL provisioning dynamic updates...")
 	if updater.ProvisionPath == "" {
@@ -127,6 +129,7 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 	}
 }
 
+// updateProvisionInstallPath sets the install path that will be used for scheduling.
 func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) {
 	log.Printf("Updating provision install path...")
 
@@ -144,7 +147,7 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 	}
 }
 
-// getAllSchedulingUnits returns a list of all the SchedulingUnits, including those found in suiteMetadata.schedulingUnits and the ones found in suiteMetadata.schedulingUnitOptions.schedulingUnits.
+// getAllSchedulingUnits returns a list of all the SchedulingUnits in the SuiteMetadata, including those found in its SchedulingUnits and in its SchedulingUnitOptions.
 func getAllSchedulingUnits(metadata *api.SuiteMetadata) []*api.SchedulingUnit {
 	combined := []*api.SchedulingUnit{}
 	if units := metadata.GetSchedulingUnits(); units != nil {
@@ -160,6 +163,7 @@ func getAllSchedulingUnits(metadata *api.SuiteMetadata) []*api.SchedulingUnit {
 	return combined
 }
 
+// updateSchedulingUnit sets the SchedulingUnit's install path and associated metadata.
 func updateSchedulingUnit(su *api.SchedulingUnit, updater *ALProvisionRequestUpdater, log *log.Logger) {
 	gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath()
 	if strings.HasPrefix(gcsPath, "android-build") {
@@ -225,6 +229,7 @@ func applyBuildInfoFromInstallPathToTarget(target *api.Target, installPath strin
 	return
 }
 
+// buildGetReq constructs a BuildGetRequest for the board.
 func buildGetReq(board string, branch string) androidapi.BuildGetRequest {
 	return androidapi.BuildGetRequest{
 		BuildType:          "submitted",
@@ -237,6 +242,7 @@ func buildGetReq(board string, branch string) androidapi.BuildGetRequest {
 	}
 }
 
+// getBranch returns the branch used by a SchedulingUnit.
 func getBranch(su *api.SchedulingUnit, log *log.Logger) string {
 	kvs := su.GetPrimaryTarget().GetSwReq().GetKeyValues()
 	if kvs == nil {
