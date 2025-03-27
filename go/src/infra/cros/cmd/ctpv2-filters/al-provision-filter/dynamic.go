@@ -166,48 +166,49 @@ func getAllSchedulingUnits(metadata *api.SuiteMetadata) []*api.SchedulingUnit {
 // updateSchedulingUnit sets the SchedulingUnit's install path and associated metadata.
 func updateSchedulingUnit(su *api.SchedulingUnit, updater *ALProvisionRequestUpdater, log *log.Logger) {
 	gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath()
+	var buildId, buildTarget string
 	if strings.HasPrefix(gcsPath, "android-build") {
-		buildId, _ := applyBuildInfoFromInstallPathToTarget(su.GetPrimaryTarget(), gcsPath)
+		buildId, buildTarget = extractBuildInfoFromInstallPath(gcsPath)
 		su.DynamicUpdateLookupTable["buildNumber"] = buildId
 		su.DynamicUpdateLookupTable["installPath"] = gcsPath
-		return
-	}
-	// Look up latest for board as not provided in gcs path.
-	if su.GetDynamicUpdateLookupTable() == nil {
-		log.Printf("dynamic lookup table is nil")
-	}
-	board, ok := su.GetDynamicUpdateLookupTable()["board"]
-	if !ok {
-		log.Printf("board not found")
-	}
-	branch := getBranch(su, log)
-	var latestGreenBuild int
-	var err error
-	if latestGreenBuild, ok = updater.LatestBuildsByBoard[board]; !ok {
-		latestGreenBuild, err = androidapi.GetLatestGreenBuildNumber(androidapi.ContainerGce, buildGetReq(board, branch))
-		if err != nil {
-			log.Printf("Error getting latest green build number: %v", err)
-			return
+	} else {
+		// Look up latest for board as not provided in gcs path.
+		if su.GetDynamicUpdateLookupTable() == nil {
+			log.Printf("dynamic lookup table is nil")
 		}
-	}
-	su.DynamicUpdateLookupTable["buildNumber"] = fmt.Sprint(latestGreenBuild)
-	log.Printf("Latest green build number: %d\n", latestGreenBuild)
+		board, ok := su.GetDynamicUpdateLookupTable()["board"]
+		if !ok {
+			log.Printf("board not found")
+		}
+		branch := getBranch(su, log)
+		var latestGreenBuild int
+		var err error
+		if latestGreenBuild, ok = updater.LatestBuildsByBoard[board]; !ok {
+			latestGreenBuild, err = androidapi.GetLatestGreenBuildNumber(androidapi.ContainerGce, buildGetReq(board, branch))
+			if err != nil {
+				log.Printf("Error getting latest green build number: %v", err)
+				return
+			}
+		}
+		log.Printf("Latest green build number: %d\n", latestGreenBuild)
+		buildId = fmt.Sprint(latestGreenBuild)
+		su.DynamicUpdateLookupTable["buildNumber"] = buildId
 
-	log.Println("Setting build target and latest green build number")
-	boardTarget := board + "-trunk_staging-userdebug"
-	installPath := fmt.Sprintf(
-		common.AndroidBuildPrefix+"%s/%s/%s-ota-%s.zip",
-		strconv.Itoa(latestGreenBuild), boardTarget, board, strconv.Itoa(latestGreenBuild))
-	log.Printf("InstallPath value: %s", installPath)
-	su.DynamicUpdateLookupTable["installPath"] = installPath
-	su.GetPrimaryTarget().GetSwReq().GcsPath = installPath
-	applyBuildInfoFromInstallPathToTarget(su.GetPrimaryTarget(), installPath)
+		log.Println("Setting build target and latest green build number")
+		buildTarget = board + "-trunk_staging-userdebug"
+		installPath := fmt.Sprintf(
+			common.AndroidBuildPrefix+"%s/%s/%s-ota-%s.zip",
+			strconv.Itoa(latestGreenBuild), buildTarget, board, strconv.Itoa(latestGreenBuild))
+		log.Printf("InstallPath value: %s", installPath)
+		su.DynamicUpdateLookupTable["installPath"] = installPath
+		su.GetPrimaryTarget().GetSwReq().GcsPath = installPath
+	}
+	applyBuildInfoToTarget(buildId, buildTarget, su.GetPrimaryTarget())
 }
 
-// applyBuildInfoFromInstallPathToTarget extracts the buildId and buildTarget
-// from the provided installPath and applies their values into the target's
-// software request key values.
-func applyBuildInfoFromInstallPathToTarget(target *api.Target, installPath string) (buildId, buildTarget string) {
+// extractBuildInfoFromInstallPath extracts the buildId and buildTarget from the
+// provided installPath.
+func extractBuildInfoFromInstallPath(installPath string) (buildId, buildTarget string) {
 	trimmedPath := strings.TrimPrefix(installPath, common.AndroidBuildPrefix)
 	splitPath := strings.Split(trimmedPath, "/")
 	if len(splitPath) < 2 {
@@ -216,6 +217,12 @@ func applyBuildInfoFromInstallPathToTarget(target *api.Target, installPath strin
 	}
 	// Indexes 0 and 1 correspond to buildId and buildTarget.
 	buildId, buildTarget = splitPath[0], splitPath[1]
+	return
+}
+
+// applyBuildInfoToTarget sets the provided buildId and buildTarget in the
+// target's software request key values.
+func applyBuildInfoToTarget(buildId, buildTarget string, target *api.Target) {
 	target.GetSwReq().KeyValues = append(target.GetSwReq().KeyValues, []*api.KeyValue{
 		{
 			Key:   "al_build_id",
