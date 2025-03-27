@@ -113,6 +113,16 @@ def builder(
         "metrics_project": "chromium-reclient-metrics",
         "scandeps_server": scandeps_server,
     }
+    properties["$build/siso"] = {
+        "configs": [
+            "builder",
+        ],
+        "enable_cloud_monitoring": True,
+        "enable_cloud_profiler": True,
+        "enable_cloud_trace": True,
+        "metrics_project": "chromium-reclient-metrics",
+        "project": "rbe-chromium-trusted",
+    }
 
     luci.builder(
         name = name,
