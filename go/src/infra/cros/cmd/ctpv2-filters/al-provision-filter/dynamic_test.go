@@ -170,29 +170,28 @@ func TestExtractBuildInfoFromInstallPath_Success(t *testing.T) {
 		installPath         string
 		expectedBuildId     string
 		expectedBuildTarget string
+		expectedBoard       string
 	}{
 		{
 			name:                "Standard path with prefix",
-			installPath:         common.AndroidBuildPrefix + "12345/board-target/file.zip",
+			installPath:         common.AndroidBuildPrefix + "12345/board-target/board-ota-12345.zip",
 			expectedBuildId:     "12345",
 			expectedBuildTarget: "board-target",
-		},
-		{
-			name:                "Path with extra segments",
-			installPath:         common.AndroidBuildPrefix + "67890/another-target/subdir/image.img",
-			expectedBuildId:     "67890",
-			expectedBuildTarget: "another-target",
+			expectedBoard:       "board",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			buildId, buildTarget := extractBuildInfoFromInstallPath(tt.installPath)
+			buildId, buildTarget, board := extractBuildInfoFromInstallPath(tt.installPath)
 			if buildId != tt.expectedBuildId {
 				t.Errorf("extractBuildInfoFromInstallPath() buildId = %q, want %q", buildId, tt.expectedBuildId)
 			}
 			if buildTarget != tt.expectedBuildTarget {
 				t.Errorf("extractBuildInfoFromInstallPath() buildTarget = %q, want %q", buildTarget, tt.expectedBuildTarget)
+			}
+			if board != tt.expectedBoard {
+				t.Errorf("extractBuildInfoFromInstallPath() board = %q, want %q", board, tt.expectedBoard)
 			}
 		})
 	}
@@ -219,17 +218,24 @@ func TestExtractBuildInfoFromInstallPath_Failure(t *testing.T) {
 			name:        "No prefix, too few segments",
 			installPath: "12345",
 		},
+		{
+			name:        "Too many segments",
+			installPath: common.AndroidBuildPrefix + "67890/another-target/subdir/another-ota-67890.img",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Expect empty strings and a log message (log check omitted)
-			buildId, buildTarget := extractBuildInfoFromInstallPath(tt.installPath)
+			buildId, buildTarget, board := extractBuildInfoFromInstallPath(tt.installPath)
 			if buildId != "" {
 				t.Errorf("extractBuildInfoFromInstallPath() buildId = %q, want \"\"", buildId)
 			}
 			if buildTarget != "" {
 				t.Errorf("extractBuildInfoFromInstallPath() buildTarget = %q, want \"\"", buildTarget)
+			}
+			if board != "" {
+				t.Errorf("extractBuildInfoFromInstallPath() board = %q, want \"\"", board)
 			}
 		})
 	}

@@ -171,7 +171,7 @@ func getAllSchedulingUnits(metadata *api.SuiteMetadata) []*api.SchedulingUnit {
 func updateSchedulingUnit(su *api.SchedulingUnit, updater *ALProvisionRequestUpdater, log *log.Logger) error {
 	var buildId, buildTarget, installPath string
 	if gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath(); strings.HasPrefix(gcsPath, "android-build") {
-		buildId, buildTarget = extractBuildInfoFromInstallPath(gcsPath)
+		buildId, buildTarget, _ = extractBuildInfoFromInstallPath(gcsPath)
 		installPath = gcsPath
 	} else {
 		// Look up latest for board as not provided in gcs path.
@@ -208,17 +208,25 @@ func updateSchedulingUnit(su *api.SchedulingUnit, updater *ALProvisionRequestUpd
 	return nil
 }
 
-// extractBuildInfoFromInstallPath extracts the buildId and buildTarget from the
-// provided installPath.
-func extractBuildInfoFromInstallPath(installPath string) (buildId, buildTarget string) {
+// extractBuildInfoFromInstallPath parses metadata out of the provided installPath.
+// A typical installPath is expected to look like: {common.AndroidBuildPrefix}/{buildId}/{buildTarget}/{board}-ota-{buildId}.zip
+// For example: android-build/build_explorer/artifacts_list/123456789/brya-trunk_staging-userdebug/brya-ota-123456789.zip
+func extractBuildInfoFromInstallPath(installPath string) (buildId, buildTarget, board string) {
 	trimmedPath := strings.TrimPrefix(installPath, common.AndroidBuildPrefix)
 	splitPath := strings.Split(trimmedPath, "/")
-	if len(splitPath) < 2 {
-		log.Printf("Warning: could not extract buildId and buildTarget from installPath")
+	if len(splitPath) != 3 {
+		log.Printf("Warning: could not parse installPath: %s", installPath)
 		return
 	}
-	// Indexes 0 and 1 correspond to buildId and buildTarget.
-	buildId, buildTarget = splitPath[0], splitPath[1]
+	buildId, buildTarget, artifactName := splitPath[0], splitPath[1], splitPath[2]
+	splitArtifactName := strings.Split(artifactName, "-")
+	if len(splitArtifactName) < 3 {
+		log.Printf(
+			"Warning: could not parse artifact name %s in installPath: %s",
+			artifactName, installPath)
+		return
+	}
+	board = splitArtifactName[0]
 	return
 }
 
