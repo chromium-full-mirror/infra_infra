@@ -199,6 +199,17 @@ func GetAssetResource(assetID string) *Resource {
 	}
 }
 
+// GetNlyteAssetResource returns a Resource with NlyteAssetEntity
+func GetNlyteAssetResource(assetID string) *Resource {
+	return &Resource{
+		Kind: registration.NlyteAssetKind,
+		ID:   assetID,
+		Entity: &registration.NlyteAssetEntity{
+			Name: assetID,
+		},
+	}
+}
+
 // GetCachingServiceResource returns a Resource with CSEntity.
 func GetCachingServiceResource(cachingServiceID string) *Resource {
 	return &Resource{

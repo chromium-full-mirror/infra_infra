@@ -219,14 +219,13 @@ var Jobs = []*cron.CronTab{
 		TrigType: cron.EVERY,
 		Job:      backfillDeviceLabelsSchedulingUnits,
 	},
-	// TODO(b/378926955): Enable dumper job automation when prod data ready
-	// {
-	// 	// Sync Nlyte device information
-	// 	Name:     "ufs.nlyte_devices.sync",
-	// 	Time:     1 * time.Hour,
-	// 	TrigType: cron.EVERY,
-	// 	Job:      fetchNlyteBigQueryData,
-	// },
+	{
+		// Sync Nlyte device information
+		Name:     "ufs.nlyte_devices.sync",
+		Time:     1 * time.Hour,
+		TrigType: cron.EVERY,
+		Job:      fetchNlyteBigQueryData,
+	},
 }
 
 // InitServer initializes a cron server.

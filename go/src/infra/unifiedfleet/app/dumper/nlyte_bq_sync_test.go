@@ -39,7 +39,7 @@ func TestNlyteUpcertAsset(t *testing.T) {
 		ctx = nlyteUpcertTestFakeAuthDB(ctx, t.T)
 
 		nlyteUpcertTestRackSetup(ctx, t.T)
-		existingUFSAsset, existingUFSNlyteAsset := nlyteUpcertTestAssetSetup(ctx, t.T)
+		existingUFSNlyteAsset := nlyteUpcertTestAssetSetup(ctx, t.T)
 
 		t.Run("Create New Nlyte Asset", func(t *ftt.Test) {
 			asset := &ufspb.Asset{
@@ -52,51 +52,23 @@ func TestNlyteUpcertAsset(t *testing.T) {
 			}
 			expected := &ufspb.Asset{}
 			proto.Merge(expected, asset)
-			expected.Name = "nlyte-" + asset.Name
 			err := nlyteUpcertAsset(ctx, asset)
 			assert.NoErr(t, err)
-			actual, err := controller.GetAsset(ctx, "nlyte-test-create-asset")
+			actual, err := controller.GetNlyteAsset(ctx, "test-create-asset")
 			assert.NoErr(t, err)
 			assert.Loosely(t, actual, should.NotBeNil)
 			assert.That(t, actual.Location, should.Match(expected.Location))
 		})
-
-		t.Run("Update Existing UFS Asset", func(t *ftt.Test) {
-			asset := &ufspb.Asset{}
+		t.Run("Update Existing Nlyte Asset", func(t *ftt.Test) {
 			expected := &ufspb.Asset{}
-			proto.Merge(asset, existingUFSAsset)
-			asset.Location.Rack = "11-02"
-			proto.Merge(expected, asset)
-			expected.Name = "nlyte-" + expected.Name
-			err := nlyteUpcertAsset(ctx, asset)
+			proto.Merge(expected, existingUFSNlyteAsset)
+			expected.Location = &ufspb.Location{Zone: ufspb.Zone_ZONE_SFO36_OS, Rack: "11-02"}
+			err := nlyteUpcertAsset(ctx, expected)
 			assert.NoErr(t, err)
-			originalAsset, err := controller.GetAsset(ctx, "test-update-ufs-asset")
+			actual, err := controller.GetNlyteAsset(ctx, "test-update-ufs-nlyte-asset")
 			assert.NoErr(t, err)
-			assert.Loosely(t, originalAsset, should.NotBeNil)
-			assert.That(t, originalAsset, should.Match(existingUFSAsset))
-			updatedAsset, err := controller.GetAsset(ctx, "nlyte-test-update-ufs-asset")
-			assert.NoErr(t, err)
-			assert.Loosely(t, updatedAsset, should.NotBeNil)
-			assert.That(t, updatedAsset.Location, should.Match(expected.Location))
-		})
-
-		t.Run("Update Existing Nlyte Prefix Asset", func(t *ftt.Test) {
-			asset := &ufspb.Asset{}
-			expected := &ufspb.Asset{}
-			proto.Merge(asset, existingUFSNlyteAsset)
-			asset.Location.Rack = "11-02"
-			proto.Merge(expected, asset)
-			expected.Name = "nlyte-" + asset.Name
-			err := nlyteUpcertAsset(ctx, asset)
-			assert.NoErr(t, err)
-			originalAsset, err := controller.GetAsset(ctx, "test-update-ufs-nlyte-asset")
-			assert.NoErr(t, err)
-			assert.Loosely(t, originalAsset, should.NotBeNil)
-			assert.That(t, originalAsset, should.Match(existingUFSNlyteAsset))
-			updatedAsset, err := controller.GetAsset(ctx, "nlyte-test-update-ufs-nlyte-asset")
-			assert.NoErr(t, err)
-			assert.Loosely(t, updatedAsset, should.NotBeNil)
-			assert.Loosely(t, updatedAsset.Location, should.Match(expected.Location))
+			assert.Loosely(t, actual, should.NotBeNil)
+			assert.That(t, actual.Location, should.Match(expected.Location))
 		})
 	})
 }
@@ -130,22 +102,12 @@ func nlyteUpcertTestRackSetup(ctx context.Context, t *testing.T) {
 	}
 }
 
-func nlyteUpcertTestAssetSetup(ctx context.Context, t *testing.T) (*ufspb.Asset, *ufspb.Asset) {
+func nlyteUpcertTestAssetSetup(ctx context.Context, t *testing.T) *ufspb.Asset {
 	t.Helper()
-	existingUFSAsset := &ufspb.Asset{Name: "test-update-ufs-asset", Type: ufspb.AssetType_DUT, Location: &ufspb.Location{Zone: ufspb.Zone_ZONE_SFO36_OS, Rack: "10-01"}}
-	if _, err := controller.AssetRegistration(ctx, existingUFSAsset); err != nil {
+	existingUFSNlyteAsset := &ufspb.Asset{Name: "test-update-ufs-nlyte-asset", Type: ufspb.AssetType_DUT, Location: &ufspb.Location{Zone: ufspb.Zone_ZONE_SFO36_OS, Rack: "10-01"}}
+	if _, err := controller.NlyteAssetRegistration(ctx, existingUFSNlyteAsset); err != nil {
 		t.Fatalf("Unable to create test existing UFS asset: %s", err)
 	}
 
-	existingUFSNlyteAsset := &ufspb.Asset{Name: "test-update-ufs-nlyte-asset", Type: ufspb.AssetType_DUT, Location: &ufspb.Location{Zone: ufspb.Zone_ZONE_SFO36_OS, Rack: "10-01"}}
-	existingUFSNlytePrefixAsset := &ufspb.Asset{}
-	proto.Merge(existingUFSNlytePrefixAsset, existingUFSNlyteAsset)
-	existingUFSNlytePrefixAsset.Name = "nlyte-" + existingUFSNlytePrefixAsset.Name
-	if _, err := controller.AssetRegistration(ctx, existingUFSNlyteAsset); err != nil {
-		t.Fatalf("Unable to create test existing UFS + Nlyte asset: %s", err)
-	}
-	if _, err := controller.AssetRegistration(ctx, existingUFSNlytePrefixAsset); err != nil {
-		t.Fatalf("Unable to create test existing UFS + Nlyte prefix asset: %s", err)
-	}
-	return existingUFSAsset, existingUFSNlyteAsset
+	return existingUFSNlyteAsset
 }

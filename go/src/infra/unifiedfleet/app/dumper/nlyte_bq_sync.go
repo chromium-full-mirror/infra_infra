@@ -5,13 +5,13 @@ package dumper
 
 import (
 	"context"
+	_ "embed"
 	"fmt"
 	"strconv"
 	"strings"
 
 	"cloud.google.com/go/bigquery"
 	"google.golang.org/api/iterator"
-	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/luci/common/errors"
@@ -26,91 +26,11 @@ import (
 const (
 	// Nlyte "DUT STD" Material ID
 	nlyteMaterialIDChromeOSAsset = 25144
-	// Collect individual active state DUT assets from Nlyte BigQuery instance
-	// Specifically, look for active assets created from materials given the
-	// material_ids parameter, associate these assets to their W-shelf chassis
-	// (created from material ID 26095) and cabinet mountings, and return
-	// UFS-style information.
-	// TODO(b/378926955): Remove restriction to cabinet ID 580836
-	nlyteQueryGetMountedDuts = `WITH
-	Assets AS (
-	  SELECT
-		Asset.AssetID,
-		Asset.Tag,
-		Asset.AssetName,
-		Asset.CabinetAssetID,
-		Asset.GridReferenceRow AS Row,
-		Asset.GridReferenceColumn AS Rack,
-		Orientation.Detail AS Face,
-	  FROM ` + "`nlyte-tng-prod.nlyte.dbo_Asset`" + ` AS Asset
-	  LEFT JOIN ` + "`nlyte-tng-prod.nlyte.dbo_vwAssetMounting`" + ` AS AssetMounting
-		ON Asset.AssetID = AssetMounting.MountedAssetID
-	  LEFT JOIN ` + "`nlyte-tng-prod.nlyte.dbo_Orientation`" + ` AS Orientation
-		USING (OrientationID)
-	  WHERE
-		MaterialID IN UNNEST(@material_ids)
-		AND RecordStatus = 2  -- Active
-	),
-	Cabinets AS (
-	  SELECT DISTINCT CabinetAssetID FROM Assets
-	),
-	CabinetShelves AS (
-	  SELECT
-		ChassisAsset.AssetID,
-		Cabinets.CabinetAssetID,
-		RANK()
-		  OVER (PARTITION BY UMounting.CabinetAssetID ORDER BY UMounting.CabinetUNumber ASC)
-		  AS ShelfIndex
-	  FROM Cabinets
-	  INNER JOIN ` + "`nlyte-tng-prod.nlyte.dbo_vwUMounting`" + ` AS UMounting
-		USING (CabinetAssetID)
-	  INNER JOIN ` + "`nlyte-tng-prod.nlyte.dbo_Asset`" + ` AS ChassisAsset
-		USING (UMountingID)
-	  WHERE ChassisAsset.MaterialID = 26095  -- Enconnex W-Shelf
-	)
-SELECT
-Assets.AssetID AS ID,
-Assets.Tag,
-FORMAT('%02d', SAFE_CAST(Assets.Row AS INT)) AS Row,
-FORMAT('%02d-%02d', SAFE_CAST(Assets.Row AS INT), SAFE_CAST(Assets.Rack AS INT)) AS Rack,
--- Chassis Host # Calculation: Offset by 0 if front mounted, or total shelf count * 2 if back
--- mounted, add index of shelf asset is attached to * 2, then finally determine if host is odd or
--- even based on chassis column, subtracting 1 if odd.
-(
-	CASE
-	WHEN Assets.Face = 'Back'
-		THEN
-		(
-			SELECT COUNT(*) * 2
-			FROM CabinetShelves
-			WHERE CabinetShelves.CabinetAssetID = Assets.CabinetAssetID
-		)
-	ELSE 0
-	END)
-	+ (CabinetShelves.ShelfIndex * 2)
-	- MOD(ChassisMountedAssetMap.ColumnPosition, 4) AS ChassisHostNumber,
-CustomFieldModel.DataValueString AS Model,
-CustomFieldBoard.DataValueString AS Board,
-CustomFieldZone.DataValueString AS Zone
-FROM Assets
-INNER JOIN ` + "`nlyte-tng-prod.nlyte.dbo_ChassisMountedAssetMap`" + ` AS ChassisMountedAssetMap
-ON Assets.AssetID = ChassisMountedAssetMap.MountedAssetID
-LEFT JOIN CabinetShelves
-ON
-	ChassisMountedAssetMap.ChassisAssetID = CabinetShelves.AssetID
-LEFT JOIN ` + "`nlyte-tng-prod.nlyte.dbo_vwAssetCustomField`" + ` AS CustomFieldModel
-ON
-	Assets.AssetID = CustomFieldModel.AssetID
-	AND CustomFieldModel.DataLabel = 'Model'
-LEFT JOIN ` + "`nlyte-tng-prod.nlyte.dbo_vwAssetCustomField`" + ` AS CustomFieldBoard
-ON
-	Assets.AssetID = CustomFieldBoard.AssetID
-	AND CustomFieldBoard.DataLabel = 'Board'
-LEFT JOIN ` + "`nlyte-tng-prod.nlyte.dbo_vwAssetCustomField`" + ` AS CustomFieldZone
-ON
-	Assets.CabinetAssetID = CustomFieldZone.AssetID
-	AND CustomFieldZone.DataLabel = 'Zone'
-WHERE Assets.CabinetAssetID = 580836;`
+)
+
+var (
+	//go:embed nlyte_bq_sync.sql
+	nlyteQueryGetMountedDuts string
 )
 
 type assetResult struct {
@@ -124,24 +44,23 @@ type assetResult struct {
 func (a assetResult) toAssetProto() (*ufspb.Asset, error) {
 	var merr []error
 
-	// TODO(b/378926955): Fill out additional data about asset (board, model)
-	// if !a.ModelBoard.Valid {
-	// 	merr = append(merr, errors.New("unset model/board"))
-	// }
 	zoneString := strings.ToUpper(a.Zone.StringVal)
-	zoneInt, ok := ufspb.Zone_value[fmt.Sprintf("ZONE_%s", zoneString)]
+	if !strings.HasPrefix(zoneString, "ZONE_") {
+		zoneString = fmt.Sprintf("ZONE_%s", zoneString)
+	}
+	zoneInt, ok := ufspb.Zone_value[zoneString]
 	if !ok {
 		merr = append(merr, errors.New(fmt.Sprintf("unknown zone %q", zoneString)))
 	}
 
 	return &ufspb.Asset{
-		Name: a.Tag,
-		Type: ufspb.AssetType_DUT,
-		// Model: a.Model.StringVal,
+		Name:  a.Tag,
+		Type:  ufspb.AssetType_DUT,
+		Model: a.Model.StringVal,
 		Info: &ufspb.AssetInfo{
-			AssetTag: a.Tag,
-			// BuildTarget: a.Board.StringVal,
-			// Model:       a.Model.StringVal,
+			AssetTag:    a.Tag,
+			BuildTarget: a.Board.StringVal,
+			Model:       a.Model.StringVal,
 		},
 		Location: &ufspb.Location{
 			Zone:     ufspb.Zone(zoneInt),
@@ -158,6 +77,8 @@ func fetchNlyteBigQueryData(ctx context.Context) (rErr error) {
 	defer func() {
 		fetchNlyteBigQueryDataTick.Add(ctx, 1, rErr == nil)
 	}()
+	logging.Infof(ctx, "Setting namespce as OS")
+	ctx, err := util.SetupDatastoreNamespace(ctx, util.OSNamespace)
 	client, err := bigquery.NewClient(ctx, "nlyte-tng-prod")
 	if err != nil {
 		return fmt.Errorf("bigquery.NewClient: %w", err)
@@ -202,35 +123,20 @@ func fetchNlyteBigQueryData(ctx context.Context) (rErr error) {
 	})
 }
 
-// TODO(b/378926955): Remove nlyte prefix once prod data is ready
-// Create a new "nlyte-" prefix asset if one does not exist, and then update the prefix asset with info from the given asset
+// Create a new nlyte asset Kind if one does not exist, otherwise update an existing nlyte asset Kind.
 func nlyteUpcertAsset(ctx context.Context, nlyteAsset *ufspb.Asset) error {
-	// Attempt to pull existing asset data (if any)
-	baseAsset, err := controller.GetAsset(ctx, nlyteAsset.Name)
-	if util.IsNotFoundError(err) {
-		logging.Debugf(ctx, "No existing asset %s found in Datastore", nlyteAsset.Name)
-		baseAsset = &ufspb.Asset{}
-		proto.Merge(baseAsset, nlyteAsset)
-	} else if err != nil {
-		return err
-	}
-
-	nlyteAsset.Name = "nlyte-" + nlyteAsset.Name
-	baseAsset.Name = "nlyte-" + baseAsset.Name
-	_, err = controller.GetAsset(ctx, baseAsset.Name)
-	if util.IsNotFoundError(err) {
-		// Create new "nlyte-" asset
-		logging.Debugf(ctx, "Creating asset %s", baseAsset.Name)
-		_, err = controller.AssetRegistration(ctx, baseAsset)
-		if err != nil {
-			return err
+	ufsAsset, err := controller.GetNlyteAsset(ctx, nlyteAsset.Name)
+	if err == nil {
+		logging.Debugf(ctx, "Nlyte kind asset %s found", nlyteAsset.Name)
+		if proto.Equal(ufsAsset, nlyteAsset) {
+			logging.Debugf(ctx, "Nlyte kind asset %s is up to date", nlyteAsset.Name)
+		} else {
+			logging.Debugf(ctx, "Nlyte kind asset %s is out of date, updating", nlyteAsset.Name)
+			_, err = controller.UpdateNlyteAsset(ctx, nlyteAsset, nil)
 		}
-	} else if err != nil {
-		return err
+	} else if util.IsNotFoundError(err) {
+		logging.Debugf(ctx, "Unable to find nlye kind asset %s, creating", nlyteAsset.Name)
+		_, err = controller.NlyteAssetRegistration(ctx, nlyteAsset)
 	}
-	// Update existing "nlyte-" asset
-	logging.Debugf(ctx, "Updating asset %s", baseAsset.Name)
-	_, err = controller.UpdateAsset(ctx, nlyteAsset, &field_mask.FieldMask{Paths: []string{"location.zone", "location.row", "location.rack", "location.position", "info.build_target", "model"}})
-
 	return err
 }
