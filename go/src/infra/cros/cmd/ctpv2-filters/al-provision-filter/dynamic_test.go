@@ -343,7 +343,7 @@ func TestUpdateSchedulingUnit_ExplicitAndroidBuildPath(t *testing.T) {
 	updater := &ALProvisionRequestUpdater{} // Not used in this path
 	logger := log.Default()                 // Use default logger
 
-	updateSchedulingUnit(su, updater, logger)
+	updateSchedulingUnit(su, &api.InternalTestplan{}, updater, logger)
 
 	// Check DynamicUpdateLookupTable
 	if val, ok := su.DynamicUpdateLookupTable["buildNumber"]; !ok || val != expectedBuildId {
@@ -389,7 +389,7 @@ func TestUpdateSchedulingUnit_LatestGreenBuild(t *testing.T) {
 	}
 	logger := log.Default() // Use default logger
 
-	updateSchedulingUnit(su, updater, logger)
+	updateSchedulingUnit(su, &api.InternalTestplan{}, updater, logger)
 
 	// Check DynamicUpdateLookupTable
 	if val, ok := su.DynamicUpdateLookupTable["buildNumber"]; !ok || val != expectedBuildId {
@@ -418,7 +418,7 @@ func TestUpdateSchedulingUnit_LatestGreenBuild(t *testing.T) {
 	}
 }
 
-// --- Tests for getOTAPath ---
+// --- Misc tests ---
 
 func TestGetOTAPath(t *testing.T) {
 	t.Parallel()
@@ -468,5 +468,27 @@ func TestGetOTAPath(t *testing.T) {
 				t.Errorf("getOTAPath(%q, %q, %q) = %q; want %q", tt.buildId, tt.buildTarget, tt.board, got, tt.want)
 			}
 		})
+	}
+}
+
+func TestFixInstallPathForKernelTest_Success(t *testing.T) {
+	originalInstallPath := "android-build/build_explorer/artifacts_list/123456789/brya_device_x86_64/brya-ota-123456789.zip"
+	expected := "android-build/build_explorer/artifacts_list/987654321/brya-trunk_staging-userdebug/brya-ota-987654321.zip"
+	req := &api.InternalTestplan{
+		SuiteInfo: &api.SuiteInfo{
+			SuiteMetadata: &api.SuiteMetadata{
+				ExecutionMetadata: &api.ExecutionMetadata{
+					Args: []*api.Arg{
+						{Flag: "build_id", Value: "987654321"},
+						{Flag: "build_target", Value: "brya-trunk_staging-userdebug"},
+					},
+				},
+			},
+		},
+	}
+	if got, err := fixInstallPathForKernelTest(originalInstallPath, req); err != nil {
+		t.Fatalf("fixInstallPathForKernelTest(%q, %q) raised error %q", originalInstallPath, req, err)
+	} else if got != expected {
+		t.Fatalf("fixInstallPathForKernelTest(%q, %q) = %q, want %q", originalInstallPath, req, got, expected)
 	}
 }

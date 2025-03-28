@@ -144,7 +144,7 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 	}
 
 	for _, schedulingUnit := range getAllSchedulingUnits(suiteMetadata) {
-		if err := updateSchedulingUnit(schedulingUnit, updater, log); err != nil {
+		if err := updateSchedulingUnit(schedulingUnit, req, updater, log); err != nil {
 			return err
 		}
 	}
@@ -168,7 +168,7 @@ func getAllSchedulingUnits(metadata *api.SuiteMetadata) []*api.SchedulingUnit {
 }
 
 // updateSchedulingUnit sets the SchedulingUnit's install path and associated metadata.
-func updateSchedulingUnit(su *api.SchedulingUnit, updater *ALProvisionRequestUpdater, log *log.Logger) error {
+func updateSchedulingUnit(su *api.SchedulingUnit, req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) error {
 	var buildId, buildTarget, installPath string
 	if gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath(); strings.HasPrefix(gcsPath, "android-build") {
 		buildId, buildTarget, _ = extractBuildInfoFromInstallPath(gcsPath)
@@ -200,12 +200,45 @@ func updateSchedulingUnit(su *api.SchedulingUnit, updater *ALProvisionRequestUpd
 		installPath = getOTAPath(buildId, buildTarget, board)
 		log.Printf("InstallPath value: %s", installPath)
 	}
-	// Make sure the buildId and installPath is consistent in all expected locations.
+	if getTestType(req) == common.KernelTestType {
+		var err error
+		installPath, err = fixInstallPathForKernelTest(installPath, req)
+		if err != nil {
+			return fmt.Errorf("fixing install path for kernel test: %+v", err)
+		}
+	}
+	// Make sure the buildId and installPath are consistent in all expected locations.
 	su.DynamicUpdateLookupTable["buildNumber"] = buildId
 	su.DynamicUpdateLookupTable["installPath"] = installPath
 	applyBuildInfoToTarget(buildId, buildTarget, su.GetPrimaryTarget())
 	su.GetPrimaryTarget().GetSwReq().GcsPath = installPath
 	return nil
+}
+
+// fixInstallPathForKernelTest finds the installPath to use for kernel tests.
+// When the test request comes into al-provision-filter, the installPath points
+// to an *-ota-*.zip artifact found in the primary build, which is normally an
+// AL OS build. However, for tests on the kernel tree, the primary build is
+// actually the kernel build, so this artifact doesn't exist. We must replace
+// it with an artifact from the OS build, which gets passed in via Args.
+func fixInstallPathForKernelTest(installPath string, req *api.InternalTestplan) (string, error) {
+	_, _, board := extractBuildInfoFromInstallPath(installPath)
+	var osBuildId, osTarget string
+	args := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
+	for _, arg := range args {
+		switch arg.GetFlag() {
+		case "build_id":
+			osBuildId = arg.GetValue()
+		case "build_target":
+			osTarget = arg.GetValue()
+		}
+	}
+	if osBuildId == "" || osTarget == "" {
+		return "", fmt.Errorf(
+			"testplan args did not contain all required info for kernel tests: build_id=%s, build_target=%s, args=%+v",
+			osBuildId, osTarget, args)
+	}
+	return getOTAPath(osBuildId, osTarget, board), nil
 }
 
 // extractBuildInfoFromInstallPath parses metadata out of the provided installPath.
