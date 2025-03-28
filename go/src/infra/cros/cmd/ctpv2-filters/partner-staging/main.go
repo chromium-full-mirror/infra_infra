@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/moblab"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/site"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging/tools"
 )
@@ -47,7 +48,7 @@ func executor(req *api.InternalTestplan, log *log.Logger, commonParams *serverte
 		log.Printf("Using service account key path: %s\n", saPath)
 		options = append(options, option.WithCredentialsFile(saPath))
 	}
-	moblabClient, err := tools.NewMobLabClient(ctx, options...)
+	moblabClient, err := moblab.NewBuildClient(ctx, options...)
 	if err != nil {
 		return req, err
 	}
@@ -103,7 +104,7 @@ func isCFTenabled(_ *api.InternalTestplan) bool {
 // stageBuilds stages the specified Chrome OS builds to the user GCS buckets.
 // It takes a map of build to bucket and stages each build to the specified bucket.
 // It uses a wait group to wait for all builds to be staged before returning.
-func stageBuilds(ctx context.Context, moblabClient tools.MobLabAPI, buildsToStage map[string]string, cft bool, log *log.Logger) error {
+func stageBuilds(ctx context.Context, moblabClient tools.MoblabClient, buildsToStage map[string]string, cft bool, log *log.Logger) error {
 	var wg sync.WaitGroup
 	errChan := make(chan error, len(buildsToStage))
 
@@ -133,7 +134,7 @@ func stageBuilds(ctx context.Context, moblabClient tools.MobLabAPI, buildsToStag
 
 // stageChromeOSBuild stages the specified Chrome OS build to the user GCS bucket.
 // It parses the build string to extract the board and version, and then calls StageImageToBucket to stage the build.
-func stageChromeOSBuild(ctx context.Context, moblabClient tools.MobLabAPI, build string, bucket string, cft bool, log *log.Logger) error {
+func stageChromeOSBuild(ctx context.Context, moblabClient tools.MoblabClient, build string, bucket string, cft bool, log *log.Logger) error {
 	board, version, err := parseChromeOSBuild(build)
 	if err != nil {
 		return err
