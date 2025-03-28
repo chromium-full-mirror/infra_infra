@@ -194,11 +194,12 @@ func updateSchedulingUnit(su *api.SchedulingUnit, updater *ALProvisionRequestUpd
 		buildTarget = board + "-trunk_staging-userdebug"
 		installPath = getOTAPath(buildId, buildTarget, board)
 		log.Printf("InstallPath value: %s", installPath)
-		su.GetPrimaryTarget().GetSwReq().GcsPath = installPath
 	}
+	// Make sure the buildId and installPath is consistent in all expected locations.
 	su.DynamicUpdateLookupTable["buildNumber"] = buildId
 	su.DynamicUpdateLookupTable["installPath"] = installPath
 	applyBuildInfoToTarget(buildId, buildTarget, su.GetPrimaryTarget())
+	su.GetPrimaryTarget().GetSwReq().GcsPath = installPath
 }
 
 // extractBuildInfoFromInstallPath extracts the buildId and buildTarget from the
