@@ -28,7 +28,9 @@ var (
 // GenerateDynamicProvisionUpdates generates and updates the provision components of the request
 func GenerateDynamicProvisionUpdates(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) error {
 	modifyProvisionRequest(req, updater, log)
-	updateProvisionInstallPath(req, updater, log)
+	if err := updateProvisionInstallPath(req, updater, log); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -129,7 +131,7 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 }
 
 // updateProvisionInstallPath sets the install path that will be used for scheduling.
-func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) {
+func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) error {
 	log.Printf("Updating provision install path...")
 
 	suiteInfo := req.GetSuiteInfo()
@@ -142,8 +144,11 @@ func updateProvisionInstallPath(req *api.InternalTestplan, updater *ALProvisionR
 	}
 
 	for _, schedulingUnit := range getAllSchedulingUnits(suiteMetadata) {
-		updateSchedulingUnit(schedulingUnit, updater, log)
+		if err := updateSchedulingUnit(schedulingUnit, updater, log); err != nil {
+			return err
+		}
 	}
+	return nil
 }
 
 // getAllSchedulingUnits returns a list of all the SchedulingUnits in the SuiteMetadata, including those found in its SchedulingUnits and in its SchedulingUnitOptions.
@@ -163,7 +168,7 @@ func getAllSchedulingUnits(metadata *api.SuiteMetadata) []*api.SchedulingUnit {
 }
 
 // updateSchedulingUnit sets the SchedulingUnit's install path and associated metadata.
-func updateSchedulingUnit(su *api.SchedulingUnit, updater *ALProvisionRequestUpdater, log *log.Logger) {
+func updateSchedulingUnit(su *api.SchedulingUnit, updater *ALProvisionRequestUpdater, log *log.Logger) error {
 	var buildId, buildTarget, installPath string
 	if gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath(); strings.HasPrefix(gcsPath, "android-build") {
 		buildId, buildTarget = extractBuildInfoFromInstallPath(gcsPath)
@@ -184,7 +189,7 @@ func updateSchedulingUnit(su *api.SchedulingUnit, updater *ALProvisionRequestUpd
 			latestGreenBuild, err = androidapi.GetLatestGreenBuildNumber(androidapi.ContainerGce, buildGetReq(board, branch))
 			if err != nil {
 				log.Printf("Error getting latest green build number: %v", err)
-				return
+				return err
 			}
 		}
 		log.Printf("Latest green build number: %d\n", latestGreenBuild)
@@ -200,6 +205,7 @@ func updateSchedulingUnit(su *api.SchedulingUnit, updater *ALProvisionRequestUpd
 	su.DynamicUpdateLookupTable["installPath"] = installPath
 	applyBuildInfoToTarget(buildId, buildTarget, su.GetPrimaryTarget())
 	su.GetPrimaryTarget().GetSwReq().GcsPath = installPath
+	return nil
 }
 
 // extractBuildInfoFromInstallPath extracts the buildId and buildTarget from the
