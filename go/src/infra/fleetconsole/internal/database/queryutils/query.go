@@ -30,6 +30,11 @@ type QueryBuilder struct {
 
 	// Pagination
 	paginationClause string
+
+	// Other filters
+
+	// if provided will query only for the devices with the specified ids
+	specificIds []string
 }
 
 type Query struct {
@@ -101,29 +106,57 @@ func (q *QueryBuilder) WithOffsetPagination(offset int, pageSize int) *QueryBuil
 	return q
 }
 
+func (q *QueryBuilder) WithSpecificIdsFilter(ids []string) *QueryBuilder {
+	q.specificIds = ids
+	return q
+}
+
 func (q *QueryBuilder) Build(realms []string) (*Query, error) {
-	if realms == nil {
-		return &Query{
-			Statement:  fmt.Sprintf("%s\n%s\n%s\n%s\n%s;", q.selectClause, q.fromClause, q.whereClause, q.orderByClause, q.paginationClause),
-			Parameters: q.parameters.values,
-		}, nil
+	if q.specificIds != nil {
+		q.addInFilter("id", q.specificIds, false)
 	}
 
-	realmsClause := "WHERE "
-	if q.whereClause != "" {
-		realmsClause = " AND "
+	if realms != nil {
+		q.addInFilter("realm", realms, true)
 	}
-
-	valuesStrings := make([]string, len(realms))
-	for i, realm := range realms {
-		valuesStrings[i] = q.bind(realm)
-	}
-	realmsClause += fmt.Sprintf("(realm IN (%s) OR realm is NULL)", strings.Join(valuesStrings, ", "))
 
 	return &Query{
-		Statement:  fmt.Sprintf("%s\n%s\n%s\n%s\n%s\n%s;", q.selectClause, q.fromClause, q.whereClause, realmsClause, q.orderByClause, q.paginationClause),
+		Statement:  fmt.Sprintf("%s\n%s\n%s\n%s\n%s;", q.selectClause, q.fromClause, q.whereClause, q.orderByClause, q.paginationClause),
 		Parameters: q.parameters.values,
 	}, nil
+}
+
+func (q *QueryBuilder) addInFilter(column string, values []string, allowNull bool) {
+	if len(values) == 0 && !allowNull {
+		return
+	}
+
+	var result strings.Builder
+	if q.whereClause != "" {
+		result.WriteString(" AND")
+	} else {
+		result.WriteString("WHERE")
+	}
+	result.WriteString(" (")
+
+	params := make([]string, len(values))
+	for i, value := range values {
+		params[i] = q.bind(value)
+	}
+
+	if len(params) > 0 {
+		result.WriteString(fmt.Sprintf("%s IN (%s)", column, strings.Join(params, ",")))
+	}
+
+	if allowNull {
+		if len(params) > 0 {
+			result.WriteString(" OR ")
+		}
+		result.WriteString(fmt.Sprintf("%s is NULL", column))
+	}
+	result.WriteString(")")
+
+	q.whereClause = fmt.Sprintf("%s%s", q.whereClause, result.String())
 }
 
 // bind binds a new query parameter with the given value, and returns

@@ -17,7 +17,7 @@ import (
 
 func List(ctx context.Context, dbConn *sql.DB, filter, orderby string, offset, pageSize int, realms []string) ([]*fleetconsolerpc.Device, bool, error) {
 	// Fetch one extra row to check whether there is more data available
-	query, err := buildListDevicesQuery(ctx, offset, pageSize+1, filter, orderby, realms)
+	query, err := buildListDevicesQuery(ctx, offset, pageSize+1, filter, orderby, nil, realms)
 	hasMoreData := false
 	if err != nil {
 		return nil, true, utils.BadRequest(err, "failed to construct the query")

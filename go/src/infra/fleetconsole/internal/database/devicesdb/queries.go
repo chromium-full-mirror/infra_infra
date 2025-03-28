@@ -15,8 +15,8 @@ import (
 	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
-func buildListDevicesQuery(ctx context.Context, offset, pageSize int, filter, orderby string, realms []string) (*queryutils.Query, error) {
-	q, err := queryutils.NewQueryBuilder(DevicesTable).WithSelectAllClause().WithFromClause().WithWhereClause(filter)
+func buildListDevicesQuery(ctx context.Context, offset, pageSize int, filter, orderby string, ids []string, realms []string) (*queryutils.Query, error) {
+	q, err := queryutils.NewQueryBuilder(DevicesTable).WithSelectAllClause().WithFromClause().WithSpecificIdsFilter(ids).WithWhereClause(filter)
 
 	if pageSize > 0 {
 		q = q.WithOffsetPagination(offset, pageSize)
@@ -58,10 +58,6 @@ func buildCountDevicesQuery(ctx context.Context, filter string, realms []string)
 	}
 
 	return q.Build(realms)
-}
-
-func buildListAllDevicesQuery(ctx context.Context, filter, orderby string, realms []string) (*queryutils.Query, error) {
-	return buildListDevicesQuery(ctx, 0, -1, filter, orderby, realms)
 }
 
 func GetUserRealms(ctx context.Context, cloudProject string) ([]string, error) {

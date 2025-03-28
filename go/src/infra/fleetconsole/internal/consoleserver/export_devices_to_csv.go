@@ -28,7 +28,7 @@ func (frontend *FleetConsoleFrontend) ExportDevicesToCSV(ctx context.Context, re
 		return nil, err
 	}
 
-	csvData, err := devicesdb.ExportCSV(ctx, sqldb.MustGetDB(ctx), req.Columns, req.Filter, req.OrderBy, realms)
+	csvData, err := devicesdb.ExportCSV(ctx, sqldb.MustGetDB(ctx), req.GetColumns(), req.GetFilter(), req.GetOrderBy(), req.GetIds(), realms)
 	if err != nil {
 		if errors.Is(err, context.Canceled) {
 			return nil, errors.Annotate(err, "failed to export devices to CSV").Tag(grpcutil.CanceledTag).Err()

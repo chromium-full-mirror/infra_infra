@@ -18,8 +18,11 @@ import (
 	"go.chromium.org/infra/fleetconsole/internal/utils"
 )
 
-func ExportCSV(ctx context.Context, dbConn *sql.DB, columns []*fleetconsolerpc.Column, filter, orderby string, realms []string) (string, error) {
-	query, err := buildListAllDevicesQuery(ctx, filter, orderby, realms)
+// Passing -1 as pageSize disables pagination, fetching all records.
+const allRecords = -1
+
+func ExportCSV(ctx context.Context, dbConn *sql.DB, columns []*fleetconsolerpc.Column, filter, orderby string, ids []string, realms []string) (string, error) {
+	query, err := buildListDevicesQuery(ctx, 0, allRecords, filter, orderby, ids, realms)
 	if err != nil {
 		return "", utils.BadRequest(err, "failed to construct the query")
 	}

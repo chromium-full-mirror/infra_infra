@@ -40,7 +40,7 @@ func TestQueryBuilder(t *testing.T) {
 				"available",
 				"my-realm",
 			}))
-			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels, realm\nFROM \"Devices\"\nWHERE (dut_state = $1)\n AND (realm IN ($2) OR realm is NULL)\nORDER BY id DESC\nLIMIT 10\nOFFSET 20;"))
+			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels, realm\nFROM \"Devices\"\nWHERE (dut_state = $1) AND (realm IN ($2) OR realm is NULL)\nORDER BY id DESC\nLIMIT 10\nOFFSET 20;"))
 		})
 
 		t.Run("query with all the clauses (bigquery)", func(t *ftt.Test) {
@@ -58,7 +58,7 @@ func TestQueryBuilder(t *testing.T) {
 				"available",
 				"my-realm",
 			}))
-			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels, realm\nFROM `Devices`\nWHERE (dut_state = ?)\n AND (realm IN (?) OR realm is NULL)\nORDER BY id DESC\nLIMIT 10\nOFFSET 20;"))
+			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels, realm\nFROM `Devices`\nWHERE (dut_state = ?) AND (realm IN (?) OR realm is NULL)\nORDER BY id DESC\nLIMIT 10\nOFFSET 20;"))
 		})
 
 		t.Run("query for a specific column's distinct values", func(t *ftt.Test) {
@@ -66,6 +66,16 @@ func TestQueryBuilder(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, q.Parameters, should.BeEmpty)
 			assert.Loosely(t, q.Statement, should.Equal("SELECT DISTINCT dut_state\nFROM \"Devices\"\n\n\n;"))
+		})
+
+		t.Run("query for specific ids and with empty realms", func(t *ftt.Test) {
+			q, err := NewQueryBuilder(table).WithSelectAllClause().WithFromClause().WithSpecificIdsFilter([]string{"device1", "device2"}).Build([]string{})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, q.Parameters, should.Match([]any{
+				"device1",
+				"device2",
+			}))
+			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels, realm\nFROM \"Devices\"\nWHERE (id IN ($1,$2)) AND (realm is NULL)\n\n;"))
 		})
 	})
 }
