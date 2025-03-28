@@ -27,7 +27,9 @@ var (
 
 // GenerateDynamicProvisionUpdates generates and updates the provision components of the request
 func GenerateDynamicProvisionUpdates(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) error {
-	modifyProvisionRequest(req, updater, log)
+	if err := modifyProvisionRequest(req, updater, log); err != nil {
+		return err
+	}
 	if err := updateProvisionInstallPath(req, updater, log); err != nil {
 		return err
 	}
@@ -36,10 +38,10 @@ func GenerateDynamicProvisionUpdates(req *api.InternalTestplan, updater *ALProvi
 
 // modifyProvisionRequest adds dynamic updates to the InternalTestplan request
 // to configure provisioning containers and associated metadata.
-func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) {
+func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) error {
 	log.Printf("Adding AL provisioning dynamic updates...")
 	if updater.ProvisionPath == "" {
-		return
+		return nil
 	}
 
 	servodId := dynamic_common.NewTaskIdentifier(common.ServoNexus).AddDeviceId(dynamic_common.NewPrimaryDeviceIdentifier())
@@ -68,31 +70,29 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 	container := provisionContainerBuilder.Build()
 	container.Network = "adb-network"
 	containers = append(containers, container)
-	err := generator.AddModification(
+	if err := generator.AddModification(
 		&api.CrosTestRunnerDynamicRequest_Task{
 			OrderedContainerRequests: containers,
 		},
 		map[string]string{
 			"orderedContainerRequests": "orderedContainerRequests",
 		},
-	)
-	if err != nil {
+	); err != nil {
 		log.Printf("Error while adding modification to provision request, %s", err)
 	}
 
 	// Update partnermetadata to the install request
-	err = generator.AddModification(
+	if err := generator.AddModification(
 		&api.PartnerMetadata{},
 		map[string]string{
 			"provision.installRequest.partnerMetadata": "",
 		},
-	)
-	if err != nil {
+	); err != nil {
 		log.Printf("Error while adding modification to provision request, %s", err)
 	}
 
 	// Update partner account ID information
-	err = generator.AddModification(
+	if err := generator.AddModification(
 		&api.DynamicDep{
 			Key:   "installRequest.partnerMetadata.accountId",
 			Value: "account-id",
@@ -100,13 +100,12 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 		map[string]string{
 			"provision.dynamicDeps": "",
 		},
-	)
-	if err != nil {
+	); err != nil {
 		log.Printf("Error while adding modification to provision request, %s", err)
 	}
 
 	// Update partner GCS bucket information
-	err = generator.AddModification(
+	if err := generator.AddModification(
 		&api.DynamicDep{
 			Key:   "installRequest.partnerMetadata.partnerGcsBucket",
 			Value: "partner-gcs-bucket",
@@ -114,13 +113,13 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 		map[string]string{
 			"provision.dynamicDeps": "",
 		},
-	)
-	if err != nil {
+	); err != nil {
 		log.Printf("Error while adding modification to provision request, %s", err)
 	}
 
-	err = dynamic_updates.AppendUserDefinedDynamicUpdates(&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate)
-	if err != nil {
+	if err := dynamic_updates.AppendUserDefinedDynamicUpdates(
+		&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate,
+	); err != nil {
 		log.Printf("Error while modifying provision request, %s", err)
 	}
 
@@ -128,6 +127,8 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 		// TODO: b/396475422 - Update provisioning request to specify kernel artifacts and partitions.
 		log.Print("This is a kernel test request!")
 	}
+
+	return nil
 }
 
 // updateProvisionInstallPath sets the install path that will be used for scheduling.
