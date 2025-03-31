@@ -60,6 +60,7 @@ func startServer(flagSet *flag.FlagSet, executor func(req *api.InternalTestplan,
 	defer logFile.Close()
 
 	logger := common.NewLogger(logFile)
+	log.SetOutput(logger.Writer())
 
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))
 	if err != nil {
