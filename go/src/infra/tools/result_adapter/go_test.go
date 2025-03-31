@@ -19,6 +19,7 @@ import (
 	"context"
 	"strings"
 	"testing"
+	"unicode/utf8"
 
 	"google.golang.org/protobuf/encoding/prototext"
 
@@ -122,6 +123,24 @@ func TestGenerateTestResults(t *testing.T) {
 					contents:  "=== RUN   TestEnsureArgsValid\n=== PAUSE TestEnsureArgsValid\n=== CONT  TestEnsureArgsValid\n--- PASS: TestEnsureArgsValid (0.00s)\n"
 		  		}
 			}`)))
+	})
+
+	ftt.Run(`Encodes error runes`, t, func(t *ftt.Test) {
+		trs, err := r.generateTestResults(context.Background(),
+			[]byte(`
+				{"Action":"start","Package":"example/pkg"}
+				{"Action":"run","Package":"example/pkg","Test":"Test`+string(utf8.RuneError)+`"}
+				{"Action":"pass","Package":"example/pkg","Test":"Test`+string(utf8.RuneError)+`"}
+				{"Action":"pass","Package":"example/pkg"}
+			`))
+		assert.NoErr(t, err)
+		assert.That(t, len(trs), should.Equal(2))
+		assert.Loosely(t, trs[1].TestIdStructured, should.Match(&sinkpb.TestIdentifier{
+			FineName: "example/pkg",
+			CaseNameComponents: []string{
+				"Test\\ufffd",
+			},
+		}))
 	})
 
 	// Test that output is associated with the test that produced it, and only that test.

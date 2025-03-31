@@ -15,6 +15,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -429,7 +430,7 @@ func (tr *TestRecord) toProto(ctx context.Context, packagePassed bool) *sinkpb.T
 	result.TestIdStructured = &sinkpb.TestIdentifier{
 		CoarseName:         "",
 		FineName:           tr.PackageName,
-		CaseNameComponents: []string{tr.TestName},
+		CaseNameComponents: []string{encodeErrorRunes(tr.TestName)},
 	}
 
 	switch tr.Result {
@@ -469,6 +470,18 @@ func (tr *TestRecord) toProto(ctx context.Context, packagePassed bool) *sinkpb.T
 	result.Duration = durationpb.New(time.Duration(int64(tr.Elapsed * float64(time.Second))))
 	result.StartTime = timestamppb.New(tr.Started)
 	return result
+}
+
+func encodeErrorRunes(input string) string {
+	var result strings.Builder
+	for _, r := range input {
+		if r == utf8.RuneError {
+			result.WriteString("\\ufffd")
+		} else {
+			result.WriteRune(r)
+		}
+	}
+	return result.String()
 }
 
 // BuildRecord represents the results of building a single package.
