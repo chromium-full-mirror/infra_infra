@@ -219,7 +219,6 @@ luci.bucket(
         service_accounts = [
             "chromium-lkgr-finder-builder@chops-service-accounts.iam.gserviceaccount.com",
             "chromium-tarball-builder@chops-service-accounts.iam.gserviceaccount.com",
-            "wpt-autoroller@chops-service-accounts.iam.gserviceaccount.com",
         ],
     ),
     bindings = [
