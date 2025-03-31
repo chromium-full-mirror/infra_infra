@@ -5,12 +5,14 @@
 package amt
 
 import (
+	"bytes"
 	"context"
 	"crypto/tls"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"os/exec"
 	"strconv"
 	"strings"
 
@@ -200,4 +202,18 @@ func (c AMTClient) SetPowerState(ctx context.Context, state string) error {
 	} else {
 		return errors.Reason("power state is missing from powerStateMap").Err()
 	}
+}
+
+// Ping the AMT interface count times or until it responds.
+func (c AMTClient) Ping(count int) error {
+	for range count {
+		// Ping once with a timeout of one second.
+		cmd := exec.Command("ping", c.hostname, "-c", "1", "-W", "1")
+		var stderr bytes.Buffer
+		cmd.Stderr = &stderr
+		if err := cmd.Run(); err == nil {
+			return nil
+		}
+	}
+	return errors.Reason("failed to ping AMT").Err()
 }

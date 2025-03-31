@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+//go:build !windows
+// +build !windows
+
 package amt
 
 import (
@@ -79,4 +82,14 @@ func TestParseURI(t *testing.T) {
 		})
 	}
 
+}
+
+func TestPing(t *testing.T) {
+	ctx := context.Background()
+	// Success case.
+	amt := NewAMTClient(ctx, "127.0.0.1", "admin", "P@ssword123", false)
+	assert.Nil(t, amt.Ping(1))
+	// 192.0.2.0/24 is TEST-NET-1.
+	amt = NewAMTClient(ctx, "192.0.2.1", "admin", "P@ssword123", false)
+	assert.ErrorContains(t, amt.Ping(1), "failed to ping AMT")
 }

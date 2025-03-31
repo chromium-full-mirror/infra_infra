@@ -5,9 +5,7 @@
 package cros
 
 import (
-	"bytes"
 	"context"
-	"os/exec"
 	"strings"
 
 	"go.chromium.org/luci/common/errors"
@@ -63,29 +61,14 @@ func flexAMTKnownExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// Ping addr for up to timeout seconds until it reponds.
-func flexPingAMT(addr string, timeout int) error {
-	for range timeout {
-		// Ping once with a timeout of one second.
-		cmd := exec.Command("ping", addr, "-c", "1", "-W", "1")
-		var stderr bytes.Buffer
-		cmd.Stderr = &stderr
-		if err := cmd.Run(); err == nil {
-			return nil
-		}
-	}
-	return errors.Reason("failed to ping AMT").Err()
-}
-
 // flexAMTRespondsToPing pings the AMT interface until is responds.
 func flexAMTRespondsToPingExec(ctx context.Context, info *execs.ExecInfo) error {
-	dut := info.GetDut()
-	amtHostname, err := retrieveAMTHostname(ctx, dut)
+	client, err := getFlexAMTClient(ctx, info)
 	if err != nil {
-		return err
+		return errors.Reason("flex AMT responds to ping: failed to create client").Err()
 	}
-	// Ping for up to a minute.
-	return errors.Annotate(flexPingAMT(amtHostname, 60), "flex AMT responds to ping").Err()
+	// Make up to 60 one-second pings.
+	return errors.Annotate(client.Ping(60), "flex AMT responds to ping").Err()
 }
 
 func init() {
