@@ -1,0 +1,86 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+FROM python:3.11-slim-buster AS build
+
+ARG ARTIFACT_DIR="tf_artifact/tradefed"
+
+
+# attr, unzip are for CTS specifically.
+# squashfs-tools is for Uprev specifically.
+RUN apt-get update \
+    && apt-get install -y \
+      attr \
+      ca-certificates \
+      cpio \
+      curl \
+      fuse \
+      fuse-zip \
+      git \
+      iproute2 \
+      iputils-ping \
+      openssh-client \
+      ssh \
+      sudo \
+      unzip \
+      wget \
+      xxd
+
+# Install SDK tools (aapt, adb, fastboot, mke2fs)
+RUN mkdir -p /usr/lib/android-sdk/lib64
+RUN wget -q --retry-connrefused -O build-tools.zip https://dl.google.com/android/repository/build-tools_r34-linux.zip \
+    && unzip -jq build-tools.zip -d /usr/lib/android-sdk android-14/aapt \
+    && unzip -jq build-tools.zip -d /usr/lib/android-sdk android-14/aapt2 \
+    && unzip -jq build-tools.zip -d /usr/lib/android-sdk/lib64 android-14/lib64/* \
+    && rm build-tools.zip \
+    && ln -sf /usr/lib/android-sdk/aapt /usr/bin/aapt \
+    && ln -sf /usr/lib/android-sdk/aapt2 /usr/bin/aapt2
+
+ENV LD_LIBRARY_PATH /usr/lib/android-sdk/lib64:${LD_LIBRARY_PATH}
+ENV ANDROID_HOME=/usr/lib/android-sdk
+
+# Point /usr/bin/python3 to usr/local/bin/python3. See b/191884161
+RUN sudo rm /usr/bin/python3*; exit 0
+RUN sudo ln -s /usr/local/bin/python3 /usr/bin/python3
+
+RUN useradd -m chromeos-test
+RUN echo 'chromeos-test ALL=NOPASSWD:ALL' > /etc/sudoers.d/chromeos-test
+
+# Installing JDK21 (used by default)
+RUN mkdir -p /jdk/jdk21 && \
+    cd /jdk/jdk21 && \
+    git init && \
+    git remote add origin https://android.googlesource.com/platform/prebuilts/jdk/jdk21.git && \
+    git config core.sparseCheckout true && \
+    echo "linux-x86/" >> .git/info/sparse-checkout && \
+    git fetch origin a312302ee53bf1c942180d3b63c29ffc23d9dfb4 --depth 1 && \
+    git checkout a312302ee53bf1c942180d3b63c29ffc23d9dfb4 && \
+    rm -rf .git/ && \
+    cd -
+
+ENV JAVA_HOME=/jdk/jdk21/linux-x86
+ENV PATH=$JAVA_HOME/bin:$PATH
+
+# Extract Tradefed console.
+RUN mkdir /tradefed
+RUN unzip ${ARTIFACT_DIR}/tradefed/tradefed.zip -d /tradefed/
+RUN chown -R chromeos-test:chromeos-test /tradefed
+
+# Cros-test binary is static across boards.
+COPY --chown=chromeos-test:chromeos-test cros-test /usr/bin/
+
+# Do a final chown on /tmp/test
+RUN chmod 755 /usr/bin/cros-test
+RUN chown -R chromeos-test:chromeos-test /tmp/test/
+
+USER chromeos-test
+
+ENV JSON_KEY_PATH=/creds/service_accounts/skylab-drone.json
+ENV GOOGLE_APPLICATION_CREDENTIALS=/creds/service_accounts/skylab-drone.json
+ENV TZ=Etc/UTC
+ENV USE_HOST_ADB=true
+ENV GLOBAL_LOG_PATH=/tmp/test/logs
+ENV TRADEFED_OPTS="-DCTS_ROOT=/tmp/xts_suite_mount -DDTS_ROOT=/tmp/xts_suite_mount -DVTS_ROOT=/tmp/xts_suite_mount -DGTS_ROOT=/tmp/xts_suite_mount -DSTS_ROOT=/tmp/xts_suite_mount -DAPTS_ROOT=/tmp/xts_suite_mount"
+
+ENV PATH=/tradefed:$PATH
