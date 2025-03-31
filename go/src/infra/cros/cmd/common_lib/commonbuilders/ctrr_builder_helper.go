@@ -33,8 +33,9 @@ var (
 		common.CrosProvision,
 		common.FwProvision,
 		common.AndroidProvision,
-		// common.VmProvision,
+		common.VmProvision,
 		common.ServoNexus,
+		common.CpconPublish,
 	}
 )
 
@@ -920,7 +921,7 @@ func DefaultDynamicCpconPublish(builder *DynamicTrv2Builder) []*api.CrosTestRunn
 							},
 						},
 					},
-					ContainerImageKey: common.CrosPublish,
+					ContainerImageKey: common.CpconPublish,
 					DynamicDeps: []*api.DynamicDep{
 						{
 							Key:   "generic.env.0",

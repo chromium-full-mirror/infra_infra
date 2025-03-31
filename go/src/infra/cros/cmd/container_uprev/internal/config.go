@@ -240,6 +240,16 @@ func GetConfigs() []*UprevConfig {
 			},
 		},
 		{
+			Name: "cpcon-publish",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/publish/cpcon-publish/${platform}"),
+			},
+			Repositories: []*Repository{
+				DefaultRepository,
+				PartnerRepository,
+			},
+		},
+		{
 			Name: "cros-dut",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/cft/dut/cros-dut/${platform}"),
