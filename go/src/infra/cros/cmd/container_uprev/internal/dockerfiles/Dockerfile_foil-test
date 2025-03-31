@@ -39,7 +39,7 @@ RUN echo 'chromeos-test ALL=NOPASSWD:ALL' > /etc/sudoers.d/chromeos-test
 # Cros-test binary is static across boards.
 COPY --chown=chromeos-test:chromeos-test cros-test /usr/bin/
 
-RUN groupadd nobody
+RUN getent group nobody || groupadd nobody
 
 # Install the GRTE binary
 COPY --chown=chromeos-test:chromeos-test ${ARTIFACT_DIR}/grte*.deb /tmp/
