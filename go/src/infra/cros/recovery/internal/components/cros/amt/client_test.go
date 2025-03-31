@@ -47,7 +47,7 @@ func TestNewAmtClient(t *testing.T) {
 		t.Run(strconv.FormatBool(tt.useTLSValue), func(t *testing.T) {
 			t.Parallel()
 			amt := NewAMTClient(ctx, "192.168.231.123", "admin", "P@ssword123", tt.useTLSValue)
-			assert.Equal(t, tt.expectedURI, amt.uri)
+			assert.Equal(t, tt.expectedURI, amt.uri())
 		})
 	}
 }

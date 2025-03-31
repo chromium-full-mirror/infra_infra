@@ -52,9 +52,9 @@ func findPowerState(response string) (int, error) {
 
 // AMTClient holds WS-Management connection data.
 type AMTClient struct {
-	uri, username, password string
-	useTLS                  bool
-	t                       *http.Transport
+	hostname, username, password string
+	useTLS                       bool
+	t                            *http.Transport
 	// The "nonce count" tracks the number of requests sent in
 	// response to a given nonce value. Required when using "auth"
 	// or "auth-int" modes.
@@ -63,18 +63,23 @@ type AMTClient struct {
 
 // NewAMTClient returns a new AMTClient instance.
 func NewAMTClient(ctx context.Context, hostname string, username string, password string, useTLS bool) *AMTClient {
-	protocol, port := "http", 16992
 	t := http.Transport{}
 	if useTLS {
-		protocol, port = "https", 16993
 		tlsConfig := tls.Config{InsecureSkipVerify: true}
 		t = http.Transport{
 			TLSClientConfig: &tlsConfig,
 		}
 	}
-	uri := fmt.Sprintf("%s://%s:%d/wsman", protocol, hostname, port)
-	log.Infof(ctx, "Using AMT manager URI: %s", uri)
-	return &AMTClient{uri, username, password, useTLS, &t, 0}
+	return &AMTClient{hostname, username, password, useTLS, &t, 0}
+}
+
+// uri returns the WS-Management endpoint URI.
+func (c AMTClient) uri() string {
+	protocol, port := "http", 16992
+	if c.useTLS {
+		protocol, port = "https", 16993
+	}
+	return fmt.Sprintf("%s://%s:%d/wsman", protocol, c.hostname, port)
 }
 
 // post does an HTTP POST with the given request envelope and returns the
@@ -92,7 +97,7 @@ func (c AMTClient) post(ctx context.Context, request string) (string, error) {
 		if err != nil {
 			return "", err
 		}
-		uri, err := parseURI(c.uri)
+		uri, err := parseURI(c.uri())
 		if err != nil {
 			return "", err
 		}
@@ -133,7 +138,7 @@ type httpResponse struct {
 
 // roundTrip posts the given envelope XML and returns an httpResponse.
 func (c AMTClient) roundTrip(authHdr, body string) (httpResponse, error) {
-	req, err := http.NewRequest(http.MethodPost, c.uri, strings.NewReader(body))
+	req, err := http.NewRequest(http.MethodPost, c.uri(), strings.NewReader(body))
 	if err != nil {
 		return httpResponse{}, err
 	}
@@ -157,7 +162,7 @@ func (c AMTClient) roundTrip(authHdr, body string) (httpResponse, error) {
 
 // GetPowerState returns the power state as an int.
 func (c AMTClient) GetPowerState(ctx context.Context) (int, error) {
-	resp, err := c.post(ctx, createReadAMTPowerStateRequest(c.uri))
+	resp, err := c.post(ctx, createReadAMTPowerStateRequest(c.uri()))
 	if err != nil {
 		return 0, err
 	}
@@ -180,7 +185,7 @@ func (c AMTClient) SetPowerState(ctx context.Context, state string) error {
 			log.Debugf(ctx, "AMT power state is already: %s", state)
 			return nil
 		}
-		resp, err := c.post(ctx, createUpdateAMTPowerStateRequest(c.uri, newState))
+		resp, err := c.post(ctx, createUpdateAMTPowerStateRequest(c.uri(), newState))
 		if err != nil {
 			return err
 		}
