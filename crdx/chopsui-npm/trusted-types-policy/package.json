@@ -1,6 +1,6 @@
 {
   "name": "@chopsui/trusted-types-policy",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Creates a secure TrustedTypes policy using DOMPurify as the sanitizer.",
   "author": "The Chromium Authors",
   "license": "BSD-3-Clause",

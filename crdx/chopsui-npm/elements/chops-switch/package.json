@@ -1,6 +1,6 @@
 {
   "name": "@chopsui/chops-switch",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "A shared switch element for Chops.",
   "author": "The Chromium Authors",
   "license": "BSD-3-Clause",
@@ -11,7 +11,7 @@
     "url": "https://chromium.googlesource.com/infra/infra/crdx/chopsui-npm.git"
   },
   "dependencies": {
-    "@chopsui/chops-checkbox": "^0.3.6",
+    "@chopsui/chops-checkbox": "^0.3.7",
     "lit-element": "^2.0.0"
   },
   "gitHead": "c2b99a3de5e65b3328905e51fb06e7a2fa66dc44"

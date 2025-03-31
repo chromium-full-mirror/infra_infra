@@ -1,6 +1,6 @@
 {
   "name": "@chopsui/test-helpers",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Test helpers for ChOps.",
   "author": "The Chromium Authors",
   "license": "BSD-3-Clause",

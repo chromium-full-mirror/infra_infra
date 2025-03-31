@@ -1,6 +1,6 @@
 {
   "name": "@chopsui/starter-packages",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Maintains compatible versions of base and common npm packages used in Chrome Infra UIs.",
   "repository": {
     "type": "git",
