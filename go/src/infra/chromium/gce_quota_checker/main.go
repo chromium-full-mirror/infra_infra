@@ -47,21 +47,24 @@ Hints:
 - zone == "us-east1-d"
 - family == "n1", "n2", "e2", etc
 
-NOTE: need to run 'gcloud auth application-default login' locally first.
+NOTE: need to run 'gcloud auth application-default login' locally first. Also,
+authenticating on cloudtop (GCE) may be difficult. Should still work on non-GCE
+platforms (eg gMac).
 `
 
 type quotaVals struct {
-	max  int64
-	used int64
-	desc string
+	max           int64
+	starlarkUsage int64
+	gcloudUsage   int64
+	desc          string
 }
 
 func (q quotaVals) GetUsagePercent() float64 {
-	return 100 * float64(q.used) / float64(q.max)
+	return 100 * float64(q.starlarkUsage) / float64(q.max)
 }
 
 func (q quotaVals) GetDescPretty() string {
-	return fmt.Sprintf("%s at %.2f%% (%d of %d)", q.desc, q.GetUsagePercent(), q.used, q.max)
+	return fmt.Sprintf("%s at %.2f%% (%d of %d)", q.desc, q.GetUsagePercent(), q.starlarkUsage, q.max)
 }
 
 type regionQuotas struct {
@@ -224,19 +227,19 @@ func getRegionQuotas(ctx context.Context, project string) (map[string]*regionQuo
 		for _, quota := range resp.Quotas {
 			switch *quota.Metric {
 			case "CPUS":
-				quotas.cpusQuota = quotaVals{max: int64(*quota.Limit), desc: "CPUs in " + region}
+				quotas.cpusQuota = quotaVals{max: int64(*quota.Limit), gcloudUsage: int64(*quota.Usage), desc: "CPUs in " + region}
 			case "IN_USE_ADDRESSES":
-				quotas.ipsQuota = quotaVals{max: int64(*quota.Limit), desc: "IPs in " + region}
+				quotas.ipsQuota = quotaVals{max: int64(*quota.Limit), gcloudUsage: int64(*quota.Usage), desc: "IPs in " + region}
 			case "INSTANCES":
-				quotas.instancesQuota = quotaVals{max: int64(*quota.Limit), desc: "Instances in " + region}
+				quotas.instancesQuota = quotaVals{max: int64(*quota.Limit), gcloudUsage: int64(*quota.Usage), desc: "Instances in " + region}
 			case "DISKS_TOTAL_GB":
-				quotas.hddQuota = quotaVals{max: int64(*quota.Limit), desc: "HDD in " + region}
+				quotas.hddQuota = quotaVals{max: int64(*quota.Limit), gcloudUsage: int64(*quota.Usage), desc: "HDD in " + region}
 			case "SSD_TOTAL_GB":
-				quotas.remoteSSDQuota = quotaVals{max: int64(*quota.Limit), desc: "Remote SSDs in " + region}
+				quotas.remoteSSDQuota = quotaVals{max: int64(*quota.Limit), gcloudUsage: int64(*quota.Usage), desc: "Remote SSDs in " + region}
 			default:
 				if strings.HasSuffix(*quota.Metric, "_CPUS") {
 					cpuFamily := strings.ToLower(strings.TrimSuffix(*quota.Metric, "_CPUS"))
-					quotas.cpusPerFamilyQuota[cpuFamily] = &quotaVals{max: int64(*quota.Limit), desc: cpuFamily + " CPUs in " + region}
+					quotas.cpusPerFamilyQuota[cpuFamily] = &quotaVals{max: int64(*quota.Limit), gcloudUsage: int64(*quota.Usage), desc: cpuFamily + " CPUs in " + region}
 				}
 			}
 		}
@@ -374,7 +377,7 @@ func parseCfgFiles(project string, cfgPaths []string, regionNames []string, quot
 				maxInstances = scheduledChange.Max
 			}
 		}
-		quotasPerRegion[region].instancesQuota.used += int64(maxInstances)
+		quotasPerRegion[region].instancesQuota.starlarkUsage += int64(maxInstances)
 
 		// Get network
 		if len(config.Attributes.NetworkInterface) != 1 || config.Attributes.NetworkInterface[0].Network == "" {
@@ -386,14 +389,14 @@ func parseCfgFiles(project string, cfgPaths []string, regionNames []string, quot
 		if ok {
 			// Some networks don't have a limit, in which case GCE's quota API won't
 			// have reported anything about it.
-			networkQuota.used += int64(maxInstances)
+			networkQuota.starlarkUsage += int64(maxInstances)
 		}
 
 		// Get IP address
 		if len(config.Attributes.NetworkInterface[0].AccessConfig) > 1 {
 			log.Fatalln("Unknown access config on ", config.Prefix)
 		} else if len(config.Attributes.NetworkInterface[0].AccessConfig) == 1 {
-			quotasPerRegion[region].ipsQuota.used += int64(maxInstances)
+			quotasPerRegion[region].ipsQuota.starlarkUsage += int64(maxInstances)
 		}
 
 		// Get core count. Families like n1 and e2 share the same base
@@ -403,10 +406,18 @@ func parseCfgFiles(project string, cfgPaths []string, regionNames []string, quot
 		family, cores := getFamilyAndCoresFromType(mt)
 		maxCores := int64(maxInstances) * cores
 		customFamilyQuota, hasCustomFamilyQuota := quotasPerRegion[region].cpusPerFamilyQuota[family]
+		// In late 2024 / early 2025, GCE started reporting quotas for *every* CPU family.
+		// Most of these quotas have "0" usage despite CPUs of the family being deployed.
+		// In such a case, we assume those CPUs are deducted from the generic CPU quota.
 		if hasCustomFamilyQuota {
-			customFamilyQuota.used += maxCores
+			customFamilyQuota.starlarkUsage += maxCores
+			if customFamilyQuota.gcloudUsage == 0 {
+				// To be safe, deduct from the region-wide CPU quota if we suspect
+				// GCE is reporting one of those ghost quotas here.
+				quotasPerRegion[region].cpusQuota.starlarkUsage += maxCores
+			}
 		} else {
-			quotasPerRegion[region].cpusQuota.used += maxCores
+			quotasPerRegion[region].cpusQuota.starlarkUsage += maxCores
 		}
 
 		// Get disk info
@@ -417,14 +428,14 @@ func parseCfgFiles(project string, cfgPaths []string, regionNames []string, quot
 			totalRemoteSSD += remoteSSD
 			totalLocalSSD += localSSD
 		}
-		quotasPerRegion[region].hddQuota.used += int64(maxInstances) * totalHDD
-		quotasPerRegion[region].remoteSSDQuota.used += int64(maxInstances) * totalRemoteSSD
+		quotasPerRegion[region].hddQuota.starlarkUsage += int64(maxInstances) * totalHDD
+		quotasPerRegion[region].remoteSSDQuota.starlarkUsage += int64(maxInstances) * totalRemoteSSD
 		// Not all regions/machine types have local SSD quota. So
 		// quotasPerRegion[region].localSSDPerFamilyQuota[family] might
 		// not have an entry initialized if there's no deployment of
 		// local SSDs for that region + family combo.
 		if totalLocalSSD > 0 {
-			quotasPerRegion[region].localSSDPerFamilyQuota[family].used += int64(maxInstances) * totalLocalSSD
+			quotasPerRegion[region].localSSDPerFamilyQuota[family].starlarkUsage += int64(maxInstances) * totalLocalSSD
 		}
 	}
 }
