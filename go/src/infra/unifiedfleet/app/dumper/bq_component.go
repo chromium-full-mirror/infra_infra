@@ -41,14 +41,15 @@ var DatastoreNamespaceToBigQueryDataset = map[string]string{
 }
 
 var registrationDumpToolkit = map[string]getAllFunc{
-	"assets":   getAllAssetMsgs,
-	"machines": getAllMachineMsgs,
-	"racks":    getAllRackMsgs,
-	"kvms":     getAllKVMMsgs,
-	"switches": getAllSwitchMsgs,
-	"rpms":     getAllRpmMsgs,
-	"nics":     getAllNicMsgs,
-	"dracs":    getAllDracMsgs,
+	"assets":       getAllAssetMsgs,
+	"machines":     getAllMachineMsgs,
+	"racks":        getAllRackMsgs,
+	"kvms":         getAllKVMMsgs,
+	"switches":     getAllSwitchMsgs,
+	"rpms":         getAllRpmMsgs,
+	"nics":         getAllNicMsgs,
+	"dracs":        getAllDracMsgs,
+	"nlyte_assets": getAllNlyteAssetMsgs,
 }
 
 var inventoryDumpToolkit = map[string]getAllFunc{
@@ -277,6 +278,26 @@ func getAllAssetMsgs(ctx context.Context) ([]proto.Message, error) {
 	msgs := make([]proto.Message, 0)
 	for startToken := ""; ; {
 		res, nextToken, err := registration.ListAssets(ctx, pageSize, startToken, nil, false)
+		if err != nil {
+			return nil, errors.Annotate(err, "get all assets").Err()
+		}
+		for _, r := range res {
+			msgs = append(msgs, &apibq.AssetRow{
+				Asset: r,
+			})
+		}
+		if nextToken == "" {
+			break
+		}
+		startToken = nextToken
+	}
+	return msgs, nil
+}
+
+func getAllNlyteAssetMsgs(ctx context.Context) ([]proto.Message, error) {
+	msgs := make([]proto.Message, 0)
+	for startToken := ""; ; {
+		res, nextToken, err := registration.ListNlyteAssets(ctx, pageSize, startToken, nil, false)
 		if err != nil {
 			return nil, errors.Annotate(err, "get all assets").Err()
 		}

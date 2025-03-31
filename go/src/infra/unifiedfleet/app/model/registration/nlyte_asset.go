@@ -9,8 +9,11 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"go.chromium.org/luci/common/errors"
+	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/gae/service/datastore"
 
 	ufspb "go.chromium.org/infra/unifiedfleet/api/v1/models"
@@ -160,4 +163,46 @@ func BatchUpdateNlyteAssets(ctx context.Context, assets []*ufspb.Asset) ([]*ufsp
 		return assets, nil
 	}
 	return nil, err
+}
+
+// ListNlyteAssets lists the nlyte assets
+// Does a query over asset entities. Returns pageSize number of entities and a
+// non-nil cursor if there are more results. pageSize must be positive
+func ListNlyteAssets(ctx context.Context, pageSize int32, pageToken string, filterMap map[string][]interface{}, keysOnly bool) (res []*ufspb.Asset, nextPageToken string, err error) {
+	q, err := ufsds.ListQuery(ctx, NlyteAssetKind, pageSize, pageToken, filterMap, keysOnly)
+	if err != nil {
+		return nil, "", err
+	}
+
+	var nextCur datastore.Cursor
+	err = datastore.Run(ctx, q, func(ent *NlyteAssetEntity, cb datastore.CursorCB) error {
+		if keysOnly {
+			asset := &ufspb.Asset{
+				Name: ent.Name,
+			}
+			res = append(res, asset)
+		} else {
+			pm, err := ent.GetProto()
+			if err != nil {
+				logging.Errorf(ctx, "Failed to unmarshall nlyte asset: %s", err)
+				return nil
+			}
+			res = append(res, pm.(*ufspb.Asset))
+		}
+		if len(res) >= int(pageSize) {
+			if nextCur, err = cb(); err != nil {
+				return err
+			}
+			return datastore.Stop
+		}
+		return nil
+	})
+	if err != nil {
+		logging.Errorf(ctx, "Failed to list nlyte assets %s", err)
+		return nil, "", status.Errorf(codes.Internal, ufsds.InternalError)
+	}
+	if nextCur != nil {
+		nextPageToken = nextCur.String()
+	}
+	return
 }

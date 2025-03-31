@@ -948,6 +948,46 @@ echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
 echo "    credentials which is stored independently than 'bq'."
 if ! (bqschemaupdater -force \
     -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.AssetRow  \
+    -partitioning-type HOUR \
+    -partitioning-expiration 3999h \
+    -table "${APPID}".ufs.nlyte_assets); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:ufs.nlyte_assets"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
+    -message unifiedfleet.api.v1.models.bigquery.AssetRow  \
+    -partitioning-type HOUR \
+    -partitioning-expiration 3999h \
+    -table "${APPID}".ufs.nlyte_assets_hourly); then
+  echo ""
+  echo ""
+  echo "Oh no! You may need to restart from scratch. You can do so with:"
+  echo ""
+  echo "  bq rm ${APPID}:ufs.nlyte_assets_hourly"
+  echo ""
+  echo "and run this script again."
+  exit 1
+fi
+
+echo "- Populate the BigQuery schema:"
+echo ""
+echo "  Warning: On first 'bqschemaupdater' invocation, it'll request default"
+echo "    credentials which is stored independently than 'bq'."
+if ! (bqschemaupdater -force \
+    -I ../../../../../../ \
     -message unifiedfleet.api.v1.models.bigquery.LatestDutInfoRow  \
     -table "${APPID}".ufs.latest_dut_info); then
   echo ""
