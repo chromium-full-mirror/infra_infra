@@ -64,6 +64,7 @@ func (ctpv2cfg *Ctpv2ExecutionConfig) GenerateConfig(ctx context.Context) error 
 	if ctpv2cfg.Configs != nil {
 		configsLog := step.Log("generated configs")
 		_, logErr := configsLog.Write([]byte(ctpv2cfg.Configs.ToString()))
+		ctpv2cfg.CmdExecutionConfig.StateKeeper.AppendToAIExecutionContext("Execution Steps to follow: \n" + ctpv2cfg.Configs.ToString())
 		if logErr != nil {
 			logging.Infof(ctx, "error during writing generated configs: %s", logErr)
 		}

@@ -182,13 +182,17 @@ func (tecfg *CmdExecutionConfig) processCommandConfig(
 	cmds := []interfaces.CommandInterface{}
 	for _, cmdConfig := range pairedConfig {
 		cmd, err := tecfg.CommandConfig.GetCommand(cmdConfig.CommandType, cmdConfig.ExecutorType)
+		tecfg.StateKeeper.AppendToAIExecutionContext(fmt.Sprintf("Processing cmd: %s %s", cmdConfig.CommandType, cmdConfig.ExecutorType))
 		if err != nil {
+			tecfg.StateKeeper.AppendToAIExecutionContext(fmt.Sprintf("Error occurred: %s", err))
 			return nil, errors.Annotate(err, "error during getting command for cmd type %s and executor type %s: ", cmdConfig.CommandType, cmdConfig.ExecutorType).Err()
 		}
 		logging.Infof(ctx, "Processing cmd: %T", cmd)
 		if err := cmd.Instantiate(ctx, tecfg.StateKeeper); err != nil {
+			tecfg.StateKeeper.AppendToAIExecutionContext(fmt.Sprintf("Error occurred: %s", err))
 			return nil, errors.Annotate(err, "error while instantiation command for cmd type %s and executor type %s: ", cmdConfig.CommandType, cmdConfig.ExecutorType).Err()
 		}
+		tecfg.StateKeeper.AppendToAIExecutionContext(fmt.Sprintf("Processed."))
 		cmds = append(cmds, cmd)
 	}
 
@@ -206,6 +210,7 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 	var singleErr error
 	var firstErr error
 	foundErr := false
+	tecfg.StateKeeper.AppendToAIExecutionContext(fmt.Sprintf("Executing Commands"))
 	for i, cmd := range cmds {
 		if firstErr == nil {
 			// Once allErr is not nil, should only have a single error.
@@ -220,11 +225,13 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 			cleanUpTag = "(CLEAN UP)"
 		}
 		logging.Infof(ctx, "Executing cmd: %s %s", cleanUpTag, cmdType)
+		tecfg.StateKeeper.AppendToAIExecutionContext(fmt.Sprintf("Executing cmd: %s %s", cleanUpTag, cmdType))
 
 		if singleErr = cmd.ExtractDependencies(ctx, tecfg.StateKeeper); singleErr != nil {
 			foundErr = true
 			allErr = errors.Append(allErr, singleErr)
 			logging.Infof(ctx, "Command type %s extract dependencies failed, %s", cmdType, singleErr)
+			tecfg.StateKeeper.AppendToAIExecutionContext(fmt.Sprintf("Command type %s extract dependencies failed, %s", cmdType, singleErr))
 			continue
 		}
 
@@ -251,6 +258,7 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 			foundErr = true
 			allErr = errors.Append(allErr, singleErr)
 			logging.Infof(ctx, "Command type %s execution failed: %s.", cmdType, singleErr)
+			tecfg.StateKeeper.AppendToAIExecutionContext(fmt.Sprintf("Command type %s execution failed: %s.", cmdType, singleErr))
 			logging.Infof(ctx, "Attempting to update state keeper.")
 			if innerErr := cmd.UpdateStateKeeper(ctx, tecfg.StateKeeper); innerErr != nil {
 				logging.Infof(ctx, "Command type %s could not update state keeper: %s", cmdType, innerErr)
@@ -266,6 +274,7 @@ func (tecfg *CmdExecutionConfig) executeCommands(
 		if singleErr = cmd.UpdateStateKeeper(ctx, tecfg.StateKeeper); singleErr != nil {
 			foundErr = true
 			allErr = errors.Append(allErr, singleErr)
+			tecfg.StateKeeper.AppendToAIExecutionContext(fmt.Sprintf("Command type %s UpdateStateKeeper failed: %s.", cmdType, singleErr))
 			continue
 		}
 	}

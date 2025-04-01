@@ -13,6 +13,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"log"
+	"os/exec"
 	"strconv"
 	"strings"
 	"sync"
@@ -208,6 +209,7 @@ func executeCtpv2Reqs(ctx context.Context,
 	resultsMap := map[string][]*data.TestResults{}
 	var err error
 	step, ctx := build.StartStep(ctx, "Suite Executions (async)")
+
 	defer func() { step.End(err) }()
 
 	resultsChan := make(chan map[string][]*data.TestResults)
@@ -346,6 +348,7 @@ func executeFiltersInLuciBuild(
 		IsAlRun:            req.IsAlRun,
 		IsPartnerRun:       isPartnerRun,
 		SuiteTestResults:   map[string]*data.TestResults{},
+		ExecutionAIContext: fmt.Sprintf("%s \n Suite request: %s", common.CTPContext, req),
 	}
 
 	fillInUserDefinedFilters(ctx, req, dockerKeyFile, ctpVersion, isPartnerRun)
@@ -379,6 +382,44 @@ func executeFiltersInLuciBuild(
 	if err != nil {
 		logging.Errorf(ctx, "executeFiltersInLuciBuild: %w", err)
 	}
+	AISummarizeSuiteExecution(ctx, sk, step, err)
+}
+
+func AISummarizeSuiteExecution(ctx context.Context, sk *data.FilterStateKeeper, step *build.Step, err error) {
+	configsLog := step.Log("AI failure Summary")
+	logging.Infof(ctx, sk.ExecutionAIContext)
+	apiKey, keyErr := fetchGeminiAPIKey(ctx)
+	if keyErr != nil {
+		logging.Infof(ctx, "error during fetching Gemini API key: %s", keyErr)
+		return
+	}
+	if err != nil {
+		aiSummary, aiErr := common.AISummarize(ctx, sk.ExecutionAIContext, common.SuiteFailureSummaryPrompt, apiKey)
+		if aiErr != nil {
+			logging.Infof(ctx, "error during AI failure summarization: %s", aiErr)
+		}
+		_, logErr := configsLog.Write([]byte(aiSummary))
+		if logErr != nil {
+			logging.Infof(ctx, "error during writing aiSummary: %s", logErr)
+		}
+	} else {
+		_, logErr := configsLog.Write([]byte("No Infra failures detected."))
+		if logErr != nil {
+			logging.Infof(ctx, "error during writing aiSummary: %s", logErr)
+		}
+	}
+}
+
+func fetchGeminiAPIKey(ctx context.Context) (string, error) {
+	cmd := exec.Command("gcloud", "secrets", "versions", "access", "latest", "--secret="+common.GeminiApiKey, "--project="+common.GeminiApiKeyProject)
+	logging.Infof(ctx, "Running command: %s", cmd.String())
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		logging.Infof(ctx, "Error retrieving secret: %v\nOutput: %s\n", err, string(output))
+		return "", err
+	}
+
+	return string(output), nil
 }
 
 func getTotalFilters(ctx context.Context, req *api.CTPRequest, defaultKarbonFilterNames []string, defaultKoffeeFilterNames []string) int {

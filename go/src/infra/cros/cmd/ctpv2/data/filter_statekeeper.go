@@ -62,4 +62,12 @@ type FilterStateKeeper struct {
 	BQClient *bigquery.Client
 
 	ExecutionError error
+
+	//Curating logs to be consumed by AI for execution context
+	ExecutionAIContext string
+}
+
+// AppendToAIExecutionContext exposes an api to easily append to AIExecutionContext
+func (sk *FilterStateKeeper) AppendToAIExecutionContext(context string) {
+	sk.ExecutionAIContext = sk.ExecutionAIContext + "\n" + context
 }

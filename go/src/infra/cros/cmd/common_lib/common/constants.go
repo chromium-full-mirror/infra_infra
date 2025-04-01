@@ -78,6 +78,8 @@ const (
 	AncestorsPropName                      = "ancestor_buildbucket_ids"
 	CbPropName                             = "crystalball_ingest"
 	CbMetricsPropName                      = "crystalball_has_data"
+	GeminiApiKey                           = "gemini-api-key"
+	GeminiApiKeyProject                    = "cros-registry"
 	// SourceMetadataPath is the path in the build output directory that
 	// details the code sources compiled into the build. The path is
 	// specified relative to the root of the build output directory.

@@ -106,6 +106,9 @@ type HwTestStateKeeper struct {
 	DockerKeyFileLocation string
 
 	ANTSInvocationID string
+
+	//Curating logs to be consumed by AI for execution context
+	ExecutionAIContext string
 }
 
 func NewHwTestStateKeeper() *HwTestStateKeeper {
@@ -129,4 +132,9 @@ func NewHwTestStateKeeper() *HwTestStateKeeper {
 		CompanionDutModels:       []*labapi.DutModel{},
 		UpdateFirmwares:          map[string]bool{},
 	}
+}
+
+// AppendToAIExecutionContext exposes an api to easily append to AIExecutionContext
+func (sk *HwTestStateKeeper) AppendToAIExecutionContext(context string) {
+	sk.ExecutionAIContext = sk.ExecutionAIContext + "\n" + context
 }

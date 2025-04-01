@@ -42,4 +42,12 @@ type PrePostFilterStateKeeper struct {
 	// BQ Client for writing CTP level task info to.
 	BQClient   *bigquery.Client
 	BuildState *build.State
+
+	//Curating logs to be consumed by AI for execution context
+	ExecutionAIContext string
+}
+
+// AppendToAIExecutionContext exposes an api to easily append to AIExecutionContext
+func (sk *PrePostFilterStateKeeper) AppendToAIExecutionContext(context string) {
+	sk.ExecutionAIContext = sk.ExecutionAIContext + "\n" + context
 }

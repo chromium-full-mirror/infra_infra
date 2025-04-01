@@ -9,9 +9,13 @@ package interfaces
 type StateKeeperInterface interface {
 	// IsStateKeeper indicates if current object is a state keeper.
 	IsStateKeeper()
+
+	AppendToAIExecutionContext(context string)
 }
 
 // StateKeeper that can be extended by other state keepers.
 type StateKeeper struct{}
 
 func (sk *StateKeeper) IsStateKeeper() {}
+
+func (sk *StateKeeper) AppendToAIExecutionContext(context string) {}

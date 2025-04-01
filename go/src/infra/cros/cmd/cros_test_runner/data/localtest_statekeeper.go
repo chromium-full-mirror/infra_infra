@@ -34,6 +34,9 @@ type LocalTestStateKeeper struct {
 	// Use the persistent key directly for docker login
 	// instead of the gcloud auth flow
 	UseDockerKeyDirectly bool
+
+	//Curating logs to be consumed by AI for execution context
+	ExecutionAIContext string
 }
 
 type LocalArgs struct {
@@ -62,4 +65,9 @@ type LocalArgs struct {
 	SkipSshTunnel        bool
 	SkipSshReverseTunnel bool
 	RunCpconPublish      bool
+}
+
+// AppendToAIExecutionContext exposes an api to easily append to AIExecutionContext
+func (sk *LocalTestStateKeeper) AppendToAIExecutionContext(context string) {
+	sk.ExecutionAIContext = sk.ExecutionAIContext + "\n" + context
 }
