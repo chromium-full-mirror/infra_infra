@@ -16,10 +16,10 @@ import (
 )
 
 // CipdRoot is the path to root directory for CIPD.
-var CipdRoot = "/cipd"
+const CipdRoot = "/cipd"
 
 // CipdEnsureFile is the path to the ensure file.
-var CipdEnsureFile = "/cipd/spec"
+const CipdEnsureFile = "/cipd/spec"
 
 // Update subcommand: Update satlab tool.
 var Update = &subcommands.Command{
