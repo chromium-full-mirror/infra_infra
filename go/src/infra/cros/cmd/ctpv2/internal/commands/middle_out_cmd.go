@@ -55,6 +55,8 @@ const (
 	TautoTastPrefix = "tauto.tast"
 	NoDevicesInt    = math.MinInt32 + 1
 	TastPrefix      = "tast"
+	minIterations   = 1
+	maxIterations   = 10
 )
 
 var dursCache = make(map[string]map[string]float64)
@@ -196,6 +198,10 @@ func (cmd *MiddleOutRequestCmd) Execute(ctx context.Context) error {
 		}(),
 		pool:                  pool,
 		durationBasedSharding: cmd.DurationBasedSharding,
+		// TODO: (thandakas) Update input with new InternalTestPlan field when available, setting it to 1 for now to mimic existing behavior
+		requestsPerSchedulingUnitOptions: validateIterationsCfg(ctx, 1),
+		// TODO: (thandakas) Update input with new InternalTestPlan field when available
+		multiEqcByModel: true,
 	}
 
 	trReqs, err := middleOut(ctx, cmd.InternalTestPlan, cfg)
@@ -274,11 +280,13 @@ type pkTestCaseData struct {
 }
 
 type distroCfg struct {
-	pool                  string
-	isUnitTest            bool
-	unitTestDevices       int
-	maxInShard            int
-	durationBasedSharding bool
+	pool                             string
+	isUnitTest                       bool
+	unitTestDevices                  int
+	maxInShard                       int
+	durationBasedSharding            bool
+	requestsPerSchedulingUnitOptions int
+	multiEqcByModel                  bool
 }
 
 type middleOutData struct {
@@ -338,6 +346,20 @@ func getTCId(tc *api.CTPTestCase) *api.TestCase_Id {
 
 func oldProto(targs []*api.HWRequirements) bool {
 	return len(targs) > 0
+}
+
+func validateIterationsCfg(ctx context.Context, numIterations int) int {
+	// Lower limit for requested scheduled iterations per SchedulingUnitOptions
+	if numIterations < minIterations {
+		logging.Infof(ctx, fmt.Sprintf("Requested # of scheduled iterations per SchedulingUnitOptions is below MIN limit of %d. Setting config to MIN limit.", minIterations))
+		return minIterations
+	}
+	// Upper limit for requested scheduled iterations per SchedulingUnitOptions
+	if numIterations > maxIterations {
+		logging.Infof(ctx, fmt.Sprintf("Requested # of scheduled iterations per SchedulingUnitOptions is above MAX limit of %d. Setting config to MAX limit.", maxIterations))
+		return maxIterations
+	}
+	return numIterations
 }
 
 // middleOut creates TRRequest(S) from a ctpv2 internal test plan.
@@ -446,11 +468,11 @@ func TestCasesGroupByPublishKeys(testCases []string, solverData *middleOutData, 
 		// First get the SchedulingUnitOptions (hw option) data for a testCase
 		tcToHwOptionMap, ok := solverData.lookBack[hwOptionHash]
 		if !ok {
-			return map[string]*pkTestCaseData{}, fmt.Errorf("Could not find SchedulingUnitOption for hw option")
+			return map[string]*pkTestCaseData{}, fmt.Errorf("Could not find SchedulingUnitOption for hw option %d", hwOptionHash)
 		}
 		hwOption, ok := tcToHwOptionMap[testCase]
 		if !ok {
-			return map[string]*pkTestCaseData{}, fmt.Errorf("Could not find SchedulingUnitOption for test case %s", testCase)
+			return map[string]*pkTestCaseData{}, fmt.Errorf("Could not find SchedulingUnitOption for hw option %d and test case %s", hwOptionHash, testCase)
 		}
 		// Then filter out the 3D publish keys of hw option
 		// and update the Eqc-To-PublishKeysTestData map with key eqcHash
@@ -529,19 +551,31 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 		} else {
 			shards = shard(tcs, solverData.cfg.maxInShard)
 		}
-
 		for _, shardedtc := range shards {
+			// Keep track of the hw and models that are selected to support multi device selection within eqc
+			hwCache := map[uint64]bool{}
+			modelCache := map[string]bool{}
 
 			harness := ""
 			if len(shardedtc) > 0 {
 				harness = getHarness(shardedtc[0])
 			}
-			logging.Infof(ctx, fmt.Sprintf("Looking for Tcs: %s", shardedtc))
-
-			selectedDevice, expandCurrentShard := getDevices(solverData, len(shardedtc), hwHash, harness)
-			logging.Infof(ctx, "Selected: %s Expand : %s", selectedDevice, expandCurrentShard)
-			logging.Infof(ctx, "selected expanded: ", solverData.hwUUIDMap[selectedDevice])
-			assignHardware(solverData, selectedDevice, expandCurrentShard, shardedtc, hwHash)
+			// Will attempt to select # of devices of a hwHash (EqC) by iterating
+			// through the EqC device selection (getDevices) and try to assign
+			// devices that have NOT been selected in prior iterations. In a case where
+			// size of the EqC devices < the requested # (requestsPerSchedulingUnitOptions), then
+			// getDevices will attempt to assign to a previously selected device if
+			// device shard capacity allows.
+			for range solverData.cfg.requestsPerSchedulingUnitOptions {
+				logging.Infof(ctx, fmt.Sprintf("Looking for Tcs: %s", shardedtc))
+				selectedDevice, expandCurrentShard := getDevices(solverData, len(shardedtc), hwHash, harness, hwCache, modelCache, solverData.cfg.multiEqcByModel)
+				// Handle a device not found case
+				if selectedDevice != 0 {
+					logging.Infof(ctx, "Selected: %s Expand : %s", selectedDevice, expandCurrentShard)
+					logging.Infof(ctx, "selected expanded: ", solverData.hwUUIDMap[selectedDevice])
+					assignHardware(solverData, selectedDevice, expandCurrentShard, shardedtc, hwHash)
+				}
+			}
 		}
 	}
 	return solverData.finalAssignments
@@ -571,7 +605,11 @@ func greedyDistro(ctx context.Context, solverData *middleOutData) map[uint64][][
 
 // assignHardware will add the tests to the selectedDevice, being aware if it should go into a non-filled hard, or a new one.
 // assignHardware will also decrement the number of devices remaining every time device is assigned tests.
-func assignHardware(solverData *middleOutData, selectedDevice uint64, expandCurrentShard bool, shardedtc []string, hash uint64) {
+func assignHardware(solverData *middleOutData, selectedDevice uint64, expandCurrentShard bool, tcShard []string, hash uint64) {
+	// A copy of the tcShard is made to ensure changes to the original slice do not affect the finalAssignments
+	shardedtc := make([]string, len(tcShard))
+	copy(shardedtc, tcShard)
+
 	if expandCurrentShard {
 		lastElement := len(solverData.finalAssignments[selectedDevice])
 		solverData.finalAssignments[selectedDevice][lastElement-1] = append(solverData.finalAssignments[selectedDevice][lastElement-1], shardedtc...)
@@ -1128,6 +1166,15 @@ func hwidFromHwInfo(hwInfo *hwInfo) string {
 	return ""
 }
 
+func modelFromHwInfo(hwInfo *hwInfo) string {
+	if hwInfo.oldReq != nil {
+		return hwInfo.oldReq.GetHwDefinition()[0].GetDutInfo().GetChromeos().GetDutModel().GetModelName()
+	} else if hwInfo.req != nil {
+		return hwInfo.req.GetSchedulingUnits()[0].GetPrimaryTarget().GetSwarmingDef().GetDutInfo().GetChromeos().GetDutModel().GetModelName()
+	}
+	return ""
+}
+
 // ConvertSwarmingLabelsToDims converts provided swarming labels to swarming dims.
 func ConvertSwarmingLabelsToDims(defaultDims []string, swarmingLabels []string) []string {
 	dims := defaultDims
@@ -1277,7 +1324,7 @@ func requiresNewShard(currentPodHarness, currentTestHarness string) bool {
 // getDevices finds a device from the devicepool + hwEquivalenceMap to satsify the need for the test
 // It will first look for a matching device with a non-full shard that fits,
 // otherwise it will look for a device with the most availability in the lab.
-func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness string) (selectedDevice uint64, append bool) {
+func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness string, hwCache map[uint64]bool, modelCache map[string]bool, multiEqcByModel bool) (selectedDevice uint64, append bool) {
 	// This is a pretty expensive approach to sharding:
 	// We will always check all devices to see if they have room in a non-empty shard.
 	// So even when we fully fill a device, or it hasn't been touched, we still check it.
@@ -1301,14 +1348,36 @@ func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness 
 			// But in these examples, its viewed as an "open shard", so we toss other tests with overlapping eq classes
 			// into the shard; resulting in those tests being skipped.
 			if solverData.flatHWUUIDMap[device].numInCurrentShard+numTests <= solverData.cfg.maxInShard {
-				selectedDevice = device
-				return selectedDevice, true
+				if !devicePreviouslySelected(solverData, device, hwCache, modelCache, multiEqcByModel) {
+					selectedDevice = device
+					updateCaches(solverData, selectedDevice, hwCache, modelCache, multiEqcByModel)
+					return selectedDevice, true
+				}
 			}
 		}
 	}
 
+	// Keep record of the hwCacheSize prior to bestChoice selection
+	hwCacheSizePrev := len(hwCache)
 	// If that cannot be done, then just pick the device with the most available.
-	selectedDevice = bestChoice(solverData, devices)
+	selectedDevice = bestChoice(solverData, devices, hwCache, modelCache, multiEqcByModel)
+
+	// If no new devices were selected, then this means all available real devices
+	// have been selected.
+	if hwCacheSizePrev == len(hwCache) {
+		// Then there may be a choice left within the devices we have already selected
+		// based on the hwCache. Now look through those selected devices again
+		// by clearing out the cache and do a recursive look.
+		if len(hwCache) > 0 {
+			if !multiEqcByModel {
+				clear(hwCache)
+			}
+			clear(modelCache)
+			return getDevices(solverData, numTests, hwHash, harness, hwCache, modelCache, false)
+		}
+		// If the cache is empty, then there are no other choices left and
+		// return the bestChoice selected device, which is one that will be rejected
+	}
 	return selectedDevice, false
 }
 
@@ -1316,18 +1385,21 @@ func getDevices(solverData *middleOutData, numTests int, hwHash uint64, harness 
 // Grab a the most free device
 // If none are free, grab the one which has the most amount of un-assigned work to it in the queue.
 // Its good to note that freeDevices is never expected to go negative, but `totalDevicesUnAssigned` can.
-func bestChoice(solverData *middleOutData, devices []uint64) (selectedDevice uint64) {
+func bestChoice(solverData *middleOutData, devices []uint64, hwCache map[uint64]bool, modelCache map[string]bool, multiEqcByModel bool) (selectedDevice uint64) {
 	maxAvailableFound := math.MinInt32
 
 	// Look through the un-allocated devices for a free one.
 	for _, device := range devices {
 		if solverData.flatHWUUIDMap[device].labLoading.freeDevices > maxAvailableFound {
-			maxAvailableFound = solverData.flatHWUUIDMap[device].labLoading.freeDevices
-			selectedDevice = device
+			if !devicePreviouslySelected(solverData, device, hwCache, modelCache, multiEqcByModel) {
+				maxAvailableFound = solverData.flatHWUUIDMap[device].labLoading.freeDevices
+				selectedDevice = device
+			}
 		}
 	}
 
 	if maxAvailableFound > 0 {
+		updateCaches(solverData, selectedDevice, hwCache, modelCache, multiEqcByModel)
 		return selectedDevice
 	}
 
@@ -1344,15 +1416,17 @@ func bestChoice(solverData *middleOutData, devices []uint64) (selectedDevice uin
 			if solverData.flatHWUUIDMap[device].labLoading.staticBotCount == 0 {
 				continue
 			}
-			maxAvailableFound = solverData.flatHWUUIDMap[device].labLoading.totalDevicesUnAssigned
-			selectedDevice = device
+			if !devicePreviouslySelected(solverData, device, hwCache, modelCache, multiEqcByModel) {
+				maxAvailableFound = solverData.flatHWUUIDMap[device].labLoading.freeDevices
+				selectedDevice = device
+			}
 		}
 	}
 
 	// If a device was found, then return it.
 	if selectedDevice != uint64(0) {
+		updateCaches(solverData, selectedDevice, hwCache, modelCache, multiEqcByModel)
 		return selectedDevice
-
 	}
 
 	// Finally, if we have no free devices, and no busy but real devices, we will select
@@ -1365,6 +1439,28 @@ func bestChoice(solverData *middleOutData, devices []uint64) (selectedDevice uin
 		}
 	}
 	return selectedDevice
+}
+
+func devicePreviouslySelected(solverData *middleOutData, device uint64, hwCache map[uint64]bool, modelCache map[string]bool, multiEqcByModel bool) bool {
+	if multiEqcByModel {
+		model := modelFromHwInfo(solverData.flatHWUUIDMap[device])
+		if _, ok := modelCache[model]; !ok {
+			return false
+		}
+	} else {
+		if _, ok := hwCache[device]; !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func updateCaches(solverData *middleOutData, device uint64, hwCache map[uint64]bool, modelCache map[string]bool, multiEqcByModel bool) {
+	if multiEqcByModel {
+		model := modelFromHwInfo(solverData.flatHWUUIDMap[device])
+		modelCache[model] = true
+	}
+	hwCache[device] = true
 }
 
 // hwSearchOrdering: given the flatUUIDLoadingMap, return the order of least common to most common boards/eqs.

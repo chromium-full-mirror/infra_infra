@@ -432,7 +432,8 @@ func TestAssignHardware(t *testing.T) {
 	shardedtc3 := []string{"3"}
 
 	cfg := distroCfg{
-		maxInShard: 2,
+		maxInShard:                       2,
+		requestsPerSchedulingUnitOptions: 1,
 	}
 
 	solverData := newMiddleOutData()
@@ -573,8 +574,9 @@ func TestSharedDeviceLabLoadingDifferentProvision3(t *testing.T) {
 
 	solverData := newMiddleOutData()
 	solverData.cfg = distroCfg{
-		unitTestDevices: 2,
-		maxInShard:      2}
+		unitTestDevices:                  2,
+		maxInShard:                       2,
+		requestsPerSchedulingUnitOptions: 1}
 	solverData.flatHWUUIDMap = flatUUIDLoadingMap
 	solverData.hwEquivalenceMap = newEq
 
@@ -585,16 +587,22 @@ func TestSharedDeviceLabLoadingDifferentProvision3(t *testing.T) {
 
 	populateLabAvalability(makeCtx(), solverData)
 
+	hwCache := map[uint64]bool{}
+	modelCache := map[string]bool{}
+
 	// The goal of this check is to ensure the first test goes into a new shard.
-	selectedDevice, expandCurrentShard := getDevices(solverData, 2, HwHash1, "tast")
+	selectedDevice, expandCurrentShard := getDevices(solverData, 2, HwHash1, "tast", hwCache, modelCache, false)
 	if expandCurrentShard {
 		t.Fatalf("First test should go into new shard and did not")
 	}
 
 	// Set the # of tests currently in the shard to 1
 	flatUUIDLoadingMap[selectedDevice].numInCurrentShard = 1
+	hwCache = map[uint64]bool{}
+	modelCache = map[string]bool{}
+
 	// Adding another test should result in the shard being expanded; and the same device being selected.
-	selectedDevice2, expandCurrentShard := getDevices(solverData, 1, HwHash1, "tast")
+	selectedDevice2, expandCurrentShard := getDevices(solverData, 1, HwHash1, "tast", hwCache, modelCache, false)
 
 	if selectedDevice != selectedDevice2 {
 		t.Fatalf("Shard was not filled when it should have been")
@@ -623,7 +631,7 @@ func TestGreedyDistro(t *testing.T) {
 	hwToTCMap[vars.HwHash1] = []string{"d", "e"}
 	hwToTCMap[vars.HwHash2] = []string{"f", "g", "h", "i", "j", "k"}
 
-	cfg := distroCfg{isUnitTest: true, unitTestDevices: 3, maxInShard: 50}
+	cfg := distroCfg{isUnitTest: true, unitTestDevices: 3, maxInShard: 50, requestsPerSchedulingUnitOptions: 1}
 
 	eqMap := flattenList(makeCtx(), []*api.SchedulingUnitOptions{vars.SU1Or2, vars.SU1Or2Or3, vars.SU4})
 
@@ -675,15 +683,76 @@ func TestGreedyDistro(t *testing.T) {
 
 	// Rerun the same test with different settings, ensure things still "work"
 	cfg = distroCfg{
-		isUnitTest:      true,
-		maxInShard:      5,
-		unitTestDevices: 5,
+		isUnitTest:                       true,
+		maxInShard:                       5,
+		unitTestDevices:                  5,
+		requestsPerSchedulingUnitOptions: 1,
 	}
 	solverData.cfg = cfg
 
 	solverData.finalAssignments = make(map[uint64][][]string)
 	finalAssignments = greedyDistro(makeCtx(), solverData)
 	correct, err = validateDistro(finalAssignments, flatHWUUIDMap, cfg, expectedTcs, expected)
+	if !correct {
+		t.Fatal(err)
+	}
+}
+
+func TestGreedyDistroIterations(t *testing.T) {
+	vars := buildTestVars()
+
+	hwToTCMap := make(map[uint64][]string)
+
+	hwToTCMap[vars.HwHash0] = []string{"a", "b", "c"}
+	hwToTCMap[vars.HwHash1] = []string{"d", "e"}
+	hwToTCMap[vars.HwHash2] = []string{"f", "g", "h", "i", "j", "k"}
+
+	cfg := distroCfg{isUnitTest: true, unitTestDevices: 3, maxInShard: 50, requestsPerSchedulingUnitOptions: 3}
+
+	eqMap := flattenList(makeCtx(), []*api.SchedulingUnitOptions{vars.SU1Or2, vars.SU1Or2Or3, vars.SU4})
+
+	flatHWUUIDMap := make(map[uint64]*hwInfo)
+
+	for k, v := range eqMap {
+		flatHWUUIDMap[k] = v
+	}
+
+	flatEqMap := make(map[uint64][]uint64)
+
+	for key, hwOptions := range vars.HwUUIDMap {
+		flatEqMap[key] = findMatches(makeCtx(), hwOptions, flatHWUUIDMap)
+	}
+
+	solverData := newMiddleOutData()
+	solverData.hwToTCMap = hwToTCMap
+	solverData.hwEquivalenceMap = flatEqMap
+	solverData.hwUUIDMap = vars.HwUUIDMap
+	solverData.cfg = cfg
+	solverData.flatHWUUIDMap = flatHWUUIDMap
+
+	finalAssignments := greedyDistro(makeCtx(), solverData)
+
+	expected := []*allowedAssignment{
+		{
+			tc:   []string{"a", "b", "c", "d", "e"},
+			nwHw: vars.SU1,
+		},
+		{
+			tc:   []string{"a", "b", "c", "d", "e"},
+			nwHw: vars.SU2,
+		},
+		{
+			tc:   []string{"a", "b", "c", "d", "e"},
+			nwHw: vars.SU3,
+		},
+		{
+			tc:   []string{"a", "b", "c", "f", "g", "h", "i", "j", "k"},
+			nwHw: vars.SU4,
+		},
+	}
+
+	expectedTcs := []string{"a", "a", "a", "b", "b", "b", "c", "c", "c", "d", "d", "d", "e", "e", "e", "f", "f", "f", "g", "g", "g", "h", "h", "h", "i", "i", "i", "j", "j", "j", "k", "k", "k"}
+	correct, err := validateDistro(finalAssignments, flatHWUUIDMap, cfg, expectedTcs, expected)
 	if !correct {
 		t.Fatal(err)
 	}
@@ -1175,8 +1244,9 @@ func TestGetDevices(t *testing.T) {
 
 	solverData := newMiddleOutData()
 	solverData.cfg = distroCfg{
-		unitTestDevices: 2,
-		maxInShard:      2}
+		unitTestDevices:                  2,
+		maxInShard:                       2,
+		requestsPerSchedulingUnitOptions: 1}
 	solverData.flatHWUUIDMap = flatUUIDLoadingMap
 	solverData.hwEquivalenceMap = newEq
 
@@ -1186,15 +1256,19 @@ func TestGetDevices(t *testing.T) {
 	for _, device := range devices {
 		solverData.flatHWUUIDMap[device].shardHarness = "tast"
 	}
+	hwCache := map[uint64]bool{}
+	modelCache := map[string]bool{}
 
-	selectedDevice, expandCurrentShard := getDevices(solverData, 1, vars.HwHash1, "tast")
+	selectedDevice, expandCurrentShard := getDevices(solverData, 1, vars.HwHash1, "tast", hwCache, modelCache, false)
+
+	hwCache = map[uint64]bool{}
+	modelCache = map[string]bool{}
 
 	flatUUIDLoadingMap[selectedDevice].numInCurrentShard = 1
 	if expandCurrentShard {
 		t.Fatalf("First test should go into new shard and did not")
 	}
-
-	selectedDevice2, _ := getDevices(solverData, 1, vars.HwHash1, "tast")
+	selectedDevice2, _ := getDevices(solverData, 1, vars.HwHash1, "tast", hwCache, modelCache, false)
 
 	if selectedDevice != selectedDevice2 {
 		t.Fatalf("Shard was not filled when it should have been")
@@ -1203,7 +1277,7 @@ func TestGetDevices(t *testing.T) {
 	// Shard is full, so reset it and remove 1 from lab loading.
 	flatUUIDLoadingMap[selectedDevice].labLoading.freeDevices--
 
-	selectedDevice3, expandCurrentShard := getDevices(solverData, 1, vars.HwHash1, "tauto")
+	selectedDevice3, expandCurrentShard := getDevices(solverData, 1, vars.HwHash1, "tauto", hwCache, modelCache, false)
 
 	if selectedDevice == selectedDevice3 || expandCurrentShard {
 		// fmt.Print(selectedDevice3)
@@ -1214,7 +1288,7 @@ func TestGetDevices(t *testing.T) {
 	flatUUIDLoadingMap[selectedDevice].numInCurrentShard = 0
 	flatUUIDLoadingMap[selectedDevice].labLoading.freeDevices--
 
-	selectedDevice4, expandCurrentShard := getDevices(solverData, 1, vars.HwHash1, "tast")
+	selectedDevice4, expandCurrentShard := getDevices(solverData, 1, vars.HwHash1, "tast", hwCache, modelCache, false)
 	if selectedDevice4 == selectedDevice2 {
 		t.Fatalf("New shard should be on different device for balancing")
 	}
@@ -1365,21 +1439,18 @@ func validateDistro(finalAssignments map[uint64][][]string, flatUUIDLoadingMap m
 }
 
 func listEqual(expected []string, found []string) bool {
+	expectedCounts := make(map[string]int)
+	foundCounts := make(map[string]int)
 
-	anyMissing := false
 	for _, tc := range expected {
-		tcFound := false
-		for _, foundTC := range found {
-			if tc == foundTC {
-				tcFound = true
-			}
-		}
-		if !tcFound {
-			fmt.Printf("TC: %s not found in given list: %s\n", tc, found)
-			anyMissing = true
-		}
+		expectedCounts[tc]++
 	}
-	return !anyMissing
+
+	for _, tc := range found {
+		foundCounts[tc]++
+	}
+
+	return reflect.DeepEqual(expectedCounts, foundCounts)
 }
 
 func validateCorrectHwAssignment(givenHw *hwInfo, flatTcs []string, expected []*allowedAssignment) bool {
@@ -1447,6 +1518,7 @@ type allowedAssignment struct {
 //		pool:            "wificell",
 //		isUnitTest:      true,
 //		unitTestDevices: 1,
+//		requestsPerSchedulingUnitOptions:   2,
 //	}
 //
 //	out, err := middleOut(makeCtx(), testPlan, cfg)
