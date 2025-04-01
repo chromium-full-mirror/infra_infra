@@ -120,13 +120,11 @@ func formatTestName(fqTestName string) string {
 	testName := fqTestName
 	testName = strings.TrimPrefix(testName, tfprefix)
 
-	// First, trim test suite prefix for all known suites.
+	// Trim test suite prefix for all known suites.
 	for _, suite := range knownSuites {
 		testName = strings.TrimPrefix(testName, suite+".")
 	}
-
-	// We do not need to strip any other info as we force the naming schema via test-finder.
-	return testName
+	return fmt.Sprintf("\"%s\"", testName)
 }
 
 func extractMetadataFlag(metadata *api.ExecutionMetadata, flagName string) (string, error) {
