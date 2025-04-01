@@ -2,7 +2,6 @@
   "packages": [
     "trusted-types-policy",
     "test-helpers",
-    "starter-packages",
     "elements/*"
   ],
   "version": "0.3.7"
