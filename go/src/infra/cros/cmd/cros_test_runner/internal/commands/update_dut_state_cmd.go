@@ -181,6 +181,13 @@ func (cmd *UpdateDutStateCmd) determineNeedForRepairAndModify(ctx context.Contex
 	foundProvisionError := false
 	for _, response := range responses {
 		logging.Infof(ctx, "Found provision response with status: %s", response.GetStatus().String())
+
+		// NOTE(b/406486832): If we are unable to boot from the USB after
+		// multiple reboot/retries, mark the USB state as unknown.
+		if response.GetStatus() == api.InstallResponse_STATUS_PRE_PROVISION_USB_BOOT_FAILURE && deviceData.GetChromeOsDeviceData().GetDutState() != nil {
+			deviceData.GetChromeOsDeviceData().GetDutState().ServoUsbState = lab.HardwareState_HARDWARE_UNKNOWN
+		}
+
 		if response.GetStatus() != api.InstallResponse_STATUS_SUCCESS {
 			repairRequest = determineRepairRequest(response.GetStatus())
 			repairReason = "provision"
@@ -284,6 +291,7 @@ func updateDutState(ctx context.Context, step *build.Step, ufsClient ufsAPI.Flee
 				"dut.state",
 				"dut_state.version_info",
 				"dut_state.repair_requests",
+				"dut_state.servo_usb_state",
 			},
 		},
 	}
