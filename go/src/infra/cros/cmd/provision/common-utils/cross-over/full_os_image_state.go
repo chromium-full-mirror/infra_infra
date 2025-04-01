@@ -99,7 +99,7 @@ func (s FullOSImageState) Execute(ctx context.Context, log *log.Logger) (*anypb.
 	// checkSSHRetryCount times using the common retry function.
 	if err := common_utils.Retry(log, checkSSHRetryCount, "checkSSH", f); err != nil {
 		setPDRole(ctx, log, "src", s.params)
-		return common_utils.WrapStringInAny(s.errStatus(err.Error())), api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED, errors.New(err.Error())
+		return common_utils.WrapStringInAny(s.errStatus(err.Error())), api.InstallResponse_STATUS_PRE_PROVISION_USB_BOOT_FAILURE, errors.New(err.Error())
 
 	}
 	defer client.Close()
