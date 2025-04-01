@@ -80,6 +80,9 @@ func NewCIPDPackage(name string) *CIPDPackage {
 type UprevConfig struct {
 	// Dockerfile found by: Dockerfile_<Name>
 	Name string
+	// Name of the firestore document this config will upload to.
+	// Defaults to Name if not set.
+	FirestoreName string
 	// Repository information.
 	// If empty, defaults to
 	// 	host: us-docker.pkg.dev
@@ -366,6 +369,10 @@ func CleanConfigs(configs []*UprevConfig) []*UprevConfig {
 	for _, config := range configs {
 		if config.ContainerName == "" {
 			config.ContainerName = config.Name
+		}
+
+		if config.FirestoreName == "" {
+			config.FirestoreName = config.Name
 		}
 
 		if len(config.Repositories) == 0 {

@@ -83,10 +83,10 @@ func addContainerInfoToStorage(ctx context.Context, firestoreClient *firestore.C
 
 	infosMap := map[string][]*common.ContainerInfoItem{}
 	// Add new container info to storage record.
-	for containerName, containerInfo := range containerInfos {
-		currentInfos := common.FetchContainerInfoFromFirestoreDoc(ctx, containersCollection.Doc(containerName))
+	for firestoreName, containerInfo := range containerInfos {
+		currentInfos := common.FetchContainerInfoFromFirestoreDoc(ctx, containersCollection.Doc(firestoreName))
 		infos := append([]*common.ContainerInfoItem{containerInfo}, currentInfos...)
-		infosMap[containerName] = infos
+		infosMap[firestoreName] = infos
 	}
 
 	err = pushContainerInfoToFirestore(ctx, firestoreClient, collectionName, infosMap)

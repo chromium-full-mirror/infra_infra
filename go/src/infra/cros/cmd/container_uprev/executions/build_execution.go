@@ -101,6 +101,7 @@ func executeContainerUprev(ctx context.Context, dockerKeyFile, cipdLabel, imageT
 			}
 			configsByRepoHostname[repo.Hostname] = append(configsByRepoHostname[repo.Hostname], &internal.UprevConfig{
 				Name:          config.Name,
+				FirestoreName: config.FirestoreName,
 				Repositories:  []*internal.Repository{repo},
 				ContainerName: config.ContainerName,
 				CIPDPackages:  config.CIPDPackages,
@@ -133,7 +134,7 @@ func executeContainerUprev(ctx context.Context, dockerKeyFile, cipdLabel, imageT
 			if _, ok := containerInfosByFirestore[repo.FirestoreHost]; !ok {
 				containerInfosByFirestore[repo.FirestoreHost] = internal.ContainerInfosMap{}
 			}
-			containerInfosByFirestore[repo.FirestoreHost][config.Name] = containerInfo
+			containerInfosByFirestore[repo.FirestoreHost][config.FirestoreName] = containerInfo
 		}
 
 		step.End(err)
