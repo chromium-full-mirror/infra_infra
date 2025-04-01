@@ -101,7 +101,7 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 			"--max-log-size", "62914560", "--max-tmp-logcat-file", "62914560",
 			"--logcat-on-failure", "--screenshot-on-failure", "--include-test-log-tags",
 			"--result-reporter:disable-result-posting", "--result-reporter:no-disable",
-			"--use-log-saver", `--post-boot-command "am switch-user 10"`,
+			"--use-log-saver", "--post-boot-command", `"am switch-user 10"`,
 		}
 		if testType != "gts" && testType != "vts" && testType != "sts" {
 			ctsParams = append(ctsParams, "--property-check:no-throw-error")

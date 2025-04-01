@@ -23,6 +23,7 @@ import (
 
 	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/common"
 	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/device"
+	"go.chromium.org/infra/cros/cmd/common_lib/secretmanager"
 )
 
 const (
@@ -31,6 +32,9 @@ const (
 	tradefedGoogleBinary = "tradefed_runner.sh"
 	tradefedGlobalLogs   = "tradefed_global_log_*.txt"
 	crossDeviceErr       = "invalid cross-device link"
+	gtsAccountKeyFile    = "/tmp/test/gts-arc.json"
+	gtsKeySecretName     = "gts-arc"
+	gtsKeyProjectNumber  = 501735538094
 )
 
 // List of xTS & non-xTS test suites supported by this driver.
@@ -160,6 +164,8 @@ func runTradefedTest(ctx context.Context, logger *log.Logger, tests []*api.TestC
 			}
 		}
 	}()
+
+	prepareEnvironment(ctx, logger)
 
 	var cmd *exec.Cmd
 
@@ -342,4 +348,27 @@ func moduleNameFromID(id string) string {
 		return sections[0]
 	}
 	return id
+}
+
+func prepareEnvironment(ctx context.Context, logger *log.Logger) {
+	if !isAospTradefed() && testType == "gts" {
+		// Internal runs of GTS might require service account key.
+		if _, err := os.Stat(gtsAccountKeyFile); err != nil && os.IsNotExist(err) {
+			// If not already present, fetch key "secret" and write it to disk.
+			keyData, err := secretmanager.GetSecretBytes(ctx, gtsKeySecretName, gtsKeyProjectNumber, 1)
+			if err != nil {
+				// Do not return error - try to run without the key.
+				logger.Printf("Unable to fetch GTS service account key: %s\n", err)
+			} else {
+				err = os.WriteFile(gtsAccountKeyFile, keyData, 0666)
+				if err != nil {
+					logger.Printf("Unable to write GTS service account key to disk: %s\n", err)
+				} else {
+					logger.Printf("GTS service account key written to file: %s\n", gtsAccountKeyFile)
+				}
+			}
+		} else {
+			logger.Printf("Reusing GTS service account key file: %s\n", gtsAccountKeyFile)
+		}
+	}
 }
