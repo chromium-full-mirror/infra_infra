@@ -6464,6 +6464,18 @@ wheel: <
 
 * *universal*
 
+### 24.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/packaging-py3"
+  version: "version:24.2"
+>
+```
+
+
+* *universal*
+
 ## **packaging-legacy-py3**
 
 ### 23.0

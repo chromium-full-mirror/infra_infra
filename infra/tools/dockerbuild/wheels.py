@@ -1604,6 +1604,7 @@ SPECS.update({
         Universal('packaging', '22.0', pyversions=['py3']),
         Universal('packaging', '23.0', pyversions=['py3']),
         Universal('packaging', '24.1', pyversions=['py3']),
+        Universal('packaging', '24.2', pyversions=['py3']),
         Universal('packaging-legacy', '23.0', pyversions=['py3']),
         Universal('parameterized', '0.7.0'),
         Universal('parameterized', '0.7.1'),
