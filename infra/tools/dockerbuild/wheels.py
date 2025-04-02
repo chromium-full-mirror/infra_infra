@@ -1135,6 +1135,7 @@ SPECS.update({
         UniversalSource('distlib', '0.3.7', pyversions=['py3']),
         UniversalSource('docopt', '0.6.2'),
         UniversalSource('ezt', '1.1'),
+        UniversalSource('filecheck', '1.0.1'),
         UniversalSource('fixtures', '4.0.1'),
         UniversalSource('flake8', '6.0.0'),
         UniversalSource('flask-talisman', '0.7.0'),

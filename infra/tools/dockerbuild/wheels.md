@@ -2518,6 +2518,20 @@ wheel: <
 
 * *universal*
 
+## **filecheck**
+
+### 1.0.1
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/filecheck-py2_py3"
+  version: "version:1.0.1"
+>
+```
+
+
+* *universal*
+
 ## **filelock-py3**
 
 ### 3.0.12
