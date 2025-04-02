@@ -7,7 +7,7 @@ module go.chromium.org/infra
 // For an example update CL, see https://crrev.com/c/6038926
 go 1.23.0
 
-toolchain go1.23.7
+toolchain go1.23.8
 
 require (
 	cloud.google.com/go v0.118.0
