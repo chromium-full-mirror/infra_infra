@@ -40,7 +40,7 @@ func TestQueryBuilder(t *testing.T) {
 				"available",
 				"my-realm",
 			}))
-			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels, realm\nFROM \"Devices\"\nWHERE (dut_state = $1) AND (realm IN ($2) OR realm is NULL)\nORDER BY id DESC\nLIMIT 10\nOFFSET 20;"))
+			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels, realm\nFROM \"Devices\"\nWHERE (dut_state = $1) AND (realm IN ($2) OR realm IS NULL)\nORDER BY id DESC\nLIMIT 10\nOFFSET 20;"))
 		})
 
 		t.Run("query with all the clauses (bigquery)", func(t *ftt.Test) {
@@ -58,7 +58,7 @@ func TestQueryBuilder(t *testing.T) {
 				"available",
 				"my-realm",
 			}))
-			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels, realm\nFROM `Devices`\nWHERE (dut_state = ?) AND (realm IN (?) OR realm is NULL)\nORDER BY id DESC\nLIMIT 10\nOFFSET 20;"))
+			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels, realm\nFROM `Devices`\nWHERE (dut_state = ?) AND (realm IN (?) OR realm IS NULL)\nORDER BY id DESC\nLIMIT 10\nOFFSET 20;"))
 		})
 
 		t.Run("query for a specific column's distinct values", func(t *ftt.Test) {
@@ -75,7 +75,14 @@ func TestQueryBuilder(t *testing.T) {
 				"device1",
 				"device2",
 			}))
-			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels, realm\nFROM \"Devices\"\nWHERE (id IN ($1,$2)) AND (realm is NULL)\n\n;"))
+			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_state, dut_name, labels, realm\nFROM \"Devices\"\nWHERE (id IN ($1,$2)) AND (realm IS NULL)\n\n;"))
+		})
+
+		t.Run("query for all columns except dut_state", func(t *ftt.Test) {
+			q, err := NewQueryBuilder(table).WithSelectAllClause(dutStateColumn).WithFromClause().Build([]string{})
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, q.Parameters, should.BeEmpty)
+			assert.Loosely(t, q.Statement, should.Equal("SELECT id, dut_name, labels, realm\nFROM \"Devices\"\nWHERE (realm IS NULL)\n\n;"))
 		})
 	})
 }

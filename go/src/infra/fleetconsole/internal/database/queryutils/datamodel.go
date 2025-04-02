@@ -4,6 +4,8 @@
 
 package queryutils
 
+import "slices"
+
 // ColumnType is an enum for the type of a column.  Valid values are in the const block above.
 type ColumnType int32
 
@@ -37,4 +39,8 @@ type Table struct {
 
 	// A mapping from externally-visible name to the column
 	columnByExternalName map[string]*Column
+}
+
+func (t *Table) ColumnExists(column string) bool {
+	return slices.ContainsFunc(t.Columns, func(c *Column) bool { return c.name == column })
 }

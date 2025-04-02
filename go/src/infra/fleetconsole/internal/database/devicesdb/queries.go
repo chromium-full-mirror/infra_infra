@@ -8,22 +8,18 @@ import (
 	"context"
 	"regexp"
 
-	"go.chromium.org/luci/server/auth"
-
 	"go.chromium.org/infra/fleetconsole/internal/database/queryutils"
 	"go.chromium.org/infra/fleetconsole/internal/utils"
-	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
 func buildListDevicesQuery(ctx context.Context, offset, pageSize int, filter, orderby string, ids []string, realms []string) (*queryutils.Query, error) {
-	q, err := queryutils.NewQueryBuilder(DevicesTable).WithSelectAllClause().WithFromClause().WithSpecificIdsFilter(ids).WithWhereClause(filter)
+	q, err := queryutils.NewQueryBuilder(DevicesTable).WithSelectAllClause(RealmColumn).WithFromClause().WithSpecificIdsFilter(ids).WithWhereClause(filter)
+	if err != nil {
+		return nil, utils.InvalidFilterError(err)
+	}
 
 	if pageSize > 0 {
 		q = q.WithOffsetPagination(offset, pageSize)
-
-	}
-	if err != nil {
-		return nil, utils.InvalidFilterError(err)
 	}
 
 	// As aip132 parser doesn't allow "-" in the identifiers
@@ -58,19 +54,4 @@ func buildCountDevicesQuery(ctx context.Context, filter string, realms []string)
 	}
 
 	return q.Build(realms)
-}
-
-func GetUserRealms(ctx context.Context, cloudProject string) ([]string, error) {
-	// When running locally auth.QueryRealms is not implemented,
-	// this defaults to showing all devices
-	if cloudProject == "" {
-		return nil, nil
-	}
-
-	realms, err := auth.QueryRealms(ctx, ufsUtil.InventoriesList, "", nil)
-	if err != nil {
-		return nil, err
-	}
-	realms = append(realms, "") // Devices with no realms are visible to everyone
-	return realms, nil
 }

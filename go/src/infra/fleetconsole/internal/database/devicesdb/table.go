@@ -23,6 +23,7 @@ var (
 		pathComponents = append(pathComponents, "Values")
 		return pathComponents
 	}).Build()
+	RealmColumn = queryutils.NewColumn("realm").Build()
 
 	// Table
 	DevicesTable = queryutils.NewTableBuilder("Devices").WithColumns(
@@ -33,5 +34,6 @@ var (
 		TypeColumn,
 		StateColumn,
 		LabelsColumn,
+		RealmColumn,
 	).Build()
 )

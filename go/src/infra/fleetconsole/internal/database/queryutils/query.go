@@ -6,6 +6,7 @@ package queryutils
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 )
 
@@ -61,9 +62,17 @@ func (q *QueryBuilder) SetSqlLangType(sqlLangType SqlLangType) *QueryBuilder {
 	return q
 }
 
-// WithSelectAllClause adds a select clause with all the columns to the query.
-func (q *QueryBuilder) WithSelectAllClause() *QueryBuilder {
-	return q.WithSelectClause(false, q.table.Columns...)
+// WithSelectAllClause adds a select clause with all the columns to the query except the ones from excludeColumns.
+func (q *QueryBuilder) WithSelectAllClause(excludeColumns ...*Column) *QueryBuilder {
+	columnsToSelect := []*Column{}
+	for _, column := range q.table.Columns {
+		if !slices.ContainsFunc(excludeColumns, func(excludeColumn *Column) bool {
+			return excludeColumn.name == column.name
+		}) {
+			columnsToSelect = append(columnsToSelect, column)
+		}
+	}
+	return q.WithSelectClause(false, columnsToSelect...)
 }
 
 // WithSelectClause adds a select clause with the specified columns to the query.
@@ -113,11 +122,14 @@ func (q *QueryBuilder) WithSpecificIdsFilter(ids []string) *QueryBuilder {
 
 func (q *QueryBuilder) Build(realms []string) (*Query, error) {
 	if q.specificIds != nil {
-		q.addInFilter("id", q.specificIds, false)
+		if err := q.addInFilter("id", q.specificIds, false); err != nil {
+			return nil, err
+		}
 	}
-
 	if realms != nil {
-		q.addInFilter("realm", realms, true)
+		if err := q.addInFilter("realm", realms, true); err != nil {
+			return nil, err
+		}
 	}
 
 	return &Query{
@@ -126,9 +138,13 @@ func (q *QueryBuilder) Build(realms []string) (*Query, error) {
 	}, nil
 }
 
-func (q *QueryBuilder) addInFilter(column string, values []string, allowNull bool) {
+func (q *QueryBuilder) addInFilter(column string, values []string, allowNull bool) error {
 	if len(values) == 0 && !allowNull {
-		return
+		return nil
+	}
+
+	if !q.table.ColumnExists(column) {
+		return fmt.Errorf("column `%s` doesn't exist", column)
 	}
 
 	var result strings.Builder
@@ -152,11 +168,13 @@ func (q *QueryBuilder) addInFilter(column string, values []string, allowNull boo
 		if len(params) > 0 {
 			result.WriteString(" OR ")
 		}
-		result.WriteString(fmt.Sprintf("%s is NULL", column))
+		result.WriteString(fmt.Sprintf("%s IS NULL", column))
 	}
 	result.WriteString(")")
 
 	q.whereClause = fmt.Sprintf("%s%s", q.whereClause, result.String())
+
+	return nil
 }
 
 // bind binds a new query parameter with the given value, and returns
