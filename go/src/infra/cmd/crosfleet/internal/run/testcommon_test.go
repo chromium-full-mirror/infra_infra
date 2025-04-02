@@ -373,7 +373,7 @@ var testTestOrSuiteNamesLabelData = []struct {
 	},
 	{
 		[]string{stringOfLength(301)},
-		stringOfLength(300),
+		stringOfLength(256),
 	},
 }
 

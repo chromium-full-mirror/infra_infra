@@ -50,7 +50,7 @@ const (
 	// error due to how they store tags in a datastore. Most tags shouldn't be
 	// anywhere close to this limit, but tags that could potentially be very
 	// long we should crop them to this limit.
-	maxSwarmingTagLength = 300
+	maxSwarmingTagLength = 256
 	// Maximum number of CTP builds that can be run from one "crosfleet run ..."
 	// command.
 	maxCTPRunsPerCmd = 12
