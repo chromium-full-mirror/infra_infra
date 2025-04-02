@@ -160,7 +160,11 @@ type ImageCandidate struct {
 
 // A url like gs://chromeos-image-archive/firmware-brya-14505.B-branch/R100-14505.832.0-1-8730368903603296945/brya/firmware_from_source.tar.bz2
 // becomes gs://firmware-image-archive/firmware-brya-14505.B/14505.832.0/omnigul.14505.832.0.tar.bz2
-var legacyUrlRe = regexp.MustCompile(`gs://(?:chromeos|firmware)-image-archive/(firmware-\S+-[\d\.]+\.B)(?:-branch(?:-firmware)?)?/(?:R\d+-)?(\d+\.\d+\.\d+)[-\d]*/.*`)
+var legacyUrlRe = regexp.MustCompile(`^gs://(?:chromeos|firmware)-image-archive/(firmware-\S+-[\d\.]+\.B)(?:-branch(?:-firmware)?)?/(?:R\d+-)?(\d+\.\d+\.\d+)[-\d]*/.*`)
+
+// A url like gs://firmware-image-archive/firmware-ec-R135-16209.5.B/16209.5.25/ or gs://chromeos-image-archive/firmware-zephyr-postsubmit/R136-16217.0.0-108800-8720748254242768705/
+// with a trailing slash needs the version number extracted so we can append the single target tar file.
+var versionedDirRe = regexp.MustCompile(`^(gs://.*)/((?:R\d+-)?(\d+\.\d+\.\d+)[-\d]*)/$`)
 
 // The legacy builder (i.e. firmware-brya-14505.B) creates files using the coreboot name
 // gs://firmware-image-archive/firmware-brya-14505.B/14505.846.0/omnigul.14505.846.0.tar.bz2
@@ -170,8 +174,18 @@ var legacyUrlRe = regexp.MustCompile(`gs://(?:chromeos|firmware)-image-archive/(
 func GetAPCandidateURLs(ctx context.Context, gsPath string, fws *FirmwareService) ([]ImageCandidate, error) {
 	candidates := []ImageCandidate{}
 
+	// If the url matches versionedDirRe, try the single target tarfile, but don't fallback to the other patterns.
+	m := versionedDirRe.FindStringSubmatch(gsPath)
+	if m != nil {
+		candidates = append(candidates, ImageCandidate{
+			GSURL:     fmt.Sprintf("%[1]s/%[2]s/%[4]s.%[3]s.tar.bz2", m[1], m[2], m[3], fws.CorebootName),
+			Filenames: []string{fmt.Sprintf("image-%v.bin", fws.CorebootName)},
+		})
+		return candidates, nil
+	}
+
 	// If the url matches legacyUrlRe, and we have a coreboot name, try the single target tarfile
-	m := legacyUrlRe.FindStringSubmatch(gsPath)
+	m = legacyUrlRe.FindStringSubmatch(gsPath)
 	if m != nil && fws.CorebootName != "" {
 		candidates = append(candidates, ImageCandidate{
 			GSURL:     fmt.Sprintf("gs://firmware-image-archive/%[1]s/%[2]s/%[3]s.%[2]s.tar.bz2", m[1], m[2], fws.CorebootName),
@@ -203,19 +217,35 @@ func GetAPCandidateURLs(ctx context.Context, gsPath string, fws *FirmwareService
 func GetECCandidateURLs(ctx context.Context, gsPath string, fws *FirmwareService) ([]ImageCandidate, error) {
 	candidates := []ImageCandidate{}
 
+	ecName := fws.LegacyECName
+	// The "standalone" builders that just build zephyr ECs use a different naming scheme.
+	if strings.Contains(gsPath, "/firmware-ec-R") || strings.Contains(gsPath, "/firmware-zephyr-") {
+		ecName = fws.StandaloneECName
+	}
+
+	// If the url matches versionedDirRe, try the single target tarfile, but don't fallback to the other patterns.
+	m := versionedDirRe.FindStringSubmatch(gsPath)
+	if m != nil {
+		candidates = append(candidates, ImageCandidate{
+			GSURL:     fmt.Sprintf("%[1]s/%[2]s/%[4]s.EC.%[3]s.tar.bz2", m[1], m[2], m[3], ecName),
+			Filenames: []string{"ec.bin"},
+		})
+		return candidates, nil
+	}
+
 	// If the url matches legacyUrlRe, and we have a legacy ec name, try the single target tarfile
-	m := legacyUrlRe.FindStringSubmatch(gsPath)
+	m = legacyUrlRe.FindStringSubmatch(gsPath)
 	if m != nil && fws.LegacyECName != "" {
 		candidates = append(candidates, ImageCandidate{
-			GSURL:     fmt.Sprintf("gs://firmware-image-archive/%[1]s/%[2]s/%[3]s.EC.%[2]s.tar.bz2", m[1], m[2], fws.LegacyECName),
+			GSURL:     fmt.Sprintf("gs://firmware-image-archive/%[1]s/%[2]s/%[3]s.EC.%[2]s.tar.bz2", m[1], m[2], ecName),
 			Filenames: []string{"ec.bin"},
 		})
 	}
 
 	// Then fallback to the giant tarball.
 	filenames := []string{}
-	if fws.LegacyECName != "" {
-		filenames = append(filenames, path.Join(fws.LegacyECName, "ec.bin"))
+	if ecName != "" {
+		filenames = append(filenames, path.Join(ecName, "ec.bin"))
 	}
 	if len(fws.GetModel()) > 0 {
 		filenames = append(filenames, path.Join(fws.GetModel(), "ec.bin"))

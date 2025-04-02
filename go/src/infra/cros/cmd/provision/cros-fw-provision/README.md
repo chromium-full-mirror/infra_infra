@@ -54,6 +54,10 @@ will search for
 first, and if it is not found, extract `image-omnigul.bin` from the giant
 `firmware_from_source.tar.bz2` archive.
 
+You can also pass the directory in firmware-image-archive directly, like
+`gs://firmware-image-archive/firmware-brya-14505.B/14505.832.0/`. The trailing
+slash is required.
+
 ## Launching
 
 The cros-fw-provision binary is normally run from docker.
@@ -83,7 +87,6 @@ Run the servo-nexus server from infra repo (outside chroot)
 
 ```
 eval `~/infra/infra/go/env.py` && \
-export CGO_ENABLED=0 && \
 (cd ~/infra/infra/go/src/infra && go install go.chromium.org/infra/cros/cmd/cft/dut/cros-servod) && \
 ~/infra/infra/go/bin/cros-servod server -server_port 8124
 ```
@@ -180,7 +183,6 @@ cat >install.json <<INSTALL
 }
 INSTALL
 eval `~/infra/infra/go/env.py` && \
-export CGO_ENABLED=0 && \
 (cd ~/infra/infra/go/src/infra && go install go.chromium.org/infra/cros/cmd/cft/provision/cros-fw-provision) && \
 ~/infra/infra/go/bin/cros-fw-provision cli -startup startup.json -install install.json
 ```
@@ -213,7 +215,6 @@ Run the test with go test:
 
 ```
 eval `~/infra/infra/go/env.py` && \
-export CGO_ENABLED=0 && \
 (cd ~/infra/infra/go/src/infra && go test go.chromium.org/infra/cros/cmd/cft/provision/cros-fw-provision/... \
 go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/...)
 ```

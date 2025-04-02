@@ -850,10 +850,6 @@ type configData struct {
 				} `yaml:"build-targets"`
 				ImageName string `yaml:"image-name"`
 			} `yaml:"firmware"`
-			Name     string `yaml:"name"`
-			Identity struct {
-				SKUID int `yaml:"sku-id"`
-			} `yaml:"identity"`
 		}
 	}
 }
