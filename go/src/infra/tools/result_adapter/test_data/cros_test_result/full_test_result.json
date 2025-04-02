@@ -18,7 +18,9 @@
                         "ro_version":"Google_Voema.13672.224.0",
                         "rw_version": "Google_Voema.13672.224.0",
                         "ap_ro_version": "Google_Voema.13672.224.0",
-                        "ap_rw_version": "Google_Voema.13672.224.0"
+                        "ap_rw_version": "Google_Voema.13672.224.0",
+                        "ec_ro_version": "vilboz_v2.0.5705-a8a7681f94",
+                        "ec_rw_version": "vilboz_v2.0.5705-a8a7681f94"
                     },
                     "kernel":{
                         "version":"5.4.151-16902-g93699f4e73de"
