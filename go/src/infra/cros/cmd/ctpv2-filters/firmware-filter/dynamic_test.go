@@ -4,6 +4,8 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"os"
 	"testing"
@@ -48,23 +50,24 @@ func TestGoldenFile(t *testing.T) {
 		FirmwareByBoard: "rex/firmware_from_source.tar.bz2",
 		ArtifactLink:    "gs://chromeos-image-archive/firmware-ec-R134-16181.3.B-branch/R134-16181.3.19-1-8721865933425388673",
 	}
+	// bucket is the storage bucket, i.e. chromeos-image-archive
+	// branchPrefix is the branch up through the major version and dot, i.e. firmware-brya-14505.
+	// release is optional, but if provided should be a milestone with trailing hyphen like R100-
+	// version is the desired version, i.e. 14505.102.0
+	// suffix is the path to the file, i.e. brya/firmware_from_source.tar.bz2
+	fakeMatcher := func(ctx context.Context, bucket, branchPrefix, release, version, suffix, board string) (string, error) {
+		if bucket == "chromeos-image-archive" && branchPrefix == "firmware-zork-13434." && release == "R87-" && version == "13434.283.0" && suffix == "zork/firmware_from_source.tar.bz2" {
+			return "gs://chromeos-image-archive/zork-firmware/R87-13434.283.0/firmware_from_source.tar.bz2", nil
+		}
+		return "", fmt.Errorf("Unexpected args bucket=%q branchPrefix=%q release=%q, version=%q suffix=%q board=%q", bucket, branchPrefix, release, version, suffix, board)
+	}
 	for tcIndex, tc := range []struct {
 		inputFile          string
 		expectedOutputFile string
 		specs              *FirmwareSpecs
 	}{
 		{"testdata/input1.textpb", "testdata/output1.textpb", &FirmwareSpecs{
-			Ro:             LatestFirmwareBranch,
-			FallbackToCros: true,
-			FirmwareBuilds: firmwareBuilds,
-		}},
-		{"testdata/input1.textpb", "testdata/output1.textpb", &FirmwareSpecs{
 			Ro:             LatestFirmwareBranch + "," + OSSource,
-			FirmwareBuilds: firmwareBuilds,
-		}},
-		{"testdata/input2.textpb", "testdata/output2.textpb", &FirmwareSpecs{
-			Ro:             LatestFirmwareBranch,
-			FallbackToCros: true,
 			FirmwareBuilds: firmwareBuilds,
 		}},
 		{"testdata/input2.textpb", "testdata/output2.textpb", &FirmwareSpecs{
@@ -78,6 +81,11 @@ func TestGoldenFile(t *testing.T) {
 			FirmwareBuilds:    firmwareBuilds,
 			ECMilestoneBuilds: ecMilestoneBuilds,
 			LatestMilestone:   135,
+		}},
+		// Explicit version from fw branch
+		{"testdata/input1.textpb", "testdata/output_13434.283.0.textpb", &FirmwareSpecs{
+			Ro:             "13434.283.0",
+			FirmwareBuilds: firmwareBuilds,
 		}},
 	} {
 		// Read the input file
@@ -106,7 +114,7 @@ func TestGoldenFile(t *testing.T) {
 			continue
 		}
 
-		err = GenerateDynamicInfo(req, tc.specs, log.New(&TWriter{t: t}, "", log.Lshortfile))
+		err = GenerateDynamicInfo(context.Background(), req, tc.specs, log.New(&TWriter{t: t}, "", log.Lshortfile), fakeMatcher)
 		if err != nil {
 			t.Errorf("[%d]GenerateDynamicInfo failed: %+v", tcIndex, err)
 			continue

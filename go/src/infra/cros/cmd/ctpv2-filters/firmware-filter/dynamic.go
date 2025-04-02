@@ -5,9 +5,11 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -20,7 +22,7 @@ import (
 // GenerateDynamicInfo creates dynamic updates for provision
 // requests, and adds their relevant information to each
 // scheduling unit's dynamic lookup table.
-func GenerateDynamicInfo(req *api.InternalTestplan, specs *FirmwareSpecs, log *log.Logger) error {
+func GenerateDynamicInfo(ctx context.Context, req *api.InternalTestplan, specs *FirmwareSpecs, log *log.Logger, matcher gcsMatcher) error {
 	// Fix cros-provision settings to avoid flashing the firmware twice
 	for _, du := range req.GetSuiteInfo().GetSuiteMetadata().GetDynamicUpdates() {
 		provision := du.GetUpdateAction().GetInsert().GetTask().GetProvision()
@@ -34,13 +36,16 @@ func GenerateDynamicInfo(req *api.InternalTestplan, specs *FirmwareSpecs, log *l
 
 	// Create Dynamic Updates.
 	if err := generateProvisionRequests(req, specs, log); err != nil {
-		return err
+		return fmt.Errorf("generateProvisionRequests failed: %w", err)
 	}
 
 	// Add provision/DUT related information to dynamic
 	// lookup table for resolving placeholders
 	// found within generated Dynamic Updates.
-	return generateDynamicUpdateLookupTables(req, specs, log)
+	if err := generateDynamicUpdateLookupTables(ctx, req, specs, log, matcher); err != nil {
+		return fmt.Errorf("generateDynamicUpdateLookupTables failed: %w", err)
+	}
+	return nil
 }
 
 // generateProvisionRequests loops through each swarming definition and
@@ -54,12 +59,12 @@ func generateProvisionRequests(req *api.InternalTestplan, specs *FirmwareSpecs, 
 
 // generateDynamicUpdateLookupTables populates the lookup table for the primary
 // and companion devices.
-func generateDynamicUpdateLookupTables(req *api.InternalTestplan, specs *FirmwareSpecs, log *log.Logger) error {
+func generateDynamicUpdateLookupTables(ctx context.Context, req *api.InternalTestplan, specs *FirmwareSpecs, log *log.Logger, matcher gcsMatcher) error {
 	suiteMetadata := req.GetSuiteInfo().GetSuiteMetadata()
 
 	// TODO (oldProto-azrahman): remove when schedulingOptions is fully rolled in.
 	for _, target := range suiteMetadata.GetSchedulingUnits() {
-		err := updateDynamicLookupTableForSchedUnit(target, specs, log)
+		err := updateDynamicLookupTableForSchedUnit(ctx, target, specs, log, matcher)
 		if err != nil {
 			return fmt.Errorf("metadata sched units failed update dynamic to %s: %w", target, err)
 		}
@@ -67,7 +72,7 @@ func generateDynamicUpdateLookupTables(req *api.InternalTestplan, specs *Firmwar
 
 	for _, schedOptions := range suiteMetadata.GetSchedulingUnitOptions() {
 		for _, target := range schedOptions.GetSchedulingUnits() {
-			err := updateDynamicLookupTableForSchedUnit(target, specs, log)
+			err := updateDynamicLookupTableForSchedUnit(ctx, target, specs, log, matcher)
 			if err != nil {
 				return fmt.Errorf("options sched units failed update dynamic to %s: %w", target, err)
 			}
@@ -83,7 +88,7 @@ func generateDynamicUpdateLookupTables(req *api.InternalTestplan, specs *Firmwar
 				hwDef.DynamicUpdateLookupTable = map[string]string{}
 			}
 			lookup := hwDef.DynamicUpdateLookupTable
-			err := addFwProvisionValuesToLookup(lookup, hwDef, dynamicHelper, specs, log)
+			err := addFwProvisionValuesToLookup(ctx, lookup, hwDef, dynamicHelper, specs, log, matcher)
 			if err != nil {
 				return fmt.Errorf("failed adding values to %s: %w", lookup, err)
 			}
@@ -92,7 +97,7 @@ func generateDynamicUpdateLookupTables(req *api.InternalTestplan, specs *Firmwar
 	return nil
 }
 
-func updateDynamicLookupTableForSchedUnit(schedUnit *api.SchedulingUnit, specs *FirmwareSpecs, log *log.Logger) error {
+func updateDynamicLookupTableForSchedUnit(ctx context.Context, schedUnit *api.SchedulingUnit, specs *FirmwareSpecs, log *log.Logger, matcher gcsMatcher) error {
 	dynamicHelper := NewDynamicFirmwareProvisionHelper(specs)
 	if schedUnit.DynamicUpdateLookupTable == nil {
 		schedUnit.DynamicUpdateLookupTable = map[string]string{}
@@ -101,7 +106,7 @@ func updateDynamicLookupTableForSchedUnit(schedUnit *api.SchedulingUnit, specs *
 
 	// Do primary
 	primarySwarming := schedUnit.PrimaryTarget.GetSwarmingDef()
-	err := addFwProvisionValuesToLookup(lookup, primarySwarming, dynamicHelper, specs, log)
+	err := addFwProvisionValuesToLookup(ctx, lookup, primarySwarming, dynamicHelper, specs, log, matcher)
 	if err != nil {
 		return fmt.Errorf("primary failed adding values to %s: %w", lookup, err)
 	}
@@ -109,7 +114,7 @@ func updateDynamicLookupTableForSchedUnit(schedUnit *api.SchedulingUnit, specs *
 	// Do companions
 	for _, companion := range schedUnit.GetCompanionTargets() {
 		swarmingDef := companion.GetSwarmingDef()
-		err = addFwProvisionValuesToLookup(lookup, swarmingDef, dynamicHelper, specs, log)
+		err = addFwProvisionValuesToLookup(ctx, lookup, swarmingDef, dynamicHelper, specs, log, matcher)
 		if err != nil {
 			return fmt.Errorf("companion failed adding values to %s: %w", lookup, err)
 		}
@@ -117,10 +122,46 @@ func updateDynamicLookupTableForSchedUnit(schedUnit *api.SchedulingUnit, specs *
 	return nil
 }
 
-func resolveSpec(spec string, specs *FirmwareSpecs, swarmingDef *api.SwarmingDefinition, fallbackToOSSource bool) (string, error) {
-	if fallbackToOSSource {
-		spec = fmt.Sprintf("%s,%s", spec, OSSource)
+var versionNumbnerRe = regexp.MustCompile(`^\d+\.\d+\.\d+$`)
+
+// firmwareArtifactRe parses the url into groups: bucket, prefix, release, suffix
+var firmwareArtifactRe = regexp.MustCompile(`^gs://(chromeos-image-archive)/(firmware-[^/]*-\d+\.)[^/]*/(R\d+-)?(?:[\d\.]+)(?:-[^/]*)?/(.*)$`)
+
+// gcsMatcher is a function that searches google cloud storage for a specific version artifact. It is injected for testing purposes.
+// bucket is the storage bucket, i.e. chromeos-image-archive
+// branchPrefix is the branch up through the major version and dot, i.e. firmware-brya-14505.
+// release is optional, but if provided should be a milestone with trailing hyphen like R100-
+// version is the desired version, i.e. 14505.102.0
+// suffix is the path to the file, i.e. brya/firmware_from_source.tar.bz2
+// board is the name of the board, i.e. zork
+type gcsMatcher func(ctx context.Context, bucket, branchPrefix, release, version, suffix, board string) (string, error)
+
+func firmwareBranchUrl(ctx context.Context, specs *FirmwareSpecs, board string) (string, error) {
+	build, ok := specs.FirmwareBuilds[board]
+	if ok {
+		url, err := url.JoinPath(build.ArtifactLink, build.FirmwareByBoard)
+		if err != nil {
+			return "", err
+		}
+		return url, nil
 	}
+	log.Printf("No branch build for board %q", board)
+	return "", nil
+}
+
+func osBranchUrl(ctx context.Context, specs *FirmwareSpecs, swarmingDef *api.SwarmingDefinition) (string, error) {
+	if len(swarmingDef.GetProvisionInfo()) > 0 {
+		osPath := swarmingDef.GetProvisionInfo()[0].GetInstallRequest()
+		url, err := url.JoinPath(osPath.GetImagePath().GetPath(), "/firmware_from_source.tar.bz2")
+		if err != nil {
+			return "", err
+		}
+		return url, nil
+	}
+	return "", fmt.Errorf("no install request")
+}
+
+func resolveSpec(ctx context.Context, spec string, specs *FirmwareSpecs, swarmingDef *api.SwarmingDefinition, log *log.Logger, matcher gcsMatcher) (string, error) {
 	dutModel := swarmingDef.GetDutInfo().GetChromeos().GetDutModel()
 	board := dutModel.GetBuildTarget()
 	// Remove suffix
@@ -134,25 +175,12 @@ func resolveSpec(spec string, specs *FirmwareSpecs, swarmingDef *api.SwarmingDef
 	}
 	for _, spec := range strings.Split(spec, ",") {
 		if spec == LatestFirmwareBranch {
-			build, ok := specs.FirmwareBuilds[board]
-			if ok {
-				url, err := url.JoinPath(build.ArtifactLink, build.FirmwareByBoard)
-				if err != nil {
-					return "", err
-				}
-				return url, nil
+			url, err := firmwareBranchUrl(ctx, specs, board)
+			if url != "" || err != nil {
+				return url, err
 			}
-			log.Printf("No branch build for board %q", board)
 		} else if spec == OSSource {
-			if len(swarmingDef.GetProvisionInfo()) > 0 {
-				osPath := swarmingDef.GetProvisionInfo()[0].GetInstallRequest()
-				url, err := url.JoinPath(osPath.GetImagePath().GetPath(), "/firmware_from_source.tar.bz2")
-				if err != nil {
-					return "", err
-				}
-				return url, nil
-			}
-			return "", fmt.Errorf("no install request")
+			return osBranchUrl(ctx, specs, swarmingDef)
 		} else if strings.HasPrefix(spec, ECMilestonePrefix) {
 			milestoneOffset, err := strconv.Atoi(spec[len(ECMilestonePrefix):])
 			if err != nil {
@@ -176,6 +204,32 @@ func resolveSpec(spec string, specs *FirmwareSpecs, swarmingDef *api.SwarmingDef
 			return url, nil
 		} else if strings.HasPrefix(spec, "gs://") {
 			return spec, nil
+		} else if versionNumbnerRe.MatchString(spec) {
+			// Try the cache
+			if specs.VersionCache == nil {
+				specs.VersionCache = make(map[string]string)
+			}
+			url, ok := specs.VersionCache[spec]
+			if ok {
+				return url, nil
+			}
+			// Try firmware branch (including stabilization branches)
+			url, err := firmwareBranchUrl(ctx, specs, board)
+			if err != nil {
+				return "", err
+			}
+			if url != "" {
+				groups := firmwareArtifactRe.FindStringSubmatch(url)
+				if groups != nil {
+					url, err = matcher(ctx /* bucket */, groups[1] /* prefix */, groups[2] /* release */, groups[3], spec /* suffix */, groups[4], board)
+					if err != nil {
+						return "", err
+					}
+					specs.VersionCache[spec] = url
+					return url, nil
+				}
+			}
+			return "", fmt.Errorf("failed to find path for %q", spec)
 		} else if spec == "" {
 			return "", nil
 		} else {
@@ -188,30 +242,32 @@ func resolveSpec(spec string, specs *FirmwareSpecs, swarmingDef *api.SwarmingDef
 // addFwProvisionValuesToLookup provides the actual values that will be
 // stored within the lookup table for firmware provisioning.
 func addFwProvisionValuesToLookup(
+	ctx context.Context,
 	lookup map[string]string,
 	swarmingDef *api.SwarmingDefinition,
 	dynamicHelper *DynamicFirmwareProvisionHelper,
 	specs *FirmwareSpecs,
-	_ *log.Logger) error {
+	log *log.Logger,
+	matcher gcsMatcher) error {
 
 	switch swarmingDef.GetDutInfo().GetDutType().(type) {
 	case *dut_api.Dut_Chromeos:
 		lookupValues := &FirmwareProvisionLookupValues{}
 		var err error
 
-		lookupValues.Ro, err = resolveSpec(specs.Ro, specs, swarmingDef, specs.FallbackToCros)
+		lookupValues.Ro, err = resolveSpec(ctx, specs.Ro, specs, swarmingDef, log, matcher)
 		if err != nil {
 			return err
 		}
-		lookupValues.Rw, err = resolveSpec(specs.Rw, specs, swarmingDef, specs.FallbackToCros)
+		lookupValues.Rw, err = resolveSpec(ctx, specs.Rw, specs, swarmingDef, log, matcher)
 		if err != nil {
 			return err
 		}
-		lookupValues.ECRO, err = resolveSpec(specs.ECRO, specs, swarmingDef, specs.FallbackToCros)
+		lookupValues.ECRO, err = resolveSpec(ctx, specs.ECRO, specs, swarmingDef, log, matcher)
 		if err != nil {
 			return err
 		}
-		lookupValues.ECRW, err = resolveSpec(specs.ECRW, specs, swarmingDef, specs.FallbackToCros)
+		lookupValues.ECRW, err = resolveSpec(ctx, specs.ECRW, specs, swarmingDef, log, matcher)
 		if err != nil {
 			return err
 		}

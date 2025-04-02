@@ -8,7 +8,6 @@ Arg                    | Description
 `-rw SPEC,SPEC,...`    | Flash the RW AP firmware from specified location. This takes place after the RO flashing.
 `-ec-ro SPEC,SPEC,...` | Flash the RO EC firmware from specified location. Defaults to the same as AP RO.
 `-ec-rw SPEC,SPEC,...` | Flash the RW EC firmware from specified location. Defaults to the same as AP RW.
-`-fallbackToCros`      | Deprecated: If `-ro` or -`rw` is set to `firmwareBoardBranch`, and no branch build can be found, fallback to `cros` instead. This is handy for new boards that don't have a branch yet.
 
 The SPEC arg can be one of the following:
 
@@ -20,6 +19,7 @@ SPEC                  | Description
 `M-1`                 | The newest EC milestone branch. Normally one version below the Chrome OS version at ToT.
 `M-2`                 | The 2nd newest EC milestone branch.
 `M-n`                 | The nth newest EC milestone branch.
+`12345.678.0`         | A specific version. Both the firmware branch builder, and the OS builders will be searched for the version.
 
 Specifications can be comma separated
 
@@ -116,7 +116,6 @@ https://chromium.googlesource.com/infra/infra/+/main/doc/source.md#checkout-code
 # If you fetched to somewhere other than ~/infra, change these paths.
 eval `~/infra/infra/go/env.py` && \
 cd ~/infra/infra/go/src/infra && \
-export CGO_ENABLED=0 && \
 go install go.chromium.org/infra/cros/cmd/ctpv2-filters/firmware-filter
 ```
 
@@ -149,7 +148,6 @@ Be sure to note the digest printed by this command.
 ```
 eval `~/infra/infra/go/env.py` && \
 cd ~/infra/infra/go/src/infra && \
-export CGO_ENABLED=0
 go fmt go.chromium.org/infra/cros/cmd/ctpv2-filters/firmware-filter && \
 golangci-lint run --fix cros/cmd/ctpv2-filters/firmware-filter/...
 ```
@@ -160,7 +158,6 @@ golangci-lint run --fix cros/cmd/ctpv2-filters/firmware-filter/...
 # If you fetched to somewhere other than ~/infra, change these paths.
 eval `~/infra/infra/go/env.py` && \
 cd ~/infra/infra/go/src/infra && \
-export CGO_ENABLED=0
 go test go.chromium.org/infra/cros/cmd/ctpv2-filters/firmware-filter/...
 ```
 
