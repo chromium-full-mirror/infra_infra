@@ -1,16 +1,6 @@
-// Copyright 2020 The Chromium Authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// Copyright 2020 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 package cli
 
@@ -224,28 +214,18 @@ func newTelemetryBenchmark(benchmark, measurement, story string, storyTags, extr
 
 var (
 	botCfgs = map[string]string{
-		"Android Nexus5X WebView Perf":     "performance_webview_test_suite",
-		"android-go_webview-perf":          "performance_webview_test_suite",
-		"android-go-perf":                  "performance_test_suite_android_clank_chrome",
-		"android-go-perf-pgo":              "performance_test_suite_android_clank_chrome",
-		"android-pixel2_webview-perf":      "performance_webview_test_suite",
-		"android-pixel4_webview-perf":      "performance_webview_test_suite",
-		"Android Nexus5 Perf":              "performance_test_suite_android_chrome",
-		"android-pixel4a_power-perf":       "performance_test_suite_android_clank_chrome",
-		"android-pixel4a_power-perf-pgo":   "performance_test_suite_android_clank_chrome",
-		"android-pixel2-perf":              "performance_test_suite_android_clank_monochrome_64_32_bundle",
-		"android-pixel2-perf-pgo":          "performance_test_suite_android_clank_monochrome_64_32_bundle",
-		"android-pixel4-perf":              "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
-		"android-pixel4-perf-pgo":          "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
-		"android-pixel6-perf":              "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
-		"android-pixel6-perf-pgo":          "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
-		"android-pixel6-pro-perf":          "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
-		"android-pixel6-pro-perf-pgo":      "performance_test_suite_android_clank_trichrome_chrome_google_64_32_bundle",
-		"android-pixel2_weblayer-perf":     "performance_weblayer_test_suite",
-		"android-pixel4_weblayer-perf":     "performance_weblayer_test_suite",
-		"android-pixel4_weblayer-perf-pgo": "performance_weblayer_test_suite",
-		"lacros-eve-perf":                  "performance_test_suite_eve",
-		"lacros-x86-perf":                  "performance_test_suite_octopus",
+		"android-go-wembley_webview-perf": "performance_webview_test_suite",
+		"android-pixel4_webview-perf":     "performance_webview_test_suite",
+		"android-pixel4_webview-perf-pgo": "performance_webview_test_suite",
+		"android-go-wembley-perf":         "performance_test_suite_android_trichrome_chrome_google_bundle",
+		"android-pixel4-perf":             "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
+		"android-pixel4-perf-pgo":         "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
+		"android-pixel6-perf":             "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
+		"android-pixel6-perf-pgo":         "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
+		"android-pixel6-pro-perf":         "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
+		"android-pixel6-pro-perf-pgo":     "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
+		"android-pixel-fold-perf":         "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
+		"android-pixel-tangor-perf":       "performance_test_suite_android_trichrome_chrome_google_64_32_bundle",
 	}
 )
 
