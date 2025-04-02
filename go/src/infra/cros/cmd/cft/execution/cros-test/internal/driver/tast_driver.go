@@ -296,6 +296,7 @@ var tastFlags = map[string]struct{}{
 // allowedTastFlag includes all Tast Flags that are allowed to be overridden.
 var allowedTastFlag = map[string]struct{}{
 	buildArtifactsURLFlag:    {},
+	checkTestDepsFlag:        {},
 	connectionTimeoutFlag:    {},
 	continueAfterFailureFlag: {},
 	downloadDataFlag:         {},
