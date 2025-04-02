@@ -12,6 +12,12 @@ create {
       # the tag list to released versions, so the builder does not get stuck on
       # a prereleased one.
       tag_filter_re: "v[0-9.]*$"
+      # Temporary limiting cmake to 3.x until we properly split cmake3 and
+      # cmake.
+      version_restriction {
+        op: LT
+        val: "4.0"
+      }
     }
     patch_dir: "patches"
     cpe_base_address: "cpe:/a:cmake_project:cmake"
