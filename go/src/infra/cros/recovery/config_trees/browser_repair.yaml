@@ -3496,6 +3496,14 @@ plans:
                           dependencies:
                             - name: Stop UART capture (Allow to fail)
                               exec_name: servod_stop_uart_capture
+                - name: Recover servo with Power-cycle by smart-hub (ALWAYS_RUN) (time:'2m0s')
+                  exec_name: servo_power_cycle_root_servo
+                  exec_args:
+                    - reset_timeout:60
+                    - wait_timeout:20
+                    - reset_authorized:false
+                  docs:
+                    - Try to power-cycle the servo via smart usbhub to recover it.
                 - name: Create request to reboot labstation (ALWAYS_RUN)
                   exec_name: sample_fail
                   docs:
@@ -3862,6 +3870,14 @@ plans:
                           dependencies:
                             - name: Stop UART capture (Allow to fail)
                               exec_name: servod_stop_uart_capture
+                - name: Recover servo with Power-cycle by smart-hub (ALWAYS_RUN) (time:'2m0s')
+                  exec_name: servo_power_cycle_root_servo
+                  exec_args:
+                    - reset_timeout:60
+                    - wait_timeout:20
+                    - reset_authorized:false
+                  docs:
+                    - Try to power-cycle the servo via smart usbhub to recover it.
                 - name: Create request to reboot labstation (ALWAYS_RUN)
                   exec_name: sample_fail
                   docs:

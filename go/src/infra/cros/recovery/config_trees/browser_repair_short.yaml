@@ -1196,6 +1196,7 @@ plans:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                           dependencies:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Recover servo with Power-cycle by smart-hub ('servo_power_cycle_root_servo') (ALWAYS_RUN) (time:'2m0s')
                 - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
                   conditions:
                     - name: Is labstation ('servo_host_is_labstation')
@@ -1323,6 +1324,7 @@ plans:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
                           dependencies:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
+                - name: Recover servo with Power-cycle by smart-hub ('servo_power_cycle_root_servo') (ALWAYS_RUN) (time:'2m0s')
                 - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
                   conditions:
                     - name: Is labstation ('servo_host_is_labstation')
