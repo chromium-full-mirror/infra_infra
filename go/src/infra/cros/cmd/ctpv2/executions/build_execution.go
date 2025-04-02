@@ -213,6 +213,7 @@ func executeCtpv2Reqs(ctx context.Context,
 	defer func() { step.End(err) }()
 
 	resultsChan := make(chan map[string][]*data.TestResults)
+	suiteExecutionSummaryChan := make(chan map[string]string, len(keyRequestMap))
 	wg := &sync.WaitGroup{}
 	contInfoMap := data.NewContainerInfoMap()
 	suiteCounter := map[string]int{}
@@ -232,11 +233,12 @@ func executeCtpv2Reqs(ctx context.Context,
 			suiteDisplayName = fmt.Sprintf("%s_%d", suiteName, suiteNum)
 		}
 		wg.Add(1)
-		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient, key, ctpVersion, top, isPartnerRun, generateInvocation, workUnitsOnly)
+		go executeFiltersInLuciBuild(ctx, ctpReq, config, buildState, wg, ctr, contInfoMap, resultsChan, suiteDisplayName, BQClient, key, ctpVersion, top, isPartnerRun, generateInvocation, workUnitsOnly, suiteExecutionSummaryChan)
 	}
 	go func() {
 		wg.Wait()
 		close(resultsChan) // Close the channel when all workers are done
+		close(suiteExecutionSummaryChan)
 
 		// Flush the SL metrics results.
 		suitelimits.CloseMetricChan()
@@ -251,7 +253,19 @@ func executeCtpv2Reqs(ctx context.Context,
 			resultsMap[k] = v
 		}
 	}
+	// safely collect AI failure(if any) summary for all suites
+	aiSummaryMap := make(map[string]string)
+	for suiteExecutionSummaryMap := range suiteExecutionSummaryChan {
+		if len(suiteExecutionSummaryMap) == 0 {
+			continue
+		}
+		for k, v := range suiteExecutionSummaryMap {
+			aiSummaryMap[k] = v
+		}
+	}
+
 	common.WriteAnyObjectToStepLog(ctx, step, resultsMap, "consolidated suite results")
+	common.WriteAnyObjectToStepLog(ctx, step, aiSummaryMap, "AI suites summary")
 	return resultsMap
 }
 
@@ -271,7 +285,8 @@ func executeFiltersInLuciBuild(
 	top *androidapi.WorkUnitNode,
 	isPartnerRun,
 	generateInvocation,
-	workUnitsOnly bool) {
+	workUnitsOnly bool,
+	suiteExecutionSummary chan<- map[string]string) {
 	defer wg.Done()
 	var err error
 	step, ctx := build.StartStep(ctx, suiteDisplayName)
@@ -281,6 +296,7 @@ func executeFiltersInLuciBuild(
 	if err != nil {
 		err = fmt.Errorf("unable to locate dockerKeyFile during initialization: %w", err)
 		logging.Errorf(ctx, "executeFiltersInLuciBuild: %w", err)
+		suiteExecutionSummary <- map[string]string{suiteDisplayName: "unable to locate dockerKeyFile during initialization"}
 		return
 	}
 
@@ -319,6 +335,7 @@ func executeFiltersInLuciBuild(
 		if err != nil {
 			err = fmt.Errorf("failed to create client for %s: %w", common.ATPSwitcherProjectIDProd, err)
 			logging.Errorf(ctx, "executeFiltersInLuciBuild: %w", err)
+			suiteExecutionSummary <- map[string]string{suiteDisplayName: "AL flow - unable to create pubsub client"}
 			return
 		}
 		defer client.Close()
@@ -382,32 +399,39 @@ func executeFiltersInLuciBuild(
 	if err != nil {
 		logging.Errorf(ctx, "executeFiltersInLuciBuild: %w", err)
 	}
-	AISummarizeSuiteExecution(ctx, sk, step, err)
+	aiSummary := AISummarizeSuiteExecution(ctx, sk, step, err)
+	// Send the result via channel
+	suiteExecutionSummary <- map[string]string{suiteDisplayName: aiSummary}
 }
 
-func AISummarizeSuiteExecution(ctx context.Context, sk *data.FilterStateKeeper, step *build.Step, err error) {
+func AISummarizeSuiteExecution(ctx context.Context, sk *data.FilterStateKeeper, step *build.Step, err error) string {
 	configsLog := step.Log("AI failure Summary")
 	logging.Infof(ctx, sk.ExecutionAIContext)
 	apiKey, keyErr := fetchGeminiAPIKey(ctx)
+	var aiSummary string
+	var aiErr error
 	if keyErr != nil {
 		logging.Infof(ctx, "error during fetching Gemini API key: %s", keyErr)
-		return
+		return "error during fetching Gemini API key"
 	}
 	if err != nil {
-		aiSummary, aiErr := common.AISummarize(ctx, sk.ExecutionAIContext, common.SuiteFailureSummaryPrompt, apiKey)
+		aiSummary, aiErr = common.AISummarize(ctx, sk.ExecutionAIContext, common.SuiteFailureSummaryPrompt, apiKey, true)
 		if aiErr != nil {
 			logging.Infof(ctx, "error during AI failure summarization: %s", aiErr)
+			return "error during AI failure summarization"
 		}
 		_, logErr := configsLog.Write([]byte(aiSummary))
 		if logErr != nil {
 			logging.Infof(ctx, "error during writing aiSummary: %s", logErr)
 		}
 	} else {
-		_, logErr := configsLog.Write([]byte("No Infra failures detected."))
+		aiSummary = "No Infra failures detected."
+		_, logErr := configsLog.Write([]byte(aiSummary))
 		if logErr != nil {
 			logging.Infof(ctx, "error during writing aiSummary: %s", logErr)
 		}
 	}
+	return aiSummary
 }
 
 func fetchGeminiAPIKey(ctx context.Context) (string, error) {

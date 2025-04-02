@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
@@ -27,8 +28,8 @@ const (
 	SuiteFailureSummaryPrompt = "Gemini, above is input request and execution summary for test suite. Explain any failure messages present in the processing of this suite_request and connect them to the details in the suite_request(<200 words)."
 )
 
-// AISummarize takes a context text and a prompt and returns a generative ai summary.
-func AISummarize(ctx context.Context, context string, prompt string, apiKey string) (string, error) {
+// AISummarize takes a context text and a prompt and returns a generative ai summary. prettyFormat bool formats the string response by adding line breaks.
+func AISummarize(ctx context.Context, context string, prompt string, apiKey string, prettyFormat bool) (string, error) {
 	// TODO: generate API_KEY for TSE project and store in Secrets Manager
 	client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
 	if err != nil {
@@ -54,6 +55,28 @@ func AISummarize(ctx context.Context, context string, prompt string, apiKey stri
 			}
 		}
 	}
+	if prettyFormat {
+		response = format(response)
+	}
 	return response, nil
 
+}
+
+// format breaks the string into multiple lines by adding line breaks after every 30 words. This enables viewing of whole text in luci log without tiring scrolling
+func format(aiSummary string) string {
+	words := strings.Fields(aiSummary)
+	var result strings.Builder
+	wordCount := 0
+
+	for i, word := range words {
+		result.WriteString(word)
+		wordCount++
+
+		if wordCount%30 == 0 && i < len(words)-1 {
+			result.WriteString("\n")
+		} else if i < len(words)-1 {
+			result.WriteString(" ")
+		}
+	}
+	return result.String()
 }
