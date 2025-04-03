@@ -248,11 +248,16 @@ func fixInstallPathForKernelTest(installPath string, req *api.InternalTestplan) 
 func extractBuildInfoFromInstallPath(installPath string) (buildId, buildTarget, board string) {
 	trimmedPath := strings.TrimPrefix(installPath, common.AndroidBuildPrefix)
 	splitPath := strings.Split(trimmedPath, "/")
-	if len(splitPath) != 3 {
+	if len(splitPath) < 2 {
 		log.Printf("Warning: could not parse installPath: %s", installPath)
 		return
 	}
-	buildId, buildTarget, artifactName := splitPath[0], splitPath[1], splitPath[2]
+	buildId, buildTarget = splitPath[0], splitPath[1]
+	if len(splitPath) < 3 {
+		log.Printf("Warning: could not parse artifact name from installPath: %s", installPath)
+		return
+	}
+	artifactName := splitPath[2]
 	splitArtifactName := strings.Split(artifactName, "-")
 	if len(splitArtifactName) < 3 {
 		log.Printf(

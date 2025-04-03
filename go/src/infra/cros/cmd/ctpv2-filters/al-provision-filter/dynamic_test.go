@@ -218,10 +218,6 @@ func TestExtractBuildInfoFromInstallPath_Failure(t *testing.T) {
 			name:        "No prefix, too few segments",
 			installPath: "12345",
 		},
-		{
-			name:        "Too many segments",
-			installPath: common.AndroidBuildPrefix + "67890/another-target/subdir/another-ota-67890.img",
-		},
 	}
 
 	for _, tt := range tests {
