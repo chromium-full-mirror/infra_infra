@@ -990,7 +990,25 @@ func getBuildFromGcsPath(gcsPath string) string {
 	if len(dirNames) < 2 {
 		return ""
 	}
-	return dirNames[len(dirNames)-2] + "/" + dirNames[len(dirNames)-1]
+	return dirNames[len(dirNames)-2] + "/" + sanitizeBuildNumber(dirNames[len(dirNames)-1])
+}
+
+// sanitizeBuildNumber fixes the format of build numbers
+// for situations such as android where it ends with .zip
+func sanitizeBuildNumber(buildNum string) string {
+	if !strings.HasSuffix(buildNum, ".zip") {
+		return buildNum
+	}
+
+	// Remove the .zip suffix.
+	buildNum = strings.TrimSuffix(buildNum, ".zip")
+
+	// Remove non-build number prefixes.
+	// Build number is the last portion of the <board>-ota-<buildNum>.zip format.
+	buildNumberParts := strings.Split(buildNum, "-")
+	buildNum = buildNumberParts[len(buildNumberParts)-1]
+
+	return buildNum
 }
 
 // GetBranchFromTestArg gets branch from the test args.
