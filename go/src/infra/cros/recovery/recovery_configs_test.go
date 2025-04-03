@@ -1,6 +1,3 @@
-//go:build linux
-// +build linux
-
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -11,6 +8,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -135,6 +133,9 @@ func TestConfigTreeGeneraterOff(t *testing.T) {
 // Please run `make trees` in recovery folder to regenerate tree files.
 func TestConfigTreeChanges(t *testing.T) {
 	t.Parallel()
+	if runtime.GOOS == "windows" {
+		t.Skip("TestConfigTreeChanges does not support Windows, sorry")
+	}
 	for _, c := range configTreeChangesCases {
 		cs := c
 		t.Run(cs.name, func(t *testing.T) {
