@@ -1,0 +1,84 @@
+#!/bin/sh
+
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Usage: ./banana 9994 -- starts a postgres database listening on port 9994.
+#
+# If at some point you rewrite this script in a better language than POSIX shell,
+# The API implied by the usage comments is the only thing you need to preserve.
+
+# This script tries to run postgres out of a temporary directory in the manner
+# appropriate for the operating system in question.
+#
+# In order to do this, it
+
+# 1) finds initdb and postgres (the executable).
+#     We don't need any of the higher level commands.
+# 2) creates a temporary database.
+# 3) runs postgres out of that temporary database, in the foreground.
+#
+# It also checks for configuration "mistakes" in the environment, such as
+# postgres being enabled as a service. This is generally not what you want.
+
+# die prints a messasge and exits.
+die() {
+        printf '%s\n' "$@" 1>&2
+        exit 1
+}
+
+# first prints a message and exits.
+first() {
+        printf '%s' "$1"
+}
+
+port="$1"
+case "$port" in
+        '') die 'choose a port' ;;
+        *) : 'do nothing' ;;
+esac
+
+# find initdb and postgres, whatever version.
+# TODO(gregorynisbet): make mismatched versions impossible.
+find_utils() {
+        initdb="$(first /usr/lib/postgresql/*/bin/initdb)"
+        test -x "$initdb" || die 'cannot find initdb'
+        postgres="$(first /usr/lib/postgresql/*/bin/postgres)"
+        test -x "$postgres" || die 'cannot find postgres'
+}
+
+# postgres the service should not be enabled on startup.
+postgres_service_status() {
+        if test -f /etc/systemd/system/multi-user.target.wants/postgresql.service; then
+                echo ENABLED
+                return 0
+        fi
+        if systemctl status postgresql | awk '$1 == "Loaded:"' | awk -F';' '{print $2}' | grep -q 'disabled'; then
+                echo DISABLED
+                return 0
+        fi
+        die 'cannot determine postgres service status'
+}
+
+oldpwd="$PWD"
+nominal_self_dir="$(dirname -- "$0")" || die 'failed to determine nominal self dir'
+my_basename="$(basename -- "$0")" || die 'failed to get basename'
+self="$( cd "$nominal_self_dir" && printf '%s/%s' "$(pwd -P)" "$my_basename" )" || die 'failed to find self'
+selfdir="$(dirname -- "$self")" || die 'cannot find own directory'
+td="$(mktemp -d)" || die 'failed to make temporary directory'
+defd="$(mktemp -d)" || die 'failed to make defensive directory'
+socketd="$(mktemp -d)" || die 'failed to make temporary directory for sockets'
+
+cd -P -- "$defd" || die 'failed to chdir to defensive directory'
+
+if test "$(postgres_service_status)" = "DISABLED"; then
+        : "do nothing"
+else
+        die "postgres service should not be enabled! Run 'sudo systemctl disable postgresql' to disable"
+fi
+find_utils
+"$initdb" "$td" || die 'failed to init'
+echo "port = $port" > "$td"/postgresql.conf || die 'failed to write conf'
+echo "unix_socket_directories = '$socketd'" >> "$td"/postgresql.conf || die 'failed to write conf'
+"$postgres" -D "$td" || die 'failed to launch'
