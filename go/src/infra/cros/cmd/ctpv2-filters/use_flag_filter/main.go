@@ -16,6 +16,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/test/publish/cmd/publishserver/storage"
 
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
@@ -309,7 +310,7 @@ func updateTestCases(req *api.InternalTestplan, useFlagDict map[string]map[strin
 	return nil
 }
 
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
+func executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	ctx := context.Background()
 
 	// parses the request and generates the use flag set for each board+variant

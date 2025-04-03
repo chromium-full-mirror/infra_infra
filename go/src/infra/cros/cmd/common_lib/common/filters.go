@@ -16,8 +16,6 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
-
-	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
 var (
@@ -45,6 +43,11 @@ var (
 		AutoVMTestShifterFilterContainerName: "autovm_test_shifter_filter",
 	}
 )
+
+type CommonFilterParams struct {
+	FirestoreDatabaseName string
+	Environment           string
+}
 
 func GetDefaultFilterContainerImageInfosMap(ctx context.Context, creds, ctpVersion string, defaultFilterNames []string, contMetadataMap map[string]*buildapi.ContainerImageInfo, build int, firestoreDBName string) map[string]*buildapi.ContainerImageInfo {
 	defaultFilters := map[string]*buildapi.ContainerImageInfo{}
@@ -315,7 +318,7 @@ func isSuiteSchedulerConfig(suiteReq *api.SuiteRequest) bool {
 
 // ProcessContainerPath processes a provided path and determines whether it needs to
 // pull from the firestoreDatabase provided.
-func ProcessContainerPath(ctx context.Context, commonParams *servertemplate.CommonFilterParams, creds, path, firestoreName string) (processedPath string, err error) {
+func ProcessContainerPath(ctx context.Context, commonParams *CommonFilterParams, creds, path, firestoreName string) (processedPath string, err error) {
 	if path != "" {
 		return path, nil
 	}

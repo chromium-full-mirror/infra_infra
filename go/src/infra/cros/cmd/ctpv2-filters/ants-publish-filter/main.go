@@ -72,7 +72,7 @@ func suiteExecutionMetadataArgValue(req *api.InternalTestplan, flag string) stri
 	return ""
 }
 
-func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
+func (apu *ANTSPublishUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	ctx := context.Background()
 
 	log.Println("Executing ants publish request-updater filter")

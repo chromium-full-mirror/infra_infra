@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	testapi "go.chromium.org/chromiumos/config/go/test/lab/api"
 
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
@@ -142,7 +143,7 @@ func updateSchedulingUnitOptions(req *api.InternalTestplan, board string, versio
 	return nil
 }
 
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
+func executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 
 	available, board, version := isAnyVMImageAvailable(context.Background(), req, log)
 

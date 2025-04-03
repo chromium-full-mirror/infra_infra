@@ -17,8 +17,10 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/post_process/cmd/post-process/common"
+	postprocesscommon "go.chromium.org/chromiumos/test/post_process/cmd/post-process/common"
 	"go.chromium.org/luci/common/errors"
+
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 // GenericFilterServiceServer ...
@@ -27,12 +29,14 @@ type GenericFilterServiceServer struct {
 	logPath      string
 	name         string
 	serverLogger *log.Logger
-	commonParams *CommonFilterParams
-	executor     func(req *api.InternalTestplan, log *log.Logger, commonParams *CommonFilterParams) (*api.InternalTestplan, error)
+	commonParams *common.CommonFilterParams
+	executor     func(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error)
 }
 
+type executorFunc func(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error)
+
 // NewServer creates an execution server.
-func NewServer(logger *log.Logger, logPath, name string, commonParams *CommonFilterParams, executor func(req *api.InternalTestplan, log *log.Logger, commonParams *CommonFilterParams) (*api.InternalTestplan, error)) (*grpc.Server, func()) {
+func NewServer(logger *log.Logger, logPath, name string, commonParams *common.CommonFilterParams, executor executorFunc) (*grpc.Server, func()) {
 	s := &GenericFilterServiceServer{
 		logPath:      logPath,
 		name:         name,
@@ -63,7 +67,7 @@ func (s *GenericFilterServiceServer) Execute(ctx context.Context, req *api.Inter
 	suiteName := req.GetSuiteInfo().GetSuiteRequest().GetTestSuite().GetName()
 	logPath := filepath.Join(s.logPath, suiteName, s.name, t.Format("20060102-150405"))
 	s.serverLogger.Printf("Creating Log File at %s", logPath)
-	logFile, err := common.CreateLogFile(logPath)
+	logFile, err := postprocesscommon.CreateLogFile(logPath)
 	if err != nil {
 		err = fmt.Errorf("failed to create log file: %s", err)
 		s.serverLogger.Println(err.Error())

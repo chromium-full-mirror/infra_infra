@@ -12,6 +12,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/pre_process_filter/interfaces"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/pre_process_filter/policies"
@@ -216,7 +217,7 @@ func innerMain(req *api.InternalTestplan, log *log.Logger) *api.InternalTestplan
 	return req
 }
 
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
+func executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	return innerMain(req, log), nil
 }
 

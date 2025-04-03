@@ -25,7 +25,7 @@ type FoilRequestUpdater struct {
 	EnableXtsArchiver bool
 }
 
-func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
+func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	log.Println("Executing request-updater filter.")
 
 	ctx := context.Background()

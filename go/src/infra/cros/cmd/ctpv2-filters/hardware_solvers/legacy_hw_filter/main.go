@@ -12,6 +12,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
@@ -138,7 +139,7 @@ func tcDepsToSwarmingLabels(tcDeps []string) []string {
 	return swarmingLabels
 }
 
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
+func executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	// Step 1. Get all the HWTargets from the suite metadata
 	// these might contain provision info.
 	hwTargets := req.GetSuiteInfo().GetSuiteMetadata().GetSchedulingUnitOptions()

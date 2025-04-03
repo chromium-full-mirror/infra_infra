@@ -14,6 +14,7 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	"go.chromium.org/infra/cros/cmd/cft/cros-test-finder/test_finder"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )
 
@@ -70,7 +71,7 @@ func fillTestCases(ctx context.Context, testPlan *api.InternalTestplan, resp *ap
 	return nil
 }
 
-func executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
+func executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	ctx := context.Background()
 
 	testFinderResponse, err := startAndRunTestFinder(req, log)

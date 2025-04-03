@@ -32,7 +32,7 @@ type ALProvisionRequestUpdater struct {
 	LatestBuildsByBoard map[string]int
 }
 
-func (pru *ALProvisionRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *servertemplate.CommonFilterParams) (*api.InternalTestplan, error) {
+func (pru *ALProvisionRequestUpdater) executor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
 	log.Println("Executing AL provision Filter - Updates provision request.")
 	dockerKeyFile, err := common.LocateFile([]string{common.LabDockerKeyFileLocation, common.VMLabDockerKeyFileLocation})
 	if err != nil {
