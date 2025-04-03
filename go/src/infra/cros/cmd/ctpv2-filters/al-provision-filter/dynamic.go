@@ -91,6 +91,20 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 		log.Printf("Error while adding modification to provision request, %s", err)
 	}
 
+	// Add kernel artifacts to the install request.
+	if getTestType(req) == common.KernelTestType {
+		if err := generator.AddModification(
+			// TODO: b/392692756 - Populate kernel artifact paths.
+			&api.KernelPrebuilts{},
+			map[string]string{
+				"provision.installRequest.kernelPrebuilts": "",
+			},
+		); err != nil {
+			log.Printf("Error while adding modification to provision request, %s", err)
+			return fmt.Errorf("adding kernel prebuilts to provision request: %+v", err)
+		}
+	}
+
 	// Update partner account ID information
 	if err := generator.AddModification(
 		&api.DynamicDep{
@@ -121,11 +135,6 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 		&req.SuiteInfo.SuiteMetadata.DynamicUpdates, generator.Generate,
 	); err != nil {
 		log.Printf("Error while modifying provision request, %s", err)
-	}
-
-	if getTestType(req) == common.KernelTestType {
-		// TODO: b/396475422 - Update provisioning request to specify kernel artifacts and partitions.
-		log.Print("This is a kernel test request!")
 	}
 
 	return nil
