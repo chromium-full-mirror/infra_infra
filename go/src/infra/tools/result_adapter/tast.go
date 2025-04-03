@@ -52,6 +52,9 @@ type TastResults struct {
 //
 // Fields not used by Test Results are omitted.
 type TastCase struct {
+	// Name specifies the test's name as "category.TestName".
+	// The name is derived from Func's package and function name.
+	// The category is the final component of the package.
 	Name         string           `json:"name"`
 	Contacts     []string         `json:"contacts"`
 	BugComponent string           `json:"bugComponent,omitempty"`
@@ -87,6 +90,33 @@ func (r *TastResults) ConvertFromJSON(reader io.Reader) error {
 	return nil
 }
 
+// toStructuredTastID converts a tast test name to a structured ID.
+func toStructuredTastID(name string) *sinkpb.TestIdentifier {
+	// Trim the "tast." prefix, if present.
+	name = strings.TrimPrefix(name, TastNamePrefix)
+
+	// Map the test category to the fine name and leave the rest
+	// in the case name.
+
+	// [0] is the Tast category
+	// [1] is the Tast test name
+	// [2] (optional) are the parameters.
+	testParts := strings.SplitN(name, ".", 3)
+	if len(testParts) < 2 {
+		return &sinkpb.TestIdentifier{
+			CoarseName:         "",
+			FineName:           "unknown",
+			CaseNameComponents: []string{testParts[0]},
+		}
+	} else {
+		return &sinkpb.TestIdentifier{
+			CoarseName:         "",
+			FineName:           testParts[0],
+			CaseNameComponents: testParts[1:], // Test name (and optionally, parameters).
+		}
+	}
+}
+
 // ToProtos converts test results in r to []*sinkpb.TestResult.
 func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, processArtifacts func(string) (map[string]string, error), testhausBaseUrl string) ([]*sinkpb.TestResult, error) {
 	metadata := map[string]*api.TestCaseMetadata{}
@@ -104,11 +134,12 @@ func (r *TastResults) ToProtos(ctx context.Context, testMetadataFile string, pro
 		testName := addTastPrefix(c.Name)
 		status, expected := genCaseStatus(c)
 		tr := &sinkpb.TestResult{
-			TestId:       testName,
-			Expected:     expected,
-			Status:       status,
-			Tags:         []*pb.StringPair{},
-			TestMetadata: &pb.TestMetadata{Name: testName},
+			TestId:           testName,
+			TestIdStructured: toStructuredTastID(c.Name),
+			Expected:         expected,
+			Status:           status,
+			Tags:             []*pb.StringPair{},
+			TestMetadata:     &pb.TestMetadata{Name: testName},
 		}
 
 		if !c.Start.IsZero() {

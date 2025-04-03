@@ -7,6 +7,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -99,20 +100,16 @@ func TestTastConversions(t *testing.T) {
 
 	ftt.Run(`ToProtos works`, t, func(t *ftt.Test) {
 		ctx := context.Background()
-		t.Run(`Basic`, func(t *ftt.Test) {
-			testhausBaseUrl := "https://tests.chromeos.goog/p/chromeos/logs/unified/build-12345"
-			jsonLine := genJSONLine(map[string]string{
-				"searchFlags": `[{"key":"testKey", "value":"testValue"}]`,
-			})
-			r := &TastResults{
-				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
-			}
-			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
-			assert.Loosely(t, err, should.BeNil)
-			got, err := r.ToProtos(ctx, "", mockCollect, testhausBaseUrl)
-			assert.Loosely(t, err, should.BeNil)
-			assert.Loosely(t, got[0], should.Match(&sinkpb.TestResult{
-				TestId:   "tast.lacros.Basic",
+
+		testhausBaseUrl := "https://tests.chromeos.goog/p/chromeos/logs/unified/build-12345"
+
+		baselineResult := func(name string) *sinkpb.TestResult {
+			return &sinkpb.TestResult{
+				TestId: fmt.Sprintf("tast.%s", name),
+				TestIdStructured: &sinkpb.TestIdentifier{
+					FineName:           "lacros",
+					CaseNameComponents: []string{"Basic"},
+				},
 				Expected: true,
 				Status:   pb.TestStatus_PASS,
 				Artifacts: map[string]*sinkpb.Artifact{
@@ -120,18 +117,17 @@ func TestTastConversions(t *testing.T) {
 						Body: &sinkpb.Artifact_FilePath{FilePath: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test/tast/results/tests/lacros.Basic/foo"},
 					},
 					"testhaus_logs": {
-						Body:        &sinkpb.Artifact_Contents{Contents: []byte(fmt.Sprintf("%s?treeQuery=lacros.Basic&test=tast.lacros.Basic", testhausBaseUrl))},
+						Body:        &sinkpb.Artifact_Contents{Contents: []byte(fmt.Sprintf("%s?treeQuery=%s&test=tast.%s", testhausBaseUrl, name, name))},
 						ContentType: "text/x-uri",
 					},
 				},
 				Tags: []*pb.StringPair{
 					pbutil.StringPair("contacts", "user1@google.com,user2@google.com"),
-					pbutil.StringPair("testKey", "testValue"),
 					pbutil.StringPair(executionOrderTag, "1"),
 					pbutil.StringPair("bug_component", "b:1234"),
 				},
 				TestMetadata: &pb.TestMetadata{
-					Name: "tast.lacros.Basic",
+					Name: "tast." + name,
 					BugComponent: &pb.BugComponent{
 						System: &pb.BugComponent_IssueTracker{
 							IssueTracker: &pb.IssueTrackerComponent{
@@ -142,12 +138,49 @@ func TestTastConversions(t *testing.T) {
 				},
 				StartTime: timestamppb.New(parseTime("2021-07-26T18:53:33.983328614Z")),
 				Duration:  &duration.Duration{Seconds: 1},
-			}))
+			}
+		}
+
+		t.Run(`Basic`, func(t *ftt.Test) {
+			jsonLine := genJSONLine(map[string]string{
+				"searchFlags": `[{"key":"testKey", "value":"testValue"}]`,
+			})
+			r := &TastResults{
+				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
+			}
+
+			expectedResult := baselineResult("lacros.Basic")
+			expectedResult.Tags = slices.Insert(expectedResult.Tags, 1, pbutil.StringPair("testKey", "testValue"))
+
+			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
+			assert.Loosely(t, err, should.BeNil)
+			got, err := r.ToProtos(ctx, "", mockCollect, testhausBaseUrl)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got[0], should.Match(expectedResult))
+		})
+		t.Run(`Test name with parameter`, func(t *ftt.Test) {
+			jsonLine := genJSONLine(map[string]string{
+				"name": "lacros.Migrate.some_parameter",
+			})
+			r := &TastResults{
+				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
+			}
+
+			expectedResult := baselineResult("lacros.Migrate.some_parameter")
+			expectedResult.TestIdStructured.FineName = "lacros"
+			expectedResult.TestIdStructured.CaseNameComponents = []string{"Migrate", "some_parameter"}
+
+			err := r.ConvertFromJSON(strings.NewReader(jsonLine))
+			assert.Loosely(t, err, should.BeNil)
+			got, err := r.ToProtos(ctx, "", mockCollect, testhausBaseUrl)
+			assert.Loosely(t, err, should.BeNil)
+			assert.Loosely(t, got[0], should.Match(expectedResult))
 		})
 		t.Run(`With metadata`, func(t *ftt.Test) {
 			r := &TastResults{
 				BaseDir: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test",
 			}
+
 			err := r.ConvertFromJSON(strings.NewReader(genJSONLine(nil) + "\n" + genJSONLine(map[string]string{
 				"name":   "lacros.Migrate",
 				"outDir": "/usr/local/autotest/results/lxc_job_folder/tast/results/tests/lacros.Migrate",
@@ -155,11 +188,15 @@ func TestTastConversions(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			got, err := r.ToProtos(ctx, "./test_data/tast/test_metadata.json", mockCollect, "")
 			assert.Loosely(t, err, should.BeNil)
+
 			expected := []*sinkpb.TestResult{
 				{
-					TestId:   "tast.lacros.Basic",
-					Expected: true,
-					Status:   pb.TestStatus_PASS,
+					TestId: "tast.lacros.Basic",
+					TestIdStructured: &sinkpb.TestIdentifier{
+						FineName:           "lacros",
+						CaseNameComponents: []string{"Basic"},
+					}, Expected: true,
+					Status: pb.TestStatus_PASS,
 					Artifacts: map[string]*sinkpb.Artifact{
 						"foo": {
 							Body: &sinkpb.Artifact_FilePath{FilePath: "/usr/local/autotest/results/swarming-55970dfb3e7ef210/1/autoserv_test/tast/results/tests/lacros.Basic/foo"},
@@ -198,7 +235,11 @@ func TestTastConversions(t *testing.T) {
 					Duration:  &duration.Duration{Seconds: 1},
 				},
 				{
-					TestId:   "tast.lacros.Migrate",
+					TestId: "tast.lacros.Migrate",
+					TestIdStructured: &sinkpb.TestIdentifier{
+						FineName:           "lacros",
+						CaseNameComponents: []string{"Migrate"},
+					},
 					Expected: true,
 					Status:   pb.TestStatus_PASS,
 					Artifacts: map[string]*sinkpb.Artifact{
@@ -254,7 +295,11 @@ func TestTastConversions(t *testing.T) {
 			got, err := r.ToProtos(ctx, "", mockCollect, "")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, got[0], should.Match(&sinkpb.TestResult{
-				TestId:      "tast.lacros.Basic",
+				TestId: "tast.lacros.Basic",
+				TestIdStructured: &sinkpb.TestIdentifier{
+					FineName:           "lacros",
+					CaseNameComponents: []string{"Basic"},
+				},
 				Expected:    true,
 				Status:      pb.TestStatus_SKIP,
 				SummaryHtml: "<text-artifact artifact-id=\"Skip Reason\" />",
@@ -304,7 +349,11 @@ func TestTastConversions(t *testing.T) {
 			got, err := r.ToProtos(ctx, "", mockCollect, "")
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, got[0], should.Match(&sinkpb.TestResult{
-				TestId:      "tast.lacros.Basic",
+				TestId: "tast.lacros.Basic",
+				TestIdStructured: &sinkpb.TestIdentifier{
+					FineName:           "lacros",
+					CaseNameComponents: []string{"Basic"},
+				},
 				Expected:    false,
 				Status:      pb.TestStatus_SKIP,
 				SummaryHtml: "<text-artifact artifact-id=\"Test Log\" />",
@@ -360,7 +409,11 @@ func TestTastConversions(t *testing.T) {
 			assert.Loosely(t, err, should.BeNil)
 			assert.Loosely(t, got[0].Duration, should.Match(&duration.Duration{Seconds: 1}))
 			assert.Loosely(t, got[0], should.Match(&sinkpb.TestResult{
-				TestId:      "tast.lacros.Basic",
+				TestId: "tast.lacros.Basic",
+				TestIdStructured: &sinkpb.TestIdentifier{
+					FineName:           "lacros",
+					CaseNameComponents: []string{"Basic"},
+				},
 				Expected:    false,
 				Status:      pb.TestStatus_FAIL,
 				SummaryHtml: "<text-artifact artifact-id=\"Test Log\" />",
