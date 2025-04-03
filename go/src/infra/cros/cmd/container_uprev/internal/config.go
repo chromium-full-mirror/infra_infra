@@ -360,6 +360,17 @@ func GetConfigs() []*UprevConfig {
 			},
 			Prepper: preppers.PrepFoilTestInternal,
 		},
+		{
+			Name:          "foil-test-aosp",
+			FirestoreName: "foil-test",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/execution/cros-test/${platform}"),
+			},
+			Repositories: []*Repository{
+				PartnerRepository,
+			},
+			Prepper: preppers.PrepFoilTestAosp,
+		},
 	}
 
 	return CleanConfigs(configs)

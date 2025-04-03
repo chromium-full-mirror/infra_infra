@@ -60,7 +60,14 @@ func PrepFoilTestInternal(ctx context.Context, dir string) error {
 		logging.Infof(ctx, "foil-test prepper: fetchMoblyArtifacts failed, %s", err)
 	}
 
-	err = fetchTradefedBinary(ctx, dir)
+	return nil
+}
+
+// PrepFoilTestAosp implements the prepper for foil-test-aosp container for partners.
+func PrepFoilTestAosp(ctx context.Context, dir string) error {
+	os.Mkdir(filepath.Join(dir, ArtifactDir), common.DirPermission)
+
+	err := fetchTradefedBinary(ctx, dir)
 	if err != nil {
 		logging.Infof(ctx, "foil-test prepper: fetchTradefedBinary failed, %s", err)
 	}
