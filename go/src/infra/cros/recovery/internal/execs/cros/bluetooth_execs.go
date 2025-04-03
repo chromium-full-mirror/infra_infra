@@ -80,6 +80,18 @@ func auditBluetoothExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Annotate(err, "audit bluetooth").Err()
 }
 
+func hasBtPeers(ctx context.Context, info *execs.ExecInfo) error {
+	btpeers := info.GetChromeos().GetBluetoothPeers()
+	if btpeers == nil {
+		return errors.Reason("has_btpeers check: btpeer data is not present in dut info").Err()
+	}
+	if len(btpeers) == 0 {
+		return errors.Reason("has_btpeers check: no btpeers found").Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("cros_audit_bluetooth", auditBluetoothExec)
+	execs.Register("cros_has_btpeers", hasBtPeers)
 }

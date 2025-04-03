@@ -119,6 +119,7 @@ func crosRepairActions() map[string]*Action {
 				"RO Firmware version matches the recovery-version",
 				"Verify servo keyboard firmware",
 				"FPMCU is working",
+				"Validate btclient adapter output",
 				"FW WP is disabled",
 				"Check if OS on required version for camerabox tablet",
 				"Check audio latency toolkit state",
@@ -1645,6 +1646,40 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName:      "sample_fail",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Validate btclient adapter output": {
+			Docs: []string{
+				// See: b/405154161 for context
+				"Bluetooth tests can cause DUTS to get into a bad state, requiring a reboot to reset.",
+			},
+			Conditions: []string{
+				"Is ChromeOS based?",
+				"Has Bluetooth peers",
+			},
+			Dependencies: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_run_command",
+			ExecExtraArgs: []string{
+				"host:dut",
+				"command:btclient -c \"adapter show\"",
+				"background:false",
+			},
+			RunControl: RunControl_ALWAYS_RUN,
+			RecoveryActions: []string{
+				"Repair by Reboot",
+				// In case normal reboot doesn't work, use a bigger hammer.
+				"Cold reset by servo and wait for ping",
+			},
+			AllowFailAfterRecovery: true,
+		},
+		"Has Bluetooth peers": {
+			Docs: []string{
+				"Check if a device has bluetooth peers",
+			},
+			ExecName:      "cros_has_btpeers",
+			RunControl:    RunControl_ALWAYS_RUN,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
 		"Audit USB-drive from DUT": {
 			Docs: []string{
@@ -3693,7 +3728,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Repair by Reboot": {
 			Docs: []string{
-				"Do simple reboot of the DUT force to update DUT cache seetings.",
+				"Do simple reboot of the DUT force to update DUT cache settings.",
 			},
 			Conditions: []string{
 				"Device is SSHable",
@@ -4800,7 +4835,7 @@ func crosRepairActions() map[string]*Action {
 				"command:crosid",
 			},
 			RecoveryActions: []string{
-				// First we try to reboot something already recoverd but not applied yet as required reboot.
+				// First we try to reboot something already recovered but not applied yet as required reboot.
 				"Repair by Reboot",
 				"Quick provision OS",
 				"Remove whitelabel_tag from vpd and reboot",
