@@ -2594,7 +2594,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "servo_download_provision_image_to_usb",
 			ExecExtraArgs: []string{
-				"os_image_path:v4",
+				"image_version:v6.1.1",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
 			RunControl:  RunControl_ALWAYS_RUN,

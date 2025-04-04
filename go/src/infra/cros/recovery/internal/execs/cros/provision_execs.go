@@ -123,7 +123,7 @@ func downloadProvisionImageToUSBExec(ctx context.Context, info *execs.ExecInfo) 
 	info.AddObservation(metrics.NewStringObservation("usbkey_model", servo.GetUsbDrive().GetManufacturer()))
 	info.AddObservation(metrics.NewStringObservation("usbkey_state", servo.GetUsbkeyState().String()))
 	argsMap := info.GetActionArgs(ctx)
-	imageVersion := argsMap.AsString(ctx, "image_version", "v6.0.6")
+	imageVersion := argsMap.AsString(ctx, "image_version", "v6.1.1")
 	// Example: `gs://chromeos-throw-away-bucket/kimjae/brya-provision-v4.bin`
 	imagePath := fmt.Sprintf("gs://chromeos-throw-away-bucket/kimjae/%s-provision-%s.bin", board, imageVersion)
 	log.Debugf(ctx, "Used image path: %s", imagePath)
