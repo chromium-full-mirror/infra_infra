@@ -13,7 +13,6 @@ DEPS = [
     'recipe_engine/nodejs',
     'recipe_engine/path',
     'recipe_engine/platform',
-    'recipe_engine/resultdb',
     'recipe_engine/step',
     'depot_tools/git',
     'depot_tools/gsutil',
@@ -82,7 +81,7 @@ def _try_promote_staging_to_prod(api, gae_dir):
   with api.nodejs(version), api.context(
       cwd=luci_ui_dir, env={'VITE_LOCAL_BASE_OUT_DIR': tarball_dist_dir}):
     api.step('npm ci', ['npm', 'ci'])
-    api.step('e2e', api.resultdb.wrap(['make', 'e2e']))
+    api.step('e2e', ['make', 'e2e'])
 
   # Promote the staging version to production
   res = api.step(

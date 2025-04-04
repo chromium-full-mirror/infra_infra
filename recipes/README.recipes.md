@@ -1810,16 +1810,16 @@ before we discover that e.g. amd64 is broken.
 [DEPS](/recipes/recipes/infra_frontend_tester.py#9): [depot\_tools/bot\_update][depot_tools/recipe_modules/bot_update], [depot\_tools/gclient][depot_tools/recipe_modules/gclient], [infra\_checkout](#recipe_modules-infra_checkout), [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/cipd][recipe_engine/recipe_modules/cipd], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/nodejs][recipe_engine/recipe_modules/nodejs], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/properties][recipe_engine/recipe_modules/properties], [recipe\_engine/resultdb][recipe_engine/recipe_modules/resultdb], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
-&mdash; **def [BuildAndLintFrontend](/recipes/recipes/infra_frontend_tester.py#116)(api, cwd, app_name):**
+&mdash; **def [BuildAndLintFrontend](/recipes/recipes/infra_frontend_tester.py#117)(api, cwd, app_name):**
 
 Build and run ESLint on a UI.
 To use this step your UI must have:
   1. A `Makefile` that contains a `build` command.
   2. A `lint` npm script in the `package.json` file.
 
-&mdash; **def [RunFrontendBuildAndLint](/recipes/recipes/infra_frontend_tester.py#135)(api, cwd, app_name):**
+&mdash; **def [RunFrontendBuildAndLint](/recipes/recipes/infra_frontend_tester.py#141)(api, cwd, app_name):**
 
-&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#128)(api, cwd, app_name):**
+&mdash; **def [RunFrontendTests](/recipes/recipes/infra_frontend_tester.py#129)(api, cwd, app_name, module_name=None):**
 
 &mdash; **def [RunInfraFrontendTests](/recipes/recipes/infra_frontend_tester.py#84)(api, root_path):**
 
@@ -1837,7 +1837,7 @@ This function runs UI tests in the `luci-go` project.
 If the UI project is configured to test a build and be linted,
 then this function will run those commands on the UI too.
 
-&mdash; **def [RunNpmInstall](/recipes/recipes/infra_frontend_tester.py#111)(api, cwd, app_name):**
+&mdash; **def [RunNpmInstall](/recipes/recipes/infra_frontend_tester.py#112)(api, cwd, app_name):**
 
 &mdash; **def [RunSteps](/recipes/recipes/infra_frontend_tester.py#25)(api):**
 ### *recipes* / [infra\_repo\_trybot](/recipes/recipes/infra_repo_trybot.py)
@@ -1868,10 +1868,10 @@ then this function will run those commands on the UI too.
 &mdash; **def [RunSteps](/recipes/recipes/luci_ui_prev_promoter.py#29)(api):**
 ### *recipes* / [luci\_ui\_promoter](/recipes/recipes/luci_ui_promoter.py)
 
-[DEPS](/recipes/recipes/luci_ui_promoter.py#7): [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [cloudbuildhelper](#recipe_modules-cloudbuildhelper), [recipe\_engine/archive][recipe_engine/recipe_modules/archive], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/nodejs][recipe_engine/recipe_modules/nodejs], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/resultdb][recipe_engine/recipe_modules/resultdb], [recipe\_engine/step][recipe_engine/recipe_modules/step]
+[DEPS](/recipes/recipes/luci_ui_promoter.py#7): [depot\_tools/git][depot_tools/recipe_modules/git], [depot\_tools/gsutil][depot_tools/recipe_modules/gsutil], [cloudbuildhelper](#recipe_modules-cloudbuildhelper), [recipe\_engine/archive][recipe_engine/recipe_modules/archive], [recipe\_engine/buildbucket][recipe_engine/recipe_modules/buildbucket], [recipe\_engine/context][recipe_engine/recipe_modules/context], [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/nodejs][recipe_engine/recipe_modules/nodejs], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/platform][recipe_engine/recipe_modules/platform], [recipe\_engine/step][recipe_engine/recipe_modules/step]
 
 
-&mdash; **def [RunSteps](/recipes/recipes/luci_ui_promoter.py#26)(api):**
+&mdash; **def [RunSteps](/recipes/recipes/luci_ui_promoter.py#25)(api):**
 ### *recipes* / [powershell:examples/test](/recipes/recipe_modules/powershell/examples/test.py)
 
 [DEPS](/recipes/recipe_modules/powershell/examples/test.py#7): [powershell](#recipe_modules-powershell), [recipe\_engine/file][recipe_engine/recipe_modules/file], [recipe\_engine/json][recipe_engine/recipe_modules/json], [recipe\_engine/path][recipe_engine/recipe_modules/path], [recipe\_engine/properties][recipe_engine/recipe_modules/properties]

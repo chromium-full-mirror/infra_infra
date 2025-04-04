@@ -105,7 +105,8 @@ def RunLuciGoTests(api, root_path):
   cwd = root_path.joinpath('milo', 'ui')
   RunNpmInstall(api, cwd, 'milo')
   BuildAndLintFrontend(api, cwd, 'milo')
-  RunFrontendTests(api, cwd, 'milo')
+  RunFrontendTests(
+      api, cwd, 'milo', module_name='infra/luci/luci-go > //milo/ui:jest_tests')
 
 
 def RunNpmInstall(api, cwd, app_name):
@@ -122,21 +123,25 @@ def BuildAndLintFrontend(api, cwd, app_name):
 
   with api.context(cwd=cwd):
     api.step(('%s lint' % app_name), ['make', 'lint'])
-    api.step(('%s build' % app_name), api.resultdb.wrap(['make', 'build']))
+    api.step(('%s build' % app_name), ['make', 'build'])
 
 
-def RunFrontendTests(api, cwd, app_name):
+def RunFrontendTests(api, cwd, app_name, module_name=None):
   with api.context(cwd=cwd):
-    # Prefixing the step name with `test` to make it easier to identify from
-    # other npm install runs.
-    api.step(('%s test' % app_name), api.resultdb.wrap(['npm', 'run', 'test']))
+    if module_name:
+      # ResultDB integration enabled.
+      api.step(('%s test' % app_name),
+               api.resultdb.wrap(['npm', 'run', 'test'],
+                                 module_name=module_name,
+                                 module_scheme='jest'))
+    else:
+      api.step(('%s test' % app_name), ['npm', 'run', 'test'])
 
 
 def RunFrontendBuildAndLint(api, cwd, app_name):
   with api.context(cwd=cwd):
-    api.step(('%s lint' % app_name), api.resultdb.wrap(['npm', 'run', 'lint']))
-    api.step(('%s build' % app_name), api.resultdb.wrap(['npm', 'run',
-                                                         'build']))
+    api.step(('%s lint' % app_name), ['npm', 'run', 'lint'])
+    api.step(('%s build' % app_name), ['npm', 'run', 'build'])
 
 def GenTests(api):
   yield (

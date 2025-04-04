@@ -354,9 +354,6 @@
   },
   {
     "cmd": [
-      "rdb",
-      "stream",
-      "--",
       "make",
       "build"
     ],
@@ -389,6 +386,10 @@
     "cmd": [
       "rdb",
       "stream",
+      "-module-name",
+      "infra/luci/luci-go > //milo/ui:jest_tests",
+      "-module-scheme",
+      "jest",
       "--",
       "npm",
       "run",
