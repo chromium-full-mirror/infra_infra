@@ -69,7 +69,7 @@ func PrepFoilTestAosp(ctx context.Context, dir string) error {
 
 	err := fetchTradefedBinary(ctx, dir)
 	if err != nil {
-		logging.Infof(ctx, "foil-test prepper: fetchTradefedBinary failed, %s", err)
+		logging.Infof(ctx, "foil-test-aosp prepper: fetchTradefedBinary failed, %s", err)
 	}
 
 	return nil

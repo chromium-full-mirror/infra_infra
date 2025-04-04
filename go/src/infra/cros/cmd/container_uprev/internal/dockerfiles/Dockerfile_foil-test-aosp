@@ -4,7 +4,7 @@
 
 FROM python:3.11-slim-buster AS build
 
-ARG ARTIFACT_DIR="tf_artifact/tradefed"
+ARG ARTIFACT_DIR="tf_artifact"
 
 
 # attr, unzip are for CTS specifically.
@@ -64,14 +64,17 @@ ENV PATH=$JAVA_HOME/bin:$PATH
 
 # Extract Tradefed console.
 RUN mkdir /tradefed
-RUN unzip ${ARTIFACT_DIR}/tradefed/tradefed.zip -d /tradefed/
+COPY ${ARTIFACT_DIR}/tradefed/cros-xts-metadata/tradefed.zip tradefed.zip
+RUN unzip tradefed.zip -d /tradefed/
 RUN chown -R chromeos-test:chromeos-test /tradefed
+RUN rm tradefed.zip
 
 # Cros-test binary is static across boards.
 COPY --chown=chromeos-test:chromeos-test cros-test /usr/bin/
 
 # Do a final chown on /tmp/test
 RUN chmod 755 /usr/bin/cros-test
+RUN mkdir /tmp/test
 RUN chown -R chromeos-test:chromeos-test /tmp/test/
 
 USER chromeos-test
