@@ -177,7 +177,9 @@ func main() {
 	kzipEntryWg.Add(numRoutines)
 	for range numRoutines {
 		go func() {
-			ip.dataFileToKzipEntry(ctx, dataFileChannel, kzipEntryChannel)
+			if err := ip.dataFileToKzipEntry(ctx, dataFileChannel, kzipEntryChannel); err != nil {
+				panic(err)
+			}
 			kzipEntryWg.Done()
 
 			// Signal targets to start unit proto processing.
