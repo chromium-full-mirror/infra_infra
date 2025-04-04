@@ -2,10 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+FROM gcr.io/dockerized-tradefed/tradefed:latest as tf
+
 FROM python:3.11-slim-buster AS build
 
 ARG ARTIFACT_DIR="tf_artifact"
-
 
 # attr, unzip are for CTS specifically.
 # squashfs-tools is for Uprev specifically.
@@ -68,6 +69,9 @@ COPY ${ARTIFACT_DIR}/tradefed/cros-xts-metadata/tradefed.zip tradefed.zip
 RUN unzip tradefed.zip -d /tradefed/
 RUN chown -R chromeos-test:chromeos-test /tradefed
 RUN rm tradefed.zip
+
+COPY --from=tf --chown=chromeos-test:chromeos-test /tradefed/adb /tradefed/adb
+RUN chmod 750 /tradefed/adb
 
 # Cros-test binary is static across boards.
 COPY --chown=chromeos-test:chromeos-test cros-test /usr/bin/
