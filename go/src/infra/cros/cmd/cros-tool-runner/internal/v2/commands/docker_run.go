@@ -29,6 +29,9 @@ func (c *DockerRun) compose() ([]string, error) {
 	if strings.Contains(c.ContainerImage, "foil-test") || strings.Contains(c.ContainerImage, "tradefed") {
 		args = append(args, "--security-opt", "seccomp=unconfined")
 	}
+	if strings.Contains(c.ContainerImage, "foil-test-aosp") {
+		args = append(args, "--cap-add", "SYS_ADMIN", "--device", "/dev/fuse", "--security-opt", "apparmor:unconfined")
+	}
 	if c.Name != "" {
 		args = append(args, "--name", c.Name)
 	}
