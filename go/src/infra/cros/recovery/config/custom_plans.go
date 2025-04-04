@@ -6,6 +6,8 @@ package config
 
 import (
 	"fmt"
+
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 // DownloadImageToServoUSBDrive creates configuration to download image to USB-drive connected to the servo.
@@ -188,6 +190,101 @@ func SetFwTargets(ecTarget, apTarget string) *Configuration {
 							fmt.Sprintf("ec_target:%s", ecTarget),
 							fmt.Sprintf("ap_target:%s", apTarget),
 						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func LabstationRpmPowerCycleConfig(timeToWait int) *Configuration {
+	if timeToWait < 10 {
+		// Minimum time needed between switch RPM action.
+		timeToWait = 10
+	}
+	return &Configuration{
+		PlanNames: []string{
+			PlanCrOS,
+		},
+		Plans: map[string]*Plan{
+			PlanCrOS: {
+				CriticalActions: []string{
+					"Device is SSHable",
+					"Power off by RPM",
+					"Wait",
+					"Power on by RPM",
+					"Wait to be SSHable",
+					"Remove reboot requests",
+				},
+				Actions: map[string]*Action{
+					"Device is SSHable": {
+						Docs: []string{
+							"This verifier checks whether the host is accessible over ssh.",
+						},
+						ExecName:               "cros_ssh",
+						ExecTimeout:            &durationpb.Duration{Seconds: 30},
+						RunControl:             RunControl_ALWAYS_RUN,
+						AllowFailAfterRecovery: true,
+						MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+					},
+					"Power off by RPM": {
+						Docs: []string{
+							"Power off the labstation via RPM.",
+						},
+						Conditions: []string{
+							"rpm_action_enabled",
+							"has_rpm_info",
+						},
+						ExecName: "rpm_power_off",
+						// 60 seconds timeout via HTTP based call and 60 seconds fallback to RPM service.
+						ExecTimeout:            &durationpb.Duration{Seconds: 120},
+						RunControl:             RunControl_ALWAYS_RUN,
+						AllowFailAfterRecovery: true,
+						MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+					},
+					"Power on by RPM": {
+						Docs: []string{
+							"Power on the labstation via RPM.",
+						},
+						Conditions: []string{
+							"rpm_action_enabled",
+							"has_rpm_info",
+						},
+						ExecName: "rpm_power_on",
+						// 60 seconds timeout via HTTP based call and 60 seconds fallback to RPM service.
+						ExecTimeout:   &durationpb.Duration{Seconds: 120},
+						RunControl:    RunControl_ALWAYS_RUN,
+						MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+					},
+					"Wait": {
+						ExecName: "sample_sleep",
+						ExecExtraArgs: []string{
+							fmt.Sprintf("sleep:%d", timeToWait),
+						},
+						ExecTimeout:            &durationpb.Duration{Seconds: int64(timeToWait + 10)},
+						RunControl:             RunControl_ALWAYS_RUN,
+						AllowFailAfterRecovery: true,
+						MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+					},
+					"Wait to be SSHable": {
+						Docs: []string{
+							"Try to wait device to be sshable during after the device being rebooted.",
+						},
+						// Labstation may take some time to fully up(e.g. network service ready) after an update.
+						// So giving it 10 minutes in here to allow more buffer.
+						ExecTimeout:   &durationpb.Duration{Seconds: 600},
+						ExecName:      "cros_ssh",
+						RunControl:    RunControl_ALWAYS_RUN,
+						MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+					},
+					"Remove reboot requests": {
+						Docs: []string{
+							"Remove all requests for reboot on the host.",
+							"The action has to be called after reboot of the device.",
+						},
+						ExecName:               "cros_remove_all_reboot_request",
+						AllowFailAfterRecovery: true,
+						MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 					},
 				},
 			},
