@@ -104,6 +104,18 @@ luci.project(
             roles = "role/analysis.editor",
             groups = "project-infra-committers",
         ),
+        luci.binding(
+            roles = "role/swarming.poolOwner",
+            groups = "mdb/chrome-troopers",
+        ),
+        luci.binding(
+            roles = "role/swarming.taskTriggerer",
+            groups = "project-infra-internal-led-breakglass",
+        ),
+        luci.binding(
+            roles = "role/buildbucket.triggerer",
+            groups = "project-infra-internal-led-breakglass",
+        ),
     ],
 )
 
@@ -199,14 +211,6 @@ luci.bucket(
 
 luci.bucket(
     name = "cron",
-    acls = [
-        acl.entry(
-            roles = acl.BUILDBUCKET_TRIGGERER,
-            groups = [
-                "mdb/chrome-troopers",
-            ],
-        ),
-    ],
 )
 
 # Shadow bucket of `cron`, for led builds.
@@ -250,6 +254,7 @@ luci.notifier_template(
 luci.list_view(name = "cron")
 
 # Setup Swarming permissions (in particular for LED).
+# TODO(crbug.com/1420100): Review these permissions.
 
 load("//lib/led.star", "led")
 
@@ -263,12 +268,6 @@ led.users(
     groups = "flex-try-led-users",
     task_realm = "try",
     pool_realm = "pools/try",
-)
-
-led.users(
-    groups = "mdb/chrome-troopers",
-    task_realm = "cron",
-    pool_realm = "pools/cron",
 )
 
 # Per-subproject resources. They may refer to the shared resources defined
