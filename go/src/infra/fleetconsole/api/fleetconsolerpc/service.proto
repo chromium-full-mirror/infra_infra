@@ -49,6 +49,9 @@ service FleetConsole {
 
   // ListResourceRequests returns Resource Requests provided by BigQuery
   rpc ListResourceRequests(ListResourceRequestsRequest) returns (ListResourceRequestsResponse) {};
+
+  // CountResourceRequests provides counts for RRI summary header
+  rpc CountResourceRequests(CountResourceRequestsRequest) returns (CountResourceRequestsResponse) {};
 }
 
 // PingRequest intentionally contains nothing.
@@ -282,4 +285,20 @@ message ResourceRequest {
 
   // Status of the Fulfillment bug for the resource request.
   optional Status fulfillment_status = 9;
+}
+
+message CountResourceRequestsRequest {
+  // See: AIP-160 (https://google.aip.dev/160) for the syntax
+  // Same filter format as ListDevicesRequest
+  string filter = 1;
+}
+
+message CountResourceRequestsResponse {
+  int32 total = 1;
+  int32 in_progress = 2;
+  int32 completed = 3;
+  int32 material_sourcing = 4;
+  int32 build = 5;
+  int32 qa = 6;
+  int32 config = 7;
 }
