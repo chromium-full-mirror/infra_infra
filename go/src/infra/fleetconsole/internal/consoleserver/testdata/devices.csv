@@ -1,0 +1,4 @@
+"id","dut_id","host","port","type","state","labels"
+"device1","C111111","","","","DEVICE_STATE_LEASED","{""model_name"": {""Values"": [""LaptopPro X""]}, ""storage_type"": {""Values"": [""SSD"", ""HDD""]}, ""os_version"": {""Values"": [""macOS Ventura""]}}"
+"device2","C222222","1.1.1.1","8888","","DEVICE_STATE_AVAILABLE","{""model_name"": {""Values"": [""Chromebook Plus""]}, ""memory_gb"": {""Values"": [""8""]}}"
+"device5","C555555","","","","DEVICE_STATE_LEASED","{""model_name"": {""Values"": [""Random model""]}, ""graphics_card"": {""Values"": [""NVIDIA GeForce RTX 3060""]}, ""wifi_generation"": {""Values"": [""Wi-Fi 5""]}}"

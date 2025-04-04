@@ -1,0 +1,4 @@
+ID,Lease state,Model name,Storage type
+device1,LEASED,LaptopPro X,"SSD, HDD"
+device2,AVAILABLE,Chromebook Plus,
+device5,LEASED,Random model,

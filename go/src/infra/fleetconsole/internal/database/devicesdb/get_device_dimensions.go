@@ -86,7 +86,7 @@ func GetBaseDimensions(ctx context.Context, dbConn *sql.DB, realms []string) (ma
 	results := map[string]*LabelValuesDAO{}
 
 	for _, column := range DevicesTable.Columns {
-		if column.Type == queryutils.ColumnTypeJSONB {
+		if column == RealmColumn || column.Type == queryutils.ColumnTypeJSONB {
 			continue
 		}
 
