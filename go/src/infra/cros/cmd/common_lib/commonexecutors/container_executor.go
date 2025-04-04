@@ -219,6 +219,24 @@ func (ex *ContainerExecutor) streamLogAsync(ctx context.Context, step *build.Ste
 	ex.LogChannels = append(ex.LogChannels, taskDone)
 	ex.WaitGroups = append(ex.WaitGroups, wg)
 
+	// Foil-provision is marked as cros-provision so for now we are adding an
+	// extra file stream log for the logcat logs.
+	//
+	// CLEAN(b/408454320): Remove once adb-logcat is containerized.
+	if identifier == "cros-provision_primary" {
+		containerLog := step.Log(fmt.Sprintf("%s-logcat Log", identifier))
+
+		logCatTaskDone, logCatWG, err := common.StreamLogcatAsync(ctx, logsLoc, containerLog)
+		if err != nil {
+			logging.Infof(ctx, "Warning: error during reading container log: %s", err)
+			return
+		}
+
+		ex.LogChannels = append(ex.LogChannels, logCatTaskDone)
+		ex.WaitGroups = append(ex.WaitGroups, logCatWG)
+
+	}
+
 	return
 }
 

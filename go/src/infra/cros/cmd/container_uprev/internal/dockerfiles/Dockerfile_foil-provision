@@ -5,3 +5,5 @@
 FROM us-docker.pkg.dev/cros-registry/test-services/foil-provision:prod_base
 
 COPY foil-provision /usr/bin/
+# CLEAN(b/408454320): Remove once adb-logcat is containerized.
+COPY adb-logcat /usr/bin/

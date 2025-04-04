@@ -199,6 +199,52 @@ func StreamLogAsync(ctx context.Context, rootDir string, writer io.Writer) (chan
 	return taskDone, &wg, nil
 }
 
+// StreamLogcatAsync starts an async reading of log file. Specifically used for
+// the logcat sidecar system.
+//
+// CLEAN(b/408454320): Remove once adb-logcat is containerized. This is
+// duplicated code and only being used as a stop gap while the adb-logcat
+// service is not a standalone CFT container. Remove this once the container as
+// been fully integrated into the CFT system.
+func StreamLogcatAsync(ctx context.Context, rootDir string, writer io.Writer) (chan<- bool, *sync.WaitGroup, error) {
+	// Create channel and wait group for proper communication
+	var wg sync.WaitGroup
+	wg.Add(1)
+	taskDone := make(chan bool)
+
+	// This file is specific to foil-provision, identified with cros-provision
+	// for now, so create it since it likely will not exist.
+	fileName := "logcat.txt"
+	path := fmt.Sprintf("%s/%s", rootDir, fileName)
+	_, err := os.Create(path)
+	if err != nil {
+		return nil, &wg, err
+	}
+
+	// Find file in root dir
+	filePath, err := FindFile(ctx, fileName, rootDir)
+	if err != nil {
+		logging.Infof(ctx, "Failed to find file '%s' at '%s' with error:%s", fileName, rootDir, err)
+		wg.Done()
+		return nil, &wg, err
+	}
+
+	// Open the file for reading
+	fi, err := os.OpenFile(filePath, os.O_RDONLY, os.ModeNamedPipe)
+	if err != nil {
+		logging.Infof(ctx, "Failed to open file %s: %s", filePath, err)
+		wg.Done()
+		return nil, &wg, err
+	}
+
+	// Kick off async reading the file and writing contents to writer
+	go WriteFromFile(ctx, fi, writer, taskDone, &wg, 3*time.Second)
+
+	// return channels and waitgroup to caller for it to control
+	// file reading and writing
+	return taskDone, &wg, nil
+}
+
 // WriteFromFile writes contents from a file to a provided writer.
 func WriteFromFile(
 	ctx context.Context,

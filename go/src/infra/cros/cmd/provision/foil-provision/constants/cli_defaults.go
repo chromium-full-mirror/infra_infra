@@ -9,3 +9,8 @@ const (
 	DefaultPort         = 80
 	DefaultLogDirectory = "/tmp/provisionservice/"
 )
+
+// CLEAN(b/408454320): Remove once adb-logcat is containerized.
+var (
+	LogFileDir = ""
+)

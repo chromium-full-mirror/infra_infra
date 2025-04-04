@@ -302,6 +302,8 @@ func GetConfigs() []*UprevConfig {
 			Name: "foil-provision",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/cft/provision/foil-provision/${platform}"),
+				// CLEAN(b/408454320): Remove once adb-logcat is containerized.
+				NewCIPDPackage("chromiumos/infra/cft/provision/adb-logcat/${platform}"),
 			},
 			Repositories: []*Repository{
 				DefaultRepository,

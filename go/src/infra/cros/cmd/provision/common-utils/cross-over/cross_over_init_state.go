@@ -7,7 +7,9 @@ package cross_over
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"os/exec"
 	"strings"
 	"time"
 
@@ -18,6 +20,7 @@ import (
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
 
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
+	"go.chromium.org/infra/cros/cmd/provision/foil-provision/constants"
 )
 
 const (
@@ -52,7 +55,31 @@ func NewCrossOverInitState(params *CrossOverParameters) common_utils.ServiceStat
 }
 
 func (s CrossOverInitState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any, api.InstallResponse_Status, error) {
-	err := startServod(ctx, log, s.params.ServoNexusClient, s.params.Dut)
+	// Generate the ADB address for the keep alive command
+	address := fmt.Sprintf("%s:%v", s.params.Dut.GetChromeos().GetSsh().GetAddress(), "5555")
+
+	// Create the CLI command to be called by bash.
+	//
+	// NOTE: We need this to be called by `bash -c` because the os/exec library
+	// does not handle redirects which we want here. We are not setting
+	// redirects using the exec.Command struct because we want this task to be
+	// run in background and persist after this provision container/binary
+	// completes.
+	bashCMD := fmt.Sprintf("adb-logcat -adb-address %s -log-dir %s >%s 2>&1", address, constants.LogFileDir, fmt.Sprintf("%s%s", constants.LogFileDir, "logcat.txt"))
+	log.Printf("bashCMD: %s\n", bashCMD)
+
+	// Launch the adb-logcat CIPD binary
+	//
+	// CLEAN(b/408454320): Remove once adb-logcat is containerized.
+	cmd := exec.Command("bash", "-c", bashCMD)
+	err := cmd.Start()
+	if err != nil {
+		log.Printf("Error launching adb-logcat sidecar, ignoring error: %s", err.Error())
+	} else {
+		log.Printf("Launched sidecar")
+	}
+
+	err = startServod(ctx, log, s.params.ServoNexusClient, s.params.Dut)
 	stopServo := true
 	if err != nil && strings.Contains(err.Error(), jobRunning) {
 		stopServo = false

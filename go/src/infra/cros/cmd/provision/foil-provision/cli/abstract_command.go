@@ -12,6 +12,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+
+	"go.chromium.org/infra/cros/cmd/provision/foil-provision/constants"
 )
 
 // AbstractCommand represents a CLI grouping (e.g.: run as server, run as CLI, etc)
@@ -41,6 +43,10 @@ func SetUpLog(dir string) (*log.Logger, error) {
 	}
 	newLog := log.New(io.MultiWriter(lf, os.Stderr), "<foil-provision>", log.LstdFlags|log.LUTC)
 	newLog.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
+
+	// CLEAN(b/408454320): Remove once adb-logcat is containerized.
+	constants.LogFileDir = dir
+
 	return newLog, nil
 }
 

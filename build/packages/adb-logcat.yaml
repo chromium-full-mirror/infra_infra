@@ -1,0 +1,11 @@
+
+package: chromiumos/infra/cft/provision/adb-logcat/${platform}
+description: adb-logcat sits in the background of test_runner builds collecting adb logcat logs.
+platforms:
+  - linux-amd64
+go_packages:
+  - go.chromium.org/infra/cros/cmd/provision/adb-logcat
+root: ../../go/bin
+data:
+  - file: adb-logcat${exe_suffix}
+  - version_file: .versions/adb-logcat${exe_suffix}.cipd_version
