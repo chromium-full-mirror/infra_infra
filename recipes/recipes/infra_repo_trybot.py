@@ -162,8 +162,9 @@ def RunSteps(api, go_version_variant, run_lint, skip_python_tests):
       step = api.step(
           'go tests',
           api.resultdb.wrap(
-              ['vpython3', '-u',
-               co.path / patch_root / 'go' / 'test.py']))
+              ['vpython3', '-u', co.path / patch_root / 'go' / 'test.py'],
+              module_name='%s > //go:go_tests' % project,
+              module_scheme='go'))
       step.presentation.step_text += (
           '\n'
           'Search with "--- FAIL:" in stdout if this step has test failures.')

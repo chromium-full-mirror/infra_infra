@@ -87,18 +87,24 @@ def RunSteps(
             api.step('go build', ['go', 'build', './...'])
             api.step(
                 'go test',
-                api.resultdb.wrap([
-                    adapter, 'go', '--', 'go', 'test', '-shuffle=on',
-                    '-fullpath', '-json', './...'
-                ]))
+                api.resultdb.wrap(
+                    [
+                        adapter, 'go', '--', 'go', 'test', '-shuffle=on',
+                        '-fullpath', '-json', './...'
+                    ],
+                    module_name='infra/luci/luci-go > //:go_tests',
+                    module_scheme='go'))
           # The race detector requires CGO. We have it only on Linux and OSX.
           if not api.platform.is_win:
             with api.context(env={'CGO_ENABLED': '1'}):
-              cmd = api.resultdb.wrap([
-                  adapter, 'go', '--', 'go', 'test', '-fullpath', '-json',
-                  '-race', './...'
-              ],
-                                      base_variant={'race': 'true'})
+              cmd = api.resultdb.wrap(
+                  [
+                      adapter, 'go', '--', 'go', 'test', '-fullpath', '-json',
+                      '-race', './...'
+                  ],
+                  module_name='infra/luci/luci-go > //:go_tests',
+                  module_scheme='go',
+                  base_variant={'race': 'true'})
               api.step('go test -race', cmd)
 
 

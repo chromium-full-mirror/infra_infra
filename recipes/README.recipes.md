@@ -1795,11 +1795,11 @@ Pushes a trivial CL to Gerrit to verify git authentication works on LUCI.
 
 &mdash; **def [build\_main](/recipes/recipes/infra_continuous.py#246)(api, checkout, buildername, project_name, repo_url, rev):**
 
-&mdash; **def [run\_python\_tests](/recipes/recipes/infra_continuous.py#335)(api, checkout, project_name):**
+&mdash; **def [run\_python\_tests](/recipes/recipes/infra_continuous.py#338)(api, checkout, project_name):**
 
 &mdash; **def [should\_run\_python\_tests](/recipes/recipes/infra_continuous.py#197)(api, builder_name):**
 
-&mdash; **def [sort\_variants](/recipes/recipes/infra_continuous.py#313)(p):**
+&mdash; **def [sort\_variants](/recipes/recipes/infra_continuous.py#316)(p):**
 
 Sorts a list of CIPD build variants by "most interesting first".
 

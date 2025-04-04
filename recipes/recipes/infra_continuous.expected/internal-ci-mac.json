@@ -314,6 +314,10 @@
     "cmd": [
       "rdb",
       "stream",
+      "-module-name",
+      "infra/infra_internal > //go:go_tests",
+      "-module-scheme",
+      "go",
       "--",
       "vpython3",
       "-u",

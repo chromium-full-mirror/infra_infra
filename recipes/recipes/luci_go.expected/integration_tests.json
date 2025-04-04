@@ -314,6 +314,10 @@
     "cmd": [
       "rdb",
       "stream",
+      "-module-name",
+      "infra/luci/luci-go > //:go_tests",
+      "-module-scheme",
+      "go",
       "--",
       "[CACHE]/builder/infra/cipd/result_adapter/result_adapter",
       "go",
@@ -362,6 +366,10 @@
     "cmd": [
       "rdb",
       "stream",
+      "-module-name",
+      "infra/luci/luci-go > //:go_tests",
+      "-module-scheme",
+      "go",
       "-var",
       "race:true",
       "--",

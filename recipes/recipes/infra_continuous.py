@@ -261,7 +261,10 @@ def build_main(api, checkout, buildername, project_name, repo_url, rev):
             api.resultdb.wrap([
                 'vpython3', '-u',
                 checkout.path / project_name / 'go' / 'test.py'
-            ]))
+            ],
+                              module_name='infra/%s > //go:go_tests' %
+                              (project_name),
+                              module_scheme='go'))
 
     fails = []
 

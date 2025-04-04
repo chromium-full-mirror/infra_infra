@@ -433,6 +433,10 @@
     "cmd": [
       "rdb",
       "stream",
+      "-module-name",
+      "infra/infra > //go:go_tests",
+      "-module-scheme",
+      "go",
       "--",
       "vpython3",
       "-u",
