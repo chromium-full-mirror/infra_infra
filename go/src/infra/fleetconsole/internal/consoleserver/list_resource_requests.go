@@ -168,8 +168,6 @@ func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, 
 		resourceRequests = resourceRequests[:req.PageSize]
 	}
 
-	logging.Debugf(ctx, "%v", resourceRequests)
-
 	return &fleetconsolerpc.ListResourceRequestsResponse{
 		ResourceRequests: resourceRequests,
 		NextPageToken:    nextPageToken,
