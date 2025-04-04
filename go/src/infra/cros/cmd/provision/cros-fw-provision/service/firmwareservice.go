@@ -498,11 +498,11 @@ func (fws *FirmwareService) ExtractFirmwareVersions(ctx context.Context, rwOnly 
 	// If there is no EC RW version, get the EC RW hash from the AP image.
 	if versions.Default.AP.Versions.ECRW == "" && apImagePath != "" && fws.board != "drallion" && fws.board != "sarien" {
 		ecImagePath := fmt.Sprintf("%s-ecrw.hash", apImagePath)
-		_, err = connection.RunCmd(ctx, "cbfstool", []string{fmt.Sprintf("'%s'", apImagePath), "extract", "-r", "FW_MAIN_A", "-n", "ecrw.hash", "-f", fmt.Sprintf("'%s'", ecImagePath)})
+		_, err = connection.RunCmd(ctx, "cbfstool", []string{Escape(apImagePath), "extract", "-r", "FW_MAIN_A", "-n", "ecrw.hash", "-f", Escape(ecImagePath)})
 		if err != nil {
 			return errors.Wrap(err, "failed to extract ecrw.hash")
 		}
-		out, err = connection.RunCmd(ctx, "od", []string{"-A", "n", "-t", "x1", fmt.Sprintf("'%s'", ecImagePath)})
+		out, err = connection.RunCmd(ctx, "od", []string{"-A", "n", "-t", "x1", Escape(ecImagePath)})
 		if err != nil {
 			return errors.Wrap(err, "failed to get ecrw hash")
 		}
@@ -682,11 +682,11 @@ with open("`)
   subprocess.run(["sync", "-d", "/var/tmp", "/usr/local/tmp"])
   subprocess.run(["reboot"])
 `)
-		_, _, err := RunDUTCommand(ctx, fws.DUTServer, time.Minute, "cat", []string{">", fmt.Sprintf("'%s'", pyScript)}, []byte(scriptBody.String()))
+		_, _, err := RunDUTCommand(ctx, fws.DUTServer, time.Minute, "cat", []string{">", Escape(pyScript)}, []byte(scriptBody.String()))
 		if err != nil {
 			return errors.Wrap(err, "failed to create futility.py")
 		}
-		defer connection.RunCmd(ctx, "rm", []string{"-f", fmt.Sprintf("'%s'", logFile)})
+		defer connection.RunCmd(ctx, "rm", []string{"-f", Escape(logFile)})
 
 		_, err = connection.RunCmd(ctx, "bash", []string{"-c", Escape(fmt.Sprintf("nohup python3 '%s' </dev/null >&'%s' & exit", pyScript, startupLogFile))})
 		if err != nil {
@@ -704,12 +704,12 @@ with open("`)
 			time.Sleep(10 * time.Second)
 			catCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 			defer cancel()
-			buf, err := connection.RunCmd(catCtx, "cat", []string{fmt.Sprintf("'%s'", logFile)})
+			buf, err := connection.RunCmd(catCtx, "cat", []string{Escape(logFile)})
 			if err != nil {
 				log.Printf("failed to download %q: %v", logFile, err)
 				catCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
 				defer cancel()
-				buf, err = connection.RunCmd(catCtx, "cat", []string{fmt.Sprintf("'%s'", startupLogFile)})
+				buf, err = connection.RunCmd(catCtx, "cat", []string{Escape(startupLogFile)})
 				if err != nil {
 					log.Printf("failed to download %q: %v", startupLogFile, err)
 					continue
@@ -967,8 +967,8 @@ func (fws *FirmwareService) ProvisionWithFlashEC(ctx context.Context, ecImage, f
 	if fws.ecChip == "stm32" {
 		customBitbangRate = "--bitbang_rate=57600"
 	}
-	flashCmdArgs := fmt.Sprintf("--ro --chip=%s --board=%s --image='%s' --port=%v %s --verify --verbose",
-		fws.ecChip, fws.model, ecImage, fws.servoPort, customBitbangRate)
+	flashCmdArgs := fmt.Sprintf("--ro --chip=%s --board=%s --image=%s --port=%v %s --verify --verbose",
+		fws.ecChip, fws.model, Escape(ecImage), fws.servoPort, customBitbangRate)
 	output, err := fws.GetConnectionToFlashingDevice().RunCmd(ctx, flashECScriptPath, strings.Split(flashCmdArgs, " "))
 	if err != nil {
 		log.Println(output)

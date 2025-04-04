@@ -367,6 +367,10 @@ func TestDetailedRequestSSHStates(t *testing.T) {
 		}
 		if testCase.mainRo {
 			dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
+				Command: "mkdir",
+				Args:    []string{"-p", "'/var/tmp/some TempDir'"},
+			}}).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil)
+			dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
 				Command: "which",
 				Args:    []string{"ifdtool"},
 			}}).MinTimes(1).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{Status: 1}}), nil)
@@ -389,6 +393,10 @@ func TestDetailedRequestSSHStates(t *testing.T) {
 				Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil)
 		}
 		if testCase.mainRw {
+			dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
+				Command: "mkdir",
+				Args:    []string{"-p", "'/var/tmp/some TempDir'"},
+			}}).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil)
 			stagingCall := dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
 				Command: "curl",
 				Args:    []string{"-f", "-S", stagingURL},
@@ -408,6 +416,10 @@ func TestDetailedRequestSSHStates(t *testing.T) {
 				Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil)
 		}
 		if testCase.ecRw {
+			dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
+				Command: "mkdir",
+				Args:    []string{"-p", "'/var/tmp/some TempDir'"},
+			}}).Return(newResponse(&api.ExecCommandResponse{ExitInfo: &api.ExecCommandResponse_ExitInfo{}}), nil)
 			stagingCall := dsc.EXPECT().ExecCommand(gomock.Any(), &rpcMsg{msg: &api.ExecCommandRequest{
 				Command: "curl",
 				Args:    []string{"-f", "-S", stagingURL},

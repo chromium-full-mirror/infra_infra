@@ -209,6 +209,17 @@ cros-fw-provision will need the cache server started.
 `cros-servod` is needed if provisioning over
 [servo]("https://chromium.googlesource.com/chromiumos/third_party/hdctools/+/HEAD/README.md").
 
+## Lint and formatting
+
+```
+eval `~/infra/infra/go/env.py` && \
+cd ~/infra/infra/go/src/infra && \
+go fmt go.chromium.org/infra/cros/cmd/cft/provision/cros-fw-provision/... \
+  go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/... && \
+golangci-lint run --fix cros/cmd/cft/provision/cros-fw-provision/... \
+  cros/cmd/provision/cros-fw-provision/...
+```
+
 ## Testing
 
 Run the test with go test:

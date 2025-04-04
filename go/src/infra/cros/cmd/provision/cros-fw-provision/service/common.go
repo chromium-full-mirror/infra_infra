@@ -129,7 +129,7 @@ func ExtractFile(ctx context.Context, dut api.DutServiceClient, url, destPath st
 	err := errors.New("unknown error")
 	for i := 1; i <= 5; i++ {
 		var stderr string
-		_, stderr, err = RunDUTCommand(ctx, dut, curlExtractTimeout, "curl", []string{"-f", "-S", "-o", fmt.Sprintf("'%s'", destPath), fmt.Sprintf("'%s'", url)}, nil)
+		_, stderr, err = RunDUTCommand(ctx, dut, curlExtractTimeout, "curl", []string{"-f", "-S", "-o", Escape(destPath), Escape(url)}, nil)
 
 		if err != nil {
 			log.Printf("Failed to download %q: %s", url, string(stderr))
@@ -267,11 +267,17 @@ func GetECCandidateURLs(ctx context.Context, gsPath string, fws *FirmwareService
 func PickAndExtractMainImage(ctx context.Context, dut api.DutServiceClient, imageMetadata ImageArchiveMetadata, gsPath string, fws *FirmwareService) (string, error) {
 	// Short circuit if we already downloaded the image
 	destPath := fmt.Sprintf("%s/bios.bin", imageMetadata.ArchiveDir)
-	_, _, err := RunDUTCommand(ctx, dut, curlExtractTimeout, "test", []string{"-f", fmt.Sprintf("'%s'", destPath)}, nil)
+	_, _, err := RunDUTCommand(ctx, dut, curlExtractTimeout, "test", []string{"-f", Escape(destPath)}, nil)
 	if err == nil {
 		log.Printf("File already downloaded: %s", destPath)
 		return destPath, nil
 	}
+
+	_, _, err = RunDUTCommand(ctx, dut, time.Minute, "mkdir", []string{"-p", Escape(imageMetadata.ArchiveDir)}, nil)
+	if err != nil {
+		return "", errors.Wrapf(err, "failed to mkdir %q", imageMetadata.ArchiveDir)
+	}
+
 	candidates, err := GetAPCandidateURLs(ctx, gsPath, fws)
 	if err != nil {
 		log.Printf("Failed to calculate candidates: %v", err)
@@ -280,7 +286,7 @@ func PickAndExtractMainImage(ctx context.Context, dut api.DutServiceClient, imag
 	for _, candidate := range candidates {
 		log.Printf("Staging %q", candidate.GSURL)
 		url := createStageURL(ctx, candidate.GSURL, fws.CacheServer)
-		args := []string{"-f", "-S", fmt.Sprintf("'%s'", url.String())}
+		args := []string{"-f", "-S", Escape(url.String())}
 		_, out, err := RunDUTCommand(ctx, dut, curlExtractTimeout, "curl", args, nil)
 		if err != nil {
 			log.Printf("Failed to stage %q: %v\n%s", candidate.GSURL, err, string(out))
@@ -313,10 +319,14 @@ Specifying board and model may help`, candidates)
 func PickAndExtractECImage(ctx context.Context, dut api.DutServiceClient, imageMetadata ImageArchiveMetadata, gsPath string, fws *FirmwareService) (string, error) {
 	// Short circuit if we already downloaded the image
 	destPath := fmt.Sprintf("%s/ec.bin", imageMetadata.ArchiveDir)
-	_, _, err := RunDUTCommand(ctx, dut, curlExtractTimeout, "test", []string{"-f", fmt.Sprintf("'%s'", destPath)}, nil)
+	_, _, err := RunDUTCommand(ctx, dut, curlExtractTimeout, "test", []string{"-f", Escape(destPath)}, nil)
 	if err == nil {
 		log.Printf("File already downloaded: %s", destPath)
 		return destPath, nil
+	}
+	_, _, err = RunDUTCommand(ctx, dut, time.Minute, "mkdir", []string{"-p", Escape(imageMetadata.ArchiveDir)}, nil)
+	if err != nil {
+		return "", errors.Wrapf(err, "failed to mkdir %q", imageMetadata.ArchiveDir)
 	}
 	candidates, err := GetECCandidateURLs(ctx, gsPath, fws)
 	if err != nil {
@@ -326,7 +336,7 @@ func PickAndExtractECImage(ctx context.Context, dut api.DutServiceClient, imageM
 	for _, candidate := range candidates {
 		log.Printf("Staging %q", candidate.GSURL)
 		url := createStageURL(ctx, candidate.GSURL, fws.CacheServer)
-		args := []string{"-f", "-S", fmt.Sprintf("'%s'", url.String())}
+		args := []string{"-f", "-S", Escape(url.String())}
 		_, out, err := RunDUTCommand(ctx, dut, curlExtractTimeout, "curl", args, nil)
 		if err != nil {
 			log.Printf("Failed to stage %q: %s", candidate.GSURL, string(out))

@@ -44,6 +44,10 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 		roAtBootRe := regexp.MustCompile("Flash protect flags:.*ro_at_boot")
 		if roAtBootRe.MatchString(out) {
 			log.Printf("RO_AT_BOOT is not clear: Rebooting EC")
+			_, _, err := firmwareservice.RunDUTCommand(ctx, s.service.DUTServer, time.Minute, "sync", []string{"-d", "/var/tmp", "/usr/local/tmp"}, nil)
+			if err != nil {
+				return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+			}
 			// Ignore the err, because the ssh connection is expected to break
 			firmwareservice.RunDUTCommand(ctx, s.service.DUTServer, time.Minute, "ectool", []string{"reboot_ec"}, nil)
 			for range 20 {
@@ -58,12 +62,6 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 			log.Printf("flashprotect after reboot: %s %s", out, err)
 		}
 		log.Printf("[FW Provisioning: Update RO] extracting EC image to flash")
-
-		_, _, err = firmwareservice.RunDUTCommand(ctx, s.service.DUTServer, time.Minute, "mkdir", []string{"-p", firmwareservice.Escape(ecRoMetadata.ArchiveDir)}, nil)
-		if err != nil {
-			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
-		}
-
 		ecRoPath, err = firmwareservice.PickAndExtractECImage(ctx, s.service.DUTServer, ecRoMetadata, s.service.GetEcRoPath(), s.service)
 		if err != nil {
 			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
