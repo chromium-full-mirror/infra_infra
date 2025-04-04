@@ -67,8 +67,8 @@ func flexAMTRespondsToPingExec(ctx context.Context, info *execs.ExecInfo) error 
 	if err != nil {
 		return errors.Reason("flex AMT responds to ping: failed to create client").Err()
 	}
-	// Make up to 60 one-second pings.
-	return errors.Annotate(client.Ping(60), "flex AMT responds to ping").Err()
+	// Make up to 90 one-second pings.
+	return errors.Annotate(client.Ping(90), "flex AMT responds to ping").Err()
 }
 
 func init() {
