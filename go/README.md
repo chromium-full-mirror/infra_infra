@@ -9,6 +9,11 @@ The steps for getting the code are:
 
  1. [Install depot_tools](https://www.chromium.org/developers/how-tos/install-depot-tools)
  1. Run `fetch infra`
+
+   ```bash
+   mkdir $PATH_TO_INSTALL_INFRA && cd $PATH_TO_INSTALL_INFRA
+   fetch infra
+   ```
  1. Run
 
     ```bash
