@@ -285,8 +285,12 @@ func (ip *indexPack) dataFileToKzipEntry(ctx context.Context,
 		}
 
 		if _, ok := ip.hashMaps.Filehash(fname); !ok {
-			if _, err := os.Stat(fname); os.IsNotExist(err) {
+			switch _, err := os.Stat(fname); {
+			case os.IsNotExist(err):
 				logging.Warningf(ctx, "File %s does not exist: %s", fname, err)
+				continue
+			case err != nil:
+				logging.Errorf(ctx, "os.Stat(%s): %s", fname, err)
 				continue
 			}
 
