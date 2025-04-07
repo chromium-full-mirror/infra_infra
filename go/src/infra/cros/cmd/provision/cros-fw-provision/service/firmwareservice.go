@@ -446,6 +446,9 @@ func (fws *FirmwareService) FlashWithFutility(ctx context.Context, rwOnly bool, 
 			} else if out.GetExitInfo().GetStatus() != 0 {
 				return errors.Errorf("update fw failed, exit code %d: %s", out.GetExitInfo().GetStatus(), out.GetStderr())
 			}
+			if err := fws.WaitForReconnect(ctx); err != nil {
+				return errors.Wrap(err, "DUT not avaliable after CSME unlock")
+			}
 			// Try the ssh flash again
 			return fws.sshFlash(ctx, rwOnly, futilityImageArgs, ecImagePath)
 		}
