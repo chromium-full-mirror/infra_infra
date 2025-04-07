@@ -7,6 +7,9 @@ package state_machine
 import (
 	"context"
 	"log"
+	"time"
+
+	"github.com/pkg/errors"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
@@ -33,6 +36,11 @@ func (s FirmwarePrepareState) Execute(ctx context.Context, log *log.Logger) (*ap
 	log.Printf("[FW Provisioning: Prepare FW] preparing for %v\n", firmwareImageDestination)
 	if err := s.service.WaitForReconnect(ctx); err != nil {
 		return nil, api.InstallResponse_STATUS_DUT_UNREACHABLE_PRE_PROVISION, err
+	}
+	_, out, err := firmwareservice.RunDUTCommand(ctx, s.service.DUTServer, 10*time.Second, "which", []string{"python3"}, nil)
+	if err != nil {
+		log.Printf("python3 not found:%s", err)
+		return nil, api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED, errors.Wrapf(err, out)
 	}
 	if err := s.service.ReadConfigYAML(ctx); err != nil {
 		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err

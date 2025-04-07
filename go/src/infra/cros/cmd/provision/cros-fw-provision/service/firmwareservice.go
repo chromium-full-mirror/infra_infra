@@ -713,8 +713,9 @@ with open("`)
 				if err != nil {
 					log.Printf("failed to download %q: %v", startupLogFile, err)
 					continue
-				} else {
+				} else if len(buf) > 0 {
 					log.Printf("Futility startup:\n%s", buf)
+					return errors.Errorf("futility failed: %q", buf)
 				}
 			} else {
 				if logfileLen > len(buf) {
