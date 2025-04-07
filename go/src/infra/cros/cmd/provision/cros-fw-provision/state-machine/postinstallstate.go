@@ -29,13 +29,13 @@ func (s FirmwarePostInstallState) Execute(ctx context.Context, log *log.Logger) 
 	if s.service.RestartRequired {
 		err := s.service.RestartDut(ctx, false)
 		if err != nil {
-			return fwMetadata, api.InstallResponse_STATUS_DUT_UNREACHABLE_POST_FIRMWARE_UPDATE, firmwareservice.UnreachablePostProvisionErr(err)
+			return fwMetadata, api.InstallResponse_STATUS_DUT_UNREACHABLE_POST_FIRMWARE_UPDATE, err
 		}
 	}
 
 	versions, err := s.service.ActiveFirmwareVersions(ctx)
 	if err != nil {
-		return nil, api.InstallResponse_STATUS_DUT_UNREACHABLE_POST_FIRMWARE_UPDATE, firmwareservice.FirmwareMismatchPostProvisionErr(err)
+		return nil, api.InstallResponse_STATUS_DUT_UNREACHABLE_POST_FIRMWARE_UPDATE, err
 	}
 	log.Printf("[FW Provisioning: Post Install] want firmware version ap:%+v ec:%+v\n", s.service.ExpectedVersions.AP.Versions, s.service.ExpectedVersions.EC.Versions)
 	log.Printf("[FW Provisioning: Post Install]  got firmware version ap:%+v ec:%+v\n", versions.AP.Versions, versions.EC.Versions)
@@ -55,12 +55,12 @@ func (s FirmwarePostInstallState) Execute(ctx context.Context, log *log.Logger) 
 	ok, err := s.service.CompareVersions(ctx, versions, &s.service.ExpectedVersions)
 	if err != nil {
 		return fwMetadata, api.InstallResponse_STATUS_FIRMWARE_MISMATCH_POST_FIRMWARE_UPDATE,
-			firmwareservice.FirmwareMismatchPostProvisionErr(err)
+			err
 	}
 	if !ok {
 		return fwMetadata, api.InstallResponse_STATUS_FIRMWARE_MISMATCH_POST_FIRMWARE_UPDATE,
-			firmwareservice.FirmwareMismatchPostProvisionErr(errors.Errorf(
-				"incorrect fw version got %+v want %+v", versions, s.service.ExpectedVersions))
+			errors.Errorf(
+				"incorrect fw version got %+v want %+v", versions, s.service.ExpectedVersions)
 	}
 
 	// Since the EC RWHash was verified, overwrite the expected EC RW version with the actual version, just in case we had the wrong one.

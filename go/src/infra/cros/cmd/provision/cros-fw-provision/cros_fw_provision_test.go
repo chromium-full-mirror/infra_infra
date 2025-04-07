@@ -252,7 +252,7 @@ func TestDetailedRequestSSHStates(t *testing.T) {
 			Scheme: "http",
 			Host:   "1.2.3.4:5678",
 		}
-		fws, err := firmwareservice.NewFirmwareService(
+		fws, _, err := firmwareservice.NewFirmwareService(
 			ctx,
 			dsc,
 			nil,

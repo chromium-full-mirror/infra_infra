@@ -212,18 +212,12 @@ func (ps *FWProvisionServer) doProvision(ctx context.Context, req *api.InstallRe
 		ps.log.Printf("Provision set OP Response to:%s ", response.String())
 	}()
 
-	fwService, err := firmwareservice.NewFirmwareService(ctx, ps.dutServer, ps.servoClient, ps.cacheServer,
+	fwService, status, err := firmwareservice.NewFirmwareService(ctx, ps.dutServer, ps.servoClient, ps.cacheServer,
 		ps.board, ps.model, false, req, ps.servoConfig)
 	if err != nil {
 		ps.log.Printf("Failed to initialize Firmware Service: %v", err)
-		provError, ok := err.(*firmwareservice.FirmwareProvisionError)
-		if ok {
-			response.Status = provError.Status
-			response.Message = provError.Err.Error()
-		} else {
-			response.Status = api.InstallResponse_STATUS_INVALID_REQUEST
-			response.Message = err.Error()
-		}
+		response.Status = status
+		response.Message = err.Error()
 		return
 	}
 	// Clean up the temporary directories on the DUT.

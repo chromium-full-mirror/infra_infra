@@ -46,7 +46,7 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 			log.Printf("RO_AT_BOOT is not clear: Rebooting EC")
 			_, _, err := firmwareservice.RunDUTCommand(ctx, s.service.DUTServer, time.Minute, "sync", []string{"-d", "/var/tmp", "/usr/local/tmp"}, nil)
 			if err != nil {
-				return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+				return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 			}
 			// Ignore the err, because the ssh connection is expected to break
 			firmwareservice.RunDUTCommand(ctx, s.service.DUTServer, time.Minute, "ectool", []string{"reboot_ec"}, nil)
@@ -64,7 +64,7 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 		log.Printf("[FW Provisioning: Update RO] extracting EC image to flash")
 		ecRoPath, err = firmwareservice.PickAndExtractECImage(ctx, s.service.DUTServer, ecRoMetadata, s.service.GetEcRoPath(), s.service)
 		if err != nil {
-			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 		}
 		if s.service.IsServoUsed() {
 			log.Printf("[FW Provisioning: Update RO] separately flashing EC over Servo with flash_ec")
@@ -73,11 +73,11 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 			// use flash_ec script that to flash the EC separately.
 			flashECScript, err := firmwareservice.GetFlashECScript(ctx, connection, ecRoMetadata.ArchiveDir)
 			if err != nil {
-				return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+				return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 			}
 			err = s.service.ProvisionWithFlashEC(ctx, ecRoPath, flashECScript)
 			if err != nil {
-				return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+				return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 			}
 		} else {
 			// For SSH, we can simply run `futility ... --ec-image=$EC_IMAGE ...`
@@ -90,12 +90,12 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 		log.Printf("[FW Provisioning: Update RO] extracting AP image to flash")
 		mainRoPath, err = firmwareservice.PickAndExtractMainImage(ctx, s.service.DUTServer, mainRoMetadata, s.service.GetMainRoPath(), s.service)
 		if err != nil {
-			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 		}
 		futilityImageArgs = append(futilityImageArgs, []string{fmt.Sprint("--image=", mainRoPath)}...)
 		hasCSME, err := s.service.CheckForCSMESections(ctx, mainRoPath)
 		if err != nil {
-			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 		}
 		if hasCSME {
 			futilityImageArgs = append(futilityImageArgs, "--quirks", "unlock_csme")
@@ -110,11 +110,11 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 		log.Printf("[FW Provisioning: Update RO] extracting EC-RW image to flash")
 		ecRwPath, err = firmwareservice.PickAndExtractECImage(ctx, s.service.DUTServer, ecRwMetadata, s.service.GetEcRwPath(), s.service)
 		if err != nil {
-			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 		}
 		newMainPath, err := firmwareservice.SwapECRWImage(ctx, s.service.DUTServer, mainRoPath, ecRwPath)
 		if err != nil {
-			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 		}
 		if newMainPath != mainRoPath {
 			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, errors.Errorf("newMainPath unexpected, got %q, want %q", newMainPath, mainRoPath)
@@ -123,11 +123,11 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 
 	log.Printf("[FW Provisioning: Update RO] checking versions")
 	if err := s.service.ExtractFirmwareVersions(ctx, false /* WP */, futilityImageArgs, mainRoPath); err != nil {
-		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 	}
 	versions, err := s.service.ActiveFirmwareVersions(ctx)
 	if err != nil {
-		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 	}
 	expected := &firmwareservice.FirmwareVersions{}
 	expected.AP.Versions.RO = s.service.ExpectedVersions.AP.Versions.RO
@@ -140,7 +140,7 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 	}
 	ok, err = s.service.CompareVersions(ctx, versions, expected)
 	if err != nil {
-		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 	}
 	if ok {
 		log.Printf("[FW Provisioning: Update RO] Existing version is correct, skipping flashing")
@@ -150,7 +150,7 @@ func (s FirmwareUpdateRoState) Execute(ctx context.Context, log *log.Logger) (*a
 	log.Printf("[FW Provisioning: Update RO] flashing RO/RW firmware with futility")
 	err = s.service.FlashWithFutility(ctx, false /* WP */, futilityImageArgs, mainRoPath, ecRoPath)
 	if err != nil {
-		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 	}
 
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil

@@ -103,14 +103,14 @@ type versionJSON struct {
 // NewFirmwareService initializes a FirmwareService.
 func NewFirmwareService(ctx context.Context, dutServer api.DutServiceClient,
 	servoClient api.ServodServiceClient, cacheServer url.URL, board, model string,
-	useServo bool, req *api.InstallRequest, servoConfig *labapi.Servo) (*FirmwareService, error) {
+	useServo bool, req *api.InstallRequest, servoConfig *labapi.Servo) (*FirmwareService, api.InstallResponse_Status, error) {
 	metadata := new(api.FirmwareProvisionInstallMetadata)
 	if req.GetMetadata().MessageIs(metadata) {
 		if err := req.GetMetadata().UnmarshalTo(metadata); err != nil {
-			return nil, InvalidRequestErr(errors.Wrap(err, "unmarshalling metadata"))
+			return nil, api.InstallResponse_STATUS_INVALID_REQUEST, errors.Wrap(err, "unmarshalling metadata")
 		}
 	} else {
-		return nil, InvalidRequestErr(errors.Errorf("FirmwareProvisionInstallMetadata is required, got %s", req.String()))
+		return nil, api.InstallResponse_STATUS_INVALID_REQUEST, errors.Errorf("FirmwareProvisionInstallMetadata is required, got %s", req.String())
 	}
 	detailedRequest := metadata.FirmwareConfig
 	dutAdapter := common_utils.NewServiceAdapter(dutServer, false /*noReboot*/)
@@ -149,10 +149,10 @@ func NewFirmwareService(ctx context.Context, dutServer api.DutServiceClient,
 	fws.PrintRequestInfo()
 
 	if !fws.UpdateRo() && !fws.UpdateRw() {
-		return nil, InvalidRequestErr(errors.New("no paths to images specified"))
+		return nil, api.InstallResponse_STATUS_INVALID_REQUEST, errors.New("no paths to images specified")
 	}
 
-	return &fws, nil
+	return &fws, api.InstallResponse_STATUS_SUCCESS, nil
 }
 
 // Confirms that cros-servod connection is functional, and fills the following
@@ -162,7 +162,7 @@ func NewFirmwareService(ctx context.Context, dutServer api.DutServiceClient,
 //   - servoPort
 func (fws *FirmwareService) prepareServoConnection(ctx context.Context, servoClient api.ServodServiceClient) error {
 	if servoClient == nil {
-		return InvalidRequestErr(errors.New("servo use is requested, but servo client not provided"))
+		return errors.New("servo use is requested, but servo client not provided")
 	}
 
 	// Note: dut.GetChromeos().Servo.ServodAddress.Port is the port of cros-servod
@@ -181,9 +181,9 @@ func (fws *FirmwareService) prepareServoConnection(ctx context.Context, servoCli
 	// and servo connection is working.
 	servoTypeStr, err := fws.servoConnection.GetVariable(ctx, "servo_type")
 	if err != nil {
-		return UnreachablePreProvisionErr(errors.Wrapf(err, "failed to get servo_type. "+
+		return errors.Wrapf(err, "failed to get servo_type. "+
 			"Is servod running on port %v and connected to the DUT?",
-			fws.servoPort)) // TODO(sfrolov): add UnreachableCrosServodErr
+			fws.servoPort)
 	}
 
 	// ask servod for serial number of the connected DUT.
@@ -202,7 +202,7 @@ func (fws *FirmwareService) prepareServoConnection(ctx context.Context, servoCli
 
 	fws.ecChip, err = fws.servoConnection.GetVariable(ctx, "ec_chip")
 	if err != nil {
-		return UnreachablePreProvisionErr(errors.Wrap(err, "failed to get ec_chip variable")) // TODO: cros-servod is unreachable
+		return errors.Wrap(err, "failed to get ec_chip variable")
 	}
 	return nil
 }

@@ -33,7 +33,7 @@ func (s FirmwareUpdateRwState) Execute(ctx context.Context, log *log.Logger) (*a
 		log.Printf("[FW Provisioning: Update RW] extracting AP image to flash\n")
 		mainRwPath, err = firmwareservice.PickAndExtractMainImage(ctx, s.service.DUTServer, mainRwMetadata, s.service.GetMainRwPath(), s.service)
 		if err != nil {
-			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 		}
 		futilityImageArgs = []string{fmt.Sprint("--image=", mainRwPath)}
 	}
@@ -44,12 +44,12 @@ func (s FirmwareUpdateRwState) Execute(ctx context.Context, log *log.Logger) (*a
 		log.Printf("[FW Provisioning: Update RW] extracting EC-RW image to flash\n")
 		ecRwPath, err = firmwareservice.PickAndExtractECImage(ctx, s.service.DUTServer, ecRwMetadata, s.service.GetEcRwPath(), s.service)
 		if err != nil {
-			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 		}
 
 		newMainPath, err := firmwareservice.SwapECRWImage(ctx, s.service.DUTServer, mainRwPath, ecRwPath)
 		if err != nil {
-			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+			return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 		}
 		if newMainPath != mainRwPath {
 			mainRwPath = newMainPath
@@ -59,11 +59,11 @@ func (s FirmwareUpdateRwState) Execute(ctx context.Context, log *log.Logger) (*a
 
 	log.Printf("[FW Provisioning: Update RW] checking versions")
 	if err := s.service.ExtractFirmwareVersions(ctx, true /* WP */, futilityImageArgs, mainRwPath); err != nil {
-		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 	}
 	versions, err := s.service.ActiveFirmwareVersions(ctx)
 	if err != nil {
-		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 	}
 	expected := &firmwareservice.FirmwareVersions{}
 	expected.AP.Versions.RW = s.service.ExpectedVersions.AP.Versions.RW
@@ -71,7 +71,7 @@ func (s FirmwareUpdateRwState) Execute(ctx context.Context, log *log.Logger) (*a
 	expected.EC.Versions.RWHash = s.service.ExpectedVersions.EC.Versions.RWHash
 	ok, err = s.service.CompareVersions(ctx, versions, expected)
 	if err != nil {
-		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 	}
 	if ok {
 		log.Printf("[FW Provisioning: Update RW] Existing version is correct, skipping flashing")
@@ -81,7 +81,7 @@ func (s FirmwareUpdateRwState) Execute(ctx context.Context, log *log.Logger) (*a
 	log.Printf("[FW Provisioning: Update RW] flashing RW firmware with futility\n")
 	err = s.service.FlashWithFutility(ctx, true /* WP */, futilityImageArgs, mainRwPath, "")
 	if err != nil {
-		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, firmwareservice.UpdateFirmwareFailedErr(err)
+		return nil, api.InstallResponse_STATUS_UPDATE_FIRMWARE_FAILED, err
 	}
 
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil
