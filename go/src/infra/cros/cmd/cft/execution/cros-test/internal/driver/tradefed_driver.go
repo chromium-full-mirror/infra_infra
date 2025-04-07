@@ -117,7 +117,7 @@ func detectTestType(tests []*api.TestCaseMetadata) string {
 }
 
 func runTradefedTest(ctx context.Context, logger *log.Logger, tests []*api.TestCaseMetadata,
-	serials []string, resultsPath string, metadata *api.ExecutionMetadata, board string, args map[string]string,
+	serials []string, resultsPath string, metadata *api.ExecutionMetadata, board string, args map[string][]string,
 	model string, servo *labapi.Servo) error {
 
 	for _, s := range serials {
@@ -208,13 +208,13 @@ func (td *TradefedDriver) RunTests(ctx context.Context, resultsDir string, req *
 	if len(req.GetTestSuites()) > 0 {
 		executionMD = req.GetTestSuites()[0].GetExecutionMetadata()
 	}
-	args := getArgs(req)
 
+	chromeOS := req.GetPrimary().GetDut().GetChromeos()
 	err = runTradefedTest(ctx, td.logger, tests, serials, resultsDir, executionMD,
-		req.GetPrimary().GetDut().GetChromeos().GetDutModel().GetBuildTarget(),
-		args,
-		req.GetPrimary().GetDut().GetChromeos().GetDutModel().GetModelName(),
-		req.GetPrimary().GetDut().GetChromeos().GetServo())
+		chromeOS.GetDutModel().GetBuildTarget(),
+		getArgs(req),
+		chromeOS.GetDutModel().GetModelName(),
+		chromeOS.GetServo())
 
 	var results *api.CrosTestResponse
 	var artifacts []string
@@ -246,22 +246,32 @@ func (td *TradefedDriver) RunTests(ctx context.Context, resultsDir string, req *
 	return allRspn, nil
 }
 
-func getArgs(req *api.CrosTestRequest) map[string]string {
-	args := make(map[string]string)
+// getArgs extracts arguments from the test request.
+// It supports multiple values for the same flag (non-unique keys).
+func getArgs(req *api.CrosTestRequest) map[string][]string {
+	args := make(map[string][]string)
+
 	suites := req.GetTestSuites()
-	// In reality; we should never have an empty suite.
+	// Check if there are any test suites.
 	if len(suites) > 0 {
-		rawArgs := suites[0].GetExecutionMetadata()
-		if rawArgs != nil {
-			for _, rawArg := range rawArgs.GetArgs() {
-				if rawArg.GetFlag() != "" && rawArg.GetValue() != "" {
-					args[rawArg.GetFlag()] = rawArg.GetValue()
+		// Assuming the metadata is the same for all test suites.
+		metadata := suites[0].GetExecutionMetadata()
+		if metadata != nil {
+			rawArgs := metadata.GetArgs()
+			if rawArgs != nil {
+				for _, rawArg := range rawArgs {
+					flag := rawArg.GetFlag()
+					value := rawArg.GetValue()
+
+					// Only process if both flag and value are non-empty.
+					if flag != "" && value != "" {
+						args[flag] = append(args[flag], value)
+					}
 				}
 			}
 		}
 	}
 	return args
-
 }
 
 // Move artifact files to resultsDir, deleting the source files. Supports glob patterns.

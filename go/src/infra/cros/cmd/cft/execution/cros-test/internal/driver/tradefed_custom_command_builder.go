@@ -19,7 +19,7 @@ const (
 )
 
 func BuildCustomTestCommand(logger *log.Logger, testType string, tests []*api.TestCaseMetadata,
-	serials []string, metadata *api.ExecutionMetadata, board string, args map[string]string, model string,
+	serials []string, metadata *api.ExecutionMetadata, board string, args map[string][]string, model string,
 	servo *labapi.Servo) []string {
 
 	cmd := []string{}
@@ -32,9 +32,11 @@ func BuildCustomTestCommand(logger *log.Logger, testType string, tests []*api.Te
 	cmd = append(cmd, command)
 
 	// Appending all arguments to the command.
-	value, ok := args["command-params"]
+	values, ok := args["command-params"]
 	if ok {
-		cmd = append(cmd, strings.Split(value, ",")...)
+		for _, value := range values {
+			cmd = append(cmd, strings.Split(value, ",")...)
+		}
 	}
 
 	// Add devices

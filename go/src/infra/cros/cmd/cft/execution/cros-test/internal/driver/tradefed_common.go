@@ -127,6 +127,8 @@ func formatTestName(fqTestName string) string {
 	return fmt.Sprintf("\"%s\"", testName)
 }
 
+// Extracts a single value for a flag name.
+// This function should not be used for multi-value keys.
 func extractMetadataFlag(metadata *api.ExecutionMetadata, flagName string) (string, error) {
 	if metadata != nil && len(metadata.Args) > 0 {
 		for _, arg := range metadata.Args {
@@ -138,7 +140,7 @@ func extractMetadataFlag(metadata *api.ExecutionMetadata, flagName string) (stri
 	return "", fmt.Errorf("flag %s for found in test metadata", flagName)
 }
 
-func buildResultReportingArgs(logger *log.Logger, metadata *api.ExecutionMetadata, args map[string]string, board, model string) []string {
+func buildResultReportingArgs(logger *log.Logger, metadata *api.ExecutionMetadata, args map[string][]string, board, model string) []string {
 	cmd := []string{}
 
 	uploadToAnts := true
@@ -169,20 +171,22 @@ func buildResultReportingArgs(logger *log.Logger, metadata *api.ExecutionMetadat
 		}
 		value, ok := args["crystalball_ingest"]
 		if ok {
-			if strings.ToLower(value) == "true" {
+			if strings.ToLower(value[0]) == "true" {
 				cmd = append(cmd, "--invocation-data", "invocation-property=crystalball_ingest:yes")
 				cmd = append(cmd, "--invocation-data", fmt.Sprintf("invocation-property=run_target:%s_%s", board, model))
 			}
 		}
 
 		// Also allow the flag to be passed in directly through the args.
-		for k, v := range args {
+		for k, vals := range args {
 			if k == "invocation-data" {
-				cmd = append(cmd, fmt.Sprintf("--%s", k), v)
-				cmd = append(cmd, "--invocation-data", fmt.Sprintf("invocation-property=run_target:%s_%s", board, model))
-
+				for _, v := range vals {
+					cmd = append(cmd, fmt.Sprintf("--%s", k), v)
+				}
 			}
 		}
+		cmd = append(cmd, "--invocation-data", fmt.Sprintf("invocation-property=run_target:%s_%s", board, model))
+
 		extraBranch, _ := extractMetadataFlag(metadata, "extra_branch")
 		extraTarget, _ := extractMetadataFlag(metadata, "extra_target")
 		extraBuild, _ := extractMetadataFlag(metadata, "extra_build")

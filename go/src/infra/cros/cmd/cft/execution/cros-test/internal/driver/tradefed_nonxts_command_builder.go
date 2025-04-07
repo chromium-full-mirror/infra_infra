@@ -27,7 +27,7 @@ var templateMap = []string{
 }
 
 func BuildNonXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestCaseMetadata,
-	serials []string, metadata *api.ExecutionMetadata, board string, args map[string]string, model string,
+	serials []string, metadata *api.ExecutionMetadata, board string, args map[string][]string, model string,
 	servo *labapi.Servo) []string {
 
 	cmd := []string{nonXtsTestRunner}

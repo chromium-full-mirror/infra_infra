@@ -45,7 +45,7 @@ func getTestRunner() string {
 }
 
 func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestCaseMetadata,
-	serials []string, metadata *api.ExecutionMetadata, board string, args map[string]string, model string,
+	serials []string, metadata *api.ExecutionMetadata, board string, args map[string][]string, model string,
 	servo *labapi.Servo) []string {
 
 	cmd := []string{getTestRunner()}
@@ -170,10 +170,14 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 			cmd = append(cmd, "--cts-params", "--compatibility:include-filter", "--cts-params", testName)
 		}
 	}
-	value, ok := args["cts-params"]
+
+	// Iterate though all values of all "cts-params" args.
+	values, ok := args["cts-params"]
 	if ok {
-		for _, val := range strings.Split(value, ",") {
-			cmd = append(cmd, "--cts-params", val)
+		for _, value := range values {
+			for _, val := range strings.Split(value, ",") {
+				cmd = append(cmd, "--cts-params", val)
+			}
 		}
 	}
 
