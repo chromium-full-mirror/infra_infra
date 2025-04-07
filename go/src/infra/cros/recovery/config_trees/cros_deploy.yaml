@@ -9084,7 +9084,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -9150,7 +9150,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -9262,7 +9262,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -9350,7 +9350,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -10912,7 +10912,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -10978,7 +10978,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -11090,7 +11090,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -11178,7 +11178,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -13623,7 +13623,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -13689,7 +13689,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -13801,7 +13801,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -13889,7 +13889,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -15711,7 +15711,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -15777,7 +15777,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -15889,7 +15889,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -15977,7 +15977,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -18225,7 +18225,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -18291,7 +18291,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -18403,7 +18403,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -18491,7 +18491,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -19858,7 +19858,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -19924,7 +19924,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -20036,7 +20036,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -20124,7 +20124,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -21542,7 +21542,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -21608,7 +21608,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -21720,7 +21720,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -21808,7 +21808,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -23175,7 +23175,7 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                       exec_name: cros_flex_amt_available
                       docs:
                         - Ping the AMT interface until it responds to pings.
@@ -23241,7 +23241,7 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                       exec_name: cros_flex_amt_available
                       docs:
                         - Ping the AMT interface until it responds to pings.
@@ -23353,7 +23353,7 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                       exec_name: cros_flex_amt_available
                       docs:
                         - Ping the AMT interface until it responds to pings.
@@ -23441,7 +23441,7 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                       exec_name: cros_flex_amt_available
                       docs:
                         - Ping the AMT interface until it responds to pings.
@@ -25862,7 +25862,7 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                       exec_name: cros_flex_amt_available
                       docs:
                         - Ping the AMT interface until it responds to pings.
@@ -25928,7 +25928,7 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                       exec_name: cros_flex_amt_available
                       docs:
                         - Ping the AMT interface until it responds to pings.
@@ -26040,7 +26040,7 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                       exec_name: cros_flex_amt_available
                       docs:
                         - Ping the AMT interface until it responds to pings.
@@ -26128,7 +26128,7 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                       exec_name: cros_flex_amt_available
                       docs:
                         - Ping the AMT interface until it responds to pings.
@@ -27609,7 +27609,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -27675,7 +27675,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -27787,7 +27787,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -27875,7 +27875,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -29204,7 +29204,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -29270,7 +29270,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -29382,7 +29382,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -29470,7 +29470,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -30799,7 +30799,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -30865,7 +30865,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -30977,7 +30977,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -31065,7 +31065,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -32394,7 +32394,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -32460,7 +32460,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -32572,7 +32572,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -32660,7 +32660,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -34086,7 +34086,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -34152,7 +34152,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -34264,7 +34264,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -34352,7 +34352,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -35734,7 +35734,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -35800,7 +35800,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -35912,7 +35912,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -36000,7 +36000,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -37876,7 +37876,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -37942,7 +37942,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -38054,7 +38054,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -38142,7 +38142,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -41632,7 +41632,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -41698,7 +41698,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -41810,7 +41810,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -41898,7 +41898,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -43757,7 +43757,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -43823,7 +43823,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -43935,7 +43935,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -44023,7 +44023,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -46509,7 +46509,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -46575,7 +46575,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -46687,7 +46687,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -46775,7 +46775,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -48144,7 +48144,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -48210,7 +48210,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -48322,7 +48322,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -48410,7 +48410,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -50097,7 +50097,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -50163,7 +50163,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -50275,7 +50275,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -50363,7 +50363,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -52317,7 +52317,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -52383,7 +52383,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -52495,7 +52495,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -52583,7 +52583,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -54907,7 +54907,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -54973,7 +54973,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -55085,7 +55085,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -55173,7 +55173,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -58872,7 +58872,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -58938,7 +58938,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -59050,7 +59050,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -59138,7 +59138,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -61541,7 +61541,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -61607,7 +61607,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -61719,7 +61719,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -61807,7 +61807,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -64689,7 +64689,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -64755,7 +64755,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -64867,7 +64867,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -64955,7 +64955,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -66332,7 +66332,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -66398,7 +66398,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -66510,7 +66510,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -66598,7 +66598,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -67976,7 +67976,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -68042,7 +68042,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -68154,7 +68154,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -68242,7 +68242,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -69649,7 +69649,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -69715,7 +69715,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -69827,7 +69827,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -69915,7 +69915,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -71320,7 +71320,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -71386,7 +71386,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -71498,7 +71498,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -71586,7 +71586,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -73004,7 +73004,7 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                           exec_name: cros_flex_amt_available
                                           docs:
                                             - Ping the AMT interface until it responds to pings.
@@ -73070,7 +73070,7 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                           exec_name: cros_flex_amt_available
                                           docs:
                                             - Ping the AMT interface until it responds to pings.
@@ -73182,7 +73182,7 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                           exec_name: cros_flex_amt_available
                                           docs:
                                             - Ping the AMT interface until it responds to pings.
@@ -73270,7 +73270,7 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                           exec_name: cros_flex_amt_available
                                           docs:
                                             - Ping the AMT interface until it responds to pings.
@@ -74677,7 +74677,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -74743,7 +74743,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -74855,7 +74855,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -74943,7 +74943,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -76346,7 +76346,7 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                           exec_name: cros_flex_amt_available
                                           docs:
                                             - Ping the AMT interface until it responds to pings.
@@ -76412,7 +76412,7 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                           exec_name: cros_flex_amt_available
                                           docs:
                                             - Ping the AMT interface until it responds to pings.
@@ -76524,7 +76524,7 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                           exec_name: cros_flex_amt_available
                                           docs:
                                             - Ping the AMT interface until it responds to pings.
@@ -76612,7 +76612,7 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                           exec_name: cros_flex_amt_available
                                           docs:
                                             - Ping the AMT interface until it responds to pings.
@@ -78016,7 +78016,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -78082,7 +78082,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -78194,7 +78194,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -78282,7 +78282,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -79623,7 +79623,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -79689,7 +79689,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -79801,7 +79801,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -79889,7 +79889,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -81279,7 +81279,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -81345,7 +81345,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -81457,7 +81457,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -81545,7 +81545,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -82886,7 +82886,7 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                           exec_name: cros_flex_amt_available
                                           docs:
                                             - Ping the AMT interface until it responds to pings.
@@ -82952,7 +82952,7 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                           exec_name: cros_flex_amt_available
                                           docs:
                                             - Ping the AMT interface until it responds to pings.
@@ -83064,7 +83064,7 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                           exec_name: cros_flex_amt_available
                                           docs:
                                             - Ping the AMT interface until it responds to pings.
@@ -83152,7 +83152,7 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                           exec_name: cros_flex_amt_available
                                           docs:
                                             - Ping the AMT interface until it responds to pings.
@@ -84549,7 +84549,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -84615,7 +84615,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -84727,7 +84727,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -84815,7 +84815,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -86179,7 +86179,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -86245,7 +86245,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -86357,7 +86357,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -86445,7 +86445,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -87779,7 +87779,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -87845,7 +87845,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -87957,7 +87957,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -88045,7 +88045,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -89389,7 +89389,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -89455,7 +89455,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -89567,7 +89567,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -89655,7 +89655,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -91087,7 +91087,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -91153,7 +91153,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -91265,7 +91265,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -91353,7 +91353,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -93572,7 +93572,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -93638,7 +93638,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -93750,7 +93750,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -93838,7 +93838,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -96264,7 +96264,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -96330,7 +96330,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -96442,7 +96442,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -96530,7 +96530,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -97966,7 +97966,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -98032,7 +98032,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -98144,7 +98144,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -98232,7 +98232,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -101213,7 +101213,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -101279,7 +101279,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -101391,7 +101391,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -101479,7 +101479,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -102851,7 +102851,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -102917,7 +102917,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -103029,7 +103029,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -103117,7 +103117,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -106040,7 +106040,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -106106,7 +106106,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -106218,7 +106218,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -106306,7 +106306,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -107839,7 +107839,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -107905,7 +107905,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -108017,7 +108017,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -108105,7 +108105,7 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                               exec_name: cros_flex_amt_available
                               docs:
                                 - Ping the AMT interface until it responds to pings.
@@ -109811,7 +109811,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -109877,7 +109877,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -109989,7 +109989,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -110077,7 +110077,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -111436,7 +111436,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -111502,7 +111502,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -111614,7 +111614,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -111702,7 +111702,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -113031,7 +113031,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -113097,7 +113097,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -113209,7 +113209,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -113297,7 +113297,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -114626,7 +114626,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -114692,7 +114692,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -114804,7 +114804,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -114892,7 +114892,7 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                   exec_name: cros_flex_amt_available
                                   docs:
                                     - Ping the AMT interface until it responds to pings.
@@ -116221,7 +116221,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -116287,7 +116287,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -116399,7 +116399,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -116487,7 +116487,7 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                                    - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                                       exec_name: cros_flex_amt_available
                                       docs:
                                         - Ping the AMT interface until it responds to pings.
@@ -120704,7 +120704,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -120770,7 +120770,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -120882,7 +120882,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.
@@ -120970,7 +120970,7 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m1s')
+                        - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
                           exec_name: cros_flex_amt_available
                           docs:
                             - Ping the AMT interface until it responds to pings.

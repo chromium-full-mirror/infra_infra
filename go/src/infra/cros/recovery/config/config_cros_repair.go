@@ -5234,7 +5234,7 @@ func crosRepairActions() map[string]*Action {
 			ExecName:      "cros_flex_amt_available",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			RunControl:    RunControl_ALWAYS_RUN,
-			ExecTimeout:   &durationpb.Duration{Seconds: 61},
+			ExecTimeout:   &durationpb.Duration{Seconds: 91},
 		},
 		"FPMCU is working": {
 			Docs: []string{
