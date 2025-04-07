@@ -172,13 +172,13 @@ Type: Summary
 `
 
 func TestTranslateMoblyResults(t *testing.T) {
-	startTime1 := time.Unix(0, 1726178525229)
-	endTime1 := time.Unix(0, 1726178525573)
+	startTime1 := time.UnixMilli(1726178525229)
+	endTime1 := time.UnixMilli(1726178525573)
 	duration1 := endTime1.Sub(startTime1)
 	startTimeProto1 := timestamppb.New(startTime1)
 
-	startTime2 := time.Unix(0, 1726178525574)
-	endTime2 := time.Unix(0, 1726178525575)
+	startTime2 := time.UnixMilli(1726178525574)
+	endTime2 := time.UnixMilli(1726178525575)
 	startTimeProto2 := timestamppb.New(startTime2)
 	duration2 := endTime2.Sub(startTime2)
 	resultsRootDir := "resultsRootDir"

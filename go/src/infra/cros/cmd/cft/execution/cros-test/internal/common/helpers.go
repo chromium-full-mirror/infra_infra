@@ -212,7 +212,7 @@ func fillTestCaseResult(raw map[string]interface{}, resultsRootDir string) (*api
 		// The map does not have start time information, use current time.
 		startTime = time.Now()
 	} else {
-		startTime = time.Unix(0, int64(startTimeValue.(int)))
+		startTime = time.UnixMilli(int64(startTimeValue.(int)))
 	}
 
 	endTimeValue, ok := raw[endTimeKey]
@@ -221,8 +221,7 @@ func fillTestCaseResult(raw map[string]interface{}, resultsRootDir string) (*api
 		// Use start time.
 		endTime = startTime
 	} else {
-		endTime = time.Unix(0, int64(endTimeValue.(int)))
-
+		endTime = time.UnixMilli(int64(endTimeValue.(int)))
 	}
 
 	if resultValue, ok := raw[resultKey]; ok && resultValue != nil {
