@@ -21,6 +21,7 @@ type FoilRequestUpdater struct {
 	TestPath          string
 	GcsPublishPath    string
 	RdbPublishPath    string
+	CpconPublishPath  string
 	FilterTests       bool
 	EnableXtsArchiver bool
 }
@@ -46,6 +47,14 @@ func (ru *FoilRequestUpdater) executor(req *api.InternalTestplan, log *log.Logge
 	ru.RdbPublishPath, err = common.ProcessContainerPath(ctx, commonParams, dockerKeyFile, ru.RdbPublishPath, "rdb-publish")
 	if err != nil {
 		return req, err
+	}
+	if commonParams.FirestoreDatabaseName == common.PartnerTestPlatformFireStore {
+		ru.CpconPublishPath, err = common.ProcessContainerPath(ctx, commonParams, dockerKeyFile, ru.CpconPublishPath, common.CpconPublish)
+		if err != nil {
+			return req, err
+		}
+	} else {
+		ru.CpconPublishPath = ""
 	}
 
 	if err := GenerateDynamicUpdates(req, ru, log); err != nil {
@@ -78,6 +87,7 @@ func main() {
 	fs.StringVar(&requestUpdater.TestPath, "test-path", "", "SHA256 value for test container")
 	fs.StringVar(&requestUpdater.GcsPublishPath, "gcs-path", "", "SHA256 value for gcs publish container")
 	fs.StringVar(&requestUpdater.RdbPublishPath, "rdb-path", "", "SHA256 value for rdb publish container")
+	fs.StringVar(&requestUpdater.CpconPublishPath, "cpcon-path", "", "SHA256 value for cpcon publish container")
 	fs.BoolVar(&requestUpdater.FilterTests, "filter-tests", false, "Filter out known faulty tests due to their device breaking behavior")
 	fs.BoolVar(&requestUpdater.EnableXtsArchiver, "enable-xts-archiver", false, "Whether to archive xTS results for release qualification")
 

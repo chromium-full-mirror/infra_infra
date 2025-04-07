@@ -22,6 +22,7 @@ func GenerateDynamicUpdates(req *api.InternalTestplan, updater *FoilRequestUpdat
 	modifyTestRequest(req, updater, log)
 	modifyPublishPath(common.RdbPublish, req, updater, log)
 	modifyPublishPath(common.GcsPublish, req, updater, log)
+	modifyPublishPath(common.CpconPublish, req, updater, log)
 	filterOutFaultyTests(req, updater, log)
 	removePostProcess(req, log)
 	modifyRdbPublishRequest(req, log)
@@ -71,6 +72,8 @@ func modifyPublishPath(publishType string, req *api.InternalTestplan, updater *F
 		publishPath = updater.RdbPublishPath
 	case common.GcsPublish:
 		publishPath = updater.GcsPublishPath
+	case common.CpconPublish:
+		publishPath = updater.CpconPublishPath
 	default:
 		return
 	}
