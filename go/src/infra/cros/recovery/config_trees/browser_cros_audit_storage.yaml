@@ -1247,10 +1247,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
+                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:10
+                            - sleep:1
                         - name: Power-on the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -1313,10 +1313,6 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 30 seconds (Allow to fail) (ALWAYS_RUN) (time:'31s')
-                          exec_name: sample_sleep
-                          exec_args:
-                            - sleep:30
                         - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
@@ -1363,10 +1359,10 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
+                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:10
+                            - sleep:1
                         - name: Power-off the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -1429,10 +1425,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
+                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:10
+                            - sleep:1
                         - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
