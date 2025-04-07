@@ -1,3 +1,7 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import React from 'react';
 
 import { render } from 'react-dom';
@@ -16,11 +20,13 @@ import Link from '@mui/material/Link';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 
+declare let ga:any;
+
 interface LuciBisectionResultSectionProps {
   result: LuciBisectionResult | null;
 }
 
-interface LuciBisectionResult {
+export interface LuciBisectionResult {
   analysis: LuciBisectionAnalysis;
   is_supported: boolean;
   failed_bbid: string;
@@ -275,7 +281,7 @@ function shortHash(commit: GitilesCommit): string {
 }
 
 export const LuciBisectionResultSection = (
-    props: LuciBisectionResultSectionProps,
+  props: LuciBisectionResultSectionProps,
 ) => {
   if (props.result == null) {
     return <></>;
@@ -393,10 +399,10 @@ export class SomLuciBisectionResult extends HTMLElement {
       return;
     }
     render(
-        <CacheProvider value={this.cache}>
-          <LuciBisectionResultSection {...this.props} />
-        </CacheProvider>,
-        this.child,
+      <CacheProvider value={this.cache}>
+        <LuciBisectionResultSection {...this.props} />
+      </CacheProvider>,
+      this.child,
     );
   }
 }

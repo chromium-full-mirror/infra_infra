@@ -1,3 +1,7 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import { QueryClient } from "react-query";
 
 export type TreesJson = TreeJson[];
@@ -99,15 +103,19 @@ export interface AlertReasonTestJson {
     cluster_name: string;
 }
 
-// TODO: RegressionRangeJson fields were added based on example data.  There may be missing or incorrect fields.
 export interface RegressionRangeJson {
-    host: string;
-    positions: string[];
     repo: string;
-    revisions: string[];
-    revisions_with_results: null;
-    url: string;
+    host?: string; // Optional based on _shouldUseRangeRevisions logic
+    revisions?: string[]; // Commit hashes
+    positions?: string[]; // Commit positions eg 'base/stable@{#12345}'
+    error?: any; // Indicates an error occurred fetching this range
 }
+
+// Placeholder type for bug data
+export interface Bug {
+    id: string;
+}
+
 
 // Create a React Query client to share globally.
 // TODO: once a full conversion to React is complete, move this to the file with the main App component.
