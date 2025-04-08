@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	postprocesscommon "go.chromium.org/chromiumos/test/post_process/cmd/post-process/common"
 	"go.chromium.org/chromiumos/test/util/portdiscovery"
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
@@ -50,13 +49,13 @@ func startServer(flagSet *flag.FlagSet, executor func(req *api.InternalTestplan,
 
 	flagSet.Parse(os.Args[2:])
 
-	logFile, err := postprocesscommon.CreateLogFile(filepath.Join(a.logPath, name, t.Format("20060102-150405")))
+	logFile, err := common.CreateLogFile(filepath.Join(a.logPath, name, t.Format("20060102-150405")))
 	if err != nil {
 		return fmt.Errorf("failed to create log file: %s", err)
 	}
 	defer logFile.Close()
 
-	logger := postprocesscommon.NewLogger(logFile)
+	logger := common.NewLogger(logFile)
 	log.SetOutput(logger.Writer())
 
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))

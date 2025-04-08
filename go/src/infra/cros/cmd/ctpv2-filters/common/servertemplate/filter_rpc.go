@@ -17,7 +17,6 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	postprocesscommon "go.chromium.org/chromiumos/test/post_process/cmd/post-process/common"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
@@ -67,7 +66,7 @@ func (s *GenericFilterServiceServer) Execute(ctx context.Context, req *api.Inter
 	suiteName := req.GetSuiteInfo().GetSuiteRequest().GetTestSuite().GetName()
 	logPath := filepath.Join(s.logPath, suiteName, s.name, t.Format("20060102-150405"))
 	s.serverLogger.Printf("Creating Log File at %s", logPath)
-	logFile, err := postprocesscommon.CreateLogFile(logPath)
+	logFile, err := common.CreateLogFile(logPath)
 	if err != nil {
 		err = fmt.Errorf("failed to create log file: %s", err)
 		s.serverLogger.Println(err.Error())
