@@ -45,6 +45,7 @@ var suMetric = metric.NewInt(
 	field.String("swarming_instance"),
 	field.String("status"),
 	field.String("os"),
+	field.String("maintenance_config_name"),
 )
 
 // Only MachineLSEs for chromeOS and browser
@@ -101,7 +102,7 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 		}
 		// Report the metrics
 		for b, count := range c {
-			suMetric.Set(mctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone, b.swarmingInstance, b.status, b.os)
+			suMetric.Set(mctx, int64(count), b.board, b.model, b.pool, b.environment, b.zone, b.swarmingInstance, b.status, b.os, b.maintenanceConfigName)
 		}
 	}
 	// Flush the metrics
@@ -248,14 +249,15 @@ var (
 // of the primary DUT values and an aggregate on all DUTs
 func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Machine, env string) (*bucket, error) {
 	b := &bucket{
-		board:            "[None]",
-		model:            "[None]",
-		pool:             getReportPool(su.GetPools()),
-		environment:      env,
-		zone:             "[None]",
-		swarmingInstance: "chromeos-swarming",
-		status:           schedulingUnitStatusFromLses(lses),
-		os:               "chromeos",
+		board:                 "[None]",
+		model:                 "[None]",
+		pool:                  getReportPool(su.GetPools()),
+		environment:           env,
+		zone:                  "[None]",
+		swarmingInstance:      "chromeos-swarming",
+		status:                schedulingUnitStatusFromLses(lses),
+		os:                    "chromeos",
+		maintenanceConfigName: "[None]",
 	}
 	// fields from all DUTs
 	switch su.GetExposeType() {
@@ -364,7 +366,7 @@ type bucket struct {
 }
 
 func (b *bucket) String() string {
-	return fmt.Sprintf("board: %s, model: %s, pool: %s, env: %s, zone: %q, swarmingInstance: %s, status: %s, os: %s", b.board, b.model, b.pool, b.environment, b.zone, b.swarmingInstance, b.status, b.os)
+	return fmt.Sprintf("board: %s, model: %s, pool: %s, env: %s, zone: %q, swarmingInstance: %s, status: %s, os: %s, maintenanceConfigName: %s", b.board, b.model, b.pool, b.environment, b.zone, b.swarmingInstance, b.status, b.os, b.maintenanceConfigName)
 }
 
 func summarizeValues(vs []string) string {
