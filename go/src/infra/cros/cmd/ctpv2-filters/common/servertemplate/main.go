@@ -15,8 +15,8 @@ import (
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/util/portdiscovery"
 
+	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 

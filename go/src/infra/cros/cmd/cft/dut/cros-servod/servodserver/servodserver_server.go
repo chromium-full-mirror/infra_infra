@@ -13,8 +13,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/lro"
-	"go.chromium.org/chromiumos/test/util/portdiscovery"
 	"go.chromium.org/luci/common/errors"
+
+	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
 )
 
 // StartServer starts servod server on requested port

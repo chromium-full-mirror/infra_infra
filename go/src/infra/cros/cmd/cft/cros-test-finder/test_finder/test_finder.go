@@ -24,8 +24,8 @@ import (
 	"go.chromium.org/chromiumos/test/execution/errors"
 	"go.chromium.org/chromiumos/test/util/finder"
 	"go.chromium.org/chromiumos/test/util/metadata"
-	"go.chromium.org/chromiumos/test/util/portdiscovery"
 
+	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
 	"go.chromium.org/infra/cros/cmd/cft/cros-test-finder/centralizedsuite"
 )
 

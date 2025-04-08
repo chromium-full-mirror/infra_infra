@@ -21,8 +21,8 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	api1 "go.chromium.org/chromiumos/config/go/test/lab/api"
 	"go.chromium.org/chromiumos/lro"
-	"go.chromium.org/chromiumos/test/util/portdiscovery"
 
+	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
 	firmwareservice "go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/service"
 	state_machine "go.chromium.org/infra/cros/cmd/provision/cros-fw-provision/state-machine"
 )

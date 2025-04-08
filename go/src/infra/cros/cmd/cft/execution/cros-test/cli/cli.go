@@ -19,8 +19,8 @@ import (
 
 	"go.chromium.org/chromiumos/test/execution/errors"
 	"go.chromium.org/chromiumos/test/util/metadata"
-	"go.chromium.org/chromiumos/test/util/portdiscovery"
 
+	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
 	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/common"
 )
 

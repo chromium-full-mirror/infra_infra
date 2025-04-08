@@ -17,10 +17,10 @@ import (
 	"google.golang.org/grpc"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/util/portdiscovery"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/cmd/cft/base-adb/internal/version"
+	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
 )
 
 // Server to run adb service.

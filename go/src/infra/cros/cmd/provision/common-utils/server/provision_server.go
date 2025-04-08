@@ -18,8 +18,8 @@ import (
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/lro"
-	"go.chromium.org/chromiumos/test/util/portdiscovery"
 
+	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/common-utils/metadata"
 )

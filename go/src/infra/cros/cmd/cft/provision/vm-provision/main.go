@@ -14,8 +14,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"go.chromium.org/chromiumos/test/util/portdiscovery"
-
+	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
