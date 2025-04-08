@@ -7,11 +7,14 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
 	"time"
+	"unicode"
 
+	"github.com/armon/circbuf"
 	"github.com/maruel/subcommands"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -111,11 +114,11 @@ func (r *baseRun) runTestCmd(ctx context.Context, args []string) (output []byte,
 		cancelCmd()
 	})()
 
+	// Create a ring buffer with size limited to last 10kb.
+	var stdoutBuf, _ = circbuf.NewBuffer(10000)
 	cmd := exec.CommandContext(cmdCtx, args[0], args[1:]...)
 	cmd.Stdin = os.Stdin
-	if !r.captureOutput {
-		cmd.Stdout = os.Stdout
-	}
+	cmd.Stdout = io.MultiWriter(stdoutBuf, os.Stdout)
 	cmd.Stderr = os.Stderr
 
 	// Launch the command w/o the result_sink section in lucictx, in case the test
@@ -128,15 +131,12 @@ func (r *baseRun) runTestCmd(ctx context.Context, args []string) (output []byte,
 	defer exported.Close()
 	exported.SetInCmd(cmd)
 
-	if r.captureOutput {
-		return cmd.Output()
-	}
-
 	if err := cmd.Start(); err != nil {
 		return nil, errors.Annotate(err, "cmd.start").Err()
 	}
 
-	return nil, cmd.Wait()
+	err = cmd.Wait()
+	return stdoutBuf.Bytes(), err
 }
 
 func (r *baseRun) done(err error) int {
@@ -147,12 +147,16 @@ func (r *baseRun) done(err error) int {
 	return 0
 }
 
-func (r *baseRun) reportException(ctx context.Context, reportErr error) {
+func (r *baseRun) reportException(ctx context.Context, reportErr error, out []byte) {
+	// Includes the stdout to stacktrace, as result_adapter exceptions are
+	// generally caused by test execution errors.
+	outString := strings.ToValidUTF8(string(out), string(unicode.ReplacementChar))
+	stackTrace := strings.Split(outString+"\n"+errors.RenderStack(reportErr), "\n")
 	exceptions := &exceptionpb.ExceptionOccurrences{
 		Datapoints: []*exceptionpb.ExceptionOccurrence{
 			{
 				Name:         reportErr.Error(),
-				Stacktrace:   strings.Split(errors.RenderStack(reportErr), "\n"),
+				Stacktrace:   stackTrace,
 				OccurredTime: timestamppb.New(time.Now()),
 			},
 		},
@@ -210,7 +214,7 @@ func (r *baseRun) run(ctx context.Context, args []string, f converter) (ret int)
 	trs, err := f(ctx, out)
 	switch {
 	case err != nil:
-		r.reportException(ctx, err)
+		r.reportException(ctx, err, out)
 		return r.done(err)
 	case len(trs) == 0:
 		return ec

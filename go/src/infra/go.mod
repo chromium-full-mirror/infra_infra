@@ -35,6 +35,7 @@ require (
 	github.com/VividCortex/godaemon v1.0.0
 	github.com/aclements/go-moremath v0.0.0-20241023150245-c8bbc672ef66
 	github.com/andygrunwald/go-gerrit v0.0.0-20210726065827-cc4e14e40b5b
+	github.com/armon/circbuf v0.0.0-20190214190532-5111143e8da2
 	github.com/bazelbuild/reclient/api v0.0.0-20240617160057-89d6134e48e5
 	github.com/bazelbuild/remote-apis v0.0.0-20250106163131-9a0af1d31814
 	github.com/bazelbuild/remote-apis-sdks v0.0.0-20250110170550-8bf84d3488e5
