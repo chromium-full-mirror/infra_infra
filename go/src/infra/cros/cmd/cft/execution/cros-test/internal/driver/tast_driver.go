@@ -19,8 +19,8 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/execution/errors"
 
+	"go.chromium.org/infra/cros/cmd/cft/common/errors"
 	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/common"
 	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/device"
 	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/tastrpc"

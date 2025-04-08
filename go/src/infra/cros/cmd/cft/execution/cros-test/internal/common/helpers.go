@@ -22,8 +22,8 @@ import (
 
 	_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	testerrors "go.chromium.org/chromiumos/test/execution/errors"
 
+	testerrors "go.chromium.org/infra/cros/cmd/cft/common/errors"
 	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/device"
 )
 

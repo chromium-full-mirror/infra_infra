@@ -20,7 +20,8 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/execution/errors"
+
+	"go.chromium.org/infra/cros/cmd/cft/common/errors"
 )
 
 // BucketJoin is equivalent to Path.Join(), but for gs buckets.

@@ -17,8 +17,9 @@ import (
 	"cloud.google.com/go/storage"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	statuserrors "go.chromium.org/chromiumos/test/execution/errors"
 	"go.chromium.org/chromiumos/test/util/finder"
+
+	statuserrors "go.chromium.org/infra/cros/cmd/cft/common/errors"
 )
 
 // GetUniqueParfiles extracts unique parfile names from a list of TestCaseMetadata.

@@ -19,8 +19,8 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/execution/errors"
 
+	"go.chromium.org/infra/cros/cmd/cft/common/errors"
 	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/device"
 )
 

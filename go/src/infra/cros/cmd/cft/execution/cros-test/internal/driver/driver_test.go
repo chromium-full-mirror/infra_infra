@@ -9,7 +9,8 @@ import (
 	"testing"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/execution/errors"
+
+	"go.chromium.org/infra/cros/cmd/cft/common/errors"
 )
 
 var mdList = &api.TestCaseMetadataList{

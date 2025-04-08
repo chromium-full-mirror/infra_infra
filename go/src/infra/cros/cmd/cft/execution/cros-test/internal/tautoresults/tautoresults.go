@@ -20,7 +20,8 @@ import (
 
 	_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/execution/errors"
+
+	"go.chromium.org/infra/cros/cmd/cft/common/errors"
 )
 
 // Report TODO: probably need to eventually move tauto over from results parsing.

@@ -20,8 +20,9 @@ import (
 
 	_go "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/execution/errors"
 	"go.chromium.org/tast/core/framework/protocol"
+
+	"go.chromium.org/infra/cros/cmd/cft/common/errors"
 )
 
 // ReportsServer implements the tast.framework.protocol.ReportsServer.
