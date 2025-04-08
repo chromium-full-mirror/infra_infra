@@ -282,7 +282,9 @@
   {
     "cmd": [
       "npm",
-      "ci"
+      "ci",
+      "--loglevel",
+      "silly"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra/appengine/dashboard/frontend",
     "env": {
@@ -343,7 +345,9 @@
   {
     "cmd": [
       "npm",
-      "ci"
+      "ci",
+      "--loglevel",
+      "silly"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/infra/appengine/chrome-test-health/frontend",
     "env": {

@@ -111,7 +111,8 @@ def RunLuciGoTests(api, root_path):
 
 def RunNpmInstall(api, cwd, app_name):
   with api.context(cwd=cwd):
-    api.step(('%s npm install' % app_name), ['npm', 'ci'])
+    api.step(('%s npm install' % app_name), [
+      'npm', 'ci', '--loglevel', 'silly'])
 
 
 def BuildAndLintFrontend(api, cwd, app_name):

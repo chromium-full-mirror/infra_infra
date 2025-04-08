@@ -282,7 +282,9 @@
   {
     "cmd": [
       "npm",
-      "ci"
+      "ci",
+      "--loglevel",
+      "silly"
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal/appengine/testhaus/frontend/ui",
     "env": {
@@ -405,7 +407,9 @@
   {
     "cmd": [
       "npm",
-      "ci"
+      "ci",
+      "--loglevel",
+      "silly"
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal/appengine/spike/appengine/frontend/ui",
     "env": {

@@ -295,7 +295,9 @@
   {
     "cmd": [
       "npm",
-      "ci"
+      "ci",
+      "--loglevel",
+      "silly"
     ],
     "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci/milo/ui",
     "env": {
