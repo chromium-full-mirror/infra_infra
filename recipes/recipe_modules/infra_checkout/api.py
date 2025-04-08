@@ -270,10 +270,6 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
     if not go_dirs:
       return  # pragma: no cover
 
-    # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/golangci-lint
-    linter = self.m.cipd.ensure_tool(
-        'infra/3pp/tools/golangci-lint/${platform}', 'version:3@1.64.5')
-
     # Read locations of all directories with .golangci.yaml within them. Paths
     # are relative to `go_module_root`.
     roots = []
@@ -312,7 +308,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
         result = self.m.step(
             'run golangci-lint in %s' % root,
             [
-                linter,
+                co.path / 'infra' / 'cipd' / 'golangci-lint',
                 'run',
                 '--out-format=json',
                 '--issues-exit-code=0',

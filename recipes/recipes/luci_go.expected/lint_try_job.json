@@ -347,114 +347,6 @@
     ]
   },
   {
-    "cmd": [],
-    "name": "install infra/3pp/tools/golangci-lint"
-  },
-  {
-    "cmd": [
-      "vpython3",
-      "-u",
-      "RECIPE_MODULE[recipe_engine::file]/resources/fileutil.py",
-      "--json-output",
-      "/path/to/tmp/json",
-      "ensure-directory",
-      "--mode",
-      "0o777",
-      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/627254c92bedffba9859283e179a383c0a7079280385c368742b12bd89cfd6cd"
-    ],
-    "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci",
-    "env": {
-      "GOFLAGS": "-mod=readonly",
-      "GOROOT": "[CACHE]/builder/golang/go",
-      "INFRA_GO_SKIP_TOOLS_INSTALL": "1"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/golang/go"
-      ]
-    },
-    "env_suffixes": {
-      "PATH": [
-        "[CACHE]/builder/infra/go/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "infra:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "install infra/3pp/tools/golangci-lint.ensure package directory",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@"
-    ]
-  },
-  {
-    "cmd": [
-      "cipd",
-      "ensure",
-      "-root",
-      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/627254c92bedffba9859283e179a383c0a7079280385c368742b12bd89cfd6cd",
-      "-ensure-file",
-      "infra/3pp/tools/golangci-lint/${platform} version:3@1.64.5",
-      "-max-threads",
-      "0",
-      "-json-output",
-      "/path/to/tmp/json"
-    ],
-    "cwd": "[CACHE]/builder/infra/go/src/go.chromium.org/luci",
-    "env": {
-      "GOFLAGS": "-mod=readonly",
-      "GOROOT": "[CACHE]/builder/golang/go",
-      "INFRA_GO_SKIP_TOOLS_INSTALL": "1"
-    },
-    "env_prefixes": {
-      "PATH": [
-        "[CACHE]/builder/golang/go"
-      ]
-    },
-    "env_suffixes": {
-      "PATH": [
-        "[CACHE]/builder/infra/go/bin"
-      ]
-    },
-    "infra_step": true,
-    "luci_context": {
-      "realm": {
-        "name": "infra:try"
-      },
-      "resultdb": {
-        "current_invocation": {
-          "name": "invocations/build:8945511751514863184",
-          "update_token": "token"
-        },
-        "hostname": "rdbhost"
-      }
-    },
-    "name": "install infra/3pp/tools/golangci-lint.ensure_installed",
-    "~followup_annotations": [
-      "@@@STEP_NEST_LEVEL@1@@@",
-      "@@@STEP_LOG_LINE@json.output@{@@@",
-      "@@@STEP_LOG_LINE@json.output@  \"result\": {@@@",
-      "@@@STEP_LOG_LINE@json.output@    \"\": [@@@",
-      "@@@STEP_LOG_LINE@json.output@      {@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"instance_id\": \"resolved-instance_id-of-version:3@1.64.5\",@@@",
-      "@@@STEP_LOG_LINE@json.output@        \"package\": \"infra/3pp/tools/golangci-lint/resolved-platform\"@@@",
-      "@@@STEP_LOG_LINE@json.output@      }@@@",
-      "@@@STEP_LOG_LINE@json.output@    ]@@@",
-      "@@@STEP_LOG_LINE@json.output@  }@@@",
-      "@@@STEP_LOG_LINE@json.output@}@@@",
-      "@@@STEP_LOG_END@json.output@@@"
-    ]
-  },
-  {
     "cmd": [
       "vpython3",
       "-u",
@@ -509,7 +401,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/627254c92bedffba9859283e179a383c0a7079280385c368742b12bd89cfd6cd/golangci-lint",
+      "[CACHE]/builder/infra/cipd/golangci-lint",
       "run",
       "--out-format=json",
       "--issues-exit-code=0",
@@ -582,7 +474,7 @@
   },
   {
     "cmd": [
-      "[START_DIR]/cipd_tool/infra/3pp/tools/golangci-lint/627254c92bedffba9859283e179a383c0a7079280385c368742b12bd89cfd6cd/golangci-lint",
+      "[CACHE]/builder/infra/cipd/golangci-lint",
       "run",
       "--out-format=json",
       "--issues-exit-code=0",
