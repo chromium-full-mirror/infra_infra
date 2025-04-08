@@ -41,7 +41,7 @@ func buildGetColumnQuery(ctx context.Context, distinct bool, column *queryutils.
 }
 
 func buildCountDevicesQuery(ctx context.Context, filter string, realms []string) (*queryutils.Query, error) {
-	q, err := queryutils.NewQueryBuilder(DevicesTable).WithCustomSelectClause(`SELECT
+	q, err := queryutils.NewQueryBuilder(DevicesTable).WithRawSelectClause(`SELECT
 		COUNT(*) AS total,
 		COUNT(CASE WHEN state = 'DEVICE_STATE_LEASED' THEN 1 ELSE NULL END) AS leased,
 		COUNT(CASE WHEN state = 'DEVICE_STATE_AVAILABLE' THEN 1 ELSE NULL END) AS available,

@@ -7,6 +7,7 @@ package queryutils
 import (
 	"fmt"
 	"slices"
+	"strconv"
 	"strings"
 )
 
@@ -24,7 +25,7 @@ type QueryBuilder struct {
 	parameters *QueryParameters
 
 	// Clauses
-	selectClause  string
+	selectClause  *SelectClause
 	fromClause    string
 	whereClause   string
 	orderByClause string
@@ -62,7 +63,7 @@ func (q *QueryBuilder) SetSqlLangType(sqlLangType SqlLangType) *QueryBuilder {
 	return q
 }
 
-// WithSelectAllClause adds a select clause with all the columns to the query except the ones from excludeColumns.
+// WithSelectAllClause adds a select clause with all the columns to the query.
 func (q *QueryBuilder) WithSelectAllClause(excludeColumns ...*Column) *QueryBuilder {
 	columnsToSelect := []*Column{}
 	for _, column := range q.table.Columns {
@@ -89,23 +90,38 @@ func (q *QueryBuilder) WithSelectClause(distinct bool, columns ...*Column) *Quer
 		result.WriteString(c.name)
 	}
 
-	q.selectClause = result.String()
+	q.selectClause = &SelectClause{selectClause: result.String()}
 	return q
 }
 
-// WithCustomSelectClause adds a custom select clause to the query.
-func (q *QueryBuilder) WithCustomSelectClause(selectClause string) *QueryBuilder {
-	q.selectClause = selectClause
-	return q
-}
+// WithCustomSelectClause adds a select clause object to the query
+func (q *QueryBuilder) WithCustomSelectClause(fieldSelectClauses ...*FieldSelectClause) *QueryBuilder {
+	var selectClauses []string
+	var bindings = map[string]*any{}
+	for i, builder := range fieldSelectClauses {
+		bindingAlias := "v" + strconv.Itoa(i)
+		boundClause := builder.fieldSelectClause + " AS " + bindingAlias
 
-// WithFromClause adds a from clause to the query.
-func (q *QueryBuilder) WithFromClause() *QueryBuilder {
-	if q.sqlLangType == BigQueryLangType {
-		q.fromClause = fmt.Sprintf("FROM `%s`", q.table.name)
-	} else {
-		q.fromClause = fmt.Sprintf("FROM \"%s\"", q.table.name)
+		bindings[bindingAlias] = builder.binding
+		selectClauses = append(selectClauses, boundClause)
 	}
+
+	q.selectClause = &SelectClause{
+		selectClause: "SELECT " + strings.Join(selectClauses, ", "),
+		bindings:     bindings,
+	}
+
+	return q
+}
+
+// WithRawSelectClause adds a raw SQL select clause to the query.
+func (q *QueryBuilder) WithRawSelectClause(selectClause string) *QueryBuilder {
+	q.selectClause = &SelectClause{selectClause: selectClause}
+	return q
+}
+
+// WithFromClause currently does nothing and was left for backwards compatibility. TODO: remove it
+func (q *QueryBuilder) WithFromClause() *QueryBuilder {
 	return q
 }
 
@@ -132,8 +148,14 @@ func (q *QueryBuilder) Build(realms []string) (*Query, error) {
 		}
 	}
 
+	if q.sqlLangType == BigQueryLangType {
+		q.fromClause = fmt.Sprintf("FROM `%s`", q.table.name)
+	} else {
+		q.fromClause = fmt.Sprintf("FROM \"%s\"", q.table.name)
+	}
+
 	return &Query{
-		Statement:  fmt.Sprintf("%s\n%s\n%s\n%s\n%s;", q.selectClause, q.fromClause, q.whereClause, q.orderByClause, q.paginationClause),
+		Statement:  fmt.Sprintf("%s\n%s\n%s\n%s\n%s;", q.selectClause.selectClause, q.fromClause, q.whereClause, q.orderByClause, q.paginationClause),
 		Parameters: q.parameters.values,
 	}, nil
 }

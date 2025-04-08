@@ -15,36 +15,14 @@ import (
 
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
 	"go.chromium.org/infra/fleetconsole/internal/bigqueryclient"
+	"go.chromium.org/infra/fleetconsole/internal/consoleserver/rri"
 	"go.chromium.org/infra/fleetconsole/internal/database/queryutils"
 	"go.chromium.org/infra/fleetconsole/internal/utils"
 )
 
 const (
-	ResourceRequestTableName                = "resource_delivery_dev.resource_requests"
-	RrIDColumn                              = "rr_id"
-	ResourceDetailsColumn                   = "resource_details"
-	ResourceRequestActualDeliveryDateColumn = "resource_request_actual_delivery_date"
-	ResourceRequestTargetDeliveryDateColumn = "resource_request_target_delivery_date"
-	FulfillmentStatusColumn                 = "fulfillment_status"
-	ProcurementDateColumn                   = "material_sourcing_target_delivery_date"
-	BuildEndDateColumn                      = "build_target_delivery_date"
-	QAEndDateColumn                         = "qa_target_delivery_date"
-	ConfigEndDateColumn                     = "config_target_delivery_date"
-
 	DefaultPageSize = 10
 )
-
-var resourceRequestsTable = queryutils.NewTableBuilder(ResourceRequestTableName).WithColumns(
-	queryutils.NewColumn(RrIDColumn).Build(),
-	queryutils.NewColumn(ResourceDetailsColumn).Build(),
-	queryutils.NewColumn(ResourceRequestActualDeliveryDateColumn).Build(),
-	queryutils.NewColumn(ResourceRequestTargetDeliveryDateColumn).Build(),
-	queryutils.NewColumn(FulfillmentStatusColumn).Build(),
-	queryutils.NewColumn(ProcurementDateColumn).Build(),
-	queryutils.NewColumn(BuildEndDateColumn).Build(),
-	queryutils.NewColumn(QAEndDateColumn).Build(),
-	queryutils.NewColumn(ConfigEndDateColumn).Build(),
-).Build()
 
 func BigQueryValueToDate(value bigquery.Value) (date *fleetconsolerpc.DateOnly) {
 	if value == nil {
@@ -60,17 +38,17 @@ func MapFulfillmentStatus(status bigquery.Value) *fleetconsolerpc.ResourceReques
 	}
 
 	switch status.(string) {
-	case "NOT_STARTED":
+	case rri.NotStartedStatus:
 		{
 			status := fleetconsolerpc.ResourceRequest_NOT_STARTED
 			return &status
 		}
-	case "INPROGRESS":
+	case rri.InProgressStatus:
 		{
 			status := fleetconsolerpc.ResourceRequest_IN_PROGRESS
 			return &status
 		}
-	case "COMPLETE":
+	case rri.CompleteStatus:
 		{
 			status := fleetconsolerpc.ResourceRequest_COMPLETED
 			return &status
@@ -83,9 +61,9 @@ func MapFulfillmentStatus(status bigquery.Value) *fleetconsolerpc.ResourceReques
 }
 
 func MapRow(row map[string]bigquery.Value) *fleetconsolerpc.ResourceRequest {
-	rrID := row[RrIDColumn].(string)
-	actualDeliveryDate := BigQueryValueToDate(row[ResourceRequestActualDeliveryDateColumn])
-	targetDeliveryDate := BigQueryValueToDate(row[ResourceRequestTargetDeliveryDateColumn])
+	rrID := row[rri.RrIDColumn].(string)
+	actualDeliveryDate := BigQueryValueToDate(row[rri.ResourceRequestActualDeliveryDateColumn])
+	targetDeliveryDate := BigQueryValueToDate(row[rri.ResourceRequestTargetDeliveryDateColumn])
 
 	var expectedEta *fleetconsolerpc.DateOnly
 
@@ -96,15 +74,15 @@ func MapRow(row map[string]bigquery.Value) *fleetconsolerpc.ResourceRequest {
 	}
 
 	return &fleetconsolerpc.ResourceRequest{
-		RrId:               row[RrIDColumn].(string),
+		RrId:               row[rri.RrIDColumn].(string),
 		Name:               "resourceRequests/" + rrID,
-		ResourceDetails:    row[ResourceDetailsColumn].(string),
+		ResourceDetails:    row[rri.ResourceDetailsColumn].(string),
 		ExpectedEta:        expectedEta,
-		FulfillmentStatus:  MapFulfillmentStatus(row[FulfillmentStatusColumn]),
-		ProcurementEndDate: BigQueryValueToDate(row[ProcurementDateColumn]),
-		BuildEndDate:       BigQueryValueToDate(row[BuildEndDateColumn]),
-		QaEndDate:          BigQueryValueToDate(row[QAEndDateColumn]),
-		ConfigEndDate:      BigQueryValueToDate(row[ConfigEndDateColumn]),
+		FulfillmentStatus:  MapFulfillmentStatus(row[rri.FulfillmentStatusColumn]),
+		ProcurementEndDate: BigQueryValueToDate(row[rri.ProcurementDateColumn]),
+		BuildEndDate:       BigQueryValueToDate(row[rri.BuildEndDateColumn]),
+		QaEndDate:          BigQueryValueToDate(row[rri.QAEndDateColumn]),
+		ConfigEndDate:      BigQueryValueToDate(row[rri.ConfigEndDateColumn]),
 	}
 }
 
@@ -128,18 +106,15 @@ func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, 
 		return nil, err
 	}
 
-	query, err := buildListResourceRequestsQuery(ctx, req, offset)
+	query, err := buildListResourceRequestsQuery(ctx, bqClient, req, offset)
 	if err != nil {
 		logging.Errorf(ctx, "failed to build query: %s", err)
 		return nil, err
 	}
 
-	q := bqClient.Query(query.Statement)
-	q.Parameters = convertQueryParameters(query.Parameters)
-
 	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(5*time.Second))
 	defer cancel()
-	it, err := q.Read(ctx)
+	it, err := query.Read(ctx)
 	if err != nil {
 		logging.Errorf(ctx, "fetching resource requests from big query failed: %s", err)
 		return nil, err
@@ -188,27 +163,12 @@ func resourceRequestsOffsetToPageToken(offset int, req *fleetconsolerpc.ListReso
 	})
 }
 
-// convertQueryParameters converts a slice of query parameters from the
-// queryutils format to the format bigquery.QueryParameter).
-//
-// Note: This function assumes that all parameters are strings. If other
-// types are needed, this function will need to be updated.
-func convertQueryParameters(params []any) []bigquery.QueryParameter {
-	bqParams := make([]bigquery.QueryParameter, len(params))
-	for i, p := range params {
-		bqParams[i] = bigquery.QueryParameter{
-			Value: p,
-		}
-	}
-	return bqParams
-}
-
 // buildListResourceRequestsQuery uses queryutils to build a query for listing
 // resource requests.
-func buildListResourceRequestsQuery(ctx context.Context, req *fleetconsolerpc.ListResourceRequestsRequest, offset int) (*queryutils.Query, error) {
-	queryBuilder := queryutils.NewQueryBuilder(resourceRequestsTable)
+func buildListResourceRequestsQuery(ctx context.Context, bqClient *bigquery.Client, req *fleetconsolerpc.ListResourceRequestsRequest, offset int) (*bigquery.Query, error) {
+	queryBuilder := queryutils.NewQueryBuilder(rri.GetResourceRequestsTable())
 	queryBuilder = queryBuilder.SetSqlLangType(queryutils.BigQueryLangType)
-	queryBuilder = queryBuilder.WithSelectAllClause().WithFromClause()
+	queryBuilder = queryBuilder.WithSelectAllClause()
 
 	queryBuilder, err := queryBuilder.WithWhereClause(req.GetFilter())
 	if err != nil {
@@ -218,7 +178,7 @@ func buildListResourceRequestsQuery(ctx context.Context, req *fleetconsolerpc.Li
 
 	// ORDER BY doesn't support parameters, so we need to make sure the column
 	// name is correct.
-	queryBuilder, err = queryBuilder.WithOrderByClause(req.GetOrderBy(), "rr_id")
+	queryBuilder, err = queryBuilder.WithOrderByClause(req.GetOrderBy(), rri.RrIDColumn)
 	if err != nil {
 		logging.Errorf(ctx, "failed to build order by clause: %s", err)
 		return nil, err
@@ -226,5 +186,5 @@ func buildListResourceRequestsQuery(ctx context.Context, req *fleetconsolerpc.Li
 
 	queryBuilder = queryBuilder.WithOffsetPagination(offset, int(req.GetPageSize()))
 
-	return queryBuilder.Build(nil)
+	return queryBuilder.ToUnboundBigQueryQuery(bqClient)
 }
