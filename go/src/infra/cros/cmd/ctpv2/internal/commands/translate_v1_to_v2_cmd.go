@@ -368,6 +368,7 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 	maxInShard := 10
 	dddSuite := false
 	testType := common.OSTestType // default to OS type testing if not provided by ATP
+	plan := ""
 
 	executionMetadata := &api.ExecutionMetadata{}
 	if testJobMsg.Test != nil {
@@ -387,18 +388,24 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 			} else if arg.Key == "max_in_shard" {
 				// max_in_shard should have exactly one value.
 				if len(arg.Values) != 1 {
-					return nil, fmt.Errorf("exactly one value is expected for max_in_shard, found %d.", len(arg.Values))
+					return nil, fmt.Errorf("exactly one value is expected for max_in_shard, found %d", len(arg.Values))
 				}
 				maxInShard, _ = strconv.Atoi(arg.Values[0])
 			} else if arg.Key == "test-type" {
 				// test-type should have exactly one value.
 				if len(arg.Values) != 1 {
-					return nil, fmt.Errorf("exactly one value is expected for test-type, found %d.", len(arg.Values))
+					return nil, fmt.Errorf("exactly one value is expected for test-type, found %d", len(arg.Values))
 				}
 				testType = common.TestType(arg.Values[0])
 				executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "test-type", Value: arg.Values[0]})
+			} else if arg.Key == "plan" {
+				// plan should have exactly one value.
+				if len(arg.Values) != 1 {
+					return nil, fmt.Errorf("exactly one value is expected for plan, found %d", len(arg.Values))
+				}
+				plan = arg.Values[0]
+				executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: "plan", Value: plan})
 			} else {
-				// directly plumb through any other args
 				for _, value := range arg.Values {
 					// add each value separately since we don't wanna enforce any parsing rule for downstream
 					if arg.Key == "exclude_filters" {
@@ -408,7 +415,8 @@ func buildSuiteRequest(testJobMsg *common.TestJobMessage, buildState *build.Stat
 						executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: arg.Key, Value: value})
 						continue
 					}
-					executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: fmt.Sprintf("driverArg: %s", arg.Key), Value: value})
+					// directly plumb through any other args
+					executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: fmt.Sprintf("driverArg: %s", strings.TrimSpace(arg.Key)), Value: strings.TrimSpace(value)})
 				}
 			}
 		}
