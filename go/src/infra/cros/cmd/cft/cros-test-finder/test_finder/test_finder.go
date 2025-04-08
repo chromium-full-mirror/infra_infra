@@ -21,10 +21,10 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/util/finder"
-	"go.chromium.org/chromiumos/test/util/metadata"
 
 	"go.chromium.org/infra/cros/cmd/cft/common/errors"
+	"go.chromium.org/infra/cros/cmd/cft/common/finder"
+	"go.chromium.org/infra/cros/cmd/cft/common/metadata"
 	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
 	"go.chromium.org/infra/cros/cmd/cft/cros-test-finder/centralizedsuite"
 )

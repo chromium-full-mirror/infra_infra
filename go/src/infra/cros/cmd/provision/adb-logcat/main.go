@@ -13,7 +13,7 @@ import (
 	"os"
 	"os/exec"
 
-	"go.chromium.org/chromiumos/test/util/adb"
+	"go.chromium.org/infra/cros/cmd/cft/common/adb"
 )
 
 type cliArgs struct {

@@ -22,12 +22,12 @@ import (
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/lro"
-	common_util "go.chromium.org/chromiumos/test/util/common"
 
 	"go.chromium.org/infra/cros/cmd/cft/dut/cros-servod/commandexecutor"
 	"go.chromium.org/infra/cros/cmd/cft/dut/cros-servod/model"
 	"go.chromium.org/infra/cros/cmd/cft/dut/cros-servod/servod"
 	"go.chromium.org/infra/cros/cmd/cft/dut/cros-servod/ssh"
+	"go.chromium.org/infra/cros/internal/env"
 )
 
 const (
@@ -51,7 +51,7 @@ func NewServodService(ctx context.Context, logger *log.Logger, commandexecutor c
 	if err != nil {
 		return nil, nil, err
 	}
-	if common_util.IsCloudBot() {
+	if env.IsCloudBot() {
 		if err = config.Load(defaultSSHConfigPathOnCloudBot); err != nil {
 			return nil, nil, err
 		}

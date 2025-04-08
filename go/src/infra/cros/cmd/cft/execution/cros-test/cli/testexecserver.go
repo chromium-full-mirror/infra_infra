@@ -17,9 +17,9 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/util/finder"
 
 	statuserrors "go.chromium.org/infra/cros/cmd/cft/common/errors"
+	"go.chromium.org/infra/cros/cmd/cft/common/finder"
 	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/driver"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/finders"
 )

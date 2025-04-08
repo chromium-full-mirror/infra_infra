@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/util/adb"
 
+	"go.chromium.org/infra/cros/cmd/cft/common/adb"
 	"go.chromium.org/infra/cros/cmd/provision/foil-provision/service"
 )
 

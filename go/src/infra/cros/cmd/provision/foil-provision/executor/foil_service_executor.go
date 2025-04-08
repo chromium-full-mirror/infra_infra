@@ -17,8 +17,8 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/test/util/adb"
 
+	"go.chromium.org/infra/cros/cmd/cft/common/adb"
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	cross_over "go.chromium.org/infra/cros/cmd/provision/common-utils/cross-over"
 	"go.chromium.org/infra/cros/cmd/provision/foil-provision/service"

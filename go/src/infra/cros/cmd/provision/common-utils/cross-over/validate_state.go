@@ -16,9 +16,9 @@ import (
 	"google.golang.org/protobuf/types/known/anypb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/util/adb"
-	"go.chromium.org/chromiumos/test/util/common"
 
+	"go.chromium.org/infra/cros/cmd/cft/common/adb"
+	"go.chromium.org/infra/cros/cmd/cft/common/files"
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
@@ -105,7 +105,7 @@ func (s ValidateState) Execute(ctx context.Context, log *log.Logger) (*anypb.Any
 		if err := retryForceReconnect(ctx, log, s.params.DutClient, bootWaitRetryCount, bootWaitRetryInterval); err != nil {
 			return common_utils.WrapStringInAny("PLATFORM: unable to connect to device post cros-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err
 		}
-		osReleaseFile, err := common.GetFile(ctx, "/etc/os-release", s.params.DutClient)
+		osReleaseFile, err := files.GetFile(ctx, "/etc/os-release", s.params.DutClient)
 		if err != nil {
 			log.Printf("Could not fetch /etc/os-release : %s\n", err)
 			return common_utils.WrapStringInAny("PLATFORM: unable to obtain /etc/os-release post cros-install"), api.InstallResponse_STATUS_POST_PROVISION_SETUP_FAILED, err

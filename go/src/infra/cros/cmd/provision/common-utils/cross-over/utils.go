@@ -17,9 +17,9 @@ import (
 	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	lab_api "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/test/util/adb"
-	"go.chromium.org/chromiumos/test/util/common"
 
+	"go.chromium.org/infra/cros/cmd/cft/common/adb"
+	"go.chromium.org/infra/cros/cmd/cft/common/dutinteraction"
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 )
 
@@ -93,7 +93,7 @@ func checkADB(logger *log.Logger, dutAddress string, timeout time.Duration) bool
 func IsCROS(ctx context.Context, logger *log.Logger, dutClient api.DutServiceClient) bool {
 	logger.Println("Checking if /etc/lsb-release is present, if it does it means its CROS.")
 	for attempt := 1; attempt <= 2; attempt++ {
-		_, err := common.RunCmd(ctx, "ls", []string{"/etc/lsb-release"}, dutClient)
+		_, err := dutinteraction.RunCmd(ctx, "ls", []string{"/etc/lsb-release"}, dutClient)
 		if err == nil {
 			return true
 		} else if attempt == 1 {

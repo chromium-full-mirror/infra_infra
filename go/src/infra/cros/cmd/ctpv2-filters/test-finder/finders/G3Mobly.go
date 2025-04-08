@@ -13,8 +13,8 @@ import (
 	"cloud.google.com/go/storage"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	finder "go.chromium.org/chromiumos/test/util/finder"
 
+	"go.chromium.org/infra/cros/cmd/cft/common/finder"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/common"
 )
 

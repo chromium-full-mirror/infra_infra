@@ -18,7 +18,8 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/util/common"
+
+	"go.chromium.org/infra/cros/cmd/cft/common/files"
 )
 
 const (
@@ -134,7 +135,7 @@ func (s ServiceAdapter) execCmd(ctx context.Context, cmd string, args []string, 
 // FetchFile downloads a file from the DUT.
 func (s ServiceAdapter) FetchFile(ctx context.Context, path string) (io.ReadCloser, error) {
 	log.Printf("Running FetchFile cmd: %s\n", path)
-	filename, err := common.GetFile(ctx, path, s.dutClient)
+	filename, err := files.GetFile(ctx, path, s.dutClient)
 	if err != nil {
 		return nil, errors.Wrap(err, "fetch file failed")
 	}
