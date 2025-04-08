@@ -156,9 +156,15 @@ func getClangFiles(ctx context.Context, filepathsSet *ConcurrentSet,
 	for scanner.Scan() {
 		// Each line in the '*.filepaths' file references the path to a source
 		// file involved in the compilation.
-		fname := strings.ReplaceAll(strings.TrimSpace(scanner.Text()), "//", "/")
+		fnameRaw := strings.TrimSpace(scanner.Text())
+		fname := strings.ReplaceAll(fnameRaw, "//", "/")
 		if !filepath.IsAbs(fname) {
 			fname = filepath.Join(target.Directory, fname)
+		}
+
+		if strings.Contains(fname, ".hmap/") {
+			// See crbug.com/408298859.
+			logging.Warningf(ctx, "Potential problematic hmap path read from %s: %s (originally %s)", filepathsFn, fname, fnameRaw)
 		}
 
 		// We should not package builtin clang header files, see
