@@ -20,7 +20,7 @@ import (
 const (
 	planMetadataFlag   = "plan"
 	tfGoogleTestRunner = "google/cts/google-cts-launcher-for-aosp"
-	tfAospTestRunner   = "tf-common-compatibility-config"
+	tfAospTestRunner   = "tf-aosp-compatibility-config"
 	DTS                = "dts"
 )
 
