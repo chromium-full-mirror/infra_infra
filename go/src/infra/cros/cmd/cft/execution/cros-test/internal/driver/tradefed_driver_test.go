@@ -199,6 +199,20 @@ func TestDetectTestType(t *testing.T) {
 				expectedTestType: "sts",
 			},
 			{
+				name: "APTS test type by name",
+				testCaseMetadata: []*api.TestCaseMetadata{
+					createMetadataMessage("apts.tool/app-start-cache", ""),
+				},
+				expectedTestType: "apts",
+			},
+			{
+				name: "APTS test type by tag",
+				testCaseMetadata: []*api.TestCaseMetadata{
+					createMetadataMessage("tool/app-start-cache", "suite:apts"),
+				},
+				expectedTestType: "apts",
+			},
+			{
 				name: "General tests by name",
 				testCaseMetadata: []*api.TestCaseMetadata{
 					createMetadataMessage("general.GenTestCase", ""),

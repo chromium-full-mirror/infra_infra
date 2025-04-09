@@ -55,6 +55,11 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 		// By default, plan is the same as test suite type, i.e. "cts", "dts", etc (except for STS).
 		if testType == "sts" {
 			plan = "sts-dynamic-full"
+		} else if testType == "apts" {
+			plan = formatTestName(tests[0].GetTestCase().GetId().GetValue())
+			if len(tests) > 1 {
+				logger.Println("Only single test is supported when running APTS test suite, running test: ", plan)
+			}
 		} else {
 			plan = testType
 		}
@@ -77,6 +82,9 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 		if testType == "gts" {
 			cmd = append(cmd, "--inject-global-config", "--global-config-filters", "host_options")
 		}
+		if testType == "apts" {
+			cmd = append(cmd, "--no-disable-compress", "--no-enable-root")
+		}
 	}
 
 	logPath := getGlobalLogPath()
@@ -97,17 +105,21 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 
 		// Adding cts-params with prefix for each one.
 		ctsParams := []string{
-			"--no-use-device-build-info", "--log-level", "VERBOSE",
+			"--log-level", "VERBOSE",
 			"--max-log-size", "62914560", "--max-tmp-logcat-file", "62914560",
-			"--logcat-on-failure", "--screenshot-on-failure", "--include-test-log-tags",
-			"--result-reporter:disable-result-posting", "--result-reporter:no-disable",
-			"--use-log-saver", "--post-boot-command", `"am switch-user 10"`,
+			"--logcat-on-failure", "--screenshot-on-failure",
 		}
-		if testType != "gts" && testType != "vts" && testType != "sts" {
+		if testType != "gts" && testType != "vts" && testType != "sts" && testType != "apts" {
 			ctsParams = append(ctsParams, "--property-check:no-throw-error")
 		}
 		if testType == "sts" {
 			ctsParams = append(ctsParams, "--ghidra-preparer:disable")
+		}
+		if testType != "apts" {
+			ctsParams = append(ctsParams, "--no-use-device-build-info", "--include-test-log-tags",
+				"--result-reporter:disable-result-posting", "--result-reporter:no-disable",
+				"--post-boot-command", `"am switch-user 10"`, "--use-log-saver",
+			)
 		}
 		for _, param := range ctsParams {
 			cmd = append(cmd, "--cts-params", param)
@@ -163,11 +175,14 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 		}
 		logger.Println("Running provided test: ", testName)
 
-		if isAospTradefed() {
-			cmd = append(cmd, "--include-filter", testName)
-		} else {
-			// Format the name in a quote, incase there is a space in it (ie a class execution)
-			cmd = append(cmd, "--cts-params", "--compatibility:include-filter", "--cts-params", testName)
+		// For APTS, test name is defined in "--config-name" parameter.
+		if testType != "apts" {
+			if isAospTradefed() {
+				cmd = append(cmd, "--include-filter", testName)
+			} else {
+				// Format the name in a quote, in case there is a space in it (ie a class execution)
+				cmd = append(cmd, "--cts-params", "--compatibility:include-filter", "--cts-params", testName)
+			}
 		}
 	}
 
