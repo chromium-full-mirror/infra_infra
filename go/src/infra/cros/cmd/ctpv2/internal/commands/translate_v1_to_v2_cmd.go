@@ -602,9 +602,7 @@ func buildScheduleTargets(testJobMsg *common.TestJobMessage, buildState *build.S
 		buildType = testJobMsg.Build.BuildType
 	}
 
-	installPath := fmt.Sprintf(
-		common.AndroidBuildPathFormat,
-		buildID, buildTarget, primaryBoard, buildID)
+	installPath := common.GetABOTAPath(buildID, buildTarget, primaryBoard)
 
 	// Validations
 	if primaryBoard == "" {

@@ -72,7 +72,6 @@ const (
 	CTPBucket                              = "testplatform"
 	CTPBucketShadow                        = "testplatform.shadow"
 	AndroidBuildPrefix                     = "android-build/build_explorer/artifacts_list/"
-	AndroidBuildPathFormat                 = AndroidBuildPrefix + "%s/%s/%s-ota-%s.zip"
 	InvocationDataFlag                     = "invocation-data"
 	CbIngestionValue                       = "invocation-property=crystalball_ingest:yes"
 	AncestorsPropName                      = "ancestor_buildbucket_ids"

@@ -93,9 +93,32 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 
 	// Add kernel artifacts to the install request.
 	if getTestType(req) == common.KernelTestType {
+		kernelBuildId, kernelTarget, err := getKernelBuildInfo(req)
+		if err != nil {
+			return fmt.Errorf("fetching kernel build: %+v", err)
+		}
 		if err := generator.AddModification(
-			// TODO: b/392692756 - Populate kernel artifact paths.
-			&api.KernelPrebuilts{},
+			&api.KernelPrebuilts{
+				PartitionImages: []*api.KernelPrebuilts_PartitionImage{
+					{
+						PartitionName: "boot_a",
+						ImagePath:     common.GetABStoragePath(kernelBuildId, kernelTarget, "boot.img"),
+					},
+					{
+						PartitionName: "system_dlkm_a",
+						ImagePath:     common.GetABStoragePath(kernelBuildId, kernelTarget, "system_dlkm.img"),
+					},
+					{
+						PartitionName: "vendor_dlkm_a",
+						ImagePath:     common.GetABStoragePath(kernelBuildId, kernelTarget, "vendor_dlkm.img"),
+					},
+					{
+						PartitionName: "vendor_boot_a",
+						RamdiskName:   "dlkm",
+						ImagePath:     common.GetABStoragePath(kernelBuildId, kernelTarget, "initramfs.img"),
+					},
+				},
+			},
 			map[string]string{
 				"provision.installRequest.kernelPrebuilts": "",
 			},
@@ -207,7 +230,7 @@ func updateSchedulingUnit(su *api.SchedulingUnit, req *api.InternalTestplan, upd
 
 		log.Println("Setting build target and latest green build number")
 		buildTarget = board + "-trunk_staging-userdebug"
-		installPath = getOTAPath(buildId, buildTarget, board)
+		installPath = common.GetABOTAPath(buildId, buildTarget, board)
 		log.Printf("InstallPath value: %s", installPath)
 	}
 	if getTestType(req) == common.KernelTestType {
@@ -248,7 +271,7 @@ func fixInstallPathForKernelTest(installPath string, req *api.InternalTestplan) 
 			"testplan args did not contain all required info for kernel tests: build_id=%s, build_target=%s, args=%+v",
 			osBuildId, osTarget, args)
 	}
-	return getOTAPath(osBuildId, osTarget, board), nil
+	return common.GetABOTAPath(osBuildId, osTarget, board), nil
 }
 
 // extractBuildInfoFromInstallPath parses metadata out of the provided installPath.
@@ -292,16 +315,6 @@ func applyBuildInfoToTarget(buildId, buildTarget string, target *api.Target) {
 		},
 	}...)
 	return
-}
-
-// getOTAPath returns the Android Build path to the *-ota-*.zip artifact.
-// buildTarget is the full target name in Android Build, such as
-// brya-trunk_staging-userdebug, whereas board is the short name of the board,
-// such as brya.
-func getOTAPath(buildId, buildTarget, board string) string {
-	return fmt.Sprintf(
-		common.AndroidBuildPrefix+"%s/%s/%s-ota-%s.zip",
-		buildId, buildTarget, board, buildId)
 }
 
 // buildGetReq constructs a BuildGetRequest for the board.
@@ -356,4 +369,27 @@ func getTestType(req *api.InternalTestplan) common.TestType {
 	}
 	log.Printf("No test-type argument found in args: %+v. Defaulting to %s.", args, defaultTestType)
 	return defaultTestType
+}
+
+// getKernelBuildInfo returns the kernel build ID and build target used for a kernel test.
+func getKernelBuildInfo(req *api.InternalTestplan) (kernelBuildId, kernelTarget string, err error) {
+	args := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
+	if args == nil {
+		return "", "", fmt.Errorf("InternalTestplan for kernel test did not contain args: %+v", req)
+	}
+	for _, arg := range args {
+		switch arg.GetFlag() {
+		case "kernel_build":
+			kernelBuildId = arg.GetValue()
+		case "kernel_target":
+			kernelTarget = arg.GetValue()
+		}
+	}
+	if kernelBuildId == "" {
+		return "", "", fmt.Errorf("ExecutionMetadata.Args for kernel test did not contain kernel_build: %+v", args)
+	}
+	if kernelTarget == "" {
+		return "", "", fmt.Errorf("ExecutionMetadata.Args for kernel test did not contain kernel_target: %+v", args)
+	}
+	return
 }

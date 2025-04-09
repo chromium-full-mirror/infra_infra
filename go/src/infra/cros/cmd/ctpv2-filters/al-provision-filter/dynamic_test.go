@@ -5,7 +5,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"reflect"
 	"strconv"
@@ -174,7 +173,7 @@ func TestExtractBuildInfoFromInstallPath_Success(t *testing.T) {
 	}{
 		{
 			name:                "Standard path with prefix",
-			installPath:         common.AndroidBuildPrefix + "12345/board-target/board-ota-12345.zip",
+			installPath:         common.GetABOTAPath("12345", "board-target", "board"),
 			expectedBuildId:     "12345",
 			expectedBuildTarget: "board-target",
 			expectedBoard:       "board",
@@ -370,9 +369,7 @@ func TestUpdateSchedulingUnit_LatestGreenBuild(t *testing.T) {
 	latestBuild := 98765
 	expectedBuildId := strconv.Itoa(latestBuild)
 	expectedBuildTarget := board + "-trunk_staging-userdebug"
-	expectedCalculatedInstallPath := fmt.Sprintf(
-		common.AndroidBuildPrefix+"%s/%s/%s-ota-%s.zip",
-		expectedBuildId, expectedBuildTarget, board, expectedBuildId)
+	expectedCalculatedInstallPath := common.GetABOTAPath(expectedBuildId, expectedBuildTarget, board)
 
 	su := newTestSchedulingUnit(originalGcsPath, nil)
 	su.DynamicUpdateLookupTable["board"] = board
@@ -415,57 +412,6 @@ func TestUpdateSchedulingUnit_LatestGreenBuild(t *testing.T) {
 }
 
 // --- Misc tests ---
-
-func TestGetOTAPath(t *testing.T) {
-	t.Parallel()
-
-	tests := []struct {
-		name        string
-		buildId     string
-		buildTarget string
-		board       string
-		want        string
-	}{
-		{
-			name:        "basic valid input",
-			buildId:     "12345678",
-			buildTarget: "brya-trunk_staging-userdebug",
-			board:       "brya",
-			want:        fmt.Sprintf("%s12345678/brya-trunk_staging-userdebug/brya-ota-12345678.zip", common.AndroidBuildPrefix),
-		},
-		{
-			name:        "different board and target",
-			buildId:     "98765",
-			buildTarget: "dedede-some_branch-user",
-			board:       "dedede",
-			want:        fmt.Sprintf("%s98765/dedede-some_branch-user/dedede-ota-98765.zip", common.AndroidBuildPrefix),
-		},
-		{
-			name:        "empty inputs", // Although unlikely in practice, test edge case
-			buildId:     "",
-			buildTarget: "",
-			board:       "",
-			want:        fmt.Sprintf("%s//-ota-.zip", common.AndroidBuildPrefix),
-		},
-		{
-			name:        "inputs with spaces", // Test if spaces are handled (they are just inserted)
-			buildId:     "1 1",
-			buildTarget: "target with space",
-			board:       "board space",
-			want:        fmt.Sprintf("%s1 1/target with space/board space-ota-1 1.zip", common.AndroidBuildPrefix),
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
-			got := getOTAPath(tt.buildId, tt.buildTarget, tt.board)
-			if got != tt.want {
-				t.Errorf("getOTAPath(%q, %q, %q) = %q; want %q", tt.buildId, tt.buildTarget, tt.board, got, tt.want)
-			}
-		})
-	}
-}
 
 func TestFixInstallPathForKernelTest_Success(t *testing.T) {
 	originalInstallPath := "android-build/build_explorer/artifacts_list/123456789/brya_device_x86_64/brya-ota-123456789.zip"
