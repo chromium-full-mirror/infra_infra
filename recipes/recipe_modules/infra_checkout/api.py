@@ -310,7 +310,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
             [
                 co.path / 'infra' / 'cipd' / 'golangci-lint',
                 'run',
-                '--out-format=json',
+                '--output.json.path=stdout',
                 '--issues-exit-code=0',
                 '--timeout=5m',
             ] + sorted(pkgs),
