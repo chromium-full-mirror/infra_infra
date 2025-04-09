@@ -7,6 +7,7 @@ package ctprequest
 import (
 	"testing"
 
+	"go.chromium.org/chromiumos/config/go/test/api"
 	requestpb "go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	suschpb "go.chromium.org/chromiumos/infra/proto/go/testplans"
 
@@ -107,4 +108,25 @@ func TestAddTagToRequest(t *testing.T) {
 		return
 	}
 
+}
+
+func TestGetTestPlanIterations(t *testing.T) {
+	config := &suschpb.SchedulerConfig{
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{
+			Iterations: &api.Iterations{NumRetries: 5},
+		},
+	}
+	testPlan := getTestPlan(config)
+	expectedRetries := 5
+	actualRetries := int(testPlan.GetIterations().NumRetries)
+	if actualRetries != expectedRetries {
+		t.Fatalf("Testplan iterations field was expected to be populated with the value of %d, actual value %d", expectedRetries, actualRetries)
+	}
+	config = &suschpb.SchedulerConfig{
+		RunOptions: &suschpb.SchedulerConfig_RunOptions{},
+	}
+	testPlan = getTestPlan(config)
+	if testPlan.GetIterations() != nil {
+		t.Fatal("Testplan iterations field was expected to be empty, the field was populated")
+	}
 }

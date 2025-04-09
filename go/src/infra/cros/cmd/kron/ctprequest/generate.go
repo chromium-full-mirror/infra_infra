@@ -160,6 +160,8 @@ func getTestPlan(config *suschpb.SchedulerConfig) *requestpb.Request_TestPlan {
 		testPlan.Suite[0].TestArgs = config.GetTestArgs()
 	}
 
+	testPlan.Iterations = config.GetRunOptions().GetIterations()
+
 	return testPlan
 }
 

@@ -7,6 +7,7 @@ package commands
 import (
 	"context"
 	"fmt"
+	"math/rand"
 	"reflect"
 	"testing"
 
@@ -1377,6 +1378,44 @@ func TestAddBoardModelToDims(t *testing.T) {
 	expected = []string{"ready", "label-board:foo", "label-model:bar", "label-board:foo_2", "label-model:bar_2"}
 	if !reflect.DeepEqual(newDims, expected) {
 		t.Fatalf("mismatch. Expected %s got %s", expected, newDims)
+	}
+}
+
+func TestValidateIterationsCfg(t *testing.T) {
+	type IterationsTest struct {
+		name           string
+		input          *api.Iterations
+		expectedResult int
+	}
+	randomValidIt := rand.Intn(10) + 1
+	itTests := []IterationsTest{
+		{
+			name:           "Empty Iteration",
+			input:          nil,
+			expectedResult: 1,
+		},
+		{
+			name:           "Valid Range Iteration",
+			input:          &api.Iterations{NumRetries: int64(randomValidIt)},
+			expectedResult: randomValidIt,
+		},
+		{
+			name:           "Min Edge Iteration",
+			input:          &api.Iterations{NumRetries: int64(0)},
+			expectedResult: 1,
+		},
+		{
+			name:           "Max Edge Iteration",
+			input:          &api.Iterations{NumRetries: int64(100)},
+			expectedResult: 10,
+		},
+	}
+
+	for _, test := range itTests {
+		actual := validateIterationsCfg(makeCtx(), test.input)
+		if actual != test.expectedResult {
+			t.Fatalf("Test %s: EXPECTED - %d , ACTUAL -  %d", test.name, test.expectedResult, actual)
+		}
 	}
 }
 

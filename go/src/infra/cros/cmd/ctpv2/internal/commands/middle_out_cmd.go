@@ -196,10 +196,9 @@ func (cmd *MiddleOutRequestCmd) Execute(ctx context.Context) error {
 			}
 			return maxInShard
 		}(),
-		pool:                  pool,
-		durationBasedSharding: cmd.DurationBasedSharding,
-		// TODO: (thandakas) Update input with new InternalTestPlan field when available, setting it to 1 for now to mimic existing behavior
-		requestsPerSchedulingUnitOptions: validateIterationsCfg(ctx, 1),
+		pool:                             pool,
+		durationBasedSharding:            cmd.DurationBasedSharding,
+		requestsPerSchedulingUnitOptions: validateIterationsCfg(ctx, cmd.InternalTestPlan.GetSuiteInfo().GetSuiteRequest().GetIterations()),
 		// TODO: (thandakas) Update input with new InternalTestPlan field when available
 		multiEqcByModel: true,
 	}
@@ -348,7 +347,12 @@ func oldProto(targs []*api.HWRequirements) bool {
 	return len(targs) > 0
 }
 
-func validateIterationsCfg(ctx context.Context, numIterations int) int {
+func validateIterationsCfg(ctx context.Context, iterations *api.Iterations) int {
+	numIterations := minIterations
+	// Nil validation check of iterations input
+	if iterations != nil {
+		numIterations = int(iterations.GetNumRetries())
+	}
 	// Lower limit for requested scheduled iterations per SchedulingUnitOptions
 	if numIterations < minIterations {
 		logging.Infof(ctx, fmt.Sprintf("Requested # of scheduled iterations per SchedulingUnitOptions is below MIN limit of %d. Setting config to MIN limit.", minIterations))
