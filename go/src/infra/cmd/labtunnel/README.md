@@ -12,7 +12,7 @@ and more with a simple single command!
 ```
 cd infra/go
 eval `./env.py`
-cd src/infra/cmd/crosfleet
+cd src/infra/cmd/labtunnel
 ```
 
 ## Installation
