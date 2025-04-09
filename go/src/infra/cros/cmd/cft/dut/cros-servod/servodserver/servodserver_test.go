@@ -17,8 +17,9 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/longrunning"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/servod/cmd/mock_commandexecutor"
 	"go.chromium.org/luci/common/errors"
+
+	"go.chromium.org/infra/cros/cmd/cft/dut/cros-servod/mock_commandexecutor"
 )
 
 // Tests that servod starts successfully.

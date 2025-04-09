@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@ package main
 import (
 	"os"
 
-	"go.chromium.org/chromiumos/test/dut/cmd/cros-dut/cli"
+	"go.chromium.org/infra/cros/cmd/cft/dut/cros-dut/cli"
 )
 
 func main() {

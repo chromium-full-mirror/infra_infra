@@ -14,7 +14,7 @@ import (
 
 	"golang.org/x/crypto/ssh"
 
-	"go.chromium.org/chromiumos/test/dut/cmd/cros-dut/dutssh"
+	"go.chromium.org/infra/cros/cmd/cft/dut/cros-dut/dutssh"
 )
 
 // ServodCommandExecutor acts as a receiver to implement CommandExecutorInterface
