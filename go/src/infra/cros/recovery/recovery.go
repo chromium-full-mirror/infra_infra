@@ -482,12 +482,11 @@ func runDUTPlans(ctx context.Context, dut *tlw.Dut, c *config.Configuration, arg
 func runSinglePlan(ctx context.Context, planName string, plan *config.Plan, execArgs *execs.RunArgs, metricSaver metrics.MetricSaver) error {
 	resources := collectResourcesForPlan(planName, execArgs.DUT)
 	if len(resources) == 0 {
-		log.Infof(ctx, "Run plan %q: no resources found.", planName)
+		log.Debugf(ctx, "Run plan %q: skipped as no resources found.", planName)
 		return nil
 	}
 	log.Infof(ctx, "------====================-----")
 	log.Infof(ctx, "Run plan %q: starting...", planName)
-	log.Infof(ctx, "------====================-----")
 	for _, resource := range resources {
 		log.Infof(ctx, "Prepare plan %q for %q.", planName, resource)
 		if err := runDUTPlanPerResource(ctx, resource, planName, plan, execArgs, metricSaver); err != nil {
