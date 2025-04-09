@@ -7,7 +7,6 @@ package main
 import (
 	"context"
 	"errors"
-	"runtime"
 	"strings"
 	"testing"
 
@@ -43,7 +42,7 @@ func TestBaseRun(t *testing.T) {
 	}
 
 	t.Run("reportError", func(t *testing.T) {
-		r.reportException(ctx, errors.New("this is an error"), []byte("line 1\nline 2"))
+		r.reportException(ctx, errors.New("this is an error"))
 		// fmt.Println(protojson.Format(s.req))
 		exception, err := structpb.NewStruct(map[string]any{
 			"@type": "type.googleapis.com/build.util.lib.proto.ExceptionOccurrences",
@@ -51,7 +50,7 @@ func TestBaseRun(t *testing.T) {
 				map[string]any{
 					"name":          "this is an error",
 					"occurred_time": "<ANY-STRING-VALUE>",
-					"stacktrace":    []any{"line 1", "line 2", "this is an error"},
+					"stacktrace":    []any{"this is an error"},
 				},
 			},
 		})
@@ -71,17 +70,5 @@ func TestBaseRun(t *testing.T) {
 		}, cmp.Comparer(func(a, b string) bool {
 			return len(a) > 0 && len(b) > 0
 		}))))
-	})
-
-	t.Run("runTestCmd", func(t *testing.T) {
-		execArgs := []string{"echo", "hello world"}
-		expecting := "hello world\n"
-		if runtime.GOOS == "windows" {
-			execArgs = append([]string{"cmd", "/c"}, execArgs...)
-			expecting = "\"hello world\"\r\n"
-		}
-		out, err := r.runTestCmd(ctx, execArgs)
-		assert.NoErr(t, err)
-		assert.That(t, string(out), should.Equal(expecting))
 	})
 }
