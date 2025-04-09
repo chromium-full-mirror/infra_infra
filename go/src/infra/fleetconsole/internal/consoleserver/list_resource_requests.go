@@ -184,7 +184,7 @@ func buildListResourceRequestsQuery(ctx context.Context, bqClient *bigquery.Clie
 		return nil, err
 	}
 
-	queryBuilder = queryBuilder.WithOffsetPagination(offset, int(req.GetPageSize()))
+	queryBuilder = queryBuilder.WithOffsetPagination(offset, int(req.GetPageSize())+1)
 
 	return queryBuilder.ToUnboundBigQueryQuery(bqClient)
 }

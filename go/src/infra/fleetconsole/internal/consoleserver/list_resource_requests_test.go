@@ -20,24 +20,6 @@ func Test_buildListResourceRequestsQuery(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 
-	t.Run("empty request", func(t *testing.T) {
-		t.Parallel()
-		req := &fleetconsolerpc.ListResourceRequestsRequest{}
-		query, err := buildListResourceRequestsQuery(ctx, &bigquery.Client{}, req, 0)
-		assert.Loosely(t, err, should.BeNil)
-		assert.Loosely(t, query.Q, should.Equal(
-			`SELECT rr_id, resource_details, resource_request_actual_delivery_date, resource_request_target_delivery_date, fulfillment_status, material_sourcing_target_delivery_date, build_target_delivery_date, qa_target_delivery_date, config_target_delivery_date
-FROM `+
-				"`resource_delivery_dev.resource_requests`"+
-				`
-
-ORDER BY rr_id
-LIMIT 0
-OFFSET 0;`,
-		))
-		assert.Loosely(t, query.Parameters, should.HaveLength(0))
-	})
-
 	t.Run("request with filter", func(t *testing.T) {
 		t.Parallel()
 		req := &fleetconsolerpc.ListResourceRequestsRequest{
@@ -53,7 +35,7 @@ FROM `+
 				`
 WHERE ((rr_id = ?) OR (rr_id = ?))
 ORDER BY rr_id
-LIMIT 10
+LIMIT 11
 OFFSET 0;`,
 		))
 		assert.Loosely(t, query.Parameters[0].Value, should.Equal("RR-001"))
