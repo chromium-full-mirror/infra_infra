@@ -29,19 +29,19 @@ pins:
   digest: sha256:152dc042452c496007f07ca9127571cb9c29697f42acbfad72324b2bb2e43c98
 - image: docker.io/library/ubuntu
   tag: "20.04"
-  digest: sha256:b650347f3d05a762604a103b48099273713d60e2754ed8dba158cc6b67cbdbb3
+  digest: sha256:8feb4d8ca5354def3d8fce243717141ce31e2c428701f6682bd2fafe15388214
 - image: docker.io/library/ubuntu
   tag: "22.04"
-  digest: sha256:bd01a6d8f34e0bc273d88e30547a0f3633875a0d1902fd39d6d1ad5aca123868
+  digest: sha256:d80997daaa3811b175119350d84305e1ec9129e1799bba0bd1e3120da3ff52c3
 - image: docker.io/library/ubuntu
   tag: "24.04"
-  digest: sha256:4a988f87aabbee19c3935e3106dbfbf63a505d4baf4a5192eb5c8cc45c8cb853
+  digest: sha256:1e622c5f073b4f6bfad6632f2616c7f59ef256e96fe78bf6a595d1dc4376ac02
 - image: docker.io/library/ubuntu
   tag: focal
-  digest: sha256:b650347f3d05a762604a103b48099273713d60e2754ed8dba158cc6b67cbdbb3
+  digest: sha256:8feb4d8ca5354def3d8fce243717141ce31e2c428701f6682bd2fafe15388214
 - image: docker.io/library/ubuntu
   tag: jammy
-  digest: sha256:bd01a6d8f34e0bc273d88e30547a0f3633875a0d1902fd39d6d1ad5aca123868
+  digest: sha256:d80997daaa3811b175119350d84305e1ec9129e1799bba0bd1e3120da3ff52c3
 - image: docker.io/library/ubuntu
   tag: xenial
   digest: sha256:1f1a2d56de1d604801a9671f301190704c25d604a416f59e03c04f5c6ffee0d6
