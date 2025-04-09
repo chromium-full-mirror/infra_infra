@@ -69,7 +69,8 @@ def main():
           # Which wheels to install
           'pip',
           'setuptools',
-          'wheel'
+          'wheel',
+          'packaging',
       ]))
 
 

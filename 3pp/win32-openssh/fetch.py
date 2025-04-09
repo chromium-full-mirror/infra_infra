@@ -35,7 +35,7 @@ def get_download_url(version, platform):
 
   extension = _EXTENSION[platform.split('-')[0]]
 
-  version_short = re.sub('p1-(?:Preview|Beta)$', '', version)
+  version_short = re.sub('p\\d+-(?:Preview|Beta)$', '', version)
 
   url = (
       'https://github.com/PowerShell/Win32-OpenSSH/releases/download/{version}/'

@@ -49,21 +49,23 @@ def do_latest():
       '45.0.0',  # Advertises python_version='py2.py3', but also requires >= 3.5
   ])
 
-  print('pip%s.setuptools%s.wheel%s' %
+  print('pip%s.setuptools%s.wheel%s.packaging%s' %
         (_get_version('pip'),
          _get_version('setuptools', bad_versions=setuptools_bad_versions),
-         _get_version('wheel')))
+         _get_version('wheel'),
+         _get_version('packaging')))
 
 
 def get_download_url(version):
   # split version pip<vers>.setuptools<vers>.wheel<vers>
   m = re.match(
-    r'^pip(.*)\.setuptools(.*)\.wheel(.*)$',
+    r'^pip(.*)\.setuptools(.*)\.wheel(.*)\.packaging(.*)$',
     version)
   versions = {
     'pip': m.group(1),
     'setuptools': m.group(2),
     'wheel': m.group(3),
+    'packaging': m.group(4),
   }
   download_urls, name = [], []
   for pkgname, vers in versions.items():
