@@ -2,88 +2,95 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+version: "2"
+
 # https://golangci-lint.run/usage/configuration/#linters-configuration
 linters:
   enable:
-    - errorlint
-    - gci
-    - stylecheck
     - copyloopvar
+    - errorlint
     - intrange
-
+    - staticcheck
   disable:
+    # There are also many unchecked errors.
+    - errcheck
     # Some projects are not ineffassign-clean yet.
     - ineffassign
     # There are many, many unused functions.
     - unused
-    # There are also many unchecked errors.
-    - errcheck
-
-linters-settings:
-  # TODO(gregorynisbet): Use default config here.
-  errorlint:
-    # Moving %v or %s to %w is a breaking API change.
-    errorf: false
-    # == is okay on errors (for now)
-    comparison: false
-    # type switches on errors are okay (for now)
-    asserts: false
-
-  # https://golangci-lint.run/usage/linters/#gci
-  gci:
-    # Section configuration to compare against.
-    # Section names are case-insensitive and may contain parameters in ().
-    # The default order of sections is `standard > default > custom > blank > dot`,
-    # If `custom-order` is `true`, it follows the order of `sections` option.
-    # Default: ["standard", "default"]
-    sections:
-      - standard # Standard section: captures all standard packages.
-      - default # Default section: contains all imports that could not be matched to another section type.
-      - prefix(go.chromium.org) # Custom section: groups all imports with the specified Prefix.
-      - localmodule # Custom section: groups all imports with the specified Prefix.
-    # Enable custom order of sections.
-    # If `true`, make the section order the same as the order of `sections`.
-    # Default: false
-    custom-order: true
-
-  # Start the stylecheck config off small and grow it over time as we remove classes of error.
-  stylecheck:
-    checks:
-      - ST1013 # HTTP Error code not magic number
-
-  # Start the staticcheck config off small and grow it over time as we remove classes of error.
-  staticcheck:
-    checks:
-      - SA1000 # Invalid regex
-
-  # Go vet exposes a disable switch, so we can enable everything and disable stuff in a piecemeal fashion.
-  govet:
-    disable:
-      # Too many cases of copying protos. For example, in tricium and, sadly, UFS.
-      - copylocks
-
-  # Start the gosimple config off slow.
-  gosimple:
-    checks:
-      # Omit comparison with boolean constant.
-      # https://staticcheck.dev/docs/checks/#S1002
-      - S1002
+  settings:
+    # TODO(gregorynisbet): Use default config here.
+    errorlint:
+      # Moving %v or %s to %w is a breaking API change.
+      errorf: false
+      # type switches on errors are okay (for now)
+      asserts: false
+      # == is okay on errors (for now)
+      comparison: false
+    # Go vet exposes a disable switch, so we can enable everything and disable stuff in a piecemeal fashion.
+    govet:
+      disable:
+        # Too many cases of copying protos. For example, in tricium and, sadly, UFS.
+        - copylocks
+    # Start the staticcheck config off small and grow it over time as we remove classes of error.
+    staticcheck:
+      checks:
+        # Omit comparison with boolean constant.
+        # https://staticcheck.dev/docs/checks/#S1002
+        - S1002
+        # Invalid regex
+        - SA1000
+        # HTTP Error code not magic number
+        - ST1013
+  exclusions:
+    generated: lax
+    # Independently from option `exclude` we use default exclude patterns,
+    # it can be disabled by this option. To list all
+    # excluded by default patterns execute `golangci-lint run --help`.
+    # The old `exclude-use-default: false` setting implied manual control, reflected here.
+    rules:
+      - path: (.+)\.go$
+        # Exclude specific error checking patterns
+        text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*printf?|os\.(Un)?Setenv). is not checked
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 
 # https://golangci-lint.run/usage/configuration/#issues-configuration
 issues:
-
-  # Independently from option `exclude` we use default exclude patterns,
-  # it can be disabled by this option. To list all
-  # excluded by default patterns execute `golangci-lint run --help`.
-  # Default value for this option is true.
-  exclude-use-default: false
-
-  exclude:
-    - "Error return value of .((os\\.)?std(out|err)\\..*|.*Close|.*Flush|os\\.Remove(All)?|.*printf?|os\\.(Un)?Setenv). is not checked"
-
-
   # Maximum issues count per one linter. Set to 0 to disable. Default is 50.
   max-issues-per-linter: 0
-
   # Maximum count of issues with the same text. Set to 0 to disable. Default is 3.
   max-same-issues: 0
+
+formatters:
+  enable:
+    - gci
+  settings:
+    # https://golangci-lint.run/usage/formatters/#gci
+    gci:
+      # Section configuration to compare against.
+      # Section names are case-insensitive and may contain parameters in ().
+      # The default order of sections is `standard > default > custom > blank > dot`,
+      # If `custom-order` is `true`, it follows the order of `sections` option.
+      # Default: ["standard", "default"]
+      sections:
+        # Standard section: captures all standard packages.
+        - standard
+        # Default section: contains all imports that could not be matched to another section type.
+        - default
+        # Custom section: groups all imports with the specified Prefix.
+        - prefix(go.chromium.org)
+        # Custom section: groups all imports with the specified Prefix (local modules).
+        - localmodule
+      # Enable custom order of sections.
+      # If `true`, make the section order the same as the order of `sections`.
+      # Default: false
+      custom-order: true
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
