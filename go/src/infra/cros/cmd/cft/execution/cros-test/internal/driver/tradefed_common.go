@@ -124,7 +124,11 @@ func formatTestName(fqTestName string) string {
 	for _, suite := range knownSuites {
 		testName = strings.TrimPrefix(testName, suite+".")
 	}
-	return fmt.Sprintf("\"%s\"", testName)
+	if isAospTradefed() {
+		return testName
+	} else {
+		return fmt.Sprintf("\"%s\"", testName)
+	}
 }
 
 // Extracts a single value for a flag name.
