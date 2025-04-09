@@ -6,7 +6,9 @@ package cli
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"os"
 	"path"
 	"runtime/debug"
 
@@ -74,6 +76,9 @@ func (s *ExecutionServiceServer) RunTests(ctx context.Context, req *api.CrosTest
 	if err != nil {
 		return op, errors.Annotate(err, "RunTests: unable to determine results directory path").Err()
 	}
+	if err = updateShadowConfig(); err != nil {
+		return op, err
+	}
 
 	rspn, err := runTests(ctx, s.logger, resultsDir, s.tlwAddr, s.metadata, req)
 	if err != nil {
@@ -99,4 +104,21 @@ func (s *ExecutionServiceServer) loadResultsDir(req *api.CrosTestRequest) (strin
 	resultsDir := path.Join(s.resultRootDir, resultsSubDir)
 	s.logger.Printf("WARNING: overriding default results directory path with %v", resultsDir)
 	return resultsDir, nil
+}
+
+func updateShadowConfig() error {
+	if imageStorageServer := os.Getenv("DRONE_AGENT_GCS_IMAGE_STORAGE_SERVER"); imageStorageServer != "" {
+		shadowConfig := "/usr/local/autotest/shadow_config.ini"
+		f, err := os.Create(shadowConfig)
+		if err != nil {
+			return errors.Annotate(err, fmt.Sprintf("Unable to create %s", shadowConfig)).Err()
+		}
+		_, err = f.WriteString(fmt.Sprintf("\n[CROS]\nimage_storage_server: gs://%s\n", imageStorageServer))
+		if err != nil {
+			f.Close()
+			return errors.Annotate(err, fmt.Sprintf("Failed to write to %s", shadowConfig)).Err()
+		}
+		f.Close()
+	}
+	return nil
 }

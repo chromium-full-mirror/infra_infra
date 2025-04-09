@@ -22,6 +22,8 @@ import (
 	"go.chromium.org/infra/cros/internal/env"
 )
 
+const GCSImageStorageServer = "DRONE_AGENT_GCS_IMAGE_STORAGE_SERVER"
+
 type crosTestProcessor struct {
 	cmdExecutor       cmdExecutor
 	defaultServerPort string // Default port used in cros-test
@@ -94,6 +96,11 @@ func (p *crosTestProcessor) Process(request *api.StartTemplatedContainerRequest)
 
 	// Get GCE Metadata Server env vars
 	envVars = append(envVars, gceMetadataEnvVars()...)
+
+	// Add env vars required by autotest. See b/385219489
+	if value, present := os.LookupEnv(GCSImageStorageServer); present {
+		envVars = append(envVars, fmt.Sprintf("%s=%s", GCSImageStorageServer, value))
+	}
 
 	additionalOptions := &api.StartContainerRequest_Options{
 		Network: request.Network,

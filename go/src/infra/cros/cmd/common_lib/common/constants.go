@@ -194,7 +194,8 @@ func DockerEnvVarsToPreserve() []string {
 		"DOCKER_CERT_PATH",
 		"DRONE_AGENT_HIVE",
 		"DOCKER_HOST",
-		"DOCKER_TLS_VERIFY"}
+		"DOCKER_TLS_VERIFY",
+		"DRONE_AGENT_GCS_IMAGE_STORAGE_SERVER"}
 }
 
 var (
