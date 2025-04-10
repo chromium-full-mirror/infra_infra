@@ -6,11 +6,13 @@ package consoleserver
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
 
+	"go.chromium.org/luci/common/data/aip132"
 	"go.chromium.org/luci/common/logging"
 
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
@@ -21,7 +23,8 @@ import (
 )
 
 const (
-	DefaultPageSize = 10
+	DefaultPageSize      = 10
+	ExpectedEtaColumnKey = "expected_eta" // computed column key, doesn't exist in the db
 )
 
 func BigQueryValueToDate(value bigquery.Value) (date *fleetconsolerpc.DateOnly) {
@@ -30,34 +33,6 @@ func BigQueryValueToDate(value bigquery.Value) (date *fleetconsolerpc.DateOnly) 
 	}
 
 	return utils.FromCivilDate(value.(civil.Date))
-}
-
-func MapFulfillmentStatus(status bigquery.Value) *fleetconsolerpc.ResourceRequest_Status {
-	if status == nil {
-		return nil
-	}
-
-	switch status.(string) {
-	case rri.NotStartedStatus:
-		{
-			status := fleetconsolerpc.ResourceRequest_NOT_STARTED
-			return &status
-		}
-	case rri.InProgressStatus:
-		{
-			status := fleetconsolerpc.ResourceRequest_IN_PROGRESS
-			return &status
-		}
-	case rri.CompleteStatus:
-		{
-			status := fleetconsolerpc.ResourceRequest_COMPLETED
-			return &status
-		}
-	default:
-		{
-			return nil
-		}
-	}
 }
 
 func MapRow(row map[string]bigquery.Value) *fleetconsolerpc.ResourceRequest {
@@ -78,7 +53,7 @@ func MapRow(row map[string]bigquery.Value) *fleetconsolerpc.ResourceRequest {
 		Name:               "resourceRequests/" + rrID,
 		ResourceDetails:    row[rri.ResourceDetailsColumn].(string),
 		ExpectedEta:        expectedEta,
-		FulfillmentStatus:  MapFulfillmentStatus(row[rri.FulfillmentStatusColumn]),
+		FulfillmentStatus:  rri.MapFulfillmentStatus(row[rri.FulfillmentStatusColumn]),
 		ProcurementEndDate: BigQueryValueToDate(row[rri.ProcurementDateColumn]),
 		BuildEndDate:       BigQueryValueToDate(row[rri.BuildEndDateColumn]),
 		QaEndDate:          BigQueryValueToDate(row[rri.QAEndDateColumn]),
@@ -176,15 +151,46 @@ func buildListResourceRequestsQuery(ctx context.Context, bqClient *bigquery.Clie
 		return nil, err
 	}
 
-	// ORDER BY doesn't support parameters, so we need to make sure the column
-	// name is correct.
-	queryBuilder, err = queryBuilder.WithOrderByClause(req.GetOrderBy(), rri.RrIDColumn)
+	orderByString, err := mapOrderBy(req.GetOrderBy())
 	if err != nil {
 		logging.Errorf(ctx, "failed to build order by clause: %s", err)
 		return nil, err
 	}
 
+	// ORDER BY doesn't support parameters, so we need to make sure the column
+	// name is correct.
+	queryBuilder = queryBuilder.WithCustomOrderByClause(orderByString)
+
 	queryBuilder = queryBuilder.WithOffsetPagination(offset, int(req.GetPageSize())+1)
 
 	return queryBuilder.ToUnboundBigQueryQuery(bqClient)
+}
+
+func mapOrderBy(orderByAip string) (string, error) {
+	orderBy, err := aip132.ParseOrderBy(orderByAip)
+	if err != nil {
+		return "", err
+	}
+
+	orderByString := ""
+
+	if len(orderBy) == 0 {
+		return rri.RrIDColumn, nil
+	}
+
+	if len(orderBy) > 1 {
+		return "", fmt.Errorf("only one order by is supported")
+	}
+
+	if orderBy[0].FieldPath.String() == ExpectedEtaColumnKey {
+		orderByString = "CASE WHEN " + rri.ResourceRequestActualDeliveryDateColumn + " IS NULL THEN " + rri.ResourceRequestTargetDeliveryDateColumn + " ELSE " + rri.ResourceRequestActualDeliveryDateColumn + " END"
+	} else {
+		orderByString = orderBy[0].FieldPath.String()
+	}
+
+	if orderBy[0].Descending {
+		orderByString += " DESC"
+	}
+
+	return orderByString, nil
 }

@@ -4,7 +4,12 @@
 
 package rri
 
-import "go.chromium.org/infra/fleetconsole/internal/database/queryutils"
+import (
+	"cloud.google.com/go/bigquery"
+
+	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
+	"go.chromium.org/infra/fleetconsole/internal/database/queryutils"
+)
 
 const (
 	ResourceRequestTableName                = "resource_delivery_dev.resource_requests"
@@ -22,7 +27,7 @@ const (
 	QAStatusColumn                          = "qa_status"
 	ConfigStatusColumn                      = "config_status"
 
-	InProgressStatus = "INPROGRESS"
+	InProgressStatus = "IN_PROGRESS"
 	NotStartedStatus = "NOT_STARTED"
 	CompleteStatus   = "COMPLETE"
 )
@@ -39,4 +44,24 @@ func GetResourceRequestsTable() *queryutils.Table {
 		queryutils.NewColumn(QAEndDateColumn).Build(),
 		queryutils.NewColumn(ConfigEndDateColumn).Build(),
 	).Build()
+}
+
+func MapFulfillmentStatus(status bigquery.Value) *fleetconsolerpc.ResourceRequest_Status {
+	if status == nil {
+		return nil
+	}
+
+	switch status.(string) {
+	case NotStartedStatus:
+		status := fleetconsolerpc.ResourceRequest_NOT_STARTED
+		return &status
+	case InProgressStatus:
+		status := fleetconsolerpc.ResourceRequest_IN_PROGRESS
+		return &status
+	case CompleteStatus:
+		status := fleetconsolerpc.ResourceRequest_COMPLETED
+		return &status
+	default:
+		return nil
+	}
 }

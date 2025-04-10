@@ -87,6 +87,15 @@ func (q *QueryBuilder) WithOrderByClause(order, uniqueFieldForDeterminism string
 	return q, nil
 }
 
+func (q *QueryBuilder) WithCustomOrderByClause(orderBy string) *QueryBuilder {
+	if orderBy == "" {
+		return q
+	}
+
+	q.orderByClause = "ORDER BY " + orderBy
+	return q
+}
+
 // fieldExistsInOrdering checks whether ordering
 // fields include the specified one as well.
 func fieldExistsInOrdering(orderby []aip132.OrderBy, field string) bool {
