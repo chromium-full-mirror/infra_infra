@@ -379,7 +379,8 @@
     "cmd": [
       "[CACHE]/builder/infra/cipd/golangci-lint",
       "run",
-      "--output.json.path=stdout",
+      "--output.json.path",
+      "/path/to/tmp/json",
       "--issues-exit-code=0",
       "--timeout=5m",
       "cmd/..."

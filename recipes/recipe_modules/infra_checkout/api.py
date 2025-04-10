@@ -310,11 +310,11 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
             [
                 co.path / 'infra' / 'cipd' / 'golangci-lint',
                 'run',
-                '--output.json.path=stdout',
+                '--output.json.path', self.m.json.output(),
                 '--issues-exit-code=0',
                 '--timeout=5m',
             ] + sorted(pkgs),
-            step_test_data=lambda: self.m.json.test_api.output_stream({
+            step_test_data=lambda: self.m.json.test_api.output({
                 'Issues': [
                     {
                         'FromLinter': 'deadcode',
@@ -347,9 +347,8 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
                         },
                     },
                 ],
-            }),
-            stdout=self.m.json.output())
-        issues.extend(result.stdout.get('Issues') or ())
+            }))
+        issues.extend(result.json.output.get('Issues') or ())
 
     findings = []
     for issue in issues:
