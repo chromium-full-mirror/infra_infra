@@ -41,22 +41,15 @@ func setAMTStateExec(ctx context.Context, info *execs.ExecInfo) error {
 
 // healthCheckExec checks if we can retrieve the power state.
 func healthCheckExec(ctx context.Context, info *execs.ExecInfo) error {
-	dut := info.GetDut()
-	if dut.GetChromeos().GetAmtManager() == nil {
-		return errors.Reason("check amt_manager health: amt_manager is not supported").Err()
+	client, err := getFlexAMTClient(ctx, info)
+	if err != nil {
+		return errors.Reason("AMT health check: failed to create client").Err()
 	}
-	hostname := dut.GetChromeos().GetAmtManager().GetHostname()
-	if hostname == "" {
-		return errors.Reason("check amt_manager health: hostname is empty").Err()
-	}
-	useTLS := dut.GetChromeos().GetAmtManager().GetUseTls()
-	// b/353671548: Store the AMT password somewhere else.
-	client := amt.NewAMTClient(ctx, hostname, "admin", "P@ssword1", useTLS)
 	//TODO(b/353283943): Implement a more granular AMT health check.
 	//
 	// Use this as a health check for now, since it implicity verifies that we can
 	// authenticate and get responses to our requests.
-	_, err := client.GetPowerState(ctx)
+	_, err = client.GetPowerState(ctx)
 	return errors.Annotate(err, "flex AMT is not healthy").Err()
 }
 
@@ -69,8 +62,43 @@ func amtManagerNotPresentExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
+// Configure and return an AMTClient.
+func getFlexAMTClient(ctx context.Context, info *execs.ExecInfo) (*amt.AMTClient, error) {
+	dut := info.GetDut()
+	hostname, err := retrieveAMTHostname(ctx, dut)
+	if err != nil {
+		return nil, err
+	}
+	useTLS := dut.GetChromeos().GetAmtManager().GetUseTls()
+	// b/353671548: Store the AMT password somewhere else.
+	return amt.NewAMTClient(ctx, hostname, "admin", "P@ssword1", useTLS), nil
+}
+
+// Retrieve the AMT hostname.
+func retrieveAMTHostname(ctx context.Context, dut *tlw.Dut) (string, error) {
+	if dut.GetChromeos().GetAmtManager() == nil {
+		return "", errors.Reason("flex get AMT client: amt_manager is not supported").Err()
+	}
+	hostname := dut.GetChromeos().GetAmtManager().GetHostname()
+	if hostname == "" {
+		return "", errors.Reason("flex get AMT client: hostname is empty").Err()
+	}
+	return hostname, nil
+}
+
+// amtManagerAMTRespondsToPingExec pings the AMT interface until is responds.
+func amtManagerAMTRespondsToPingExec(ctx context.Context, info *execs.ExecInfo) error {
+	client, err := getFlexAMTClient(ctx, info)
+	if err != nil {
+		return errors.Reason("flex AMT responds to ping: failed to create client").Err()
+	}
+	// Make up to 90 one-second pings.
+	return errors.Annotate(client.Ping(90), "flex AMT responds to ping").Err()
+}
+
 func init() {
 	execs.Register("amt_manager_is_healthy", healthCheckExec)
 	execs.Register("amt_manager_set_state", setAMTStateExec)
 	execs.Register("amt_manager_not_present", amtManagerNotPresentExec)
+	execs.Register("amt_manager_amt_available", amtManagerAMTRespondsToPingExec)
 }
