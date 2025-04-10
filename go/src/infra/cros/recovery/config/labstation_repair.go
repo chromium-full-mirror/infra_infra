@@ -21,6 +21,7 @@ func LabstationRepairConfig() *Configuration {
 		"System services is up",
 		"Clean up logs if necessary",
 		"Filesystem is writable",
+		"Used Inodes percentage on stateful partition is lower than 50%",
 		"Check servod dependencies",
 		"cros_is_on_stable_version",
 		"Update provisioned info",
@@ -530,6 +531,22 @@ func LabstationRepairConfig() *Configuration {
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
+		"Used Inodes percentage on stateful partition is lower than 50%": {
+			Docs: []string{
+				"Check Inodes useage on stateful partition and make sure it's lower than 50%",
+			},
+			Conditions: []string{
+				"Device is SSHable",
+			},
+			ExecName: "cros_check_used_inode_percentage_lower_than_threshold",
+			ExecExtraArgs: []string{
+				"targetPath:/mnt/stateful_partition",
+				"threshold:50",
+			},
+			RecoveryActions: []string{
+				"Powerwash repair labstation",
+			},
 		},
 	}
 	for k, v := range beforeLogActions {

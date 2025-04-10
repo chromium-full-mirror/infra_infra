@@ -7,6 +7,7 @@ package cros
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -15,6 +16,7 @@ import (
 	"go.chromium.org/infra/cros/recovery/internal/components/cros"
 	"go.chromium.org/infra/cros/recovery/internal/execs"
 	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/logger/metrics"
 )
 
 const (
@@ -166,6 +168,41 @@ func updateGenesysLogicFirmwareForServos(ctx context.Context, info *execs.ExecIn
 	return nil
 }
 
+// checkUsedInodePercentageLowerThanThreshold compare used Inode percentage of a specific path with a specific threshold.
+// It only fails if we can get a reading from system and the reading is greater than the threshold, all error that
+// prevent us from get a valid reading will be warning only.
+func checkUsedInodePercentageLowerThanThreshold(ctx context.Context, info *execs.ExecInfo) error {
+	run := info.DefaultRunner()
+	argsMap := info.GetActionArgs(ctx)
+	targetPath := argsMap.AsString(ctx, "targetPath", "/mnt/stateful_partition")
+	if _, err := run(ctx, 20*time.Second, fmt.Sprintf("test -e %s", targetPath)); err != nil {
+		log.Warningf(ctx, "(Non-critical) path: %s does not exists", targetPath)
+		return nil
+	}
+	output, err := run(ctx, 20*time.Second, fmt.Sprintf("df -Pi %s | tail -1", targetPath))
+	if err != nil {
+		log.Warningf(ctx, "(Non-critical) failed to get valid reading from df, %s", err.Error())
+		return nil
+	}
+	parts := strings.Fields(output)
+	// An example of expected output would includes value of Filesystem, Inodes, IUsed, IFree, IUse%, Mounted on.
+	if len(parts) != 6 {
+		log.Warningf(ctx, "(Non-critical) failed to parse reading from df")
+		return nil
+	}
+	percentageStr := strings.TrimSuffix(parts[4], "%")
+	usePercentage, err := strconv.Atoi(percentageStr)
+	if err != nil {
+		log.Warningf(ctx, "(Non-critical) failed to convert IUse to an integer, %s", err.Error())
+	}
+	threshold := argsMap.AsInt(ctx, "threshold", 50)
+	if usePercentage > threshold {
+		metrics.NewInt64Observation("usedInodePercentage", int64(usePercentage))
+		return errors.Reason("ensure used inode percentage: IUse: %d is greater than threshold: %d", usePercentage, threshold).Err()
+	}
+	return nil
+}
+
 func init() {
 	execs.Register("cros_clean_tmp_owner_request", cleanTmpOwnerRequestExec)
 	execs.Register("cros_validate_uptime", validateUptime)
@@ -175,4 +212,5 @@ func init() {
 	execs.Register("cros_remove_bt_devices", removeBluetoothDeviceExec)
 	execs.Register("cros_update_genesys_logic_firmware", updateGenesysLogicFirmwareForServos)
 	execs.Register("cros_genesys_logic_firmware_image_exists", checkGenesysLogicFirmwareImageExists)
+	execs.Register("cros_check_used_inode_percentage_lower_than_threshold", checkUsedInodePercentageLowerThanThreshold)
 }

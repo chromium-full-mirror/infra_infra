@@ -283,6 +283,197 @@ plans:
           exec_name: cros_is_file_system_writable
           docs:
             - This verifier checks whether the host filesystem is writable.
+        - name: Used Inodes percentage on stateful partition is lower than 50%
+          exec_name: cros_check_used_inode_percentage_lower_than_threshold
+          exec_args:
+            - targetPath:/mnt/stateful_partition
+            - threshold:50
+          docs:
+            - Check Inodes useage on stateful partition and make sure it's lower than 50%
+          conditions:
+            - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
+              exec_name: cros_ssh
+              docs:
+                - This verifier checks whether the host is accessible over ssh.
+          recoveries:
+            - name: Powerwash repair labstation
+              exec_name: sample_pass
+              docs:
+                - Powerwash and then install stable_version image on the labstation.
+              conditions:
+                - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
+                  exec_name: cros_ssh
+                  docs:
+                    - This verifier checks whether the host is accessible over ssh.
+                - name: Labstation not in auto-update exempted pool
+                  exec_name: dut_not_in_pool
+                  exec_args:
+                    - servo_verification
+                    - labstation_tryjob
+                    - labstation_canary
+                    - labstation_block_autoupdate
+                  docs:
+                    - There are some labstations we don't want they receive auto-update, e.g. labstations that used for image qualification purpose
+              dependencies:
+                - name: Write factory-install-reset to file system
+                  exec_name: cros_run_shell_command
+                  exec_args:
+                    - echo "fast safe" > /mnt/stateful_partition/factory_install_reset
+                - name: Labstation reboot (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Perform reboot of the host and perform additional actions as necessary.
+                    - If reboot succeed then we can remove all request for reboot as we just did it.
+                  dependencies:
+                    - name: cros_stop_powerd (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_run_shell_command
+                      exec_args:
+                        - stop
+                        - powerd
+                    - name: cros_clean_tmp_owner_request (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_clean_tmp_owner_request
+                      docs:
+                        - In some cases, the update flow puts the TPM into a state such that it fails verification.
+                        - We don't know why. However, this call papers over the problem by clearing the TPM during the reboot.
+                        - We ignore failures from 'crossystem'.
+                        - Although failure here is unexpected, and could signal a bug, the point of the exercise is to paper over problems.
+                    - name: cros_allowed_reboot
+                      exec_name: cros_allowed_reboot
+                    - name: Simple reboot (ALWAYS_RUN)
+                      exec_name: cros_run_command
+                      exec_args:
+                        - command:reboot
+                        - background:true
+                      docs:
+                        - Simple un-blocker reboot.
+                        - The action will not run if the labstation's filesystem I/O is blocked because /sbin/reboot may not work if the filesystem is hosed.
+                      conditions:
+                        - name: cros_filesystem_io_not_blocked
+                          exec_name: cros_filesystem_io_not_blocked
+                    - name: Sysrq reboot (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_run_shell_command
+                      exec_args:
+                        - echo b > /proc/sysrq-trigger
+                      docs:
+                        - Immediately reboot the system, without unmounting or syncing filesystems
+                        - The action only runs when the filesystem is hosed where regular reboot executable will not work.
+                      conditions:
+                        - name: Filesystem IO blocked (ALWAYS_RUN)
+                          exec_name: sample_fail
+                          docs:
+                            - Filesystem I/O is blocked on the labstation.
+                            - The action is expected to fail when filesystem I/O is not blocked on the labstation.
+                          conditions:
+                            - name: cros_filesystem_io_not_blocked
+                              exec_name: cros_filesystem_io_not_blocked
+                    - name: Sleep 10s (Allow to fail) (ALWAYS_RUN)
+                      exec_name: sample_sleep
+                      exec_args:
+                        - sleep:10
+                    - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Try to wait device to be sshable during after the device being rebooted.
+                    - name: Start system services (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_run_command
+                      exec_args:
+                        - host:dut
+                        - command:start system-services
+                      docs:
+                        - Start system-services on the labstation
+                      dependencies:
+                        - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
+                          exec_name: cros_ssh
+                          docs:
+                            - This verifier checks whether the host is accessible over ssh.
+                    - name: Remove reboot requests (Allow to fail)
+                      exec_name: cros_remove_all_reboot_request
+                      docs:
+                        - Remove all requests for reboot on the host.
+                        - The action has to be called after reboot of the device.
+                - name: Install stable labstation image without reboot (time:'1h0m0s')
+                  exec_name: cros_provision
+                  exec_args:
+                    - no_reboot
+                  docs:
+                    - Install stable labstation image but do not reboot.
+                  conditions:
+                    - name: has_stable_version_cros_image
+                      exec_name: has_stable_version_cros_image
+                    - name: cros_kernel_priority_has_not_changed
+                      exec_name: cros_kernel_priority_has_not_changed
+                - name: Labstation reboot (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Perform reboot of the host and perform additional actions as necessary.
+                    - If reboot succeed then we can remove all request for reboot as we just did it.
+                  dependencies:
+                    - name: cros_stop_powerd (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_run_shell_command
+                      exec_args:
+                        - stop
+                        - powerd
+                    - name: cros_clean_tmp_owner_request (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_clean_tmp_owner_request
+                      docs:
+                        - In some cases, the update flow puts the TPM into a state such that it fails verification.
+                        - We don't know why. However, this call papers over the problem by clearing the TPM during the reboot.
+                        - We ignore failures from 'crossystem'.
+                        - Although failure here is unexpected, and could signal a bug, the point of the exercise is to paper over problems.
+                    - name: cros_allowed_reboot
+                      exec_name: cros_allowed_reboot
+                    - name: Simple reboot (ALWAYS_RUN)
+                      exec_name: cros_run_command
+                      exec_args:
+                        - command:reboot
+                        - background:true
+                      docs:
+                        - Simple un-blocker reboot.
+                        - The action will not run if the labstation's filesystem I/O is blocked because /sbin/reboot may not work if the filesystem is hosed.
+                      conditions:
+                        - name: cros_filesystem_io_not_blocked
+                          exec_name: cros_filesystem_io_not_blocked
+                    - name: Sysrq reboot (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_run_shell_command
+                      exec_args:
+                        - echo b > /proc/sysrq-trigger
+                      docs:
+                        - Immediately reboot the system, without unmounting or syncing filesystems
+                        - The action only runs when the filesystem is hosed where regular reboot executable will not work.
+                      conditions:
+                        - name: Filesystem IO blocked (ALWAYS_RUN)
+                          exec_name: sample_fail
+                          docs:
+                            - Filesystem I/O is blocked on the labstation.
+                            - The action is expected to fail when filesystem I/O is not blocked on the labstation.
+                          conditions:
+                            - name: cros_filesystem_io_not_blocked
+                              exec_name: cros_filesystem_io_not_blocked
+                    - name: Sleep 10s (Allow to fail) (ALWAYS_RUN)
+                      exec_name: sample_sleep
+                      exec_args:
+                        - sleep:10
+                    - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Try to wait device to be sshable during after the device being rebooted.
+                    - name: Start system services (Allow to fail) (ALWAYS_RUN)
+                      exec_name: cros_run_command
+                      exec_args:
+                        - host:dut
+                        - command:start system-services
+                      docs:
+                        - Start system-services on the labstation
+                      dependencies:
+                        - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
+                          exec_name: cros_ssh
+                          docs:
+                            - This verifier checks whether the host is accessible over ssh.
+                    - name: Remove reboot requests (Allow to fail)
+                      exec_name: cros_remove_all_reboot_request
+                      docs:
+                        - Remove all requests for reboot on the host.
+                        - The action has to be called after reboot of the device.
         - name: Check servod dependencies
           exec_name: cros_run_command
           exec_args:
