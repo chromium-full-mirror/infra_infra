@@ -16,8 +16,6 @@ linters:
     - errcheck
     # Some projects are not ineffassign-clean yet.
     - ineffassign
-    # There are many, many unused functions.
-    - unused
   settings:
     # TODO(gregorynisbet): Use default config here.
     errorlint:
@@ -51,6 +49,14 @@ linters:
       - path: (.+)\.go$
         # Exclude specific error checking patterns
         text: Error return value of .((os\.)?std(out|err)\..*|.*Close|.*Flush|os\.Remove(All)?|.*printf?|os\.(Un)?Setenv). is not checked
+      - linters:
+        - unused
+        # Ignore `_kind` field in struct for datastore.
+        text: "field _kind is unused"
+      # TODO(b/398333401): Reduce this exlucde by cleaning up unused symbols.
+      - linters:
+        - unused
+        path: ^(appengine|chromeperf|cmd|chromium|cr_builder_health|cros|device_manager|experimental|fleetconsole|libs|qscheduler|rts|tools|unifiedfleet|vm_leaser)/
     paths:
       # Ignore files under third_party dir.
       - ^third_party/.*\.go$
