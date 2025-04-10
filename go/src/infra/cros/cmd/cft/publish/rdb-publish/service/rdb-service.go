@@ -13,6 +13,7 @@ import (
 	"os"
 	"path"
 	"strconv"
+	"strings"
 
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
@@ -325,6 +326,47 @@ func extractBaseChromiumRDBConfig(testArgs map[string]string) (map[string]interf
 	return rdbSettings, nil
 }
 
+// fetchChromeosTags fetches ChromeOS specific tags from the test results.
+func fetchChromeosTags(testResult *artifact.TestResult) map[string]string {
+	primaryExecutionInfo := testResult.GetTestInvocation().GetPrimaryExecutionInfo()
+	if primaryExecutionInfo == nil {
+		return map[string]string{}
+	}
+
+	tags := map[string]string{}
+	buildInfo := primaryExecutionInfo.GetBuildInfo()
+	if buildInfo != nil {
+		buildName := buildInfo.Name
+		tags["image"] = buildName
+		tags["build"] = strings.Split(buildName, "/")[1]
+	}
+
+	envInfo := primaryExecutionInfo.GetEnvInfo()
+	var buildbucketInfo *artifact.BuildbucketInfo
+	switch envInfo.(type) {
+	case *artifact.ExecutionInfo_SkylabInfo:
+		skylabInfo := primaryExecutionInfo.GetSkylabInfo()
+		if skylabInfo != nil {
+			buildbucketInfo = skylabInfo.GetBuildbucketInfo()
+		}
+	case *artifact.ExecutionInfo_SatlabInfo:
+		satlabInfo := primaryExecutionInfo.GetSatlabInfo()
+		if satlabInfo != nil {
+			buildbucketInfo = satlabInfo.GetBuildbucketInfo()
+		}
+	default:
+		log.Printf("unsupported env info type: %v", envInfo)
+	}
+	if buildbucketInfo != nil {
+		tags["ancestor_buildbucket_ids"] = strings.Trim(
+			strings.Join(strings.Fields(
+				fmt.Sprint(buildbucketInfo.GetAncestorIds())), ","),
+			"[]")
+	}
+
+	return tags
+}
+
 // chromiumTestRDBConfig creates the resultdb config for chromium tests.
 func chromiumTestRDBConfig(testResult *artifact.TestResult, baseTags map[string]string, baseVariant map[string]string, testhausBaseURL string, crosTestResultFile string) (*rdbclient.RdbStreamConfig, error) {
 	if len(testResult.TestRuns) == 0 {
@@ -352,6 +394,11 @@ func chromiumTestRDBConfig(testResult *artifact.TestResult, baseTags map[string]
 		// For gtest, use the chromium result format and its result file.
 		resultFileDir := testResult.TestRuns[0].GetTestCaseInfo().GetTestCaseResult().GetResultDirPath().GetPath()
 		resultFilePath = path.Join(resultFileDir, ChromiumResultJSONFilePathForGtest)
+
+		chromeosTags := fetchChromeosTags(testResult)
+		for k, v := range chromeosTags {
+			baseTags[k] = v
+		}
 	case "native":
 		// For native, use the chromium result format and its result file.
 		testCase := testResult.TestRuns[0].GetTestCaseInfo().GetTestCaseResult()
