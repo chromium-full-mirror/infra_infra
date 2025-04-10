@@ -288,6 +288,7 @@
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal/appengine/testhaus/frontend/ui",
     "env": {
+      "UV_USE_IO_URING": "0",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
     },
@@ -319,6 +320,7 @@
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal/appengine/testhaus/frontend/ui",
     "env": {
+      "UV_USE_IO_URING": "0",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
     },
@@ -350,6 +352,7 @@
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal/appengine/testhaus/frontend/ui",
     "env": {
+      "UV_USE_IO_URING": "0",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
     },
@@ -381,6 +384,7 @@
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal/appengine/testhaus/frontend/ui",
     "env": {
+      "UV_USE_IO_URING": "0",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
     },
@@ -413,6 +417,7 @@
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal/appengine/spike/appengine/frontend/ui",
     "env": {
+      "UV_USE_IO_URING": "0",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
     },
@@ -444,6 +449,7 @@
     ],
     "cwd": "[CACHE]/builder/infra_internal/go/src/infra_internal/appengine/spike/appengine/frontend/ui",
     "env": {
+      "UV_USE_IO_URING": "0",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
     },

@@ -153,6 +153,7 @@
       "GOPROXY": null,
       "GOROOT": "[CACHE]/go6_6_6_chromium1",
       "GOTOOLCHAIN": "local",
+      "UV_USE_IO_URING": "0",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
     },

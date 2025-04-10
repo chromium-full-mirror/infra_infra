@@ -530,6 +530,7 @@
     ],
     "cwd": "[CACHE]/luci-go/milo/ui",
     "env": {
+      "UV_USE_IO_URING": "0",
       "VITE_LOCAL_BASE_OUT_DIR": "[CLEANUP]/tarball/milo/service-ui-new/ui/dist",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
@@ -561,6 +562,7 @@
     ],
     "cwd": "[CACHE]/luci-go/milo/ui",
     "env": {
+      "UV_USE_IO_URING": "0",
       "VITE_LOCAL_BASE_OUT_DIR": "[CLEANUP]/tarball/milo/service-ui-new/ui/dist",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
