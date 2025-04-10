@@ -8,7 +8,6 @@ package localtlw
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"go.chromium.org/chromiumos/config/go/api/test/xmlrpc"
 	"go.chromium.org/luci/common/errors"
@@ -66,46 +65,6 @@ func (c *tlwClient) InitServod(ctx context.Context, req *tlw.InitServodRequest) 
 		return errors.Reason("init servod %q: unexpected case", req.Resource).Err()
 	}
 	return nil
-}
-
-// dockerServodImageName provides image for servod when use container.
-// TODO(b:260649824): move to servod package.
-func dockerServodImageName() string {
-	label := getEnv("SERVOD_CONTAINER_LABEL", "release")
-	registry := getEnv("REGISTRY_URI", "us-docker.pkg.dev/chromeos-partner-moblab/common-core")
-	return fmt.Sprintf("%s/servod:%s", registry, label)
-}
-
-// getEnv retrieves the value of the environment variable named by the key.
-// If retrieved value is empty return default value.
-// TODO(b:260649824): move to servod package.
-func getEnv(key, defaultvalue string) string {
-	if key != "" {
-		if v := os.Getenv(key); v != "" {
-			return v
-		}
-	}
-	return defaultvalue
-}
-
-// createServodContainerArgs creates default args for servodContainer.
-// TODO(b:260649824): move to servod package.
-func createServodContainerArgs(detached bool, exposePorts, envVar, cmd []string) *docker.ContainerArgs {
-	return &docker.ContainerArgs{
-		Detached:   detached,
-		EnvVar:     envVar,
-		ImageName:  dockerServodImageName(),
-		Network:    defaultDockerNetwork(),
-		Volumes:    []string{"/dev:/dev"},
-		Privileged: true,
-		Exec:       cmd,
-	}
-}
-
-// defaultDockerNetwork provides network in which docker need to run.
-// TODO(b:260649824): move to servod package.
-func defaultDockerNetwork() string {
-	return os.Getenv("DOCKER_DEFAULT_NETWORK")
 }
 
 // StopServod stops servod daemon on servo-host.

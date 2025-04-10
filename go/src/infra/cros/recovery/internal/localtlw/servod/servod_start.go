@@ -84,7 +84,7 @@ func startServodOnLocalContainer(ctx context.Context, req *StartServodRequest) e
 			exposePorts = append(exposePorts, fmt.Sprintf("%d:%d/tcp", req.Options.GetServodPort(), req.Options.GetServodPort()))
 		}
 	}
-	containerArgs := createServodContainerArgs(true, exposePorts, envVar, containerStartArgs)
+	containerArgs := CreateServodContainerArgs(req.Options.GetServoSerial(), req.Options.GetServodPort(), true, exposePorts, envVar, containerStartArgs)
 	// Servod expected to start in less 1 minutes.
 	// Image is small is expected to be download in less 1 minute.
 	// To be safe we set 4 minutes to be sure everything will work.
@@ -147,14 +147,20 @@ func defaultDockerNetwork() string {
 	return os.Getenv("DOCKER_DEFAULT_NETWORK")
 }
 
-// createServodContainerArgs creates default args for servodContainer.
-func createServodContainerArgs(detached bool, exposePorts, envVar, cmd []string) *docker.ContainerArgs {
+// CreateServodContainerArgs creates default args for servodContainer.
+func CreateServodContainerArgs(servoSerial string, servoPort int32, detached bool, exposePorts, envVar, cmd []string) *docker.ContainerArgs {
+	volumes := []string{
+		"/dev:/dev",
+	}
+	if servoSerial != "" {
+		volumes = append(volumes, fmt.Sprintf("%s_log:/var/log/servod_%d/", servoSerial, servoPort))
+	}
 	return &docker.ContainerArgs{
 		Detached:    detached,
 		EnvVar:      envVar,
 		ImageName:   dockerServodImageName(),
 		Network:     defaultDockerNetwork(),
-		Volumes:     []string{"/dev:/dev"},
+		Volumes:     volumes,
 		ExposePorts: exposePorts,
 		Privileged:  true,
 		Exec:        cmd,

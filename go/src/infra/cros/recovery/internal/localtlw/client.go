@@ -18,6 +18,7 @@ import (
 	"go.chromium.org/infra/cros/internal/env"
 	"go.chromium.org/infra/cros/recovery/docker"
 	"go.chromium.org/infra/cros/recovery/internal/localtlw/localproxy"
+	"go.chromium.org/infra/cros/recovery/internal/localtlw/servod"
 	"go.chromium.org/infra/cros/recovery/internal/localtlw/ssh"
 	"go.chromium.org/infra/cros/recovery/internal/log"
 	"go.chromium.org/infra/cros/recovery/internal/rpm"
@@ -233,7 +234,7 @@ func (c *tlwClient) Run(ctx context.Context, req *tlw.RunRequest) *tlw.RunResult
 		} else {
 			// If container is down we will run all command directly by container.
 			// TODO(otabek): Simplify running a container when move outside.
-			containerArgs := createServodContainerArgs(false, nil, nil, eReq.Cmd)
+			containerArgs := servod.CreateServodContainerArgs("", 0, false, nil, nil, eReq.Cmd)
 			res, err := d.Start(ctx, containerName, containerArgs, eReq.Timeout)
 			if err != nil {
 				return &tlw.RunResult{
