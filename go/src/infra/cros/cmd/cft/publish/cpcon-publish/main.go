@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"go.chromium.org/chromiumos/test/publish/cmd/cpcon-publish/cli"
+	"go.chromium.org/infra/cros/cmd/cft/publish/cpcon-publish/cli"
 )
 
 func main() {

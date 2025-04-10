@@ -1,4 +1,4 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"os"
 
-	"go.chromium.org/chromiumos/test/publish/cmd/rdb-publish/cli"
+	"go.chromium.org/infra/cros/cmd/cft/publish/rdb-publish/cli"
 )
 
 func main() {

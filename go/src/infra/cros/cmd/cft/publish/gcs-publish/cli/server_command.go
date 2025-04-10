@@ -1,7 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2022 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Represents the server command grouping
 package cli
 
 import (
@@ -10,11 +11,12 @@ import (
 	"log"
 	"strings"
 
-	"go.chromium.org/infra/cros/cmd/cft/publish/ants-publish/server"
 	"go.chromium.org/infra/cros/cmd/cft/publish/commonutils/metadata"
+	"go.chromium.org/infra/cros/cmd/cft/publish/gcs-publish/constants"
+	"go.chromium.org/infra/cros/cmd/cft/publish/gcs-publish/server"
 )
 
-// ServerCommand executed the provisioning as a Server
+// ServerCommand executed the GCS publish as a Server
 type ServerCommand struct {
 	metadata    *metadata.ServerMetadata
 	logFileName string
@@ -27,8 +29,8 @@ func NewServerCommand() *ServerCommand {
 		metadata: &metadata.ServerMetadata{},
 	}
 
-	sc.flagSet.IntVar(&sc.metadata.Port, "port", defaultPort, fmt.Sprintf("Specify the port for the server. Default value %d.", defaultPort))
-	sc.flagSet.StringVar(&sc.logFileName, "log-path", defaultLogDirectory, fmt.Sprintf("Path to record execution logs. Default value is %s", defaultLogDirectory))
+	sc.flagSet.IntVar(&sc.metadata.Port, "port", constants.DefaultPort, fmt.Sprintf("Specify the port for the server. Default value %d.", constants.DefaultPort))
+	sc.flagSet.StringVar(&sc.logFileName, "log-path", constants.DefaultLogDirectory, fmt.Sprintf("Path to record execution logs. Default value is %s", constants.DefaultLogDirectory))
 	return sc
 }
 
@@ -47,7 +49,7 @@ func (sc *ServerCommand) Init(args []string) error {
 	}
 
 	if err = SetUpLog(sc.logFileName); err != nil {
-		return fmt.Errorf("unable to set up logs: %w", err)
+		return fmt.Errorf("unable to set up logs: %s", err)
 	}
 
 	return nil
@@ -56,7 +58,7 @@ func (sc *ServerCommand) Init(args []string) error {
 func (sc *ServerCommand) Run() error {
 	log.Printf("running server mode:")
 
-	ps, closer, err := server.NewAntsPublishServer(sc.metadata)
+	ps, closer, err := server.NewGcsPublishServer(sc.metadata)
 	defer closer()
 	if err != nil {
 		log.Fatalln("failed to create provision: ", err)
