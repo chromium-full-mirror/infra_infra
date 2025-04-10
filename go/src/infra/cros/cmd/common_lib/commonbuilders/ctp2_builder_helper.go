@@ -325,6 +325,7 @@ func buildSuiteRequest(v1 *test_platform.Request) *testapi.SuiteRequest {
 		MaxInShard:      v1.GetTestPlan().GetMaxInShard(),
 		DddSuite:        IsDDDSuite(v1),
 		RetryCount:      GetRetryCount(v1),
+		Iterations:      v1.GetTestPlan().GetIterations(),
 	}
 }
 

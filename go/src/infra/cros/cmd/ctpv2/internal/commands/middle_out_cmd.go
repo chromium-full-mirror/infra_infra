@@ -363,6 +363,7 @@ func validateIterationsCfg(ctx context.Context, iterations *api.Iterations) int 
 		logging.Infof(ctx, fmt.Sprintf("Requested # of scheduled iterations per SchedulingUnitOptions is above MAX limit of %d. Setting config to MAX limit.", maxIterations))
 		return maxIterations
 	}
+	logging.Infof(ctx, fmt.Sprintf("Setting config Iterations to %d", numIterations))
 	return numIterations
 }
 
