@@ -152,7 +152,7 @@ plans:
                             - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                        - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                         - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -719,7 +719,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -740,7 +740,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Install OS in DEV mode by USB-drive ('sample_pass') (ALWAYS_RUN)
                       conditions:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)

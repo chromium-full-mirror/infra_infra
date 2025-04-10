@@ -6884,10 +6884,10 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                - name: Sleep 60 seconds (Allow to fail) (ALWAYS_RUN) (time:'1m10s')
+                - name: Sleep 120 seconds (Allow to fail) (ALWAYS_RUN) (time:'2m5s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:60
+                    - sleep:120
                 - name: Disable software write protection via servo (Allow to fail) (ALWAYS_RUN) (time:'1m0s')
                   exec_name: cros_disable_software_write_protection_by_servo
                   docs:
@@ -7203,10 +7203,10 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
+                - name: Sleep 120 seconds (Allow to fail) (ALWAYS_RUN) (time:'2m5s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:10
+                    - sleep:120
                 - name: Disable software write protection via servo (Allow to fail) (ALWAYS_RUN) (time:'1m0s')
                   exec_name: cros_disable_software_write_protection_by_servo
                   docs:
@@ -7263,10 +7263,10 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
+                - name: Sleep 120 seconds (Allow to fail) (ALWAYS_RUN) (time:'2m5s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:10
+                    - sleep:120
                 - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
                   exec_name: cros_provision_actions_from_recovery_mode
                   exec_args:
@@ -7664,10 +7664,10 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
+                - name: Sleep 120 seconds (Allow to fail) (ALWAYS_RUN) (time:'2m5s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:10
+                    - sleep:120
                 - name: Disable software write protection via servo (Allow to fail) (ALWAYS_RUN) (time:'1m0s')
                   exec_name: cros_disable_software_write_protection_by_servo
                   docs:
@@ -7724,10 +7724,10 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
+                - name: Sleep 120 seconds (Allow to fail) (ALWAYS_RUN) (time:'2m5s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:10
+                    - sleep:120
                 - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
                   exec_name: cros_provision_actions_from_recovery_mode
                   exec_args:
@@ -8097,10 +8097,10 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
+                - name: Sleep 120 seconds (Allow to fail) (ALWAYS_RUN) (time:'2m5s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:10
+                    - sleep:120
                 - name: Disable software write protection via servo (Allow to fail) (ALWAYS_RUN) (time:'1m0s')
                   exec_name: cros_disable_software_write_protection_by_servo
                   docs:
@@ -8157,10 +8157,10 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
+                - name: Sleep 120 seconds (Allow to fail) (ALWAYS_RUN) (time:'2m5s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:10
+                    - sleep:120
                 - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
                   exec_name: cros_provision_actions_from_recovery_mode
                   exec_args:
@@ -8732,10 +8732,10 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                - name: Sleep 60 seconds (Allow to fail) (ALWAYS_RUN) (time:'1m10s')
+                - name: Sleep 120 seconds (Allow to fail) (ALWAYS_RUN) (time:'2m5s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:60
+                    - sleep:120
                 - name: Disable software write protection via servo (Allow to fail) (ALWAYS_RUN) (time:'1m0s')
                   exec_name: cros_disable_software_write_protection_by_servo
                   docs:
@@ -9554,10 +9554,10 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                - name: Sleep 60 seconds (Allow to fail) (ALWAYS_RUN) (time:'1m10s')
+                - name: Sleep 120 seconds (Allow to fail) (ALWAYS_RUN) (time:'2m5s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:60
+                    - sleep:120
                 - name: Disable software write protection via servo (Allow to fail) (ALWAYS_RUN) (time:'1m0s')
                   exec_name: cros_disable_software_write_protection_by_servo
                   docs:
@@ -10305,10 +10305,10 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
+                - name: Sleep 120 seconds (Allow to fail) (ALWAYS_RUN) (time:'2m5s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:10
+                    - sleep:120
                 - name: Disable software write protection via servo (Allow to fail) (ALWAYS_RUN) (time:'1m0s')
                   exec_name: cros_disable_software_write_protection_by_servo
                   docs:
@@ -10365,10 +10365,10 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
+                - name: Sleep 120 seconds (Allow to fail) (ALWAYS_RUN) (time:'2m5s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:10
+                    - sleep:120
                 - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
                   exec_name: cros_provision_actions_from_recovery_mode
                   exec_args:

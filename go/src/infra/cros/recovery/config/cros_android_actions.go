@@ -184,10 +184,10 @@ func androidActions(actions map[string]*Action) {
 				"Call servod to download provision image to USB-key",
 				// Update FW.
 				"Flash EC (FW) by servo (allowed failed)",
-				"Sleep 10 seconds",
+				"Sleep 120 seconds",
 				"Disable software write protection via servo",
 				"Flash AP (FW) by servo with GBB (dev mode + USB boot)",
-				"Sleep 10 seconds",
+				"Sleep 120 seconds",
 				// Reimage the DUT
 				"Boot on USB-key and install AndroidOS",
 				"Wait to be SSHable (normal boot)",

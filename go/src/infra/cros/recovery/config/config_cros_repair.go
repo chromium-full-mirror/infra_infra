@@ -420,7 +420,7 @@ func crosRepairActions() map[string]*Action {
 				"Mark as ChromeOS based",
 				"Mark labstation as servod is in-use",
 				"Flash EC (FW) by servo (allowed failed)",
-				"Sleep 60 seconds",
+				"Sleep 120 seconds",
 				"Disable software write protection via servo",
 				"Flash AP (FW) by servo with GBB (dev mode + USB boot) (allowed failed)",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
@@ -3130,7 +3130,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Mark as ChromeOS based",
 				"Flash EC (FW) by servo (allowed failed)",
-				"Sleep 60 seconds",
+				"Sleep 120 seconds",
 				"Disable software write protection via servo",
 				"Flash AP (FW) by servo with GBB (dev mode + USB boot)",
 				"Servo USB-Key needs to be reflashed",
@@ -3898,7 +3898,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Flash EC (FW) by servo (allowed failed)",
-				"Sleep 60 seconds",
+				"Sleep 120 seconds",
 				"Disable software write protection via servo",
 				"Flash AP (FW) by servo with GBB (dev mode + USB boot)",
 				"Wait to be pingable (normal boot)",
@@ -4731,6 +4731,16 @@ func crosRepairActions() map[string]*Action {
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
+		"Sleep 120 seconds": {
+			ExecName: "sample_sleep",
+			ExecExtraArgs: []string{
+				"sleep:120",
+			},
+			ExecTimeout:            &durationpb.Duration{Seconds: 125},
+			RunControl:             RunControl_ALWAYS_RUN,
+			AllowFailAfterRecovery: true,
+			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
 		"Sleep 1 seconds": {
 			ExecName: "sample_sleep",
 			ExecExtraArgs: []string{
@@ -4994,7 +5004,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Mark labstation as servod is in-use",
 				"Flash EC (FW) by servo (allowed failed)",
-				"Sleep 60 seconds",
+				"Sleep 120 seconds",
 				"Disable software write protection via servo",
 				"Flash AP (FW) by servo with GBB (dev mode + USB boot) (allowed failed)",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
@@ -5089,10 +5099,10 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Flash EC (FW) by servo (allowed failed)",
-				"Sleep 60 seconds",
+				"Sleep 120 seconds",
 				"Disable software write protection via servo",
 				"Flash AP (FW) by servo with GBB (dev mode + USB boot)",
-				"Sleep 60 seconds",
+				"Sleep 120 seconds",
 				"Install OS in DEV mode by USB-drive",
 				"Remove REFLASH_FW repair-request",
 			},

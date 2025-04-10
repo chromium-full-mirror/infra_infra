@@ -2312,7 +2312,7 @@ plans:
                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                 - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -2441,7 +2441,7 @@ plans:
                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                 - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -2968,7 +2968,7 @@ plans:
                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                 - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -2989,7 +2989,7 @@ plans:
                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                 - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                 - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                 - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
@@ -3042,7 +3042,7 @@ plans:
                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                 - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -3199,7 +3199,7 @@ plans:
                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                 - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                   dependencies:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -3693,7 +3693,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -4160,7 +4160,7 @@ plans:
                                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                       dependencies:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                                 - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                                   dependencies:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -4627,7 +4627,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -5094,7 +5094,7 @@ plans:
                                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                       dependencies:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                                 - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                                   dependencies:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -5579,7 +5579,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -6059,7 +6059,7 @@ plans:
                             - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                        - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                         - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -6690,7 +6690,7 @@ plans:
                             - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                        - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                         - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -7792,7 +7792,7 @@ plans:
                             - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                        - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                         - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -8421,7 +8421,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -9043,7 +9043,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -9064,7 +9064,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
@@ -9117,7 +9117,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -9302,7 +9302,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -9715,7 +9715,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -10353,7 +10353,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -10942,7 +10942,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -11706,7 +11706,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -12875,7 +12875,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -13658,7 +13658,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -14582,7 +14582,7 @@ plans:
                             - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                        - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                         - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -15068,7 +15068,7 @@ plans:
                             - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                        - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                         - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -15554,7 +15554,7 @@ plans:
                             - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                        - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                         - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -16050,7 +16050,7 @@ plans:
                                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                       dependencies:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                                 - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                                   dependencies:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -16546,7 +16546,7 @@ plans:
                                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                       dependencies:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                                 - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                                   dependencies:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -17045,7 +17045,7 @@ plans:
                                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                           dependencies:
                                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                                       dependencies:
                                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -17542,7 +17542,7 @@ plans:
                                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                       dependencies:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                                 - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                                   dependencies:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -18037,7 +18037,7 @@ plans:
                                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                           dependencies:
                                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                                       dependencies:
                                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -18531,7 +18531,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -19002,7 +19002,7 @@ plans:
                                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                       dependencies:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                                 - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                                   dependencies:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -19491,7 +19491,7 @@ plans:
                                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                       dependencies:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                                 - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                                   dependencies:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -19962,7 +19962,7 @@ plans:
                                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                           dependencies:
                                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                                       dependencies:
                                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -20454,7 +20454,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -20929,7 +20929,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -21396,7 +21396,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -21867,7 +21867,7 @@ plans:
                             - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                        - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                         - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -22355,7 +22355,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -22932,7 +22932,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -23083,7 +23083,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -23660,7 +23660,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -23873,7 +23873,7 @@ plans:
                             - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                        - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                         - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -24373,7 +24373,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -25320,7 +25320,7 @@ plans:
                             - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                        - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                         - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -25801,7 +25801,7 @@ plans:
                                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                       dependencies:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                                 - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                                   dependencies:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -26699,7 +26699,7 @@ plans:
                             - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                        - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                         - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -27220,7 +27220,7 @@ plans:
                             - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                        - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                         - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                           dependencies:
                             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -27791,7 +27791,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -28266,7 +28266,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -28733,7 +28733,7 @@ plans:
                                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                       dependencies:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                                 - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                                   dependencies:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -29200,7 +29200,7 @@ plans:
                                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                   dependencies:
                                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                            - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                             - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                               dependencies:
                                 - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -29667,7 +29667,7 @@ plans:
                                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                                       dependencies:
                                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                                - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                                - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                                 - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                                   dependencies:
                                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -30347,7 +30347,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -30593,7 +30593,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -30812,7 +30812,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -30833,7 +30833,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 10 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'11s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Boot on USB-key and install AndroidOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
                     - name: Wait to be SSHable (normal boot) ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                     - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
@@ -30886,7 +30886,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -31071,7 +31071,7 @@ plans:
                         - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
+                    - name: Sleep 120 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'2m5s')
                     - name: Disable software write protection via servo (Allow to fail) ('cros_disable_software_write_protection_by_servo') (ALWAYS_RUN) (time:'1m0s')
                       dependencies:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
