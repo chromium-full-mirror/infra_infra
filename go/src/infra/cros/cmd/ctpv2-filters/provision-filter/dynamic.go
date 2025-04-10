@@ -7,12 +7,12 @@ package main
 import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates"
-	dynamic_common "go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/common"
-	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/generators"
-	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/helpers"
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates"
+	dynamic_common "go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/generators"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/helpers"
 )
 
 // GenerateDynamicInfo creates dynamic updates for provision

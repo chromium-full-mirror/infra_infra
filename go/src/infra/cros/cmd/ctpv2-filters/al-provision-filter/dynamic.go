@@ -10,14 +10,14 @@ import (
 	"strings"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates"
-	dynamic_builders "go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/builders"
-	dynamic_common "go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/common"
-	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/generators"
 
 	androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api"
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/common_lib/commonbuilders"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates"
+	dynamic_builders "go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/builders"
+	dynamic_common "go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/generators"
 )
 
 var (

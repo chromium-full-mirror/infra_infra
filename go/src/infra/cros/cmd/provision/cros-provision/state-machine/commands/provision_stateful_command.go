@@ -12,8 +12,6 @@ import (
 
 	conf "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
-	// TODO(juahurta): Migrate all code from dev-util/test
-	"go.chromium.org/chromiumos/test/provision/cmd/provisionserver/bootstrap/info"
 
 	common_utils "go.chromium.org/infra/cros/cmd/provision/common-utils"
 	"go.chromium.org/infra/cros/cmd/provision/cros-provision/service"
@@ -39,7 +37,7 @@ func (c *ProvisionStatefulCommand) Execute(log *log.Logger) error {
 	}
 
 	if _, err := c.cs.Connection.RunCmd(c.ctx, "rm", []string{
-		"-rf", info.UpdateStatefulFilePath, path.Join(info.StatefulPath, "var_new"), path.Join(info.StatefulPath, "dev_image_new"),
+		"-rf", common_utils.UpdateStatefulFilePath, path.Join(common_utils.StatefulPath, "var_new"), path.Join(common_utils.StatefulPath, "dev_image_new"),
 	}); err != nil {
 		log.Printf("ProvisionStatefulCommand rm FAILED")
 		return err
@@ -48,12 +46,12 @@ func (c *ProvisionStatefulCommand) Execute(log *log.Logger) error {
 
 	if err := c.cs.Connection.PipeData(c.ctx,
 		common_utils.BucketJoin(c.cs.ImagePath.GetPath(), "stateful.zst"),
-		fmt.Sprintf("tar --ignore-command-error --overwrite --directory=%s --selinux --zstd -xf -", info.StatefulPath)); err != nil {
+		fmt.Sprintf("tar --ignore-command-error --overwrite --directory=%s --selinux --zstd -xf -", common_utils.StatefulPath)); err != nil {
 		log.Printf("ProvisionStatefulCommand PipeData zst failed CONTINUING")
 		// Continue here, we need the fallback below.
 		if err := c.cs.Connection.PipeData(c.ctx,
 			common_utils.BucketJoin(c.cs.ImagePath.GetPath(), "stateful.tgz"),
-			fmt.Sprintf("tar --ignore-command-error --overwrite --directory=%s --selinux -xzf -", info.StatefulPath)); err != nil {
+			fmt.Sprintf("tar --ignore-command-error --overwrite --directory=%s --selinux -xzf -", common_utils.StatefulPath)); err != nil {
 			log.Printf("ProvisionStatefulCommand PipeData FAILED")
 			return err
 		}
@@ -61,7 +59,7 @@ func (c *ProvisionStatefulCommand) Execute(log *log.Logger) error {
 
 	log.Printf("ProvisionStatefulCommand PipeData Completed")
 
-	if _, err := c.cs.Connection.RunCmd(c.ctx, "echo", []string{"-n", "clobber", ">", info.UpdateStatefulFilePath}); err != nil {
+	if _, err := c.cs.Connection.RunCmd(c.ctx, "echo", []string{"-n", "clobber", ">", common_utils.UpdateStatefulFilePath}); err != nil {
 		log.Printf("ProvisionStatefulCommand UpdateStatefulFilePath FAILED")
 		return err
 	}
@@ -71,9 +69,9 @@ func (c *ProvisionStatefulCommand) Execute(log *log.Logger) error {
 }
 
 func (c *ProvisionStatefulCommand) Revert() error {
-	varNewPath := path.Join(info.StatefulPath, "var_new")
-	devImageNewPath := path.Join(info.StatefulPath, "dev_image_new")
-	_, err := c.cs.Connection.RunCmd(c.ctx, "rm", []string{"-rf", varNewPath, devImageNewPath, info.UpdateStatefulFilePath})
+	varNewPath := path.Join(common_utils.StatefulPath, "var_new")
+	devImageNewPath := path.Join(common_utils.StatefulPath, "dev_image_new")
+	_, err := c.cs.Connection.RunCmd(c.ctx, "rm", []string{"-rf", varNewPath, devImageNewPath, common_utils.UpdateStatefulFilePath})
 	if err != nil {
 		log.Printf("revert stateful install: failed to revert stateful installation, %s", err)
 	}

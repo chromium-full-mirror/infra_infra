@@ -118,7 +118,7 @@ Create `.vscode/launch.json`
 
 ## Running Tests
 ```bash
-go test -v go.chromium.org/chromiumos/test/ctpv2/partner-staging
+go test -v go.chromium.org/infra/cros/cmd/ctpv2-filters/partner-staging
 ```
 
 ## Run with LUCI

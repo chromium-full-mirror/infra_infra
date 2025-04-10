@@ -11,13 +11,13 @@ import (
 	storage_path "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 	dut_api "go.chromium.org/chromiumos/config/go/test/lab/api"
-	. "go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/common"
-	. "go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/helpers"
 	"go.chromium.org/luci/common/testing/ftt"
 	"go.chromium.org/luci/common/testing/truth"
 	"go.chromium.org/luci/common/testing/truth/assert"
 	"go.chromium.org/luci/common/testing/truth/should"
 
+	. "go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/common"
+	. "go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/helpers"
 	. "go.chromium.org/infra/cros/cmd/ctpv2-filters/provision-filter"
 )
 

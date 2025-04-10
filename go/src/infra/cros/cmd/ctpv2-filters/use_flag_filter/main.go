@@ -14,8 +14,8 @@ import (
 	"github.com/google/uuid"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/publish/cmd/publishserver/storage"
 
+	"go.chromium.org/infra/cros/cmd/cft/publish/commonutils/storage"
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/servertemplate"
 )

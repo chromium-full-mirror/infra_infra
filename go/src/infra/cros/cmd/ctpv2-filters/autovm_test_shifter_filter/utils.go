@@ -18,7 +18,8 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/test/publish/cmd/publishserver/storage"
+
+	"go.chromium.org/infra/cros/cmd/cft/publish/commonutils/storage"
 )
 
 const (

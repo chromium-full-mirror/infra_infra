@@ -11,11 +11,11 @@ import (
 	"google.golang.org/protobuf/types/known/structpb"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
-	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates"
-	dynamic_common "go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/common"
-	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/generators"
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates"
+	dynamic_common "go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/generators"
 )
 
 func GenerateDynamicUpdates(req *api.InternalTestplan, updater *FoilRequestUpdater, log *log.Logger) error {

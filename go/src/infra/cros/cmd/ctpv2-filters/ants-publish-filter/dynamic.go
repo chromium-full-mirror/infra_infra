@@ -12,10 +12,11 @@ import (
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/config/go/test/api/metadata"
 	labapi "go.chromium.org/chromiumos/config/go/test/lab/api"
-	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates"
-	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/builders"
-	dynamic_common "go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/common"
-	"go.chromium.org/chromiumos/test/ctpv2/common/dynamic_updates/generators"
+
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/builders"
+	dynamic_common "go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/common"
+	"go.chromium.org/infra/cros/cmd/ctpv2-filters/common/dynamic_updates/generators"
 )
 
 const (
