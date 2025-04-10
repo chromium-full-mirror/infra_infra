@@ -10,6 +10,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 
 	"google.golang.org/grpc/codes"
 
@@ -22,6 +23,10 @@ import (
 	"go.chromium.org/infra/cros/internal/env"
 )
 
+// Tokens expire after 60 minutes.
+// Give ourselves a 10 minute buffer period.
+const reauthTime = 50 * time.Minute
+
 // ContainerServerImpl implements the gRPC services by running commands and
 // mapping errors to proper gRPC status codes.
 type ContainerServerImpl struct {
@@ -29,6 +34,12 @@ type ContainerServerImpl struct {
 	executor          CommandExecutor
 	templateProcessor templates.TemplateProcessor
 	containerLookuper templates.ContainerLookuper
+
+	// Cached Info
+	cachedLoginRegistryRequest *api.LoginRegistryRequest
+
+	// Internal server tracking
+	lastAuth time.Time
 }
 
 // serverStateManager provides API to clean up server state: remove networks and
@@ -107,6 +118,10 @@ func (s *ContainerServerImpl) LoginRegistry(ctx context.Context, request *api.Lo
 	if request.Registry == "" {
 		return nil, utils.invalidArgument("Missing registry")
 	}
+
+	// Set server cache
+	s.cachedLoginRegistryRequest = request
+
 	extensionOutput := s.handleLoginRegistryExtension(ctx, request)
 	if request.Password == "$(gcloud auth print-access-token)" {
 		password, stderr, err := s.executor.Execute(ctx, &commands.GcloudAuthTokenPrint{})
@@ -142,6 +157,8 @@ func (s *ContainerServerImpl) LoginRegistry(ctx context.Context, request *api.Lo
 	if err != nil {
 		return nil, err
 	}
+	// Mark time of authentication
+	s.lastAuth = time.Now()
 	return &api.LoginRegistryResponse{Message: stdout, ExtensionsOutput: extensionOutput}, nil
 }
 
@@ -184,6 +201,22 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 			return nil, utils.unimplemented("Exposing a range of ports are not supported")
 		}
 	}
+
+	// Before pulling image, check if re-authenication is needed.
+	if s.cachedLoginRegistryRequest != nil {
+		// If time since the last authentication is greater than
+		// the allowed amount, re-authenicate.
+		timeSinceAuth := time.Now().Sub(s.lastAuth)
+		if timeSinceAuth >= reauthTime {
+			log.Printf("Last authentication happened %s ago, re-authenticating", timeSinceAuth.String())
+			_, err := s.LoginRegistry(ctx, s.cachedLoginRegistryRequest)
+			if err != nil {
+				log.Printf("Warning: re-authentication returned an error: %s", err)
+				log.Println("Attempting despite authentication failure")
+			}
+		}
+	}
+
 	if pullErr := s.pullImage(ctx, request.ContainerImage); pullErr != nil {
 		log.Printf("warning: error when pulling image: %s", pullErr)
 	}

@@ -160,8 +160,7 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, sk *data.HwTe
 	if !cftHwStepsConfig.GetSkipTestExecution() {
 		mainConfigs = append(mainConfigs,
 			TestServerStart_CrosTestExecutor,
-			TestsExecution_CrosTestExecutor,
-			GcloudAuth_CtrExecutor.WithRequired(true))
+			TestsExecution_CrosTestExecutor)
 	}
 
 	// Add support for dynamic command/executor for post-process.
@@ -179,9 +178,6 @@ func hwConfigsForPlatform(cftHwStepsConfig *tpcommon.HwTestConfig, sk *data.HwTe
 
 	// Publish commands
 	if !cftHwStepsConfig.GetSkipAllResultPublish() {
-		// Re-auth as long test execution can expire previous auth
-		mainConfigs = append(mainConfigs, GcloudAuth_CtrExecutor)
-
 		// Rdb publish commands
 		if !cftHwStepsConfig.GetSkipRdbPublish() {
 			mainConfigs = append(mainConfigs,
@@ -383,8 +379,7 @@ func generateTaskConfigs(inputV2 *api.CrosTestRunnerDynamicRequest, platform com
 		case *api.CrosTestRunnerDynamicRequest_Task_PreTest:
 		case *api.CrosTestRunnerDynamicRequest_Task_Test:
 			mainConfigs = append(mainConfigs,
-				GenericTests_GenericTestsExecutor.WithRequired(task.Required),
-				GcloudAuth_CtrExecutor.WithRequired(task.Required))
+				GenericTests_GenericTestsExecutor.WithRequired(task.Required))
 		case *api.CrosTestRunnerDynamicRequest_Task_PostTest:
 			mainConfigs = append(mainConfigs,
 				GenericPostProcess_GenericPostProcessExecutor.WithRequired(task.Required))
