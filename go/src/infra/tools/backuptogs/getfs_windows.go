@@ -6,8 +6,9 @@ package main
 import (
 	"context"
 
-	"go.chromium.org/luci/common/logging"
 	"golang.org/x/sys/windows"
+
+	"go.chromium.org/luci/common/logging"
 )
 
 func getFs(ctx context.Context, path string) (fs uint64, err error) {

@@ -17,9 +17,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/option"
+
 	"go.chromium.org/luci/auth"
 	"go.chromium.org/luci/common/logging"
-	"google.golang.org/api/option"
 
 	"go.chromium.org/infra/cros/satlab/common/site"
 	"go.chromium.org/infra/cros/satlab/common/utils/misc"

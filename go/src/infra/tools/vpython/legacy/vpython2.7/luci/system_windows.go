@@ -24,13 +24,12 @@ import (
 	"unicode/utf16"
 	"unsafe"
 
-	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/python"
-	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/venv"
-
 	"go.chromium.org/luci/common/errors"
-
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/common/system/environ"
+
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/python"
+	"go.chromium.org/infra/tools/vpython/legacy/vpython2.7/luci/venv"
 )
 
 // systemSpecificLaunch launches the process described by "cmd" while ensuring

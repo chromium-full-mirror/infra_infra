@@ -9,10 +9,9 @@
 package linuxssh
 
 import (
-	"time"
-
 	"context"
 	"os"
+	"time"
 
 	"go.chromium.org/infra/cros/servo/errors"
 	"go.chromium.org/infra/cros/servo/ssh"

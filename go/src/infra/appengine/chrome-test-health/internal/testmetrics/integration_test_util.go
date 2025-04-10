@@ -8,7 +8,6 @@ package testmetrics
 
 import (
 	"context"
-	"go.chromium.org/infra/appengine/chrome-test-health/api"
 	"os"
 	"path/filepath"
 	"strings"
@@ -16,7 +15,10 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/civil"
+
 	"go.chromium.org/luci/common/errors"
+
+	"go.chromium.org/infra/appengine/chrome-test-health/api"
 )
 
 var (

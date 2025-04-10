@@ -35,6 +35,7 @@ import (
 	"unsafe"
 
 	"github.com/VividCortex/godaemon"
+
 	"go.chromium.org/luci/common/runtime/paniccatcher"
 	"go.chromium.org/luci/common/sync/parallel"
 )
