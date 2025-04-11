@@ -106807,6 +106807,11 @@ plans:
             - state:BROKEN
         - name: Intel AMT is working (time:'15s')
           exec_name: amt_manager_is_healthy
+          conditions:
+            - name: Intel AMT is available (ALWAYS_RUN) (time:'1m31s')
+              exec_name: amt_manager_amt_available
+              docs:
+                - Ping the AMT interface until it responds to pings.
         - name: Set AMT state to WORKING
           exec_name: amt_manager_set_state
           exec_args:

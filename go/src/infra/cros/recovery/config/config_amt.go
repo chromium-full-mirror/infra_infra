@@ -18,6 +18,9 @@ func amtRepairPlan() *Plan {
 		},
 		Actions: map[string]*Action{
 			"Intel AMT is working": {
+				Conditions: []string{
+					"Intel AMT is available",
+				},
 				ExecName:      "amt_manager_is_healthy",
 				ExecTimeout:   &durationpb.Duration{Seconds: 15},
 				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
@@ -35,6 +38,15 @@ func amtRepairPlan() *Plan {
 					"state:WORKING",
 				},
 				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			},
+			"Intel AMT is available": {
+				Docs: []string{
+					"Ping the AMT interface until it responds to pings.",
+				},
+				ExecName:      "amt_manager_amt_available",
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+				RunControl:    RunControl_ALWAYS_RUN,
+				ExecTimeout:   &durationpb.Duration{Seconds: 91},
 			},
 		},
 	}
