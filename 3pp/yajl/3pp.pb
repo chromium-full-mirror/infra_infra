@@ -8,7 +8,7 @@ create {
     cpe_base_address: "cpe:/a:yajl_project:yajl"
   }
   build {
-    tool: "tools/cmake"
+    tool: "tools/cmake3"
   }
 }
 

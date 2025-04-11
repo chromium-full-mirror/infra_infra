@@ -11,7 +11,7 @@ create {
 
   build {
     dep: "static_libs/openssl"
-    tool: "tools/cmake"
+    tool: "tools/cmake3"
   }
 }
 

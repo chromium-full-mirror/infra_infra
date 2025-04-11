@@ -22,7 +22,7 @@ create {
     tool: "tools/cpython38"
     tool: "tools/re2c"  # Required if we ever patch ninja source
     tool: "tools/sed"
-    tool: "tools/cmake" # Required for running tests
+    tool: "tools/cmake3" # Required for running tests
   }
 }
 
@@ -39,7 +39,7 @@ create {
 create {
   platform_re: "windows-amd64"
   build {
-    tool: "tools/cmake" # Required for running tests
+    tool: "tools/cmake3" # Required for running tests
     tool: "build_support/ca-bundle" # CMake can't find default CA on windows
   }
 }

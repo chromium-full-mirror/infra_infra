@@ -19,7 +19,7 @@ create {
     patch_version: "chromium.6"
   }
   build {
-    tool: "tools/cmake"
+    tool: "tools/cmake3"
     tool: "tools/perl"
     tool: "tools/nasm"
     tool: "build_support/mingw@2@11.2.0-6"

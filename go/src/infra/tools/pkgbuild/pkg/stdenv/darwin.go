@@ -53,13 +53,14 @@ func importDarwin(ctx context.Context, cfg *Config, bins ...string) (gs []genera
 		Name: "darwin_import",
 		Targets: map[string]generators.ImportTarget{
 			"bin/codesign":     {Source: "/usr/bin/codesign", Mode: fs.ModeSymlink},
-			"bin/xcode-select": {Source: "/usr/bin/xcode-select", Mode: fs.ModeSymlink},
-			"bin/xcrun":        {Source: "/usr/bin/xcrun", Mode: fs.ModeSymlink},
 			"bin/hdiutil":      {Source: "/usr/bin/hdiutil", Mode: fs.ModeSymlink},
 			"bin/pkgbuild":     {Source: "/usr/bin/pkgbuild", Mode: fs.ModeSymlink},
+			"bin/plutil":       {Source: "/usr/bin/plutil", Mode: fs.ModeSymlink},
 			"bin/productbuild": {Source: "/usr/bin/productbuild", Mode: fs.ModeSymlink},
 			"bin/sw_vers":      {Source: "/usr/bin/sw_vers", Mode: fs.ModeSymlink},
-			"bin/plutil":       {Source: "/usr/bin/plutil", Mode: fs.ModeSymlink},
+			"bin/vm_stat":      {Source: "/usr/bin/vm_stat", Mode: fs.ModeSymlink},
+			"bin/xcode-select": {Source: "/usr/bin/xcode-select", Mode: fs.ModeSymlink},
+			"bin/xcrun":        {Source: "/usr/bin/xcrun", Mode: fs.ModeSymlink},
 
 			// Using compilers without wrappers require configuring Apple Framework properly, which isn't trivial.
 			// See also: https://github.com/NixOS/nixpkgs/tree/master/pkgs/os-specific/darwin/apple-sdk

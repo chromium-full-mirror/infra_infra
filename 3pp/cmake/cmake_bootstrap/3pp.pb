@@ -8,6 +8,10 @@ create {
       # the tag list to released versions, so the builder does not get stuck on
       # a prereleased one.
       tag_filter_re: "v[0-9.]*$"
+      version_restriction {
+        op: GE
+        val: "4.0"
+      }
     }
     patch_version: "chromium.2"
   }
