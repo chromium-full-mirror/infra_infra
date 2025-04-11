@@ -187,6 +187,7 @@
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge",
+      "UV_USE_IO_URING": "0",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
     },
@@ -232,6 +233,7 @@
       "GOROOT": "[CACHE]/builder/golang/go",
       "INFRA_GO_SKIP_TOOLS_INSTALL": "1",
       "INFRA_GO_VERSION_VARIANT": "bleeding_edge",
+      "UV_USE_IO_URING": "0",
       "npm_config_cache": "[CACHE]/npmcache/npm",
       "npm_config_prefix": "[CACHE]/npmcache/pfx"
     },

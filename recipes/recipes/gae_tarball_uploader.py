@@ -217,6 +217,8 @@ def _checkout_gclient(api, project, version_label_template):
           'npm_config_cache': api.path.cache_dir.joinpath('npmcache', 'npm'),
           # Where packages are installed when using 'npm -g ...'.
           'npm_config_prefix': api.path.cache_dir.joinpath('npmcache', 'pfx'),
+          # Potential workaround for b/409370331.
+          'UV_USE_IO_URING': '0',
       }
       env_prefixes = {
           'PATH': [
