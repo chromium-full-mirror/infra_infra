@@ -107,6 +107,11 @@ func (s *ExecutionServiceServer) loadResultsDir(req *api.CrosTestRequest) (strin
 }
 
 func updateShadowConfig() error {
+	// If autotest directory does not exist, then the autotest program
+	// cannot be run and there is no need for the shadown_config.ini
+	if _, err := os.Stat("/usr/local/autotest"); os.IsNotExist(err) {
+		return nil
+	}
 	if imageStorageServer := os.Getenv("DRONE_AGENT_GCS_IMAGE_STORAGE_SERVER"); imageStorageServer != "" {
 		shadowConfig := "/usr/local/autotest/shadow_config.ini"
 		f, err := os.Create(shadowConfig)
