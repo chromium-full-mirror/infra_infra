@@ -14,8 +14,6 @@ linters:
   disable:
     # There are also many unchecked errors.
     - errcheck
-    # Some projects are not ineffassign-clean yet.
-    - ineffassign
   settings:
     # TODO(gregorynisbet): Use default config here.
     errorlint:
@@ -57,6 +55,10 @@ linters:
       - linters:
         - unused
         path: ^(appengine|chromeperf|cmd|chromium|cr_builder_health|cros|device_manager|experimental|fleetconsole|libs|qscheduler|rts|tools|unifiedfleet|vm_leaser)/
+      # TODO(b/398333401): Reduce this exlucde by cleaning up ineffective assignments.
+      - linters:
+        - ineffassign
+        path: ^(appengine|chromeperf|cmd|cr_builder_health|cros|experimental|fleetconsole|qscheduler|rts|tools|unifiedfleet)/
     paths:
       # Ignore files under third_party dir.
       - ^third_party/.*\.go$
