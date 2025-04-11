@@ -1961,7 +1961,6 @@ func servoPlanActions() map[string]*Action {
 				"Reboot servo device via servodtool",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
 				"Stop servod",
 			},
 			// temporarily disable servo built-in reboot due to b/398198297

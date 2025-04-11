@@ -862,16 +862,6 @@ plans:
               docs:
                 - Reboot servo device via servodtool
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Verify that device is reachable by SSH.
-                    - Limited to 15 seconds.
-                  dependencies:
-                    - name: Set state:NO_SSH (ALWAYS_RUN)
-                      exec_name: servo_set_servo_state
-                      exec_args:
-                        - state:NO_SSH
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                   exec_name: servo_host_servod_stop
                   docs:
@@ -1121,16 +1111,6 @@ plans:
               docs:
                 - Reboot servo device via servodtool
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Verify that device is reachable by SSH.
-                    - Limited to 15 seconds.
-                  dependencies:
-                    - name: Set state:NO_SSH (ALWAYS_RUN)
-                      exec_name: servo_set_servo_state
-                      exec_args:
-                        - state:NO_SSH
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                   exec_name: servo_host_servod_stop
                   docs:
@@ -1265,16 +1245,6 @@ plans:
               docs:
                 - Reboot servo device via servodtool
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Verify that device is reachable by SSH.
-                    - Limited to 15 seconds.
-                  dependencies:
-                    - name: Set state:NO_SSH (ALWAYS_RUN)
-                      exec_name: servo_set_servo_state
-                      exec_args:
-                        - state:NO_SSH
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                   exec_name: servo_host_servod_stop
                   docs:
@@ -1567,16 +1537,6 @@ plans:
               docs:
                 - Reboot servo device via servodtool
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Verify that device is reachable by SSH.
-                    - Limited to 15 seconds.
-                  dependencies:
-                    - name: Set state:NO_SSH (ALWAYS_RUN)
-                      exec_name: servo_set_servo_state
-                      exec_args:
-                        - state:NO_SSH
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                   exec_name: servo_host_servod_stop
                   docs:
@@ -1896,16 +1856,6 @@ plans:
               docs:
                 - Reboot servo device via servodtool
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Verify that device is reachable by SSH.
-                    - Limited to 15 seconds.
-                  dependencies:
-                    - name: Set state:NO_SSH (ALWAYS_RUN)
-                      exec_name: servo_set_servo_state
-                      exec_args:
-                        - state:NO_SSH
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                   exec_name: servo_host_servod_stop
                   docs:
@@ -2464,16 +2414,6 @@ plans:
                   docs:
                     - Reboot servo device via servodtool
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
-                      docs:
-                        - Verify that device is reachable by SSH.
-                        - Limited to 15 seconds.
-                      dependencies:
-                        - name: Set state:NO_SSH (ALWAYS_RUN)
-                          exec_name: servo_set_servo_state
-                          exec_args:
-                            - state:NO_SSH
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                       exec_name: servo_host_servod_stop
                       docs:
@@ -2819,16 +2759,6 @@ plans:
                   docs:
                     - Reboot servo device via servodtool
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
-                      docs:
-                        - Verify that device is reachable by SSH.
-                        - Limited to 15 seconds.
-                      dependencies:
-                        - name: Set state:NO_SSH (ALWAYS_RUN)
-                          exec_name: servo_set_servo_state
-                          exec_args:
-                            - state:NO_SSH
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                       exec_name: servo_host_servod_stop
                       docs:
@@ -3158,16 +3088,6 @@ plans:
               docs:
                 - Reboot servo device via servodtool
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Verify that device is reachable by SSH.
-                    - Limited to 15 seconds.
-                  dependencies:
-                    - name: Set state:NO_SSH (ALWAYS_RUN)
-                      exec_name: servo_set_servo_state
-                      exec_args:
-                        - state:NO_SSH
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                   exec_name: servo_host_servod_stop
                   docs:
@@ -3532,16 +3452,6 @@ plans:
                   docs:
                     - Reboot servo device via servodtool
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
-                      docs:
-                        - Verify that device is reachable by SSH.
-                        - Limited to 15 seconds.
-                      dependencies:
-                        - name: Set state:NO_SSH (ALWAYS_RUN)
-                          exec_name: servo_set_servo_state
-                          exec_args:
-                            - state:NO_SSH
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                       exec_name: servo_host_servod_stop
                       docs:
@@ -3899,16 +3809,6 @@ plans:
                   docs:
                     - Reboot servo device via servodtool
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
-                      docs:
-                        - Verify that device is reachable by SSH.
-                        - Limited to 15 seconds.
-                      dependencies:
-                        - name: Set state:NO_SSH (ALWAYS_RUN)
-                          exec_name: servo_set_servo_state
-                          exec_args:
-                            - state:NO_SSH
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                       exec_name: servo_host_servod_stop
                       docs:
@@ -4490,16 +4390,6 @@ plans:
               docs:
                 - Reboot servo device via servodtool
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Verify that device is reachable by SSH.
-                    - Limited to 15 seconds.
-                  dependencies:
-                    - name: Set state:NO_SSH (ALWAYS_RUN)
-                      exec_name: servo_set_servo_state
-                      exec_args:
-                        - state:NO_SSH
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                   exec_name: servo_host_servod_stop
                   docs:
@@ -5050,16 +4940,6 @@ plans:
                   docs:
                     - Reboot servo device via servodtool
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
-                      docs:
-                        - Verify that device is reachable by SSH.
-                        - Limited to 15 seconds.
-                      dependencies:
-                        - name: Set state:NO_SSH (ALWAYS_RUN)
-                          exec_name: servo_set_servo_state
-                          exec_args:
-                            - state:NO_SSH
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                       exec_name: servo_host_servod_stop
                       docs:
@@ -5373,16 +5253,6 @@ plans:
               docs:
                 - Reboot servo device via servodtool
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Verify that device is reachable by SSH.
-                    - Limited to 15 seconds.
-                  dependencies:
-                    - name: Set state:NO_SSH (ALWAYS_RUN)
-                      exec_name: servo_set_servo_state
-                      exec_args:
-                        - state:NO_SSH
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                   exec_name: servo_host_servod_stop
                   docs:
@@ -5731,16 +5601,6 @@ plans:
               docs:
                 - Reboot servo device via servodtool
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Verify that device is reachable by SSH.
-                    - Limited to 15 seconds.
-                  dependencies:
-                    - name: Set state:NO_SSH (ALWAYS_RUN)
-                      exec_name: servo_set_servo_state
-                      exec_args:
-                        - state:NO_SSH
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                   exec_name: servo_host_servod_stop
                   docs:
@@ -6051,16 +5911,6 @@ plans:
                   docs:
                     - Reboot servo device via servodtool
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
-                      docs:
-                        - Verify that device is reachable by SSH.
-                        - Limited to 15 seconds.
-                      dependencies:
-                        - name: Set state:NO_SSH (ALWAYS_RUN)
-                          exec_name: servo_set_servo_state
-                          exec_args:
-                            - state:NO_SSH
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
                       exec_name: servo_host_servod_stop
                       docs:
