@@ -330,6 +330,12 @@ func crosProvisionActionsFromUSBDriveInRecoveryModeExec(ctx context.Context, inf
 				finishedTPMReset = "failed"
 				log.Debugf(ctx, "Install from USB drive: (non-critical) fail to reset tmp: Error: %s", err)
 			}
+			if _, err := dutRun(ctx, tpmResetTimeout, "which", "chromeos-tpm-recovery"); err == nil {
+				if _, err := dutRun(ctx, tpmResetTimeout, "chromeos-tpm-recovery"); err != nil {
+					finishedTPMReset = "failed_legacy"
+					log.Debugf(ctx, "Install from USB drive: (non-critical) fail to reset tmp: Error: %s", err)
+				}
+			}
 		}
 		if androidInstall || crosInstall {
 			installTimeout := am.AsDuration(ctx, "install_timeout", 600, time.Second)
