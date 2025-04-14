@@ -9,6 +9,8 @@ import (
 	"log"
 	"strings"
 
+	"google.golang.org/protobuf/types/known/structpb"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api"
@@ -46,6 +48,7 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 
 	servodId := dynamic_common.NewTaskIdentifier(common.ServoNexus).AddDeviceId(dynamic_common.NewPrimaryDeviceIdentifier())
 	taskID := dynamic_common.NewTaskIdentifier(common.CrosProvision).AddDeviceId(dynamic_common.NewPrimaryDeviceIdentifier())
+	newTaskID := dynamic_common.NewTaskIdentifier(common.FoilProvision).AddDeviceId(dynamic_common.NewPrimaryDeviceIdentifier())
 	generator := generators.NewModifyGenerator(
 		dynamic_common.FindByDynamicIdentifier(
 			taskID.Id))
@@ -55,7 +58,7 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 		"/tmp/servod", "cros-servod server -server_port 0",
 	)
 	provisionContainerBuilder := dynamic_builders.NewContainerBuilder(
-		taskID.Id, common.CrosProvision, updater.ProvisionPath,
+		newTaskID.Id, common.FoilProvision, updater.ProvisionPath,
 		"/tmp/provisionservice", "foil-provision server -port 0")
 
 	containers := []*api.ContainerRequest{}
@@ -76,6 +79,17 @@ func modifyProvisionRequest(req *api.InternalTestplan, updater *ALProvisionReque
 		},
 		map[string]string{
 			"orderedContainerRequests": "orderedContainerRequests",
+		},
+	); err != nil {
+		log.Printf("Error while adding modification to provision request, %s", err)
+	}
+
+	// Update dynamic identifier
+	if err := generator.AddModification(
+		structpb.NewStringValue(newTaskID.Id),
+		map[string]string{
+			"provision.dynamicIdentifier":   "value",
+			"provision.dynamicDeps.0.value": "value",
 		},
 	); err != nil {
 		log.Printf("Error while adding modification to provision request, %s", err)

@@ -122,6 +122,7 @@ const (
 const (
 	// Base task identifiers and image metadata keys.
 	CrosProvision    = "cros-provision"
+	FoilProvision    = "foil-provision"
 	AndroidProvision = "android-provision"
 	FwProvision      = "cros-fw-provision"
 	VmProvision      = "vm-provision"
