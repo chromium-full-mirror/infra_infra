@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"google.golang.org/grpc/codes"
+	"google.golang.org/protobuf/proto"
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/luci/common/errors"
@@ -120,7 +121,7 @@ func (s *ContainerServerImpl) LoginRegistry(ctx context.Context, request *api.Lo
 	}
 
 	// Set server cache
-	s.cachedLoginRegistryRequest = request
+	s.cachedLoginRegistryRequest = proto.Clone(request).(*api.LoginRegistryRequest)
 
 	extensionOutput := s.handleLoginRegistryExtension(ctx, request)
 	if request.Password == "$(gcloud auth print-access-token)" {
