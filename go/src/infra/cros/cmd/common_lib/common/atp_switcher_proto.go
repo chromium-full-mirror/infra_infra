@@ -8,9 +8,9 @@
 package common
 
 import (
-	gensupport "go.chromium.org/infra/cros/cmd/common_lib/ants/gensupport"
-
 	googleapi "google.golang.org/api/googleapi"
+
+	gensupport "go.chromium.org/infra/cros/cmd/common_lib/ants/gensupport"
 )
 
 // BuildMessage: Build

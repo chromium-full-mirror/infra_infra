@@ -95,6 +95,10 @@ const (
 
 	// Experiments
 	DynamicExperiment = "chromeos.cros_infra_config.dynamic_trv2"
+
+	// Data Sizes
+	KB = 1024
+	MB = KB * KB
 )
 
 // AL related constants
