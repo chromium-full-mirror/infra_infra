@@ -305,8 +305,10 @@ func crosProvisionActionsFromUSBDriveInRecoveryModeExec(ctx context.Context, inf
 			board := dut.GetBoard()
 			installCMD = fmt.Sprintf("al-install android-build/builds/%s/%s-trunk_staging-userdebug/attempts/latest/artifacts/android-desktop_image.bin.gz %s", osVersion, board, cachingIPAddr)
 		} else if crosInstall {
-			osImagePath := recoveryVersion.GetOsImagePath()
-			installCMD = fmt.Sprintf("cros-install chromeos-image-archive/%s %s", osImagePath, cachingIPAddr)
+			// The path is modified path which look like `chromeos-image-archive/nami-kernelnext-release/R137-16253.0.0`
+			// where `chromeos-image-archive` is defined by envoroment where it runs.
+			path := gsCrOSImageBucket + recoveryVersion.GetOsImagePath()
+			installCMD = fmt.Sprintf("cros-install %s %s", path[5:], cachingIPAddr)
 		}
 	}
 
