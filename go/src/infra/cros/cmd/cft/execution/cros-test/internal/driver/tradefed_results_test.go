@@ -111,6 +111,7 @@ func TestSelectFileByPattern(t *testing.T) {
 
 func getTestCaseResults(prefix string) []*api.TestCaseResult {
 	failureMessage := "java.lang.AssertionError\r\njava.lang.AssertionError\n\tat org.junit.Assert.fail(Assert.java:86)\n"
+	stackTrace := "java.lang.AssertionError\n\tat org.junit.Assert.fail(Assert.java:86)\n"
 	startTimestamp := int64(1724450705582)
 	startTime := timestamppb.New(time.Unix(startTimestamp/1000, startTimestamp%1000*1000000))
 	numOfTests := 2
@@ -138,7 +139,7 @@ func getTestCaseResults(prefix string) []*api.TestCaseResult {
 			Tags:        testTags,
 			TestHarness: testHarness,
 			Verdict:     &api.TestCaseResult_Pass_{Pass: &api.TestCaseResult_Pass{}},
-			Errors:      []*api.TestCaseResult_Error{{Message: failureMessage}},
+			Errors:      []*api.TestCaseResult_Error{{Message: failureMessage, StackTrace: stackTrace}},
 			StartTime:   startTime,
 			Duration:    duration,
 			TestCaseMetadata: &api.TestCaseMetadata{
@@ -151,7 +152,7 @@ func getTestCaseResults(prefix string) []*api.TestCaseResult {
 			Tags:        testTags,
 			TestHarness: testHarness,
 			Verdict:     &api.TestCaseResult_Crash_{Crash: &api.TestCaseResult_Crash{}},
-			Errors:      []*api.TestCaseResult_Error{{Message: failureMessage}},
+			Errors:      []*api.TestCaseResult_Error{{Message: failureMessage, StackTrace: stackTrace}},
 			StartTime:   startTime,
 			Duration:    duration,
 			TestCaseMetadata: &api.TestCaseMetadata{
@@ -164,7 +165,7 @@ func getTestCaseResults(prefix string) []*api.TestCaseResult {
 			Tags:        testTags,
 			TestHarness: testHarness,
 			Verdict:     &api.TestCaseResult_Skip_{Skip: &api.TestCaseResult_Skip{}},
-			Errors:      []*api.TestCaseResult_Error{{Message: ""}},
+			Errors:      []*api.TestCaseResult_Error{{Message: "", StackTrace: ""}},
 			StartTime:   startTime,
 			Duration:    duration,
 			TestCaseMetadata: &api.TestCaseMetadata{
@@ -177,7 +178,7 @@ func getTestCaseResults(prefix string) []*api.TestCaseResult {
 			Tags:        testTags,
 			TestHarness: testHarness,
 			Verdict:     &api.TestCaseResult_Fail_{Fail: &api.TestCaseResult_Fail{}},
-			Errors:      []*api.TestCaseResult_Error{{Message: ""}},
+			Errors:      []*api.TestCaseResult_Error{{Message: "", StackTrace: ""}},
 			StartTime:   startTime,
 			Duration:    duration,
 			TestCaseMetadata: &api.TestCaseMetadata{
@@ -190,7 +191,7 @@ func getTestCaseResults(prefix string) []*api.TestCaseResult {
 			Tags:        testTags,
 			TestHarness: testHarness,
 			Verdict:     &api.TestCaseResult_Fail_{Fail: &api.TestCaseResult_Fail{}},
-			Errors:      []*api.TestCaseResult_Error{{Message: failureMessage}},
+			Errors:      []*api.TestCaseResult_Error{{Message: failureMessage, StackTrace: stackTrace}},
 			StartTime:   startTime,
 			Duration:    duration,
 			TestCaseMetadata: &api.TestCaseMetadata{
@@ -241,7 +242,7 @@ func getGeneralTestCaseResults(prefix string) []*api.TestCaseResult {
 			Tags:        testTags,
 			TestHarness: testHarness,
 			Verdict:     &api.TestCaseResult_Fail_{Fail: &api.TestCaseResult_Fail{}},
-			Errors:      []*api.TestCaseResult_Error{{Message: "null: java.lang.AssertionError: windows expected: 5, found: 4"}},
+			Errors:      []*api.TestCaseResult_Error{{Message: "null: java.lang.AssertionError: windows expected: 5, found: 4", StackTrace: ""}},
 			StartTime:   startTime,
 			Duration:    duration,
 			TestCaseMetadata: &api.TestCaseMetadata{
@@ -363,6 +364,7 @@ func TestBuildTcResult(t *testing.T) {
 		endTime, _ := time.Parse(time.RFC3339, "2024-01-18T00:13:34Z")
 		duration := endTime.Sub(startTime)
 		failureMessage := "Failed for some reason"
+		stackTrace := "Failed for some reason\n\tat SomeClass.someMethod(SomeClass.java:123)"
 		testName := "tradefed.cts.CtsSampleTestCase"
 		abi := "x86_64"
 
@@ -380,6 +382,7 @@ func TestBuildTcResult(t *testing.T) {
 			name         string
 			abi          string
 			errorMessage string
+			stackTrace   string
 			status       string
 			want         *api.TestCaseResult
 		}{
@@ -387,6 +390,7 @@ func TestBuildTcResult(t *testing.T) {
 				name:         "Pass test",
 				abi:          abi,
 				errorMessage: "",
+				stackTrace:   "",
 				status:       "PASSED",
 				want: &api.TestCaseResult{
 					TestCaseId:       testCaseID,
@@ -402,13 +406,14 @@ func TestBuildTcResult(t *testing.T) {
 				name:         "Assumption failure test",
 				abi:          abi,
 				errorMessage: failureMessage,
+				stackTrace:   stackTrace,
 				status:       "ASSUMPTION_FAILURE",
 				want: &api.TestCaseResult{
 					TestCaseId:       testCaseID,
 					Tags:             testTags,
 					TestHarness:      testHarness,
 					Verdict:          &api.TestCaseResult_Pass_{Pass: &api.TestCaseResult_Pass{}},
-					Errors:           []*api.TestCaseResult_Error{{Message: failureMessage}},
+					Errors:           []*api.TestCaseResult_Error{{Message: failureMessage, StackTrace: stackTrace}},
 					StartTime:        wantStartTime,
 					Duration:         wantDuration,
 					TestCaseMetadata: wantTestCaseMetadata,
@@ -418,13 +423,14 @@ func TestBuildTcResult(t *testing.T) {
 				name:         "Fail test",
 				abi:          abi,
 				errorMessage: failureMessage,
+				stackTrace:   stackTrace,
 				status:       "FAILED",
 				want: &api.TestCaseResult{
 					TestCaseId:       testCaseID,
 					Tags:             testTags,
 					TestHarness:      testHarness,
 					Verdict:          &api.TestCaseResult_Fail_{Fail: &api.TestCaseResult_Fail{}},
-					Errors:           []*api.TestCaseResult_Error{{Message: failureMessage}},
+					Errors:           []*api.TestCaseResult_Error{{Message: failureMessage, StackTrace: stackTrace}},
 					StartTime:        wantStartTime,
 					Duration:         wantDuration,
 					TestCaseMetadata: wantTestCaseMetadata,
@@ -434,13 +440,14 @@ func TestBuildTcResult(t *testing.T) {
 				name:         "Incomplete test",
 				abi:          abi,
 				errorMessage: failureMessage,
+				stackTrace:   stackTrace,
 				status:       "INCOMPLETE",
 				want: &api.TestCaseResult{
 					TestCaseId:       testCaseID,
 					Tags:             testTags,
 					TestHarness:      testHarness,
 					Verdict:          &api.TestCaseResult_Crash_{Crash: &api.TestCaseResult_Crash{}},
-					Errors:           []*api.TestCaseResult_Error{{Message: failureMessage}},
+					Errors:           []*api.TestCaseResult_Error{{Message: failureMessage, StackTrace: stackTrace}},
 					StartTime:        wantStartTime,
 					Duration:         wantDuration,
 					TestCaseMetadata: wantTestCaseMetadata,
@@ -450,13 +457,14 @@ func TestBuildTcResult(t *testing.T) {
 				name:         "Skipped test",
 				abi:          abi,
 				errorMessage: failureMessage,
+				stackTrace:   stackTrace,
 				status:       "SKIPPED",
 				want: &api.TestCaseResult{
 					TestCaseId:       testCaseID,
 					Tags:             testTags,
 					TestHarness:      testHarness,
 					Verdict:          &api.TestCaseResult_Skip_{Skip: &api.TestCaseResult_Skip{}},
-					Errors:           []*api.TestCaseResult_Error{{Message: failureMessage}},
+					Errors:           []*api.TestCaseResult_Error{{Message: failureMessage, StackTrace: stackTrace}},
 					StartTime:        wantStartTime,
 					Duration:         wantDuration,
 					TestCaseMetadata: wantTestCaseMetadata,
@@ -466,13 +474,14 @@ func TestBuildTcResult(t *testing.T) {
 				name:         "Ignore test",
 				abi:          abi,
 				errorMessage: failureMessage,
+				stackTrace:   stackTrace,
 				status:       "IGNORED",
 				want: &api.TestCaseResult{
 					TestCaseId:       testCaseID,
 					Tags:             testTags,
 					TestHarness:      testHarness,
 					Verdict:          &api.TestCaseResult_Skip_{Skip: &api.TestCaseResult_Skip{}},
-					Errors:           []*api.TestCaseResult_Error{{Message: failureMessage}},
+					Errors:           []*api.TestCaseResult_Error{{Message: failureMessage, StackTrace: stackTrace}},
 					StartTime:        wantStartTime,
 					Duration:         wantDuration,
 					TestCaseMetadata: wantTestCaseMetadata,
@@ -480,7 +489,7 @@ func TestBuildTcResult(t *testing.T) {
 			},
 		} {
 			ftt.Run(tc.name, t.T, func(t *ftt.Test) {
-				got := buildTcResult(testName, tc.abi, tc.status, startTime, int64(duration.Seconds()), tc.errorMessage)
+				got := buildTcResult(testName, tc.abi, tc.status, startTime, int64(duration.Seconds()), tc.errorMessage, tc.stackTrace)
 				assert.Loosely(t, got, should.Match(tc.want))
 			})
 		}
