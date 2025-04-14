@@ -717,6 +717,116 @@ plans:
                               dependencies:
                                 - name: Setup has servo info
                                   exec_name: dut_servo_host_present
+                    - name: Install ChromeOS by booting from servo USB-drive (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Use provision image on USB-key to boot and get SSH access.
+                        - Run specific install command to install ChromeOS.
+                        - The logic is copy from cros-provision
+                      conditions:
+                        - name: Is a Chromebook (RUN_ONCE)
+                          exec_name: dut_check_board
+                          exec_args:
+                            - string_values:aurora,reven
+                            - invert_result:true
+                          docs:
+                            - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                        - name: Can become ChromeOS-based (ALWAYS_RUN)
+                          exec_name: dut_is_chromeos_hw
+                          docs:
+                            - Check if DUT can be provisioned to ChromeOS.
+                            - Devices runngin under MH is not allowed.
+                          dependencies:
+                            - name: Do not run on Mobile Harness box (RUN_ONCE)
+                              exec_name: env_is_not_mh_box
+                              docs:
+                                - Check that the process is not running on Mobile Harness box.
+                        - name: Is servo USB key detected
+                          exec_name: servo_usbkey_is_detected
+                          exec_args:
+                            - file_check:true
+                          docs:
+                            - The action used as codiion.
+                            - The action verify that USB-key is detected and readable.
+                          dependencies:
+                            - name: Is servod running (ALWAYS_RUN)
+                              exec_name: sample_pass
+                              docs:
+                                - Verify that servo host specified in setup and servod is running.
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                                - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                                  exec_name: servod_echo
+                                  exec_args:
+                                    - ssh_check:false
+                                  dependencies:
+                                    - name: Setup has servo info
+                                      exec_name: dut_servo_host_present
+                      dependencies:
+                        - name: Mark as ChromeOS based (ALWAYS_RUN)
+                          exec_name: cros_set_as_chrome_based
+                          docs:
+                            - Mark DUT as Chrome based.
+                        - name: Detect CacheService address
+                          exec_name: cache_service_address_detection
+                          docs:
+                            - Collect address of CacheService rom labService.
+                          conditions:
+                            - name: Do not run on Mobile Harness box (RUN_ONCE)
+                              exec_name: env_is_not_mh_box
+                              docs:
+                                - Check that the process is not running on Mobile Harness box.
+                        - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                          exec_name: servo_download_provision_image_to_usb
+                          exec_args:
+                            - image_version:v6.1.1
+                          docs:
+                            - This action calls servod to download provision image custom kernel to servo USB-key.
+                        - name: Boot on USB-key and install ChroemOS (ALWAYS_RUN) (time:'2h46m40s')
+                          exec_name: cros_provision_actions_from_recovery_mode
+                          exec_args:
+                            - run_android_install:false
+                            - run_cros_install:true
+                            - reset_tpm:true
+                            - boot_timeout:150
+                            - boot_interval:10
+                            - boot_retry:1
+                            - ignore_reboot_failure:true
+                            - after_reboot_check:true
+                            - after_reboot_timeout:240
+                            - after_reboot_allow_use_servo_reset:true
+                          docs:
+                            - 'This action installs the test image on DUT utilizing '
+                            - 'the features of servo. DUT will be booted in recovery '
+                            - 'mode. In some cases RO FW is not allowed to boot in '
+                            - 'recovery mode with active PD, so we will change it to '
+                            - sink-mode if required.
+                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_ssh
+                          docs:
+                            - Try to wait device to be sshable after the device being rebooted.
+                            - Waiting time 150 seconds.
+                        - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                          exec_name: dut_remove_repair_requests
+                          exec_args:
+                            - requests:PROVISION,REIMAGE_BY_USBKEY
+                          docs:
+                            - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
                     - name: Install OS in recovery mode by booting from servo USB-drive (ALWAYS_RUN)
                       exec_name: sample_pass
                       docs:
@@ -1777,6 +1887,116 @@ plans:
                         - requests:PROVISION
                       docs:
                         - Remove a PROVISION repair-request.
+                - name: Install ChromeOS by booting from servo USB-drive (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Use provision image on USB-key to boot and get SSH access.
+                    - Run specific install command to install ChromeOS.
+                    - The logic is copy from cros-provision
+                  conditions:
+                    - name: Is a Chromebook (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:aurora,reven
+                        - invert_result:true
+                      docs:
+                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                    - name: Can become ChromeOS-based (ALWAYS_RUN)
+                      exec_name: dut_is_chromeos_hw
+                      docs:
+                        - Check if DUT can be provisioned to ChromeOS.
+                        - Devices runngin under MH is not allowed.
+                      dependencies:
+                        - name: Do not run on Mobile Harness box (RUN_ONCE)
+                          exec_name: env_is_not_mh_box
+                          docs:
+                            - Check that the process is not running on Mobile Harness box.
+                    - name: Is servo USB key detected
+                      exec_name: servo_usbkey_is_detected
+                      exec_args:
+                        - file_check:true
+                      docs:
+                        - The action used as codiion.
+                        - The action verify that USB-key is detected and readable.
+                      dependencies:
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                  dependencies:
+                    - name: Mark as ChromeOS based (ALWAYS_RUN)
+                      exec_name: cros_set_as_chrome_based
+                      docs:
+                        - Mark DUT as Chrome based.
+                    - name: Detect CacheService address
+                      exec_name: cache_service_address_detection
+                      docs:
+                        - Collect address of CacheService rom labService.
+                      conditions:
+                        - name: Do not run on Mobile Harness box (RUN_ONCE)
+                          exec_name: env_is_not_mh_box
+                          docs:
+                            - Check that the process is not running on Mobile Harness box.
+                    - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                      exec_name: servo_download_provision_image_to_usb
+                      exec_args:
+                        - image_version:v6.1.1
+                      docs:
+                        - This action calls servod to download provision image custom kernel to servo USB-key.
+                    - name: Boot on USB-key and install ChroemOS (ALWAYS_RUN) (time:'2h46m40s')
+                      exec_name: cros_provision_actions_from_recovery_mode
+                      exec_args:
+                        - run_android_install:false
+                        - run_cros_install:true
+                        - reset_tpm:true
+                        - boot_timeout:150
+                        - boot_interval:10
+                        - boot_retry:1
+                        - ignore_reboot_failure:true
+                        - after_reboot_check:true
+                        - after_reboot_timeout:240
+                        - after_reboot_allow_use_servo_reset:true
+                      docs:
+                        - 'This action installs the test image on DUT utilizing '
+                        - 'the features of servo. DUT will be booted in recovery '
+                        - 'mode. In some cases RO FW is not allowed to boot in '
+                        - 'recovery mode with active PD, so we will change it to '
+                        - sink-mode if required.
+                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ssh
+                      docs:
+                        - Try to wait device to be sshable after the device being rebooted.
+                        - Waiting time 150 seconds.
+                    - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                      exec_name: dut_remove_repair_requests
+                      exec_args:
+                        - requests:PROVISION,REIMAGE_BY_USBKEY
+                      docs:
+                        - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
                 - name: Install OS in DEV mode, with force to DEV-mode
                   exec_name: sample_pass
                   docs:
