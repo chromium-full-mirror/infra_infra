@@ -105,6 +105,7 @@ type testCommonFlags struct {
 	testNameExcludes       []string
 	maxInShard             int64
 	userDefinedFilters     []*api.CTPFilter
+	desktop                bool
 }
 
 type fleetValidationResults struct {
@@ -157,6 +158,7 @@ If a Quota Scheduler account is specified via -qs-account, this value is not use
 	f.StringVar(&c.luciProject, "luci-project", "", "LUCI project which the bucket and builder are associated with")
 	f.BoolVar(&c.trv2, "trv2", false, "Run via Trv2.")
 	f.BoolVar(&c.dynamicTrv2, "dynamic-trv2", false, "Run via Trv2.")
+	f.BoolVar(&c.desktop, "desktop", false, "Run as 'desktop'.")
 	f.StringVar(&c.testArgs, "test-args", "", "Test arguments string (meaning depends on test).")
 	f.Func("user-defined-filter", "CTPv2 user defined filter as JSON. Can be repeated", func(s string) error {
 		var filter api.CTPFilter
@@ -438,6 +440,11 @@ func (l *ctpRunLauncher) ctpBuilder(model string) *builder.CTPBuilder {
 	filters := l.cliFlags.userDefinedFilters
 	if l.testPlan.Suite != nil {
 		for _, suite := range l.testPlan.GetSuite() {
+			if l.cliFlags.desktop {
+				if !strings.HasPrefix(suite.GetName(), "AL.") {
+					suite.Name = "AL." + suite.Name
+				}
+			}
 			if strings.HasPrefix(suite.GetName(), "AL.") {
 				alProvisionFilter := &api.CTPFilter{
 					ContainerInfo: &api.ContainerInfo{
