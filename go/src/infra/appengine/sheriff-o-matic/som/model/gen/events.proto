@@ -106,9 +106,6 @@ message SOMAnnotationEvent {
   // annotation. This ID appears in the GAE request logs as protoPayload.requestId.
   string request_id = 3;
 
-  // User is the ID of the user making the annotation change.
-  string user = 4;
-
   // AlertKeyDigest is the key digest for the alert.
   string alert_key_digest = 5;
 
@@ -122,29 +119,6 @@ message SOMAnnotationEvent {
 
   // Operation is the annoation operation.
   OperationType operation = 7;
-
-  message MonorailBug {
-    string bug_id = 1;
-    string project_id = 2;
-  }
-
-  // Deprecated, use bug_list instead
-  repeated string bugs = 8 [deprecated=true];
-
-  // bug_list is the list of MonorailBugs attached to the alert.
-  repeated MonorailBug bug_list = 13;
-
-  // Comment is a user comment attached to an alert.
-  message Comment {
-    // Text is the text of the comment.
-    string text = 1;
-
-    // Time is the time when the comment was posted.
-    google.protobuf.Timestamp time = 2;
-  }
-
-  // Comments is the list of comments attached to the alert.
-  repeated Comment comments = 9;
 
   // SnoozeTime is the time until which to snooze the alert.
   google.protobuf.Timestamp snooze_time = 10;
