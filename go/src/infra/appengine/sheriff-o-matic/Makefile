@@ -44,12 +44,12 @@ bqtools:
 	go install go.chromium.org/luci/tools/cmd/bqschemaupdater
 
 update_bq_staging: bqtools
-	bqschemaupdater -proto-dir ./som/model/gen -table sheriff-o-matic-staging.events.alerts -message gen.SOMAlertsEvent
-	bqschemaupdater -proto-dir ./som/model/gen -table sheriff-o-matic-staging.events.annotations -message gen.SOMAnnotationEvent
+	bqschemaupdater -message-dir ./som/model/gen -table sheriff-o-matic-staging.events.alerts -message som.events.SOMAlertsEvent
+	bqschemaupdater -message-dir ./som/model/gen -table sheriff-o-matic-staging.events.annotations -message som.events.SOMAnnotationEvent
 
 update_bq_prod: bqtools
-	bqschemaupdater -proto-dir ./som/model/gen -table sheriff-o-matic.events.alerts -message gen.SOMAlertsEvent
-	bqschemaupdater -proto-dir ./som/model/gen -table sheriff-o-matic.events.annotations -message gen.SOMAnnotationEvent
+	bqschemaupdater -message-dir ./som/model/gen -table sheriff-o-matic.events.alerts -message som.events.SOMAlertsEvent
+	bqschemaupdater -message-dir ./som/model/gen -table sheriff-o-matic.events.annotations -message som.events.SOMAnnotationEvent
 
 deploy_staging: build
 	$(GAE_PY) upload -A sheriff-o-matic-staging --app-dir . default analyzer
