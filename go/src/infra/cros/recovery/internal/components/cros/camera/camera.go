@@ -21,9 +21,10 @@ import (
 )
 
 const (
-	cameraCountCmd         = "cros_config /camera count"
-	cameraInterfaceTypeCmd = "cros_config /camera/devices/%d interface"
-	cameraCaptureFrameCmd  = "yavta -c5 /dev/video%d"
+	cameraCountCmd           = "cros_config /camera count"
+	cameraInterfaceTypeCmd   = "cros_config /camera/devices/%d interface"
+	cameraCaptureFrameCmd    = "yavta -c5 %s"
+	cameraGetUsbCameraDevice = "media_v4l2_test --list_usbcam"
 )
 
 // CountByConfig get the number of camera on DUT.
@@ -50,12 +51,21 @@ func InterfaceType(ctx context.Context, ha components.HostAccess, cameraIndex in
 
 // TryCaptureFrame tries to capture a frame.
 // The capture takes maximum 10 second time and returns error if failed
-func TryCaptureFrame(ctx context.Context, ha components.HostAccess, cameraIndex int) error {
-	_, err := ha.Run(ctx, time.Minute*5, fmt.Sprintf(cameraCaptureFrameCmd, cameraIndex))
+func TryCaptureFrame(ctx context.Context, ha components.HostAccess, cameraDeviceFile string) error {
+	_, err := ha.Run(ctx, time.Minute*5, fmt.Sprintf(cameraCaptureFrameCmd, cameraDeviceFile))
 	if err != nil {
-		return errors.Annotate(err, "audit camera: unable to capture frame for camera index: %d.", cameraIndex).Err()
+		return errors.Annotate(err, "audit camera: unable to capture frame for camera device: %s", cameraDeviceFile).Err()
 	}
 	return nil
+}
+
+// GetUsbDeviceFiles get all usb camera device files.
+func GetUsbDeviceFiles(ctx context.Context, ha components.HostAccess) ([]string, error) {
+	res, err := ha.Run(ctx, time.Minute, cameraGetUsbCameraDevice)
+	if err != nil {
+		return nil, errors.Annotate(err, "audit camera: unable to get usb devices files.").Err()
+	}
+	return strings.Fields(res.GetStdout()), nil
 }
 
 // ShouldRunAudit determines if audit should run.

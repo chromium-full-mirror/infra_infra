@@ -6,6 +6,7 @@ package cros
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"go.chromium.org/luci/common/errors"
@@ -18,8 +19,9 @@ import (
 )
 
 const (
-	interfaceTypeErrorMsg   = "audit camera: failed to get interface type. (camera index: %d)"
-	tryCaptureFrameErrorMsg = "audit camera: failed to capture frame. (camera index: %d)"
+	interfaceTypeErrorMsg          = "audit camera: failed to get interface type. (camera index: %d)"
+	tryCaptureFrameErrorMsg        = "audit camera: failed to capture frame. (camera device: %s)"
+	usbCameraCountNotMatchErrorMsg = "audit camera: number of usb camera device files does not match the number of usb cros cameras. (deviceFilesCount: %d, crosCameraCount: %d)"
 )
 
 // auditCameraExec audit the camera of DUT and updates the camera state.
@@ -70,24 +72,52 @@ func auditCameraExec(ctx context.Context, info *execs.ExecInfo) (rErr error) {
 	}
 
 	var errs []error
-	for cameraIndex := range cameraCount {
-		interfaceType, err := camera.InterfaceType(ctx, ha, cameraIndex)
-		if err != nil {
-			err = errors.Annotate(err, interfaceTypeErrorMsg, cameraIndex).Err()
-			errs = append(errs, err)
-			continue
-		}
-		switch interfaceType {
-		case "usb":
-			if err := camera.TryCaptureFrame(ctx, ha, cameraIndex); err != nil {
-				err = errors.Annotate(err, tryCaptureFrameErrorMsg, cameraIndex).Err()
+	func() {
+		usbCameraCount := 0
+		for cameraIndex := range cameraCount {
+			interfaceType, err := camera.InterfaceType(ctx, ha, cameraIndex)
+			if err != nil {
+				err = errors.Annotate(err, interfaceTypeErrorMsg, cameraIndex).Err()
 				errs = append(errs, err)
 				continue
 			}
-		default:
-			log.Infof(ctx, "audit camera: ignoring non-usb interface type %s. (camera index: %d)", interfaceType, cameraIndex)
+			switch interfaceType {
+			case "usb":
+				usbCameraCount += 1
+			default:
+				log.Infof(ctx, "audit camera: ignoring non-usb interface type %s. (camera index: %d)", interfaceType, cameraIndex)
+			}
 		}
-	}
+
+		if usbCameraCount == 0 {
+			log.Infof(ctx, "audit camera: device does not have a USB camera.")
+			return
+		}
+
+		usbCameraDeviceFiles, err := camera.GetUsbDeviceFiles(ctx, ha)
+		if err != nil {
+			err = errors.Annotate(err, "audit camera: failed to get USB camera device files.").Err()
+			errs = append(errs, err)
+			return
+		}
+
+		if len(usbCameraDeviceFiles) != usbCameraCount {
+			log.Errorf(ctx, "audit camera: number of USB camera device files %d", len(usbCameraDeviceFiles))
+			log.Errorf(ctx, "audit camera: number of USB camera count from cros config %d", usbCameraCount)
+			errs = append(errs, errors.New(
+				fmt.Sprintf(usbCameraCountNotMatchErrorMsg, len(usbCameraDeviceFiles), usbCameraCount),
+			))
+			return
+		}
+
+		for _, usbCameraDeviceFile := range usbCameraDeviceFiles {
+			if err := camera.TryCaptureFrame(ctx, ha, usbCameraDeviceFile); err != nil {
+				err = errors.Annotate(err, tryCaptureFrameErrorMsg, usbCameraDeviceFile).Err()
+				errs = append(errs, err)
+				continue
+			}
+		}
+	}()
 
 	err = errors.Join(errs...)
 	if err != nil {
