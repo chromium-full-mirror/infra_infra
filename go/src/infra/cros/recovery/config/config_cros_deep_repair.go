@@ -87,7 +87,7 @@ func deepRepairServoPlan() *Plan {
 				},
 				Conditions: []string{
 					// We try restart only if we lost network to the dut.
-					"DUT is not pingable",
+					"Only run if DUT ping fails",
 				},
 				ExecName: "servo_power_cycle_root_servo",
 				ExecExtraArgs: []string{
@@ -104,7 +104,7 @@ func deepRepairServoPlan() *Plan {
 					"Create lock file is_in_use.",
 				},
 				Conditions: []string{
-					"Is labstation",
+					"Only applies to labstation",
 				},
 				ExecName: "cros_create_servo_in_use",
 				RecoveryActions: []string{
@@ -213,7 +213,7 @@ func deepRepairServoPlan() *Plan {
 				ExecTimeout: &durationpb.Duration{Seconds: 15},
 				RunControl:  RunControl_ALWAYS_RUN,
 			},
-			"DUT is not pingable": {
+			"Only run if DUT ping fails": {
 				Docs: []string{
 					"Verify if DUT is not SSH-able",
 				},
@@ -229,12 +229,12 @@ func deepRepairServoPlan() *Plan {
 				},
 				Conditions: []string{
 					"Device is SSHable",
-					"Is labstation",
+					"Only applies to labstation",
 				},
 				ExecName:   "cros_create_reboot_request",
 				RunControl: RunControl_ALWAYS_RUN,
 			},
-			"Is labstation": {
+			"Only applies to labstation": {
 				Docs: []string{
 					"Condition to check if the servohost is a labstation.",
 				},

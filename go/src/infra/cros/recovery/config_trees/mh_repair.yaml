@@ -212,7 +212,7 @@ plans:
           docs:
             - Create lock file is_in_use.
           conditions:
-            - name: Is labstation
+            - name: Only applies to labstation
               exec_name: servo_host_is_labstation
               docs:
                 - Condition to check if the servohost is a labstation.
@@ -248,7 +248,7 @@ plans:
                 - Try to create reboot flag file request.
                 - The action always fails as Servo will be fixed after reboot.
               conditions:
-                - name: Is labstation
+                - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
                   docs:
                     - Condition to check if the servohost is a labstation.
@@ -263,7 +263,7 @@ plans:
           docs:
             - Read host release data for future analysis.
           conditions:
-            - name: Servod container is not used
+            - name: Only runs for physical labstation
               exec_name: servo_uses_servod_container
               exec_args:
                 - reverse:true
@@ -297,7 +297,7 @@ plans:
           docs:
             - Try to reset(power-cycle) the servo via smart usbhub.
           conditions:
-            - name: DUT is not pingable (ALWAYS_RUN)
+            - name: Only run if DUT ping fails (ALWAYS_RUN)
               exec_name: sample_fail
               docs:
                 - Verify if DUT is not SSH-able
@@ -332,7 +332,7 @@ plans:
           docs:
             - Check if stateful partition have enough disk space that is at least 0.5GB.
           conditions:
-            - name: Servod container is not used
+            - name: Only runs for physical labstation
               exec_name: servo_uses_servod_container
               exec_args:
                 - reverse:true
@@ -363,7 +363,7 @@ plans:
               docs:
                 - Clean up the old servod files as well as labstation.
               conditions:
-                - name: Is labstation
+                - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
                   docs:
                     - Condition to check if the servohost is a labstation.
@@ -382,7 +382,7 @@ plans:
                 - Try to create reboot flag file request.
                 - The action always fails as Servo will be fixed after reboot.
               conditions:
-                - name: Is labstation
+                - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
                   docs:
                     - Condition to check if the servohost is a labstation.
@@ -395,7 +395,7 @@ plans:
             - Cache servod start time based on previous runs.
             - If we fail all logs will be collected
           conditions:
-            - name: Servod container is not used
+            - name: Only runs for physical labstation
               exec_name: servo_uses_servod_container
               exec_args:
                 - reverse:true
@@ -441,7 +441,7 @@ plans:
                 - Try to create reboot flag file request.
                 - The action always fails as Servo will be fixed after reboot.
               conditions:
-                - name: Is labstation
+                - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
                   docs:
                     - Condition to check if the servohost is a labstation.
@@ -708,7 +708,7 @@ plans:
                 - Try to create reboot flag file request.
                 - The action always fails as Servo will be fixed after reboot.
               conditions:
-                - name: Is labstation
+                - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
                   docs:
                     - Condition to check if the servohost is a labstation.
@@ -881,7 +881,7 @@ plans:
                 - Try to create reboot flag file request.
                 - The action always fails as Servo will be fixed after reboot.
               conditions:
-                - name: Is labstation
+                - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
                   docs:
                     - Condition to check if the servohost is a labstation.
@@ -1425,7 +1425,7 @@ plans:
               docs:
                 - Try to update servo micro firmware
               conditions:
-                - name: Is labstation
+                - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
                   docs:
                     - Condition to check if the servohost is a labstation.
@@ -1454,7 +1454,7 @@ plans:
                   docs:
                     - Try to update servo micro firmware
                   conditions:
-                    - name: Is labstation
+                    - name: Only applies to labstation
                       exec_name: servo_host_is_labstation
                       docs:
                         - Condition to check if the servohost is a labstation.
@@ -1579,7 +1579,7 @@ plans:
                 - Try to create reboot flag file request.
                 - The action always fails as Servo will be fixed after reboot.
               conditions:
-                - name: Is labstation
+                - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
                   docs:
                     - Condition to check if the servohost is a labstation.
@@ -2381,7 +2381,7 @@ plans:
                     - Try to create reboot flag file request.
                     - The action always fails as Servo will be fixed after reboot.
                   conditions:
-                    - name: Is labstation
+                    - name: Only applies to labstation
                       exec_name: servo_host_is_labstation
                       docs:
                         - Condition to check if the servohost is a labstation.
@@ -3055,7 +3055,7 @@ plans:
                 - Try to create reboot flag file request.
                 - The action always fails as Servo will be fixed after reboot.
               conditions:
-                - name: Is labstation
+                - name: Only applies to labstation
                   exec_name: servo_host_is_labstation
                   docs:
                     - Condition to check if the servohost is a labstation.
@@ -3420,7 +3420,7 @@ plans:
                     - Try to create reboot flag file request.
                     - The action always fails as Servo will be fixed after reboot.
                   conditions:
-                    - name: Is labstation
+                    - name: Only applies to labstation
                       exec_name: servo_host_is_labstation
                       docs:
                         - Condition to check if the servohost is a labstation.
@@ -3784,7 +3784,7 @@ plans:
                     - Try to create reboot flag file request.
                     - The action always fails as Servo will be fixed after reboot.
                   conditions:
-                    - name: Is labstation
+                    - name: Only applies to labstation
                       exec_name: servo_host_is_labstation
                       docs:
                         - Condition to check if the servohost is a labstation.
@@ -5786,7 +5786,7 @@ plans:
                   docs:
                     - Try to update servo micro firmware
                   conditions:
-                    - name: Is labstation
+                    - name: Only applies to labstation
                       exec_name: servo_host_is_labstation
                       docs:
                         - Condition to check if the servohost is a labstation.
@@ -5815,7 +5815,7 @@ plans:
                       docs:
                         - Try to update servo micro firmware
                       conditions:
-                        - name: Is labstation
+                        - name: Only applies to labstation
                           exec_name: servo_host_is_labstation
                           docs:
                             - Condition to check if the servohost is a labstation.
@@ -8542,7 +8542,7 @@ plans:
                   docs:
                     - Create lock file is_in_use.
                   conditions:
-                    - name: Is labstation (ALWAYS_RUN)
+                    - name: Only applies to labstation (ALWAYS_RUN)
                       exec_name: servo_host_is_labstation
                       docs:
                         - Condition to check if the servohost is a labstation.
@@ -9364,7 +9364,7 @@ plans:
                   docs:
                     - Create lock file is_in_use.
                   conditions:
-                    - name: Is labstation (ALWAYS_RUN)
+                    - name: Only applies to labstation (ALWAYS_RUN)
                       exec_name: servo_host_is_labstation
                       docs:
                         - Condition to check if the servohost is a labstation.

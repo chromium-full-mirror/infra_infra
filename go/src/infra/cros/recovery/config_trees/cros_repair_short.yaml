@@ -77,7 +77,7 @@ plans:
             - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
         - name: Mark labstation as servod is in-use ('cros_create_servo_in_use')
           conditions:
-            - name: Is labstation ('servo_host_is_labstation')
+            - name: Only applies to labstation ('servo_host_is_labstation')
           dependencies:
             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               dependencies:
@@ -89,12 +89,12 @@ plans:
             - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
             - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
               conditions:
-                - name: Is labstation ('servo_host_is_labstation')
+                - name: Only applies to labstation ('servo_host_is_labstation')
               dependencies:
                 - name: cros_create_reboot_request
         - name: Read release info (Allow to fail) ('cros_run_command') (RUN_ONCE)
           conditions:
-            - name: Servod container is not used ('servo_uses_servod_container')
+            - name: Only runs for physical labstation ('servo_uses_servod_container')
           dependencies:
             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               dependencies:
@@ -104,7 +104,7 @@ plans:
             - name: Set state:SERVO_HOST_ISSUE ('servo_set_servo_state') (ALWAYS_RUN)
         - name: Power-cycle by smart-hub (Allow to fail) ('servo_power_cycle_root_servo') (RUN_ONCE) (time:'2m0s')
           conditions:
-            - name: DUT is not pingable ('sample_fail') (ALWAYS_RUN)
+            - name: Only run if DUT ping fails ('sample_fail') (ALWAYS_RUN)
               conditions:
                 - name: DUT is pingable ('cros_ping') (ALWAYS_RUN) (time:'15s')
           dependencies:
@@ -115,7 +115,7 @@ plans:
                 - name: Wait for labstation to load ('cros_ssh') (time:'2m0s')
         - name: Has enough free disk space ('cros_has_enough_storage_space')
           conditions:
-            - name: Servod container is not used ('servo_uses_servod_container')
+            - name: Only runs for physical labstation ('servo_uses_servod_container')
           dependencies:
             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               dependencies:
@@ -126,18 +126,18 @@ plans:
           recoveries:
             - name: Remove logs and other files ('sample_pass')
               conditions:
-                - name: Is labstation ('servo_host_is_labstation')
+                - name: Only applies to labstation ('servo_host_is_labstation')
               dependencies:
                 - name: servo_labstation_disk_cleanup
                 - name: Remove logs older 5 days ('servo_servod_old_logs_cleanup')
             - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
               conditions:
-                - name: Is labstation ('servo_host_is_labstation')
+                - name: Only applies to labstation ('servo_host_is_labstation')
               dependencies:
                 - name: cros_create_reboot_request
         - name: Cache latest servod start time (Allow to fail) ('cros_register_servod_logs_start')
           conditions:
-            - name: Servod container is not used ('servo_uses_servod_container')
+            - name: Only runs for physical labstation ('servo_uses_servod_container')
         - name: Servo_v4(p1) main present ('servo_v4_root_present')
           dependencies:
             - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
@@ -150,7 +150,7 @@ plans:
             - name: Recover servo with Power-cycle by smart-hub ('servo_power_cycle_root_servo') (ALWAYS_RUN) (time:'2m0s')
             - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
               conditions:
-                - name: Is labstation ('servo_host_is_labstation')
+                - name: Only applies to labstation ('servo_host_is_labstation')
               dependencies:
                 - name: cros_create_reboot_request
         - name: All servo's fw updated ('servo_fw_need_update') (time:'5m0s')
@@ -242,7 +242,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
               conditions:
-                - name: Is labstation ('servo_host_is_labstation')
+                - name: Only applies to labstation ('servo_host_is_labstation')
               dependencies:
                 - name: cros_create_reboot_request
         - name: Start UART capture (Allow to fail) ('servod_start_uart_capture')
@@ -306,7 +306,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
               conditions:
-                - name: Is labstation ('servo_host_is_labstation')
+                - name: Only applies to labstation ('servo_host_is_labstation')
               dependencies:
                 - name: cros_create_reboot_request
         - name: Read servo serial by servod harness ('servod_echo')
@@ -498,7 +498,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Force reflash servo_micro fw and stop ('sample_pass')
               conditions:
-                - name: Is labstation ('servo_host_is_labstation')
+                - name: Only applies to labstation ('servo_host_is_labstation')
                 - name: is_servo_micro
                 - name: Is ok to force update servo_micro firmware ('sample_fail')
                   conditions:
@@ -506,7 +506,7 @@ plans:
               dependencies:
                 - name: Force update servo_micro firmware ('servo_update_servo_firmware') (time:'3m0s')
                   conditions:
-                    - name: Is labstation ('servo_host_is_labstation')
+                    - name: Only applies to labstation ('servo_host_is_labstation')
                     - name: is_servo_micro
                     - name: Is ok to force update servo_micro firmware ('sample_fail')
                       conditions:
@@ -550,7 +550,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
               conditions:
-                - name: Is labstation ('servo_host_is_labstation')
+                - name: Only applies to labstation ('servo_host_is_labstation')
               dependencies:
                 - name: cros_create_reboot_request
         - name: Cold reset pin is detected ('servo_check_servod_control')
@@ -815,7 +815,7 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
                   conditions:
-                    - name: Is labstation ('servo_host_is_labstation')
+                    - name: Only applies to labstation ('servo_host_is_labstation')
                   dependencies:
                     - name: cros_create_reboot_request
             - name: Set state:CR50_NOT_ENUMERATED ('servo_set_servo_state') (ALWAYS_RUN)
@@ -1048,7 +1048,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
               conditions:
-                - name: Is labstation ('servo_host_is_labstation')
+                - name: Only applies to labstation ('servo_host_is_labstation')
               dependencies:
                 - name: cros_create_reboot_request
         - name: Servo topology ('sample_pass')
@@ -1172,7 +1172,7 @@ plans:
                 - name: Recover servo with Power-cycle by smart-hub ('servo_power_cycle_root_servo') (ALWAYS_RUN) (time:'2m0s')
                 - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
                   conditions:
-                    - name: Is labstation ('servo_host_is_labstation')
+                    - name: Only applies to labstation ('servo_host_is_labstation')
                   dependencies:
                     - name: cros_create_reboot_request
             - name: Servo topology min two children ('servo_topology_update')
@@ -1297,7 +1297,7 @@ plans:
                 - name: Recover servo with Power-cycle by smart-hub ('servo_power_cycle_root_servo') (ALWAYS_RUN) (time:'2m0s')
                 - name: Create request to reboot labstation ('sample_fail') (ALWAYS_RUN)
                   conditions:
-                    - name: Is labstation ('servo_host_is_labstation')
+                    - name: Only applies to labstation ('servo_host_is_labstation')
                   dependencies:
                     - name: cros_create_reboot_request
         - name: Update USB drive info (Allow to fail) ('servo_update_usbkey_history')
@@ -1986,7 +1986,7 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Force reflash servo_micro fw and stop ('sample_pass')
                   conditions:
-                    - name: Is labstation ('servo_host_is_labstation')
+                    - name: Only applies to labstation ('servo_host_is_labstation')
                     - name: is_servo_micro
                     - name: Is ok to force update servo_micro firmware ('sample_fail')
                       conditions:
@@ -1994,7 +1994,7 @@ plans:
                   dependencies:
                     - name: Force update servo_micro firmware ('servo_update_servo_firmware') (time:'3m0s')
                       conditions:
-                        - name: Is labstation ('servo_host_is_labstation')
+                        - name: Only applies to labstation ('servo_host_is_labstation')
                         - name: is_servo_micro
                         - name: Is ok to force update servo_micro firmware ('sample_fail')
                           conditions:
@@ -2220,7 +2220,7 @@ plans:
       criticalactions:
         - name: Mark labstation as servod is in-use (Allow to fail) ('cros_create_servo_in_use')
           conditions:
-            - name: Is labstation ('servo_host_is_labstation') (ALWAYS_RUN)
+            - name: Only applies to labstation ('servo_host_is_labstation') (ALWAYS_RUN)
         - name: Has repair-request for re-image USB-key ('dut_has_any_repair_requests')
           recoveries:
             - name: Download stable image to USB-key (Allow to fail) ('sample_pass') (ALWAYS_RUN)
@@ -2984,7 +2984,7 @@ plans:
                 - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                 - name: Mark labstation as servod is in-use (Allow to fail) ('cros_create_servo_in_use')
                   conditions:
-                    - name: Is labstation ('servo_host_is_labstation') (ALWAYS_RUN)
+                    - name: Only applies to labstation ('servo_host_is_labstation') (ALWAYS_RUN)
                 - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
                   conditions:
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -9552,7 +9552,7 @@ plans:
                     - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                     - name: Mark labstation as servod is in-use (Allow to fail) ('cros_create_servo_in_use')
                       conditions:
-                        - name: Is labstation ('servo_host_is_labstation') (ALWAYS_RUN)
+                        - name: Only applies to labstation ('servo_host_is_labstation') (ALWAYS_RUN)
                     - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -32290,7 +32290,7 @@ plans:
                     - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                     - name: Mark labstation as servod is in-use (Allow to fail) ('cros_create_servo_in_use')
                       conditions:
-                        - name: Is labstation ('servo_host_is_labstation') (ALWAYS_RUN)
+                        - name: Only applies to labstation ('servo_host_is_labstation') (ALWAYS_RUN)
                     - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -32536,7 +32536,7 @@ plans:
                     - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                     - name: Mark labstation as servod is in-use (Allow to fail) ('cros_create_servo_in_use')
                       conditions:
-                        - name: Is labstation ('servo_host_is_labstation') (ALWAYS_RUN)
+                        - name: Only applies to labstation ('servo_host_is_labstation') (ALWAYS_RUN)
                     - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)
@@ -32829,7 +32829,7 @@ plans:
                     - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                     - name: Mark labstation as servod is in-use (Allow to fail) ('cros_create_servo_in_use')
                       conditions:
-                        - name: Is labstation ('servo_host_is_labstation') (ALWAYS_RUN)
+                        - name: Only applies to labstation ('servo_host_is_labstation') (ALWAYS_RUN)
                     - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) ('cros_update_fw_with_fw_image_by_servo') (time:'1h50m0s')
                       conditions:
                         - name: Is servod running ('sample_pass') (ALWAYS_RUN)

@@ -204,7 +204,7 @@ func crosRepairActions() map[string]*Action {
 				"Create lock file is_in_use.",
 			},
 			Conditions: []string{
-				"Is labstation",
+				"Only applies to labstation",
 			},
 			ExecName:               "cros_create_servo_in_use",
 			AllowFailAfterRecovery: true,
@@ -216,7 +216,7 @@ func crosRepairActions() map[string]*Action {
 				"Limited to 15 seconds.",
 			},
 			Dependencies: []string{
-				"Is labstation",
+				"Only applies to labstation",
 			},
 			ExecName: "cros_ssh",
 			ExecExtraArgs: []string{
@@ -226,7 +226,7 @@ func crosRepairActions() map[string]*Action {
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
-		"Is labstation": {
+		"Only applies to labstation": {
 			Docs: []string{
 				"Condition to check if the servohost is a labstation.",
 			},
@@ -2908,7 +2908,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Setup has servo info",
-				"Is labstation",
+				"Only applies to labstation",
 			},
 			ExecName: "servo_main_device_is_gsc",
 		},

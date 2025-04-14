@@ -275,18 +275,18 @@ func (r *recoveryEngine) runAction(ctx context.Context, actionName, parentAction
 	log.Infof(ctx, "Action %q (level: %d): started.", actionName, actionLevel)
 	conditionName, err := r.runActionConditions(ctx, actionName, actionLevel+1)
 	if err != nil {
-		log.Infof(ctx, "Action %q: skipping, one of conditions %q failed.", actionName, conditionName)
-		log.Debugf(ctx, "Action %q: condition %q fail with %s", actionName, conditionName, err)
+		log.Infof(ctx, "Action %q: skipped due to failure of precondition %q.", actionName, conditionName)
+		log.Debugf(ctx, "Action %q: precondition %q fail with %s", actionName, conditionName, err)
 		if step != nil {
 			stepLog := step.Log("Skipped")
-			if _, err := io.WriteString(stepLog, fmt.Sprintf("The condition %q is not met!", conditionName)); err != nil {
+			if _, err := io.WriteString(stepLog, fmt.Sprintf("The precondition %q is not met!", conditionName)); err != nil {
 				log.Debugf(ctx, "Fail to write reason why action skipped: %v.", err)
 			}
 		}
 		if metric != nil {
 			metric.Status = metrics.ActionStatusSkip
 		}
-		stepSummaryMarkdown = fmt.Sprintf("Condition %q is not met", conditionName)
+		stepSummaryMarkdown = fmt.Sprintf("Precondition %q is not met", conditionName)
 		// Return nil error so we can continue execution of next actions...
 		return metric, actionSkip, nil
 	}
@@ -416,18 +416,18 @@ func (r *recoveryEngine) runActionExecWithTimeout(ctx context.Context, actionNam
 func (r *recoveryEngine) runActionConditions(ctx context.Context, actionName string, actionLevel int64) (conditionName string, err error) {
 	a := r.getAction(actionName)
 	if len(a.GetConditions()) == 0 {
-		log.Debugf(ctx, "Action %q: no conditions.", actionName)
+		log.Debugf(ctx, "Action %q: no preconditions.", actionName)
 		return "", nil
 	}
-	log.Debugf(ctx, "Action %q: starting running conditions...", actionName)
 	enableRecovery := false
 	for _, condition := range a.GetConditions() {
+		log.Debugf(ctx, "Action %q: requires precondition %q", actionName, condition)
 		if _, _, err := r.runAction(ctx, condition, actionName, enableRecovery, "Condition", metrics.ActionTypeCondition, actionLevel); err != nil {
 			log.Debugf(ctx, "Action %q: condition %q fails. Error: %s", actionName, condition, err)
 			return condition, errors.Annotate(err, "run conditions").Err()
 		}
 	}
-	log.Debugf(ctx, "Action %q: all conditions passed.", actionName)
+	log.Debugf(ctx, "Action %q: all preconditions passed.", actionName)
 	return "", nil
 }
 

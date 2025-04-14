@@ -119,7 +119,7 @@ func servoPlanActions() map[string]*Action {
 				"Limited to 15 seconds.",
 			},
 			Conditions: []string{
-				"Servod container is not used",
+				"Only runs for physical labstation",
 			},
 			ExecName: "cros_ping",
 			ExecTimeout: &durationpb.Duration{
@@ -156,7 +156,7 @@ func servoPlanActions() map[string]*Action {
 				"If we fail all logs will be collected",
 			},
 			Conditions: []string{
-				"Servod container is not used",
+				"Only runs for physical labstation",
 			},
 			ExecName:               "cros_register_servod_logs_start",
 			AllowFailAfterRecovery: true,
@@ -284,7 +284,7 @@ func servoPlanActions() map[string]*Action {
 			ExecName:   "servo_servod_port_present",
 			RunControl: RunControl_RUN_ONCE,
 		},
-		"Is labstation": {
+		"Only applies to labstation": {
 			Docs: []string{
 				"Condition to check if the servohost is a labstation.",
 			},
@@ -301,7 +301,7 @@ func servoPlanActions() map[string]*Action {
 				"Create lock file is_in_use.",
 			},
 			Conditions: []string{
-				"Is labstation",
+				"Only applies to labstation",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
@@ -318,7 +318,7 @@ func servoPlanActions() map[string]*Action {
 				"Check if stateful partition have enough disk space that is at least 0.5GB.",
 			},
 			Conditions: []string{
-				"Servod container is not used",
+				"Only runs for physical labstation",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
@@ -338,7 +338,7 @@ func servoPlanActions() map[string]*Action {
 				"Clean up the old servod files as well as labstation.",
 			},
 			Conditions: []string{
-				"Is labstation",
+				"Only applies to labstation",
 			},
 			Dependencies: []string{
 				"servo_labstation_disk_cleanup",
@@ -355,7 +355,7 @@ func servoPlanActions() map[string]*Action {
 				"max_days:5",
 			},
 		},
-		"Servod container is not used": {
+		"Only runs for physical labstation": {
 			ExecName: "servo_uses_servod_container",
 			ExecExtraArgs: []string{
 				"reverse:true",
@@ -963,7 +963,7 @@ func servoPlanActions() map[string]*Action {
 				"Working only for labstation with servo_micro.",
 			},
 			Conditions: []string{
-				"Is labstation",
+				"Only applies to labstation",
 				"is_servo_micro",
 				"DUT has CrOS EC",
 				// Followed is condition to check if voltage is low means servo_micro is not connected.
@@ -1167,7 +1167,7 @@ func servoPlanActions() map[string]*Action {
 				"Try to update servo micro firmware",
 			},
 			Conditions: []string{
-				"Is labstation",
+				"Only applies to labstation",
 				"is_servo_micro",
 				"Is ok to force update servo_micro firmware",
 			},
@@ -1182,7 +1182,7 @@ func servoPlanActions() map[string]*Action {
 				"Try to update servo micro firmware",
 			},
 			Conditions: []string{
-				"Is labstation",
+				"Only applies to labstation",
 				"is_servo_micro",
 				"Is ok to force update servo_micro firmware",
 			},
@@ -1733,7 +1733,7 @@ func servoPlanActions() map[string]*Action {
 				"The action always fails as Servo will be fixed after reboot.",
 			},
 			Conditions: []string{
-				"Is labstation",
+				"Only applies to labstation",
 			},
 			Dependencies: []string{
 				"cros_create_reboot_request",
@@ -1825,7 +1825,7 @@ func servoPlanActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
-		"DUT is not pingable": {
+		"Only run if DUT ping fails": {
 			Docs: []string{
 				"Verify if DUT is not SSH-able",
 			},
@@ -1889,7 +1889,7 @@ func servoPlanActions() map[string]*Action {
 			},
 			Conditions: []string{
 				// We try restart only if we lost network to the dut.
-				"DUT is not pingable",
+				"Only run if DUT ping fails",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
@@ -1941,7 +1941,7 @@ func servoPlanActions() map[string]*Action {
 				"Read host release data for future analysis.",
 			},
 			Conditions: []string{
-				"Servod container is not used",
+				"Only runs for physical labstation",
 			},
 			Dependencies: []string{
 				"Device is SSHable",
