@@ -281,14 +281,19 @@ func deleteStaleConfigs(ctx context.Context, botPrefixesMap map[string]*ufspb.Ow
 			// otherwise mark it as stale
 			hostName := entry.Name
 			_, ok := botsMap[hostName]
-			if !ok {
-				_, ok = botPrefixesMap[hostName]
-				if !ok && !mapContainsPrefix(botPrefixesMap, hostName) {
-					updateOwnership(ctx, hostName, nil, entry.AssetType)
-					staleEntries = append(staleEntries, hostName)
-					logging.Warningf(ctx, "found stale entry during cleanup : %s", hostName)
-				}
+			if ok {
+				continue
 			}
+			_, ok = botPrefixesMap[hostName]
+			if ok {
+				continue
+			}
+			if mapContainsPrefix(botPrefixesMap, hostName) {
+				continue
+			}
+			updateOwnership(ctx, hostName, nil, entry.AssetType)
+			staleEntries = append(staleEntries, hostName)
+			logging.Warningf(ctx, "found stale entry during cleanup : %s", hostName)
 		}
 		if token == "" {
 			break
