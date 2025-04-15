@@ -6,6 +6,7 @@ package queryutils
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"go.chromium.org/luci/common/data/aip160"
@@ -175,12 +176,12 @@ func (q *QueryBuilder) restrictionQuery(restriction *aip160.Restriction, argInfo
 		return "", fmt.Errorf("operator `%s` not implemented for json fields yet", restriction.Comparator)
 	}
 
-	if restriction.Comparator == "=" {
+	if slices.Contains([]string{"=", "<", ">"}, restriction.Comparator) {
 		arg, err := q.argValue(restriction.Arg)
 		if err != nil {
 			return "", errors.Annotate(err, "argument for field %s", column.ExternalName).Err()
 		}
-		return fmt.Sprintf("(%s = %s)", column.name, arg), nil
+		return fmt.Sprintf("(%s %s %s)", column.name, restriction.Comparator, arg), nil
 	} else if restriction.Comparator == "!=" {
 		arg, err := q.argValue(restriction.Arg)
 		if err != nil {
