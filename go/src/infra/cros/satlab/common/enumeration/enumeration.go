@@ -27,6 +27,8 @@ var GooglePIDs = map[string]string{
 	"5014": "cr50",
 	// For D2 chip
 	"504a": "ti50",
+	// For NuvoTitan chip
+	"5066": "ti50",
 }
 
 // USBDevice represents a plugged in USB Device
