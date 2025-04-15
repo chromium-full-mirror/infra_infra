@@ -10,7 +10,6 @@ linters:
     - copyloopvar
     - errorlint
     - intrange
-    - staticcheck
   disable:
     # There are also many unchecked errors.
     - errcheck
