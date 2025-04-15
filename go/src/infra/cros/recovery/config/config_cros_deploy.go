@@ -30,6 +30,25 @@ func crosDeployPlan() *Plan {
 	}
 }
 
+func mhDeployPlan() *Plan {
+	return &Plan{
+		CriticalActions: []string{
+			"Check stable versions exist",
+			// TODO(b/410571779): Slowly verify and enable actions below.
+			// "Device is pingable before deploy",
+			// "DUT is on test channel OS",
+			// "Collect firmware target",
+			// "DUT has correct cros image version",
+			// "Set dev_boot_usb is enabled",
+			// "DUT has expected dev firmware",
+			// "DUT has expected firmware version",
+			// "Deployment checks",
+			// "Collect DUT labels",
+		},
+		Actions: crosDeployAndRepairActions(),
+	}
+}
+
 func deployActions() map[string]*Action {
 	return map[string]*Action{
 		"Device is pingable before deploy": {
@@ -320,8 +339,6 @@ func deployActions() map[string]*Action {
 			Dependencies: []string{
 				"Recovery version has OS image path",
 				"Check stable firmware version exists",
-				// Disabled faft version check until b/241150358 got resolved.
-				//"Check stable faft version exists",
 			},
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},

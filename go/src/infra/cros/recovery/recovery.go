@@ -281,6 +281,11 @@ func defaultConfiguration(tn buildbucket.TaskName, ds tlw.DUTSetupType) (*config
 		default:
 			return nil, errors.Reason("Setup type: %q is not supported for task: %q!", ds, tn).Err()
 		}
+	case buildbucket.MHDeploy:
+		switch ds {
+		case tlw.DUTSetupType_CROS, tlw.DUTSetupType_CROS_BROWSER, tlw.DUTSetupType_CLANK_ONLY:
+			return config.MHDeployConfig(), nil
+		}
 	case buildbucket.AuditRPM:
 		switch ds {
 		case tlw.DUTSetupType_CROS, tlw.DUTSetupType_CROS_BROWSER:

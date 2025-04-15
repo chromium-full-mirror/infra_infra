@@ -103,7 +103,7 @@ func MHRepairConfig() *Configuration {
 	}
 }
 
-// CrosDeployConfig provides config for deploy cros setup in the lab task.
+// CrosDeployConfig provides config for deploy cros setup in the lab.
 func CrosDeployConfig() *Configuration {
 	return &Configuration{
 		PlanNames: []string{
@@ -126,6 +126,40 @@ func CrosDeployConfig() *Configuration {
 			PlanCrOSDeploy:    setAllowFail(crosDeployPlan(), false),
 			PlanCrOSBase:      setAllowFail(crosBasePlan(basePlanTypeDeploy), false),
 			PlanCrOS:          setAllowFail(crosRepairPlan(), false),
+			PlanChameleon:     setAllowFail(chameleonPlan(), true),
+			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
+			PlanWifiRouter:    setAllowFail(wifiRouterRepairPlan(), true),
+			PlanHMR:           setAllowFail(hmrRepairPlan(), true),
+			PlanDolos:         setAllowFail(dolosRepairPlan(), true),
+			PlanAMT:           setAllowFail(amtRepairPlan(), true),
+			PlanClosing:       setAllowFail(crosClosePlan(), true),
+		},
+	}
+}
+
+// MHDeployConfig provides config for deploy cros setup in the MH.
+func MHDeployConfig() *Configuration {
+	return &Configuration{
+		PlanNames: []string{
+			PlanCrOSBase,
+			PlanServoFwUpdate,
+			PlanDolos,
+			PlanServo,
+			PlanCrOSDeploy,
+			PlanCrOS,
+			PlanChameleon,
+			PlanBluetoothPeer,
+			PlanWifiRouter,
+			PlanHMR,
+			PlanAMT,
+			PlanClosing,
+		},
+		Plans: map[string]*Plan{
+			PlanServo:         setAllowFail(servoRepairPlan(), false),
+			PlanServoFwUpdate: setAllowFail(servoPreDeployPlan(), false),
+			PlanCrOSDeploy:    setAllowFail(mhDeployPlan(), false),
+			PlanCrOSBase:      setAllowFail(crosBasePlan(basePlanTypeDeploy), false),
+			PlanCrOS:          setAllowFail(mhRepairPlan(), false),
 			PlanChameleon:     setAllowFail(chameleonPlan(), true),
 			PlanBluetoothPeer: setAllowFail(btpeerRepairPlan(), true),
 			PlanWifiRouter:    setAllowFail(wifiRouterRepairPlan(), true),
