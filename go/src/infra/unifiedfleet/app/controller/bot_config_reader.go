@@ -264,7 +264,50 @@ func parseConfigs(ctx context.Context, config *ufspb.SecurityInfos) (map[string]
 			}
 		}
 	}
+	addDerivativeBots(ctx, botsMap)
 	return botsMap, botPrefixesMap
+}
+
+// addDerivativeBots adds the derivative bots id to the botsMap, so we can apply
+// the ownership to them and their machines.
+//
+// Swarming allows 'derivative' bots where multiple bots run on the same
+// host machine in some sort of container (such as Docker containers) and SHARE
+// A SINGLE CREDENTIAL. These bots have hostnames such as 'hostmachine--001',
+// where the "--001" suffix indicates which of the contained bots on
+// 'hostmachine' it is. When Swarming checks the bot affiliation for this
+// contained machine, it checks ONLY the 'hostmachine' portion.
+//
+// No need to add the derivative bots id to botPrefixMap because it's compatible
+// with the bot prefix matching.
+func addDerivativeBots(ctx context.Context, botsMap map[string]*ufspb.OwnershipData) {
+	// Enumerate MachineLSEs and check if the name implies a derivative bot.
+	// If true, then add it to the map with the same ownership with its hosting
+	// machine.
+	for pageToken := ""; ; {
+		lses, pageToken, err := inventory.ListMachineLSEs(ctx, 1000, pageToken, nil, false)
+		if err != nil {
+			logging.Warningf(ctx, "List MachineLSEs failed during derivative bots checking: %s", err)
+		}
+		for _, l := range lses {
+			// Get the host portion of the name if it applies.
+			name := l.GetName()
+			index := strings.Index(name, "--")
+			if index == -1 {
+				continue
+			}
+			hostBot := name[:index]
+
+			ownership, ok := botsMap[hostBot]
+			if !ok {
+				continue
+			}
+			botsMap[name] = ownership
+		}
+		if pageToken == "" {
+			break
+		}
+	}
 }
 
 // Cleanup ownership data that is no longer present in the starlark configs
