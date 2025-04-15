@@ -171,10 +171,6 @@ func reportUFSInventoryForNamespace(ctx context.Context, ns string) (c inventory
 		if ns == util.OSNamespace && lseInSUnitMap[name] {
 			continue
 		}
-		if ns == util.BrowserNamespace && lse.GetAttachedDeviceLse() != nil {
-			// The host for attached device is not for running task.
-			continue
-		}
 		machine, err := getMachineForLse(lse, idTomachineMap)
 		if err != nil {
 			logging.Warningf(ctx, err.Error())
