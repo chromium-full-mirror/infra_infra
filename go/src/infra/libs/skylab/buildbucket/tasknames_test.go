@@ -43,6 +43,8 @@ var TaskNameToBuilderPerVersionCases = []struct {
 	{"repair-latest", DeepRecovery, CIPDLatest},
 	{"deploy", Deploy, CIPDProd},
 	{"deploy-latest", Deploy, CIPDLatest},
+	{"mh_deploy", MHDeploy, CIPDProd},
+	{"mh_deploy-latest", MHDeploy, CIPDLatest},
 	{"custom", Custom, CIPDProd},
 	{"custom-latest", Custom, CIPDLatest},
 	{"custom", InvalidTaskName, CIPDProd},

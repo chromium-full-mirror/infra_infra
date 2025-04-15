@@ -31,6 +31,8 @@ const (
 	MHRecovery TaskName = "mh_recovery"
 	// Task used to prepare device to be used in the lab.
 	Deploy TaskName = "deploy"
+	// Task used to prepare devices to be used in the MH.
+	MHDeploy TaskName = "mh_deploy"
 	// Task used to execute custom plans.
 	// Configuration has to be provided by the user.
 	Custom TaskName = "custom"
@@ -73,6 +75,8 @@ func NormalizeTaskName(name string) (TaskName, error) {
 		return DeepRecovery, nil
 	case "deploy":
 		return Deploy, nil
+	case "mh-deploy", "mh_deploy", "mhdeploy":
+		return Deploy, nil
 	case "dry_run", "dry-run":
 		return DryRun, nil
 	case "custom":
@@ -94,6 +98,7 @@ func ValidateTaskName(tn TaskName) error {
 	case MHRecovery:
 	case DeepRecovery:
 	case Deploy:
+	case MHDeploy:
 	case Custom:
 	default:
 		return fmt.Errorf("validate task name: %q is not a valid task name", tn)
@@ -130,6 +135,11 @@ func TaskNameToBuilderNamePerVersion(tn TaskName, v CIPDVersion) string {
 			return "deploy-latest"
 		}
 		return "deploy"
+	case MHDeploy:
+		if v == CIPDLatest {
+			return "mh_deploy-latest"
+		}
+		return "mh_deploy"
 	default:
 		if v == CIPDLatest {
 			return "custom-latest"
