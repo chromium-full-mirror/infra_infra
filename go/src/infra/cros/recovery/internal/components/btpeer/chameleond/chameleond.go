@@ -69,10 +69,18 @@ func FetchInstalledChameleondBundleCommit(ctx context.Context, sshRunner ssh.Run
 
 // InstallChameleondBundle installs chameleond on the btpeer using the bundle
 // archive at the provided path on the host.
-func InstallChameleondBundle(ctx context.Context, sshRunner ssh.Runner, pathToBundleOnHost string) error {
+func InstallChameleondBundle(ctx context.Context, sshRunner ssh.Runner, pathToBundleOnHost string, installBluetoothGRPC bool) error {
+	makeInstallCommand := "install"
+	sshTimeOut := 10 * time.Minute
+
+	if installBluetoothGRPC {
+		makeInstallCommand = "rpi-local-install"
+		sshTimeOut = 30 * time.Minute
+	}
+
 	if _, err := sshRunner.Run(
 		ctx,
-		10*time.Minute,
+		sshTimeOut,
 
 		// Enter install dir and extract bundle contents to it.
 		"cd", fmt.Sprintf("'%s'", installDir), "&&",
@@ -82,16 +90,14 @@ func InstallChameleondBundle(ctx context.Context, sshRunner ssh.Runner, pathToBu
 		"cd", "\"$(find -mindepth 1 -maxdepth 1 -type d)\"", "&&",
 
 		// Install chameleond.
-		"make", "install",
+		"make", makeInstallCommand,
 		"REMOTE_INSTALL=TRUE",
 		fmt.Sprintf("HOST_NOW=%q", time.Now().Format("2006-01-02 03:04:05")),
-		"BUNDLE_VERSION=9999",
-		"CHAMELEON_BOARD=fpga_tio",
-		"NEEDS_SYSTEM_UPDATE=TRUE",
-		"PY_VERSION=python3",
+		fmt.Sprintf("INSTALL_GRPC=%t", installBluetoothGRPC),
 	); err != nil {
 		return errors.Annotate(err, "failed to install chameleond bundle").Err()
 	}
+
 	return nil
 }
 

@@ -17,6 +17,7 @@ import (
 	"go.chromium.org/infra/cros/recovery/internal/components/btpeer/chameleond"
 	"go.chromium.org/infra/cros/recovery/internal/execs"
 	"go.chromium.org/infra/cros/recovery/internal/log"
+	"go.chromium.org/infra/cros/recovery/tlw"
 )
 
 // fetchInstalledChameleondBundleCommitExec retrieves the chameleond commit of
@@ -63,6 +64,19 @@ func fetchBtpeerChameleondReleaseConfigExec(ctx context.Context, info *execs.Exe
 	return nil
 }
 
+func isDUTInProtoAPPool(ctx context.Context, d *tlw.Dut) bool {
+	// TODO(b/410508510): Remove this once bluetoth_server is updated to use
+	// the new chameleond release process.
+
+	pools := d.ExtraAttributes[tlw.ExtraAttributePools]
+	for _, pool := range pools {
+		if pool == "wificell_proto_ap" {
+			return true
+		}
+	}
+	return false
+}
+
 // identifyExpectedChameleondReleaseBundleExec Identifies the expected
 // chameleond release bundle based off of the chameleond config and DUT host.
 // The config of the expected bundle is stored in the scope state for later
@@ -79,7 +93,14 @@ func identifyExpectedChameleondReleaseBundleExec(ctx context.Context, info *exec
 	// a very high version is used for selection to force this behavior.
 	actionArgs := info.GetActionArgs(ctx)
 	const crosVersionActionArgKey = "cros_version"
-	crosVersion := actionArgs.AsString(ctx, crosVersionActionArgKey, "999999999")
+	currentVersion := "999999999"
+
+	// TODO(b/410508510): Remove this once bluetoth_server is updated to use
+	// the new chameleond release process.
+	if isDUTInProtoAPPool(ctx, info.GetDut()) {
+		currentVersion = "10000"
+	}
+	crosVersion := actionArgs.AsString(ctx, crosVersionActionArgKey, currentVersion)
 	expectedBundleConfig, err := chameleond.SelectChameleondBundleForDut(ctx, btpeerScopeState.GetChameleond().GetReleaseConfig(), info.GetDut().Name, crosVersion)
 	if err != nil {
 		return errors.Annotate(err, "failed to select highest non-next chameleond bundle for btpeer").Err()
@@ -149,7 +170,8 @@ func installExpectedChameleondReleaseBundleExec(ctx context.Context, info *execs
 		return errors.Annotate(err, "failed to download expected chameleond bundle (commit %q) to btpeer", expectedCommit).Err()
 	}
 	// Install bundle.
-	if err := chameleond.InstallChameleondBundle(ctx, sshRunner, localBundleLocation); err != nil {
+	installBluetoothGRPC := isDUTInProtoAPPool(ctx, info.GetDut())
+	if err := chameleond.InstallChameleondBundle(ctx, sshRunner, localBundleLocation, installBluetoothGRPC); err != nil {
 		return errors.Annotate(err, "failed to install expected chameleond bundle (commit %q) on btpeer", expectedCommit).Err()
 	}
 	// Clean install dir.
@@ -173,6 +195,12 @@ func installExpectedChameleondReleaseBundleExec(ctx context.Context, info *execs
 // service on the device to see if it is running. Returns a non-nil error if the
 // service is not running.
 func assertChameleondServiceIsRunningExec(ctx context.Context, info *execs.ExecInfo) error {
+	// TODO(b/410508510): Remove this once bluetoth_server is updated to use
+	// the new chameleond release process.
+	if isDUTInProtoAPPool(ctx, info.GetDut()) {
+		return nil
+	}
+
 	sshRunner := btpeer.NewSshRunner(info.GetAccess(), info.GetActiveResource())
 	if err := chameleond.AssertChameleondServiceIsRunning(ctx, sshRunner); err != nil {
 		return errors.Annotate(err, "failed to assert that chameleond is running").Err()

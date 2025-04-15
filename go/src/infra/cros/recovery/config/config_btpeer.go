@@ -89,7 +89,6 @@ func btpeerRepairPlan() *Plan {
 				},
 				RunControl: RunControl_ALWAYS_RUN,
 			},
-
 			// Chameleond release process actions.
 			"Chameleond version is up to date": {
 				Docs: []string{
@@ -97,7 +96,6 @@ func btpeerRepairPlan() *Plan {
 				},
 				Conditions: []string{
 					"Btpeer release process should be chameleond-based",
-					"Btpeer should not have ignore file present",
 				},
 				Dependencies: []string{
 					"Fetch btpeer chameleond release config from GCS",
@@ -188,14 +186,6 @@ func btpeerRepairPlan() *Plan {
 				ExecExtraArgs: []string{
 					"expected_release_process:image",
 				},
-				RunControl: RunControl_RUN_ONCE,
-			},
-			"Btpeer should not have ignore file present": {
-				Docs: []string{
-					"Passes if btpeer doesn't have ignore file (ignore_btpeer_update)",
-					"Btpeer update should be failed if file exists",
-				},
-				ExecName:   "btpeer_assert_ignore_file_present",
 				RunControl: RunControl_RUN_ONCE,
 			},
 			"Btpeer release process should be chameleond-based": {
