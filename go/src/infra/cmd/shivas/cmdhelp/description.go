@@ -2450,6 +2450,17 @@ func ServoSetupTypeAllowedValuesString() string {
 	return fmt.Sprintf("[%s]", strings.Join(servoSetupTypeAllowedValueList, ", "))
 }
 
+const OSRestrictionPrefix = "OSR_"
+
+// OSRestrictionAllowedValuesString returns a string description of all allowed values for os-restriction.
+func OSRestrictionAllowedValuesString() string {
+	list := []string{}
+	for name := range chromeosLab.DeviceUnderTest_OSRestriction_value {
+		list = append(list, strings.TrimPrefix(name, OSRestrictionPrefix))
+	}
+	return fmt.Sprintf("[%s]", strings.Join(list, ", "))
+}
+
 // ServoFwChannelAllowedValuesString returns a string description of all allowed values for servo firmware channel.
 func ServoFwChannelAllowedValuesString() string {
 	valueList := []string{}

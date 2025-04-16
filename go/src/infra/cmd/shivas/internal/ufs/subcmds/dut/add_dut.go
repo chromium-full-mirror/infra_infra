@@ -93,6 +93,7 @@ var AddDUTCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.state, "state", "", cmdhelp.StateHelp)
 		c.Flags.StringVar(&c.description, "desc", "", "description for the machine.")
 		c.Flags.StringVar(&c.logicalZone, "logicalzone", "", "Logical zone. "+cmdhelp.LogicalZoneHelpText)
+		c.Flags.StringVar(&c.osRestriction, "os-restriction", "", "Specify which OS is allowed on the DUT, Allowed options: "+cmdhelp.OSRestrictionAllowedValuesString())
 
 		// ACS DUT fields
 		c.Flags.Var(utils.CSVString(&c.chameleons), "chameleons", cmdhelp.ChameleonTypeHelpText)
@@ -158,6 +159,7 @@ type addDUT struct {
 	rpmType                  string
 	hive                     string
 	ateHost                  string
+	osRestriction            string
 
 	ignoreUFS        bool
 	deployTags       []string
@@ -393,6 +395,12 @@ func (c addDUT) validateArgs() error {
 		if c.servoSetupType != "" {
 			if _, ok := chromeosLab.ServoSetupType_value[appendServoSetupPrefix(c.servoSetupType)]; !ok {
 				return cmdlib.NewQuietUsageError(c.Flags, "Invalid servo setup %s", c.servoSetupType)
+			}
+		}
+		if c.osRestriction != "" {
+			c.osRestriction = strings.ToUpper(c.osRestriction)
+			if _, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+c.osRestriction]; !ok {
+				return cmdlib.NewQuietUsageError(c.Flags, "Invalid os-restriction %s", c.osRestriction)
 			}
 		}
 		if err := validateRPM(c.rpm, c.rpmOutlet, c.rpmType); err != nil {
@@ -689,6 +697,9 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 	}
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = c.hive
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().SubrailConfig = subrailConfig
+	if restriction, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+c.osRestriction]; ok {
+		lse.GetChromeosMachineLse().GetDeviceLse().GetDut().OsRestriction = chromeosLab.DeviceUnderTest_OSRestriction(restriction)
+	}
 	lse.Machines = machines
 
 	// Use the input params if available for all the options.
