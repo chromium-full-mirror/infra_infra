@@ -36,7 +36,7 @@ message ChromeOSDevice {
   };
 }
 
-// Next Tag: 14
+// Next Tag: 15
 message DeviceUnderTest{
   string hostname = 1;
   Peripherals peripherals = 2;
@@ -83,6 +83,18 @@ message DeviceUnderTest{
 
   // Provide DUT/ATE labserver affinity
   string ate_host = 13;
+
+  // Defines the operating system usage constraint for this DUT.
+  enum OSRestriction {
+    // No restrictions by default.
+    OSR_ANY = 0;
+    OSR_CHROMEOS_ONLY = 1;
+    OSR_ANDROID_ONLY = 2;
+  }
+  // Defines the operating system restriction for DUT.
+  // Use DUTOS_ANDROID_ONLY to permit only Android.
+  // Use DUTOS_ANY if any operating system is allowed.
+  OSRestriction os_restriction = 14;
 }
 
 // Next Tag: 6
