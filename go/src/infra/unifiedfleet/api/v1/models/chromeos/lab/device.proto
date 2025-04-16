@@ -36,7 +36,7 @@ message ChromeOSDevice {
   };
 }
 
-// Next Tag: 12
+// Next Tag: 14
 message DeviceUnderTest{
   string hostname = 1;
   Peripherals peripherals = 2;
@@ -80,6 +80,9 @@ message DeviceUnderTest{
 
   // Power subrail config file
   string subrail_config = 12;
+
+  // Provide DUT/ATE labserver affinity
+  string ate_host = 13;
 }
 
 // Next Tag: 6
