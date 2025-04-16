@@ -2965,7 +2965,7 @@ func crosRepairActions() map[string]*Action {
 		"Set GBB flags to enable dev mode and boot from usb by servo": {
 			Docs: []string{
 				"Force to set GBB flags to boot in DEV mode and enable to boot from USB-drive.",
-				"Allowed to fail as flags can applied but fail by some reason",
+				"Allowed to fail as flags can be applied but the command may fail due to various reasons.",
 			},
 			Dependencies: []string{
 				"Is servod running",

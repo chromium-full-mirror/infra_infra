@@ -33,14 +33,18 @@ func crosDeployPlan() *Plan {
 func mhDeployPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
+			"Mark as Android based",
+			"Set CacheService address",
 			"Check stable versions exist",
+			"Set GBB flags to enable dev mode and boot from usb by servo",
+			"ADB Connect DUT",
+			"Android is accessable",
+			"ADB set Android as always awake",
 			// TODO(b/410571779): Slowly verify and enable actions below.
-			// "Device is pingable before deploy",
 			// "DUT is on test channel OS",
 			// "Collect firmware target",  Blocked by b/374944007
 			// "DUT has correct cros image version",
-			// "Set dev_boot_usb is enabled",
-			// "DUT has expected dev firmware",
+			"DUT has expected dev firmware",
 			// "DUT has expected firmware version",
 			// "Deployment checks",
 			// "Collect DUT labels",

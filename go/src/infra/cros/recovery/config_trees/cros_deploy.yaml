@@ -7103,7 +7103,7 @@ plans:
                     - gbb_flags:0x80000018
                   docs:
                     - Force to set GBB flags to boot in DEV mode and enable to boot from USB-drive.
-                    - Allowed to fail as flags can applied but fail by some reason
+                    - Allowed to fail as flags can be applied but the command may fail due to various reasons.
                   dependencies:
                     - name: Is servod running (ALWAYS_RUN)
                       exec_name: sample_pass
@@ -11716,7 +11716,7 @@ plans:
                     - gbb_flags:0x80000018
                   docs:
                     - Force to set GBB flags to boot in DEV mode and enable to boot from USB-drive.
-                    - Allowed to fail as flags can applied but fail by some reason
+                    - Allowed to fail as flags can be applied but the command may fail due to various reasons.
                   dependencies:
                     - name: Is servod running (ALWAYS_RUN)
                       exec_name: sample_pass
@@ -20879,7 +20879,7 @@ plans:
                     - gbb_flags:0x80000018
                   docs:
                     - Force to set GBB flags to boot in DEV mode and enable to boot from USB-drive.
-                    - Allowed to fail as flags can applied but fail by some reason
+                    - Allowed to fail as flags can be applied but the command may fail due to various reasons.
                   dependencies:
                     - name: Is servod running (ALWAYS_RUN)
                       exec_name: sample_pass
@@ -41472,7 +41472,7 @@ plans:
                         - gbb_flags:0x80000018
                       docs:
                         - Force to set GBB flags to boot in DEV mode and enable to boot from USB-drive.
-                        - Allowed to fail as flags can applied but fail by some reason
+                        - Allowed to fail as flags can be applied but the command may fail due to various reasons.
                       dependencies:
                         - name: Is servod running (ALWAYS_RUN)
                           exec_name: sample_pass
@@ -46083,7 +46083,7 @@ plans:
                         - gbb_flags:0x80000018
                       docs:
                         - Force to set GBB flags to boot in DEV mode and enable to boot from USB-drive.
-                        - Allowed to fail as flags can applied but fail by some reason
+                        - Allowed to fail as flags can be applied but the command may fail due to various reasons.
                       dependencies:
                         - name: Is servod running (ALWAYS_RUN)
                           exec_name: sample_pass
@@ -49891,7 +49891,7 @@ plans:
                         - gbb_flags:0x80000018
                       docs:
                         - Force to set GBB flags to boot in DEV mode and enable to boot from USB-drive.
-                        - Allowed to fail as flags can applied but fail by some reason
+                        - Allowed to fail as flags can be applied but the command may fail due to various reasons.
                       dependencies:
                         - name: Is servod running (ALWAYS_RUN)
                           exec_name: sample_pass
@@ -50586,7 +50586,7 @@ plans:
                         - gbb_flags:0x80000018
                       docs:
                         - Force to set GBB flags to boot in DEV mode and enable to boot from USB-drive.
-                        - Allowed to fail as flags can applied but fail by some reason
+                        - Allowed to fail as flags can be applied but the command may fail due to various reasons.
                       dependencies:
                         - name: Is servod running (ALWAYS_RUN)
                           exec_name: sample_pass
@@ -122008,7 +122008,7 @@ plans:
                         - gbb_flags:0x80000018
                       docs:
                         - Force to set GBB flags to boot in DEV mode and enable to boot from USB-drive.
-                        - Allowed to fail as flags can applied but fail by some reason
+                        - Allowed to fail as flags can be applied but the command may fail due to various reasons.
                       dependencies:
                         - name: Is servod running (ALWAYS_RUN)
                           exec_name: sample_pass
@@ -125998,7 +125998,7 @@ plans:
                         - gbb_flags:0x80000018
                       docs:
                         - Force to set GBB flags to boot in DEV mode and enable to boot from USB-drive.
-                        - Allowed to fail as flags can applied but fail by some reason
+                        - Allowed to fail as flags can be applied but the command may fail due to various reasons.
                       dependencies:
                         - name: Is servod running (ALWAYS_RUN)
                           exec_name: sample_pass
