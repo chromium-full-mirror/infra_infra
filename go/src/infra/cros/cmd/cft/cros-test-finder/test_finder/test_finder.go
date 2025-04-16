@@ -27,11 +27,12 @@ import (
 	"go.chromium.org/infra/cros/cmd/cft/common/metadata"
 	"go.chromium.org/infra/cros/cmd/cft/common/portdiscovery"
 	"go.chromium.org/infra/cros/cmd/cft/cros-test-finder/centralizedsuite"
+	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
 const (
 	defaultRootPath        = "/tmp/test/cros-test-finder"
-	filterLogPath          = "/tmp/filters/cros-test-finder"
+	DefaultLogPath         = "/tmp/filters"
 	defaultInputFileName   = "request.json"
 	defaultOutputFileName  = "result.json"
 	defaultTestMetadataDir = "/tmp/test/metadata"
@@ -286,51 +287,44 @@ func runCLI(ctx context.Context, d []string) int {
 }
 
 // startServer is the entry point for running cros-test-finder (TestFinderService) in server mode.
-func startServer(d []string) int {
+func startServer(flagSet *flag.FlagSet, executor func(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error), name string) error {
 	a := args{}
+	commonParams := common.CommonFilterParams{}
 	t := time.Now()
-	defaultLogPath := filepath.Join(defaultRootPath, t.Format("20060102-150405"))
-	fs := flag.NewFlagSet("Run cros-test", flag.ExitOnError)
-	fs.StringVar(&a.logPath, "log", defaultLogPath, fmt.Sprintf("Path to record finder logs. Default value is %s", defaultLogPath))
-	fs.StringVar(&a.metadataDir, "metadatadir", defaultTestMetadataDir, "specify a directory that contain all test metadata proto files.")
-	fs.IntVar(&a.port, "port", defaultPort, fmt.Sprintf("Specify the port for the server. Default value %d.", defaultPort))
-	fs.Parse(d)
+	flagSet.StringVar(&a.logPath, "log", DefaultLogPath, fmt.Sprintf("Base path to record logs. Default value is %s", DefaultLogPath))
+	flagSet.IntVar(&a.port, "port", defaultPort, fmt.Sprintf("Specify the port for the server. Default value %d.", defaultPort))
+	flagSet.StringVar(&commonParams.FirestoreDatabaseName, "firestore", common.TestPlatformFireStore, fmt.Sprintf("Firestore database name to pull from. Default value is %s", common.TestPlatformFireStore))
+	flagSet.StringVar(&commonParams.Environment, "env", "prod", "Environment of the run. Default value is prod")
 
-	filterLogFile, err := createLogFile(filepath.Join(filterLogPath, t.Format("20060102-150405")))
+	flagSet.Parse(os.Args[2:])
+
+	logFile, err := common.CreateLogFile(filepath.Join(a.logPath, name, t.Format("20060102-150405")))
 	if err != nil {
-		log.Fatalln("Failed to create log file", err)
-		return 2
-	}
-	logFile, err := createLogFile(a.logPath)
-	if err != nil {
-		log.Fatalln("Failed to create log file", err)
-		return 2
+		return fmt.Errorf("failed to create log file: %s", err)
 	}
 	defer logFile.Close()
 
-	logger := newLogger(logFile, filterLogFile)
+	logger := common.NewLogger(logFile)
+	log.SetOutput(logger.Writer())
 
 	l, err := net.Listen("tcp", fmt.Sprintf(":%d", a.port))
 	if err != nil {
-		logger.Fatalln("Failed to create a net listener: ", err)
-		return 2
+		return fmt.Errorf("failed to create a net listener: %s", err)
 	}
-	logger.Println("Starting TestFinderService on port ", a.port)
-
 	// Write port number to ~/.cftmeta for go/cft-port-discovery
-	err = portdiscovery.WriteServiceMetadata("cros-test-finder", l.Addr().String(), logger)
+	err = portdiscovery.WriteServiceMetadata(name, l.Addr().String(), logger)
 	if err != nil {
-		logger.Println("Warning: error when writing to metadata file: ", err)
+		return fmt.Errorf("failed to write metadata port: %s", err)
 	}
+	server := NewServer(logger, a.logPath, name, &commonParams, executor)
 
-	server, closer := NewServer(logger, a.metadataDir)
-	defer closer()
 	err = server.Serve(l)
 	if err != nil {
-		logger.Fatalln("Failed to initialize server: ", err)
-		return 2
+		return fmt.Errorf("failed to initialize server: %s", err)
 	}
-	return 0
+	logger.Println("Starting generic filter service on port ", a.port)
+
+	return nil
 }
 
 // Specify run mode for CLI.
@@ -366,6 +360,26 @@ func getRunMode() (runMode, error) {
 	return runCliDefault, nil
 }
 
+func filterExecutor(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error) {
+	log.Println("Executing cros-test-finder as filter.")
+
+	findTestReq, _ := common.ToTestFinderRequest(req)
+
+	log.Printf("Custom TF Adaptor Request: %s", req)
+
+	findTestResp, err := FindTests(log, findTestReq, defaultTestMetadataDir)
+	if err != nil {
+		// log error but don't return it as we want enumeration error happening for this
+		log.Printf("filter grpc execution failure: %s", err.Error())
+		return req, nil
+	}
+
+	log.Println("Backfilling results")
+	err = common.FillTestCasesIntoTestPlan(req, findTestResp)
+
+	return req, nil
+}
+
 func TestFinderInternal(ctx context.Context) int {
 	runMode, err := getRunMode()
 	if err != nil {
@@ -382,7 +396,12 @@ func TestFinderInternal(ctx context.Context) int {
 		return runCLI(ctx, os.Args[2:])
 	case runServer:
 		log.Printf("Running server mode!")
-		return startServer(os.Args[2:])
+		fs := flag.NewFlagSet("Run cros-test-finder server", flag.ExitOnError)
+		err := startServer(fs, filterExecutor, "cros-test-finder")
+		if err != nil {
+			return 2
+		}
+		return 0
 	case runVersion:
 		log.Printf("TestFinderService version: %s", Version)
 		return 0

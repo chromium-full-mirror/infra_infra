@@ -8,7 +8,6 @@ package executors
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
 	"google.golang.org/grpc"
@@ -23,8 +22,6 @@ import (
 	"go.chromium.org/infra/cros/cmd/common_lib/interfaces"
 	ctpv2_data "go.chromium.org/infra/cros/cmd/ctpv2/data"
 	"go.chromium.org/infra/cros/cmd/ctpv2/internal/commands"
-	"go.chromium.org/infra/libs/skylab/inventory/autotest/labels"
-	s "go.chromium.org/infra/libs/skylab/inventory/swarming"
 )
 
 // FilterExecutor represents executor for all filter related commands.
@@ -109,7 +106,7 @@ func executeTestFinderAdaptor(ctx context.Context, conn *grpc.ClientConn, filter
 	maxRecvSizeOption := grpc.MaxCallRecvMsgSize(32 * 10e6)
 	maxSendSizeOption := grpc.MaxCallSendMsgSize(32 * 10e6)
 
-	req, _ := toTestFinderRequest(filterReq)
+	req, _ := common.ToTestFinderRequest(filterReq)
 
 	logging.Infof(ctx, "Custom TF Adaptor Request: %s", req)
 
@@ -123,103 +120,17 @@ func executeTestFinderAdaptor(ctx context.Context, conn *grpc.ClientConn, filter
 	}
 
 	logging.Infof(ctx, "Backfilling results")
-	err = fillTestCasesIntoTestPlan(ctx, filterReq, findTestResp)
+	err = common.FillTestCasesIntoTestPlan(filterReq, findTestResp)
 	if err != nil {
 		return nil, errors.Annotate(err, "Error in translated TestFinder: ").Err()
 	}
 	return filterReq, nil
 }
 
-func toTestFinderRequest(testPlan *testapi.InternalTestplan) (*testapi.CrosTestFinderRequest, error) {
-	centralizedSuitesPrefix := "centralizedsuite:"
-	// TODO... switch
-	requestedSuite, ok := testPlan.GetSuiteInfo().GetSuiteRequest().GetSuiteRequest().(*testapi.SuiteRequest_TestSuite)
-	if !ok {
-		return nil, errors.New("SuiteRequest is not TestSuite")
-	}
-	testSuite := requestedSuite.TestSuite
-	if testSuite != nil && strings.HasPrefix(testSuite.Name, centralizedSuitesPrefix) {
-		return &testapi.CrosTestFinderRequest{
-			CentralizedSuite: strings.TrimPrefix(testSuite.Name, centralizedSuitesPrefix),
-			MetadataRequired: true,
-		}, nil
-	}
-	return &testapi.CrosTestFinderRequest{
-		TestSuites:       []*testapi.TestSuite{testSuite},
-		MetadataRequired: true,
-	}, nil
-}
-
-func fillTestCasesIntoTestPlan(ctx context.Context, testPlan *testapi.InternalTestplan, resp *testapi.CrosTestFinderResponse) error {
-	if len(resp.GetTestSuites()) == 0 {
-		return nil
-	}
-
-	// Only need to check the [0] index; as test-finder only populates that.
-	metadataList, ok := resp.GetTestSuites()[0].Spec.(*testapi.TestSuite_TestCasesMetadata)
-	if !ok {
-		return errors.New("no test cases metadata in the response")
-	}
-
-	for _, metadata := range metadataList.TestCasesMetadata.GetValues() {
-		testPlan.TestCases = append(testPlan.TestCases, tfToCTPTestCase(metadata))
-	}
-	return nil
-}
-
-func tfToCTPTestCase(metadata *testapi.TestCaseMetadata) *testapi.CTPTestCase {
-	tc := &testapi.CTPTestCase{
-		Name:     metadata.GetTestCase().GetId().GetValue(),
-		Metadata: metadata,
-	}
-
-	deps := Converter(tc.GetMetadata().GetTestCase().GetDependencies())
-	if len(deps) != 0 {
-		tc.Metadata.TestCase.Dependencies = deps
-	}
-	return tc
-}
-
-func Converter(deps []*testapi.TestCase_Dependency) []*testapi.TestCase_Dependency {
-	convertedDeps := []string{}
-	for _, dep := range deps {
-		f := dep.GetValue()
-		converted := convertDep(f)
-		// If the dep can't be converted, let it flow through naturally. Bot params should handel the case where its invalid
-		if len(converted) == 0 {
-			convertedDeps = append(convertedDeps, f)
-		} else {
-			convertedDeps = append(convertedDeps, converted...)
-		}
-	}
-	finalDeps := []*testapi.TestCase_Dependency{}
-	for _, dep := range convertedDeps {
-		tcD := &testapi.TestCase_Dependency{
-			Value: dep,
-		}
-		finalDeps = append(finalDeps, tcD)
-	}
-	return finalDeps
-}
-
-func convertDep(dep string) []string {
-	deps := []string{dep}
-	parsedDeps := labels.Revert(deps)
-
-	depsf := []string{}
-	for k, v := range s.Convert(parsedDeps) {
-		for _, innerv := range v {
-			depsf = append(depsf, fmt.Sprintf("%s:%s", k, innerv))
-
-		}
-	}
-	return depsf
-}
-
 // ExecuteFilter invokes the run tests endpoint of cros-test.
 func (ex *FilterExecutor) ExecuteFilter(
 	ctx context.Context,
-	filterReq *testapi.InternalTestplan) (*testapi.InternalTestplan, error) {
+	filterReq *testapi.InternalTestplan) (resp *testapi.InternalTestplan, err error) {
 
 	if filterReq == nil {
 		return nil, fmt.Errorf("cannot execute filter for nil filter request")
@@ -248,19 +159,18 @@ func (ex *FilterExecutor) ExecuteFilter(
 	}
 	logging.Infof(ctx, "connected with filter service")
 
-	// If the filter is test-finder, build a test-finder command and run that instead. Translate both ways.
-	// This is to ensure full backwards compatibility with everything including LTS.
 	filter := ex.ContainerInfo.Request.GetContainer().GetContainer().(*testapi.Template_Generic)
-	if filter.Generic.GetBinaryName() == "cros-test-finder" {
-		filterResp, err := executeTestFinderAdaptor(ctx, conn, filterReq)
-		if err != nil {
-			return nil, errors.Annotate(err, "test finder adaptor filter err: ").Err()
-		}
-		logging.Infof(ctx, "Filter Adaptor Success?")
-		return filterResp, nil
-	}
-
 	// Create new client.
+	defer func() {
+		if err != nil && filter.Generic.GetBinaryName() == "cros-test-finder" {
+			logging.Infof(ctx, "Encountered error when executing cros-test-finder. Falling back to adaptor execution.")
+			resp, err = executeTestFinderAdaptor(ctx, conn, filterReq)
+			if err != nil {
+				err = errors.Annotate(err, "test finder adaptor filter err: ").Err()
+			}
+			logging.Infof(ctx, "Filter Adaptor Success")
+		}
+	}()
 	filterServiceClient := testapi.NewGenericFilterServiceClient(conn)
 	if filterServiceClient == nil {
 		return nil, fmt.Errorf("filterServiceClient is nil")
@@ -268,10 +178,10 @@ func (ex *FilterExecutor) ExecuteFilter(
 	maxRecvSizeOption := grpc.MaxCallRecvMsgSize(32 * 10e6)
 	maxSendSizeOption := grpc.MaxCallSendMsgSize(32 * 10e6)
 	// Call filter grpc endpoint
-	findTestResp, err := filterServiceClient.Execute(ctx, filterReq, maxRecvSizeOption, maxSendSizeOption)
+	resp, err = filterServiceClient.Execute(ctx, filterReq, maxRecvSizeOption, maxSendSizeOption)
 	if err != nil {
 		return nil, errors.Annotate(err, "filter grpc execution failure: ").Err()
 	}
 
-	return findTestResp, nil
+	return
 }

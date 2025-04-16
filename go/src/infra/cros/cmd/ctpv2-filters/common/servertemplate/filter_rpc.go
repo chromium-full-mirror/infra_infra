@@ -25,23 +25,23 @@ import (
 // GenericFilterServiceServer ...
 type GenericFilterServiceServer struct {
 	api.GenericFilterServiceServer
-	logPath      string
-	name         string
-	serverLogger *log.Logger
-	commonParams *common.CommonFilterParams
-	executor     func(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error)
+	LogPath      string
+	Name         string
+	ServerLogger *log.Logger
+	CommonParams *common.CommonFilterParams
+	Executor     func(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error)
 }
 
-type executorFunc func(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error)
+type ExecutorFunc func(req *api.InternalTestplan, log *log.Logger, commonParams *common.CommonFilterParams) (*api.InternalTestplan, error)
 
 // NewServer creates an execution server.
-func NewServer(logger *log.Logger, logPath, name string, commonParams *common.CommonFilterParams, executor executorFunc) (*grpc.Server, func()) {
+func NewServer(logger *log.Logger, logPath, name string, commonParams *common.CommonFilterParams, executor ExecutorFunc) (*grpc.Server, func()) {
 	s := &GenericFilterServiceServer{
-		logPath:      logPath,
-		name:         name,
-		serverLogger: logger,
-		commonParams: commonParams,
-		executor:     executor,
+		LogPath:      logPath,
+		Name:         name,
+		ServerLogger: logger,
+		CommonParams: commonParams,
+		Executor:     executor,
 	}
 
 	server := grpc.NewServer(grpc.MaxRecvMsgSize(1024*1024*32), grpc.MaxSendMsgSize(1024*1024*32))
@@ -64,22 +64,22 @@ func NewServer(logger *log.Logger, logPath, name string, commonParams *common.Co
 func (s *GenericFilterServiceServer) Execute(ctx context.Context, req *api.InternalTestplan) (*api.InternalTestplan, error) {
 	t := time.Now()
 	suiteName := req.GetSuiteInfo().GetSuiteRequest().GetTestSuite().GetName()
-	logPath := filepath.Join(s.logPath, suiteName, s.name, t.Format("20060102-150405"))
-	s.serverLogger.Printf("Creating Log File at %s", logPath)
+	logPath := filepath.Join(s.LogPath, suiteName, s.Name, t.Format("20060102-150405"))
+	s.ServerLogger.Printf("Creating Log File at %s", logPath)
 	logFile, err := common.CreateLogFile(logPath)
 	if err != nil {
 		err = fmt.Errorf("failed to create log file: %s", err)
-		s.serverLogger.Println(err.Error())
+		s.ServerLogger.Println(err.Error())
 		return req, err
 	}
 	defer logFile.Close()
-	logger := s.serverLogger
+	logger := s.ServerLogger
 	logger.SetFlags(log.LstdFlags | log.LUTC | log.Lshortfile)
 	logger.SetPrefix(fmt.Sprintf("%s: ", suiteName))
 
 	logger.Printf("Received Request: %s", req)
 
-	rspn, err := s.executor(req, logger, s.commonParams)
+	rspn, err := s.Executor(req, logger, s.CommonParams)
 	if err != nil {
 		return nil, errors.Annotate(err, "Executor: failed to run").Err()
 	}
@@ -121,7 +121,7 @@ func (s *GenericFilterServiceServer) execute(req *api.InternalTestplan, logger *
 	defer CapturePanic(logger, &err)
 	resp = req
 
-	resp, err = s.executor(req, logger, s.commonParams)
+	resp, err = s.Executor(req, logger, s.CommonParams)
 	return
 }
 
