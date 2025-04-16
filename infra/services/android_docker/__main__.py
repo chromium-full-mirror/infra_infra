@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import argparse
+import json
 import logging
 import os
 import subprocess
@@ -114,6 +115,21 @@ def launch(docker_client, android_devices, args):
   main_helpers.launch_containers(docker_client, container_descriptors, args)
 
 
+def list_devices(_, devices, args):
+  for d in sorted(devices, key=lambda d: d.physical_port):
+    print(f'USB device {d.serial}, port num: {d.physical_port}')
+  if args.json_output:
+    with open(args.json_output, 'w') as f:
+      json.dump(
+          [{
+              "serial": d.serial,
+              "port": d.physical_port
+          } for d in devices],
+          f,
+          indent=2,
+      )
+
+
 def main():
   parser = argparse.ArgumentParser(
       description='Manage docker containers that wrap an android device.')
@@ -139,6 +155,15 @@ def main():
   )
   launch_subparser.set_defaults(func=launch, name='launch')
   main_helpers.add_launch_arguments(launch_subparser)
+
+  list_subparser = subparsers.add_parser(
+      'list', help='Simply prints devices seen on the host.')
+  list_subparser.add_argument(
+      '--json-output',
+      help='Path to a json file to write the device contents to. Format is '
+      '[{"serial": ..., "port": ...}, ...]')
+  list_subparser.set_defaults(func=list_devices, name='list')
+
   args = parser.parse_args()
 
   # Udev-triggered runs of this script run as root while the crons run as
@@ -149,6 +174,10 @@ def main():
       os.getpid(), args.name, ','.join(args.devices) if args.devices else 'all')
   main_helpers.configure_logging(
       'android_containers.log', log_prefix, args.verbose)
+  # No need for things like cgroup warnings if we're just printing devices.
+  if args.name == 'list':
+    logger = logging.getLogger()
+    logger.setLevel(logging.ERROR)
 
   if not os.path.exists(main_helpers.BOT_SHUTDOWN_FILE):
     logging.debug('Killing any host-side ADB processes.')

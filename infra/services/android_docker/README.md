@@ -1,9 +1,14 @@
 The script here is used to manage the containers on android swarming bots.
-By design, it's stateless and event-driven. It has two modes of execution:
+By design, it's stateless and event-driven. It has a few modes of execution:
 * `launch`: Ensures every locally connected android device has a running
           container. On the bots, it's called every 5 minutes via cron.
 * `add_device`: Gives a device's container access to its device. Called every
               time a device appears/reappears on the system via udev.
+* `list`: This simply prints the serials and their physical port nums. This
+        does not touch or modify any containers or swarming bots on the machine.
+        It only prints info to stdout. This can be useful since mapping devices
+        to their port nums can be non-trivial, and we wouldn't want that logic
+        duplicated by any service that needs to know the mapping.
 
 It's intended to be run in conjucture with the android_docker container image.
 More information on the image can be found [here](https://chromium.googlesource.com/infra/infra/+/HEAD/docker/docker_devices/README.md).
