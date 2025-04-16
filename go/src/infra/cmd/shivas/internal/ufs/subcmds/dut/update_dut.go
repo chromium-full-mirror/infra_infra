@@ -64,6 +64,7 @@ const (
 	licensePath       = "dut.licenses"
 	hivePath          = "dut.hive"
 	subrailConfigPath = "dut.subrailConfig"
+	osRestrictionPath = "dut.os_restriction"
 
 	// ACS related UpdateMask paths.
 	chameleonsPath           = "dut.chameleon.type"
@@ -143,6 +144,7 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.dolosRpmOutlet, "dolos-rpm-outlet", "", "")
 		c.Flags.StringVar(&c.dolosFirmwareVersion, "dolos-firmware-version", "", "")
 		c.Flags.StringVar(&c.hive, "hive", "", "Hive name for the DUT. "+cmdhelp.ClearFieldHelpText)
+		c.Flags.StringVar(&c.osRestriction, "os-restriction", "", "Specify which OS is allowed on the DUT, Allowed options: "+cmdhelp.OSRestrictionAllowedValuesString())
 
 		c.Flags.BoolVar(&c.forceDeploy, "force-deploy", false, "forces a deploy task for all the updates.")
 		c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma seperated tags for deployment task.")
@@ -209,6 +211,7 @@ type updateDUT struct {
 	dolosRpmOutlet           string
 	dolosFirmwareVersion     string
 	hive                     string
+	osRestriction            string
 
 	// Deploy task inputs.
 	forceDeploy bool
@@ -429,6 +432,12 @@ func (c updateDUT) validateArgs() error {
 		// Note: This check is run irrespective of servo input because it is possible to perform an update on only this field.
 		if _, ok := chromeosLab.ServoSetupType_value[appendServoSetupPrefix(c.servoSetupType)]; c.servoSetupType != "" && !ok {
 			return cmdlib.NewQuietUsageError(c.Flags, "Invalid value for servo setup type. Valid values are %s", cmdhelp.ServoSetupTypeAllowedValuesString())
+		}
+		if c.osRestriction != "" {
+			c.osRestriction = strings.ToUpper(c.osRestriction)
+			if _, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+c.osRestriction]; !ok {
+				return cmdlib.NewQuietUsageError(c.Flags, "Invalid os-restriction %s; Valid values: %s", c.osRestriction, cmdhelp.OSRestrictionAllowedValuesString())
+			}
 		}
 		// Check if servo firmware channel is valid.
 		// Note: This check is run irrespective of servo input because it is possible to perform an update on only this field.
@@ -741,6 +750,15 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().SubrailConfig = c.subrailConfig
 		} else {
 			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().SubrailConfig = ""
+		}
+	}
+
+	if c.osRestriction != "" {
+		restriction, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+c.osRestriction]
+		newValue := chromeosLab.DeviceUnderTest_OSRestriction(restriction)
+		if ok && newValue != lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetOsRestriction() {
+			mask.Paths = append(mask.Paths, osRestrictionPath)
+			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().OsRestriction = newValue
 		}
 	}
 
