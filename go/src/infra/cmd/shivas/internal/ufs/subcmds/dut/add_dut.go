@@ -70,6 +70,7 @@ var AddDUTCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.zone, "zone", "", "Zone that the asset is in. "+cmdhelp.ZoneFilterHelpText)
 		c.Flags.StringVar(&c.rack, "rack", "", "Rack that the asset is in.")
 		c.Flags.StringVar(&c.hive, "hive", "", "Hive that the DUT belongs to. Example: satlab-abc123. If not provided, it will be inferred from the hostname.")
+		c.Flags.StringVar(&c.ateHost, "ate-host", "", "ATE host that the DUT belongs to. Example: kube99-e.")
 
 		// DUT/MachineLSE common fields
 		c.Flags.StringVar(&c.hostname, "name", "", "hostname of the DUT.")
@@ -156,6 +157,7 @@ type addDUT struct {
 	rpmOutlet                string
 	rpmType                  string
 	hive                     string
+	ateHost                  string
 
 	ignoreUFS        bool
 	deployTags       []string
@@ -307,6 +309,11 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 				continue
 			}
 		}
+		if c.ateHost != "" {
+			// skip swarming deployment task when dut is under ate host
+			fmt.Printf("Skipping swarming deployment for ATE host: %s\n", c.ateHost)
+			continue
+		}
 
 		// Trigger Deployment Job
 		unitName := param.DUT.GetName()
@@ -351,7 +358,7 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 			fmt.Fprintf(a.GetOut(), "Deployment URL: %s\n", url)
 		}
 	}
-	if len(dutParams) > 1 {
+	if c.ateHost == "" && len(dutParams) > 1 {
 		fmt.Fprintf(a.GetOut(), "\nBatch tasks URL: %s\n\n", utils.TasksBatchLink(e.SwarmingService, sessionTag))
 	}
 	return nil
@@ -676,6 +683,10 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 	lse.Name = name
 	lse.Hostname = name
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hostname = name
+	if c.ateHost != "" {
+		lse.GetChromeosMachineLse().GetDeviceLse().GetDut().AteHost = c.ateHost
+		c.hive = "ATE_HOSTS_NOT_APPLICABLE"
+	}
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = c.hive
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().SubrailConfig = subrailConfig
 	lse.Machines = machines
