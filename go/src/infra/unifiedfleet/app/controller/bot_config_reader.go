@@ -284,10 +284,11 @@ func addDerivativeBots(ctx context.Context, botsMap map[string]*ufspb.OwnershipD
 	// Enumerate MachineLSEs and check if the name implies a derivative bot.
 	// If true, then add it to the map with the same ownership with its hosting
 	// machine.
-	for pageToken := ""; ; {
-		lses, pageToken, err := inventory.ListMachineLSEs(ctx, 1000, pageToken, nil, false)
+	for startToken := ""; ; {
+		lses, nextToken, err := inventory.ListMachineLSEs(ctx, 1000, startToken, nil, false)
 		if err != nil {
 			logging.Warningf(ctx, "List MachineLSEs failed during derivative bots checking: %s", err)
+			break
 		}
 		for _, l := range lses {
 			// Get the host portion of the name if it applies.
@@ -304,9 +305,10 @@ func addDerivativeBots(ctx context.Context, botsMap map[string]*ufspb.OwnershipD
 			}
 			botsMap[name] = ownership
 		}
-		if pageToken == "" {
+		if nextToken == "" {
 			break
 		}
+		startToken = nextToken
 	}
 }
 
