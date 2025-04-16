@@ -34,6 +34,7 @@ func mhRepairPlan() *Plan {
 			"Read bootId",
 			"Device Uptime",
 			"Android: Has repair-request for re-provision",
+			"Provision to stable-version if required",
 			"Reset provisioned info",
 			"Verify that DUT is not in DEV mode",
 			"Verify that DUT has default GBB flags",

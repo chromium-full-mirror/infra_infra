@@ -262,6 +262,27 @@ func androidActions(actions map[string]*Action) {
 			ExecTimeout: &durationpb.Duration{Seconds: 10000},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
+		"Provision to stable-version if required": {
+			Docs: []string{
+				"Provision to stable-version for stable-version required pools.",
+			},
+			Conditions: []string{
+				"Is Android based?",
+				"Is in stable version required pools",
+			},
+			ExecName:               "android_is_on_os_stable_version",
+			AllowFailAfterRecovery: true,
+		},
+		"Is in stable version required pools": {
+			Docs: []string{
+				"Verify device is in pools which require to be on stable version.",
+			},
+			ExecName: "dut_is_in_pool",
+			ExecExtraArgs: []string{
+				"chrome",
+			},
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+		},
 	}
 	for k, v := range am {
 		if _, ok := actions[k]; ok {

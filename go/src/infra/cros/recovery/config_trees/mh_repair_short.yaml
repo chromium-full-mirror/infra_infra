@@ -3314,6 +3314,10 @@ plans:
                 - name: ADB set Android as always awake ('ctr_make_awake_always') (ALWAYS_RUN)
                 - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
+        - name: Provision to stable-version if required (Allow to fail) ('android_is_on_os_stable_version')
+          conditions:
+            - name: Is Android based? ('cros_is_android_based') (ALWAYS_RUN)
+            - name: Is in stable version required pools ('dut_is_in_pool')
         - name: Reset provisioned info ('cros_reset_provision_info') (ALWAYS_RUN)
         - name: Verify that DUT is not in DEV mode ('cros_is_not_in_dev_mode')
           conditions:

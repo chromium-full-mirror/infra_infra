@@ -10152,6 +10152,19 @@ plans:
                     - requests:REFLASH_FW
                   docs:
                     - Remove REFLASH_FW repair-requests.
+        - name: Provision to stable-version if required (Allow to fail)
+          exec_name: android_is_on_os_stable_version
+          docs:
+            - Provision to stable-version for stable-version required pools.
+          conditions:
+            - name: Is Android based? (ALWAYS_RUN)
+              exec_name: cros_is_android_based
+            - name: Is in stable version required pools
+              exec_name: dut_is_in_pool
+              exec_args:
+                - chrome
+              docs:
+                - Verify device is in pools which require to be on stable version.
         - name: Reset provisioned info (ALWAYS_RUN)
           exec_name: cros_reset_provision_info
           docs:
