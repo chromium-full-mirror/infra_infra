@@ -283,6 +283,12 @@ func GetConfigs() []*UprevConfig {
 			},
 		},
 		{
+			Name: "ash-chrome-provision",
+			CIPDPackages: []*CIPDPackage{
+				NewCIPDPackage("chromiumos/infra/cft/provision/ash-chrome-provision/${platform}"),
+			},
+		},
+		{
 			Name: "cros-provision",
 			CIPDPackages: []*CIPDPackage{
 				NewCIPDPackage("chromiumos/infra/cft/provision/cros-provision/${platform}"),
