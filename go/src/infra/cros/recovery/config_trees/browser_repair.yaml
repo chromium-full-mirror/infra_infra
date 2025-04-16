@@ -82602,9 +82602,9 @@ plans:
                       docs:
                         - Remove REFLASH_FW repair-requests.
             - name: RO Firmware version matches the recovery-version (Allow to fail)
-              exec_name: cros_is_on_ro_firmware_stable_version
+              exec_name: cros_is_on_stable_firmware_version
               exec_args:
-                - only_check_numbers:true
+                - target:ro
               docs:
                 - Check if the version of RO firmware on DUT matches the stable firmware version.
               conditions:

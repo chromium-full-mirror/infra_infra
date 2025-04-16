@@ -37,7 +37,7 @@ func mhDeployPlan() *Plan {
 			// TODO(b/410571779): Slowly verify and enable actions below.
 			// "Device is pingable before deploy",
 			// "DUT is on test channel OS",
-			// "Collect firmware target",
+			// "Collect firmware target",  Blocked by b/374944007
 			// "DUT has correct cros image version",
 			// "Set dev_boot_usb is enabled",
 			// "DUT has expected dev firmware",
@@ -89,9 +89,6 @@ func deployActions() map[string]*Action {
 				"Is a Chromebook",
 				"Device not in MP Signed AP FW pool",
 			},
-			Dependencies: []string{
-				"Device is SSHable",
-			},
 			ExecName:    "cros_has_dev_signed_firmware",
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
 			RecoveryActions: []string{
@@ -109,15 +106,14 @@ func deployActions() map[string]*Action {
 			Conditions: []string{
 				"Is it first deployment task",
 				"Is a Chromebook",
-				// Some model depends on hwid to differentiate firmware target, so we need collect this info before firmware update.
-				"Collect HWID into inventory",
 				"Device not in MP Signed AP FW pool",
 				"Has a stable-version service",
 				"Check stable firmware version exists",
 				"Is recovery-version has firmware image path",
+				// Some model depends on hwid to differentiate firmware target, so we need collect this info before firmware update.
+				"Collect HWID into inventory",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
 				"DUT has expected RO firmware version",
 				"DUT has expected RW firmware version",
 			},
@@ -128,9 +124,9 @@ func deployActions() map[string]*Action {
 			Docs: []string{
 				"Verify that RO FW on the DUT matches stable version.",
 			},
-			ExecName: "cros_is_on_ro_firmware_stable_version",
+			ExecName: "cros_is_on_stable_firmware_version",
 			ExecExtraArgs: []string{
-				"only_check_numbers:true",
+				"target:ro",
 			},
 			RecoveryActions: []string{
 				"Fix FW on the DUT to match stable-version and wait to boot",
@@ -142,9 +138,9 @@ func deployActions() map[string]*Action {
 			Docs: []string{
 				"Verify that RW FW on the DUT matches stable version.",
 			},
-			ExecName: "cros_is_on_rw_firmware_stable_version",
+			ExecName: "cros_is_on_stable_firmware_version",
 			ExecExtraArgs: []string{
-				"only_check_numbers:true",
+				"target:rw",
 			},
 			RecoveryActions: []string{
 				"Fix FW on the DUT to match stable-version and wait to boot",

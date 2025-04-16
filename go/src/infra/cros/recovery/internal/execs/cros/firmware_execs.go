@@ -53,60 +53,21 @@ func isFirmwareInGoodState(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// isOnRWFirmwareStableVersionExec confirms that the current RW firmware on DUT is match with model specific stable version.
-func isOnRWFirmwareStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	err := isOnStableFirmwareVersion(ctx, info, "fwid")
-	return errors.Annotate(err, "on rw firmware stable version").Err()
-}
-
-// isOnROFirmwareStableVersionExec confirms that the current RO firmware on DUT is match with model specific stable version.
-func isOnROFirmwareStableVersionExec(ctx context.Context, info *execs.ExecInfo) error {
-	err := isOnStableFirmwareVersion(ctx, info, "ro_fwid")
-	return errors.Annotate(err, "on ro firmware stable version").Err()
-}
-
-func isOnStableFirmwareVersion(ctx context.Context, info *execs.ExecInfo, crossystemControl string) error {
-	logger := info.NewLogger()
-	sv, err := version.ByDut(ctx, info.GetDut())
-	if err != nil {
-		return errors.Annotate(err, "is on stable firmware version").Err()
-	}
+// isOnStableFirmwareVersionExec confirms that the current firmware on DUT is match with model specific stable version.
+func isOnStableFirmwareVersionExec(ctx context.Context, info *execs.ExecInfo) error {
 	actionArgs := info.GetActionArgs(ctx)
-	// Only check number part as we have special fw versions and matching can be different.
-	// Ex: Google_Model.XXXXX.XXX.0 vs Google_Model_Ufs.XXXXX.XXX.0
-	versionNumberOnly := actionArgs.AsBool(ctx, "only_check_numbers", false)
-	if !versionNumberOnly {
-		// For multiple firmware model, firmware name may change based on hwid data.
-		versionNumberOnly = firmware.IsMultiFirmwareHwid(info.GetChromeos().GetHwid())
+	// crosystem control provide data from the DUT
+	control := "fwid"
+	if "ro" == actionArgs.AsString(ctx, "target", "rw") {
+		control = "ro_fwid"
 	}
-	if versionNumberOnly {
-		delimiter := "."
-		logger.Debugf("Multi-firmware hwid detected, will only compare version number for firmware match validation.")
-		err = cros.MatchSuffixValueToExpectation(ctx, info.DefaultRunner(), crossystemControl, sv.GetFirmwareRoVersion(), delimiter, logger)
-	} else {
-		err = cros.MatchCrossystemValueToExpectation(ctx, info.DefaultRunner(), crossystemControl, sv.GetFirmwareRoVersion())
-	}
-	return errors.Annotate(err, "is on stable firmware version").Err()
-}
-
-// isRWFirmwareStableVersionAvailableExec confirms the stable firmware is up to date with the available firmware.
-func isRWFirmwareStableVersionAvailableExec(ctx context.Context, info *execs.ExecInfo) error {
-	r := info.DefaultRunner()
 	sv, err := version.ByDut(ctx, info.GetDut())
 	if err != nil {
-		return errors.Annotate(err, "rw firmware stable version available").Err()
+		return errors.Annotate(err, "is on stable firmware version %q", control).Err()
 	}
-	modelFirmware, err := ReadFirmwareManifest(ctx, r, info.GetChromeos().GetModel())
-	if err != nil {
-		return errors.Annotate(err, "rw firmware stable version available").Err()
-	}
-	availableVersion, err := modelFirmware.AvailableRWFirmware()
-	if err != nil {
-		return errors.Annotate(err, "rw firmware stable version available").Err()
-	}
-	stableVersion := sv.GetFirmwareRoVersion()
-	if availableVersion != stableVersion {
-		return errors.Reason("rw firmware stable version not available, expected %q, found %q", availableVersion, stableVersion).Err()
+	const versionDelimiter = "."
+	if err := cros.MatchSuffixValueToExpectation(ctx, info.DefaultRunner(), control, sv.GetFirmwareRoVersion(), versionDelimiter); err != nil {
+		return errors.Annotate(err, "is on stable firmware version").Err()
 	}
 	return nil
 }
@@ -227,9 +188,7 @@ func isHardwareWriteProtectionDisabled(ctx context.Context, info *execs.ExecInfo
 
 func init() {
 	execs.Register("cros_is_firmware_in_good_state", isFirmwareInGoodState)
-	execs.Register("cros_is_on_rw_firmware_stable_version", isOnRWFirmwareStableVersionExec)
-	execs.Register("cros_is_on_ro_firmware_stable_version", isOnROFirmwareStableVersionExec)
-	execs.Register("cros_is_rw_firmware_stable_version_available", isRWFirmwareStableVersionAvailableExec)
+	execs.Register("cros_is_on_stable_firmware_version", isOnStableFirmwareVersionExec)
 	execs.Register("cros_has_dev_signed_firmware", hasDevSignedFirmwareExec)
 	execs.Register("cros_run_firmware_update", runFirmwareUpdaterExec)
 	execs.Register("cros_disable_fprom_write_protect", runDisableFPROMWriteProtectExec)

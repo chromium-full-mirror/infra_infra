@@ -13,7 +13,7 @@ import (
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/recovery/internal/components"
-	"go.chromium.org/infra/cros/recovery/logger"
+	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
 // MatchCrossystemValueToExpectation reads value from crossystem and compared to expected value.
@@ -30,7 +30,7 @@ func MatchCrossystemValueToExpectation(ctx context.Context, run components.Runne
 }
 
 // MatchSuffixValueToExpectation reads value from crossystem, split both read out and expected value with a given delimiter and then compare their suffix.
-func MatchSuffixValueToExpectation(ctx context.Context, run components.Runner, subcommand string, expectedValue string, delimiter string, log logger.Logger) error {
+func MatchSuffixValueToExpectation(ctx context.Context, run components.Runner, subcommand string, expectedValue string, delimiter string) error {
 	out, err := run(ctx, time.Minute, "crossystem", subcommand)
 	if err != nil {
 		return errors.Annotate(err, "match suffix value to expectation: fail read %s", subcommand).Err()
@@ -44,7 +44,7 @@ func MatchSuffixValueToExpectation(ctx context.Context, run components.Runner, s
 	if actual == "" {
 		return errors.Reason("match suffix value to expectation: suffix from output value is empty after split.").Err()
 	}
-	log.Debugf(fmt.Sprintf("Suffix found from splitted output value: %s", actual))
+	log.Debugf(ctx, "Suffix found from splitted output value: %s", actual)
 
 	splittedExpectedValue := strings.SplitN(expectedValue, delimiter, 2)
 	if len(splittedExpectedValue) != 2 {
@@ -54,7 +54,7 @@ func MatchSuffixValueToExpectation(ctx context.Context, run components.Runner, s
 	if expected == "" {
 		return errors.Reason("match suffix value to expectation: suffix from expected value is empty after split.").Err()
 	}
-	log.Debugf(fmt.Sprintf("Suffix found from splitted expected value: %s", expected))
+	log.Debugf(ctx, "Suffix found from splitted expected value: %s", expected)
 
 	if actual != expected {
 		return errors.Reason("match crossystem value to expectation: %q, found: %q", expected, actual).Err()
