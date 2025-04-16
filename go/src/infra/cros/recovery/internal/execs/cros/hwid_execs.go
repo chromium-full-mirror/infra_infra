@@ -11,12 +11,9 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
+	"go.chromium.org/infra/cros/recovery/internal/components/cros"
 	"go.chromium.org/infra/cros/recovery/internal/execs"
 	"go.chromium.org/infra/cros/recovery/internal/log"
-)
-
-const (
-	readHWIDCommand = "crossystem hwid"
 )
 
 // updateHWIDToInvExec read HWID from the resource and update DUT info.
@@ -33,7 +30,7 @@ func updateHWIDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 			return nil
 		}
 	}
-	hwid, err := run(ctx, time.Minute, readHWIDCommand)
+	hwid, err := cros.HostHWID(ctx, info.GetDut(), info.GetExecTimeout(), run)
 	if err != nil {
 		return errors.Annotate(err, "update HWID in DUT-info").Err()
 	}
@@ -48,7 +45,7 @@ func updateHWIDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 // matchHWIDToInvExec matches HWID from the resource to value in the Inventory.
 func matchHWIDToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
-	actualHWID, err := run(ctx, time.Minute, readHWIDCommand)
+	actualHWID, err := cros.HostHWID(ctx, info.GetDut(), info.GetExecTimeout(), run)
 	if err != nil {
 		return errors.Annotate(err, "match HWID to inventory").Err()
 	}
