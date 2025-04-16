@@ -38,7 +38,8 @@
                     "fail":{},
                     "reason": "Failed to start Chrome: login failed: OOBE not dismissed, it is on screen \"signin-fatal-error\"",
                     "errors": [{
-                        "message": "Failed to start Chrome: login failed: OOBE not dismissed, it is on screen \"signin-fatal-error\""
+                        "message": "Failed to start Chrome: login failed: OOBE not dismissed, it is on screen \"signin-fatal-error\"",
+                        "stack_trace": "\"java.lang.AssertionError\n\tat org.junit.Assert.fail(Assert.java:86)\n\""
                     }, {
                         "message": "Failed to clean-up Chrome: some error"
                     }, {

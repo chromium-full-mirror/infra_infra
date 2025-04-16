@@ -426,7 +426,7 @@ func TestCrosTestResultConversions(t *testing.T) {
 					FailureReason: &pb.FailureReason{
 						PrimaryErrorMessage: "Failed to start Chrome: login failed: OOBE not dismissed, it is on screen \"signin-fatal-error\"",
 						Errors: []*pb.FailureReason_Error{
-							{Message: "Failed to start Chrome: login failed: OOBE not dismissed, it is on screen \"signin-fatal-error\""},
+							{Message: "Failed to start Chrome: login failed: OOBE not dismissed, it is on screen \"signin-fatal-error\"\n\"java.lang.AssertionError\n\tat org.junit.Assert.fail(Assert.java:86)\n\""},
 							{Message: "Failed to clean-up Chrome: some error"},
 							{Message: "Error three"},
 						},

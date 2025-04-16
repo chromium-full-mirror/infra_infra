@@ -89,8 +89,13 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 			var rdbErrors []*pb.FailureReason_Error
 			var errorsSize int
 			for _, e := range testCaseResult.Errors {
+				errorMessage := e.Message
+				if len(e.StackTrace) > 0 {
+					errorMessage += "\n" + e.StackTrace
+				}
+
 				rdbError := &pb.FailureReason_Error{
-					Message: truncateString(e.Message, maxErrorMessageBytes),
+					Message: truncateString(errorMessage, maxErrorMessageBytes),
 				}
 				errorSize := proto.Size(rdbError)
 				if errorsSize+errorSize > maxErrorsBytes {
@@ -205,7 +210,12 @@ func PopulateProperties(testResult *sinkpb.TestResult, testRun *artifactpb.TestR
 		propErrors := make([]*apipb.TestCaseResult_Error, 0, errorsSize)
 		curErrorsSize := 0
 		for _, e := range testCaseResult.Errors {
-			propMessage := truncateString(e.Message, maxPropErrorMessageBytes)
+			errorMessage := e.Message
+			if len(e.StackTrace) > 0 {
+				errorMessage += "\n" + e.StackTrace
+			}
+
+			propMessage := truncateString(errorMessage, maxPropErrorMessageBytes)
 			errorSize := len(propMessage)
 			if curErrorsSize+errorSize > maxPropErrorsBytes {
 				// No more errors fit.
