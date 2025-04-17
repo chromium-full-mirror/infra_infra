@@ -218,12 +218,7 @@ func parseConfigs(ctx context.Context, config *ufspb.SecurityInfos) (map[string]
 
 		hosts := []string{}
 		for _, host := range pool.Hosts {
-			if strings.Contains(host, "{") {
-				// Parse the Host Range
-				hosts = append(hosts, parseBotIds(host)...)
-			} else {
-				hosts = append(hosts, host)
-			}
+			hosts = append(hosts, expandHostRange(host)...)
 		}
 
 		// Collecting all the pools for each bot.
@@ -268,6 +263,14 @@ func parseConfigs(ctx context.Context, config *ufspb.SecurityInfos) (map[string]
 	return botsMap, botPrefixesMap
 }
 
+// Parse and expand the Host Range
+func expandHostRange(host string) []string {
+	if strings.Contains(host, "{") {
+		return parseBotIds(host)
+	}
+	return []string{host}
+}
+
 // addDerivativeBots adds the derivative bots id to the botsMap, so we can apply
 // the ownership to them and their machines.
 //
@@ -280,7 +283,7 @@ func parseConfigs(ctx context.Context, config *ufspb.SecurityInfos) (map[string]
 //
 // No need to add the derivative bots id to botPrefixMap because it's compatible
 // with the bot prefix matching.
-func addDerivativeBots(ctx context.Context, botsMap map[string]*ufspb.OwnershipData) {
+func addDerivativeBots[V any](ctx context.Context, botsMap map[string]V) {
 	// Enumerate MachineLSEs and check if the name implies a derivative bot.
 	// If true, then add it to the map with the same ownership with its hosting
 	// machine.
@@ -299,11 +302,11 @@ func addDerivativeBots(ctx context.Context, botsMap map[string]*ufspb.OwnershipD
 			}
 			hostBot := name[:index]
 
-			ownership, ok := botsMap[hostBot]
+			data, ok := botsMap[hostBot]
 			if !ok {
 				continue
 			}
-			botsMap[name] = ownership
+			botsMap[name] = data
 		}
 		if nextToken == "" {
 			break

@@ -110,12 +110,7 @@ func mapConfigsToBots(ctx context.Context, maintenanceConfigs *ufspb.Maintenance
 
 		hosts := []string{}
 		for _, host := range cfg.BotId {
-			if strings.Contains(host, "{") {
-				// Parse the Host Range
-				hosts = append(hosts, parseBotIds(host)...)
-			} else {
-				hosts = append(hosts, host)
-			}
+			hosts = append(hosts, expandHostRange(host)...)
 		}
 
 		pb := &ufspb.BotMaintenanceConfig{
@@ -131,6 +126,7 @@ func mapConfigsToBots(ctx context.Context, maintenanceConfigs *ufspb.Maintenance
 			botPrefixesMap[prefix] = pb
 		}
 	}
+	addDerivativeBots(ctx, botsMap)
 	return botsMap, botPrefixesMap
 }
 
