@@ -64,7 +64,7 @@ const (
 	licensePath       = "dut.licenses"
 	hivePath          = "dut.hive"
 	subrailConfigPath = "dut.subrailConfig"
-	osRestrictionPath = "dut.os_restriction"
+	osRestrictionPath = "dut.os.restriction"
 
 	// ACS related UpdateMask paths.
 	chameleonsPath           = "dut.chameleon.type"
@@ -434,8 +434,7 @@ func (c updateDUT) validateArgs() error {
 			return cmdlib.NewQuietUsageError(c.Flags, "Invalid value for servo setup type. Valid values are %s", cmdhelp.ServoSetupTypeAllowedValuesString())
 		}
 		if c.osRestriction != "" {
-			c.osRestriction = strings.ToUpper(c.osRestriction)
-			if _, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+c.osRestriction]; !ok {
+			if _, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+strings.ToUpper(c.osRestriction)]; !ok {
 				return cmdlib.NewQuietUsageError(c.Flags, "Invalid os-restriction %s; Valid values: %s", c.osRestriction, cmdhelp.OSRestrictionAllowedValuesString())
 			}
 		}
@@ -754,9 +753,9 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 	}
 
 	if c.osRestriction != "" {
-		restriction, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+c.osRestriction]
+		restriction := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+strings.ToUpper(c.osRestriction)]
 		newValue := chromeosLab.DeviceUnderTest_OSRestriction(restriction)
-		if ok && newValue != lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetOsRestriction() {
+		if newValue != lse.GetChromeosMachineLse().GetDeviceLse().GetDut().GetOsRestriction() {
 			mask.Paths = append(mask.Paths, osRestrictionPath)
 			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().OsRestriction = newValue
 		}

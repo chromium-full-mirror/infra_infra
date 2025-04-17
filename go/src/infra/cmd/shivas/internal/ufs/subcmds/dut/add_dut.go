@@ -398,8 +398,7 @@ func (c addDUT) validateArgs() error {
 			}
 		}
 		if c.osRestriction != "" {
-			c.osRestriction = strings.ToUpper(c.osRestriction)
-			if _, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+c.osRestriction]; !ok {
+			if _, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+strings.ToUpper(c.osRestriction)]; !ok {
 				return cmdlib.NewQuietUsageError(c.Flags, "Invalid os-restriction %s", c.osRestriction)
 			}
 		}
@@ -697,7 +696,7 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 	}
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = c.hive
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().SubrailConfig = subrailConfig
-	if restriction, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+c.osRestriction]; ok {
+	if restriction, ok := chromeosLab.DeviceUnderTest_OSRestriction_value[cmdhelp.OSRestrictionPrefix+strings.ToUpper(c.osRestriction)]; c.osRestriction != "" && ok {
 		lse.GetChromeosMachineLse().GetDeviceLse().GetDut().OsRestriction = chromeosLab.DeviceUnderTest_OSRestriction(restriction)
 	}
 	lse.Machines = machines

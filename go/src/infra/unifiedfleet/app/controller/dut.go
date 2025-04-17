@@ -603,7 +603,7 @@ func validateUpdateMachineLSEDUTMask(ctx context.Context, mask *field_mask.Field
 		case "dut.hive":
 		case "dut.ateHost":
 		case "dut.subrailConfig":
-		case "dut.os_restriction":
+		case "dut.os.restriction":
 		case "dut.servo.port":
 		case "dut.servo.serial":
 		case "dut.servo.setup":
@@ -793,7 +793,7 @@ func processUpdateMachineLSEDUTMask(oldDut, newDut *chromeosLab.DeviceUnderTest,
 		oldDut.AteHost = newDut.GetAteHost()
 	case "dut.subrailConfig":
 		oldDut.SubrailConfig = newDut.GetSubrailConfig()
-	case "dut.os_restriction":
+	case "dut.os.restriction":
 		oldDut.OsRestriction = newDut.GetOsRestriction()
 	case "dut.carrier":
 		oldDut.GetPeripherals().Carrier = newDut.GetPeripherals().GetCarrier()
