@@ -912,6 +912,17 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 		assert.Loosely(t, resp, should.NotBeNil)
 		assert.Loosely(t, resp, should.Match(dutMachinelse3))
 	})
+
+	ftt.Run("UpdateMachineLSE for a DUT - Hive - Success", t, func(t *ftt.Test) {
+		dutMachinelse3 := mockDutMachineLSE("DUTMachineLSE-22")
+		dutMachinelse3.Machines = []string{"machine-22"}
+		dutMachinelse3.GetChromeosMachineLse().GetDeviceLse().GetDut().AteHost = "ate-host1"
+		resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
+		assert.Loosely(t, err, should.BeNil)
+		assert.Loosely(t, resp, should.NotBeNil)
+		assert.Loosely(t, resp, should.Match(dutMachinelse3))
+		assert.Loosely(t, resp.GetChromeosMachineLse().GetDeviceLse().GetDut().GetAteHost(), should.Equal("ate-host1"))
+	})
 }
 
 func TestUpdateMachineLSELabstation(t *testing.T) {

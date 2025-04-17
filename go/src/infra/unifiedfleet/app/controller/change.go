@@ -779,6 +779,7 @@ func logDut(resourceName string, oldData, newData *chromeosLab.DeviceUnderTest) 
 	changes := make([]*ufspb.ChangeEvent, 0)
 	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.pools", oldData.GetPools(), newData.GetPools())...)
 	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.hive", oldData.GetHive(), newData.GetHive())...)
+	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.ateHost", oldData.GetAteHost(), newData.GetAteHost())...)
 	changes = append(changes, logCommon(resourceName, "machine_lse.chromeos_machine_lse.dut.subrailConfig", oldData.GetSubrailConfig(), newData.GetSubrailConfig())...)
 	if oldData.GetPeripherals() == nil {
 		oldData.Peripherals = &chromeosLab.Peripherals{}
