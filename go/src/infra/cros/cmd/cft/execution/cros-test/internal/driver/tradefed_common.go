@@ -50,6 +50,30 @@ func getGlobalLogPath() string {
 	return logPath
 }
 
+func extractRetryConfig(metadata *api.ExecutionMetadata) bool {
+	if retryFlag, err := extractMetadataFlag(metadata, "driverArg:retry-strategy"); err == nil {
+		if retryFlag == "RETRY_ANY_FAILURE" {
+			return true
+		}
+	}
+	return false
+}
+
+func generateDriverArgsCmds(metadata *api.ExecutionMetadata) []string {
+	cmd := []string{}
+	if metadata != nil && len(metadata.Args) > 0 {
+		for _, arg := range metadata.Args {
+			if strings.Contains(arg.Flag, "driverArg:") {
+				parts := strings.SplitN(arg.Flag, "driverArg:", 2)
+				if len(parts) > 1 {
+					cmd = append(cmd, "--"+strings.TrimSpace(parts[1])+" "+strings.TrimSpace(arg.Value))
+				}
+			}
+		}
+	}
+	return cmd
+}
+
 func extractBuildInfoFromExecutionMetadata(metadata *api.ExecutionMetadata) (branch string, target string, build string) {
 	if branchFlag, err := extractMetadataFlag(metadata, "branch"); err == nil {
 		branch = branchFlag

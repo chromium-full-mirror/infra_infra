@@ -52,7 +52,7 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 
 	plan, err := extractMetadataFlag(metadata, planMetadataFlag)
 	if err != nil {
-		// By default, plan is the same as test suite type, i.e. "cts", "dts", etc (except for STS).
+		// By default, plan is the same as test suite type, i.e. "cts", "dtd", etc (except for STS).
 		if testType == "sts" {
 			plan = "sts-dynamic-full"
 		} else if testType == "apts" {
@@ -133,11 +133,15 @@ func BuildXtsTestCommand(logger *log.Logger, testType string, tests []*api.TestC
 		cmd = append(cmd, buildResultReportingArgs(logger, metadata, args, board, model)...)
 	}
 
-	if retryFailedRuns {
+	if extractRetryConfig(metadata) {
 		cmd = append(cmd, "--max-testcase-run-count", "3", "--retry-isolation-grade", "FULLY_ISOLATED",
 			"--retry-strategy", "RETRY_ANY_FAILURE", "--module-preparation-retry")
 	} else {
 		cmd = append(cmd, "--max-testcase-run-count", "1", "--retry-strategy", "NO_RETRY")
+	}
+
+	for _, driverArgCmd := range generateDriverArgsCmds(metadata) {
+		cmd = append(cmd, driverArgCmd)
 	}
 
 	var buildInfoReported = false
