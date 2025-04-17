@@ -533,7 +533,7 @@ func TestResultEntries(t *testing.T) {
 				{
 					TestCaseId: &api.TestCase_Id{Value: "testcase#testname2"},
 					Verdict:    &api.TestCaseResult_Fail_{},
-					Errors:     []*api.TestCaseResult_Error{{Message: "error"}},
+					Errors:     []*api.TestCaseResult_Error{{Message: "error", StackTrace: "error\n\tat TestClass(test.java:123)"}},
 				},
 			},
 			expectWU: &atp.WorkUnit{
@@ -571,7 +571,10 @@ func TestResultEntries(t *testing.T) {
 					WorkUnitId:       returnWUID,
 					Timing:           &atp.Timing{},
 					PrimaryBuildInfo: buildInfo,
-					DebugInfo:        &atp.DebugInfo{ErrorMessage: "error"},
+					DebugInfo: &atp.DebugInfo{
+						ErrorMessage: "error",
+						Trace:        "error\n\tat TestClass(test.java:123)",
+					},
 				},
 			},
 		},

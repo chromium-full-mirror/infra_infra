@@ -221,6 +221,7 @@ func (aps *AntsPublishService) antsResult(result *api.TestCaseResult, props []*a
 			// Use the first error as it is the primary error and
 			// ants only allows one error.
 			ErrorMessage: result.GetErrors()[0].GetMessage(),
+			Trace:        result.GetErrors()[0].GetStackTrace(),
 		}
 	}
 
