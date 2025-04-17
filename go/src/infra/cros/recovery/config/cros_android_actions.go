@@ -190,7 +190,8 @@ func androidActions(actions map[string]*Action) {
 				"Sleep 120 seconds",
 				// Reimage the DUT
 				"Boot on USB-key and install AndroidOS",
-				"Wait to be SSHable (normal boot)",
+				// Re-ping and reconnect as the device may have gone to sleep.
+				"Wait to be pingable (normal boot)",
 				"ADB reconnect",
 				"ADB set Android as always awake",
 				"Remove REIMAGE_BY_USBKEY repair-request",
@@ -216,7 +217,8 @@ func androidActions(actions map[string]*Action) {
 				"Detect CacheService address",
 				"Call servod to download provision image to USB-key",
 				"Boot on USB-key and install AndroidOS",
-				"Wait to be SSHable (normal boot)",
+				// Re-ping and reconnect as the device may have gone to sleep.
+				"Wait to be pingable (normal boot)",
 				"ADB reconnect",
 				"ADB set Android as always awake",
 				"Remove REIMAGE_BY_USBKEY repair-request",

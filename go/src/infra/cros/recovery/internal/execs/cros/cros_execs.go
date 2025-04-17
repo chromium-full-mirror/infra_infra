@@ -71,11 +71,6 @@ func sshExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// sshDUTExec verifies ssh access to the DUT.
-func sshDUTExec(ctx context.Context, info *execs.ExecInfo) error {
-	return cros.WaitUntilSSHable(ctx, info.GetExecTimeout(), cros.SSHRetryInterval, info.NewRunner(info.GetDut().Name))
-}
-
 // rebootExec reboots the cros DUT.
 func rebootExec(ctx context.Context, info *execs.ExecInfo) error {
 	if err := cros.Reboot(ctx, info.NewRunner(info.GetDut().Name), info.GetExecTimeout()); err != nil {
@@ -457,7 +452,6 @@ func logTypeCStatus(ctx context.Context, info *execs.ExecInfo) error {
 func init() {
 	execs.Register("cros_ping", pingExec)
 	execs.Register("cros_ssh", sshExec)
-	execs.Register("cros_ssh_dut", sshDUTExec)
 	execs.Register("cros_reboot", rebootExec)
 	execs.Register("cros_is_on_stable_version", isOnStableVersionExec)
 	execs.Register("cros_not_on_stable_version", notOnStableVersionExec)

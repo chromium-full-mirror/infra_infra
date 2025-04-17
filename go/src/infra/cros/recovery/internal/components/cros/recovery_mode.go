@@ -141,7 +141,8 @@ func BootInRecoveryMode(ctx context.Context, req *BootInRecoveryRequest, dutRun,
 						return err
 					}
 					if req.DUT.GetChromeos().GetIsAndroidBased() {
-						if err := android.ADBConnect(ctx, 3, time.Second, false, 3*time.Second, req.DUT); err != nil {
+						forceReconnect := false
+						if err := android.ADBConnect(ctx, 3, time.Second, forceReconnect, 3*time.Second, req.DUT); err != nil {
 							return err
 						}
 					}

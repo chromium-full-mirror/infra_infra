@@ -169,7 +169,7 @@ func deployActions() map[string]*Action {
 				"Update FW from fw-image with factory mode from DUT",
 				"Remove REFLASH_FW repair-request",
 				"Simple reboot",
-				"Wait to be SSHable (normal boot)",
+				"Wait to be accessable",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -191,7 +191,7 @@ func deployActions() map[string]*Action {
 				"Update FW from host OS image with factory mode",
 				"Remove REFLASH_FW repair-request",
 				"Simple reboot",
-				"Wait to be SSHable (normal boot)",
+				"Wait to be accessable",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -207,9 +207,9 @@ func deployActions() map[string]*Action {
 			Dependencies: []string{
 				"Verify battery charging level",
 				"Verify boot in recovery mode",
-				"Wait to be SSHable (normal boot)",
+				"Wait to be accessable",
 				"Verify RPM config",
-				"Wait to be SSHable (normal boot)",
+				"Wait to be accessable",
 			},
 			ExecName: "sample_pass",
 		},
@@ -225,7 +225,7 @@ func deployActions() map[string]*Action {
 				"Battery is present on device",
 			},
 			Dependencies: []string{
-				"Wait to be SSHable (normal boot)",
+				"Wait to be accessable",
 			},
 			ExecName: "cros_battery_changable_to_expected_level",
 			ExecExtraArgs: []string{
@@ -243,7 +243,7 @@ func deployActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Is servod running",
-				"Wait to be SSHable (normal boot)",
+				"Wait to be accessable",
 			},
 			ExecName: "cros_install_in_recovery_mode",
 			ExecExtraArgs: []string{

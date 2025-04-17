@@ -408,10 +408,10 @@ plans:
                             - 'mode. In some cases RO FW is not allowed to boot in '
                             - 'recovery mode with active PD, so we will change it to '
                             - sink-mode if required.
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
                         - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                           exec_name: dut_remove_repair_requests
@@ -816,10 +816,10 @@ plans:
                             - 'mode. In some cases RO FW is not allowed to boot in '
                             - 'recovery mode with active PD, so we will change it to '
                             - sink-mode if required.
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
                         - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                           exec_name: dut_remove_repair_requests
@@ -1049,10 +1049,10 @@ plans:
                             - 'mode. In some cases RO FW is not allowed to boot in '
                             - 'recovery mode with active PD, so we will change it to '
                             - sink-mode if required.
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
                         - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                           exec_name: dut_remove_repair_requests
@@ -1423,10 +1423,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
                         - name: Print active devices (Allow to fail) (ALWAYS_RUN)
                           exec_name: cros_run_command
@@ -1623,10 +1623,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
                         - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                           exec_name: dut_remove_repair_requests
@@ -1770,10 +1770,10 @@ plans:
                               docs:
                                 - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
                         - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                           exec_name: dut_remove_repair_requests
@@ -1986,10 +1986,10 @@ plans:
                         - 'mode. In some cases RO FW is not allowed to boot in '
                         - 'recovery mode with active PD, so we will change it to '
                         - sink-mode if required.
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_ssh
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Try to wait device to be acccesable (SSH or ADB).
                         - Waiting time 150 seconds.
                     - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                       exec_name: dut_remove_repair_requests
@@ -2213,10 +2213,10 @@ plans:
                               docs:
                                 - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
                         - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                           exec_name: dut_remove_repair_requests
@@ -2461,10 +2461,10 @@ plans:
                               docs:
                                 - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
                         - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                           exec_name: dut_remove_repair_requests
@@ -2775,10 +2775,10 @@ plans:
                               docs:
                                 - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
-                        - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
                           exec_name: cros_ssh
                           docs:
-                            - Try to wait device to be sshable after the device being rebooted.
+                            - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
                         - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                           exec_name: dut_remove_repair_requests
@@ -3014,10 +3014,10 @@ plans:
                         - 'mode. In some cases RO FW is not allowed to boot in '
                         - 'recovery mode with active PD, so we will change it to '
                         - sink-mode if required.
-                    - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_ssh
                       docs:
-                        - Try to wait device to be sshable after the device being rebooted.
+                        - Try to wait device to be acccesable (SSH or ADB).
                         - Waiting time 150 seconds.
                     - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                       exec_name: dut_remove_repair_requests

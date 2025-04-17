@@ -198,7 +198,10 @@ func deepRepairServoPlan() *Plan {
 				Docs: []string{
 					"verify if DUT is SSH-able",
 				},
-				ExecName:    "cros_ssh_dut",
+				ExecName: "cros_ssh",
+				ExecExtraArgs: []string{
+					"device_type:dut",
+				},
 				ExecTimeout: &durationpb.Duration{Seconds: 15},
 				RunControl:  RunControl_ALWAYS_RUN,
 			},

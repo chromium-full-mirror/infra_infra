@@ -166,12 +166,12 @@ plans:
                     - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: is_servo_type_ccd
               dependencies:
                 - name: cros_reset_ec (ALWAYS_RUN)
                   dependencies:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -179,7 +179,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: is_servo_type_ccd
                 - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
                   conditions:
@@ -187,7 +187,7 @@ plans:
               dependencies:
                 - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
                   dependencies:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -195,12 +195,12 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
               dependencies:
                 - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -259,12 +259,12 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: is_servo_type_ccd
               dependencies:
                 - name: cros_reset_ec (ALWAYS_RUN)
                   dependencies:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -342,7 +342,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: is_servo_type_ccd
                 - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
                   conditions:
@@ -350,7 +350,7 @@ plans:
               dependencies:
                 - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
                   dependencies:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -358,12 +358,12 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: is_servo_type_ccd
               dependencies:
                 - name: cros_reset_ec (ALWAYS_RUN)
                   dependencies:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -451,12 +451,12 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: is_servo_type_ccd
               dependencies:
                 - name: cros_reset_ec (ALWAYS_RUN)
                   dependencies:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -503,12 +503,12 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: is_servo_type_ccd
               dependencies:
                 - name: cros_reset_ec (ALWAYS_RUN)
                   dependencies:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -546,12 +546,12 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: is_servo_type_ccd
               dependencies:
                 - name: cros_reset_ec (ALWAYS_RUN)
                   dependencies:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -739,7 +739,7 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: is_servo_type_ccd
                     - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
                       conditions:
@@ -747,7 +747,7 @@ plans:
                   dependencies:
                     - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
                       dependencies:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -755,12 +755,12 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: is_servo_type_ccd
                   dependencies:
                     - name: cros_reset_ec (ALWAYS_RUN)
                       dependencies:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -768,12 +768,12 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
                   dependencies:
                     - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
                       conditions:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -850,12 +850,12 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: is_servo_type_ccd
                   dependencies:
                     - name: cros_reset_ec (ALWAYS_RUN)
                       dependencies:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -871,7 +871,7 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: is_servo_type_ccd
                     - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
                       conditions:
@@ -879,7 +879,7 @@ plans:
                   dependencies:
                     - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
                       dependencies:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -887,12 +887,12 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
                   dependencies:
                     - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
                       conditions:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -972,12 +972,12 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: is_servo_type_ccd
               dependencies:
                 - name: cros_reset_ec (ALWAYS_RUN)
                   dependencies:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -985,7 +985,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: is_servo_type_ccd
                 - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
                   conditions:
@@ -993,7 +993,7 @@ plans:
               dependencies:
                 - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
                   dependencies:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1001,12 +1001,12 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
               dependencies:
                 - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1098,12 +1098,12 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
                   dependencies:
                     - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
                       conditions:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1111,12 +1111,12 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: is_servo_type_ccd
                   dependencies:
                     - name: cros_reset_ec (ALWAYS_RUN)
                       dependencies:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1124,12 +1124,12 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
                   dependencies:
                     - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
                       conditions:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1220,7 +1220,7 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: is_servo_type_ccd
                     - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
                       conditions:
@@ -1228,7 +1228,7 @@ plans:
                   dependencies:
                     - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
                       dependencies:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1236,12 +1236,12 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: is_servo_type_ccd
                   dependencies:
                     - name: cros_reset_ec (ALWAYS_RUN)
                       dependencies:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1249,12 +1249,12 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
                   dependencies:
                     - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
                       conditions:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1322,12 +1322,12 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: is_servo_type_ccd
                   dependencies:
                     - name: cros_reset_ec (ALWAYS_RUN)
                       dependencies:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1414,7 +1414,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: is_servo_type_ccd
                 - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
                   conditions:
@@ -1422,7 +1422,7 @@ plans:
               dependencies:
                 - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
                   dependencies:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1430,12 +1430,12 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: is_servo_type_ccd
               dependencies:
                 - name: cros_reset_ec (ALWAYS_RUN)
                   dependencies:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1443,12 +1443,12 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
               dependencies:
                 - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1506,12 +1506,12 @@ plans:
                                 - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                     - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
                       conditions:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: is_servo_type_ccd
                       dependencies:
                         - name: cros_reset_ec (ALWAYS_RUN)
                           dependencies:
-                            - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                            - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                           dependencies:
                             - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1598,7 +1598,7 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: is_servo_type_ccd
                     - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
                       conditions:
@@ -1606,7 +1606,7 @@ plans:
                   dependencies:
                     - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
                       dependencies:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1614,12 +1614,12 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: is_servo_type_ccd
                   dependencies:
                     - name: cros_reset_ec (ALWAYS_RUN)
                       dependencies:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1627,12 +1627,12 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
                   dependencies:
                     - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
                       conditions:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1708,7 +1708,7 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: is_servo_type_ccd
                 - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
                   conditions:
@@ -1716,7 +1716,7 @@ plans:
               dependencies:
                 - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
                   dependencies:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1724,12 +1724,12 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: is_servo_type_ccd
               dependencies:
                 - name: cros_reset_ec (ALWAYS_RUN)
                   dependencies:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1737,12 +1737,12 @@ plans:
                         - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
             - name: Reset GSC from DUT and stop servod ('sample_pass') (RUN_ONCE)
               conditions:
-                - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Is servo_v4(p1) used with type-c connector ('servo_check_servod_control')
               dependencies:
                 - name: Reset GSC on DUT (Allow to fail) ('cros_run_command') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                   dependencies:
                     - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1855,12 +1855,12 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: is_servo_type_ccd
                   dependencies:
                     - name: cros_reset_ec (ALWAYS_RUN)
                       dependencies:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1939,12 +1939,12 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: is_servo_type_ccd
                   dependencies:
                     - name: cros_reset_ec (ALWAYS_RUN)
                       dependencies:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -1972,7 +1972,7 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: is_servo_type_ccd
                     - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
                       conditions:
@@ -1980,7 +1980,7 @@ plans:
                   dependencies:
                     - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
                       dependencies:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -2012,7 +2012,7 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reflash Cr50 fw and stop ('sample_pass') (RUN_ONCE)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: is_servo_type_ccd
                     - name: Is reflash Cr50 was done more 24 hours ago ('sample_fail')
                       conditions:
@@ -2020,7 +2020,7 @@ plans:
                   dependencies:
                     - name: Reflash Cr50 fw on DUT ('cros_reflash_cr50_fw') (RUN_ONCE) (time:'2m30s')
                       dependencies:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')
@@ -2028,12 +2028,12 @@ plans:
                             - name: Stop UART capture (Allow to fail) ('servod_stop_uart_capture')
                 - name: Reset EC from DUT and stop ('sample_pass') (ALWAYS_RUN)
                   conditions:
-                    - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                    - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: is_servo_type_ccd
                   dependencies:
                     - name: cros_reset_ec (ALWAYS_RUN)
                       dependencies:
-                        - name: DUT is SSHable ('cros_ssh_dut') (ALWAYS_RUN) (time:'15s')
+                        - name: DUT is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Stop servod (Allow to fail) ('servo_host_servod_stop') (ALWAYS_RUN)
                       dependencies:
                         - name: Save UART capture (Allow to fail) ('servod_save_uart_capture')

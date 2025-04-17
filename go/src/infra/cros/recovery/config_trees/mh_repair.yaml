@@ -583,7 +583,9 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: is_servo_type_ccd
@@ -597,7 +599,9 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -617,7 +621,9 @@ plans:
                 - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: is_servo_type_ccd
@@ -646,7 +652,9 @@ plans:
                     - Reboot after the fw flash is successful.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -666,7 +674,9 @@ plans:
                 - Try to reset GSC from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: Is servo_v4(p1) used with type-c connector
@@ -688,7 +698,9 @@ plans:
                     - Reboot after the fw flash is successful.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -847,7 +859,9 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: is_servo_type_ccd
@@ -861,7 +875,9 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -1066,7 +1082,9 @@ plans:
                 - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: is_servo_type_ccd
@@ -1095,7 +1113,9 @@ plans:
                     - Reboot after the fw flash is successful.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -1115,7 +1135,9 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: is_servo_type_ccd
@@ -1129,7 +1151,9 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -1392,7 +1416,9 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: is_servo_type_ccd
@@ -1406,7 +1432,9 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -1545,7 +1573,9 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: is_servo_type_ccd
@@ -1559,7 +1589,9 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -1669,7 +1701,9 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: is_servo_type_ccd
@@ -1683,7 +1717,9 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -2256,7 +2292,9 @@ plans:
                     - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: is_servo_type_ccd
@@ -2285,7 +2323,9 @@ plans:
                         - Reboot after the fw flash is successful.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -2305,7 +2345,9 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: is_servo_type_ccd
@@ -2319,7 +2361,9 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -2339,7 +2383,9 @@ plans:
                     - Try to reset GSC from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: Is servo_v4(p1) used with type-c connector
@@ -2361,7 +2407,9 @@ plans:
                         - Reboot after the fw flash is successful.
                       conditions:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -2578,7 +2626,9 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: is_servo_type_ccd
@@ -2592,7 +2642,9 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -2635,7 +2687,9 @@ plans:
                     - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: is_servo_type_ccd
@@ -2664,7 +2718,9 @@ plans:
                         - Reboot after the fw flash is successful.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -2684,7 +2740,9 @@ plans:
                     - Try to reset GSC from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: Is servo_v4(p1) used with type-c connector
@@ -2706,7 +2764,9 @@ plans:
                         - Reboot after the fw flash is successful.
                       conditions:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -2930,7 +2990,9 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: is_servo_type_ccd
@@ -2944,7 +3006,9 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -2964,7 +3028,9 @@ plans:
                 - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: is_servo_type_ccd
@@ -2993,7 +3059,9 @@ plans:
                     - Reboot after the fw flash is successful.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -3013,7 +3081,9 @@ plans:
                 - Try to reset GSC from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: Is servo_v4(p1) used with type-c connector
@@ -3035,7 +3105,9 @@ plans:
                     - Reboot after the fw flash is successful.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -3294,7 +3366,9 @@ plans:
                     - Try to reset GSC from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: Is servo_v4(p1) used with type-c connector
@@ -3316,7 +3390,9 @@ plans:
                         - Reboot after the fw flash is successful.
                       conditions:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -3336,7 +3412,9 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: is_servo_type_ccd
@@ -3350,7 +3428,9 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -3370,7 +3450,9 @@ plans:
                     - Try to reset GSC from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: Is servo_v4(p1) used with type-c connector
@@ -3392,7 +3474,9 @@ plans:
                         - Reboot after the fw flash is successful.
                       conditions:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -3651,7 +3735,9 @@ plans:
                     - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: is_servo_type_ccd
@@ -3680,7 +3766,9 @@ plans:
                         - Reboot after the fw flash is successful.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -3700,7 +3788,9 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: is_servo_type_ccd
@@ -3714,7 +3804,9 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -3734,7 +3826,9 @@ plans:
                     - Try to reset GSC from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: Is servo_v4(p1) used with type-c connector
@@ -3756,7 +3850,9 @@ plans:
                         - Reboot after the fw flash is successful.
                       conditions:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -3960,7 +4056,9 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: is_servo_type_ccd
@@ -3974,7 +4072,9 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -4232,7 +4332,9 @@ plans:
                 - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: is_servo_type_ccd
@@ -4261,7 +4363,9 @@ plans:
                     - Reboot after the fw flash is successful.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -4281,7 +4385,9 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: is_servo_type_ccd
@@ -4295,7 +4401,9 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -4315,7 +4423,9 @@ plans:
                 - Try to reset GSC from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: Is servo_v4(p1) used with type-c connector
@@ -4337,7 +4447,9 @@ plans:
                     - Reboot after the fw flash is successful.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -4510,7 +4622,9 @@ plans:
                         - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                       conditions:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                         - name: is_servo_type_ccd
@@ -4524,7 +4638,9 @@ plans:
                             - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                           dependencies:
                             - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh_dut
+                              exec_name: cros_ssh
+                              exec_args:
+                                - device_type:dut
                               docs:
                                 - verify if DUT is SSH-able
                         - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -4782,7 +4898,9 @@ plans:
                     - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: is_servo_type_ccd
@@ -4811,7 +4929,9 @@ plans:
                         - Reboot after the fw flash is successful.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -4831,7 +4951,9 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: is_servo_type_ccd
@@ -4845,7 +4967,9 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -4865,7 +4989,9 @@ plans:
                     - Try to reset GSC from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: Is servo_v4(p1) used with type-c connector
@@ -4887,7 +5013,9 @@ plans:
                         - Reboot after the fw flash is successful.
                       conditions:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -5095,7 +5223,9 @@ plans:
                 - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: is_servo_type_ccd
@@ -5124,7 +5254,9 @@ plans:
                     - Reboot after the fw flash is successful.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -5144,7 +5276,9 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: is_servo_type_ccd
@@ -5158,7 +5292,9 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -5178,7 +5314,9 @@ plans:
                 - Try to reset GSC from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh_dut
+                  exec_name: cros_ssh
+                  exec_args:
+                    - device_type:dut
                   docs:
                     - verify if DUT is SSH-able
                 - name: Is servo_v4(p1) used with type-c connector
@@ -5200,7 +5338,9 @@ plans:
                     - Reboot after the fw flash is successful.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                 - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -5515,7 +5655,9 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: is_servo_type_ccd
@@ -5529,7 +5671,9 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -5753,7 +5897,9 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: is_servo_type_ccd
@@ -5767,7 +5913,9 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -5851,7 +5999,9 @@ plans:
                     - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: is_servo_type_ccd
@@ -5880,7 +6030,9 @@ plans:
                         - Reboot after the fw flash is successful.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -5968,7 +6120,9 @@ plans:
                     - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: is_servo_type_ccd
@@ -5997,7 +6151,9 @@ plans:
                         - Reboot after the fw flash is successful.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -6017,7 +6173,9 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh_dut
+                      exec_name: cros_ssh
+                      exec_args:
+                        - device_type:dut
                       docs:
                         - verify if DUT is SSH-able
                     - name: is_servo_type_ccd
@@ -6031,7 +6189,9 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh_dut
+                          exec_name: cros_ssh
+                          exec_args:
+                            - device_type:dut
                           docs:
                             - verify if DUT is SSH-able
                     - name: Stop servod (Allow to fail) (ALWAYS_RUN)
@@ -6900,10 +7060,10 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
                 - name: ADB reconnect (ALWAYS_RUN)
                   exec_name: ctr_adb_connect
@@ -7131,10 +7291,10 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
                 - name: ADB reconnect (ALWAYS_RUN)
                   exec_name: ctr_adb_connect
@@ -7361,10 +7521,10 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
                 - name: ADB reconnect (ALWAYS_RUN)
                   exec_name: ctr_adb_connect
@@ -7592,10 +7752,10 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
                 - name: ADB reconnect (ALWAYS_RUN)
                   exec_name: ctr_adb_connect
@@ -7794,10 +7954,10 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
                 - name: ADB reconnect (ALWAYS_RUN)
                   exec_name: ctr_adb_connect
@@ -8025,10 +8185,10 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
                 - name: ADB reconnect (ALWAYS_RUN)
                   exec_name: ctr_adb_connect
@@ -8216,10 +8376,10 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
                 - name: ADB reconnect (ALWAYS_RUN)
                   exec_name: ctr_adb_connect
@@ -8773,10 +8933,10 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
                   exec_name: cros_ssh
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Try to wait device to be acccesable (SSH or ADB).
                     - Waiting time 150 seconds.
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -9006,10 +9166,10 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
                   exec_name: cros_ssh
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Try to wait device to be acccesable (SSH or ADB).
                     - Waiting time 150 seconds.
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -9191,10 +9351,10 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
                 - name: ADB reconnect (ALWAYS_RUN)
                   exec_name: ctr_adb_connect
@@ -9595,10 +9755,10 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
                   exec_name: cros_ssh
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Try to wait device to be acccesable (SSH or ADB).
                     - Waiting time 150 seconds.
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -9828,10 +9988,10 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
                   exec_name: cros_ssh
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Try to wait device to be acccesable (SSH or ADB).
                     - Waiting time 150 seconds.
                 - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
@@ -9955,10 +10115,10 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
                 - name: ADB reconnect (ALWAYS_RUN)
                   exec_name: ctr_adb_connect
@@ -10233,10 +10393,10 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
                 - name: ADB reconnect (ALWAYS_RUN)
                   exec_name: ctr_adb_connect
@@ -10512,10 +10672,10 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
                 - name: ADB reconnect (ALWAYS_RUN)
                   exec_name: ctr_adb_connect
@@ -10868,10 +11028,10 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be SSHable (normal boot) (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
                   docs:
-                    - Try to wait device to be sshable after the device being rebooted.
+                    - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
                 - name: ADB reconnect (ALWAYS_RUN)
                   exec_name: ctr_adb_connect

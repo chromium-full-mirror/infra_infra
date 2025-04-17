@@ -80,7 +80,7 @@ func RestoreHWIDFromInventoryConfig() *Configuration {
 					"Set HWID of the DUT from inventory",
 					"Simple reboot",
 					"Sleep 1s",
-					"Wait to be SSHable (normal boot)",
+					"Wait to be accessable",
 					"cros_match_hwid_to_inventory",
 				},
 				Actions: crosRepairActions(),
