@@ -17,6 +17,7 @@ import (
 	testapi "go.chromium.org/chromiumos/config/go/test/api"
 	"go.chromium.org/chromiumos/infra/proto/go/test_platform"
 	"go.chromium.org/luci/common/logging"
+	"go.chromium.org/luci/luciexe/build"
 
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
@@ -267,11 +268,11 @@ func removeNonGroupableSuiteFields(suite *testapi.SuiteRequest) *testapi.SuiteRe
 }
 
 // buildCTPRequest converts a v1 ctp request into a v2 CTPRequest.
-func buildCTPRequest(v1 *test_platform.Request) *testapi.CTPRequest {
+func buildCTPRequest(v1 *test_platform.Request, buildState *build.State) *testapi.CTPRequest {
 	return &testapi.CTPRequest{
 		SuiteRequest:    buildSuiteRequest(v1),
 		ScheduleTargets: buildScheduleTargets(v1),
-		SchedulerInfo:   buildSchedulerInfo(v1),
+		SchedulerInfo:   buildSchedulerInfo(v1, buildState.Build().GetBuilder().GetBucket()),
 		Pool:            getSchedulingPool(v1),
 		KarbonFilters:   v1.GetParams().GetUserDefinedFilters(),
 		// Reuse translate flag from v1 to signal dynamic run in v2.
@@ -282,15 +283,13 @@ func buildCTPRequest(v1 *test_platform.Request) *testapi.CTPRequest {
 
 // buildSchedulerInfo chooses the scheduling interface to be used,
 // as well as fetches the qs account for scheduling.
-func buildSchedulerInfo(v1 *test_platform.Request) *testapi.SchedulerInfo {
+func buildSchedulerInfo(v1 *test_platform.Request, bucket string) *testapi.SchedulerInfo {
 	dryRun := v1.GetParams().GetDryRunCtpv2()
-
-	// Fetch the list of pools that cannot run in Scheduke.
-	ctpv2WithFifo := common.GetCtpv2WithFifoList()
 
 	// If in the above list, set runWithoutScheduke to true
 	runWithoutScheduke := false
-	if slices.Contains(ctpv2WithFifo, getSchedulingPool(v1)) {
+	// If external(partner) bucket, don't run through scheduke
+	if strings.Contains(bucket, "external") {
 		runWithoutScheduke = true
 	}
 
