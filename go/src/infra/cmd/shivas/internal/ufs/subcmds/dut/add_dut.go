@@ -35,6 +35,9 @@ import (
 	ufsUtil "go.chromium.org/infra/unifiedfleet/app/util"
 )
 
+// ATE-HOSTS DEFAULT HIVE
+const ATE_HIVE string = "ATE_HOSTS_HIVE_NOT_APPLICABLE"
+
 // Regexp to enforce the input format
 var servoHostPortRegexp = regexp.MustCompile(`^[a-zA-Z0-9\-\.]+:[0-9]+$`)
 
@@ -692,7 +695,7 @@ func (c *addDUT) initializeLSEAndAsset(recMap map[string]string) (*dutDeployUFSP
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hostname = name
 	if c.ateHost != "" {
 		lse.GetChromeosMachineLse().GetDeviceLse().GetDut().AteHost = c.ateHost
-		c.hive = "ATE_HOSTS_NOT_APPLICABLE"
+		c.hive = ATE_HIVE
 	}
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = c.hive
 	lse.GetChromeosMachineLse().GetDeviceLse().GetDut().SubrailConfig = subrailConfig

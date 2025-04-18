@@ -63,6 +63,7 @@ const (
 	poolsPath         = "dut.pools"
 	licensePath       = "dut.licenses"
 	hivePath          = "dut.hive"
+	ateHostPath       = "dut.ateHost"
 	subrailConfigPath = "dut.subrailConfig"
 	osRestrictionPath = "dut.os.restriction"
 
@@ -145,6 +146,7 @@ var UpdateDUTCmd = &subcommands.Command{
 		c.Flags.StringVar(&c.dolosFirmwareVersion, "dolos-firmware-version", "", "")
 		c.Flags.StringVar(&c.hive, "hive", "", "Hive name for the DUT. "+cmdhelp.ClearFieldHelpText)
 		c.Flags.StringVar(&c.osRestriction, "os-restriction", "", "Specify which OS is allowed on the DUT, Allowed options: "+cmdhelp.OSRestrictionAllowedValuesString())
+		c.Flags.StringVar(&c.ateHost, "ate-host", "", "ATE host for the DUT. "+cmdhelp.ClearFieldHelpText)
 
 		c.Flags.BoolVar(&c.forceDeploy, "force-deploy", false, "forces a deploy task for all the updates.")
 		c.Flags.Var(utils.CSVString(&c.deployTags), "deploy-tags", "comma seperated tags for deployment task.")
@@ -211,6 +213,7 @@ type updateDUT struct {
 	dolosRpmOutlet           string
 	dolosFirmwareVersion     string
 	hive                     string
+	ateHost                  string
 	osRestriction            string
 
 	// Deploy task inputs.
@@ -419,6 +422,14 @@ func (c *updateDUT) getNamespace() (string, error) {
 func (c updateDUT) validateArgs() error {
 	if c.newSpecsFile == "" && c.hostname == "" {
 		return cmdlib.NewQuietUsageError(c.Flags, "Need hostname to create a DUT")
+	}
+	if c.ateHost != "" {
+		if c.ateHost != utils.ClearFieldValue && c.hive != "" {
+			return cmdlib.NewQuietUsageError(c.Flags, "When updating to ate-host, hive should not be specified")
+		}
+		if c.ateHost == utils.ClearFieldValue && c.hive == ATE_HIVE {
+			return cmdlib.NewQuietUsageError(c.Flags, "When removing from ate-host, hive should not be %s", ATE_HIVE)
+		}
 	}
 	if c.newSpecsFile == "" {
 		// Check if servo input is valid
@@ -740,6 +751,26 @@ func (c *updateDUT) initializeLSEAndMask(recMap map[string]string) (*ufspb.Machi
 			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = c.hive
 		} else {
 			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = ""
+		}
+	}
+
+	// Check if ate-host field is being updated.
+	if c.ateHost != "" {
+		mask.Paths = append(mask.Paths, ateHostPath)
+		if c.ateHost != utils.ClearFieldValue {
+			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().AteHost = c.ateHost
+			// Force ATE_HIVE hive
+			mask.Paths = append(mask.Paths, hivePath)
+			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = ATE_HIVE
+			// Force OSRestriction to be ANDROID_ONLY
+			c.osRestriction = chromeosLab.DeviceUnderTest_OSRestriction_name[int32(chromeosLab.DeviceUnderTest_OSR_ANDROID_ONLY)][len(cmdhelp.OSRestrictionPrefix):]
+		} else {
+			lse.GetChromeosMachineLse().GetDeviceLse().GetDut().AteHost = ""
+			if c.hive == "" {
+				// remove from ATE_HIVE hive
+				mask.Paths = append(mask.Paths, hivePath)
+				lse.GetChromeosMachineLse().GetDeviceLse().GetDut().Hive = ""
+			}
 		}
 	}
 
@@ -1188,6 +1219,10 @@ func (c *updateDUT) needToDeploy(ctx context.Context, ic ufsAPI.FleetClient, req
 	// If DUT doesn't exist return error as update will fail.
 	if err != nil {
 		return false, "", errors.Annotate(err, "getDeployActions - Please check if DUT exists before updating. Failed to get DUT %s", newDut.GetName()).Err()
+	}
+
+	if (c.ateHost != "" && c.ateHost != utils.ClearFieldValue) || (c.ateHost == "" && oldDut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetAteHost() != "") {
+		return false, ATE_HIVE, nil
 	}
 
 	deployBuilderHive := ufsUtil.GetHiveForDut(newDut.GetName(), oldDut.GetChromeosMachineLse().GetDeviceLse().GetDut().GetHive())
