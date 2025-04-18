@@ -7,7 +7,7 @@ import argparse
 import json
 
 # Update this when upgrading NDK.
-_VERSION = "r23c"
+_VERSION = "r27c"
 _URL = f"https://dl.google.com/android/repository/android-ndk-{_VERSION}-linux.zip"
 
 
