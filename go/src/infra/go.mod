@@ -116,16 +116,16 @@ require (
 	go.opentelemetry.io/otel/trace v1.34.0
 	go.skia.org/infra v0.0.0-20250114041601-4a95c0b5f67e
 	go.starlark.net v0.0.0-20250127224320-2fb1215d657f
-	golang.org/x/crypto v0.35.0
+	golang.org/x/crypto v0.37.0
 	golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8
 	golang.org/x/mobile v0.0.0-20191031020345-0945064e013a
 	golang.org/x/mod v0.22.0
-	golang.org/x/net v0.36.0
+	golang.org/x/net v0.39.0
 	golang.org/x/oauth2 v0.25.0
 	golang.org/x/perf v0.0.0-20250106172127-400946f43c82
-	golang.org/x/sync v0.11.0
-	golang.org/x/sys v0.30.0
-	golang.org/x/term v0.29.0
+	golang.org/x/sync v0.13.0
+	golang.org/x/sys v0.32.0
+	golang.org/x/term v0.31.0
 	golang.org/x/time v0.9.0
 	golang.org/x/tools v0.29.0
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da
@@ -380,7 +380,7 @@ require (
 	go.uber.org/mock v0.4.0 // indirect
 	golang.org/x/arch v0.11.0 // indirect
 	golang.org/x/telemetry v0.0.0-20241106142447-58a1122356f5 // indirect
-	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/text v0.24.0 // indirect
 	gopkg.in/cenkalti/backoff.v1 v1.1.0 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
