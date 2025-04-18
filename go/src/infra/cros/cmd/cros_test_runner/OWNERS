@@ -4,13 +4,11 @@ set noparent
 # CrOS Infra Test Scheduling & Execution Team
 include chromiumos/owners:v1:/infra/OWNERS.tse
 
-
-# FTE Contributors
-dbeckett@chromium.org
-dbeckett@google.com
+# Prefer the gwsq for gerrit suggestions.
+chromeos-test-scheduling-team@google.com
 
 # CTRP Team Contributors
-jkusuma@google.com
-jlcruz@google.com
-yasinsonui@google.com
-zhihuixie@google.com
+jkusuma@google.com #{LAST_RESORT_SUGGESTION}
+jlcruz@google.com #{LAST_RESORT_SUGGESTION}
+yasinsonui@google.com #{LAST_RESORT_SUGGESTION}
+zhihuixie@google.com #{LAST_RESORT_SUGGESTION}
