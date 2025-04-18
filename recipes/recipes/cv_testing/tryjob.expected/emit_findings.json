@@ -13,7 +13,7 @@
       "@@@STEP_LOG_LINE@findings.json@    {@@@",
       "@@@STEP_LOG_LINE@findings.json@      \"category\": \"LUCIFindingsTestCategory\",@@@",
       "@@@STEP_LOG_LINE@findings.json@      \"location\": {@@@",
-      "@@@STEP_LOG_LINE@findings.json@        \"file_path\": \"/COMMIT_MSG\",@@@",
+      "@@@STEP_LOG_LINE@findings.json@        \"file_path\": \"/PATCHSET_LEVEL\",@@@",
       "@@@STEP_LOG_LINE@findings.json@        \"gerrit_change_ref\": {@@@",
       "@@@STEP_LOG_LINE@findings.json@          \"change\": \"123456\",@@@",
       "@@@STEP_LOG_LINE@findings.json@          \"host\": \"chromium-review.googlesource.com\",@@@",
@@ -59,7 +59,7 @@
       }
     },
     "name": "upload 1 findings to ResultDB.upload_invocation_artifacts",
-    "stdin": "{\"requests\": [{\"artifact\": {\"artifactId\": \"findings-00000000-0000-0000-0000-000000001337\", \"contentType\": \"application/vnd.google.protobuf+gzip\", \"contents\": \"H4sIAAAAAAAC/+Oq5JLwCXX2dMvMS8nMSy8OSS0ucU4sSU3PL6oUsuPS51JIzijKz80szdUtSi3LTC3XS8/PT89JLc4vLUpO1UvOzxVizcxLK0qUOHCEXYFdiFvf2d/X1zMk3jfYXUo6JCOzWAGIEhVKgOYqJOenpCqkQWxSYAQAkkPx03sAAAA=\"}, \"parent\": \"invocations/build:8945511751514863184\"}]}",
+    "stdin": "{\"requests\": [{\"artifact\": {\"artifactId\": \"findings-00000000-0000-0000-0000-000000001337\", \"contentType\": \"application/vnd.google.protobuf+gzip\", \"contents\": \"H4sIAAAAAAAC/+Oq5ZLwCXX2dMvMS8nMSy8OSS0ucU4sSU3PL6oUcuLS51JIzijKz80szdUtSi3LTC3XS8/PT89JLc4vLUpO1UvOzxVizcxLK0qUOHCEXYFdiF8/wDHE2SPYNSTexzXM1UdKOiQjs1gBiBIVSoBmKyTnp6QqpEFsU2AEAP+Ph8p/AAAA\"}, \"parent\": \"invocations/build:8945511751514863184\"}]}",
     "~followup_annotations": [
       "@@@STEP_NEST_LEVEL@1@@@",
       "@@@STEP_LOG_LINE@json.output@{}@@@",
@@ -70,7 +70,7 @@
       "@@@STEP_LOG_LINE@json.input@      \"artifact\": {@@@",
       "@@@STEP_LOG_LINE@json.input@        \"artifactId\": \"findings-00000000-0000-0000-0000-000000001337\",@@@",
       "@@@STEP_LOG_LINE@json.input@        \"contentType\": \"application/vnd.google.protobuf+gzip\",@@@",
-      "@@@STEP_LOG_LINE@json.input@        \"contents\": \"H4sIAAAAAAAC/+Oq5JLwCXX2dMvMS8nMSy8OSS0ucU4sSU3PL6oUsuPS51JIzijKz80szdUtSi3LTC3XS8/PT89JLc4vLUpO1UvOzxVizcxLK0qUOHCEXYFdiFvf2d/X1zMk3jfYXUo6JCOzWAGIEhVKgOYqJOenpCqkQWxSYAQAkkPx03sAAAA=\"@@@",
+      "@@@STEP_LOG_LINE@json.input@        \"contents\": \"H4sIAAAAAAAC/+Oq5ZLwCXX2dMvMS8nMSy8OSS0ucU4sSU3PL6oUcuLS51JIzijKz80szdUtSi3LTC3XS8/PT89JLc4vLUpO1UvOzxVizcxLK0qUOHCEXYFdiF8/wDHE2SPYNSTexzXM1UdKOiQjs1gBiBIVSoBmKyTnp6QqpEFsU2AEAP+Ph8p/AAAA\"@@@",
       "@@@STEP_LOG_LINE@json.input@      },@@@",
       "@@@STEP_LOG_LINE@json.input@      \"parent\": \"invocations/build:8945511751514863184\"@@@",
       "@@@STEP_LOG_LINE@json.input@    }@@@",

@@ -34,7 +34,7 @@ def RunSteps(api, properties):
         severity_level=findings_pb.Finding.SEVERITY_LEVEL_INFO,
         message='This is a test code finding')
     api.findings.populate_source_from_current_build(finding.location)
-    finding.location.file_path = '/COMMIT_MSG'
+    finding.location.file_path = api.findings.PATCHSET_LEVEL_FILE_PATH
     api.findings.upload_findings([finding])
 
 
