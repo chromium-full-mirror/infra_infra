@@ -5,6 +5,11 @@
 // Package bols contains common implementation of bols.
 package bols
 
+import (
+	"go.chromium.org/chromiumos/config/go/test/api/bols"
+)
+
 // Service holds common implementation of BOLS service.
 type Service struct {
+	bols.UnimplementedBolsServiceServer
 }

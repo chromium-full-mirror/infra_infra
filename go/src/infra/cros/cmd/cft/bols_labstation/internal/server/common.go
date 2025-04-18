@@ -16,6 +16,7 @@ import (
 
 	"google.golang.org/grpc"
 
+	bols_service "go.chromium.org/chromiumos/config/go/test/api/bols"
 	"go.chromium.org/luci/common/errors"
 
 	"go.chromium.org/infra/cros/cmd/cft/bols_labstation/internal/version"
@@ -74,7 +75,8 @@ func (s *service) Run(ctx context.Context) error {
 		logger.Println("Warning: error when writing to metadata file: ", err)
 	}
 	srv := grpc.NewServer()
-	// TODO register API. like api.RegisterBolsServiceServer(srv, s)
+	bols_service.RegisterBolsServiceServer(srv, s)
+
 	logger.Println("service listen to request at ", l.Addr().String())
 	if err := srv.Serve(l); err != nil {
 		return err
