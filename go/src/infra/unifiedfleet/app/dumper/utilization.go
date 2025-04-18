@@ -116,62 +116,30 @@ func reportUFSInventoryCronHandler(ctx context.Context) (err error) {
 // reportUFSInventoryForNamespace push the ufs duts metrics to tsmon
 func reportUFSInventoryForNamespace(ctx context.Context, ns string) (c inventoryCounter, err error) {
 	logging.Infof(ctx, "Reporting UFS inventory DUT metrics for namespace %s", ns)
-
-	env := config.Get(ctx).SelfStorageBucket
-	// Get all the MachineLSEs
 	lses, err := getAllMachineLSEs(ctx, false)
 	if err != nil {
 		return nil, err
 	}
-	idTolseMap := make(map[string]*ufspb.MachineLSE, 0)
-	for _, lse := range lses {
-		idTolseMap[lse.GetName()] = lse
-	}
-	// Get all Machines
 	machines, err := getAllMachines(ctx, false)
 	if err != nil {
 		return nil, err
 	}
-	idTomachineMap := make(map[string]*ufspb.Machine, 0)
+	idToMachineMap := make(map[string]*ufspb.Machine, 0)
 	for _, machine := range machines {
-		idTomachineMap[machine.GetName()] = machine
+		idToMachineMap[machine.GetName()] = machine
 	}
 
-	// Scheduling Units are OS namespace only
-	var lseInSUnitMap map[string]bool
+	env := config.Get(ctx).SelfStorageBucket
 	c = make(inventoryCounter)
-	if ns == util.OSNamespace {
-		sUnits, err := getAllSchedulingUnits(ctx, false)
-		if err != nil {
-			return nil, err
-		}
-		// Map for MachineLSEs associated with SchedulingUnit for easy search.
-		lseInSUnitMap = make(map[string]bool)
-		for _, su := range sUnits {
-			if len(su.GetMachineLSEs()) > 0 {
-				suLses := make([]*ufspb.MachineLSE, len(su.GetMachineLSEs()))
-				for i, lseID := range su.GetMachineLSEs() {
-					suLses[i] = idTolseMap[lseID]
-				}
-
-				b, err := getBucketForSchedulingUnit(su, suLses, idTomachineMap, env)
-				if err != nil {
-					logging.Warningf(ctx, err.Error())
-					continue
-				}
-				c[*b]++
-				for _, lseName := range su.GetMachineLSEs() {
-					lseInSUnitMap[lseName] = true
-				}
-			}
-		}
+	ignored, err := initialCountAndIgnore(ctx, ns, c, lses, idToMachineMap, env)
+	if err != nil {
+		return nil, fmt.Errorf("report inventory for namespace %q: %w", ns, err)
 	}
 	for _, lse := range lses {
-		name := lse.GetName()
-		if ns == util.OSNamespace && lseInSUnitMap[name] {
+		if ignored[lse.GetName()] {
 			continue
 		}
-		machine, err := getMachineForLse(lse, idTomachineMap)
+		machine, err := getMachineForLse(lse, idToMachineMap)
 		if err != nil {
 			logging.Warningf(ctx, err.Error())
 			continue
@@ -183,14 +151,61 @@ func reportUFSInventoryForNamespace(ctx context.Context, ns string) (c inventory
 	return c, nil
 }
 
+func initialCountAndIgnore(ctx context.Context, ns string, c inventoryCounter, lses []*ufspb.MachineLSE, idToMachineMap map[string]*ufspb.Machine, env string) (map[string]bool, error) {
+	switch ns {
+	case util.OSNamespace:
+		ignored, err := countSchedulingUnit(ctx, c, lses, idToMachineMap, env)
+		if err != nil {
+			return nil, fmt.Errorf("initial count for OS: %w", err)
+		}
+		return ignored, nil
+	}
+	return nil, fmt.Errorf("initial count: unknown namespace %q", ns)
+}
+
+// countSchedulingUnit counts the Scheduling Units which are OS namespace only.
+// We count the whole scheduling unit as one and ignore all composing machine
+// LSEs.
+func countSchedulingUnit(ctx context.Context, c inventoryCounter, lses []*ufspb.MachineLSE, idToMachineMap map[string]*ufspb.Machine, env string) (map[string]bool, error) {
+	idToLseMap := make(map[string]*ufspb.MachineLSE, 0)
+	for _, lse := range lses {
+		idToLseMap[lse.GetName()] = lse
+	}
+	sUnits, err := getAllSchedulingUnits(ctx, false)
+	if err != nil {
+		return nil, err
+	}
+	// Map for MachineLSEs associated with SchedulingUnit for easy search.
+	lseInSUnitMap := make(map[string]bool)
+	for _, su := range sUnits {
+		if len(su.GetMachineLSEs()) > 0 {
+			suLses := make([]*ufspb.MachineLSE, len(su.GetMachineLSEs()))
+			for i, lseID := range su.GetMachineLSEs() {
+				suLses[i] = idToLseMap[lseID]
+			}
+
+			b, err := getBucketForSchedulingUnit(su, suLses, idToMachineMap, env)
+			if err != nil {
+				logging.Warningf(ctx, err.Error())
+				continue
+			}
+			c[*b]++
+			for _, lseName := range su.GetMachineLSEs() {
+				lseInSUnitMap[lseName] = true
+			}
+		}
+	}
+	return lseInSUnitMap, nil
+}
+
 // getMachineForLse returns the Machine that's attached to the MachineLSE
 // iff the MachineLSE references exactly one Machine
-func getMachineForLse(lse *ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Machine) (*ufspb.Machine, error) {
+func getMachineForLse(lse *ufspb.MachineLSE, idToMachineMap map[string]*ufspb.Machine) (*ufspb.Machine, error) {
 	machines := lse.GetMachines()
 	if n := len(machines); n != 1 {
 		return nil, errors.Reason("report ufs inventory cron handler: %d machines %v associated with %q", n, machines, lse.GetName()).Err()
 	}
-	machine, ok := idTomachineMap[machines[0]]
+	machine, ok := idToMachineMap[machines[0]]
 	if !ok {
 		return nil, errors.Reason("report ufs inventory cron handler: machine %s not found for LSE %s", machines[0], lse.GetName()).Err()
 	}
@@ -247,7 +262,7 @@ var (
 // and corresponding DUTs.
 // Depending on the ExposeType, the bucket dimensions are based on a combination
 // of the primary DUT values and an aggregate on all DUTs
-func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Machine, env string) (*bucket, error) {
+func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineLSE, idToMachineMap map[string]*ufspb.Machine, env string) (*bucket, error) {
 	b := &bucket{
 		board:                 "[None]",
 		model:                 "[None]",
@@ -264,11 +279,11 @@ func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineL
 	case ufspb.SchedulingUnit_DEFAULT:
 		fallthrough
 	case ufspb.SchedulingUnit_DEFAULT_PLUS_PRIMARY:
-		board, err := schedulingUnitLabelForLses(lses, idTomachineMap, machineBoardValueFunc)
+		board, err := schedulingUnitLabelForLses(lses, idToMachineMap, machineBoardValueFunc)
 		if err != nil {
 			return nil, err
 		}
-		model, err := schedulingUnitLabelForLses(lses, idTomachineMap, machineModelValueFunc)
+		model, err := schedulingUnitLabelForLses(lses, idToMachineMap, machineModelValueFunc)
 		if err != nil {
 			return nil, err
 		}
@@ -292,7 +307,7 @@ func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineL
 		if primaryLse == nil {
 			return nil, errors.Reason("Could not find primary MachineLSE %s for scheduling unit %s", su.GetPrimaryDut(), su.GetName()).Err()
 		}
-		machine, err := getMachineForLse(primaryLse, idTomachineMap)
+		machine, err := getMachineForLse(primaryLse, idToMachineMap)
 		if err != nil {
 			return nil, err
 		}
@@ -314,10 +329,10 @@ func getBucketForSchedulingUnit(su *ufspb.SchedulingUnit, lses []*ufspb.MachineL
 
 // schedulingUnitLabelForLses calculates an overall label for a scheduling unit
 // given a list of MachineLSEs
-func schedulingUnitLabelForLses(lses []*ufspb.MachineLSE, idTomachineMap map[string]*ufspb.Machine, f machineFieldToValueFunc) (string, error) {
+func schedulingUnitLabelForLses(lses []*ufspb.MachineLSE, idToMachineMap map[string]*ufspb.Machine, f machineFieldToValueFunc) (string, error) {
 	machines := make([]*ufspb.Machine, len(lses))
 	for i, lse := range lses {
-		machine, err := getMachineForLse(lse, idTomachineMap)
+		machine, err := getMachineForLse(lse, idToMachineMap)
 		if err != nil {
 			return "", err
 		}
