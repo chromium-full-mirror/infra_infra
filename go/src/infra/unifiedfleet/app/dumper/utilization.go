@@ -159,6 +159,12 @@ func initialCountAndIgnore(ctx context.Context, ns string, c inventoryCounter, l
 			return nil, fmt.Errorf("initial count for OS: %w", err)
 		}
 		return ignored, nil
+	case util.BrowserNamespace:
+		ignored, err := getHostWithAttachedDevices(ctx, lses)
+		if err != nil {
+			return nil, fmt.Errorf("initial count for browser: %w", err)
+		}
+		return ignored, nil
 	}
 	return nil, fmt.Errorf("initial count: unknown namespace %q", ns)
 }
@@ -196,6 +202,21 @@ func countSchedulingUnit(ctx context.Context, c inventoryCounter, lses []*ufspb.
 		}
 	}
 	return lseInSUnitMap, nil
+}
+
+// getHostWithAttachedDevices gets the set of hosts which has attached devices
+// for the browser fleet.
+//
+// We don't count them as scheduable. We only count each attached device which
+// has it's own MachineLSE.
+func getHostWithAttachedDevices(ctx context.Context, lses []*ufspb.MachineLSE) (map[string]bool, error) {
+	hosts := make(map[string]bool)
+	for _, lse := range lses {
+		if ad := lse.GetAttachedDeviceLse(); ad != nil {
+			hosts[ad.GetAssociatedHostname()] = true
+		}
+	}
+	return hosts, nil
 }
 
 // getMachineForLse returns the Machine that's attached to the MachineLSE
