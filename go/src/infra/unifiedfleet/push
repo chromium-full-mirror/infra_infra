@@ -78,7 +78,9 @@ then
 fi
 
 # Get the changelog content
-CONTENT=$(git log refs/remotes/origin/main --oneline "$OLD_COMMIT".."$NEW_COMMIT" -- .)
+# Add https://chromium-review.googlesource.com/... so that you can click on a commit message and see it.
+# Example: https://chrome-internal-review.googlesource.com/c/infradata/k8s/+/8209058
+CONTENT=$(git log refs/remotes/origin/main --oneline "$OLD_COMMIT".."$NEW_COMMIT" -- . | sed -e 's@^@https://chromium-review.googlesource.com/q/@')
 
 # Change back to workdir to create the CL
 pushd "$WORKDIR" >/dev/null || (
