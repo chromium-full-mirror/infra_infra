@@ -7,22 +7,18 @@ package cros
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"go.chromium.org/luci/common/errors"
 
+	"go.chromium.org/infra/cros/recovery/internal/components/cros"
 	"go.chromium.org/infra/cros/recovery/internal/execs"
 	"go.chromium.org/infra/cros/recovery/internal/log"
-)
-
-const (
-	readSerialNumberCommand = "vpd -g serial_number"
 )
 
 // updateSerialNumberToInvExec updates serial number in DUT-info.
 func updateSerialNumberToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
-	sn, err := run(ctx, time.Minute, readSerialNumberCommand)
+	sn, err := cros.HostSerial(ctx, info.GetDut(), info.GetExecTimeout(), run)
 	if err != nil {
 		return errors.Annotate(err, "update serial number in DUT-info").Err()
 	}
@@ -37,7 +33,7 @@ func updateSerialNumberToInvExec(ctx context.Context, info *execs.ExecInfo) erro
 // matchSerialNumberToInvExec matches serial number from the resource to value in the Inventory.
 func matchSerialNumberToInvExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
-	actualSerialNumber, err := run(ctx, time.Minute, readSerialNumberCommand)
+	actualSerialNumber, err := cros.HostSerial(ctx, info.GetDut(), info.GetExecTimeout(), run)
 	if err != nil {
 		return errors.Annotate(err, "match serial number to inventory").Err()
 	}
