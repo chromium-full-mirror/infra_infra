@@ -6,10 +6,14 @@ package state_machine
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"os"
+	"path/filepath"
 
 	"google.golang.org/protobuf/types/known/anypb"
 
+	conf "go.chromium.org/chromiumos/config/go"
 	"go.chromium.org/chromiumos/config/go/test/api"
 
 	ashchromeservice "go.chromium.org/infra/cros/cmd/provision/ash-chrome-provision/service"
@@ -32,6 +36,24 @@ func (s AshChromePrepareState) Execute(ctx context.Context, log *log.Logger) (*a
 	log.Printf("Started %s\n", s.Name())
 	if err := s.service.WaitForReconnect(ctx); err != nil {
 		return nil, api.InstallResponse_STATUS_DUT_UNREACHABLE_PRE_PROVISION, err
+	}
+
+	artifact := s.service.GetArtifactPath()
+	tmpDir := s.service.GetTmpDir()
+	switch artifact.HostType {
+	case conf.StoragePath_GS:
+		if err := s.service.DownloadChromeArtifactsFromGS(ctx, artifact.Path, filepath.Join(tmpDir, "chrome.tar.zst")); err != nil {
+			return nil, api.InstallResponse_STATUS_GS_DOWNLOAD_FAILED, err
+		}
+		if err := os.Mkdir(filepath.Join(tmpDir, "chrome"), 0755); err != nil {
+			return nil, api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED, err
+		}
+		if err := s.service.ExtractChromeArtifacts(ctx, filepath.Join(tmpDir, "chrome.tar.zst"), filepath.Join(tmpDir, "chrome")); err != nil {
+			return nil, api.InstallResponse_STATUS_PRE_PROVISION_SETUP_FAILED, err
+		}
+	default:
+		log.Printf("Unhandled types: %v", artifact.HostType)
+		return nil, api.InstallResponse_STATUS_INVALID_REQUEST, fmt.Errorf("unsupported artifact host_type: %v", artifact.HostType)
 	}
 
 	return nil, api.InstallResponse_STATUS_SUCCESS, nil

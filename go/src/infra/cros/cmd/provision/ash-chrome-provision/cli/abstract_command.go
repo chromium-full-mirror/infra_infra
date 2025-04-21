@@ -41,7 +41,7 @@ func SetUpLog(dir string) (*log.Logger, error) {
 	}
 	newLog := log.Default()
 	newLog.SetOutput(io.MultiWriter(lf, os.Stderr))
-	newLog.SetPrefix("<cros-fw-provision>")
+	newLog.SetPrefix("<ash-chrome-provision>")
 	newLog.SetFlags(log.LstdFlags | log.Lshortfile | log.Lmsgprefix)
 	return newLog, nil
 }

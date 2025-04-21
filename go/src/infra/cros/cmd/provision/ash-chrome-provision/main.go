@@ -19,7 +19,7 @@ func main() {
 	}
 	err = opt.Run()
 	if err != nil {
-		fmt.Printf("cros-fw-provision failed: %v\n", err)
+		fmt.Printf("ash-chrome-provision failed: %v\n", err)
 		os.Exit(1)
 	}
 }

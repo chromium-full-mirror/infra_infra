@@ -2,5 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-FROM us-docker.pkg.dev/cros-registry/base-images/ubuntu:ubuntuProd
-COPY ash-chrome-provision /usr/bin/
+# ash-chrome-provision will use chromite
+FROM python:3.8-slim-buster
+
+# zstd for extracting Chrome builder artifacts.
+# curl, ca-certificates, and gnupg for google-cloud-sdk install below.
+RUN apt-get update \
+    && apt-get install -y zstd curl ca-certificates gnupg
+
+# grab gsutil
+RUN echo \
+    "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] \
+    http://packages.cloud.google.com/apt cloud-sdk main" | \
+    tee -a /etc/apt/sources.list.d/google-cloud-sdk.list && \
+    curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | \
+    apt-key --keyring /usr/share/keyrings/cloud.google.gpg  \
+    add - && apt-get update -y && apt-get install google-cloud-sdk=369.0.0-0 -y
+RUN rm -rf /usr/lib/google-cloud-sdk/bin/anthoscli \
+  /usr/lib/google-cloud-sdk/bin/kuberun
+
+COPY ash-chrome-provision /usr/bin/ash-chrome-provision
