@@ -11286,6 +11286,20 @@ wheel: <
 
 * *universal*
 
+## **xlsxwriter-py3**
+
+### 3.2.2
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/xlsxwriter-py3"
+  version: "version:3.2.2"
+>
+```
+
+
+* *universal*
+
 ## **xmltodict**
 
 ### 0.13.0

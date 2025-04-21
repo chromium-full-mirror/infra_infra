@@ -1895,6 +1895,7 @@ SPECS.update({
         Universal('wrapt', '1.15.0', pyversions=['py3']),
         Universal('wsproto', '1.1.0', pyversions=['py3']),
         Universal('wsproto', '1.2.0', pyversions=['py3']),
+        Universal('xlsxwriter', '3.2.2', pyversions=['py3']),
         Universal('xmltodict', '0.13.0'),
         Universal('yapf', '0.22.0'),
         Universal('yapf', '0.24.0'),
