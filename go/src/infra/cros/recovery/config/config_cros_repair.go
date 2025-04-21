@@ -83,7 +83,7 @@ func crosRepairActions() map[string]*Action {
 				"Reset provisioned info",
 				"Enable verbose network logging for cellular DUTs",
 				"Collect logs and crashinfo",
-				"Device is SSHable",
+				"Device is accessable",
 				"Read bootId",
 				"Device Uptime",
 				"Verify access to cache",
@@ -307,7 +307,7 @@ func crosRepairActions() map[string]*Action {
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
-		"Device is SSHable": {
+		"Device is accessable": {
 			Docs: []string{
 				"Verify that device is reachable by SSH.",
 				"Limited to 15 seconds.",
@@ -502,7 +502,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Is a Chromebook",
 				"Is HWID known",
-				"Device is SSHable",
+				"Device is accessable",
 				"Set HWID of the DUT from inventory",
 				"Simple reboot",
 				"Sleep 1s",
@@ -740,7 +740,7 @@ func crosRepairActions() map[string]*Action {
 				"The recovery process may fail, but it may still solve the problem.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_enrollment_cleanup",
 			ExecExtraArgs: []string{
@@ -838,7 +838,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Disable factory settings on the DUT": {
 			Conditions: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_run_command",
 			ExecExtraArgs: []string{
@@ -848,7 +848,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Shutdown DUT by SSH": {
 			Conditions: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_run_command",
 			ExecExtraArgs: []string{
@@ -897,7 +897,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that we can read ownership on device.",
 			},
 			Conditions: []string{
-				"Device is SSHable",
+				"Device is accessable",
 				"Is hwsec-ownership-id expected",
 			},
 			ExecName: "cros_run_command",
@@ -928,7 +928,7 @@ func crosRepairActions() map[string]*Action {
 				"The hwsec-ownership-id is expected from R101 version of ChromeOS on the DUT.",
 			},
 			Conditions: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_is_on_expected_version",
 			ExecExtraArgs: []string{
@@ -1554,7 +1554,7 @@ func crosRepairActions() map[string]*Action {
 				"DUT not on stable version",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 				"Call provision for DUT",
 				"Remove PROVISION repair-request",
 			},
@@ -1611,7 +1611,7 @@ func crosRepairActions() map[string]*Action {
 				"Part of analysis of b/267384675",
 			},
 			Conditions: []string{
-				"Not Satlab device",
+				"Run only in main lab",
 				"Servo state is working",
 				"Is servod running",
 				"Servod has battery_tempc control",
@@ -1666,7 +1666,7 @@ func crosRepairActions() map[string]*Action {
 				"Has Bluetooth peers",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_run_command",
 			ExecExtraArgs: []string{
@@ -1725,7 +1725,7 @@ func crosRepairActions() map[string]*Action {
 				"Check wifi on the DUT is normal and update wifi hardware state accordingly.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_audit_wifi",
 			RecoveryActions: []string{
@@ -1738,7 +1738,7 @@ func crosRepairActions() map[string]*Action {
 				"Check bluetooth on the DUT is normal and update bluetooth hardware state accordingly.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_audit_bluetooth",
 			ExecExtraArgs: []string{
@@ -1839,7 +1839,7 @@ func crosRepairActions() map[string]*Action {
 				"cros_has_mmcli",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 				"Cellular modem is up",
 			},
 			ExecName: "cros_modem_state_not_in",
@@ -1861,7 +1861,7 @@ func crosRepairActions() map[string]*Action {
 				"has_cellular_info",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_audit_cellular_modem",
 			ExecExtraArgs: []string{
@@ -1899,7 +1899,7 @@ func crosRepairActions() map[string]*Action {
 				"has_cellular_info",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_audit_cellular_modem",
 			ExecExtraArgs: []string{
@@ -1922,7 +1922,7 @@ func crosRepairActions() map[string]*Action {
 				"Has live carrier",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 				"Cellular modem is up",
 				"Cellular modem is not in failed state",
 			},
@@ -1945,7 +1945,7 @@ func crosRepairActions() map[string]*Action {
 				"Is starfish device",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName:               "cros_audit_cellular_starfish",
 			AllowFailAfterRecovery: true,
@@ -2186,7 +2186,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is a Chromebook",
-				"Not Satlab device",
+				"Run only in main lab",
 				"Is HWID empty",
 			},
 			Dependencies: []string{
@@ -2217,7 +2217,7 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Is a Chromebook",
 				"Is ChromeOS based?",
-				"Not Satlab device",
+				"Run only in main lab",
 				"Is serial-number empty",
 			},
 			Dependencies: []string{
@@ -2286,17 +2286,17 @@ func crosRepairActions() map[string]*Action {
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
-		"Not Satlab device": {
+		"Run only in main lab": {
 			Docs: []string{
 				"Verify that DUT name is not belong Satlab.",
 			},
 			Conditions: []string{
-				"Is Satlab device",
+				"Run only on Satlab",
 			},
 			ExecName:      "sample_fail",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
-		"Is Satlab device": {
+		"Run only on Satlab": {
 			Docs: []string{
 				"Verify that DUT name is belong Satlab.",
 			},
@@ -2319,14 +2319,14 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Read DUT serial-number from DUT": {
 			Conditions: []string{
-				"Not Satlab device",
+				"Run only in main lab",
 			},
 			ExecName:   "cros_update_serial_number_inventory",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Read DUT serial-number from DUT (Satlab)": {
 			Conditions: []string{
-				"Is Satlab device",
+				"Run only on Satlab",
 			},
 			ExecName:               "cros_update_serial_number_inventory",
 			RunControl:             RunControl_ALWAYS_RUN,
@@ -2334,14 +2334,14 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Read HWID from DUT": {
 			Conditions: []string{
-				"Not Satlab device",
+				"Run only in main lab",
 			},
 			ExecName:   "cros_update_hwid_to_inventory",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Read HWID from DUT (Satlab)": {
 			Conditions: []string{
-				"Is Satlab device",
+				"Run only on Satlab",
 			},
 			ExecName:               "cros_update_hwid_to_inventory",
 			RunControl:             RunControl_ALWAYS_RUN,
@@ -2353,7 +2353,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Is ChromeOS based?",
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_is_file_system_writable",
 			ExecExtraArgs: []string{
@@ -2374,7 +2374,7 @@ func crosRepairActions() map[string]*Action {
 				"If linux has some hardware error then file system can became read-only.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_has_critical_kernel_error",
 			RecoveryActions: []string{
@@ -2793,7 +2793,7 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Can become ChromeOS-based",
 				"Recovery version has OS image path",
-				"Device is SSHable",
+				"Device is accessable",
 				"Internal storage is responsive",
 			},
 			Dependencies: []string{
@@ -2872,7 +2872,7 @@ func crosRepairActions() map[string]*Action {
 				"Then, using servo to initialize dut again.",
 			},
 			Conditions: []string{
-				"Not Satlab device",
+				"Run only in main lab",
 				"Is servod running",
 			},
 			Dependencies: []string{
@@ -3049,7 +3049,7 @@ func crosRepairActions() map[string]*Action {
 				"Disable write-protect fprom 'internal'.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_disable_fprom_write_protect",
 			ExecExtraArgs: []string{
@@ -3064,7 +3064,7 @@ func crosRepairActions() map[string]*Action {
 				"Disable write-protect fprom 'ec'.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_disable_fprom_write_protect",
 			ExecExtraArgs: []string{
@@ -3634,7 +3634,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is a Chromebook",
-				"Not Satlab device",
+				"Run only in main lab",
 				"Has a stable-version service",
 			},
 			ExecName: "has_stable_version_fw_image",
@@ -3729,7 +3729,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Can become ChromeOS-based",
-				"Device is SSHable",
+				"Device is accessable",
 				"Internal storage is responsive",
 			},
 			Dependencies: []string{
@@ -3746,7 +3746,7 @@ func crosRepairActions() map[string]*Action {
 				"Do simple reboot of the DUT force to update DUT cache settings.",
 			},
 			Conditions: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			Dependencies: []string{
 				"Simple reboot",
@@ -4262,7 +4262,7 @@ func crosRepairActions() map[string]*Action {
 				"Record data that is present in RO_VPD of DUT to inventory.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_update_ro_vpd_inventory",
 		},
@@ -4272,7 +4272,7 @@ func crosRepairActions() map[string]*Action {
 				"Skip update values if already known by inventory.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_update_ro_vpd_inventory",
 			ExecExtraArgs: []string{
@@ -4284,7 +4284,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify if data from RO_VPD key: wifi_sar that was present on deploy is still present.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_match_ro_vpd_inventory",
 			RecoveryActions: []string{
@@ -4296,7 +4296,7 @@ func crosRepairActions() map[string]*Action {
 				"Restore data from RO_VPD key: wifi_sar that was present on deploy.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_set_ro_vpd",
 		},
@@ -4338,7 +4338,7 @@ func crosRepairActions() map[string]*Action {
 				"Timeout is 10 mins.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_audit_camera",
 			ExecTimeout: &durationpb.Duration{
@@ -4406,7 +4406,7 @@ func crosRepairActions() map[string]*Action {
 				"Is a Chromebook",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName:   "cros_verify_rootfs_verity",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -4440,7 +4440,7 @@ func crosRepairActions() map[string]*Action {
 				"that action attempt to perform to avoid repeating it.",
 			},
 			Conditions: []string{
-				"Device is SSHable",
+				"Device is accessable",
 				"Confirm log collection info does not exist",
 			},
 			Dependencies: []string{
@@ -4462,7 +4462,7 @@ func crosRepairActions() map[string]*Action {
 				"not critical.",
 			},
 			Conditions: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_copy_to_logs",
 			ExecExtraArgs: []string{
@@ -4483,7 +4483,7 @@ func crosRepairActions() map[string]*Action {
 				"log collection are not critical.",
 			},
 			Conditions: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_copy_to_logs",
 			ExecExtraArgs: []string{
@@ -4504,7 +4504,7 @@ func crosRepairActions() map[string]*Action {
 				"retain context even when a repair was successful.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_copy_to_logs",
 			ExecExtraArgs: []string{
@@ -4526,7 +4526,7 @@ func crosRepairActions() map[string]*Action {
 				"retain context even when a repair was successful.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_copy_to_logs",
 			ExecExtraArgs: []string{
@@ -4546,7 +4546,7 @@ func crosRepairActions() map[string]*Action {
 				"Checks if shill debug utility can be found in DUT cli.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_is_tool_present",
 			ExecExtraArgs: []string{
@@ -4561,7 +4561,7 @@ func crosRepairActions() map[string]*Action {
 				"Checks if modem utility can be found in DUT cli.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_is_tool_present",
 			ExecExtraArgs: []string{
@@ -4576,7 +4576,7 @@ func crosRepairActions() map[string]*Action {
 				"Enables verbose logging of shill network manager.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 				"Is shill debug CLI present",
 			},
 			ExecName: "cros_set_verbose_shill_logs",
@@ -4593,7 +4593,7 @@ func crosRepairActions() map[string]*Action {
 				"Enables verbose logging of modem manager.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 				"Is modem CLI present",
 			},
 			ExecName: "cros_set_verbose_mm_logs",
@@ -4608,7 +4608,7 @@ func crosRepairActions() map[string]*Action {
 				"Enables verbose logging of shill network manager.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 				"Is shill debug CLI present",
 			},
 			ExecName: "cros_set_verbose_shill_logs",
@@ -4623,7 +4623,7 @@ func crosRepairActions() map[string]*Action {
 				"Enables verbose logging of modem manager.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 				"Is modem CLI present",
 			},
 			ExecName: "cros_set_verbose_mm_logs",
@@ -4639,7 +4639,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is in cellular pool",
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			Dependencies: []string{
 				"Enable verbose shill logs",
@@ -4669,7 +4669,7 @@ func crosRepairActions() map[string]*Action {
 				"We collect the dmesg output.",
 			},
 			Conditions: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_dmesg",
 			ExecExtraArgs: []string{
@@ -4688,7 +4688,7 @@ func crosRepairActions() map[string]*Action {
 				"copy-attempt completes with success or not.",
 			},
 			Conditions: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_collect_crash_dumps",
 			ExecExtraArgs: []string{
@@ -4804,7 +4804,7 @@ func crosRepairActions() map[string]*Action {
 				"Verified if DUT's kernel doesn't waiting for update.",
 			},
 			Conditions: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_kernel_priority_has_not_changed",
 			RecoveryActions: []string{
@@ -4818,7 +4818,7 @@ func crosRepairActions() map[string]*Action {
 				"Reboot initiated from DUT side.",
 			},
 			Conditions: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			Dependencies: []string{
 				"Simple reboot",
@@ -4842,7 +4842,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is a Chromebook",
-				"Device is SSHable",
+				"Device is accessable",
 				"Is crosid present",
 			},
 			ExecName: "cros_run_command",
@@ -4862,7 +4862,7 @@ func crosRepairActions() map[string]*Action {
 				"Remove whitelabel_tag from vpd and reboot to apply change.",
 			},
 			Conditions: []string{
-				"Device is SSHable",
+				"Device is accessable",
 				"Is a Chromebook",
 			},
 			Dependencies: []string{
@@ -5061,7 +5061,7 @@ func crosRepairActions() map[string]*Action {
 				"Connection checked from the DUT.",
 			},
 			Conditions: []string{
-				"Not Satlab device",
+				"Run only in main lab",
 			},
 			ExecName:               "cache_download_check",
 			RunControl:             RunControl_ALWAYS_RUN,
@@ -5077,7 +5077,7 @@ func crosRepairActions() map[string]*Action {
 				"Has a stable-version service",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName: "cros_is_on_stable_version",
 			RecoveryActions: []string{
@@ -5148,7 +5148,7 @@ func crosRepairActions() map[string]*Action {
 				"Is a Chromebook",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 				"Is crosid readable",
 			},
 			ExecName: "cros_collect_firmware_target",
@@ -5168,7 +5168,7 @@ func crosRepairActions() map[string]*Action {
 				"Collect gpu_id from DUT with graphics hardware_probe to UFS and recoveries's label GpuId.",
 			},
 			Dependencies: []string{
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			ExecName:               "cros_collect_gpu_id",
 			AllowFailAfterRecovery: true,

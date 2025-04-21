@@ -3560,11 +3560,11 @@ plans:
             - name: Enable verbose network logging for cellular DUTs (Allow to fail) ('sample_pass')
               conditions:
                 - name: Is in cellular pool ('dut_is_in_pool_regex') (RUN_ONCE)
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               dependencies:
                 - name: Enable verbose shill logs (Allow to fail) ('cros_set_verbose_shill_logs')
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -4060,7 +4060,7 @@ plans:
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Is shill debug CLI present ('cros_is_tool_present')
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                           recoveries:
                             - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                               conditions:
@@ -4556,7 +4556,7 @@ plans:
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Enable verbose ModemManager logs (Allow to fail) ('cros_set_verbose_mm_logs')
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -5052,7 +5052,7 @@ plans:
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Is modem CLI present ('cros_is_tool_present')
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                           recoveries:
                             - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                               conditions:
@@ -5548,7 +5548,7 @@ plans:
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Collect logs and crashinfo (Allow to fail) ('sample_pass') (RUN_ONCE)
               conditions:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Confirm log collection info does not exist ('cros_confirm_file_not_exists')
               dependencies:
                 - name: Create log collection info ('cros_create_log_collection_info') (RUN_ONCE)
@@ -5556,17 +5556,17 @@ plans:
                     - name: Confirm log collection info does not exist ('cros_confirm_file_not_exists')
                 - name: Collect logs from DUT on /var/log/* (Allow to fail) ('cros_copy_to_logs') (RUN_ONCE)
                   conditions:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Collect logs from DUT on /sys/fs/pstore/* (Allow to fail) ('cros_copy_to_logs') (RUN_ONCE)
                   conditions:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Collect dmesg (Allow to fail) ('cros_dmesg') (RUN_ONCE)
                   conditions:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Collect crash dumps (Allow to fail) ('cros_collect_crash_dumps') (RUN_ONCE)
                   conditions:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
-            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               recoveries:
                 - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                   conditions:
@@ -6066,16 +6066,16 @@ plans:
             - name: Device Uptime (Allow to fail) ('cros_uptime_print')
             - name: Verify access to cache (Allow to fail) ('cache_download_check') (ALWAYS_RUN)
               conditions:
-                - name: Not Satlab device ('sample_fail')
+                - name: Run only in main lab ('sample_fail')
                   conditions:
-                    - name: Is Satlab device ('dut_regex_name_match')
+                    - name: Run only on Satlab ('dut_regex_name_match')
             - name: Set dev_boot_usb is enabled (Allow to fail) ('cros_update_crossystem') (RUN_ONCE)
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
             - name: Internal storage is responsive ('cros_is_file_system_writable')
               dependencies:
                 - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   recoveries:
                     - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                       conditions:
@@ -6596,11 +6596,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -6609,11 +6609,11 @@ plans:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                       dependencies:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -6764,7 +6764,7 @@ plans:
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Kernel does not know issues ('cros_has_critical_kernel_error')
               dependencies:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   recoveries:
                     - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                       conditions:
@@ -7285,11 +7285,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -7298,11 +7298,11 @@ plans:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                       dependencies:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -7461,11 +7461,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -7474,11 +7474,11 @@ plans:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                       dependencies:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -7637,11 +7637,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -7650,11 +7650,11 @@ plans:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                       dependencies:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -7813,11 +7813,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -7826,11 +7826,11 @@ plans:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                       dependencies:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -7981,11 +7981,11 @@ plans:
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Verify if booted from priority kernel ('cros_kernel_priority_has_not_changed')
               conditions:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               recoveries:
                 - name: Simple reboot to right kernel ('cros_kernel_priority_has_not_changed')
                   conditions:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                     - name: Wait to be accessable ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
@@ -8011,7 +8011,7 @@ plans:
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
               dependencies:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   recoveries:
                     - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                       conditions:
@@ -8514,11 +8514,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -8698,7 +8698,7 @@ plans:
                 - name: Internal storage is responsive ('cros_is_file_system_writable')
                   dependencies:
                     - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -9219,11 +9219,11 @@ plans:
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -9232,11 +9232,11 @@ plans:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                           dependencies:
                             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -9637,11 +9637,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -10050,7 +10050,7 @@ plans:
                 - name: Internal storage is responsive ('cros_is_file_system_writable')
                   dependencies:
                     - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -10571,11 +10571,11 @@ plans:
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -10584,11 +10584,11 @@ plans:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                           dependencies:
                             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -10746,11 +10746,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -11164,11 +11164,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -11177,11 +11177,11 @@ plans:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                       dependencies:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -11364,7 +11364,7 @@ plans:
                 - name: Internal storage is responsive ('cros_is_file_system_writable')
                   dependencies:
                     - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -11885,11 +11885,11 @@ plans:
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -11898,11 +11898,11 @@ plans:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                           dependencies:
                             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -12060,11 +12060,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -12186,7 +12186,7 @@ plans:
                 - name: Internal storage is responsive ('cros_is_file_system_writable')
                   dependencies:
                     - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -12707,11 +12707,11 @@ plans:
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -12720,11 +12720,11 @@ plans:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                           dependencies:
                             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -12876,7 +12876,7 @@ plans:
               recoveries:
                 - name: Cleanup the enrollment state and wait for boot (Allow to fail) ('cros_enrollment_cleanup') (time:'20m0s')
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
             - name: Check power sources ('sample_pass')
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -12923,11 +12923,11 @@ plans:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                           dependencies:
                             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -13092,10 +13092,10 @@ plans:
                       dependencies:
                         - name: Disable factory settings on the DUT ('cros_run_command')
                           conditions:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Shutdown DUT by SSH ('cros_run_command')
                           conditions:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Sleep 60 seconds (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
                         - name: Set RPM OFF ('device_rpm_power_off') (ALWAYS_RUN)
                           conditions:
@@ -13153,11 +13153,11 @@ plans:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                           dependencies:
                             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -13321,11 +13321,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -13334,11 +13334,11 @@ plans:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                       dependencies:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -13489,10 +13489,10 @@ plans:
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Read TPM ownership (Allow to fail) ('cros_run_command')
               conditions:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Is hwsec-ownership-id expected ('cros_is_on_expected_version')
                   conditions:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
             - name: Verify tpm_fwver is updated correctly ('cros_match_dev_tpm_firmware_version')
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -13500,7 +13500,7 @@ plans:
                 - name: Internal storage is responsive ('cros_is_file_system_writable')
                   dependencies:
                     - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -14021,11 +14021,11 @@ plans:
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -14034,11 +14034,11 @@ plans:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                           dependencies:
                             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -14196,11 +14196,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -14352,11 +14352,11 @@ plans:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                       dependencies:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -14370,7 +14370,7 @@ plans:
                 - name: Internal storage is responsive ('cros_is_file_system_writable')
                   dependencies:
                     - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -14891,11 +14891,11 @@ plans:
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -14904,11 +14904,11 @@ plans:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                           dependencies:
                             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -15216,11 +15216,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -15229,11 +15229,11 @@ plans:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                       dependencies:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -15392,13 +15392,13 @@ plans:
                 - name: Internal storage is responsive ('cros_is_file_system_writable')
                   dependencies:
                     - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               dependencies:
                 - name: Battery temperature below threshold (Allow to fail) ('servo_check_servod_control')
                   conditions:
-                    - name: Not Satlab device ('sample_fail')
+                    - name: Run only in main lab ('sample_fail')
                       conditions:
-                        - name: Is Satlab device ('dut_regex_name_match')
+                        - name: Run only on Satlab ('dut_regex_name_match')
                     - name: Servo state is working ('servo_match_state')
                     - name: Is servod running ('sample_pass') (ALWAYS_RUN)
                       dependencies:
@@ -15410,7 +15410,7 @@ plans:
             - name: Audit storage (SMART only) (Allow to fail) ('cros_audit_storage_smart')
             - name: Audit wifi (Allow to fail) ('cros_audit_wifi')
               dependencies:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   recoveries:
                     - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                       conditions:
@@ -15925,7 +15925,7 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Audit bluetooth (Allow to fail) ('cros_audit_bluetooth')
               dependencies:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   recoveries:
                     - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                       conditions:
@@ -16440,7 +16440,7 @@ plans:
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
             - name: Audit camera (Allow to fail) ('cros_audit_camera') (time:'10m0s')
               dependencies:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   recoveries:
                     - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                       conditions:
@@ -16965,7 +16965,7 @@ plans:
                         - name: cros_has_mmcli
                         - name: has_cellular_info
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                           recoveries:
                             - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                               conditions:
@@ -17490,7 +17490,7 @@ plans:
                         - name: cros_has_mmcli
                         - name: has_cellular_info
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                           recoveries:
                             - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                               conditions:
@@ -18018,7 +18018,7 @@ plans:
                             - name: cros_has_mmcli
                             - name: has_cellular_info
                           dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                               recoveries:
                                 - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                                   conditions:
@@ -18544,7 +18544,7 @@ plans:
                         - name: cros_has_mmcli
                         - name: has_cellular_info
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                           recoveries:
                             - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                               conditions:
@@ -19068,7 +19068,7 @@ plans:
                             - name: cros_has_mmcli
                             - name: has_cellular_info
                           dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                               recoveries:
                                 - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                                   conditions:
@@ -19591,7 +19591,7 @@ plans:
                         - name: Is in cellular pool ('dut_is_in_pool_regex') (RUN_ONCE)
                         - name: has_cellular_info
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -20091,7 +20091,7 @@ plans:
                         - name: cros_has_mmcli
                         - name: has_cellular_info
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                           recoveries:
                             - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                               conditions:
@@ -20609,7 +20609,7 @@ plans:
                         - name: Is in cellular pool ('dut_is_in_pool_regex') (RUN_ONCE)
                         - name: cros_has_mmcli
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                           recoveries:
                             - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                               conditions:
@@ -21109,7 +21109,7 @@ plans:
                             - name: cros_has_mmcli
                             - name: has_cellular_info
                           dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                               recoveries:
                                 - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                                   conditions:
@@ -21630,7 +21630,7 @@ plans:
                         - name: Is in cellular pool ('dut_is_in_pool_regex') (RUN_ONCE)
                         - name: has_cellular_info
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -22134,7 +22134,7 @@ plans:
                     - name: has_cellular_info
                 - name: Collect var/log/messages from DUT (Allow to fail) ('cros_copy_to_logs') (RUN_ONCE)
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -22630,7 +22630,7 @@ plans:
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Collect var/log/net.log from DUT (Allow to fail) ('cros_copy_to_logs') (RUN_ONCE)
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -23130,7 +23130,7 @@ plans:
                 - name: cros_has_mmcli
                 - name: has_cellular_info
               dependencies:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   recoveries:
                     - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                       conditions:
@@ -23638,7 +23638,7 @@ plans:
               recoveries:
                 - name: Cleanup the enrollment state and wait for boot (Allow to fail) ('cros_enrollment_cleanup') (time:'20m0s')
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
             - name: Ensure firmware is in good state ('cros_is_firmware_in_good_state')
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -23647,7 +23647,7 @@ plans:
                 - name: Internal storage is responsive ('cros_is_file_system_writable')
                   dependencies:
                     - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -24168,11 +24168,11 @@ plans:
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -24181,11 +24181,11 @@ plans:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                           dependencies:
                             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -24356,15 +24356,15 @@ plans:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: DUT not on stable version ('cros_not_on_stable_version')
                           dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                 - name: Update FW from fw-image by servo and wait for boot ('sample_pass')
                   conditions:
@@ -24433,7 +24433,7 @@ plans:
                 - name: Internal storage is responsive ('cros_is_file_system_writable')
                   dependencies:
                     - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -24954,11 +24954,11 @@ plans:
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -24967,11 +24967,11 @@ plans:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                           dependencies:
                             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -25142,15 +25142,15 @@ plans:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                             - name: DUT not on stable version ('cros_not_on_stable_version')
                           dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                 - name: Update FW from fw-image by servo and wait for boot ('sample_pass')
                   conditions:
@@ -25266,7 +25266,7 @@ plans:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                     - name: DUT not on stable version ('cros_not_on_stable_version')
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Reflash FP MCU from installed OS ('cros_run_command') (ALWAYS_RUN) (time:'10m0s')
@@ -25281,7 +25281,7 @@ plans:
                 - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
                 - name: Has Bluetooth peers ('cros_has_btpeers') (ALWAYS_RUN)
               dependencies:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   recoveries:
                     - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                       conditions:
@@ -25778,7 +25778,7 @@ plans:
               recoveries:
                 - name: Repair by Reboot ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                   conditions:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                 - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
@@ -25810,7 +25810,7 @@ plans:
                 - name: Internal storage is responsive ('cros_is_file_system_writable')
                   dependencies:
                     - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -26331,11 +26331,11 @@ plans:
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -26344,11 +26344,11 @@ plans:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                           dependencies:
                             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -26531,11 +26531,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -26544,11 +26544,11 @@ plans:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                       dependencies:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -26684,7 +26684,7 @@ plans:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                         - name: DUT not on stable version ('cros_not_on_stable_version')
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Erase RW VPD Keys ('cros_run_shell_command')
@@ -26705,11 +26705,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -26718,11 +26718,11 @@ plans:
                     - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                       dependencies:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -26844,7 +26844,7 @@ plans:
                 - name: Set fake RO_VPD dsm_calib (Allow to fail) ('cros_set_fake_ro_vpd_dsm_calib')
             - name: Verify RO_VPD data on DUT ('cros_match_ro_vpd_inventory')
               dependencies:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   recoveries:
                     - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                       conditions:
@@ -27341,7 +27341,7 @@ plans:
               recoveries:
                 - name: Restore RO_VPD on DUT ('cros_set_ro_vpd')
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
             - name: Verify system info ('sample_pass')
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -27354,7 +27354,7 @@ plans:
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                           recoveries:
                             - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                               conditions:
@@ -27875,11 +27875,11 @@ plans:
                             - name: Recovery version has OS image path ('has_stable_version_cros_image')
                               dependencies:
                                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Internal storage is responsive ('cros_is_file_system_writable')
                               dependencies:
                                 - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                           dependencies:
                             - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                             - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -27888,11 +27888,11 @@ plans:
                             - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                               dependencies:
                                 - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Internal storage is responsive ('cros_is_file_system_writable')
                               dependencies:
                                 - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                           dependencies:
                             - name: Write factory-install-reset to file system (Allow to fail) ('cros_run_shell_command')
                             - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
@@ -28051,11 +28051,11 @@ plans:
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -28063,15 +28063,15 @@ plans:
                       dependencies:
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                         - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Set HWID of the DUT from inventory ('cros_update_hwid_from_inventory_to_host') (time:'4m0s')
                           dependencies:
                             - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                               dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                               dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                         - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
                 - name: Verify that DUT is not in DEV mode ('cros_is_not_in_dev_mode')
@@ -28095,10 +28095,10 @@ plans:
                           dependencies:
                             - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                               dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                               dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
@@ -28158,11 +28158,11 @@ plans:
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -28185,10 +28185,10 @@ plans:
                           dependencies:
                             - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                               dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                               dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                         - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
@@ -28248,20 +28248,20 @@ plans:
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Missing HWID ('sample_fail')
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
-                    - name: Not Satlab device ('sample_fail')
+                    - name: Run only in main lab ('sample_fail')
                       conditions:
-                        - name: Is Satlab device ('dut_regex_name_match')
+                        - name: Run only on Satlab ('dut_regex_name_match')
                     - name: Is HWID empty ('sample_fail') (ALWAYS_RUN)
                       conditions:
                         - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
@@ -28271,9 +28271,9 @@ plans:
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                    - name: Not Satlab device ('sample_fail')
+                    - name: Run only in main lab ('sample_fail')
                       conditions:
-                        - name: Is Satlab device ('dut_regex_name_match')
+                        - name: Run only on Satlab ('dut_regex_name_match')
                     - name: Is serial-number empty ('sample_fail') (ALWAYS_RUN)
                       conditions:
                         - name: Is serial-number known ('dut_has_serial_number') (ALWAYS_RUN)
@@ -28288,15 +28288,15 @@ plans:
                       dependencies:
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                         - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Set HWID of the DUT from inventory ('cros_update_hwid_from_inventory_to_host') (time:'4m0s')
                           dependencies:
                             - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                               dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                             - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                               dependencies:
-                                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                         - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
                 - name: Match serial-number (Allow to fail) ('cros_match_serial_number_inventory')
@@ -28310,7 +28310,7 @@ plans:
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
               dependencies:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   recoveries:
                     - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                       conditions:
@@ -28807,12 +28807,12 @@ plans:
                 - name: Is crosid readable ('cros_run_command')
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Is crosid present ('cros_run_command')
                   recoveries:
                     - name: Repair by Reboot ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                       conditions:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                     - name: Quick provision OS ('sample_pass')
@@ -28823,17 +28823,17 @@ plans:
                         - name: Recovery version has OS image path ('has_stable_version_cros_image')
                           dependencies:
                             - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Internal storage is responsive ('cros_is_file_system_writable')
                           dependencies:
                             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       dependencies:
                         - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                         - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Remove whitelabel_tag from vpd and reboot ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                       conditions:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                       dependencies:
                         - name: Delete whitelabel_tag from vpd ('cros_run_command') (ALWAYS_RUN)
@@ -28850,17 +28850,17 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Collect gpu_id (Allow to fail) ('cros_collect_gpu_id') (ALWAYS_RUN)
               dependencies:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   recoveries:
                     - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                       conditions:
@@ -29399,12 +29399,12 @@ plans:
             - name: Is crosid readable ('cros_run_command')
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Is crosid present ('cros_run_command')
               recoveries:
                 - name: Repair by Reboot ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                   conditions:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                 - name: Quick provision OS ('sample_pass')
@@ -29415,17 +29415,17 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Remove whitelabel_tag from vpd and reboot ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
                   conditions:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                   dependencies:
                     - name: Delete whitelabel_tag from vpd ('cros_run_command') (ALWAYS_RUN)
@@ -29460,7 +29460,7 @@ plans:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Update RO_VPD from DUT to Inventory ('cros_update_ro_vpd_inventory')
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -29964,7 +29964,7 @@ plans:
               dependencies:
                 - name: Disable verbose shill logs (Allow to fail) ('cros_set_verbose_shill_logs')
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -30460,7 +30460,7 @@ plans:
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Is shill debug CLI present ('cros_is_tool_present')
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                           recoveries:
                             - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                               conditions:
@@ -30956,7 +30956,7 @@ plans:
                                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Disable verbose ModemManager logs (Allow to fail) ('cros_set_verbose_mm_logs')
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                       recoveries:
                         - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                           conditions:
@@ -31452,7 +31452,7 @@ plans:
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                     - name: Is modem CLI present ('cros_is_tool_present')
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                           recoveries:
                             - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                               conditions:
@@ -31956,11 +31956,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -32914,11 +32914,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -33344,10 +33344,10 @@ plans:
                       dependencies:
                         - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
@@ -33407,11 +33407,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -33434,10 +33434,10 @@ plans:
                       dependencies:
                         - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
@@ -33497,20 +33497,20 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Missing HWID ('sample_fail')
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
-                - name: Not Satlab device ('sample_fail')
+                - name: Run only in main lab ('sample_fail')
                   conditions:
-                    - name: Is Satlab device ('dut_regex_name_match')
+                    - name: Run only on Satlab ('dut_regex_name_match')
                 - name: Is HWID empty ('sample_fail') (ALWAYS_RUN)
                   conditions:
                     - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
@@ -33525,15 +33525,15 @@ plans:
                   dependencies:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                     - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Set HWID of the DUT from inventory ('cros_update_hwid_from_inventory_to_host') (time:'4m0s')
                       dependencies:
                         - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                         - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                           dependencies:
-                            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                     - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
         - name: All repair-requests resolved ('dut_has_no_repair_requests')

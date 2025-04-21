@@ -209,7 +209,7 @@ func LabstationRpmPowerCycleConfig(timeToWait int) *Configuration {
 		Plans: map[string]*Plan{
 			PlanCrOS: {
 				CriticalActions: []string{
-					"Device is SSHable",
+					"Device is accessable",
 					"Power off by RPM",
 					"Wait",
 					"Power on by RPM",
@@ -217,7 +217,7 @@ func LabstationRpmPowerCycleConfig(timeToWait int) *Configuration {
 					"Remove reboot requests",
 				},
 				Actions: map[string]*Action{
-					"Device is SSHable": {
+					"Device is accessable": {
 						Docs: []string{
 							"This verifier checks whether the host is accessible over ssh.",
 						},

@@ -10531,7 +10531,7 @@ plans:
                       docs:
                         - Disable write-protect fprom 'internal'.
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -10543,7 +10543,7 @@ plans:
                       docs:
                         - Disable write-protect fprom 'ec'.
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -10772,7 +10772,7 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -10788,7 +10788,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -10887,7 +10887,7 @@ plans:
                       docs:
                         - Disable write-protect fprom 'internal'.
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -10899,7 +10899,7 @@ plans:
                       docs:
                         - Disable write-protect fprom 'ec'.
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -11128,7 +11128,7 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -11144,7 +11144,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -11172,12 +11172,12 @@ plans:
                 - invert_result:true
               docs:
                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-            - name: Not Satlab device
+            - name: Run only in main lab
               exec_name: sample_fail
               docs:
                 - Verify that DUT name is not belong Satlab.
               conditions:
-                - name: Is Satlab device
+                - name: Run only on Satlab
                   exec_name: dut_regex_name_match
                   exec_args:
                     - regex:^satlab
@@ -11235,7 +11235,7 @@ plans:
                   exec_name: dut_has_hwid
                   docs:
                     - Check whether the DUT information includes its HWID.
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -11253,7 +11253,7 @@ plans:
                       docs:
                         - Disable write-protect fprom 'internal'.
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -11265,7 +11265,7 @@ plans:
                       docs:
                         - Disable write-protect fprom 'ec'.
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.

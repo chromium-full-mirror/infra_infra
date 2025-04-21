@@ -6962,7 +6962,7 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -6978,7 +6978,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -8009,7 +8009,7 @@ plans:
               docs:
                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
           dependencies:
-            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
               exec_name: cros_ssh
               docs:
                 - Verify that device is reachable by SSH.
@@ -9722,7 +9722,7 @@ plans:
                     - invert_result:true
                   docs:
                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -9740,7 +9740,7 @@ plans:
                   docs:
                     - Do simple reboot of the DUT force to update DUT cache settings.
                   conditions:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -9778,7 +9778,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -9794,7 +9794,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -9815,7 +9815,7 @@ plans:
                   docs:
                     - Remove whitelabel_tag from vpd and reboot to apply change.
                   conditions:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -9881,7 +9881,7 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -9897,7 +9897,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -9947,7 +9947,7 @@ plans:
               docs:
                 - Verify if we have access to the service provided access to the stable version
           dependencies:
-            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
               exec_name: cros_ssh
               docs:
                 - Verify that device is reachable by SSH.
@@ -11670,7 +11670,7 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -11686,7 +11686,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -13057,7 +13057,7 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -13070,7 +13070,7 @@ plans:
                   docs:
                     - Disable write-protect fprom 'internal'.
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -13082,7 +13082,7 @@ plans:
                   docs:
                     - Disable write-protect fprom 'ec'.
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -13202,7 +13202,7 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -13215,7 +13215,7 @@ plans:
                   docs:
                     - Disable write-protect fprom 'internal'.
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -13227,7 +13227,7 @@ plans:
                   docs:
                     - Disable write-protect fprom 'ec'.
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -13356,12 +13356,12 @@ plans:
                 - name: Read HWID from DUT (ALWAYS_RUN)
                   exec_name: cros_update_hwid_to_inventory
                   conditions:
-                    - name: Not Satlab device
+                    - name: Run only in main lab
                       exec_name: sample_fail
                       docs:
                         - Verify that DUT name is not belong Satlab.
                       conditions:
-                        - name: Is Satlab device
+                        - name: Run only on Satlab
                           exec_name: dut_regex_name_match
                           exec_args:
                             - regex:^satlab
@@ -13370,7 +13370,7 @@ plans:
                 - name: Read HWID from DUT (Satlab) (Allow to fail) (ALWAYS_RUN)
                   exec_name: cros_update_hwid_to_inventory
                   conditions:
-                    - name: Is Satlab device
+                    - name: Run only on Satlab
                       exec_name: dut_regex_name_match
                       exec_args:
                         - regex:^satlab
@@ -13453,7 +13453,7 @@ plans:
                               docs:
                                 - Confirm that DUT does not have stable version.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -13475,7 +13475,7 @@ plans:
                           docs:
                             - Disable write-protect fprom 'internal'.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -13487,7 +13487,7 @@ plans:
                           docs:
                             - Disable write-protect fprom 'ec'.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -13732,7 +13732,7 @@ plans:
                               docs:
                                 - Confirm that DUT does not have stable version.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -13754,7 +13754,7 @@ plans:
                           docs:
                             - Disable write-protect fprom 'internal'.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -13766,7 +13766,7 @@ plans:
                           docs:
                             - Disable write-protect fprom 'ec'.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -13940,12 +13940,12 @@ plans:
           docs:
             - Run some special checks as part of deployment.
           conditions:
-            - name: Not Satlab device
+            - name: Run only in main lab
               exec_name: sample_fail
               docs:
                 - Verify that DUT name is not belong Satlab.
               conditions:
-                - name: Is Satlab device
+                - name: Run only on Satlab
                   exec_name: dut_regex_name_match
                   exec_args:
                     - regex:^satlab
@@ -14220,12 +14220,12 @@ plans:
                 - name: Read HWID from DUT (ALWAYS_RUN)
                   exec_name: cros_update_hwid_to_inventory
                   conditions:
-                    - name: Not Satlab device
+                    - name: Run only in main lab
                       exec_name: sample_fail
                       docs:
                         - Verify that DUT name is not belong Satlab.
                       conditions:
-                        - name: Is Satlab device
+                        - name: Run only on Satlab
                           exec_name: dut_regex_name_match
                           exec_args:
                             - regex:^satlab
@@ -14234,7 +14234,7 @@ plans:
                 - name: Read HWID from DUT (Satlab) (Allow to fail) (ALWAYS_RUN)
                   exec_name: cros_update_hwid_to_inventory
                   conditions:
-                    - name: Is Satlab device
+                    - name: Run only on Satlab
                       exec_name: dut_regex_name_match
                       exec_args:
                         - regex:^satlab
@@ -14243,12 +14243,12 @@ plans:
             - name: Read DUT serial-number from DUT (ALWAYS_RUN)
               exec_name: cros_update_serial_number_inventory
               conditions:
-                - name: Not Satlab device
+                - name: Run only in main lab
                   exec_name: sample_fail
                   docs:
                     - Verify that DUT name is not belong Satlab.
                   conditions:
-                    - name: Is Satlab device
+                    - name: Run only on Satlab
                       exec_name: dut_regex_name_match
                       exec_args:
                         - regex:^satlab
@@ -14257,7 +14257,7 @@ plans:
             - name: Read DUT serial-number from DUT (Satlab) (Allow to fail) (ALWAYS_RUN)
               exec_name: cros_update_serial_number_inventory
               conditions:
-                - name: Is Satlab device
+                - name: Run only on Satlab
                   exec_name: dut_regex_name_match
                   exec_args:
                     - regex:^satlab
@@ -14303,7 +14303,7 @@ plans:
               docs:
                 - Record data that is present in RO_VPD of DUT to inventory.
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -16046,7 +16046,7 @@ plans:
                         - name: has_cellular_info
                           exec_name: has_cellular_info
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -17840,7 +17840,7 @@ plans:
                         - name: has_cellular_info
                           exec_name: has_cellular_info
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -24114,7 +24114,7 @@ plans:
                     - regex:(?i)^cellular
                   docs:
                     - Verify that DUT is not in a cellular pool.
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -24127,7 +24127,7 @@ plans:
                   docs:
                     - Enables verbose logging of shill network manager.
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -25832,7 +25832,7 @@ plans:
                       docs:
                         - Checks if shill debug utility can be found in DUT cli.
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -27537,7 +27537,7 @@ plans:
                   docs:
                     - Enables verbose logging of modem manager.
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -29242,7 +29242,7 @@ plans:
                       docs:
                         - Checks if modem utility can be found in DUT cli.
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -30947,7 +30947,7 @@ plans:
                 - 'on the DUT. Any logs collection are not critical, and we marks '
                 - that action attempt to perform to avoid repeating it.
               conditions:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -30992,7 +30992,7 @@ plans:
                     - 'the DUT. Any failures with this initial log collection are '
                     - not critical.
                   conditions:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -31010,7 +31010,7 @@ plans:
                     - 'executing repairs on the DUT. Any failures with this initial '
                     - log collection are not critical.
                   conditions:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -31024,7 +31024,7 @@ plans:
                   docs:
                     - We collect the dmesg output.
                   conditions:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -31039,12 +31039,12 @@ plans:
                     - 'on the source are deleted, irrespective of whether the '
                     - copy-attempt completes with success or not.
                   conditions:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
                         - Limited to 15 seconds.
-            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
               exec_name: cros_ssh
               docs:
                 - Verify that device is reachable by SSH.
@@ -32764,12 +32764,12 @@ plans:
                 - Verifies connection to the cache service.
                 - Connection checked from the DUT.
               conditions:
-                - name: Not Satlab device
+                - name: Run only in main lab
                   exec_name: sample_fail
                   docs:
                     - Verify that DUT name is not belong Satlab.
                   conditions:
-                    - name: Is Satlab device
+                    - name: Run only on Satlab
                       exec_name: dut_regex_name_match
                       exec_args:
                         - regex:^satlab
@@ -32802,7 +32802,7 @@ plans:
                   exec_name: cros_is_not_android_based
                   docs:
                     - Check if device is marked as ChromeOS based
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -34572,7 +34572,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -34588,7 +34588,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -34619,7 +34619,7 @@ plans:
                           exec_name: env_is_not_mh_box
                           docs:
                             - Check that the process is not running on Mobile Harness box.
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -34635,7 +34635,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -35164,7 +35164,7 @@ plans:
                 - Verify instrenal storage is writable.
                 - If linux has some hardware error then file system can became read-only.
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -36934,7 +36934,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -36950,7 +36950,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -36981,7 +36981,7 @@ plans:
                           exec_name: env_is_not_mh_box
                           docs:
                             - Check that the process is not running on Mobile Harness box.
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -36997,7 +36997,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -37551,7 +37551,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -37567,7 +37567,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -37598,7 +37598,7 @@ plans:
                           exec_name: env_is_not_mh_box
                           docs:
                             - Check that the process is not running on Mobile Harness box.
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -37614,7 +37614,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -38169,7 +38169,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -38185,7 +38185,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -38216,7 +38216,7 @@ plans:
                           exec_name: env_is_not_mh_box
                           docs:
                             - Check that the process is not running on Mobile Harness box.
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -38232,7 +38232,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -38787,7 +38787,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -38803,7 +38803,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -38834,7 +38834,7 @@ plans:
                           exec_name: env_is_not_mh_box
                           docs:
                             - Check that the process is not running on Mobile Harness box.
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -38850,7 +38850,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -39379,7 +39379,7 @@ plans:
                 - Kernel can wait for reboot as the last provisioning waiting for some issue.
                 - Verified if DUT's kernel doesn't waiting for update.
               conditions:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -39391,7 +39391,7 @@ plans:
                     - Simple reboot DUT to boot from right kernel.
                     - Reboot initiated from DUT side.
                   conditions:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -39470,7 +39470,7 @@ plans:
                   docs:
                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -41193,7 +41193,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -41209,7 +41209,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -41815,7 +41815,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -43585,7 +43585,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -43601,7 +43601,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -43632,7 +43632,7 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -43648,7 +43648,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -44995,7 +44995,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -45011,7 +45011,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -46422,7 +46422,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -48192,7 +48192,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -48208,7 +48208,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -48239,7 +48239,7 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -48255,7 +48255,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -48803,7 +48803,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -48819,7 +48819,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -50243,7 +50243,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -50259,7 +50259,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -50290,7 +50290,7 @@ plans:
                           exec_name: env_is_not_mh_box
                           docs:
                             - Check that the process is not running on Mobile Harness box.
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -50306,7 +50306,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -50925,7 +50925,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -52695,7 +52695,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -52711,7 +52711,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -52742,7 +52742,7 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -52758,7 +52758,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -53306,7 +53306,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -53322,7 +53322,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -53735,7 +53735,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -55505,7 +55505,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -55521,7 +55521,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -55552,7 +55552,7 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -55568,7 +55568,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -56109,7 +56109,7 @@ plans:
                     - Cleanup the enrollment state.
                     - The recovery process may fail, but it may still solve the problem.
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -56250,7 +56250,7 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -56266,7 +56266,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -56836,7 +56836,7 @@ plans:
                             - host:dut
                             - command:gsctool -a -F disable
                           conditions:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -56848,7 +56848,7 @@ plans:
                             - command:shutdown -h now
                             - background:true
                           conditions:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -57025,7 +57025,7 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -57041,7 +57041,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -57612,7 +57612,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -57628,7 +57628,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -57659,7 +57659,7 @@ plans:
                           exec_name: env_is_not_mh_box
                           docs:
                             - Check that the process is not running on Mobile Harness box.
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -57675,7 +57675,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -58208,7 +58208,7 @@ plans:
                 - No recovery action just verify and report of issue.
                 - Verify that we can read ownership on device.
               conditions:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -58220,7 +58220,7 @@ plans:
                   docs:
                     - The hwsec-ownership-id is expected from R101 version of ChromeOS on the DUT.
                   conditions:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -58250,7 +58250,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -60020,7 +60020,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -60036,7 +60036,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -60067,7 +60067,7 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -60083,7 +60083,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -60631,7 +60631,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -60647,7 +60647,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -61175,7 +61175,7 @@ plans:
                           exec_name: env_is_not_mh_box
                           docs:
                             - Check that the process is not running on Mobile Harness box.
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -61191,7 +61191,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -61249,7 +61249,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -63019,7 +63019,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -63035,7 +63035,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -63066,7 +63066,7 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -63082,7 +63082,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -64153,7 +64153,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -64169,7 +64169,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -64200,7 +64200,7 @@ plans:
                           exec_name: env_is_not_mh_box
                           docs:
                             - Check that the process is not running on Mobile Harness box.
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -64216,7 +64216,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -64774,7 +64774,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -64789,12 +64789,12 @@ plans:
                     - Read and print battery_tempc control value to logs.
                     - Part of analysis of b/267384675
                   conditions:
-                    - name: Not Satlab device
+                    - name: Run only in main lab
                       exec_name: sample_fail
                       docs:
                         - Verify that DUT name is not belong Satlab.
                       conditions:
-                        - name: Is Satlab device
+                        - name: Run only on Satlab
                           exec_name: dut_regex_name_match
                           exec_args:
                             - regex:^satlab
@@ -64837,7 +64837,7 @@ plans:
               docs:
                 - Check wifi on the DUT is normal and update wifi hardware state accordingly.
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -66590,7 +66590,7 @@ plans:
               docs:
                 - Check bluetooth on the DUT is normal and update bluetooth hardware state accordingly.
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -68344,7 +68344,7 @@ plans:
                 - Check the cameras on DUT and update camera state accordingly
                 - Timeout is 10 mins.
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -70127,7 +70127,7 @@ plans:
                         - name: has_cellular_info
                           exec_name: has_cellular_info
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -71908,7 +71908,7 @@ plans:
                         - name: has_cellular_info
                           exec_name: has_cellular_info
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -73702,7 +73702,7 @@ plans:
                             - name: has_cellular_info
                               exec_name: has_cellular_info
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -75485,7 +75485,7 @@ plans:
                         - name: has_cellular_info
                           exec_name: has_cellular_info
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -77264,7 +77264,7 @@ plans:
                             - name: has_cellular_info
                               exec_name: has_cellular_info
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -79044,7 +79044,7 @@ plans:
                         - name: has_cellular_info
                           exec_name: has_cellular_info
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -80761,7 +80761,7 @@ plans:
                         - name: has_cellular_info
                           exec_name: has_cellular_info
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -82527,7 +82527,7 @@ plans:
                         - name: cros_has_mmcli
                           exec_name: cros_has_mmcli
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -84244,7 +84244,7 @@ plans:
                             - name: has_cellular_info
                               exec_name: has_cellular_info
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -86017,7 +86017,7 @@ plans:
                         - name: has_cellular_info
                           exec_name: has_cellular_info
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -87757,7 +87757,7 @@ plans:
                     - 'system messages logged during the repair process to help '
                     - retain context even when a repair was successful.
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -89467,7 +89467,7 @@ plans:
                     - 'system messages logged during the repair process to help '
                     - retain context even when a repair was successful.
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -91187,7 +91187,7 @@ plans:
                 - name: has_cellular_info
                   exec_name: has_cellular_info
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -92957,7 +92957,7 @@ plans:
                     - Cleanup the enrollment state.
                     - The recovery process may fail, but it may still solve the problem.
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -92995,7 +92995,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -94765,7 +94765,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -94781,7 +94781,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -94812,7 +94812,7 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -94828,7 +94828,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -95421,7 +95421,7 @@ plans:
                               docs:
                                 - Confirm that DUT does not have stable version.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -95443,7 +95443,7 @@ plans:
                           docs:
                             - Disable write-protect fprom 'internal'.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -95455,7 +95455,7 @@ plans:
                           docs:
                             - Disable write-protect fprom 'ec'.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -95700,7 +95700,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -97470,7 +97470,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -97486,7 +97486,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -97517,7 +97517,7 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -97533,7 +97533,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -98126,7 +98126,7 @@ plans:
                               docs:
                                 - Confirm that DUT does not have stable version.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -98148,7 +98148,7 @@ plans:
                           docs:
                             - Disable write-protect fprom 'internal'.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -98160,7 +98160,7 @@ plans:
                           docs:
                             - Disable write-protect fprom 'ec'.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -98554,7 +98554,7 @@ plans:
                       docs:
                         - Confirm that DUT does not have stable version.
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -98612,7 +98612,7 @@ plans:
                   docs:
                     - Check if a device has bluetooth peers
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -100316,7 +100316,7 @@ plans:
                   docs:
                     - Do simple reboot of the DUT force to update DUT cache settings.
                   conditions:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -100424,7 +100424,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -102194,7 +102194,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -102210,7 +102210,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -102241,7 +102241,7 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -102257,7 +102257,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -102877,7 +102877,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -102893,7 +102893,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -102924,7 +102924,7 @@ plans:
                           exec_name: env_is_not_mh_box
                           docs:
                             - Check that the process is not running on Mobile Harness box.
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -102940,7 +102940,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -103400,7 +103400,7 @@ plans:
                           docs:
                             - Confirm that DUT does not have stable version.
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -103479,7 +103479,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -103495,7 +103495,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -103526,7 +103526,7 @@ plans:
                           exec_name: env_is_not_mh_box
                           docs:
                             - Check that the process is not running on Mobile Harness box.
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -103542,7 +103542,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -104001,7 +104001,7 @@ plans:
               docs:
                 - 'Verify if data from RO_VPD key: wifi_sar that was present on deploy is still present.'
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -105705,7 +105705,7 @@ plans:
                   docs:
                     - 'Restore data from RO_VPD key: wifi_sar that was present on deploy.'
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -105749,7 +105749,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -107519,7 +107519,7 @@ plans:
                                   exec_name: has_stable_version_service_path
                                   docs:
                                     - Verify if we have access to the service provided access to the stable version
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -107535,7 +107535,7 @@ plans:
                                   exec_name: cros_is_not_android_based
                                   docs:
                                     - Check if device is marked as ChromeOS based
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
                                     - Verify that device is reachable by SSH.
@@ -107566,7 +107566,7 @@ plans:
                                   exec_name: env_is_not_mh_box
                                   docs:
                                     - Check that the process is not running on Mobile Harness box.
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -107582,7 +107582,7 @@ plans:
                                   exec_name: cros_is_not_android_based
                                   docs:
                                     - Check if device is marked as ChromeOS based
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
                                     - Verify that device is reachable by SSH.
@@ -108138,7 +108138,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -108154,7 +108154,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -108188,7 +108188,7 @@ plans:
                           exec_name: dut_has_hwid
                           docs:
                             - Check whether the DUT information includes its HWID.
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -108206,7 +108206,7 @@ plans:
                               docs:
                                 - Disable write-protect fprom 'internal'.
                               dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
                                     - Verify that device is reachable by SSH.
@@ -108218,7 +108218,7 @@ plans:
                               docs:
                                 - Disable write-protect fprom 'ec'.
                               dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
                                     - Verify that device is reachable by SSH.
@@ -108321,7 +108321,7 @@ plans:
                               docs:
                                 - Disable write-protect fprom 'internal'.
                               dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
                                     - Verify that device is reachable by SSH.
@@ -108333,7 +108333,7 @@ plans:
                               docs:
                                 - Disable write-protect fprom 'ec'.
                               dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
                                     - Verify that device is reachable by SSH.
@@ -108562,7 +108562,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -108578,7 +108578,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -108677,7 +108677,7 @@ plans:
                               docs:
                                 - Disable write-protect fprom 'internal'.
                               dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
                                     - Verify that device is reachable by SSH.
@@ -108689,7 +108689,7 @@ plans:
                               docs:
                                 - Disable write-protect fprom 'ec'.
                               dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
                                     - Verify that device is reachable by SSH.
@@ -108918,7 +108918,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -108934,7 +108934,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -108962,12 +108962,12 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                    - name: Not Satlab device
+                    - name: Run only in main lab
                       exec_name: sample_fail
                       docs:
                         - Verify that DUT name is not belong Satlab.
                       conditions:
-                        - name: Is Satlab device
+                        - name: Run only on Satlab
                           exec_name: dut_regex_name_match
                           exec_args:
                             - regex:^satlab
@@ -109005,12 +109005,12 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Not Satlab device
+                    - name: Run only in main lab
                       exec_name: sample_fail
                       docs:
                         - Verify that DUT name is not belong Satlab.
                       conditions:
-                        - name: Is Satlab device
+                        - name: Run only on Satlab
                           exec_name: dut_regex_name_match
                           exec_args:
                             - regex:^satlab
@@ -109070,7 +109070,7 @@ plans:
                           exec_name: dut_has_hwid
                           docs:
                             - Check whether the DUT information includes its HWID.
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -109088,7 +109088,7 @@ plans:
                               docs:
                                 - Disable write-protect fprom 'internal'.
                               dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
                                     - Verify that device is reachable by SSH.
@@ -109100,7 +109100,7 @@ plans:
                               docs:
                                 - Disable write-protect fprom 'ec'.
                               dependencies:
-                                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                                   exec_name: cros_ssh
                                   docs:
                                     - Verify that device is reachable by SSH.
@@ -109158,7 +109158,7 @@ plans:
                   docs:
                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -110871,7 +110871,7 @@ plans:
                         - invert_result:true
                       docs:
                         - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -110889,7 +110889,7 @@ plans:
                       docs:
                         - Do simple reboot of the DUT force to update DUT cache settings.
                       conditions:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -110927,7 +110927,7 @@ plans:
                               exec_name: has_stable_version_service_path
                               docs:
                                 - Verify if we have access to the service provided access to the stable version
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -110943,7 +110943,7 @@ plans:
                               exec_name: cros_is_not_android_based
                               docs:
                                 - Check if device is marked as ChromeOS based
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -110964,7 +110964,7 @@ plans:
                       docs:
                         - Remove whitelabel_tag from vpd and reboot to apply change.
                       conditions:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -111030,7 +111030,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -111046,7 +111046,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -111067,7 +111067,7 @@ plans:
               docs:
                 - Collect gpu_id from DUT with graphics hardware_probe to UFS and recoveries's label GpuId.
               dependencies:
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -112927,7 +112927,7 @@ plans:
                     - invert_result:true
                   docs:
                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -112945,7 +112945,7 @@ plans:
                   docs:
                     - Do simple reboot of the DUT force to update DUT cache settings.
                   conditions:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -112983,7 +112983,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -112999,7 +112999,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -113020,7 +113020,7 @@ plans:
                   docs:
                     - Remove whitelabel_tag from vpd and reboot to apply change.
                   conditions:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -113149,7 +113149,7 @@ plans:
                     - Record data that is present in RO_VPD of DUT to inventory.
                     - Skip update values if already known by inventory.
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -114884,7 +114884,7 @@ plans:
                   docs:
                     - Enables verbose logging of shill network manager.
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -116589,7 +116589,7 @@ plans:
                       docs:
                         - Checks if shill debug utility can be found in DUT cli.
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -118294,7 +118294,7 @@ plans:
                   docs:
                     - Enables verbose logging of modem manager.
                   dependencies:
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -119999,7 +119999,7 @@ plans:
                       docs:
                         - Checks if modem utility can be found in DUT cli.
                       dependencies:
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -121729,7 +121729,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -121745,7 +121745,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -124910,7 +124910,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -124926,7 +124926,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -126411,7 +126411,7 @@ plans:
                           docs:
                             - Disable write-protect fprom 'internal'.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -126423,7 +126423,7 @@ plans:
                           docs:
                             - Disable write-protect fprom 'ec'.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -126652,7 +126652,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -126668,7 +126668,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -126767,7 +126767,7 @@ plans:
                           docs:
                             - Disable write-protect fprom 'internal'.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -126779,7 +126779,7 @@ plans:
                           docs:
                             - Disable write-protect fprom 'ec'.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -127008,7 +127008,7 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -127024,7 +127024,7 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                           exec_name: cros_ssh
                           docs:
                             - Verify that device is reachable by SSH.
@@ -127052,12 +127052,12 @@ plans:
                     - invert_result:true
                   docs:
                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                - name: Not Satlab device
+                - name: Run only in main lab
                   exec_name: sample_fail
                   docs:
                     - Verify that DUT name is not belong Satlab.
                   conditions:
-                    - name: Is Satlab device
+                    - name: Run only on Satlab
                       exec_name: dut_regex_name_match
                       exec_args:
                         - regex:^satlab
@@ -127115,7 +127115,7 @@ plans:
                       exec_name: dut_has_hwid
                       docs:
                         - Check whether the DUT information includes its HWID.
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.
@@ -127133,7 +127133,7 @@ plans:
                           docs:
                             - Disable write-protect fprom 'internal'.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.
@@ -127145,7 +127145,7 @@ plans:
                           docs:
                             - Disable write-protect fprom 'ec'.
                           dependencies:
-                            - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                            - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                               exec_name: cros_ssh
                               docs:
                                 - Verify that device is reachable by SSH.

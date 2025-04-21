@@ -2941,14 +2941,14 @@ plans:
                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               dependencies:
                 - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Update FW from fw-image with factory mode from DUT ('cros_update_firmware_from_firmware_image_on_dut') (ALWAYS_RUN) (time:'2h0m0s')
                   conditions:
                     - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
@@ -2981,14 +2981,14 @@ plans:
                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               dependencies:
                 - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Update FW from host OS image with factory mode ('cros_run_firmware_update') (ALWAYS_RUN) (time:'15m0s')
                   conditions:
                     - name: Recovery version misses fw-image path ('sample_fail')
@@ -4125,10 +4125,10 @@ plans:
                   dependencies:
                     - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
                 - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
@@ -4188,11 +4188,11 @@ plans:
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Internal storage is responsive ('cros_is_file_system_writable')
                   dependencies:
                     - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               dependencies:
                 - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                 - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -4215,10 +4215,10 @@ plans:
                   dependencies:
                     - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
                 - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                 - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
@@ -4278,20 +4278,20 @@ plans:
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Internal storage is responsive ('cros_is_file_system_writable')
                   dependencies:
                     - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               dependencies:
                 - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                 - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
         - name: Missing HWID ('sample_fail')
           conditions:
             - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
-            - name: Not Satlab device ('sample_fail')
+            - name: Run only in main lab ('sample_fail')
               conditions:
-                - name: Is Satlab device ('dut_regex_name_match')
+                - name: Run only on Satlab ('dut_regex_name_match')
             - name: Is HWID empty ('sample_fail') (ALWAYS_RUN)
               conditions:
                 - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
@@ -4306,15 +4306,15 @@ plans:
               dependencies:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Is HWID known ('dut_has_hwid') (ALWAYS_RUN)
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Set HWID of the DUT from inventory ('cros_update_hwid_from_inventory_to_host') (time:'4m0s')
                   dependencies:
                     - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                     - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                 - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
         - name: Reset provisioned info ('cros_reset_provision_info') (ALWAYS_RUN)

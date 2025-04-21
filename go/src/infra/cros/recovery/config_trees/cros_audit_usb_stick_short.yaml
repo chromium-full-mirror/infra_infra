@@ -2093,11 +2093,11 @@ plans:
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
                 - name: Internal storage is responsive ('cros_is_file_system_writable')
                   dependencies:
                     - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
               dependencies:
                 - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                 - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)

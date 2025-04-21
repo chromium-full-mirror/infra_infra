@@ -6316,7 +6316,7 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                   exec_name: cros_ssh
                   docs:
                     - Verify that device is reachable by SSH.
@@ -6332,7 +6332,7 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
                       exec_name: cros_ssh
                       docs:
                         - Verify that device is reachable by SSH.

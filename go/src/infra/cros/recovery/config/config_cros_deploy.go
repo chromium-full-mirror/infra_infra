@@ -161,7 +161,7 @@ func deployActions() map[string]*Action {
 			Conditions: []string{
 				"Is a Chromebook",
 				"Is recovery-version has firmware image path",
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			Dependencies: []string{
 				"Disable software-controlled write-protect for 'internal'",
@@ -183,7 +183,7 @@ func deployActions() map[string]*Action {
 			Conditions: []string{
 				"Is a Chromebook",
 				"Is recovery-version has firmware image path",
-				"Device is SSHable",
+				"Device is accessable",
 			},
 			Dependencies: []string{
 				"Disable software-controlled write-protect for 'internal'",
@@ -201,7 +201,7 @@ func deployActions() map[string]*Action {
 				"Run some special checks as part of deployment.",
 			},
 			Conditions: []string{
-				"Not Satlab device",
+				"Run only in main lab",
 				"Is it first deployment task",
 			},
 			Dependencies: []string{
