@@ -19,9 +19,6 @@ import (
 )
 
 const (
-	// moSysSkuCmd will retrieve the SKU label of the DUT.
-	moSysSkuCmd                    = "mosys platform sku"
-	crosIDSkuCmd                   = "crosid -f SKU"
 	cmdAudioLatencyToolkitCheck    = "lsusb -vv -d 16c0: | grep \"Teensyduino\""
 	cmdAudioBeamformingCheckLegacy = "cros_config /audio/main cras-config-dir"
 	cmdAudioBeamformingCheck       = "cras_server_tool label-audio_beamforming"
@@ -50,36 +47,46 @@ func updateDlmSkuIDInvExec(ctx context.Context, info *execs.ExecInfo) error {
 	return nil
 }
 
-// updateDeviceSKUExec updates device's SKU label if not present in inventory
-// or keep it the same if the info.GetDut() already has the value for SKU label.
+// updateDeviceSKUExec updates device's SKU label if not present in inventory.
 func updateDeviceSKUExec(ctx context.Context, info *execs.ExecInfo) error {
 	// If sku is present, skip
-	if info.GetChromeos().DeviceSku != "" {
+	if info.GetChromeos().GetDeviceSku() != "" {
 		log.Debugf(ctx, "Device sku already present. Skipping update.")
 		return nil
 	}
-
-	r := info.DefaultRunner()
-	// Try crosid
-	skuLabelOutput, err := r(ctx, time.Minute, crosIDSkuCmd)
-	if err == nil {
-		log.Debugf(ctx, "Device sku found with crosid.")
-		info.GetChromeos().DeviceSku = skuLabelOutput
+	run := info.DefaultRunner()
+	if info.GetChromeos().GetIsAndroidBased() {
+		sku, err := run(ctx, info.GetExecTimeout(), "getprop", "vendor.device.sku.id")
+		if err != nil {
+			return errors.Annotate(err, "update device sku label").Err()
+		}
+		if sku == "" {
+			return errors.Reason("update device sku label: sku is empty").Err()
+		}
+		// The sku value has prefix `sku`, filed b/411515265 to validate it.
+		cleanSku, _ := strings.CutPrefix(sku, "sku")
+		info.GetChromeos().DeviceSku = cleanSku
 		return nil
-	}
-	log.Debugf(ctx, "Error when reading device sku with crosid: %s", err)
+	} else {
+		// Try crosid
+		if skuLabelOutput, err := run(ctx, time.Minute, "crosid -f SKU"); err == nil {
+			log.Debugf(ctx, "Device sku found with crosid.")
+			info.GetChromeos().DeviceSku = skuLabelOutput
+			return nil
+		} else {
+			log.Debugf(ctx, "Error when reading device sku with crosid: %s", err)
+		}
 
-	// Else, try mosys
-	skuLabelOutput, err = r(ctx, time.Minute, moSysSkuCmd)
-	if err == nil {
-		log.Debugf(ctx, "Device sku found with mosys.")
-		info.GetChromeos().DeviceSku = skuLabelOutput
-		return nil
+		// Else, try mosys
+		if skuLabelOutput, err := run(ctx, time.Minute, "mosys platform sku"); err == nil {
+			log.Debugf(ctx, "Device sku found with mosys.")
+			info.GetChromeos().DeviceSku = skuLabelOutput
+			return nil
+		} else {
+			log.Debugf(ctx, "Error when reading device sku with mosys: %s", err)
+		}
+		return errors.Reason("update device sku label: sku not found").Err()
 	}
-	log.Debugf(ctx, "Error when reading device sku with mosys: %s", err)
-
-	log.Debugf(ctx, "Device sku label not found in the DUT.")
-	return errors.Annotate(err, "update device sku label").Err()
 }
 
 // isAudioLoopBackStateWorkingExec checks if the DUT's audio loop back state has already been in the working state.
