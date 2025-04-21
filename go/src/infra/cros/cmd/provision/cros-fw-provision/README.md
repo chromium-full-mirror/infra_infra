@@ -75,12 +75,13 @@ DUT_HOSTNAME=192.168.0.0
 D=localhost:2222 # Forwarded ssh port
 ```
 
-Run the cros-dut server in the chroot
+Run the cros-dut server from infra repo (outside chroot)
 
 ```
 CACHE_SERVER=192.168.100.1
-~/chromiumos/src/platform/dev/fast_build.sh -b go.chromium.org/chromiumos/test/dut/cmd/cros-dut -o ~/go/bin/cros-dut && \
-~/go/bin/cros-dut -cache_address ${CACHE_SERVER?}:8082 -dut_address ${D?} -port 8123
+eval `~/infra/infra/go/env.py` && \
+(cd ~/infra/infra/go/src/infra && go install go.chromium.org/infra/cros/cmd/cft/dut/cros-dut) && \
+~/infra/infra/go/bin/cros-dut -cache_address ${CACHE_SERVER?}:8082 -dut_address ${D?} -port 8123
 ```
 
 Run the servo-nexus server from infra repo (outside chroot)
