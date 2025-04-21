@@ -272,7 +272,12 @@ func androidActions(actions map[string]*Action) {
 				"Is Android based?",
 				"Is in stable version required pools",
 			},
-			ExecName:               "android_is_on_os_stable_version",
+			ExecName: "android_is_on_os_stable_version",
+			RecoveryActions: []string{
+				"Install Android OS by booting from servo USB-drive",
+				"Foil: Install Android OS from servo USB-drive",
+				"Update FW and install Android OS from servo USB-drive",
+			},
 			AllowFailAfterRecovery: true,
 		},
 		"Is in stable version required pools": {
