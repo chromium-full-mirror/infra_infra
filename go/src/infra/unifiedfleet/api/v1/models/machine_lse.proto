@@ -231,6 +231,9 @@ message VM {
 
     // Disk capacity in bytes assigned (eg. 512 000 000 000)
     int64 storage = 19;
+
+    //  Proxmox unique ID of the VM (100 - 999999999)
+    int64 vmid = 20;
 }
 
 // OSVersion refers to the version of Operating System
