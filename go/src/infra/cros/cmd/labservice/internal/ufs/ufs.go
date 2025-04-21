@@ -338,7 +338,8 @@ func getServo(s *lab.Servo, ds *lab.DutState) *labapi.Servo {
 				Address: s.GetServoHostname(),
 				Port:    s.GetServoPort(),
 			},
-			Serial: s.GetServoSerial(),
+			Serial:        s.GetServoSerial(),
+			ContainerName: s.GetDockerContainerName(),
 		}
 		servo.State = labapi.PeripheralState_BROKEN
 		if ds.GetServo() == lab.PeripheralState_WORKING {

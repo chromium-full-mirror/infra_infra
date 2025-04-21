@@ -47,8 +47,9 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 												ChameleonPeripherals: []lab.ChameleonType{lab.ChameleonType_CHAMELEON_TYPE_DP, lab.ChameleonType_CHAMELEON_TYPE_V3},
 											},
 											Servo: &lab.Servo{
-												ServoHostname: "servo_host",
-												ServoPort:     33,
+												ServoHostname:       "servo_host",
+												ServoPort:           33,
+												DockerContainerName: "container",
 											},
 											Wifi: &lab.Wifi{
 												Wificell:    true,
@@ -333,7 +334,8 @@ func TestGetChromeOsDutTopology_single(t *testing.T) {
 								Address: "servo_host",
 								Port:    33,
 							},
-							State: labapi.PeripheralState_WORKING,
+							State:         labapi.PeripheralState_WORKING,
+							ContainerName: "container",
 						},
 						Ssh: &labapi.IpEndpoint{
 							Address: "200.200.200.200",
