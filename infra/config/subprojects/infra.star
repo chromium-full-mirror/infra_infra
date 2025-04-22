@@ -85,7 +85,7 @@ ci_builder(name = "infra-continuous-jammy-arm64", os = "Ubuntu-22.04", cpu = "ar
 ci_builder(name = "infra-continuous-mac-10.15-64", os = "Mac-10.15", tree_closing = True)
 
 # CI Win.
-ci_builder(name = "infra-continuous-win10-64", os = "Windows-10", tree_closing = True)
+ci_builder(name = "infra-continuous-win10-64", os = "Windows-10", execution_timeout = time.hour, tree_closing = True)
 
 # CI for building docker images.
 ci_builder(

@@ -96,6 +96,7 @@ def builder(
         schedule = None,
         extra_dimensions = None,
         caches = None,
+        execution_timeout = None,
 
         # Triggering relations.
         triggered_by = None,
@@ -122,6 +123,7 @@ def builder(
       schedule: a string with builder schedule for cron-like builders.
       extra_dimensions: a dict with additional Swarming dimensions.
       caches: a list with swarming.cache(...) to use.
+      execution_timeout: how long the builder can run.
       triggered_by: builders that trigger this one.
       notifies: what luci.notifier(...) to notify when its done.
     """
@@ -176,6 +178,7 @@ def builder(
         experiments = {
             "luci.buildbucket.backend_go": 100,
         },
+        execution_timeout = execution_timeout,
     )
 
 def _tree_closing_notifiers():
