@@ -110,7 +110,7 @@ func TestSelectFileByPattern(t *testing.T) {
 }
 
 func getTestCaseResults(prefix string) []*api.TestCaseResult {
-	failureMessage := "java.lang.AssertionError\r\njava.lang.AssertionError\n\tat org.junit.Assert.fail(Assert.java:86)\n"
+	failureMessage := "java.lang.AssertionError\r"
 	stackTrace := "java.lang.AssertionError\n\tat org.junit.Assert.fail(Assert.java:86)\n"
 	startTimestamp := int64(1724450705582)
 	startTime := timestamppb.New(time.Unix(startTimestamp/1000, startTimestamp%1000*1000000))

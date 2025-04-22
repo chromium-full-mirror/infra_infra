@@ -463,13 +463,7 @@ func generateTestCaseResult(logger *log.Logger, testType string, R Result, req *
 		for _, testcase := range module.TestCases {
 			for _, test := range testcase.Tests {
 				fullTestName := fmt.Sprintf("tradefed.%s.%s#%s#%s", testType, module.Name, testcase.Name, test.Name)
-				// TODO(b/409853008): Stop appending the stack trace to the
-				// failure message once downstream systems adopt the stack
-				// trace.
 				errorMessage := test.Failure.Message
-				if len(test.Failure.StackTrace) > 0 {
-					errorMessage += "\n" + test.Failure.StackTrace
-				}
 				abi := module.Abi
 				if len(test.Abi) > 0 {
 					// If test ABI is available, use it instead of the module ABI.
