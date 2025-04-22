@@ -16,7 +16,7 @@ plans:
             - 'Collection to folder: before.'
           conditions:
             - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - This verifier checks whether the host is accessible over ssh.
             - name: Confirm log collection info does not exist (before)
@@ -76,7 +76,7 @@ plans:
                 - Collect the dmesg output.
                 - 'Collection to folder: before.'
         - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-          exec_name: cros_ssh
+          exec_name: cros_access
           docs:
             - This verifier checks whether the host is accessible over ssh.
           recoveries:
@@ -93,7 +93,7 @@ plans:
                 - name: rpm_power_cycle
                   exec_name: rpm_power_cycle
                 - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be sshable during after the device being rebooted.
                 - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -105,7 +105,7 @@ plans:
                     - Start system-services on the labstation
                   dependencies:
                     - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - This verifier checks whether the host is accessible over ssh.
                 - name: Remove reboot requests (Allow to fail)
@@ -144,7 +144,7 @@ plans:
                     - name: has_rpm_info
                       exec_name: has_rpm_info
                 - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be sshable during after the device being rebooted.
                 - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -156,7 +156,7 @@ plans:
                     - Start system-services on the labstation
                   dependencies:
                     - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - This verifier checks whether the host is accessible over ssh.
                 - name: Remove reboot requests (Allow to fail)
@@ -170,7 +170,7 @@ plans:
             - Check whether system-services is up and running
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - This verifier checks whether the host is accessible over ssh.
               recoveries:
@@ -187,7 +187,7 @@ plans:
                     - name: rpm_power_cycle
                       exec_name: rpm_power_cycle
                     - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - Try to wait device to be sshable during after the device being rebooted.
                     - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -199,7 +199,7 @@ plans:
                         - Start system-services on the labstation
                       dependencies:
                         - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           docs:
                             - This verifier checks whether the host is accessible over ssh.
                     - name: Remove reboot requests (Allow to fail)
@@ -238,7 +238,7 @@ plans:
                         - name: has_rpm_info
                           exec_name: has_rpm_info
                     - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - Try to wait device to be sshable during after the device being rebooted.
                     - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -250,7 +250,7 @@ plans:
                         - Start system-services on the labstation
                       dependencies:
                         - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           docs:
                             - This verifier checks whether the host is accessible over ssh.
                     - name: Remove reboot requests (Allow to fail)
@@ -268,7 +268,7 @@ plans:
                 - Start system-services on the labstation
               dependencies:
                 - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - This verifier checks whether the host is accessible over ssh.
             - name: Sleep 1 minute (Allow to fail) (ALWAYS_RUN) (time:'1m10s')
@@ -292,7 +292,7 @@ plans:
             - Check Inodes useage on stateful partition and make sure it's lower than 50%
           conditions:
             - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - This verifier checks whether the host is accessible over ssh.
           recoveries:
@@ -302,7 +302,7 @@ plans:
                 - Powerwash and then install stable_version image on the labstation.
               conditions:
                 - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - This verifier checks whether the host is accessible over ssh.
                 - name: Labstation not in auto-update exempted pool
@@ -371,7 +371,7 @@ plans:
                       exec_args:
                         - sleep:10
                     - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - Try to wait device to be sshable during after the device being rebooted.
                     - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -383,7 +383,7 @@ plans:
                         - Start system-services on the labstation
                       dependencies:
                         - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           docs:
                             - This verifier checks whether the host is accessible over ssh.
                     - name: Remove reboot requests (Allow to fail)
@@ -454,7 +454,7 @@ plans:
                       exec_args:
                         - sleep:10
                     - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - Try to wait device to be sshable during after the device being rebooted.
                     - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -466,7 +466,7 @@ plans:
                         - Start system-services on the labstation
                       dependencies:
                         - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           docs:
                             - This verifier checks whether the host is accessible over ssh.
                     - name: Remove reboot requests (Allow to fail)
@@ -483,7 +483,7 @@ plans:
             - Ensure critical dependencies for servod is there, this check may fail if labstation had a incomplete provision.
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - This verifier checks whether the host is accessible over ssh.
               recoveries:
@@ -500,7 +500,7 @@ plans:
                     - name: rpm_power_cycle
                       exec_name: rpm_power_cycle
                     - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - Try to wait device to be sshable during after the device being rebooted.
                     - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -512,7 +512,7 @@ plans:
                         - Start system-services on the labstation
                       dependencies:
                         - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           docs:
                             - This verifier checks whether the host is accessible over ssh.
                     - name: Remove reboot requests (Allow to fail)
@@ -551,7 +551,7 @@ plans:
                         - name: has_rpm_info
                           exec_name: has_rpm_info
                     - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - Try to wait device to be sshable during after the device being rebooted.
                     - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -563,7 +563,7 @@ plans:
                         - Start system-services on the labstation
                       dependencies:
                         - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           docs:
                             - This verifier checks whether the host is accessible over ssh.
                     - name: Remove reboot requests (Allow to fail)
@@ -578,7 +578,7 @@ plans:
                 - Powerwash and then install stable_version image on the labstation.
               conditions:
                 - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - This verifier checks whether the host is accessible over ssh.
                 - name: Labstation not in auto-update exempted pool
@@ -647,7 +647,7 @@ plans:
                       exec_args:
                         - sleep:10
                     - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - Try to wait device to be sshable during after the device being rebooted.
                     - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -659,7 +659,7 @@ plans:
                         - Start system-services on the labstation
                       dependencies:
                         - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           docs:
                             - This verifier checks whether the host is accessible over ssh.
                     - name: Remove reboot requests (Allow to fail)
@@ -730,7 +730,7 @@ plans:
                       exec_args:
                         - sleep:10
                     - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - Try to wait device to be sshable during after the device being rebooted.
                     - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -742,7 +742,7 @@ plans:
                         - Start system-services on the labstation
                       dependencies:
                         - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           docs:
                             - This verifier checks whether the host is accessible over ssh.
                     - name: Remove reboot requests (Allow to fail)
@@ -843,7 +843,7 @@ plans:
                   exec_args:
                     - sleep:10
                 - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be sshable during after the device being rebooted.
                 - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -855,7 +855,7 @@ plans:
                     - Start system-services on the labstation
                   dependencies:
                     - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - This verifier checks whether the host is accessible over ssh.
                 - name: Remove reboot requests (Allow to fail)
@@ -876,7 +876,7 @@ plans:
                 - name: rpm_power_cycle
                   exec_name: rpm_power_cycle
                 - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be sshable during after the device being rebooted.
                 - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -888,7 +888,7 @@ plans:
                     - Start system-services on the labstation
                   dependencies:
                     - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - This verifier checks whether the host is accessible over ssh.
                 - name: Remove reboot requests (Allow to fail)
@@ -963,7 +963,7 @@ plans:
                   exec_args:
                     - sleep:10
                 - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be sshable during after the device being rebooted.
                 - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -975,7 +975,7 @@ plans:
                     - Start system-services on the labstation
                   dependencies:
                     - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - This verifier checks whether the host is accessible over ssh.
                 - name: Remove reboot requests (Allow to fail)
@@ -996,7 +996,7 @@ plans:
                 - name: rpm_power_cycle
                   exec_name: rpm_power_cycle
                 - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be sshable during after the device being rebooted.
                 - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -1008,7 +1008,7 @@ plans:
                     - Start system-services on the labstation
                   dependencies:
                     - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - This verifier checks whether the host is accessible over ssh.
                 - name: Remove reboot requests (Allow to fail)
@@ -1078,7 +1078,7 @@ plans:
                   exec_args:
                     - sleep:10
                 - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be sshable during after the device being rebooted.
                 - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -1090,7 +1090,7 @@ plans:
                     - Start system-services on the labstation
                   dependencies:
                     - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - This verifier checks whether the host is accessible over ssh.
                 - name: Remove reboot requests (Allow to fail)
@@ -1111,7 +1111,7 @@ plans:
                 - name: rpm_power_cycle
                   exec_name: rpm_power_cycle
                 - name: Wait to be SSHable (ALWAYS_RUN) (time:'10m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be sshable during after the device being rebooted.
                 - name: Start system services (Allow to fail) (ALWAYS_RUN)
@@ -1123,7 +1123,7 @@ plans:
                     - Start system-services on the labstation
                   dependencies:
                     - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - This verifier checks whether the host is accessible over ssh.
                 - name: Remove reboot requests (Allow to fail)
@@ -1156,7 +1156,7 @@ plans:
             - Verify crosid cli is responsive.
           conditions:
             - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - This verifier checks whether the host is accessible over ssh.
             - name: Is crosid present
@@ -1176,7 +1176,7 @@ plans:
                 - Remove whitelabel_tag field from VPD cache.
               conditions:
                 - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - This verifier checks whether the host is accessible over ssh.
         - name: Update inventory info
@@ -1212,7 +1212,7 @@ plans:
             - 'Collection to folder: after.'
           conditions:
             - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - This verifier checks whether the host is accessible over ssh.
             - name: Confirm log collection info does not exist (after)

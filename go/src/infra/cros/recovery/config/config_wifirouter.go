@@ -158,7 +158,7 @@ func wifiRouterRepairPlan() *Plan {
 					"tcpdump, hostapd, dnsmasq, netperf, iperf, iw",
 				},
 				Dependencies: []string{
-					"cros_ssh",
+					"cros_access",
 				},
 				ExecName: "cros_is_tool_present",
 				ExecExtraArgs: []string{

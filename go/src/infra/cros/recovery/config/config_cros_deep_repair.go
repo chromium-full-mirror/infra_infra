@@ -42,7 +42,7 @@ func deepRepairServoPlan() *Plan {
 			"Servo is know in the setup",
 			"Servod port specified",
 			"Servo serial is specified",
-			"Device is accessable",
+			"Device is accessible",
 			"Power-cycle by smart-hub",
 			// Disable servo_v4.1 reboot due to b/398198297.
 			// "Reboot servo_v4.1",
@@ -72,13 +72,13 @@ func deepRepairServoPlan() *Plan {
 				ExecName:   "dut_servo_has_serial",
 				RunControl: RunControl_RUN_ONCE,
 			},
-			"Device is accessable": {
+			"Device is accessible": {
 				Docs: []string{
 					"Verify that device is reachable by SSH.",
 					"Limited to 15 seconds.",
 				},
 				ExecTimeout: &durationpb.Duration{Seconds: 15},
-				ExecName:    "cros_ssh",
+				ExecName:    "cros_access",
 				RunControl:  RunControl_ALWAYS_RUN,
 			},
 			"Power-cycle by smart-hub": {
@@ -198,7 +198,7 @@ func deepRepairServoPlan() *Plan {
 				Docs: []string{
 					"verify if DUT is SSH-able",
 				},
-				ExecName: "cros_ssh",
+				ExecName: "cros_access",
 				ExecExtraArgs: []string{
 					"device_type:dut",
 				},
@@ -231,7 +231,7 @@ func deepRepairServoPlan() *Plan {
 					"Try to create reboot flag file request.",
 				},
 				Conditions: []string{
-					"Device is accessable",
+					"Device is accessible",
 					"Only applies to labstation",
 				},
 				ExecName:   "cros_create_reboot_request",
@@ -260,7 +260,7 @@ func deepRepairServoPlan() *Plan {
 					"is_servo_v4p1_by_serial_number",
 				},
 				Dependencies: []string{
-					"Device is accessable",
+					"Device is accessible",
 					"Stop servod",
 				},
 				ExecName: "servo_reboot",

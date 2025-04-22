@@ -16,7 +16,7 @@ func androidActions(actions map[string]*Action) {
 				"Is Android based?",
 			},
 			Dependencies: []string{
-				"Android is accessable",
+				"Android is accessible",
 				"ADB set Android as always awake",
 				"Read bootId",
 				"Device Uptime",
@@ -26,15 +26,17 @@ func androidActions(actions map[string]*Action) {
 				"Verify that DUT has default GBB flags",
 				"Missing HWID",
 				"Match HWID",
+				"Missing serial-number",
+				"Match serial-number",
 			},
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
-		"Android is accessable": {
+		"Android is accessible": {
 			Docs: []string{
-				"Validate is Andoid OS is accessable by reading data from the host.",
+				"Validate is Andoid OS is accessible by reading data from the host.",
 			},
-			ExecName:    "cros_ssh",
+			ExecName:    "cros_access",
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
 			RunControl:  RunControl_ALWAYS_RUN,
 			RecoveryActions: []string{
@@ -264,6 +266,38 @@ func androidActions(actions map[string]*Action) {
 			ExecTimeout: &durationpb.Duration{Seconds: 10000},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
+		"Android: verify boot in recovery mode": {
+			Docs: []string{
+				"Verify that devices can boot from USB drive in recovery mode.",
+			},
+			Conditions: []string{
+				"Setup has servo info",
+			},
+			Dependencies: []string{
+				"Is servod running",
+				"Is servo USB key detected",
+				"Detect CacheService address",
+				"Call servod to download provision image to USB-key",
+			},
+			ExecName: "cros_provision_actions_from_recovery_mode",
+			ExecExtraArgs: []string{
+				"run_android_install:false",
+				"run_cros_install:false",
+				"reset_tpm:false",
+				"boot_timeout:150",
+				"boot_interval:10",
+				"boot_retry:2",
+				"ignore_reboot_failure:true",
+				"after_reboot_check:true",
+				// Increase from 150 to 240 see b/389769971#comment3
+				"after_reboot_timeout:240",
+				"after_reboot_allow_use_servo_reset:true",
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 1500},
+			RecoveryActions: []string{
+				"Cold reset DUT by servo and wait to boot",
+			},
+		},
 		"Provision to stable-version if required": {
 			Docs: []string{
 				"Provision to stable-version for stable-version required pools.",
@@ -278,7 +312,20 @@ func androidActions(actions map[string]*Action) {
 				"Foil: Install Android OS from servo USB-drive",
 				"Update FW and install Android OS from servo USB-drive",
 			},
-			AllowFailAfterRecovery: true,
+		},
+		"Android: Verify OS is on stable-version": {
+			Docs: []string{
+				"Verify that Android OS is on stable version.",
+			},
+			Conditions: []string{
+				"Is Android based?",
+			},
+			ExecName: "android_is_on_os_stable_version",
+			RecoveryActions: []string{
+				"Install Android OS by booting from servo USB-drive",
+				"Foil: Install Android OS from servo USB-drive",
+				"Update FW and install Android OS from servo USB-drive",
+			},
 		},
 		"Is in stable version required pools": {
 			Docs: []string{

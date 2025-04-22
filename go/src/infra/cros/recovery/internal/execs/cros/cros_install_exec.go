@@ -320,6 +320,7 @@ func crosProvisionActionsFromUSBDriveInRecoveryModeExec(ctx context.Context, inf
 			dut.GetChromeos().IsAndroidBased = cacheIsAndroid
 		}()
 
+		log.Debugf(ctx, "Booted in recoovery mode from light provision-image!")
 		bootedInrecoveryMode = "yes"
 		if am.AsBool(ctx, "reset_tpm", false) {
 			// Clear TPM is not critical as can fail in some cases.

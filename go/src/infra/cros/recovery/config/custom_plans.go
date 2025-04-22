@@ -76,11 +76,11 @@ func RestoreHWIDFromInventoryConfig() *Configuration {
 			PlanCrOS: {
 				CriticalActions: []string{
 					"dut_has_hwid",
-					"cros_ssh",
+					"cros_access",
 					"Set HWID of the DUT from inventory",
 					"Simple reboot",
 					"Sleep 1s",
-					"Wait to be accessable",
+					"Wait to be accessible",
 					"cros_match_hwid_to_inventory",
 				},
 				Actions: crosRepairActions(),
@@ -209,7 +209,7 @@ func LabstationRpmPowerCycleConfig(timeToWait int) *Configuration {
 		Plans: map[string]*Plan{
 			PlanCrOS: {
 				CriticalActions: []string{
-					"Device is accessable",
+					"Device is accessible",
 					"Power off by RPM",
 					"Wait",
 					"Power on by RPM",
@@ -217,11 +217,11 @@ func LabstationRpmPowerCycleConfig(timeToWait int) *Configuration {
 					"Remove reboot requests",
 				},
 				Actions: map[string]*Action{
-					"Device is accessable": {
+					"Device is accessible": {
 						Docs: []string{
 							"This verifier checks whether the host is accessible over ssh.",
 						},
-						ExecName:               "cros_ssh",
+						ExecName:               "cros_access",
 						ExecTimeout:            &durationpb.Duration{Seconds: 30},
 						RunControl:             RunControl_ALWAYS_RUN,
 						AllowFailAfterRecovery: true,
@@ -273,7 +273,7 @@ func LabstationRpmPowerCycleConfig(timeToWait int) *Configuration {
 						// Labstation may take some time to fully up(e.g. network service ready) after an update.
 						// So giving it 10 minutes in here to allow more buffer.
 						ExecTimeout:   &durationpb.Duration{Seconds: 600},
-						ExecName:      "cros_ssh",
+						ExecName:      "cros_access",
 						RunControl:    RunControl_ALWAYS_RUN,
 						MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 					},

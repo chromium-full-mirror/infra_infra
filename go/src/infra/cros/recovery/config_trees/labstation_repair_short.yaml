@@ -4,7 +4,7 @@ plans:
         - name: 'Set state: repair_failed (''dut_set_state'')'
         - name: Collect logs (before) (Allow to fail) ('sample_pass') (RUN_ONCE)
           conditions:
-            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+            - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
             - name: Confirm log collection info does not exist (before) ('cros_confirm_file_not_exists')
           dependencies:
             - name: Create log collection info (before) ('cros_create_log_collection_info') (RUN_ONCE)
@@ -13,7 +13,7 @@ plans:
             - name: Copy messages (before) (Allow to fail) ('cros_copy_to_logs')
             - name: Copy eventlog.txt (before) (Allow to fail) ('cros_copy_to_logs')
             - name: Collect dmesg (before) (Allow to fail) ('cros_dmesg') (RUN_ONCE)
-        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+        - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
           recoveries:
             - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
               conditions:
@@ -21,10 +21,10 @@ plans:
                 - name: has_rpm_info
               dependencies:
                 - name: rpm_power_cycle
-                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                 - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                    - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                 - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
             - name: Power cycle by RPM with long delay ('sample_pass') (ALWAYS_RUN)
               conditions:
@@ -39,14 +39,14 @@ plans:
                   conditions:
                     - name: rpm_action_enabled
                     - name: has_rpm_info
-                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                 - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                    - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                 - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
         - name: System services is up ('cros_wait_for_system')
           dependencies:
-            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+            - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
               recoveries:
                 - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
                   conditions:
@@ -54,10 +54,10 @@ plans:
                     - name: has_rpm_info
                   dependencies:
                     - name: rpm_power_cycle
-                    - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                     - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                        - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                     - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
                 - name: Power cycle by RPM with long delay ('sample_pass') (ALWAYS_RUN)
                   conditions:
@@ -72,25 +72,25 @@ plans:
                       conditions:
                         - name: rpm_action_enabled
                         - name: has_rpm_info
-                    - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                     - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                        - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                     - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
           recoveries:
             - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
               dependencies:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
             - name: Sleep 1 minute (Allow to fail) ('sample_sleep') (ALWAYS_RUN) (time:'1m10s')
         - name: Clean up logs if necessary (Allow to fail) ('cros_log_clean_up')
         - name: Filesystem is writable (Allow to fail) ('cros_is_file_system_writable')
         - name: Used Inodes percentage on stateful partition is lower than 50% ('cros_check_used_inode_percentage_lower_than_threshold')
           conditions:
-            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+            - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
           recoveries:
             - name: Powerwash repair labstation ('sample_pass')
               conditions:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                 - name: Labstation not in auto-update exempted pool ('dut_not_in_pool')
               dependencies:
                 - name: Write factory-install-reset to file system ('cros_run_shell_command')
@@ -108,10 +108,10 @@ plans:
                           conditions:
                             - name: cros_filesystem_io_not_blocked
                     - name: Sleep 10s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
-                    - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                     - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                        - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                     - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
                 - name: Install stable labstation image without reboot ('cros_provision') (time:'1h0m0s')
                   conditions:
@@ -131,14 +131,14 @@ plans:
                           conditions:
                             - name: cros_filesystem_io_not_blocked
                     - name: Sleep 10s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
-                    - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                     - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                        - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                     - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
         - name: Check servod dependencies ('cros_run_command')
           dependencies:
-            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+            - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
               recoveries:
                 - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
                   conditions:
@@ -146,10 +146,10 @@ plans:
                     - name: has_rpm_info
                   dependencies:
                     - name: rpm_power_cycle
-                    - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                     - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                        - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                     - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
                 - name: Power cycle by RPM with long delay ('sample_pass') (ALWAYS_RUN)
                   conditions:
@@ -164,15 +164,15 @@ plans:
                       conditions:
                         - name: rpm_action_enabled
                         - name: has_rpm_info
-                    - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                     - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                        - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                     - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
           recoveries:
             - name: Powerwash repair labstation ('sample_pass')
               conditions:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                 - name: Labstation not in auto-update exempted pool ('dut_not_in_pool')
               dependencies:
                 - name: Write factory-install-reset to file system ('cros_run_shell_command')
@@ -190,10 +190,10 @@ plans:
                           conditions:
                             - name: cros_filesystem_io_not_blocked
                     - name: Sleep 10s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
-                    - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                     - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                        - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                     - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
                 - name: Install stable labstation image without reboot ('cros_provision') (time:'1h0m0s')
                   conditions:
@@ -213,10 +213,10 @@ plans:
                           conditions:
                             - name: cros_filesystem_io_not_blocked
                     - name: Sleep 10s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
-                    - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                    - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                     - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                       dependencies:
-                        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                        - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                     - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
         - name: cros_is_on_stable_version (Allow to fail)
           conditions:
@@ -247,10 +247,10 @@ plans:
                       conditions:
                         - name: cros_filesystem_io_not_blocked
                 - name: Sleep 10s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
-                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                 - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                    - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                 - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
             - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
               conditions:
@@ -258,10 +258,10 @@ plans:
                 - name: has_rpm_info
               dependencies:
                 - name: rpm_power_cycle
-                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                 - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                    - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                 - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
         - name: reboot_by_request ('sample_fail')
           conditions:
@@ -283,10 +283,10 @@ plans:
                       conditions:
                         - name: cros_filesystem_io_not_blocked
                 - name: Sleep 10s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
-                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                 - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                    - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                 - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
             - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
               conditions:
@@ -294,10 +294,10 @@ plans:
                 - name: has_rpm_info
               dependencies:
                 - name: rpm_power_cycle
-                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                 - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                    - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                 - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
         - name: Reboot labstation if uptime longer than 7 days ('cros_validate_uptime')
           conditions:
@@ -317,10 +317,10 @@ plans:
                       conditions:
                         - name: cros_filesystem_io_not_blocked
                 - name: Sleep 10s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
-                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                 - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                    - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                 - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
             - name: Power cycle by RPM ('sample_pass') (ALWAYS_RUN)
               conditions:
@@ -328,10 +328,10 @@ plans:
                 - name: has_rpm_info
               dependencies:
                 - name: rpm_power_cycle
-                - name: Wait to be SSHable ('cros_ssh') (ALWAYS_RUN) (time:'10m0s')
+                - name: Wait to be SSHable ('cros_access') (ALWAYS_RUN) (time:'10m0s')
                 - name: Start system services (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                   dependencies:
-                    - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                    - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
                 - name: Remove reboot requests (Allow to fail) ('cros_remove_all_reboot_request')
         - name: Cleanup bluetooth (Allow to fail) ('sample_pass')
           dependencies:
@@ -339,12 +339,12 @@ plans:
             - name: Attempt to power off bluetooth adapter (Allow to fail) ('cros_run_shell_command')
         - name: Is crosid readable (Allow to fail) ('cros_run_command')
           conditions:
-            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+            - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
             - name: Is crosid present ('cros_run_command')
           recoveries:
             - name: Remove whitelabel_tag VPD field ('cros_run_command')
               conditions:
-                - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
         - name: Update inventory info ('sample_pass')
           dependencies:
             - name: cros_update_hwid_to_inventory
@@ -355,7 +355,7 @@ plans:
             - name: Reset DUT-state reason ('dut_reset_state_reason')
         - name: Collect logs (after) (Allow to fail) ('sample_pass') (RUN_ONCE)
           conditions:
-            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+            - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
             - name: Confirm log collection info does not exist (after) ('cros_confirm_file_not_exists')
           dependencies:
             - name: Create log collection info (after) ('cros_create_log_collection_info') (RUN_ONCE)

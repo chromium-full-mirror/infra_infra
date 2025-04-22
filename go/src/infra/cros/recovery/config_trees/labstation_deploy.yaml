@@ -25,7 +25,7 @@ plans:
             - 'Collection to folder: before.'
           conditions:
             - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - This verifier checks whether the host is accessible over ssh.
             - name: Confirm log collection info does not exist (before)
@@ -85,7 +85,7 @@ plans:
                 - Collect the dmesg output.
                 - 'Collection to folder: before.'
         - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-          exec_name: cros_ssh
+          exec_name: cros_access
           docs:
             - This verifier checks whether the host is accessible over ssh.
           recoveries:
@@ -202,7 +202,7 @@ plans:
             - 'Collection to folder: after.'
           conditions:
             - name: Device is SSHable (ALWAYS_RUN) (time:'30s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - This verifier checks whether the host is accessible over ssh.
             - name: Confirm log collection info does not exist (after)

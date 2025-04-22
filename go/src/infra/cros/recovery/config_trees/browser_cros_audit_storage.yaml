@@ -65,13 +65,13 @@ plans:
               exec_name: cros_set_as_chrome_based
               docs:
                 - Mark DUT as Chrome based.
-            - name: DUT is not SSHable (simple) (ALWAYS_RUN)
+            - name: Device is not accessible (simple) (ALWAYS_RUN)
               exec_name: sample_fail
               docs:
                 - Verify that device is not reachable by SSH.
               conditions:
-                - name: Device is SSHable (simple) (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                - name: Device is accessible (simple) (ALWAYS_RUN) (time:'15s')
+                  exec_name: cros_access
                   docs:
                     - Verify that device is reachable by SSH.
                     - Limited to 15 seconds.
@@ -93,8 +93,8 @@ plans:
               docs:
                 - Check if device is marked as ChromeOS based
           dependencies:
-            - name: Device is SSHable (simple) (ALWAYS_RUN) (time:'15s')
-              exec_name: cros_ssh
+            - name: Device is accessible (simple) (ALWAYS_RUN) (time:'15s')
+              exec_name: cros_access
               docs:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
@@ -132,8 +132,8 @@ plans:
                   docs:
                     - Verify if we have access to the service provided access to the stable version
               dependencies:
-                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                  exec_name: cros_access
                   docs:
                     - Verify that device is reachable by SSH.
                     - Limited to 15 seconds.
@@ -408,8 +408,8 @@ plans:
                             - 'mode. In some cases RO FW is not allowed to boot in '
                             - 'recovery mode with active PD, so we will change it to '
                             - sink-mode if required.
-                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_access
                           docs:
                             - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
@@ -622,7 +622,7 @@ plans:
                             - name: is_servo_type_ccd
                               exec_name: is_servo_type_ccd
                         - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           docs:
                             - Try to wait device to be accesable shortly.
                             - Waiting time 30 seconds.
@@ -797,7 +797,7 @@ plans:
                             - image_version:v6.1.1
                           docs:
                             - This action calls servod to download provision image custom kernel to servo USB-key.
-                        - name: Boot on USB-key and install ChroemOS (ALWAYS_RUN) (time:'2h46m40s')
+                        - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
                           exec_name: cros_provision_actions_from_recovery_mode
                           exec_args:
                             - run_android_install:false
@@ -816,8 +816,8 @@ plans:
                             - 'mode. In some cases RO FW is not allowed to boot in '
                             - 'recovery mode with active PD, so we will change it to '
                             - sink-mode if required.
-                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_access
                           docs:
                             - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
@@ -1049,8 +1049,8 @@ plans:
                             - 'mode. In some cases RO FW is not allowed to boot in '
                             - 'recovery mode with active PD, so we will change it to '
                             - sink-mode if required.
-                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_access
                           docs:
                             - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
@@ -1423,8 +1423,8 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_access
                           docs:
                             - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
@@ -1623,8 +1623,8 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_access
                           docs:
                             - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
@@ -1770,8 +1770,8 @@ plans:
                               docs:
                                 - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
-                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_access
                           docs:
                             - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
@@ -1855,8 +1855,8 @@ plans:
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                    - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                      exec_name: cros_access
                       docs:
                         - Verify that device is reachable by SSH.
                         - Limited to 15 seconds.
@@ -1871,8 +1871,8 @@ plans:
                           exec_name: cros_is_not_android_based
                           docs:
                             - Check if device is marked as ChromeOS based
-                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                        - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                          exec_name: cros_access
                           docs:
                             - Verify that device is reachable by SSH.
                             - Limited to 15 seconds.
@@ -1967,7 +1967,7 @@ plans:
                         - image_version:v6.1.1
                       docs:
                         - This action calls servod to download provision image custom kernel to servo USB-key.
-                    - name: Boot on USB-key and install ChroemOS (ALWAYS_RUN) (time:'2h46m40s')
+                    - name: Boot on USB-key and install ChromeOS (ALWAYS_RUN) (time:'2h46m40s')
                       exec_name: cros_provision_actions_from_recovery_mode
                       exec_args:
                         - run_android_install:false
@@ -1986,8 +1986,8 @@ plans:
                         - 'mode. In some cases RO FW is not allowed to boot in '
                         - 'recovery mode with active PD, so we will change it to '
                         - sink-mode if required.
-                    - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_access
                       docs:
                         - Try to wait device to be acccesable (SSH or ADB).
                         - Waiting time 150 seconds.
@@ -2213,8 +2213,8 @@ plans:
                               docs:
                                 - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
-                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_access
                           docs:
                             - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
@@ -2461,8 +2461,8 @@ plans:
                               docs:
                                 - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
-                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_access
                           docs:
                             - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
@@ -2775,8 +2775,8 @@ plans:
                               docs:
                                 - Wait DUT to be pingable after some action on it.
                                 - Waiting time 150 seconds.
-                        - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                          exec_name: cros_ssh
+                        - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                          exec_name: cros_access
                           docs:
                             - Try to wait device to be acccesable (SSH or ADB).
                             - Waiting time 150 seconds.
@@ -3014,8 +3014,8 @@ plans:
                         - 'mode. In some cases RO FW is not allowed to boot in '
                         - 'recovery mode with active PD, so we will change it to '
                         - sink-mode if required.
-                    - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                      exec_name: cros_ssh
+                    - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_access
                       docs:
                         - Try to wait device to be acccesable (SSH or ADB).
                         - Waiting time 150 seconds.

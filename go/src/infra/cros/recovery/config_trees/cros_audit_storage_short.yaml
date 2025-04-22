@@ -20,15 +20,15 @@ plans:
           conditions:
             - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
             - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
-            - name: DUT is not SSHable (simple) ('sample_fail') (ALWAYS_RUN)
+            - name: Device is not accessible (simple) ('sample_fail') (ALWAYS_RUN)
               conditions:
-                - name: Device is SSHable (simple) ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessible (simple) ('cros_access') (ALWAYS_RUN) (time:'15s')
             - name: ADB Connect DUT ('ctr_adb_connect') (ALWAYS_RUN)
         - name: Audit storage ('sample_pass')
           conditions:
             - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
           dependencies:
-            - name: Device is SSHable (simple) ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+            - name: Device is accessible (simple) ('cros_access') (ALWAYS_RUN) (time:'15s')
             - name: DUT has correct cros image version ('cros_is_on_stable_version')
               conditions:
                 - name: Is it first deployment task ('sample_fail') (ALWAYS_RUN)
@@ -40,7 +40,7 @@ plans:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
               dependencies:
-                - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   recoveries:
                     - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)
                       conditions:
@@ -122,7 +122,7 @@ plans:
                             - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                         - name: Boot DUT in recovery and install from USB-drive (no storage check) ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
-                        - name: Wait to be accessable ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Update FW from fw-image by servo and wait for boot ('sample_pass')
                       conditions:
@@ -190,7 +190,7 @@ plans:
                         - name: Try fake disconnect ('servo_fake_disconnect_dut') (ALWAYS_RUN)
                           conditions:
                             - name: is_servo_type_ccd
-                        - name: Wait to be SSHable (short waiting) ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+                        - name: Wait to be SSHable (short waiting) ('cros_access') (ALWAYS_RUN) (time:'30s')
                     - name: Update fingerpprint FW from USB drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'16m40s')
                       conditions:
                         - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
@@ -243,8 +243,8 @@ plans:
                           conditions:
                             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                         - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
-                        - name: Boot on USB-key and install ChroemOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
-                        - name: Wait to be accessable ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Boot on USB-key and install ChromeOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                        - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Install OS in recovery mode by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                       conditions:
@@ -308,7 +308,7 @@ plans:
                             - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                         - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                         - name: Boot DUT in recovery and install from USB-drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
-                        - name: Wait to be accessable ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Install OS in recovery mode by booting from servo USB-drive (Flex with AMT) ('sample_pass') (ALWAYS_RUN)
                       conditions:
@@ -415,7 +415,7 @@ plans:
                                     - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                                       conditions:
                                         - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                        - name: Wait to be accessable ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Print active devices (Allow to fail) ('cros_run_command') (ALWAYS_RUN)
                         - name: Is Flex booted from USB-drive ('cros_run_command') (ALWAYS_RUN)
                           conditions:
@@ -465,7 +465,7 @@ plans:
                                     - name: Are AMT details known ('cros_flex_amt_known') (ALWAYS_RUN)
                                       conditions:
                                         - name: Is Flex device ('dut_check_board') (RUN_ONCE)
-                        - name: Wait to be accessable ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Install OS in DEV mode by USB-drive ('sample_pass') (ALWAYS_RUN)
                       conditions:
@@ -514,7 +514,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info ('dut_servo_host_present')
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
-                        - name: Wait to be accessable ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Reset power using servo if booted from USB ('sample_pass')
                       conditions:
@@ -543,11 +543,11 @@ plans:
                     - name: Recovery version has OS image path ('has_stable_version_cros_image')
                       dependencies:
                         - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-                    - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                    - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                     - name: Internal storage is responsive ('cros_is_file_system_writable')
                       dependencies:
                         - name: Is ChromeOS based? ('cros_is_not_android_based') (ALWAYS_RUN)
-                        - name: Device is accessable ('cros_ssh') (ALWAYS_RUN) (time:'15s')
+                        - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
@@ -577,8 +577,8 @@ plans:
                       conditions:
                         - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
                     - name: Call servod to download provision image to USB-key ('servo_download_provision_image_to_usb') (ALWAYS_RUN) (time:'10m0s')
-                    - name: Boot on USB-key and install ChroemOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
-                    - name: Wait to be accessable ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Boot on USB-key and install ChromeOS ('cros_provision_actions_from_recovery_mode') (ALWAYS_RUN) (time:'2h46m40s')
+                    - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install OS in DEV mode, with force to DEV-mode ('sample_pass')
                   conditions:
@@ -656,7 +656,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info ('dut_servo_host_present')
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
-                        - name: Wait to be accessable ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install OS in DEV mode with fresh image ('sample_pass')
                   conditions:
@@ -739,7 +739,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info ('dut_servo_host_present')
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
-                        - name: Wait to be accessable ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install OS in DEV mode, with force to DEV-mode with test firmware ('sample_pass') (ALWAYS_RUN)
                   conditions:
@@ -846,7 +846,7 @@ plans:
                                       dependencies:
                                         - name: Setup has servo info ('dut_servo_host_present')
                             - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
-                        - name: Wait to be accessable ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                        - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Remove REFLASH_FW repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                 - name: Install OS in recovery mode by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
@@ -911,7 +911,7 @@ plans:
                         - name: Remove UPDATE_USBKEY_IMAGE repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
                     - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
                     - name: Boot DUT in recovery and install from USB-drive ('cros_install_in_recovery_mode') (ALWAYS_RUN) (time:'2h13m20s')
-                    - name: Wait to be accessable ('cros_ssh') (ALWAYS_RUN) (time:'2m30s')
+                    - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Audit storage (SMART only) (Allow to fail) ('cros_audit_storage_smart')
             - name: Audit device storage using badblocks (Allow to fail) ('cros_audit_storage_bad_blocks') (time:'1h40m0s')

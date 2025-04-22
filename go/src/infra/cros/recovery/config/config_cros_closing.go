@@ -349,7 +349,7 @@ func crosRepairClosingActions() map[string]*Action {
 				"Stop the servod daemon.",
 				"Allowed to fail as can be run when servod is not running.",
 			},
-			ExecName: "cros_ssh",
+			ExecName: "cros_access",
 			ExecExtraArgs: []string{
 				"device_type:servo",
 			},

@@ -136,7 +136,7 @@ func servoPlanActions() map[string]*Action {
 				"Set state:NO_SSH",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
-			ExecName:    "cros_ssh",
+			ExecName:    "cros_access",
 			RunControl:  RunControl_ALWAYS_RUN,
 			RecoveryActions: []string{
 				"Wait for labstation to load",
@@ -148,7 +148,7 @@ func servoPlanActions() map[string]*Action {
 				"Labstation is expected to complete the reboot within 2 minutes.",
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 120},
-			ExecName:    "cros_ssh",
+			ExecName:    "cros_access",
 		},
 		"Cache latest servod start time": {
 			Docs: []string{
@@ -1810,7 +1810,7 @@ func servoPlanActions() map[string]*Action {
 			Docs: []string{
 				"verify if DUT is SSH-able",
 			},
-			ExecName: "cros_ssh",
+			ExecName: "cros_access",
 			ExecExtraArgs: []string{
 				"device_type:dut",
 			},

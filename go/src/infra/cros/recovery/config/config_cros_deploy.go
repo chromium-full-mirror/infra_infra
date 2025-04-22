@@ -17,14 +17,23 @@ func crosDeployPlan() *Plan {
 			"Check stable versions exist",
 			"Download stable version OS image to servo usbkey if necessary",
 			"Device is pingable before deploy",
+			"Device NOT booted from USB-drive",
 			"DUT is on test channel OS",
 			"Collect firmware target",
+			"Has repair-request for reflash-firmware",
 			"DUT has correct cros image version",
 			"Set dev_boot_usb is enabled",
 			"DUT has expected dev firmware",
 			"DUT has expected firmware version",
 			"Deployment checks",
-			"Collect DUT labels",
+			"Collect HWID into inventory",
+			"Collect serial-number",
+			"Collect serial-number (Satlab)",
+			"Collect storage type",
+			"Collect SKU value",
+			"Collect servo_type",
+			"Collect RO_VPD from DUT",
+			"Collect cellular labels",
 		},
 		Actions: crosDeployAndRepairActions(),
 	}
@@ -38,16 +47,26 @@ func mhDeployPlan() *Plan {
 			"Check stable versions exist",
 			"Set GBB flags to enable dev mode and boot from usb by servo",
 			"ADB Connect DUT",
-			"Android is accessable",
+			"Android is accessible",
 			"ADB set Android as always awake",
-			// TODO(b/410571779): Slowly verify and enable actions below.
-			// "DUT is on test channel OS",
 			// "Collect firmware target",  Blocked by b/374944007
-			// "DUT has correct cros image version",
+			"Has repair-request for reflash-firmware",
+			"Android: Verify OS is on stable-version",
 			"DUT has expected dev firmware",
-			// "DUT has expected firmware version",
-			// "Deployment checks",
-			// "Collect DUT labels",
+			// "DUT has expected firmware version", Blocked by b/374944007
+			// TODO(b/410571779): Slowly verify and enable actions below.
+			"Android: Deployment checks",
+			"Collect HWID into inventory",
+			"Collect serial-number",
+			"Collect serial-number (Satlab)",
+			"Collect SKU value",
+			"Collect servo_type",
+			// TODO(b/412442749): implement after tools are available.
+			"Collect storage type",
+			// TODO(b/411517919): enable when logic is migrated.
+			// "Collect RO_VPD from DUT",
+			// TODO(b/411518597): enable when logic is migrated.
+			// "Collect cellular labels",
 		},
 		Actions: crosDeployAndRepairActions(),
 	}
@@ -72,10 +91,6 @@ func deployActions() map[string]*Action {
 			Docs: []string{
 				"Verify that device has OS version from test channel, if not then install it.",
 			},
-			Dependencies: []string{
-				"Device is pingable before deploy",
-				"Device NOT booted from USB-drive",
-			},
 			ExecName: "cros_is_os_test_channel",
 			RecoveryActions: []string{
 				"Quick provision OS",
@@ -96,11 +111,12 @@ func deployActions() map[string]*Action {
 			ExecName:    "cros_has_dev_signed_firmware",
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
 			RecoveryActions: []string{
-				"Update FW from fw-image by servo and wait for boot",
-				"Update firmware with factory mode by host",
-				// IF DUT failed too boot after reboot then hard rebboot it.
-				"Cold reset DUT by servo and wait to boot",
-				"Update firmware with factory mode from host OS",
+				"Place REFLASH_FW repair-requests",
+				// "Update FW from fw-image by servo and wait for boot",
+				// "Update firmware with factory mode by host",
+				// // IF DUT failed too boot after reboot then hard rebboot it.
+				// "Cold reset DUT by servo and wait to boot",
+				// "Update firmware with factory mode from host OS",
 			},
 		},
 		"DUT has expected firmware version": {
@@ -161,7 +177,7 @@ func deployActions() map[string]*Action {
 			Conditions: []string{
 				"Is a Chromebook",
 				"Is recovery-version has firmware image path",
-				"Device is accessable",
+				"Device is accessible",
 			},
 			Dependencies: []string{
 				"Disable software-controlled write-protect for 'internal'",
@@ -169,7 +185,7 @@ func deployActions() map[string]*Action {
 				"Update FW from fw-image with factory mode from DUT",
 				"Remove REFLASH_FW repair-request",
 				"Simple reboot",
-				"Wait to be accessable",
+				"Wait to be accessible",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -183,7 +199,7 @@ func deployActions() map[string]*Action {
 			Conditions: []string{
 				"Is a Chromebook",
 				"Is recovery-version has firmware image path",
-				"Device is accessable",
+				"Device is accessible",
 			},
 			Dependencies: []string{
 				"Disable software-controlled write-protect for 'internal'",
@@ -191,7 +207,7 @@ func deployActions() map[string]*Action {
 				"Update FW from host OS image with factory mode",
 				"Remove REFLASH_FW repair-request",
 				"Simple reboot",
-				"Wait to be accessable",
+				"Wait to be accessible",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -207,9 +223,29 @@ func deployActions() map[string]*Action {
 			Dependencies: []string{
 				"Verify battery charging level",
 				"Verify boot in recovery mode",
-				"Wait to be accessable",
+				"Wait to be accessible",
 				"Verify RPM config",
-				"Wait to be accessable",
+				"Wait to be accessible",
+			},
+			ExecName: "sample_pass",
+		},
+		"Android: Deployment checks": {
+			Docs: []string{
+				"Run some special checks as part of deployment.",
+			},
+			Conditions: []string{
+				"Run only in main lab",
+				"Is it first deployment task",
+			},
+			Dependencies: []string{
+				// TODO(b/369238146): enable when battery tool are available.
+				// "Verify battery charging level",
+				// "Wait to be accessible",
+				"Android: verify boot in recovery mode",
+				"Wait to be accessible",
+				// TODO(b/412412065): enable when RPM service is available.
+				// "Verify RPM config",
+				// "Wait to be accessible",
 			},
 			ExecName: "sample_pass",
 		},
@@ -220,12 +256,12 @@ func deployActions() map[string]*Action {
 				"Dues overheat battery in audio boxes mostly it deployed ",
 			},
 			Conditions: []string{
-				"Is not in audio box",
+				"Do no run in audio box pool",
 				"Battery is expected on device",
 				"Battery is present on device",
 			},
 			Dependencies: []string{
-				"Wait to be accessable",
+				"Wait to be accessible",
 			},
 			ExecName: "cros_battery_changable_to_expected_level",
 			ExecExtraArgs: []string{
@@ -243,7 +279,7 @@ func deployActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Is servod running",
-				"Wait to be accessable",
+				"Wait to be accessible",
 			},
 			ExecName: "cros_install_in_recovery_mode",
 			ExecExtraArgs: []string{
@@ -301,27 +337,7 @@ func deployActions() map[string]*Action {
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
-		"Collect DUT labels": {
-			Docs: []string{
-				"Updating device info in inventory.",
-			},
-			Dependencies: []string{
-				// Collect HWID may not get tiggered before this if a DUT already have DEV signed firmware.
-				// Invoke it here to ensure we have fwid updated, and the action has RunControl_RUN_ONCE so
-				// the actual exectution won't happen twice.
-				"Collect HWID into inventory",
-				"Read DUT serial-number from DUT",
-				"Read DUT serial-number from DUT (Satlab)",
-				"Read storage type from DUT",
-				"Read device SKU",
-				"servo_type_label",
-				"Read RO_VPD from DUT",
-				"Collect cellular labels",
-			},
-			ExecName:      "sample_pass",
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
-		"servo_type_label": {
+		"Collect servo_type": {
 			Docs: []string{
 				"Update the servo type label for the DUT info.",
 			},

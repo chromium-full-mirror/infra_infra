@@ -29,7 +29,7 @@ func mhRepairPlan() *Plan {
 			"Android: Has repair-request for re-image by USB-key",
 			"Android:Device is pingable",
 			"ADB Connect DUT",
-			"Android is accessable",
+			"Android is accessible",
 			"ADB set Android as always awake",
 			"Read bootId",
 			"Device Uptime",
@@ -83,7 +83,7 @@ func crosRepairActions() map[string]*Action {
 				"Reset provisioned info",
 				"Enable verbose network logging for cellular DUTs",
 				"Collect logs and crashinfo",
-				"Device is accessable",
+				"Device is accessible",
 				"Read bootId",
 				"Device Uptime",
 				"Verify access to cache",
@@ -133,7 +133,13 @@ func crosRepairActions() map[string]*Action {
 				"Verify RO_VPD sku_number",
 				"Verify RO_VPD dsm_calib",
 				"Verify RO_VPD data on DUT",
-				"Verify system info",
+				"Default boot set as internal storage",
+				"Verify that DUT is not in DEV mode",
+				"Verify that DUT has default GBB flags",
+				"Missing HWID",
+				"Missing serial-number",
+				"Match HWID",
+				"Match serial-number",
 				"Collect firmware target",
 				"Collect gpu_id",
 				"Collect fingerprint",
@@ -158,7 +164,7 @@ func crosRepairActions() map[string]*Action {
 				"Do not run on CloudBot",
 				// Always reset first.
 				"Mark as ChromeOS based",
-				"DUT is not SSHable (simple)",
+				"Device is not accessible (simple)",
 				"ADB Connect DUT",
 			},
 			ExecName: "cros_set_as_android_based",
@@ -219,7 +225,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Only applies to labstation",
 			},
-			ExecName: "cros_ssh",
+			ExecName: "cros_access",
 			ExecExtraArgs: []string{
 				"device_type:servo",
 			},
@@ -307,12 +313,12 @@ func crosRepairActions() map[string]*Action {
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
-		"Device is accessable": {
+		"Device is accessible": {
 			Docs: []string{
 				"Verify that device is reachable by SSH.",
 				"Limited to 15 seconds.",
 			},
-			ExecName:    "cros_ssh",
+			ExecName:    "cros_access",
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for ping",
@@ -331,21 +337,21 @@ func crosRepairActions() map[string]*Action {
 				UploadPolicy: MetricsConfig_DEFAULT_UPLOAD_POLICY,
 			},
 		},
-		"Device is SSHable (simple)": {
+		"Device is accessible (simple)": {
 			Docs: []string{
 				"Verify that device is reachable by SSH.",
 				"Limited to 15 seconds.",
 			},
-			ExecName:    "cros_ssh",
+			ExecName:    "cros_access",
 			ExecTimeout: &durationpb.Duration{Seconds: 15},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
-		"DUT is not SSHable (simple)": {
+		"Device is not accessible (simple)": {
 			Docs: []string{
 				"Verify that device is not reachable by SSH.",
 			},
 			Conditions: []string{
-				"Device is SSHable (simple)",
+				"Device is accessible (simple)",
 			},
 			ExecName:   "sample_fail",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -431,7 +437,7 @@ func crosRepairActions() map[string]*Action {
 				"Boot DUT from USB in DEV mode",
 				"Run install after boot from USB-drive",
 				"Cold reset DUT by servo and wait to boot",
-				"Wait to be accessable",
+				"Wait to be accessible",
 				"Remove REIMAGE_BY_USBKEY repair-request",
 			},
 			ExecName:   "sample_pass",
@@ -445,7 +451,7 @@ func crosRepairActions() map[string]*Action {
 				"Is ChromeOS based?",
 			},
 			Dependencies: []string{
-				"Device is SSHable (simple)",
+				"Device is accessible (simple)",
 				// Just to be sure that audit executed on good OS version.
 				"DUT has correct cros image version",
 				"Audit storage (SMART only)",
@@ -477,22 +483,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			AllowFailAfterRecovery: true,
 		},
-		"Verify system info": {
-			Conditions: []string{
-				"Is a Chromebook",
-			},
-			Dependencies: []string{
-				"Default boot set as internal storage",
-				"Verify that DUT is not in DEV mode",
-				"Verify that DUT has default GBB flags",
-				"Missing HWID",
-				"Missing serial-number",
-				"Match HWID",
-				"Match serial-number",
-			},
-			ExecName:      "sample_pass",
-			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
 		"Restore HWID from inventory": {
 			Docs: []string{
 				"Restoring HWID on the host from the inventory data.",
@@ -502,12 +492,12 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Is a Chromebook",
 				"Is HWID known",
-				"Device is accessable",
+				"Device is accessible",
 				"Set HWID of the DUT from inventory",
 				"Simple reboot",
 				"Sleep 1s",
 			},
-			ExecName:               "cros_ssh",
+			ExecName:               "cros_access",
 			ExecTimeout:            &durationpb.Duration{Seconds: 150},
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
@@ -740,7 +730,7 @@ func crosRepairActions() map[string]*Action {
 				"The recovery process may fail, but it may still solve the problem.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_enrollment_cleanup",
 			ExecExtraArgs: []string{
@@ -838,7 +828,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Disable factory settings on the DUT": {
 			Conditions: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_run_command",
 			ExecExtraArgs: []string{
@@ -848,7 +838,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Shutdown DUT by SSH": {
 			Conditions: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_run_command",
 			ExecExtraArgs: []string{
@@ -897,7 +887,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify that we can read ownership on device.",
 			},
 			Conditions: []string{
-				"Device is accessable",
+				"Device is accessible",
 				"Is hwsec-ownership-id expected",
 			},
 			ExecName: "cros_run_command",
@@ -928,7 +918,7 @@ func crosRepairActions() map[string]*Action {
 				"The hwsec-ownership-id is expected from R101 version of ChromeOS on the DUT.",
 			},
 			Conditions: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_is_on_expected_version",
 			ExecExtraArgs: []string{
@@ -1007,7 +997,7 @@ func crosRepairActions() map[string]*Action {
 			Dependencies: []string{
 				"Restore CBI contents from UFS",
 				"Simple reboot",
-				"Wait to be accessable",
+				"Wait to be accessible",
 				"Invalidate CBI cache",
 			},
 			ExecName:    "cros_cbi_contents_are_valid",
@@ -1502,7 +1492,7 @@ func crosRepairActions() map[string]*Action {
 				"Fix FW on the DUT to match stable-version",
 				"Simple reboot",
 			},
-			ExecName:    "cros_ssh",
+			ExecName:    "cros_access",
 			ExecTimeout: &durationpb.Duration{Seconds: 150},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
@@ -1554,7 +1544,7 @@ func crosRepairActions() map[string]*Action {
 				"DUT not on stable version",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 				"Call provision for DUT",
 				"Remove PROVISION repair-request",
 			},
@@ -1571,7 +1561,7 @@ func crosRepairActions() map[string]*Action {
 				"DUT has Cr50 phase label",
 			},
 			Dependencies: []string{
-				"Device is SSHable (simple)",
+				"Device is accessible (simple)",
 			},
 			ExecName: "cros_run_shell_command",
 			ExecExtraArgs: []string{
@@ -1666,7 +1656,7 @@ func crosRepairActions() map[string]*Action {
 				"Has Bluetooth peers",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_run_command",
 			ExecExtraArgs: []string{
@@ -1700,7 +1690,7 @@ func crosRepairActions() map[string]*Action {
 				"Is ChromeOS based?",
 			},
 			Dependencies: []string{
-				"Device is SSHable (simple)",
+				"Device is accessible (simple)",
 				"Servo state is working",
 				"Is servod running",
 				"Device NOT booted from USB-drive",
@@ -1725,7 +1715,7 @@ func crosRepairActions() map[string]*Action {
 				"Check wifi on the DUT is normal and update wifi hardware state accordingly.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_audit_wifi",
 			RecoveryActions: []string{
@@ -1738,7 +1728,7 @@ func crosRepairActions() map[string]*Action {
 				"Check bluetooth on the DUT is normal and update bluetooth hardware state accordingly.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_audit_bluetooth",
 			ExecExtraArgs: []string{
@@ -1839,7 +1829,7 @@ func crosRepairActions() map[string]*Action {
 				"cros_has_mmcli",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 				"Cellular modem is up",
 			},
 			ExecName: "cros_modem_state_not_in",
@@ -1861,7 +1851,7 @@ func crosRepairActions() map[string]*Action {
 				"has_cellular_info",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_audit_cellular_modem",
 			ExecExtraArgs: []string{
@@ -1899,7 +1889,7 @@ func crosRepairActions() map[string]*Action {
 				"has_cellular_info",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_audit_cellular_modem",
 			ExecExtraArgs: []string{
@@ -1922,7 +1912,7 @@ func crosRepairActions() map[string]*Action {
 				"Has live carrier",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 				"Cellular modem is up",
 				"Cellular modem is not in failed state",
 			},
@@ -1945,7 +1935,7 @@ func crosRepairActions() map[string]*Action {
 				"Is starfish device",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName:               "cros_audit_cellular_starfish",
 			AllowFailAfterRecovery: true,
@@ -2216,7 +2206,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is a Chromebook",
-				"Is ChromeOS based?",
 				"Run only in main lab",
 				"Is serial-number empty",
 			},
@@ -2231,7 +2220,6 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is a Chromebook",
-				"Is ChromeOS based?",
 				"Is serial-number known",
 			},
 			ExecName: "cros_match_serial_number_inventory",
@@ -2243,6 +2231,10 @@ func crosRepairActions() map[string]*Action {
 		"Restore serial-number": {
 			Docs: []string{
 				"Restore serial number from inventory to the host",
+			},
+			Dependencies: []string{
+				"Is a Chromebook",
+				"Is ChromeOS based?",
 			},
 			ExecName: "cros_restore_serial_number",
 		},
@@ -2288,7 +2280,7 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Run only in main lab": {
 			Docs: []string{
-				"Verify that DUT name is not belong Satlab.",
+				"Verify that DUT name is in main lab.",
 			},
 			Conditions: []string{
 				"Run only on Satlab",
@@ -2306,7 +2298,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
-		"Read storage type from DUT": {
+		"Collect storage type": {
 			Docs: []string{
 				"Read storage type from DUT.",
 			},
@@ -2317,14 +2309,14 @@ func crosRepairActions() map[string]*Action {
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
-		"Read DUT serial-number from DUT": {
+		"Collect serial-number": {
 			Conditions: []string{
 				"Run only in main lab",
 			},
 			ExecName:   "cros_update_serial_number_inventory",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
-		"Read DUT serial-number from DUT (Satlab)": {
+		"Collect serial-number (Satlab)": {
 			Conditions: []string{
 				"Run only on Satlab",
 			},
@@ -2353,7 +2345,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Is ChromeOS based?",
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_is_file_system_writable",
 			ExecExtraArgs: []string{
@@ -2374,7 +2366,7 @@ func crosRepairActions() map[string]*Action {
 				"If linux has some hardware error then file system can became read-only.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_has_critical_kernel_error",
 			RecoveryActions: []string{
@@ -2441,13 +2433,13 @@ func crosRepairActions() map[string]*Action {
 				"Read special labels everytime as part of repair process.",
 			},
 			Dependencies: []string{
-				"Read device SKU",
+				"Collect SKU value",
 				"Read Cr50 PHASE",
 				"Read Cr50 key ID",
 				"Read if audio loopback present",
 				"Read dlm_sku_id",
 				"Update RO_VPD from DUT to Inventory",
-				"Read storage type from DUT",
+				"Collect storage type",
 			},
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
@@ -2497,7 +2489,7 @@ func crosRepairActions() map[string]*Action {
 				"The action working as condition. Please do not exclude based on labels.",
 			},
 			Dependencies: []string{
-				"Device is SSHable (simple)",
+				"Device is accessible (simple)",
 			},
 			ExecName: "cros_run_shell_command",
 			ExecExtraArgs: []string{
@@ -2510,25 +2502,15 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "dut_has_cr50",
 		},
-		"Read device SKU": {
+		"Collect SKU value": {
 			Docs: []string{
 				"Update the device_sku label from the device if not present in inventory data.",
 			},
 			Conditions: []string{
 				"Is a Chromebook",
-				"dut_does_not_have_device_sku",
 			},
 			ExecName:               "cros_update_device_sku",
 			AllowFailAfterRecovery: true,
-		},
-		"dut_does_not_have_device_sku": {
-			Docs: []string{
-				"Confirm that the DUT itself does not have device_sku label.",
-			},
-			Conditions: []string{
-				"dut_has_device_sku",
-			},
-			ExecName: "sample_fail",
 		},
 		"Read dlm_sku_id": {
 			Docs: []string{
@@ -2734,7 +2716,7 @@ func crosRepairActions() map[string]*Action {
 				"Wait to be pingable (normal boot)",
 				"ADB reconnect",
 			},
-			ExecName:    "cros_ssh",
+			ExecName:    "cros_access",
 			ExecTimeout: &durationpb.Duration{Seconds: 150},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
@@ -2793,7 +2775,7 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Can become ChromeOS-based",
 				"Recovery version has OS image path",
-				"Device is accessable",
+				"Device is accessible",
 				"Internal storage is responsive",
 			},
 			Dependencies: []string{
@@ -2802,13 +2784,13 @@ func crosRepairActions() map[string]*Action {
 			},
 			ExecName: "sample_pass",
 		},
-		"Wait to be accessable": {
+		"Wait to be accessible": {
 			// No recovery actions as that is help action.
 			Docs: []string{
 				"Try to wait device to be acccesable (SSH or ADB).",
 				"Waiting time 150 seconds.",
 			},
-			ExecName:      "cros_ssh",
+			ExecName:      "cros_access",
 			ExecTimeout:   &durationpb.Duration{Seconds: 150},
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
@@ -2819,7 +2801,7 @@ func crosRepairActions() map[string]*Action {
 				"Try to wait device to be accesable shortly.",
 				"Waiting time 30 seconds.",
 			},
-			ExecName:      "cros_ssh",
+			ExecName:      "cros_access",
 			ExecTimeout:   &durationpb.Duration{Seconds: 30},
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
@@ -2846,7 +2828,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Trigger kernel panic by servod",
-				"Wait to be accessable",
+				"Wait to be accessible",
 			},
 			ExecName: "sample_pass",
 		},
@@ -2879,7 +2861,7 @@ func crosRepairActions() map[string]*Action {
 				"servod_has_control_cr50_reboot",
 				"Trigger power_state:cr50_reset",
 				"Re-initialize DUT part of servo",
-				"Wait to be accessable",
+				"Wait to be accessible",
 			},
 			ExecName: "sample_pass",
 		},
@@ -3008,7 +2990,7 @@ func crosRepairActions() map[string]*Action {
 			RunControl:             RunControl_ALWAYS_RUN,
 			AllowFailAfterRecovery: true,
 		},
-		"Is not in audio box": {
+		"Do no run in audio box pool": {
 			Docs: []string{
 				"Verify that setup is not audio box",
 			},
@@ -3049,7 +3031,7 @@ func crosRepairActions() map[string]*Action {
 				"Disable write-protect fprom 'internal'.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_disable_fprom_write_protect",
 			ExecExtraArgs: []string{
@@ -3064,7 +3046,7 @@ func crosRepairActions() map[string]*Action {
 				"Disable write-protect fprom 'ec'.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_disable_fprom_write_protect",
 			ExecExtraArgs: []string{
@@ -3124,7 +3106,7 @@ func crosRepairActions() map[string]*Action {
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Mark as ChromeOS based",
 				"Boot DUT in recovery and install from USB-drive",
-				"Wait to be accessable",
+				"Wait to be accessible",
 				"Remove REIMAGE_BY_USBKEY repair-request",
 			},
 			ExecName:   "sample_pass",
@@ -3152,7 +3134,7 @@ func crosRepairActions() map[string]*Action {
 				"Servo USB-Key needs to be reflashed",
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Boot DUT in recovery and install from USB-drive",
-				"Wait to be accessable",
+				"Wait to be accessible",
 				"Remove REIMAGE_BY_USBKEY repair-request",
 				"Remove REFLASH_FW repair-request",
 			},
@@ -3176,7 +3158,7 @@ func crosRepairActions() map[string]*Action {
 				"Download stable version OS image to servo usbkey if necessary (allow fail)",
 				"Mark as ChromeOS based",
 				"Boot DUT in recovery and install from USB-drive (no storage check)",
-				"Wait to be accessable",
+				"Wait to be accessible",
 				"Remove REIMAGE_BY_USBKEY repair-request",
 			},
 			ExecName:   "sample_pass",
@@ -3204,7 +3186,7 @@ func crosRepairActions() map[string]*Action {
 				"Power-off the DUT using AMT",
 				"Sleep 1 seconds",
 				"Power-on the DUT using AMT",
-				"Wait to be accessable",
+				"Wait to be accessible",
 				"Print active devices",
 				"Is Flex booted from USB-drive",
 				"Run chromeos-install for Flex",
@@ -3213,7 +3195,7 @@ func crosRepairActions() map[string]*Action {
 				"Sleep 1 seconds",
 				"Direct USB-drive to servo host",
 				"Power-on the DUT using AMT",
-				"Wait to be accessable",
+				"Wait to be accessible",
 				"Remove REIMAGE_BY_USBKEY repair-request",
 			},
 			ExecName:   "sample_pass",
@@ -3325,7 +3307,7 @@ func crosRepairActions() map[string]*Action {
 				"Mark as ChromeOS based",
 				"Run install after boot from USB-drive",
 				"Cold reset DUT by servo and wait to boot",
-				"Wait to be accessable",
+				"Wait to be accessible",
 				"Remove REIMAGE_BY_USBKEY repair-request",
 			},
 			ExecName:   "sample_pass",
@@ -3729,13 +3711,13 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Can become ChromeOS-based",
-				"Device is accessable",
+				"Device is accessible",
 				"Internal storage is responsive",
 			},
 			Dependencies: []string{
 				"Write factory-install-reset to file system",
 				"Simple reboot",
-				"Wait to be accessable",
+				"Wait to be accessible",
 				"Call provision for DUT",
 				"Remove PROVISION repair-request",
 			},
@@ -3746,12 +3728,12 @@ func crosRepairActions() map[string]*Action {
 				"Do simple reboot of the DUT force to update DUT cache settings.",
 			},
 			Conditions: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			Dependencies: []string{
 				"Simple reboot",
 			},
-			ExecName:    "cros_ssh",
+			ExecName:    "cros_access",
 			ExecTimeout: &durationpb.Duration{Seconds: 150},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
@@ -4163,7 +4145,7 @@ func crosRepairActions() map[string]*Action {
 				"RPM config present",
 			},
 			Dependencies: []string{
-				"Device is SSHable (simple)",
+				"Device is accessible (simple)",
 				"Audit RPM config (with battery)",
 				"Audit RPM config (without battery)",
 			},
@@ -4257,12 +4239,12 @@ func crosRepairActions() map[string]*Action {
 			},
 			AllowFailAfterRecovery: true,
 		},
-		"Read RO_VPD from DUT": {
+		"Collect RO_VPD from DUT": {
 			Docs: []string{
 				"Record data that is present in RO_VPD of DUT to inventory.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_update_ro_vpd_inventory",
 		},
@@ -4272,7 +4254,7 @@ func crosRepairActions() map[string]*Action {
 				"Skip update values if already known by inventory.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_update_ro_vpd_inventory",
 			ExecExtraArgs: []string{
@@ -4284,7 +4266,7 @@ func crosRepairActions() map[string]*Action {
 				"Verify if data from RO_VPD key: wifi_sar that was present on deploy is still present.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_match_ro_vpd_inventory",
 			RecoveryActions: []string{
@@ -4296,7 +4278,7 @@ func crosRepairActions() map[string]*Action {
 				"Restore data from RO_VPD key: wifi_sar that was present on deploy.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_set_ro_vpd",
 		},
@@ -4338,7 +4320,7 @@ func crosRepairActions() map[string]*Action {
 				"Timeout is 10 mins.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_audit_camera",
 			ExecTimeout: &durationpb.Duration{
@@ -4406,7 +4388,7 @@ func crosRepairActions() map[string]*Action {
 				"Is a Chromebook",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName:   "cros_verify_rootfs_verity",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -4440,7 +4422,7 @@ func crosRepairActions() map[string]*Action {
 				"that action attempt to perform to avoid repeating it.",
 			},
 			Conditions: []string{
-				"Device is accessable",
+				"Device is accessible",
 				"Confirm log collection info does not exist",
 			},
 			Dependencies: []string{
@@ -4462,7 +4444,7 @@ func crosRepairActions() map[string]*Action {
 				"not critical.",
 			},
 			Conditions: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_copy_to_logs",
 			ExecExtraArgs: []string{
@@ -4483,7 +4465,7 @@ func crosRepairActions() map[string]*Action {
 				"log collection are not critical.",
 			},
 			Conditions: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_copy_to_logs",
 			ExecExtraArgs: []string{
@@ -4504,7 +4486,7 @@ func crosRepairActions() map[string]*Action {
 				"retain context even when a repair was successful.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_copy_to_logs",
 			ExecExtraArgs: []string{
@@ -4526,7 +4508,7 @@ func crosRepairActions() map[string]*Action {
 				"retain context even when a repair was successful.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_copy_to_logs",
 			ExecExtraArgs: []string{
@@ -4546,7 +4528,7 @@ func crosRepairActions() map[string]*Action {
 				"Checks if shill debug utility can be found in DUT cli.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_is_tool_present",
 			ExecExtraArgs: []string{
@@ -4561,7 +4543,7 @@ func crosRepairActions() map[string]*Action {
 				"Checks if modem utility can be found in DUT cli.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_is_tool_present",
 			ExecExtraArgs: []string{
@@ -4576,7 +4558,7 @@ func crosRepairActions() map[string]*Action {
 				"Enables verbose logging of shill network manager.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 				"Is shill debug CLI present",
 			},
 			ExecName: "cros_set_verbose_shill_logs",
@@ -4593,7 +4575,7 @@ func crosRepairActions() map[string]*Action {
 				"Enables verbose logging of modem manager.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 				"Is modem CLI present",
 			},
 			ExecName: "cros_set_verbose_mm_logs",
@@ -4608,7 +4590,7 @@ func crosRepairActions() map[string]*Action {
 				"Enables verbose logging of shill network manager.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 				"Is shill debug CLI present",
 			},
 			ExecName: "cros_set_verbose_shill_logs",
@@ -4623,7 +4605,7 @@ func crosRepairActions() map[string]*Action {
 				"Enables verbose logging of modem manager.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 				"Is modem CLI present",
 			},
 			ExecName: "cros_set_verbose_mm_logs",
@@ -4639,7 +4621,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is in cellular pool",
-				"Device is accessable",
+				"Device is accessible",
 			},
 			Dependencies: []string{
 				"Enable verbose shill logs",
@@ -4669,7 +4651,7 @@ func crosRepairActions() map[string]*Action {
 				"We collect the dmesg output.",
 			},
 			Conditions: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_dmesg",
 			ExecExtraArgs: []string{
@@ -4688,7 +4670,7 @@ func crosRepairActions() map[string]*Action {
 				"copy-attempt completes with success or not.",
 			},
 			Conditions: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_collect_crash_dumps",
 			ExecExtraArgs: []string{
@@ -4804,7 +4786,7 @@ func crosRepairActions() map[string]*Action {
 				"Verified if DUT's kernel doesn't waiting for update.",
 			},
 			Conditions: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_kernel_priority_has_not_changed",
 			RecoveryActions: []string{
@@ -4818,11 +4800,11 @@ func crosRepairActions() map[string]*Action {
 				"Reboot initiated from DUT side.",
 			},
 			Conditions: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			Dependencies: []string{
 				"Simple reboot",
-				"Wait to be accessable",
+				"Wait to be accessible",
 			},
 			ExecName: "cros_kernel_priority_has_not_changed",
 		},
@@ -4842,7 +4824,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Conditions: []string{
 				"Is a Chromebook",
-				"Device is accessable",
+				"Device is accessible",
 				"Is crosid present",
 			},
 			ExecName: "cros_run_command",
@@ -4862,14 +4844,14 @@ func crosRepairActions() map[string]*Action {
 				"Remove whitelabel_tag from vpd and reboot to apply change.",
 			},
 			Conditions: []string{
-				"Device is accessable",
+				"Device is accessible",
 				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"Delete whitelabel_tag from vpd",
 				"Simple reboot",
 			},
-			ExecName:    "cros_ssh",
+			ExecName:    "cros_access",
 			ExecTimeout: &durationpb.Duration{Seconds: 150},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
@@ -4904,7 +4886,7 @@ func crosRepairActions() map[string]*Action {
 				"Sleep 10 seconds",
 				"Try fake disconnect",
 				"Sleep 60 seconds",
-				"Wait to be accessable",
+				"Wait to be accessible",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
@@ -5077,7 +5059,7 @@ func crosRepairActions() map[string]*Action {
 				"Has a stable-version service",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName: "cros_is_on_stable_version",
 			RecoveryActions: []string{
@@ -5148,7 +5130,7 @@ func crosRepairActions() map[string]*Action {
 				"Is a Chromebook",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 				"Is crosid readable",
 			},
 			ExecName: "cros_collect_firmware_target",
@@ -5168,7 +5150,7 @@ func crosRepairActions() map[string]*Action {
 				"Collect gpu_id from DUT with graphics hardware_probe to UFS and recoveries's label GpuId.",
 			},
 			Dependencies: []string{
-				"Device is accessable",
+				"Device is accessible",
 			},
 			ExecName:               "cros_collect_gpu_id",
 			AllowFailAfterRecovery: true,
@@ -5354,14 +5336,14 @@ func crosRepairActions() map[string]*Action {
 				"Mark as ChromeOS based",
 				"Detect CacheService address",
 				"Call servod to download provision image to USB-key",
-				"Boot on USB-key and install ChroemOS",
-				"Wait to be accessable",
+				"Boot on USB-key and install ChromeOS",
+				"Wait to be accessible",
 				"Remove REIMAGE_BY_USBKEY repair-request",
 			},
 			ExecName:   "sample_pass",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
-		"Boot on USB-key and install ChroemOS": {
+		"Boot on USB-key and install ChromeOS": {
 			Docs: []string{
 				"This action installs the test image on DUT utilizing ",
 				"the features of servo. DUT will be booted in recovery ",

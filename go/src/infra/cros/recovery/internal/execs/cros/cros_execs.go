@@ -46,8 +46,8 @@ func pingExec(ctx context.Context, info *execs.ExecInfo) error {
 	return cros.WaitUntilPingable(ctx, info.GetExecTimeout(), cros.PingRetryInterval, 2, pinger)
 }
 
-// sshExec verifies ssh access to the current plan's device (named by the default resource name).
-func sshExec(ctx context.Context, info *execs.ExecInfo) error {
+// checkAccessExec verifies access to the device.
+func checkAccessExec(ctx context.Context, info *execs.ExecInfo) error {
 	argsMap := info.GetActionArgs(ctx)
 	run := info.DefaultRunner()
 	deviceType := argsMap.AsString(ctx, "device_type", "")
@@ -451,7 +451,7 @@ func logTypeCStatus(ctx context.Context, info *execs.ExecInfo) error {
 
 func init() {
 	execs.Register("cros_ping", pingExec)
-	execs.Register("cros_ssh", sshExec)
+	execs.Register("cros_access", checkAccessExec)
 	execs.Register("cros_reboot", rebootExec)
 	execs.Register("cros_is_on_stable_version", isOnStableVersionExec)
 	execs.Register("cros_not_on_stable_version", notOnStableVersionExec)

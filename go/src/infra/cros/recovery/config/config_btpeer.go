@@ -54,7 +54,7 @@ func btpeerRepairPlan() *Plan {
 					"Try to wait device to be sshable.",
 					"Waiting time 150 seconds.",
 				},
-				ExecName:   "cros_ssh",
+				ExecName:   "cros_access",
 				RunControl: RunControl_ALWAYS_RUN,
 			},
 			"Device has been rebooted recently": {

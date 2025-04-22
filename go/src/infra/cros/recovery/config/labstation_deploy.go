@@ -111,7 +111,7 @@ func LabstationDeployConfig() *Configuration {
 			Docs: []string{
 				"This verifier checks whether the host is accessible over ssh.",
 			},
-			ExecName:    "cros_ssh",
+			ExecName:    "cros_access",
 			ExecTimeout: &durationpb.Duration{Seconds: 30},
 			RunControl:  RunControl_ALWAYS_RUN,
 			RecoveryActions: []string{

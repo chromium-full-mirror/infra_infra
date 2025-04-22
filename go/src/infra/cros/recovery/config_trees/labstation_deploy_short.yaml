@@ -8,7 +8,7 @@ plans:
             - name: dut_has_model_name
         - name: Collect logs (before) (Allow to fail) ('sample_pass') (RUN_ONCE)
           conditions:
-            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+            - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
             - name: Confirm log collection info does not exist (before) ('cros_confirm_file_not_exists')
           dependencies:
             - name: Create log collection info (before) ('cros_create_log_collection_info') (RUN_ONCE)
@@ -17,7 +17,7 @@ plans:
             - name: Copy messages (before) (Allow to fail) ('cros_copy_to_logs')
             - name: Copy eventlog.txt (before) (Allow to fail) ('cros_copy_to_logs')
             - name: Collect dmesg (before) (Allow to fail) ('cros_dmesg') (RUN_ONCE)
-        - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+        - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
           recoveries:
             - name: Power cycle by RPM ('rpm_power_cycle') (ALWAYS_RUN) (time:'2m0s')
               conditions:
@@ -59,7 +59,7 @@ plans:
             - name: Reset DUT-state reason ('dut_reset_state_reason')
         - name: Collect logs (after) (Allow to fail) ('sample_pass') (RUN_ONCE)
           conditions:
-            - name: Device is SSHable ('cros_ssh') (ALWAYS_RUN) (time:'30s')
+            - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
             - name: Confirm log collection info does not exist (after) ('cros_confirm_file_not_exists')
           dependencies:
             - name: Create log collection info (after) ('cros_create_log_collection_info') (RUN_ONCE)

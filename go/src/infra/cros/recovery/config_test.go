@@ -27,7 +27,7 @@ func verifyConfig(name string, t *testing.T, c *config.Configuration) {
 	ctx := context.Background()
 	p, err := config.Load(ctx, mustCreateConfigJSON(c), execs.Exist)
 	if err != nil {
-		t.Errorf("%q expected to pass but failed with error: %s", name, err)
+		t.Errorf("%q :unexpected failed with error: %s", name, err)
 	}
 	if p == nil {
 		t.Errorf("%q default config is empty", name)
@@ -62,6 +62,12 @@ func TestMHRepairConfig(t *testing.T) {
 func TestCrosDeployConfig(t *testing.T) {
 	t.Parallel()
 	verifyConfig("dut-deploy", t, config.CrosDeployConfig())
+}
+
+// TestMHDeployConfig verifies the MH deploy configuration.
+func TestMHDeployConfig(t *testing.T) {
+	t.Parallel()
+	verifyConfig("mh-deploy", t, config.MHDeployConfig())
 }
 
 // TestAndroidRepairConfig verifies the android repair configuration.

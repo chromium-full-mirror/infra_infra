@@ -177,7 +177,7 @@ func LabstationRepairConfig() *Configuration {
 				"Power cycle by RPM",
 				"Power cycle by RPM with long delay",
 			},
-			ExecName:    "cros_ssh",
+			ExecName:    "cros_access",
 			ExecTimeout: &durationpb.Duration{Seconds: 30},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
@@ -293,7 +293,7 @@ func LabstationRepairConfig() *Configuration {
 			// Labstation may take some time to fully up(e.g. network service ready) after an update.
 			// So giving it 10 minutes in here to allow more buffer.
 			ExecTimeout:   &durationpb.Duration{Seconds: 600},
-			ExecName:      "cros_ssh",
+			ExecName:      "cros_access",
 			RunControl:    RunControl_ALWAYS_RUN,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},

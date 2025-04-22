@@ -29,7 +29,7 @@ func dolosRepairPlan() *Plan {
 					"Set dolos state:NO_SSH",
 					"Device is pingable",
 				},
-				ExecName:    "cros_ssh",
+				ExecName:    "cros_access",
 				ExecTimeout: &durationpb.Duration{Seconds: 30},
 			},
 			"Is Dolos present": {

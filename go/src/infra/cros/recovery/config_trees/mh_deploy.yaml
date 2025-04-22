@@ -100,7 +100,7 @@ plans:
                     - name: Stop UART capture (Allow to fail)
                       exec_name: servod_stop_uart_capture
         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-          exec_name: cros_ssh
+          exec_name: cros_access
           docs:
             - Verify that device is reachable by SSH.
             - Limited to 15 seconds.
@@ -111,7 +111,7 @@ plans:
                 - state:NO_SSH
           recoveries:
             - name: Wait for labstation to load (time:'2m0s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                 - Labstation is expected to complete the reboot within 2 minutes.
@@ -126,7 +126,7 @@ plans:
                 - Condition to check if the servohost is a labstation.
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
@@ -137,7 +137,7 @@ plans:
                     - state:NO_SSH
               recoveries:
                 - name: Wait for labstation to load (time:'2m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                     - Labstation is expected to complete the reboot within 2 minutes.
@@ -176,7 +176,7 @@ plans:
                 - reverse:true
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
@@ -187,7 +187,7 @@ plans:
                     - state:NO_SSH
               recoveries:
                 - name: Wait for labstation to load (time:'2m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                     - Labstation is expected to complete the reboot within 2 minutes.
@@ -235,7 +235,7 @@ plans:
             - Verify that servo_v4(p1) board is present
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
@@ -246,7 +246,7 @@ plans:
                     - state:NO_SSH
               recoveries:
                 - name: Wait for labstation to load (time:'2m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                     - Labstation is expected to complete the reboot within 2 minutes.
@@ -283,7 +283,7 @@ plans:
             - Check running agains version specified by servo_updater channel.
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
@@ -294,7 +294,7 @@ plans:
                     - state:NO_SSH
               recoveries:
                 - name: Wait for labstation to load (time:'2m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                     - Labstation is expected to complete the reboot within 2 minutes.
@@ -382,7 +382,7 @@ plans:
         - name: Is Dolos present
           exec_name: dolos_is_enabled
         - name: Device is sshable (time:'30s')
-          exec_name: cros_ssh
+          exec_name: cros_access
           dependencies:
             - name: Set dolos state:NO_SSH (ALWAYS_RUN)
               exec_name: dolos_set_dolos_state
@@ -400,7 +400,7 @@ plans:
               exec_name: dolos_update_uartname_cache
               dependencies:
                 - name: Device is sshable (time:'30s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   dependencies:
                     - name: Set dolos state:NO_SSH (ALWAYS_RUN)
                       exec_name: dolos_set_dolos_state
@@ -520,7 +520,7 @@ plans:
                     - name: Stop UART capture (Allow to fail)
                       exec_name: servod_stop_uart_capture
         - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-          exec_name: cros_ssh
+          exec_name: cros_access
           docs:
             - Verify that device is reachable by SSH.
             - Limited to 15 seconds.
@@ -531,7 +531,7 @@ plans:
                 - state:NO_SSH
           recoveries:
             - name: Wait for labstation to load (time:'2m0s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                 - Labstation is expected to complete the reboot within 2 minutes.
@@ -546,7 +546,7 @@ plans:
                 - Condition to check if the servohost is a labstation.
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
@@ -557,7 +557,7 @@ plans:
                     - state:NO_SSH
               recoveries:
                 - name: Wait for labstation to load (time:'2m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                     - Labstation is expected to complete the reboot within 2 minutes.
@@ -597,7 +597,7 @@ plans:
                 - reverse:true
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
@@ -608,7 +608,7 @@ plans:
                     - state:NO_SSH
               recoveries:
                 - name: Wait for labstation to load (time:'2m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                     - Labstation is expected to complete the reboot within 2 minutes.
@@ -638,7 +638,7 @@ plans:
                     - verify if DUT is SSH-able
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
@@ -649,7 +649,7 @@ plans:
                     - state:NO_SSH
               recoveries:
                 - name: Wait for labstation to load (time:'2m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                     - Labstation is expected to complete the reboot within 2 minutes.
@@ -666,7 +666,7 @@ plans:
                 - reverse:true
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
@@ -677,7 +677,7 @@ plans:
                     - state:NO_SSH
               recoveries:
                 - name: Wait for labstation to load (time:'2m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                     - Labstation is expected to complete the reboot within 2 minutes.
@@ -735,7 +735,7 @@ plans:
             - Verify that servo_v4(p1) board is present
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
@@ -746,7 +746,7 @@ plans:
                     - state:NO_SSH
               recoveries:
                 - name: Wait for labstation to load (time:'2m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                     - Labstation is expected to complete the reboot within 2 minutes.
@@ -783,7 +783,7 @@ plans:
             - Check running agains version specified by servo_updater channel.
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
@@ -794,7 +794,7 @@ plans:
                     - state:NO_SSH
               recoveries:
                 - name: Wait for labstation to load (time:'2m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                     - Labstation is expected to complete the reboot within 2 minutes.
@@ -834,7 +834,7 @@ plans:
             - Start servod daemon on servo-host
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
@@ -845,7 +845,7 @@ plans:
                     - state:NO_SSH
               recoveries:
                 - name: Wait for labstation to load (time:'2m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                     - Labstation is expected to complete the reboot within 2 minutes.
@@ -911,7 +911,7 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -927,7 +927,7 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -949,7 +949,7 @@ plans:
                 - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -980,7 +980,7 @@ plans:
                     - Reboot after the fw flash is successful.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -1002,7 +1002,7 @@ plans:
                 - Try to reset GSC from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -1026,7 +1026,7 @@ plans:
                     - Reboot after the fw flash is successful.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -1063,7 +1063,7 @@ plans:
             - Uses a servod control to check whether the servod daemon is responsive.
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
@@ -1074,7 +1074,7 @@ plans:
                     - state:NO_SSH
               recoveries:
                 - name: Wait for labstation to load (time:'2m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                     - Labstation is expected to complete the reboot within 2 minutes.
@@ -1187,7 +1187,7 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -1203,7 +1203,7 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -1410,7 +1410,7 @@ plans:
                 - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -1441,7 +1441,7 @@ plans:
                     - Reboot after the fw flash is successful.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -1463,7 +1463,7 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -1479,7 +1479,7 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -1744,7 +1744,7 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -1760,7 +1760,7 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -1901,7 +1901,7 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -1917,7 +1917,7 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -1968,7 +1968,7 @@ plans:
                 - Verify whether servo V4(p1) device is connect to DUT using Type-A connection.
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
@@ -1979,7 +1979,7 @@ plans:
                     - state:NO_SSH
               recoveries:
                 - name: Wait for labstation to load (time:'2m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                     - Labstation is expected to complete the reboot within 2 minutes.
@@ -2029,7 +2029,7 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -2045,7 +2045,7 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -2087,7 +2087,7 @@ plans:
                 - Verify is servod expected to have warm_reset control
           dependencies:
             - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Verify that device is reachable by SSH.
                 - Limited to 15 seconds.
@@ -2098,7 +2098,7 @@ plans:
                     - state:NO_SSH
               recoveries:
                 - name: Wait for labstation to load (time:'2m0s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                     - Labstation is expected to complete the reboot within 2 minutes.
@@ -2620,7 +2620,7 @@ plans:
                     - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -2651,7 +2651,7 @@ plans:
                         - Reboot after the fw flash is successful.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -2673,7 +2673,7 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -2689,7 +2689,7 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -2711,7 +2711,7 @@ plans:
                     - Try to reset GSC from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -2735,7 +2735,7 @@ plans:
                         - Reboot after the fw flash is successful.
                       conditions:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -2954,7 +2954,7 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -2970,7 +2970,7 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -3015,7 +3015,7 @@ plans:
                     - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -3046,7 +3046,7 @@ plans:
                         - Reboot after the fw flash is successful.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -3068,7 +3068,7 @@ plans:
                     - Try to reset GSC from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -3092,7 +3092,7 @@ plans:
                         - Reboot after the fw flash is successful.
                       conditions:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -3318,7 +3318,7 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -3334,7 +3334,7 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -3356,7 +3356,7 @@ plans:
                 - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -3387,7 +3387,7 @@ plans:
                     - Reboot after the fw flash is successful.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -3409,7 +3409,7 @@ plans:
                 - Try to reset GSC from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -3433,7 +3433,7 @@ plans:
                     - Reboot after the fw flash is successful.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -3485,7 +3485,7 @@ plans:
                 - Usually that is ccd_gsc|cr50 or servo_micro or c2d2.
               dependencies:
                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Verify that device is reachable by SSH.
                     - Limited to 15 seconds.
@@ -3496,7 +3496,7 @@ plans:
                         - state:NO_SSH
                   recoveries:
                     - name: Wait for labstation to load (time:'2m0s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                         - Labstation is expected to complete the reboot within 2 minutes.
@@ -3694,7 +3694,7 @@ plans:
                     - Try to reset GSC from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -3718,7 +3718,7 @@ plans:
                         - Reboot after the fw flash is successful.
                       conditions:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -3740,7 +3740,7 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -3756,7 +3756,7 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -3778,7 +3778,7 @@ plans:
                     - Try to reset GSC from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -3802,7 +3802,7 @@ plans:
                         - Reboot after the fw flash is successful.
                       conditions:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -3854,7 +3854,7 @@ plans:
                     - Check whether the servo device has dual setup. This check only applies to the devices that have the dual setup configured on them.
               dependencies:
                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Verify that device is reachable by SSH.
                     - Limited to 15 seconds.
@@ -3865,7 +3865,7 @@ plans:
                         - state:NO_SSH
                   recoveries:
                     - name: Wait for labstation to load (time:'2m0s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                         - Labstation is expected to complete the reboot within 2 minutes.
@@ -4063,7 +4063,7 @@ plans:
                     - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -4094,7 +4094,7 @@ plans:
                         - Reboot after the fw flash is successful.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -4116,7 +4116,7 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -4132,7 +4132,7 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -4154,7 +4154,7 @@ plans:
                     - Try to reset GSC from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -4178,7 +4178,7 @@ plans:
                         - Reboot after the fw flash is successful.
                       conditions:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -4229,7 +4229,7 @@ plans:
                 - Verify that usb-key is responsive
               dependencies:
                 - name: Device is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Verify that device is reachable by SSH.
                     - Limited to 15 seconds.
@@ -4240,7 +4240,7 @@ plans:
                         - state:NO_SSH
                   recoveries:
                     - name: Wait for labstation to load (time:'2m0s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       docs:
                         - Sometimes we can try to connect when labstation is the middle of reboot, so we wait.
                         - Labstation is expected to complete the reboot within 2 minutes.
@@ -4384,7 +4384,7 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -4400,7 +4400,7 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -4660,7 +4660,7 @@ plans:
                 - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -4691,7 +4691,7 @@ plans:
                     - Reboot after the fw flash is successful.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -4713,7 +4713,7 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -4729,7 +4729,7 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -4751,7 +4751,7 @@ plans:
                 - Try to reset GSC from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -4775,7 +4775,7 @@ plans:
                     - Reboot after the fw flash is successful.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -4950,7 +4950,7 @@ plans:
                         - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                       conditions:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -4966,7 +4966,7 @@ plans:
                             - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                           dependencies:
                             - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                              exec_name: cros_ssh
+                              exec_name: cros_access
                               exec_args:
                                 - device_type:dut
                               docs:
@@ -5226,7 +5226,7 @@ plans:
                     - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -5257,7 +5257,7 @@ plans:
                         - Reboot after the fw flash is successful.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -5279,7 +5279,7 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -5295,7 +5295,7 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -5317,7 +5317,7 @@ plans:
                     - Try to reset GSC from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -5341,7 +5341,7 @@ plans:
                         - Reboot after the fw flash is successful.
                       conditions:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -5551,7 +5551,7 @@ plans:
                 - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -5582,7 +5582,7 @@ plans:
                     - Reboot after the fw flash is successful.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -5604,7 +5604,7 @@ plans:
                 - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -5620,7 +5620,7 @@ plans:
                     - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                   dependencies:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -5642,7 +5642,7 @@ plans:
                 - Try to reset GSC from DUT side to wake it up.
               conditions:
                 - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   exec_args:
                     - device_type:dut
                   docs:
@@ -5666,7 +5666,7 @@ plans:
                     - Reboot after the fw flash is successful.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -5983,7 +5983,7 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -5999,7 +5999,7 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -6225,7 +6225,7 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -6241,7 +6241,7 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -6327,7 +6327,7 @@ plans:
                     - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -6358,7 +6358,7 @@ plans:
                         - Reboot after the fw flash is successful.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -6448,7 +6448,7 @@ plans:
                     - Try to reflash cr50 firmware and reboot AP from DUT side to wake it up.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -6479,7 +6479,7 @@ plans:
                         - Reboot after the fw flash is successful.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -6501,7 +6501,7 @@ plans:
                     - Try to reset EC from DUT side to wake CR50 up and then stop the servod.
                   conditions:
                     - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                      exec_name: cros_access
                       exec_args:
                         - device_type:dut
                       docs:
@@ -6517,7 +6517,7 @@ plans:
                         - Try to reset EC from DUT side by running connads wake up the device as it will trigger recovering ec, cr50, and other fw.
                       dependencies:
                         - name: DUT is SSHable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                          exec_name: cros_access
                           exec_args:
                             - device_type:dut
                           docs:
@@ -7062,10 +7062,10 @@ plans:
                     - requests:REFLASH_FW
                   docs:
                     - Remove REFLASH_FW repair-requests.
-        - name: Android is accessable (ALWAYS_RUN) (time:'15s')
-          exec_name: cros_ssh
+        - name: Android is accessible (ALWAYS_RUN) (time:'15s')
+          exec_name: cros_access
           docs:
-            - Validate is Andoid OS is accessable by reading data from the host.
+            - Validate is Andoid OS is accessible by reading data from the host.
           recoveries:
             - name: Reboot by ADB (Allow to fail) (ALWAYS_RUN)
               exec_name: ctr_adb_command
@@ -7443,7 +7443,7 @@ plans:
                     - name: is_servo_type_ccd
                       exec_name: is_servo_type_ccd
                 - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be accesable shortly.
                     - Waiting time 30 seconds.
@@ -7775,8 +7775,8 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
-                - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be acccesable (SSH or ADB).
                     - Waiting time 150 seconds.
@@ -8008,8 +8008,8 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be acccesable (SSH or ADB).
                     - Waiting time 150 seconds.
@@ -8597,8 +8597,8 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
-                - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be acccesable (SSH or ADB).
                     - Waiting time 150 seconds.
@@ -8830,8 +8830,8 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be acccesable (SSH or ADB).
                     - Waiting time 150 seconds.
@@ -8841,27 +8841,12 @@ plans:
                     - requests:PROVISION,REIMAGE_BY_USBKEY
                   docs:
                     - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
-        - name: DUT has expected dev firmware (time:'10m0s')
-          exec_name: cros_has_dev_signed_firmware
+        - name: Has repair-request for reflash-firmware
+          exec_name: dut_has_any_repair_requests
+          exec_args:
+            - requests:REFLASH_FW
           docs:
-            - Verify that FW on the DUT has dev keys.
-          conditions:
-            - name: Is a Chromebook (RUN_ONCE)
-              exec_name: dut_check_board
-              exec_args:
-                - string_values:aurora,reven
-                - invert_result:true
-              docs:
-                - Check that DUT is a Chromebook by checking for non-Chromebook boards
-            - name: Device not in MP Signed AP FW pool
-              exec_name: dut_not_in_pool
-              exec_args:
-                - mp_firmware_testing
-              docs:
-                - Verify that DUT is not in the pool that requires MP signed AP firmware.
-                - The firmware validation only applies to dev signed AP firmware
-                - currently. Depending on how widespread MP signed AP firmware
-                - testing is, we could add a parallel validation for MP AP firmware.
+            - Check if REFLASH_FW repair-request is present.
           recoveries:
             - name: Update FW from fw-image by servo and wait for boot
               exec_name: sample_pass
@@ -9019,12 +9004,20 @@ plans:
                     - requests:REFLASH_FW
                   docs:
                     - Remove REFLASH_FW repair-requests.
-            - name: Update firmware with factory mode by host (ALWAYS_RUN)
+        - name: 'Android: Verify OS is on stable-version'
+          exec_name: android_is_on_os_stable_version
+          docs:
+            - Verify that Android OS is on stable version.
+          conditions:
+            - name: Is Android based? (ALWAYS_RUN)
+              exec_name: cros_is_android_based
+          recoveries:
+            - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
-                - 'Force update FW on the DUT by factory mode. Access to the '
-                - 'device under test is required to collect HWID information, '
-                - which is critical to finding the firmware targets for flash.
+                - Use provision image on USB-key to boot and get SSH access.
+                - Run specific install command to install Android OS.
+                - The logic is copy from foil-provision
               conditions:
                 - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
@@ -9033,95 +9026,6 @@ plans:
                     - invert_result:true
                   docs:
                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                - name: Is recovery-version has firmware image path
-                  exec_name: has_stable_version_fw_image
-                  docs:
-                    - Verify that recovery version has firmware image path.
-                  dependencies:
-                    - name: Has a stable-version service (RUN_ONCE)
-                      exec_name: has_stable_version_service_path
-                      docs:
-                        - Verify if we have access to the service provided access to the stable version
-                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Verify that device is reachable by SSH.
-                    - Limited to 15 seconds.
-              dependencies:
-                - name: Disable software-controlled write-protect for 'internal' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
-                  exec_name: cros_disable_fprom_write_protect
-                  exec_args:
-                    - fprom:internal
-                  docs:
-                    - Disable write-protect fprom 'internal'.
-                  dependencies:
-                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
-                      docs:
-                        - Verify that device is reachable by SSH.
-                        - Limited to 15 seconds.
-                - name: Disable software-controlled write-protect for 'ec' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
-                  exec_name: cros_disable_fprom_write_protect
-                  exec_args:
-                    - fprom:ec
-                  docs:
-                    - Disable write-protect fprom 'ec'.
-                  dependencies:
-                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
-                      docs:
-                        - Verify that device is reachable by SSH.
-                        - Limited to 15 seconds.
-                - name: Update FW from fw-image with factory mode from DUT (ALWAYS_RUN) (time:'2h0m0s')
-                  exec_name: cros_update_firmware_from_firmware_image_on_dut
-                  exec_args:
-                    - mode:factory
-                    - force:true
-                    - updater_timeout:600
-                    - update_ec_attempt_count:1
-                    - update_ap_attempt_count:1
-                    - use_cache_extractor:true
-                    - use_fw_targets_from_inventory:true
-                  docs:
-                    - Download firmware image to DUT, and install via firmware updater.
-                    - Update firmware from faft stable image with chromeos-firmwareupdate tool
-                    - --mode=facotry will be specified when run chromeos-firmwareupdate
-                    - 'Set timeout to 120 minutes = 10 minutes for download + 100 minutes '
-                    - for find and extract AP/EC images + 10 minutes for run updater.
-                  conditions:
-                    - name: Is recovery-version has firmware image path
-                      exec_name: has_stable_version_fw_image
-                      docs:
-                        - Verify that recovery version has firmware image path.
-                      dependencies:
-                        - name: Has a stable-version service (RUN_ONCE)
-                          exec_name: has_stable_version_service_path
-                          docs:
-                            - Verify if we have access to the service provided access to the stable version
-                - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
-                  exec_name: dut_remove_repair_requests
-                  exec_args:
-                    - requests:REFLASH_FW
-                  docs:
-                    - Remove REFLASH_FW repair-requests.
-                - name: Simple reboot (ALWAYS_RUN)
-                  exec_name: cros_run_command
-                  exec_args:
-                    - host:dut
-                    - command:reboot
-                    - background:true
-                  docs:
-                    - Simple un-blocker reboot.
-                - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Try to wait device to be acccesable (SSH or ADB).
-                    - Waiting time 150 seconds.
-            - name: Cold reset DUT by servo and wait to boot (ALWAYS_RUN)
-              exec_name: sample_pass
-              docs:
-                - Cold reset device by servo and wait for DUT to become ping-able.
-              conditions:
                 - name: Is servod running (ALWAYS_RUN)
                   exec_name: sample_pass
                   docs:
@@ -9136,14 +9040,17 @@ plans:
                       dependencies:
                         - name: Setup has servo info
                           exec_name: dut_servo_host_present
-              dependencies:
-                - name: Cold reset DUT by servo (ALWAYS_RUN)
-                  exec_name: servo_power_state_reset
-                  exec_args:
-                    - timeout:30
-                    - more_logs:true
+                - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                  exec_name: cros_is_previous_android_based_or_os_type
                   docs:
-                    - Cold reset device by servo and do not wait.
+                    - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                - name: Is servo USB key detected
+                  exec_name: servo_usbkey_is_detected
+                  exec_args:
+                    - file_check:true
+                  docs:
+                    - The action used as codiion.
+                    - The action verify that USB-key is detected and readable.
                   dependencies:
                     - name: Is servod running (ALWAYS_RUN)
                       exec_name: sample_pass
@@ -9159,17 +9066,127 @@ plans:
                           dependencies:
                             - name: Setup has servo info
                               exec_name: dut_servo_host_present
+              dependencies:
+                - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                  exec_name: cros_set_as_android_based
+                  docs:
+                    - Mark DUT as Android based.
+                - name: Detect CacheService address
+                  exec_name: cache_service_address_detection
+                  docs:
+                    - Collect address of CacheService rom labService.
+                  conditions:
+                    - name: Do not run on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
+                - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                  exec_name: servo_download_provision_image_to_usb
+                  exec_args:
+                    - image_version:v6.1.1
+                  docs:
+                    - This action calls servod to download provision image custom kernel to servo USB-key.
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
+                  exec_name: cros_provision_actions_from_recovery_mode
+                  exec_args:
+                    - run_android_install:true
+                    - run_cros_install:false
+                    - reset_tpm:true
+                    - boot_timeout:150
+                    - boot_interval:10
+                    - boot_retry:1
+                    - ignore_reboot_failure:true
+                    - after_reboot_check:true
+                    - after_reboot_timeout:240
+                    - after_reboot_allow_use_servo_reset:true
+                  docs:
+                    - 'This action installs the test image on DUT utilizing '
+                    - 'the features of servo. DUT will be booted in recovery '
+                    - 'mode. In some cases RO FW is not allowed to boot in '
+                    - 'recovery mode with active PD, so we will change it to '
+                    - sink-mode if required.
                 - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                   exec_name: cros_ping
                   docs:
                     - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
-            - name: Update firmware with factory mode from host OS (ALWAYS_RUN)
+                - name: ADB reconnect (ALWAYS_RUN)
+                  exec_name: ctr_adb_connect
+                  exec_args:
+                    - retry_count:3
+                    - retry_interval:3
+                    - timeout:5
+                  docs:
+                    - Connect to DUT by ADB if not connected.
+                    - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
+                - name: ADB set Android as always awake (ALWAYS_RUN)
+                  exec_name: ctr_make_awake_always
+                  docs:
+                    - Set Android to be awake always.
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
+                  docs:
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
+            - name: 'Foil: Install Android OS from servo USB-drive (ALWAYS_RUN)'
               exec_name: sample_pass
               docs:
-                - 'Force update FW on the DUT by factory mode. Access to the '
-                - 'device under test is required to collect HWID information, '
-                - which is critical to finding the firmware targets for flash.
+                - The install performs real install Android on the DUT.
+              conditions:
+                - name: Do not run on Mobile Harness box (RUN_ONCE)
+                  exec_name: env_is_not_mh_box
+                  docs:
+                    - Check that the process is not running on Mobile Harness box.
+                - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                  exec_name: cros_is_previous_android_based_or_os_type
+                  docs:
+                    - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+              dependencies:
+                - name: Detect CacheService address
+                  exec_name: cache_service_address_detection
+                  docs:
+                    - Collect address of CacheService rom labService.
+                  conditions:
+                    - name: Do not run on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
+                - name: Start Foil-provision
+                  exec_name: ctr_start_foil_provision_container
+                  docs:
+                    - Pull and run foil-provision container
+                  conditions:
+                    - name: Do not run on CloudBot (RUN_ONCE)
+                      exec_name: env_is_not_cloudbot
+                      docs:
+                        - Check that the process is not running on cloudbot.
+                    - name: CrosToolRunner is up
+                      exec_name: ctr_is_up
+                      docs:
+                        - 'Verify that cros-tool-runner service is up and running, '
+                        - the tool expected to start as part of system preparation.
+                - name: Foil-provision install OS (ALWAYS_RUN) (time:'1h0m0s')
+                  exec_name: ctr_foil_provision_install
+                  docs:
+                    - Run install scrpt on the DUT.
+                - name: Remove PROVISION repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:PROVISION
+                  docs:
+                    - Remove a PROVISION repair-request.
+            - name: Update FW and install Android OS from servo USB-drive (ALWAYS_RUN)
+              exec_name: sample_pass
+              docs:
+                - Use provision image on USB-key to boot and get SSH access.
+                - Run specific install command to install Android OS.
+                - The logic is copy from foil-provision
               conditions:
                 - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
@@ -9178,6 +9195,46 @@ plans:
                     - invert_result:true
                   docs:
                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                - name: Is servod running (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Verify that servo host specified in setup and servod is running.
+                  dependencies:
+                    - name: Setup has servo info
+                      exec_name: dut_servo_host_present
+                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                      exec_name: servod_echo
+                      exec_args:
+                        - ssh_check:false
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
+                  exec_name: cros_is_previous_android_based_or_os_type
+                  docs:
+                    - Validate that DUT has AndroidOS based on ADB connection or provisioned info.
+                - name: Is servo USB key detected
+                  exec_name: servo_usbkey_is_detected
+                  exec_args:
+                    - file_check:true
+                  docs:
+                    - The action used as codiion.
+                    - The action verify that USB-key is detected and readable.
+                  dependencies:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
                 - name: Is recovery-version has firmware image path
                   exec_name: has_stable_version_fw_image
                   docs:
@@ -9187,86 +9244,443 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
-                  docs:
-                    - Verify that device is reachable by SSH.
-                    - Limited to 15 seconds.
               dependencies:
-                - name: Disable software-controlled write-protect for 'internal' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
-                  exec_name: cros_disable_fprom_write_protect
-                  exec_args:
-                    - fprom:internal
+                - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
+                  exec_name: cros_set_as_android_based
                   docs:
-                    - Disable write-protect fprom 'internal'.
-                  dependencies:
-                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
-                      docs:
-                        - Verify that device is reachable by SSH.
-                        - Limited to 15 seconds.
-                - name: Disable software-controlled write-protect for 'ec' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
-                  exec_name: cros_disable_fprom_write_protect
-                  exec_args:
-                    - fprom:ec
+                    - Mark DUT as Android based.
+                - name: Detect CacheService address
+                  exec_name: cache_service_address_detection
                   docs:
-                    - Disable write-protect fprom 'ec'.
-                  dependencies:
-                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
-                      docs:
-                        - Verify that device is reachable by SSH.
-                        - Limited to 15 seconds.
-                - name: Update FW from host OS image with factory mode (ALWAYS_RUN) (time:'15m0s')
-                  exec_name: cros_run_firmware_update
-                  exec_args:
-                    - mode:factory
-                    - force:true
-                    - updater_timeout:600
-                  docs:
-                    - Run chromeos-firmwareupdate with factory mode.
-                    - The reboot is not triggered as part of the action.
-                    - The action is not strict to not block repair actions.
-                    - 'Only runs when recovery-version does not have firmware '
-                    - image path, e.g. it's an early stage devices.
+                    - Collect address of CacheService rom labService.
                   conditions:
-                    - name: Recovery version misses fw-image path
-                      exec_name: sample_fail
+                    - name: Do not run on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
                       docs:
-                        - Verify that the DUT doesn't have model specific stable_version record in faft section
-                      conditions:
+                        - Check that the process is not running on Mobile Harness box.
+                - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                  exec_name: servo_download_provision_image_to_usb
+                  exec_args:
+                    - image_version:v6.1.1
+                  docs:
+                    - This action calls servod to download provision image custom kernel to servo USB-key.
+                - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) (time:'1h50m0s')
+                  exec_name: cros_update_fw_with_fw_image_by_servo
+                  exec_args:
+                    - update_ec_attempt_count:5
+                    - download_timeout:600
+                    - use_cache_extractor:true
+                    - use_fw_targets_from_inventory:true
+                  docs:
+                    - Download fw-image specified in stable version and flash EC to the DUT by servo
+                    - Set timeout for 110 minutes for now as = 10m(download)+4*20m(find/extract file)+20m(ec-update with retry).
+                    - We will retry up to 5 times since there is flakiness on flash EC.
+                  conditions:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                  dependencies:
+                    - name: Is recovery-version has firmware image path
+                      exec_name: has_stable_version_fw_image
+                      docs:
+                        - Verify that recovery version has firmware image path.
+                      dependencies:
                         - name: Has a stable-version service (RUN_ONCE)
                           exec_name: has_stable_version_service_path
                           docs:
                             - Verify if we have access to the service provided access to the stable version
-                        - name: Is recovery-version has firmware image path
-                          exec_name: has_stable_version_fw_image
-                          docs:
-                            - Verify that recovery version has firmware image path.
+                - name: Sleep 120 seconds (Allow to fail) (ALWAYS_RUN) (time:'2m5s')
+                  exec_name: sample_sleep
+                  exec_args:
+                    - sleep:120
+                - name: Disable software write protection via servo (Allow to fail) (ALWAYS_RUN) (time:'1m0s')
+                  exec_name: cros_disable_software_write_protection_by_servo
+                  docs:
+                    - Disable software write protection(for flash firmware) via servo.
+                  dependencies:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
                           dependencies:
-                            - name: Has a stable-version service (RUN_ONCE)
-                              exec_name: has_stable_version_service_path
-                              docs:
-                                - Verify if we have access to the service provided access to the stable version
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
+                  exec_name: cros_update_fw_with_fw_image_by_servo
+                  exec_args:
+                    - update_ap_attempt_count:3
+                    - download_timeout:600
+                    - gbb_flags:0x80000018
+                    - use_cache_extractor:true
+                    - use_fw_targets_from_inventory:true
+                  docs:
+                    - Download fw-image specified in stable version and flash AP to the DUT by servo
+                    - Set timeout for 90 minutes for now as = 10m(download)+2*20m(find/extract file)+40m(ap-update with retry).
+                    - We will retry up to 3 times since there may be flakiness on flash AP via servo.
+                  conditions:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                  dependencies:
+                    - name: Is recovery-version has firmware image path
+                      exec_name: has_stable_version_fw_image
+                      docs:
+                        - Verify that recovery version has firmware image path.
+                      dependencies:
+                        - name: Has a stable-version service (RUN_ONCE)
+                          exec_name: has_stable_version_service_path
+                          docs:
+                            - Verify if we have access to the service provided access to the stable version
+                - name: Sleep 120 seconds (Allow to fail) (ALWAYS_RUN) (time:'2m5s')
+                  exec_name: sample_sleep
+                  exec_args:
+                    - sleep:120
+                - name: Boot on USB-key and install AndroidOS (ALWAYS_RUN) (time:'2h46m40s')
+                  exec_name: cros_provision_actions_from_recovery_mode
+                  exec_args:
+                    - run_android_install:true
+                    - run_cros_install:false
+                    - reset_tpm:true
+                    - boot_timeout:150
+                    - boot_interval:10
+                    - boot_retry:1
+                    - ignore_reboot_failure:true
+                    - after_reboot_check:true
+                    - after_reboot_timeout:240
+                    - after_reboot_allow_use_servo_reset:true
+                  docs:
+                    - 'This action installs the test image on DUT utilizing '
+                    - 'the features of servo. DUT will be booted in recovery '
+                    - 'mode. In some cases RO FW is not allowed to boot in '
+                    - 'recovery mode with active PD, so we will change it to '
+                    - sink-mode if required.
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
+                  docs:
+                    - Wait DUT to be pingable after some action on it.
+                    - Waiting time 150 seconds.
+                - name: ADB reconnect (ALWAYS_RUN)
+                  exec_name: ctr_adb_connect
+                  exec_args:
+                    - retry_count:3
+                    - retry_interval:3
+                    - timeout:5
+                  docs:
+                    - Connect to DUT by ADB if not connected.
+                    - Only executed if DUT is Android based.
+                  conditions:
+                    - name: Is Android based on previous DUT OS
+                      exec_name: cros_is_previous_android_os_type
+                      docs:
+                        - Validate that OS on the DUT was provisioned with Android.
+                - name: ADB set Android as always awake (ALWAYS_RUN)
+                  exec_name: ctr_make_awake_always
+                  docs:
+                    - Set Android to be awake always.
+                - name: Remove REIMAGE_BY_USBKEY repair-request (ALWAYS_RUN)
+                  exec_name: dut_remove_repair_requests
+                  exec_args:
+                    - requests:PROVISION,REIMAGE_BY_USBKEY
+                  docs:
+                    - Remove REIMAGE_BY_USBKEY and PROVISION repair-requests.
                 - name: Remove REFLASH_FW repair-request (ALWAYS_RUN)
                   exec_name: dut_remove_repair_requests
                   exec_args:
                     - requests:REFLASH_FW
                   docs:
                     - Remove REFLASH_FW repair-requests.
-                - name: Simple reboot (ALWAYS_RUN)
-                  exec_name: cros_run_command
+        - name: DUT has expected dev firmware (time:'10m0s')
+          exec_name: cros_has_dev_signed_firmware
+          docs:
+            - Verify that FW on the DUT has dev keys.
+          conditions:
+            - name: Is a Chromebook (RUN_ONCE)
+              exec_name: dut_check_board
+              exec_args:
+                - string_values:aurora,reven
+                - invert_result:true
+              docs:
+                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+            - name: Device not in MP Signed AP FW pool
+              exec_name: dut_not_in_pool
+              exec_args:
+                - mp_firmware_testing
+              docs:
+                - Verify that DUT is not in the pool that requires MP signed AP firmware.
+                - The firmware validation only applies to dev signed AP firmware
+                - currently. Depending on how widespread MP signed AP firmware
+                - testing is, we could add a parallel validation for MP AP firmware.
+          recoveries:
+            - name: Place REFLASH_FW repair-requests (ALWAYS_RUN)
+              exec_name: dut_add_repair_requests
+              exec_args:
+                - requests:REFLASH_FW
+              docs:
+                - 'Place repair-request: reflash firmware of the DUT.'
+                - The request will be applied when plan restarted and reached action to address it.
+        - name: 'Android: Deployment checks'
+          exec_name: sample_pass
+          docs:
+            - Run some special checks as part of deployment.
+          conditions:
+            - name: Run only in main lab
+              exec_name: sample_fail
+              docs:
+                - Verify that DUT name is in main lab.
+              conditions:
+                - name: Run only on Satlab
+                  exec_name: dut_regex_name_match
                   exec_args:
-                    - host:dut
-                    - command:reboot
-                    - background:true
+                    - regex:^satlab
                   docs:
-                    - Simple un-blocker reboot.
-                - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                    - Verify that DUT name is belong Satlab.
+            - name: Is it first deployment task (ALWAYS_RUN)
+              exec_name: sample_fail
+              docs:
+                - Check if deployment check not need to be run.
+                - If HWID or serial-number already collected from DUT then we already test it before.
+              conditions:
+                - name: Is HWID known (ALWAYS_RUN)
+                  exec_name: dut_has_hwid
                   docs:
-                    - Try to wait device to be acccesable (SSH or ADB).
-                    - Waiting time 150 seconds.
+                    - Check whether the DUT information includes its HWID.
+                - name: Is serial-number known (ALWAYS_RUN)
+                  exec_name: dut_has_serial_number
+                  docs:
+                    - 'Check whether the DUT information includes its '
+                    - serial number.
+          dependencies:
+            - name: 'Android: verify boot in recovery mode (time:''25m0s'')'
+              exec_name: cros_provision_actions_from_recovery_mode
+              exec_args:
+                - run_android_install:false
+                - run_cros_install:false
+                - reset_tpm:false
+                - boot_timeout:150
+                - boot_interval:10
+                - boot_retry:2
+                - ignore_reboot_failure:true
+                - after_reboot_check:true
+                - after_reboot_timeout:240
+                - after_reboot_allow_use_servo_reset:true
+              docs:
+                - Verify that devices can boot from USB drive in recovery mode.
+              conditions:
+                - name: Setup has servo info
+                  exec_name: dut_servo_host_present
+              dependencies:
+                - name: Is servod running (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Verify that servo host specified in setup and servod is running.
+                  dependencies:
+                    - name: Setup has servo info
+                      exec_name: dut_servo_host_present
+                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                      exec_name: servod_echo
+                      exec_args:
+                        - ssh_check:false
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                - name: Is servo USB key detected
+                  exec_name: servo_usbkey_is_detected
+                  exec_args:
+                    - file_check:true
+                  docs:
+                    - The action used as codiion.
+                    - The action verify that USB-key is detected and readable.
+                  dependencies:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                - name: Detect CacheService address
+                  exec_name: cache_service_address_detection
+                  docs:
+                    - Collect address of CacheService rom labService.
+                  conditions:
+                    - name: Do not run on Mobile Harness box (RUN_ONCE)
+                      exec_name: env_is_not_mh_box
+                      docs:
+                        - Check that the process is not running on Mobile Harness box.
+                - name: Call servod to download provision image to USB-key (ALWAYS_RUN) (time:'10m0s')
+                  exec_name: servo_download_provision_image_to_usb
+                  exec_args:
+                    - image_version:v6.1.1
+                  docs:
+                    - This action calls servod to download provision image custom kernel to servo USB-key.
+              recoveries:
+                - name: Cold reset DUT by servo and wait to boot (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Cold reset device by servo and wait for DUT to become ping-able.
+                  conditions:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                  dependencies:
+                    - name: Cold reset DUT by servo (ALWAYS_RUN)
+                      exec_name: servo_power_state_reset
+                      exec_args:
+                        - timeout:30
+                        - more_logs:true
+                      docs:
+                        - Cold reset device by servo and do not wait.
+                      dependencies:
+                        - name: Is servod running (ALWAYS_RUN)
+                          exec_name: sample_pass
+                          docs:
+                            - Verify that servo host specified in setup and servod is running.
+                          dependencies:
+                            - name: Setup has servo info
+                              exec_name: dut_servo_host_present
+                            - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                              exec_name: servod_echo
+                              exec_args:
+                                - ssh_check:false
+                              dependencies:
+                                - name: Setup has servo info
+                                  exec_name: dut_servo_host_present
+                    - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                      exec_name: cros_ping
+                      docs:
+                        - Wait DUT to be pingable after some action on it.
+                        - Waiting time 150 seconds.
+            - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+              exec_name: cros_access
+              docs:
+                - Try to wait device to be acccesable (SSH or ADB).
+                - Waiting time 150 seconds.
+        - name: Collect HWID into inventory (RUN_ONCE)
+          exec_name: sample_pass
+          docs:
+            - Collect DUT hwid and update it into inventory info.
+          dependencies:
+            - name: Read HWID from DUT (ALWAYS_RUN)
+              exec_name: cros_update_hwid_to_inventory
+              conditions:
+                - name: Run only in main lab
+                  exec_name: sample_fail
+                  docs:
+                    - Verify that DUT name is in main lab.
+                  conditions:
+                    - name: Run only on Satlab
+                      exec_name: dut_regex_name_match
+                      exec_args:
+                        - regex:^satlab
+                      docs:
+                        - Verify that DUT name is belong Satlab.
+            - name: Read HWID from DUT (Satlab) (Allow to fail) (ALWAYS_RUN)
+              exec_name: cros_update_hwid_to_inventory
+              conditions:
+                - name: Run only on Satlab
+                  exec_name: dut_regex_name_match
+                  exec_args:
+                    - regex:^satlab
+                  docs:
+                    - Verify that DUT name is belong Satlab.
+        - name: Collect serial-number (ALWAYS_RUN)
+          exec_name: cros_update_serial_number_inventory
+          conditions:
+            - name: Run only in main lab
+              exec_name: sample_fail
+              docs:
+                - Verify that DUT name is in main lab.
+              conditions:
+                - name: Run only on Satlab
+                  exec_name: dut_regex_name_match
+                  exec_args:
+                    - regex:^satlab
+                  docs:
+                    - Verify that DUT name is belong Satlab.
+        - name: Collect serial-number (Satlab) (Allow to fail) (ALWAYS_RUN)
+          exec_name: cros_update_serial_number_inventory
+          conditions:
+            - name: Run only on Satlab
+              exec_name: dut_regex_name_match
+              exec_args:
+                - regex:^satlab
+              docs:
+                - Verify that DUT name is belong Satlab.
+        - name: Collect SKU value (Allow to fail)
+          exec_name: cros_update_device_sku
+          docs:
+            - Update the device_sku label from the device if not present in inventory data.
+          conditions:
+            - name: Is a Chromebook (RUN_ONCE)
+              exec_name: dut_check_board
+              exec_args:
+                - string_values:aurora,reven
+                - invert_result:true
+              docs:
+                - Check that DUT is a Chromebook by checking for non-Chromebook boards
+        - name: Collect servo_type (Allow to fail)
+          exec_name: servo_update_servo_type_label
+          docs:
+            - Update the servo type label for the DUT info.
+        - name: Collect storage type (Allow to fail) (ALWAYS_RUN)
+          exec_name: cros_update_storage_type_to_inventory
+          docs:
+            - Read storage type from DUT.
+          conditions:
+            - name: Is a Chromebook (RUN_ONCE)
+              exec_name: dut_check_board
+              exec_args:
+                - string_values:aurora,reven
+                - invert_result:true
+              docs:
+                - Check that DUT is a Chromebook by checking for non-Chromebook boards
     - name: cros
       criticalactions:
         - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
@@ -10762,10 +11176,10 @@ plans:
                     - requests:REFLASH_FW
                   docs:
                     - Remove REFLASH_FW repair-requests.
-        - name: Android is accessable (ALWAYS_RUN) (time:'15s')
-          exec_name: cros_ssh
+        - name: Android is accessible (ALWAYS_RUN) (time:'15s')
+          exec_name: cros_access
           docs:
-            - Validate is Andoid OS is accessable by reading data from the host.
+            - Validate is Andoid OS is accessible by reading data from the host.
           recoveries:
             - name: Reboot by ADB (Allow to fail) (ALWAYS_RUN)
               exec_name: ctr_adb_command
@@ -11143,7 +11557,7 @@ plans:
                     - name: is_servo_type_ccd
                       exec_name: is_servo_type_ccd
                 - name: Wait to be SSHable (short waiting) (ALWAYS_RUN) (time:'30s')
-                  exec_name: cros_ssh
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be accesable shortly.
                     - Waiting time 30 seconds.
@@ -11475,8 +11889,8 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
-                - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be acccesable (SSH or ADB).
                     - Waiting time 150 seconds.
@@ -11708,8 +12122,8 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be acccesable (SSH or ADB).
                     - Waiting time 150 seconds.
@@ -12297,8 +12711,8 @@ plans:
                       docs:
                         - Wait DUT to be pingable after some action on it.
                         - Waiting time 150 seconds.
-                - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be acccesable (SSH or ADB).
                     - Waiting time 150 seconds.
@@ -12530,8 +12944,8 @@ plans:
                     - 'mode. In some cases RO FW is not allowed to boot in '
                     - 'recovery mode with active PD, so we will change it to '
                     - sink-mode if required.
-                - name: Wait to be accessable (ALWAYS_RUN) (time:'2m30s')
-                  exec_name: cros_ssh
+                - name: Wait to be accessible (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_access
                   docs:
                     - Try to wait device to be acccesable (SSH or ADB).
                     - Waiting time 150 seconds.
@@ -12970,7 +13384,7 @@ plans:
                     - requests:REFLASH_FW
                   docs:
                     - Remove REFLASH_FW repair-requests.
-        - name: Provision to stable-version if required (Allow to fail)
+        - name: Provision to stable-version if required
           exec_name: android_is_on_os_stable_version
           docs:
             - Provision to stable-version for stable-version required pools.
@@ -13426,7 +13840,7 @@ plans:
                     - Verify that pools are allowed to stay in DEV mode.
           recoveries:
             - name: Switch to secure-mode and reboot (ALWAYS_RUN) (time:'2m30s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - This repair action utilizes the dependent actions to set the
                 - ' GBB flags and disable booting into dev-mode. Then it reboots'
@@ -13480,8 +13894,8 @@ plans:
                       docs:
                         - Disable write-protect fprom 'internal'.
                       dependencies:
-                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                        - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                          exec_name: cros_access
                           docs:
                             - Verify that device is reachable by SSH.
                             - Limited to 15 seconds.
@@ -13492,8 +13906,8 @@ plans:
                       docs:
                         - Disable write-protect fprom 'ec'.
                       dependencies:
-                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                        - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                          exec_name: cros_access
                           docs:
                             - Verify that device is reachable by SSH.
                             - Limited to 15 seconds.
@@ -13721,8 +14135,8 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                  exec_name: cros_access
                   docs:
                     - Verify that device is reachable by SSH.
                     - Limited to 15 seconds.
@@ -13737,8 +14151,8 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                    - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                      exec_name: cros_access
                       docs:
                         - Verify that device is reachable by SSH.
                         - Limited to 15 seconds.
@@ -13782,7 +14196,7 @@ plans:
                 - Verify that device we check in the pool which not required fw management.
           recoveries:
             - name: Switch to secure-mode and reboot (ALWAYS_RUN) (time:'2m30s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - This repair action utilizes the dependent actions to set the
                 - ' GBB flags and disable booting into dev-mode. Then it reboots'
@@ -13836,8 +14250,8 @@ plans:
                       docs:
                         - Disable write-protect fprom 'internal'.
                       dependencies:
-                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                        - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                          exec_name: cros_access
                           docs:
                             - Verify that device is reachable by SSH.
                             - Limited to 15 seconds.
@@ -13848,8 +14262,8 @@ plans:
                       docs:
                         - Disable write-protect fprom 'ec'.
                       dependencies:
-                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                        - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                          exec_name: cros_access
                           docs:
                             - Verify that device is reachable by SSH.
                             - Limited to 15 seconds.
@@ -14077,8 +14491,8 @@ plans:
                       exec_name: has_stable_version_service_path
                       docs:
                         - Verify if we have access to the service provided access to the stable version
-                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                  exec_name: cros_access
                   docs:
                     - Verify that device is reachable by SSH.
                     - Limited to 15 seconds.
@@ -14093,8 +14507,8 @@ plans:
                       exec_name: cros_is_not_android_based
                       docs:
                         - Check if device is marked as ChromeOS based
-                    - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                      exec_name: cros_ssh
+                    - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                      exec_name: cros_access
                       docs:
                         - Verify that device is reachable by SSH.
                         - Limited to 15 seconds.
@@ -14124,7 +14538,7 @@ plans:
             - name: Run only in main lab
               exec_name: sample_fail
               docs:
-                - Verify that DUT name is not belong Satlab.
+                - Verify that DUT name is in main lab.
               conditions:
                 - name: Run only on Satlab
                   exec_name: dut_regex_name_match
@@ -14167,7 +14581,7 @@ plans:
                 - Check whether the DUT information includes its HWID.
           recoveries:
             - name: Restore HWID from inventory (Allow to fail) (ALWAYS_RUN) (time:'2m30s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Restoring HWID on the host from the inventory data.
                 - Using recovery from the host as flashing firmware by servo is very slow.
@@ -14184,8 +14598,8 @@ plans:
                   exec_name: dut_has_hwid
                   docs:
                     - Check whether the DUT information includes its HWID.
-                - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                  exec_name: cros_ssh
+                - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                  exec_name: cros_access
                   docs:
                     - Verify that device is reachable by SSH.
                     - Limited to 15 seconds.
@@ -14202,8 +14616,8 @@ plans:
                       docs:
                         - Disable write-protect fprom 'internal'.
                       dependencies:
-                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                        - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                          exec_name: cros_access
                           docs:
                             - Verify that device is reachable by SSH.
                             - Limited to 15 seconds.
@@ -14214,8 +14628,8 @@ plans:
                       docs:
                         - Disable write-protect fprom 'ec'.
                       dependencies:
-                        - name: Device is accessable (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_ssh
+                        - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                          exec_name: cros_access
                           docs:
                             - Verify that device is reachable by SSH.
                             - Limited to 15 seconds.
@@ -14285,7 +14699,7 @@ plans:
           exec_name: cros_ping
           recoveries:
             - name: Chameleon RPM power cycle (ALWAYS_RUN) (time:'2m30s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               docs:
                 - Power cycle chameleon if rpm exists
                 - Ensure chameleon is SSHable on after power cycle
@@ -14304,8 +14718,8 @@ plans:
                     - device_type:chameleon
                   docs:
                     - Run rpm power cycle on chameleon
-        - name: cros_ssh
-          exec_name: cros_ssh
+        - name: cros_access
+          exec_name: cros_access
         - name: Update AudioBox JackPlugger State (Allow to fail)
           exec_name: chameleon_check_audiobox_jackplugger
           docs:
@@ -14324,7 +14738,7 @@ plans:
             - Wait device to be pingable.
             - Waiting time 15 seconds.
         - name: Device is SSHable (ALWAYS_RUN)
-          exec_name: cros_ssh
+          exec_name: cros_access
           docs:
             - Try to wait device to be sshable.
             - Waiting time 150 seconds.
@@ -14628,8 +15042,8 @@ plans:
                 - 'check whether wifirouter critical tools present: '
                 - tcpdump, hostapd, dnsmasq, netperf, iperf, iw
               dependencies:
-                - name: cros_ssh
-                  exec_name: cros_ssh
+                - name: cros_access
+                  exec_name: cros_access
               recoveries:
                 - name: Provision Gale device to stable version (time:'1h0m0s')
                   exec_name: cros_provision
@@ -14803,7 +15217,7 @@ plans:
         - name: Device is pingable (time:'15s')
           exec_name: cros_ping
         - name: Device is sshable (time:'1m0s')
-          exec_name: cros_ssh
+          exec_name: cros_access
         - name: Check HMR state with XMLRPC call GetErrors
           exec_name: check_hmr_state
           docs:
@@ -14973,7 +15387,7 @@ plans:
             - name: Servo-host known
               exec_name: dut_servo_host_present
             - name: Servo-host is sshable (RUN_ONCE) (time:'15s')
-              exec_name: cros_ssh
+              exec_name: cros_access
               exec_args:
                 - device_type:servo
               docs:

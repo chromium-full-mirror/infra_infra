@@ -25,7 +25,7 @@ func hmrRepairPlan() *Plan {
 				// TODO: Recovery with RPM power cycle on the touchhost.
 			},
 			"Device is sshable": {
-				ExecName:    "cros_ssh",
+				ExecName:    "cros_access",
 				ExecTimeout: &durationpb.Duration{Seconds: 60},
 			},
 			"Set state:BROKEN": {

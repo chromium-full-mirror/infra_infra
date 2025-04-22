@@ -13,7 +13,7 @@ func chameleonPlan() *Plan {
 		CriticalActions: []string{
 			"Mark as bad",
 			"Device is pingable",
-			"cros_ssh",
+			"cros_access",
 			"Update AudioBox JackPlugger State",
 			"Mark as good",
 		},
@@ -47,7 +47,7 @@ func chameleonPlan() *Plan {
 				Dependencies: []string{
 					"Power cycle chameleon by RPM",
 				},
-				ExecName:    "cros_ssh",
+				ExecName:    "cros_access",
 				ExecTimeout: &durationpb.Duration{Seconds: 150},
 				RunControl:  RunControl_ALWAYS_RUN,
 			},
