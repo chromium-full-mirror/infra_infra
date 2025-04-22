@@ -45,6 +45,8 @@ type FirmwareSpecs struct {
 	// SAFile is the path to the cloud credentials file.
 	SAFile       string
 	VersionCache map[string]string
+	// TestArgReplacements are user requested test args that need resolved to paths.
+	TestArgReplacements map[string]string
 }
 
 // Specification strings for the Ro, Rw, ECRO, and ECRW specs above.
@@ -467,6 +469,19 @@ func main() {
 	fs.StringVar(&firmwareSpecs.ECRO, "ec-ro", "", "Comma separated list of specs for EC firmware RO")
 	fs.StringVar(&firmwareSpecs.ECRW, "ec-rw", "", "Comma separated list of specs for EC firmware RW")
 	fs.StringVar(&firmwareSpecs.SAFile, "serviceAccountCred", "/creds/service_accounts/service-account-chromeos.json", "Path to service account credential json file")
+	fs.Func("testarg", "key=SPEC to add to test arguments", func(s string) error {
+		parts := strings.SplitN(s, "=", 2)
+		if len(parts) != 2 {
+			return errors.New("Invalid testarg, use -testarg key=SPEC")
+		}
+		key := parts[0]
+		val := parts[1]
+		if firmwareSpecs.TestArgReplacements == nil {
+			firmwareSpecs.TestArgReplacements = make(map[string]string)
+		}
+		firmwareSpecs.TestArgReplacements[key] = val
+		return nil
+	})
 
 	err := servertemplate.ServerWithFlagSet(fs, firmwareSpecs.executor, "fw_filter")
 	if err != nil {

@@ -24,19 +24,59 @@ import (
 // scheduling unit's dynamic lookup table.
 func GenerateDynamicInfo(ctx context.Context, req *api.InternalTestplan, specs *FirmwareSpecs, log *log.Logger, matcher gcsMatcher) error {
 	// Fix cros-provision settings to avoid flashing the firmware twice
-	for _, du := range req.GetSuiteInfo().GetSuiteMetadata().GetDynamicUpdates() {
-		provision := du.GetUpdateAction().GetInsert().GetTask().GetProvision()
-		if provision.GetInstallRequest().GetMetadata().MessageIs((*api.CrOSProvisionMetadata)(nil)) {
-			provision.DynamicDeps = append(provision.DynamicDeps, &api.DynamicDep{
-				Key:   common.CrosProvisionMetadataUpdateFirmware,
-				Value: "BOOL=false",
-			})
+	if specs.Ro != "" || specs.Rw != "" || specs.ECRO != "" || specs.ECRW != "" {
+		for _, du := range req.GetSuiteInfo().GetSuiteMetadata().GetDynamicUpdates() {
+			provision := du.GetUpdateAction().GetInsert().GetTask().GetProvision()
+			if provision.GetInstallRequest().GetMetadata().MessageIs((*api.CrOSProvisionMetadata)(nil)) {
+				provision.DynamicDeps = append(provision.DynamicDeps, &api.DynamicDep{
+					Key:   common.CrosProvisionMetadataUpdateFirmware,
+					Value: "BOOL=false",
+				})
+			}
+		}
+		// Create Dynamic Updates.
+		if err := generateProvisionRequests(req, specs, log); err != nil {
+			return fmt.Errorf("generateProvisionRequests failed: %w", err)
 		}
 	}
 
-	// Create Dynamic Updates.
-	if err := generateProvisionRequests(req, specs, log); err != nil {
-		return fmt.Errorf("generateProvisionRequests failed: %w", err)
+	if specs.TestArgReplacements != nil {
+		suiteMetadata := req.GetSuiteInfo().GetSuiteMetadata()
+
+		// TODO (oldProto-azrahman): remove when schedulingOptions is fully rolled in.
+		if len(suiteMetadata.GetSchedulingUnits()) > 0 {
+			if len(suiteMetadata.GetSchedulingUnits()) != 1 {
+				return fmt.Errorf("test arg replacement only allowed for a single suite_metadata.scheduling_units, got %d", len(suiteMetadata.GetSchedulingUnits()))
+			}
+			target := suiteMetadata.GetSchedulingUnits()[0]
+			if err := addFwPathsToTestArgs(
+				ctx,
+				req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata(),
+				target.GetPrimaryTarget().GetSwarmingDef(),
+				specs,
+				log,
+				matcher); err != nil {
+				return fmt.Errorf("addFwPathsToTestArgs failed: %w", err)
+			}
+		} else {
+			if len(suiteMetadata.GetSchedulingUnitOptions()) != 1 {
+				return fmt.Errorf("test arg replacement only allowed for a single scheduling_unit_options, got %d", len(suiteMetadata.GetSchedulingUnitOptions()))
+			}
+			schedOptions := suiteMetadata.GetSchedulingUnitOptions()[0]
+			if len(schedOptions.GetSchedulingUnits()) != 1 {
+				return fmt.Errorf("test arg replacement only allowed for a single scheduling_unit_options.scheduling_units, got %d", len(schedOptions.GetSchedulingUnits()))
+			}
+			target := schedOptions.GetSchedulingUnits()[0]
+			if err := addFwPathsToTestArgs(
+				ctx,
+				req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata(),
+				target.GetPrimaryTarget().GetSwarmingDef(),
+				specs,
+				log,
+				matcher); err != nil {
+				return fmt.Errorf("addFwPathsToTestArgs failed: %w", err)
+			}
+		}
 	}
 
 	// Add provision/DUT related information to dynamic
@@ -229,7 +269,7 @@ func resolveSpec(ctx context.Context, spec string, specs *FirmwareSpecs, swarmin
 					return url, nil
 				}
 			}
-			return "", fmt.Errorf("failed to find path for %q", spec)
+			return "", fmt.Errorf("failed to find path for %q (no fw branch for %s)", spec, board)
 		} else if spec == "" {
 			return "", nil
 		} else {
@@ -273,6 +313,31 @@ func addFwProvisionValuesToLookup(
 		}
 
 		dynamicHelper.ApplyFirmwareProvisionToLookup(lookup, lookupValues)
+	}
+	return nil
+}
+
+// addFwPathsToTestArgs updates test args.
+func addFwPathsToTestArgs(
+	ctx context.Context,
+	executionMetadata *api.ExecutionMetadata,
+	swarmingDef *api.SwarmingDefinition,
+	specs *FirmwareSpecs,
+	log *log.Logger,
+	matcher gcsMatcher) error {
+
+	for key, val := range specs.TestArgReplacements {
+		val, err := resolveSpec(ctx, val, specs, swarmingDef, log, matcher)
+		if err != nil {
+			return fmt.Errorf("failed to resolve test arg %s=%s: %w", key, val, err)
+		}
+		for i := 0; i < len(executionMetadata.Args); i++ {
+			if executionMetadata.Args[i].GetFlag() == key {
+				executionMetadata.Args = append(executionMetadata.Args[:i], executionMetadata.Args[i+1:]...)
+				i--
+			}
+		}
+		executionMetadata.Args = append(executionMetadata.Args, &api.Arg{Flag: key, Value: val})
 	}
 	return nil
 }

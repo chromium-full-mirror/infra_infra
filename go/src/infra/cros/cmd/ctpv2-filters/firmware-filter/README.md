@@ -8,6 +8,7 @@ Arg                    | Description
 `-rw SPEC,SPEC,...`    | Flash the RW AP firmware from specified location. This takes place after the RO flashing.
 `-ec-ro SPEC,SPEC,...` | Flash the RO EC firmware from specified location. Defaults to the same as AP RO.
 `-ec-rw SPEC,SPEC,...` | Flash the RW EC firmware from specified location. Defaults to the same as AP RW.
+`-testarg key=SPEC`    | Resolve SPEC and populate test args with result. It will add a new arg or replace existing.
 
 The SPEC arg can be one of the following:
 
@@ -135,7 +136,7 @@ After you have uploaded to CIPD
 
 ```shell
 cd ~/infra/infra/go/src/infra
-go install infra/cros/cmd/container_uprev
+go install go.chromium.org/infra/cros/cmd/container_uprev
 container_uprev cli -label $USER-test -target firmware-filter
 ```
 
@@ -213,5 +214,9 @@ choosing.
         }
         ```
 
-5.  Run job: `cd ~/chromiumos/infra/recipes ; cat ~/job.json | led
-    edit-recipe-bundle | led launch`
+5.  Run job:
+
+    ```shell
+    cd ~/chromiumos/infra/recipes
+    cat ~/job.json | led edit-recipe-bundle | led launch
+    ```
