@@ -5447,6 +5447,30 @@ wheel: <
 
 * *universal*
 
+### 2.2.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/markdown-it-py-py3"
+  version: "version:2.2.0"
+>
+```
+
+
+* *universal*
+
+### 3.0.0
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/markdown-it-py-py3"
+  version: "version:3.0.0"
+>
+```
+
+
+* *universal*
+
 ## **mccabe**
 
 ### 0.6.1
@@ -5467,6 +5491,20 @@ wheel: <
 wheel: <
   name: "infra/python/wheels/mccabe-py2_py3"
   version: "version:0.7.0"
+>
+```
+
+
+* *universal*
+
+## **mdformat-py3**
+
+### 0.7.22
+
+```protobuf
+wheel: <
+  name: "infra/python/wheels/mdformat-py3"
+  version: "version:0.7.22"
 >
 ```
 
