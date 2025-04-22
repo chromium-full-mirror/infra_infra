@@ -12,7 +12,7 @@ import (
 	"strings"
 
 	"go.chromium.org/infra/cros/cmd/cft/publish/commonutils/metadata"
-	"go.chromium.org/infra/cros/cmd/cft/publish/gcs-publish/constants"
+	"go.chromium.org/infra/cros/cmd/cft/publish/rdb-publish/constants"
 	"go.chromium.org/infra/cros/cmd/cft/publish/rdb-publish/server"
 )
 
