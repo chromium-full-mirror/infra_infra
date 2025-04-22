@@ -1,5 +1,5 @@
-# Kernel team owners
-# Eventually set no-parent on this file so that only the Kernel team is
-# owners of the kernel-provision service.
-engeg@google.com
+# AL PDEIO Kernel team.
+# Eventually set no-parent on this file so that only the AL PDEIO Kernel team
+# are the full owners of the kernel-provision service.
 gredelston@google.com
+lovisolo@google.com
