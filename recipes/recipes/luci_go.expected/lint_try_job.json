@@ -406,6 +406,8 @@
       "--output.json.path",
       "/path/to/tmp/json",
       "--issues-exit-code=0",
+      "--path-prefix",
+      "client",
       "--timeout=5m",
       "client/cmd/isolate/lib/...",
       "client/cmd/isolated/lib/..."
@@ -480,6 +482,8 @@
       "--output.json.path",
       "/path/to/tmp/json",
       "--issues-exit-code=0",
+      "--path-prefix",
+      "server",
       "--timeout=5m",
       "server/..."
     ],

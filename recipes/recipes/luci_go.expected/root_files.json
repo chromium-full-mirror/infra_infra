@@ -395,6 +395,8 @@
       "--output.json.path",
       "/path/to/tmp/json",
       "--issues-exit-code=0",
+      "--path-prefix",
+      ".",
       "--timeout=5m",
       "./..."
     ],

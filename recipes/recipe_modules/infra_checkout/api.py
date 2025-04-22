@@ -235,7 +235,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
     for line in description.splitlines():
       override_match = re.match(
           r'try-(?P<dep>infra|infra_internal|\.)\:'
-          '\s*(?P<revision>[a-f0-9]+|HEAD)', line, re.IGNORECASE)
+          r'\s*(?P<revision>[a-f0-9]+|HEAD)', line, re.IGNORECASE)
       if override_match:
         overrides[override_match.group('dep')] = override_match.group(
             'revision')
@@ -312,6 +312,7 @@ class InfraCheckoutApi(recipe_api.RecipeApi):
                 'run',
                 '--output.json.path', self.m.json.output(),
                 '--issues-exit-code=0',
+                '--path-prefix', root,
                 '--timeout=5m',
             ] + sorted(pkgs),
             step_test_data=lambda: self.m.json.test_api.output({
