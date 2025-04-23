@@ -76,6 +76,9 @@ def presubmit(
             "pool": pool,
         },
         task_template_canary_percentage = 30,
+        resultdb_settings = resultdb.settings(
+            enable = True,
+        ),
     )
     luci.cq_tryjob_verifier(
         builder = name,
