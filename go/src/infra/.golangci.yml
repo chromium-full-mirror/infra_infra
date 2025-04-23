@@ -28,15 +28,157 @@ linters:
         # Too many cases of copying protos. For example, in tricium and, sadly, UFS.
         - copylocks
     # Start the staticcheck config off small and grow it over time as we remove classes of error.
+    # https://golangci-lint.run/usage/linters/#staticcheck
     staticcheck:
       checks:
-        # Omit comparison with boolean constant.
-        # https://staticcheck.dev/docs/checks/#S1002
-        - S1002
-        # Invalid regex
-        - SA1000
-        # HTTP Error code not magic number
-        - ST1013
+        - all
+        - "-ST1000"
+        - "-ST1003"
+        - "-ST1016"
+        - "-ST1020"
+        - "-ST1021"
+        - "-ST1022"
+        # Aboves are default set of checks in golangci-lint.
+        # Belows are additional checks we currently need to disable in infra repo.
+        # https://staticcheck.dev/docs/checks#QF1001
+        # Apply De Morgan's law
+        - "-QF1001"
+        # https://staticcheck.dev/docs/checks#QF1002
+        # Convert untagged switch to tagged switch
+        - "-QF1002"
+        # https://staticcheck.dev/docs/checks#QF1003
+        # Convert if/else-if chain to tagged switch
+        - "-QF1003"
+        # https://staticcheck.dev/docs/checks#QF1004
+        # Use strings.ReplaceAll instead of strings.Replace with n == -1
+        - "-QF1004"
+        # https://staticcheck.dev/docs/checks#QF1006
+        # Lift if + break into loop condition
+        - "-QF1006"
+        # https://staticcheck.dev/docs/checks#QF1007
+        # Merge conditional assignment into variable declaration
+        - "-QF1007"
+        # https://staticcheck.dev/docs/checks#QF1008
+        # Omit embedded fields from selector expression
+        - "-QF1008"
+        # https://staticcheck.dev/docs/checks#QF1009
+        # Use time.Time.Equal instead of == operator
+        - "-QF1009"
+        # https://staticcheck.dev/docs/checks#QF1011
+        # Omit redundant type from variable declaration
+        - "-QF1011"
+        # https://staticcheck.dev/docs/checks#QF1012
+        # Use fmt.Fprintf(x, ...) instead of x.Write(fmt.Sprintf(...))
+        - "-QF1012"
+        # https://staticcheck.dev/docs/checks#S1000
+        # Use plain channel send or receive instead of single-case select
+        - "-S1000"
+        # https://staticcheck.dev/docs/checks#S1006
+        # Use for { ... } for infinite loops
+        - "-S1006"
+        # https://staticcheck.dev/docs/checks#S1007
+        # Simplify regular expression by using raw string literal
+        - "-S1007"
+        # https://staticcheck.dev/docs/checks#S1008
+        # Simplify returning boolean expression
+        - "-S1008"
+        # https://staticcheck.dev/docs/checks#S1009
+        # Omit redundant nil check on slices, maps, and channels
+        - "-S1009"
+        # https://staticcheck.dev/docs/checks#S1012
+        # Replace time.Now().Sub(x) with time.Since(x)
+        - "-S1012"
+        # https://staticcheck.dev/docs/checks#S1016
+        # Use a type conversion instead of manually copying struct fields
+        - "-S1016"
+        # https://staticcheck.dev/docs/checks#S1017
+        # Replace manual trimming with strings.TrimPrefix
+        - "-S1017"
+        # https://staticcheck.dev/docs/checks#S1023
+        # Omit redundant control flow
+        - "-S1023"
+        # https://staticcheck.dev/docs/checks#S1031
+        # Omit redundant nil check around loop
+        - "-S1031"
+        # https://staticcheck.dev/docs/checks#S1032
+        # Use sort.Ints(x) , sort.Float64s(x) , and sort.Strings(x)
+        - "-S1032"
+        # https://staticcheck.dev/docs/checks#S1038
+        # Unnecessarily complex way of printing formatted string
+        - "-S1038"
+        # https://staticcheck.dev/docs/checks#S1039
+        # Unnecessary use of fmt.Sprint
+        - "-S1039"
+        # https://staticcheck.dev/docs/checks#SA1006
+        # Printf with dynamic first argument and no further arguments
+        - "-SA1006"
+        # https://staticcheck.dev/docs/checks#SA1019
+        # Using a deprecated function, variable, constant or field
+        - "-SA1019"
+        # https://staticcheck.dev/docs/checks#SA1024
+        # A string cutset contains duplicate characters
+        - "-SA1024"
+        # https://staticcheck.dev/docs/checks#SA1029
+        # Inappropriate key in call to context.WithValue
+        - "-SA1029"
+        # https://staticcheck.dev/docs/checks#SA4004
+        # The loop exits unconditionally after one iteration
+        - "-SA4004"
+        # https://staticcheck.dev/docs/checks#SA4006
+        # A value assigned to a variable is never read before being overwritten. Forgotten error check or dead code?
+        - "-SA4006"
+        # https://staticcheck.dev/docs/checks#SA4010
+        # The result of append will never be observed anywhere
+        - "-SA4010"
+        # https://staticcheck.dev/docs/checks#SA4011
+        # Break statement with no effect. Did you mean to break out of an outer loop?
+        - "-SA4011"
+        # https://staticcheck.dev/docs/checks#SA4017
+        # Discarding the return values of a function without side effects, making the call pointless
+        - "-SA4017"
+        # https://staticcheck.dev/docs/checks#SA4022
+        # Comparing the address of a variable against nil
+        - "-SA4022"
+        # https://staticcheck.dev/docs/checks#SA5001
+        # Deferring Close before checking for a possible error
+        - "-SA5001"
+        # https://staticcheck.dev/docs/checks#SA5012
+        # Passing odd-sized slice to function expecting even size
+        - "-SA5012"
+        # https://staticcheck.dev/docs/checks#SA9001
+        # Defers in range loops may not run when you expect them to
+        - "-SA9001"
+        # https://staticcheck.dev/docs/checks#SA9003
+        # Empty body in an if or else branch
+        - "-SA9003"
+        # https://staticcheck.dev/docs/checks#ST1001
+        # Dot imports are discouraged
+        - "-ST1001"
+        # https://staticcheck.dev/docs/checks#ST1005
+        # Incorrectly formatted error string
+        - "-ST1005"
+        # https://staticcheck.dev/docs/checks#ST1006
+        # Poorly chosen receiver name
+        - "-ST1006"
+        # https://staticcheck.dev/docs/checks#ST1008
+        # A function's error value should be its last return value
+        - "-ST1008"
+        # https://staticcheck.dev/docs/checks#ST1011
+        # Poorly chosen name for variable of type time.Duration
+        - "-ST1011"
+        # https://staticcheck.dev/docs/checks#ST1012
+        # Poorly chosen name for error variable
+        - "-ST1012"
+        # https://staticcheck.dev/docs/checks#ST1017
+        # Don't use Yoda conditions
+        - "-ST1017"
+        # https://staticcheck.dev/docs/checks#ST1019
+        # Importing the same package multiple times
+        - "-ST1019"
+        # https://staticcheck.dev/docs/checks#ST1023
+        # Redundant type in variable declaration
+        - "-ST1023"
+
   exclusions:
     # Independently from option `exclude` we use default exclude patterns,
     # it can be disabled by this option. To list all
@@ -53,11 +195,11 @@ linters:
       # TODO(b/398333401): Reduce this exlucde by cleaning up unused symbols.
       - linters:
         - unused
-        path: ^(appengine|chromeperf|cmd|chromium|cr_builder_health|cros|device_manager|experimental|fleetconsole|libs|qscheduler|rts|tools|unifiedfleet|vm_leaser)/
+        path: ^(appengine/(cr-rev|cros|crosskylabadmin|dashboard|drone-queen|poros|rietveld-static|rubber-stamper|sheriff-o-matic|test-results|tree-status)|chromeperf|cmd|chromium|cr_builder_health|cros|device_manager|experimental|fleetconsole|libs|qscheduler|rts|tools|unifiedfleet|vm_leaser)/
       # TODO(b/398333401): Reduce this exlucde by cleaning up ineffective assignments.
       - linters:
         - ineffassign
-        path: ^(appengine|chromeperf|cmd|cr_builder_health|cros|experimental|fleetconsole|qscheduler|rts|tools|unifiedfleet)/
+        path: ^(appengine/(cros|poros|rotation-proxy)|chromeperf|cmd|cr_builder_health|cros|experimental|fleetconsole|qscheduler|rts|tools|unifiedfleet)/
     paths:
       # Ignore files under third_party dir.
       - ^third_party/.*\.go$
