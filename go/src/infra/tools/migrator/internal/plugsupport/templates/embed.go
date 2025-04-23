@@ -12,14 +12,14 @@ import (
 	"path"
 )
 
-//go:embed _plugin/*
+//go:embed plugin/*
 //go:embed commit-message.txt
 //go:embed default.cfg
 var content embed.FS
 
 // Plugin returns plugin template files.
 func Plugin() map[string][]byte {
-	const pluginRoot = "_plugin"
+	const pluginRoot = "plugin"
 
 	dir, err := content.ReadDir(pluginRoot)
 	if err != nil {
@@ -29,7 +29,7 @@ func Plugin() map[string][]byte {
 	out := make(map[string][]byte, len(dir))
 	for _, ent := range dir {
 		if ent.IsDir() {
-			panic("You added a directory to _plugin and need to change the code now to scan it recursively. Good luck!")
+			panic("You added a directory to plugin and need to change the code now to scan it recursively. Good luck!")
 		}
 		out[ent.Name()] = bodyOf(path.Join(pluginRoot, ent.Name()))
 	}

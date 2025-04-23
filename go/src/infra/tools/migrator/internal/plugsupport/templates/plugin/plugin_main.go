@@ -6,13 +6,12 @@ package main
 
 import (
 	"context"
-	"fmt"
-
-	m "go.chromium.org/infra/tools/migrator"
-	"go.chromium.org/infra/tools/migrator/plugin"
 
 	bbpb "go.chromium.org/luci/buildbucket/proto"
 	"go.chromium.org/luci/common/logging"
+
+	m "go.chromium.org/infra/tools/migrator"
+	"go.chromium.org/infra/tools/migrator/plugin"
 )
 
 type impl struct{}
@@ -46,27 +45,6 @@ func (*impl) FindProblems(ctx context.Context, proj m.Project) {
 
 	bbConfig := &bbpb.BuildbucketCfg{}
 	cfgFile.TextPb(bbConfig)
-
-	// This example looks for usage of BuilderDefaults and BuilderMixins;
-	// presumably this migration would be looking to remove these deprecated
-	// fields.
-	for _, b := range bbConfig.Buckets {
-		if b.GetSwarming().GetBuilderDefaults() != nil {
-			cfgFile.Report(
-				"BUILDER_DEFAULTS",
-				fmt.Sprintf("Bucket %s defines builder defaults.", b.Name),
-				m.MetadataOption("bucketname", b.Name))
-		}
-		for _, sw := range b.GetSwarming().GetBuilders() {
-			if len(sw.Mixins) != 0 {
-				cfgFile.Report(
-					"BUILDER_MIXINS",
-					fmt.Sprintf("Builder %s/%s uses mixins.", b.Name, sw.Name),
-					m.MetadataOption("bucketname", b.Name),
-					m.MetadataOption("buildername", sw.Name))
-			}
-		}
-	}
 }
 
 // ApplyFix allows you to attempt to automatically fix problems within a repo.
