@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/*
-The labpack program allows to run repair tasks f5or ChromeOS devices in the lab.
-For more information please read go/paris-.
-Managed by Chrome Fleet Software (go/chrome-fleet-software).
-*/
+// The labpack program allows to run repair tasks for ChromeOS devices in the lab.
+// For more information please read go/paris-.
+// Managed by Chrome Fleet Software (go/chrome-fleet-software).
 package main
 
 import (
