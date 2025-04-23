@@ -373,7 +373,7 @@ func TestConvertFull(t *testing.T) {
 		t.Fatalf("Error unmarshalling example text: %s", err)
 	}
 	got := Convert(&ls)
-	sort.Sort(sort.StringSlice(got))
+	sort.Strings(got)
 	want := make([]string, len(fullLabels))
 	copy(want, fullLabels)
 	if diff := typed.Got(got).Want(want).Diff(); diff != "" {
