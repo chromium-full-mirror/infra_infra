@@ -826,12 +826,24 @@ message Camera {
   HardwareState state = 1;
 }
 
-// Chrome OS specific DUT details
-// NEXT TAG: 37
+// ChromeOS specific DUT details
+// NEXT TAG: 38
 message ChromeOS {
   // Is OS based on Android.
   // If not then based on Chrome.
   bool is_android_based = 1;
+
+  // Defines the operating system usage constraint for this DUT.
+  enum OSRestruction {
+    // No restrictions by default.
+    OSR_ANY = 0;
+    OSR_CHROMEOS_ONLY = 1;
+    OSR_ANDROID_ONLY = 2;
+  }
+  // Defines the operating system restriction for DUT.
+  // Use DUTOS_ANDROID_ONLY to permit only Android.
+  // Use DUTOS_ANY if any operating system is allowed.
+  OSRestruction os_restriction = 37;
   // Board name of the DUT.
   string board = 2;
   // Model name of the DUT.
