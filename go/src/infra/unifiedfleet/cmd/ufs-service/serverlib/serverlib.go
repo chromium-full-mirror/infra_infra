@@ -17,7 +17,6 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
-	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server"
 	"go.chromium.org/luci/server/auth"
@@ -66,13 +65,13 @@ func ServerMain(cfgLoader *config.Loader) func(*server.Server) error {
 			ProjectID:         srv.Options.CloudProject,
 		}
 
-		profilerStartErr := profiler.Start(cfg)
-		// TODO(gregorynisbet): Upgrade this to a panic once enabling the profiler is reliable enough in prod.
-		if profilerStartErr == nil {
-			logging.Infof(srv.Context, "profiler started successfully: 848356fa-b429-4e0e-bc63-a8cfbe3b5b75")
-		} else {
-			logging.Errorf(srv.Context, "%s\n", errors.Annotate(profilerStartErr, "error encountered when setting up profiler during startup").Err())
+		if err := profiler.Start(cfg); err != nil {
+			// Note to future readers: If you are reading this panic message and you are on a Chromebook, there is a good chance you will need
+			// to Chrome Remote Desktop into whatever environment the UFS server process is running on in order to complete the auth flow.
+			// Reality is often disappointing.
+			panic(fmt.Sprintf(`error encountered when setting up profiler during startup (try gcloud auth application-default login if running locally): %s`, err))
 		}
+		logging.Infof(srv.Context, "profiler started successfully.")
 
 		// Load service config form a local file (deployed via GKE),
 		// periodically reread it to pick up changes without full restart.
