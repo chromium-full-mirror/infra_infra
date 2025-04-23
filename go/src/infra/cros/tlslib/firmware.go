@@ -75,7 +75,7 @@ func getFirmwareTarget(c *ssh.Client) (string, error) {
 	}
 	fwLine := firmwareManifestRegexp.FindString(out)
 	if fwLine != "" {
-		return strings.TrimLeft(strings.TrimRight(fwLine, "'"), "FIRMWARE_MANIFEST_KEY='"), nil
+		return strings.TrimPrefix(strings.TrimSuffix(fwLine, "'"), "FIRMWARE_MANIFEST_KEY='"), nil
 	}
 	return "", fmt.Errorf("getFirmwareTarget: unable to parse FIRMWARE_MANIFEST_KEY from crosid.")
 }
