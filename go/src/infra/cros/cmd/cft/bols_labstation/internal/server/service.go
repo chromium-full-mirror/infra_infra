@@ -6,12 +6,16 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"io"
 	"os"
 	"os/exec"
+	"strconv"
+	"strings"
+	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -65,25 +69,23 @@ func (s *service) PutFile(stream bols.BolsService_PutFileServer) error {
 		if err == io.EOF {
 			break
 		}
-		if err == nil {
+		if err != nil {
 			return fmt.Errorf("failed to receive streaming data: %v", err)
 		}
-		info := req.GetReqInfo()
-		if info != nil {
+		switch {
+		case req.GetReqInfo() != nil:
+			info := req.GetReqInfo()
 			fn = info.GetFilename()
 			f, err = os.OpenFile(fn, os.O_RDWR|os.O_CREATE, 0644)
 			if err != nil {
 				return fmt.Errorf("failed to open file %s: %v", fn, err)
 			}
 			defer f.Close()
-			continue
-		}
-		data := req.GetData()
-		if data != nil {
+		case req.GetData() != nil:
 			if f == nil {
 				return errors.New("data was send before file name")
 			}
-			if _, err := f.Write(data); err != nil {
+			if _, err := f.Write(req.GetData()); err != nil {
 				return fmt.Errorf("failed to write file %s: %v", fn, err)
 			}
 		}
@@ -156,7 +158,6 @@ func (s *service) MakeTempDir(ctx context.Context, req *bols.MakeTempDirRequest)
 
 // RemoveDir removes a directory from labstation/container.
 func (s *service) RemoveDir(ctx context.Context, req *bols.RemoveDirRequest) (*bols.RemoveDirResponse, error) {
-
 	path := req.GetPath()
 	fi, err := os.Stat(path)
 	if err != nil {
@@ -197,30 +198,124 @@ func (s *service) DMesg(req *bols.DMesgRequest, stream bols.BolsService_DMesgSer
 // WriteFileByBlock write data to a file by blocks.
 // For most implementation of this service, it will be simple
 // call to "dd <filename> oflag=sync conv=notrunc,nocreat".
-func (s *service) WriteFileByBlock(bols.BolsService_WriteFileByBlockServer) error {
-	return status.Errorf(codes.Unimplemented, "method WriteFileByBlock not implemented")
+func (s *service) WriteFileByBlock(stream bols.BolsService_WriteFileByBlockServer) error {
+	var fn string
+	var byteSize int32
+	var stdin io.WriteCloser
+	var cmd *exec.Cmd
+	ctx := stream.Context()
+
+	for {
+		req, err := stream.Recv()
+		if err == io.EOF {
+			if err := stdin.Close(); err != nil {
+				return fmt.Errorf("failed to close stdin to dd: %v", err)
+			}
+			if err := cmd.Wait(); err != nil {
+				return fmt.Errorf("failed to wait for dd to finish: %v", err)
+			}
+			break
+		}
+		if err != nil {
+			return fmt.Errorf("failed to receive streaming data: %v", err)
+		}
+		switch {
+		case req.GetReqInfo() != nil:
+			info := req.GetReqInfo()
+			fn = info.GetFilePath()
+			byteSize = info.GetByteSize()
+			args := []string{
+				fmt.Sprintf("of=%s", fn),
+				"oflag=sync", "conv=notrunc,nocreat",
+			}
+			if byteSize > 0 {
+				args = append(args, fmt.Sprintf("bs=%d", byteSize))
+			}
+			cmd = exec.CommandContext(ctx, "dd", args...)
+			stdin, err = cmd.StdinPipe()
+			if err != nil {
+				return fmt.Errorf("failed to create stdin to dd: %v", err)
+			}
+		case req.GetData() != nil:
+			if fn == "" {
+				return errors.New("data was send before file name")
+			}
+			if _, err := io.Writer.Write(stdin, req.GetData()); err != nil {
+				stdin.Close()
+				return fmt.Errorf("failed to write data to file %s: %v", fn, err)
+			}
+		}
+	}
+	return nil
 }
 
 // ReadFileByBlock reads data by Block
 // For most implementation of this service, it will be simple
 // call to "dd".
 func (s *service) ReadFileByBlock(*bols.ReadFileByBlockRequest, bols.BolsService_ReadFileByBlockServer) error {
+	// TODO: check if we really need this function.
 	return status.Errorf(codes.Unimplemented, "method ReadFileByBlock not implemented")
 }
 
 // RunMount runs the "mount" command on the labstation.
-func (s *service) RunMount(context.Context, *bols.RunMountRequest) (*bols.RunMountResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RunMount not implemented")
+func (s *service) RunMount(ctx context.Context, req *bols.RunMountRequest) (*bols.RunMountResponse, error) {
+	var args []string
+	args = append(args, req.GetParams()...)
+	if req.GetSrc() != "" {
+		args = append(args, req.GetSrc())
+	}
+	if req.GetDest() != "" {
+		args = append(args, req.GetDest())
+	}
+	if out, err := exec.CommandContext(ctx, "mount", args...).CombinedOutput(); err != nil {
+		return nil, fmt.Errorf("failed to mount %s to %s: %s: %v", req.GetSrc(), req.GetDest(), string(out), err)
+	}
+	return &bols.RunMountResponse{}, nil
 }
 
 // RunUMount runs the "umount" command on the labstation.
-func (s *service) RunUMount(context.Context, *bols.RunUMountRequest) (*bols.RunUMountResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RunUMount not implemented")
+func (s *service) RunUMount(ctx context.Context, req *bols.RunUMountRequest) (*bols.RunUMountResponse, error) {
+	if out, err := exec.CommandContext(ctx, "umount", req.GetPath()).CombinedOutput(); err != nil {
+		return nil, fmt.Errorf("failed to umount %s: %s: %v", req.GetPath(), string(out), err)
+	}
+	return &bols.RunUMountResponse{}, nil
 }
 
 // StartServod runs a servod daemon.
-func (s *service) StartServod(context.Context, *bols.StartServodRequest) (*bols.StartServodResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StartServod not implemented")
+func (s *service) StartServod(ctx context.Context, req *bols.StartServodRequest) (*bols.StartServodResponse, error) {
+	port := req.GetStationId().GetServodPort()
+	if err := markInUseFile(port); err != nil {
+		return nil, fmt.Errorf("failed to mark in use file: %v", err)
+	}
+	if getServodStatus(ctx, port) == bols.ServodStatus_SERVOD_RUNNING {
+		// Since servod has already been started, do not need to start again.
+		return &bols.StartServodResponse{}, nil
+	}
+	args := []string{"servod"}
+	args = append(args, fmt.Sprintf("PORT=%d", port))
+	if board := req.GetBoard(); board != "" {
+		args = append(args, fmt.Sprintf("BOARD=%s", board))
+	}
+	if model := req.GetModel(); model != "" {
+		args = append(args, fmt.Sprintf("MODEL=%s", model))
+	}
+	if serial := req.GetStationId().GetServoSerial(); serial != "" {
+		args = append(args, fmt.Sprintf("SERIAL=%s", serial))
+	}
+	if config := req.GetConfig(); config != "" {
+		args = append(args, fmt.Sprintf("CONFIG=%s", config))
+	}
+	if req.GetRecoveryMode() {
+		args = append(args, "REC_MODE=1")
+	}
+	if out, err := exec.CommandContext(ctx, "start", args...).CombinedOutput(); err != nil {
+		return nil, fmt.Errorf("failed to start servod at %d: %s: %v", port, string(out), err)
+	}
+	if out, err := exec.CommandContext(ctx, "servodtool", "instance", "wait-for-active",
+		"--timeout", "120", "-p", fmt.Sprintf("%d", port)).Output(); err != nil {
+		s.logger.Printf("Failed to check if servod is ready: %s: %v", string(out), err)
+	}
+	return &bols.StartServodResponse{}, nil
 }
 
 // StopServod stops the servod daemon.
@@ -274,14 +369,74 @@ func (s *service) UpdateServoFirmware(context.Context, *bols.UpdateServoFirmware
 }
 
 // RunFutility run futility tool on labstation.
-func (s *service) RunFutility(context.Context, *bols.RunFutilityRequest) (*bols.RunFutilityResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RunFutility not implemented")
+func (s *service) RunFutility(ctx context.Context, req *bols.RunFutilityRequest) (*bols.RunFutilityResponse, error) {
+	var args []string
+	args = append(args, req.GetParams()...)
+	port := req.GetStationId().GetServodPort()
+	hasPortParam := false
+	// Make sure that the port argument is valid.
+	for _, a := range args {
+		if hasPortParam {
+			// Check if the port argument is valid.
+			num, err := strconv.Atoi(a)
+			if err != nil {
+				return nil, fmt.Errorf("invalid port number %s: %v", a, err)
+			}
+			if num != int(port) {
+				return nil, fmt.Errorf("port number %s does not match port %d in station id: %v", a, port, err)
+			}
+			break
+		}
+		if a == "--servo_port" {
+			hasPortParam = true
+		}
+	}
+	cmd := exec.CommandContext(ctx, "futility", args...)
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		return nil, fmt.Errorf("failed to run futility: %s: %v", stderr.String(), err)
+	}
+	return &bols.RunFutilityResponse{
+		Output: &bols.OutputStream{
+			Stdout: stdout.Bytes(),
+			Stderr: stderr.Bytes(),
+		}}, nil
 }
 
 // RunFlashEC runs EC firmware flashing from the servo.
 // In most of implementation, it runs flash_ec tool on labstation.
-func (s *service) RunFlashEC(context.Context, *bols.RunFlashECRequest) (*bols.RunFlashECResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RunFlashEC not implemented")
+func (s *service) RunFlashEC(ctx context.Context, req *bols.RunFlashECRequest) (*bols.RunFlashECResponse, error) {
+	var args []string
+	args = append(args, req.GetParams()...)
+	port := req.GetStationId().GetServodPort()
+	// Make sure that the port argument is valid.
+	for _, a := range args {
+		if strings.HasPrefix(a, "--port=") {
+			// Check if the port argument is valid.
+			num, err := strconv.Atoi(a[len("--port="):])
+			if err != nil {
+				return nil, fmt.Errorf("invalid port number %s: %v", a, err)
+			}
+			if num != int(port) {
+				return nil, fmt.Errorf("port number %s does not match port %d in station id: %v", a, port, err)
+			}
+			break
+		}
+	}
+	cmd := exec.CommandContext(ctx, "flash_ec", args...)
+	var stdout, stderr bytes.Buffer
+	cmd.Stdout = &stdout
+	cmd.Stderr = &stderr
+	if err := cmd.Run(); err != nil {
+		return nil, fmt.Errorf("failed to run flash_ec: %s: %v", stderr.String(), err)
+	}
+	return &bols.RunFlashECResponse{
+		Output: &bols.OutputStream{
+			Stdout: stdout.Bytes(),
+			Stderr: stderr.Bytes(),
+		}}, nil
 }
 
 // GetDolosVersion returns the current dolos version.
@@ -320,4 +475,31 @@ func fstat(path string) (*bols.FileStat, error) {
 		IsDir:     fi.IsDir(),
 		IsSymlink: lstat.Mode()&os.ModeSymlink == os.ModeSymlink,
 	}, nil
+}
+
+func markInUseFile(port int32) error {
+	inUseFile := fmt.Sprintf("/var/lib/servod/%d_in_use", port)
+	// Create the file if the file does not exist.
+	file, err := os.OpenFile(inUseFile, os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		return fmt.Errorf("failed to open %s: %w", inUseFile, err)
+	}
+	if err := file.Close(); err != nil {
+		return fmt.Errorf("failed to close %s: %w", inUseFile, err)
+	}
+
+	currentTime := time.Now()
+	err = os.Chtimes(inUseFile, currentTime, currentTime)
+	if err != nil {
+		return fmt.Errorf("failed to chance time for %s: %w", inUseFile, err)
+	}
+	return nil
+}
+
+func getServodStatus(ctx context.Context, port int32) bols.ServodStatus {
+	if err := exec.CommandContext(ctx, "servodtool", "instance", "show", "-p",
+		fmt.Sprintf("%d", port)).Run(); err == nil {
+		return bols.ServodStatus_SERVOD_RUNNING
+	}
+	return bols.ServodStatus_SERVOD_STOPPED
 }
