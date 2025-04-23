@@ -88,10 +88,14 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 			(status == pb.TestStatus_FAIL || status == pb.TestStatus_ABORT || status == pb.TestStatus_CRASH) {
 			var rdbErrors []*pb.FailureReason_Error
 			var errorsSize int
-			for _, e := range testCaseResult.Errors {
+			var primaryErrorMessage string
+			for i, e := range testCaseResult.Errors {
 				errorMessage := e.Message
 				if len(e.StackTrace) > 0 {
 					errorMessage += "\n" + e.StackTrace
+				}
+				if i == 0 {
+					primaryErrorMessage = errorMessage
 				}
 
 				rdbError := &pb.FailureReason_Error{
@@ -107,7 +111,7 @@ func (r *CrosTestResult) ToProtos(ctx context.Context) ([]*sinkpb.TestResult, er
 			}
 
 			tr.FailureReason = &pb.FailureReason{
-				PrimaryErrorMessage:  truncateString(testCaseResult.Errors[0].Message, maxErrorMessageBytes),
+				PrimaryErrorMessage:  truncateString(primaryErrorMessage, maxErrorMessageBytes),
 				Errors:               rdbErrors,
 				TruncatedErrorsCount: int32(len(testCaseResult.Errors) - len(rdbErrors)),
 			}
