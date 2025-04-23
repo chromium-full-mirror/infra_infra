@@ -26,7 +26,6 @@ func addCrosCftContainers(actions map[string]*Action) {
 			},
 			Conditions: []string{
 				"Do not run on Mobile Harness box",
-				"Do not run on CloudBot",
 				"CrosToolRunner is up",
 			},
 			ExecName:    "ctr_start_adb_container",
@@ -45,7 +44,6 @@ func addCrosCftContainers(actions map[string]*Action) {
 			},
 			Conditions: []string{
 				"Do not run on Mobile Harness box",
-				"Do not run on CloudBot",
 				"Testbed has Servo",
 				"CrosToolRunner is up",
 			},
@@ -64,7 +62,6 @@ func addCrosCftContainers(actions map[string]*Action) {
 				"Pull and run foil-provision container",
 			},
 			Conditions: []string{
-				"Do not run on CloudBot",
 				"CrosToolRunner is up",
 			},
 			ExecName: "ctr_start_foil_provision_container",

@@ -5,12 +5,10 @@ plans:
         - name: Start ADB-base ('ctr_start_adb_container') (time:'2m0s')
           conditions:
             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-            - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
             - name: CrosToolRunner is up ('ctr_is_up')
         - name: Start Servo-Nexus ('ctr_servo_nexus_start_container') (time:'4m0s')
           conditions:
             - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
-            - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
             - name: Testbed has Servo ('dut_servo_host_present') (RUN_ONCE)
             - name: CrosToolRunner is up ('ctr_is_up')
     - name: servo
@@ -2055,7 +2053,6 @@ plans:
         - name: Device is pingable (simple) ('cros_ping') (ALWAYS_RUN) (time:'15s')
         - name: Mark DUT as Android if applicable ('cros_set_as_android_based')
           conditions:
-            - name: Do not run on CloudBot ('env_is_not_cloudbot') (RUN_ONCE)
             - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
             - name: Device is not accessible (simple) ('sample_fail') (ALWAYS_RUN)
               conditions:

@@ -161,7 +161,6 @@ func crosRepairActions() map[string]*Action {
 				"Mark DUT as Android, based on ADB responses.",
 			},
 			Conditions: []string{
-				"Do not run on CloudBot",
 				// Always reset first.
 				"Mark as ChromeOS based",
 				"Device is not accessible (simple)",

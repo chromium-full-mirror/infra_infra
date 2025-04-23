@@ -16,10 +16,6 @@ plans:
               exec_name: env_is_not_mh_box
               docs:
                 - Check that the process is not running on Mobile Harness box.
-            - name: Do not run on CloudBot (RUN_ONCE)
-              exec_name: env_is_not_cloudbot
-              docs:
-                - Check that the process is not running on cloudbot.
             - name: CrosToolRunner is up
               exec_name: ctr_is_up
               docs:
@@ -34,10 +30,6 @@ plans:
               exec_name: env_is_not_mh_box
               docs:
                 - Check that the process is not running on Mobile Harness box.
-            - name: Do not run on CloudBot (RUN_ONCE)
-              exec_name: env_is_not_cloudbot
-              docs:
-                - Check that the process is not running on cloudbot.
             - name: Testbed has Servo (RUN_ONCE)
               exec_name: dut_servo_host_present
             - name: CrosToolRunner is up
@@ -7275,10 +7267,6 @@ plans:
                   docs:
                     - Pull and run foil-provision container
                   conditions:
-                    - name: Do not run on CloudBot (RUN_ONCE)
-                      exec_name: env_is_not_cloudbot
-                      docs:
-                        - Check that the process is not running on cloudbot.
                     - name: CrosToolRunner is up
                       exec_name: ctr_is_up
                       docs:
@@ -8250,10 +8238,6 @@ plans:
                   docs:
                     - Pull and run foil-provision container
                   conditions:
-                    - name: Do not run on CloudBot (RUN_ONCE)
-                      exec_name: env_is_not_cloudbot
-                      docs:
-                        - Check that the process is not running on cloudbot.
                     - name: CrosToolRunner is up
                       exec_name: ctr_is_up
                       docs:
@@ -9162,10 +9146,6 @@ plans:
                   docs:
                     - Pull and run foil-provision container
                   conditions:
-                    - name: Do not run on CloudBot (RUN_ONCE)
-                      exec_name: env_is_not_cloudbot
-                      docs:
-                        - Check that the process is not running on cloudbot.
                     - name: CrosToolRunner is up
                       exec_name: ctr_is_up
                       docs:
@@ -11389,10 +11369,6 @@ plans:
                   docs:
                     - Pull and run foil-provision container
                   conditions:
-                    - name: Do not run on CloudBot (RUN_ONCE)
-                      exec_name: env_is_not_cloudbot
-                      docs:
-                        - Check that the process is not running on cloudbot.
                     - name: CrosToolRunner is up
                       exec_name: ctr_is_up
                       docs:
@@ -12364,10 +12340,6 @@ plans:
                   docs:
                     - Pull and run foil-provision container
                   conditions:
-                    - name: Do not run on CloudBot (RUN_ONCE)
-                      exec_name: env_is_not_cloudbot
-                      docs:
-                        - Check that the process is not running on cloudbot.
                     - name: CrosToolRunner is up
                       exec_name: ctr_is_up
                       docs:
@@ -13128,10 +13100,6 @@ plans:
                   docs:
                     - Pull and run foil-provision container
                   conditions:
-                    - name: Do not run on CloudBot (RUN_ONCE)
-                      exec_name: env_is_not_cloudbot
-                      docs:
-                        - Check that the process is not running on cloudbot.
                     - name: CrosToolRunner is up
                       exec_name: ctr_is_up
                       docs:
@@ -13548,10 +13516,6 @@ plans:
                   docs:
                     - Pull and run foil-provision container
                   conditions:
-                    - name: Do not run on CloudBot (RUN_ONCE)
-                      exec_name: env_is_not_cloudbot
-                      docs:
-                        - Check that the process is not running on cloudbot.
                     - name: CrosToolRunner is up
                       exec_name: ctr_is_up
                       docs:
@@ -14092,10 +14056,6 @@ plans:
                   docs:
                     - Pull and run foil-provision container
                   conditions:
-                    - name: Do not run on CloudBot (RUN_ONCE)
-                      exec_name: env_is_not_cloudbot
-                      docs:
-                        - Check that the process is not running on cloudbot.
                     - name: CrosToolRunner is up
                       exec_name: ctr_is_up
                       docs:
@@ -14448,10 +14408,6 @@ plans:
                   docs:
                     - Pull and run foil-provision container
                   conditions:
-                    - name: Do not run on CloudBot (RUN_ONCE)
-                      exec_name: env_is_not_cloudbot
-                      docs:
-                        - Check that the process is not running on cloudbot.
                     - name: CrosToolRunner is up
                       exec_name: ctr_is_up
                       docs:
