@@ -151,9 +151,6 @@ linters:
         # https://staticcheck.dev/docs/checks#SA9003
         # Empty body in an if or else branch
         - "-SA9003"
-        # https://staticcheck.dev/docs/checks#ST1001
-        # Dot imports are discouraged
-        - "-ST1001"
         # https://staticcheck.dev/docs/checks#ST1005
         # Incorrectly formatted error string
         - "-ST1005"

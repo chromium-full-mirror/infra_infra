@@ -20,7 +20,7 @@ import (
 	"go.chromium.org/luci/server/auth"
 	"go.chromium.org/luci/server/tq"
 
-	. "go.chromium.org/infra/appengine/poros/api/entities"
+	"go.chromium.org/infra/appengine/poros/api/entities"
 	proto "go.chromium.org/infra/appengine/poros/api/proto"
 	"go.chromium.org/infra/appengine/poros/taskspb"
 )
@@ -29,9 +29,9 @@ type AssetInstanceHandler struct {
 	proto.UnimplementedAssetInstanceServer
 }
 
-func toAssetInstanceEntity(model *proto.AssetInstanceModel) *AssetInstanceEntity {
+func toAssetInstanceEntity(model *proto.AssetInstanceModel) *entities.AssetInstanceEntity {
 	if model != nil {
-		return &AssetInstanceEntity{
+		return &entities.AssetInstanceEntity{
 			AssetInstanceId: model.AssetInstanceId,
 			AssetId:         model.AssetId,
 			Status:          model.Status,
@@ -45,7 +45,7 @@ func toAssetInstanceEntity(model *proto.AssetInstanceModel) *AssetInstanceEntity
 	return nil
 }
 
-func toAssetIntanceModel(entity *AssetInstanceEntity) *proto.AssetInstanceModel {
+func toAssetIntanceModel(entity *entities.AssetInstanceEntity) *proto.AssetInstanceModel {
 	if entity != nil {
 		return &proto.AssetInstanceModel{
 			AssetInstanceId: entity.AssetInstanceId,
@@ -62,7 +62,7 @@ func toAssetIntanceModel(entity *AssetInstanceEntity) *proto.AssetInstanceModel 
 	return nil
 }
 
-func validateAssetInstanceEntity(entity *AssetInstanceEntity) error {
+func validateAssetInstanceEntity(entity *entities.AssetInstanceEntity) error {
 	// validate AssetId and Status
 	if entity.AssetId == "" {
 		return errors.New("assetId cannot be empty")
@@ -77,7 +77,7 @@ func validateAssetInstanceEntity(entity *AssetInstanceEntity) error {
 func (e *AssetInstanceHandler) Create(ctx context.Context, req *proto.CreateAssetInstanceRequest) (*proto.AssetInstanceModel, error) {
 	id := uuid.New().String()
 	timestamp := time.Now().UTC()
-	entity := &AssetInstanceEntity{
+	entity := &entities.AssetInstanceEntity{
 		AssetInstanceId: id,
 		AssetId:         req.GetAssetId(),
 		Status:          req.GetStatus(),
@@ -109,7 +109,7 @@ func deploymentProject(ctx context.Context) (string, error) {
 	var activeProjects []string
 	for _, status := range activeInstanceStatuses {
 		query := datastore.NewQuery("AssetInstanceEntity").Eq("Status", status)
-		var asset_instances []*AssetInstanceEntity
+		var asset_instances []*entities.AssetInstanceEntity
 		if err := datastore.GetAll(ctx, query, &asset_instances); err != nil {
 			return "", err
 		}
@@ -187,7 +187,7 @@ func (e *AssetInstanceHandler) Update(ctx context.Context, req *proto.UpdateAsse
 
 // Deletes the given AssetInstance.
 func (e *AssetInstanceHandler) Delete(ctx context.Context, req *proto.DeleteAssetInstanceRequest) (*emptypb.Empty, error) {
-	if err := datastore.Delete(ctx, &AssetInstanceEntity{
+	if err := datastore.Delete(ctx, &entities.AssetInstanceEntity{
 		AssetInstanceId: req.GetAssetInstanceId()}); err != nil {
 		return nil, err
 	}
@@ -197,7 +197,7 @@ func (e *AssetInstanceHandler) Delete(ctx context.Context, req *proto.DeleteAsse
 // Lists all AssetInstance.
 func (e *AssetInstanceHandler) List(ctx context.Context, in *proto.ListAssetInstancesRequest) (*proto.ListAssetInstancesResponse, error) {
 	query := datastore.NewQuery("AssetInstanceEntity")
-	var asset_instances []*AssetInstanceEntity
+	var asset_instances []*entities.AssetInstanceEntity
 	res := &proto.ListAssetInstancesResponse{}
 	if err := datastore.GetAll(ctx, query, &asset_instances); err != nil {
 		return nil, err
@@ -216,7 +216,7 @@ func (e *AssetInstanceHandler) TriggerDeployment(ctx context.Context, in *proto.
 	entityId := in.GetEntityId()
 	projectPrefix := "celab-poros"
 
-	var entity *AssetInstanceEntity
+	var entity *entities.AssetInstanceEntity
 	var err error
 	if entityType == "Asset" {
 		project, err := deploymentProject(ctx)
@@ -226,7 +226,7 @@ func (e *AssetInstanceHandler) TriggerDeployment(ctx context.Context, in *proto.
 
 		id := uuid.New().String()
 		timestamp := time.Now().UTC()
-		entity = &AssetInstanceEntity{
+		entity = &entities.AssetInstanceEntity{
 			AssetInstanceId: id,
 			AssetId:         entityId,
 			Status:          "STATUS_RUNNING",
@@ -289,8 +289,8 @@ func gcpProjectList() []string {
 	return projectList
 }
 
-func getAssetInstanceById(ctx context.Context, id string) (*AssetInstanceEntity, error) {
-	asset_instance := &AssetInstanceEntity{AssetInstanceId: id}
+func getAssetInstanceById(ctx context.Context, id string) (*entities.AssetInstanceEntity, error) {
+	asset_instance := &entities.AssetInstanceEntity{AssetInstanceId: id}
 	if err := datastore.Get(ctx, asset_instance); err != nil {
 		return nil, err
 	}
@@ -301,7 +301,7 @@ func getAssetInstanceById(ctx context.Context, id string) (*AssetInstanceEntity,
 func (e *AssetInstanceHandler) TriggerAssetDeletion(ctx context.Context, in *emptypb.Empty) (*emptypb.Empty, error) {
 	currentTime := time.Now().UTC()
 	query := datastore.NewQuery("AssetInstanceEntity").Eq("Status", "STATUS_COMPLETED").Lte("DeleteAt", currentTime)
-	var asset_instances []*AssetInstanceEntity
+	var asset_instances []*entities.AssetInstanceEntity
 	if err := datastore.GetAll(ctx, query, &asset_instances); err != nil {
 		return nil, err
 	}

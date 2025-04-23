@@ -18,7 +18,7 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
 
-	. "go.chromium.org/infra/appengine/poros/api/entities"
+	"go.chromium.org/infra/appengine/poros/api/entities"
 	proto "go.chromium.org/infra/appengine/poros/api/proto"
 )
 
@@ -26,9 +26,9 @@ type AssetHandler struct {
 	proto.UnimplementedAssetServer
 }
 
-func toEntity(model *proto.AssetModel) *AssetEntity {
+func toEntity(model *proto.AssetModel) *entities.AssetEntity {
 	if model != nil {
-		return &AssetEntity{
+		return &entities.AssetEntity{
 			AssetId:     model.AssetId,
 			Name:        model.Name,
 			AssetType:   model.AssetType,
@@ -43,7 +43,7 @@ func toEntity(model *proto.AssetModel) *AssetEntity {
 	return nil
 }
 
-func toModel(entity *AssetEntity) *proto.AssetModel {
+func toModel(entity *entities.AssetEntity) *proto.AssetModel {
 	if entity != nil {
 		return &proto.AssetModel{
 			AssetId:     entity.AssetId,
@@ -60,7 +60,7 @@ func toModel(entity *AssetEntity) *proto.AssetModel {
 	return nil
 }
 
-func validateEntity(entity *AssetEntity) error {
+func validateEntity(entity *entities.AssetEntity) error {
 	// validate name & description
 	if entity.Name == "" {
 		return errors.New("name cannot be empty")
@@ -83,7 +83,7 @@ func fakeAncestorKey(ctx context.Context) *datastore.Key {
 // Creates the given Asset.
 func (e *AssetHandler) Create(ctx context.Context, req *proto.CreateAssetRequest) (*proto.CreateAssetResponse, error) {
 	id := uuid.New().String()
-	entity := &AssetEntity{
+	entity := &entities.AssetEntity{
 		AssetId:     id,
 		Name:        req.GetName(),
 		Description: req.GetDescription(),
@@ -215,7 +215,7 @@ func (e *AssetHandler) Update(ctx context.Context, req *proto.UpdateAssetRequest
 
 		assetResourcesToDelete := req.GetAssetResourcesToDelete()
 		for _, assetResourceModel := range assetResourcesToDelete {
-			if err := datastore.Delete(ctx, &AssetResourceEntity{
+			if err := datastore.Delete(ctx, &entities.AssetResourceEntity{
 				AssetResourceId: assetResourceModel.GetAssetResourceId()}); err != nil {
 				return err
 			}
@@ -250,7 +250,7 @@ func (e *AssetHandler) List(ctx context.Context, in *proto.ListAssetsRequest) (*
 	// TODO: crbug/1318606 - Implement Asset List functionality with filter,
 	// orderby & paging.
 	query := datastore.NewQuery("AssetEntity")
-	var assetEntities []*AssetEntity
+	var assetEntities []*entities.AssetEntity
 	res := &proto.ListAssetsResponse{}
 	if err := datastore.GetAll(ctx, query, &assetEntities); err != nil {
 		return nil, err
@@ -271,7 +271,7 @@ func (c *AssetHandler) GetAssetConfiguration(ctx context.Context, in *proto.GetA
 	res := &proto.AssetConfiguration{AssetId: assetId, AssetType: asset.AssetType}
 
 	query := datastore.NewQuery("AssetResourceEntity").Eq("AssetId", assetId)
-	var assetResourceEntites []*AssetResourceEntity
+	var assetResourceEntites []*entities.AssetResourceEntity
 	if err := datastore.GetAll(ctx, query, &assetResourceEntites); err != nil {
 		return nil, err
 	}
@@ -354,7 +354,7 @@ func (e *AssetHandler) GetDefaultResources(ctx context.Context, req *proto.GetDe
 	var assetResources []*proto.AssetResourceModel
 	for _, data := range resourceData {
 		query := datastore.NewQuery("ResourceEntity").Eq("Type", data[0]).Limit(1)
-		var entities []*ResourceEntity
+		var entities []*entities.ResourceEntity
 		if err := datastore.GetAll(ctx, query, &entities); err != nil {
 			return nil, err
 		}
@@ -366,8 +366,8 @@ func (e *AssetHandler) GetDefaultResources(ctx context.Context, req *proto.GetDe
 	return &proto.GetDefaultResourcesResponse{AssetResources: assetResources}, nil
 }
 
-func getById(ctx context.Context, id string) (*AssetEntity, error) {
-	asset := &AssetEntity{AssetId: id}
+func getById(ctx context.Context, id string) (*entities.AssetEntity, error) {
+	asset := &entities.AssetEntity{AssetId: id}
 	if err := datastore.Get(ctx, asset); err != nil {
 		return nil, err
 	}

@@ -16,7 +16,7 @@ import (
 	"go.chromium.org/luci/gae/service/datastore"
 	"go.chromium.org/luci/server/auth"
 
-	. "go.chromium.org/infra/appengine/poros/api/entities"
+	"go.chromium.org/infra/appengine/poros/api/entities"
 	proto "go.chromium.org/infra/appengine/poros/api/proto"
 )
 
@@ -24,9 +24,9 @@ type ResourceHandler struct {
 	proto.UnimplementedResourceServer
 }
 
-func toResourceEntity(model *proto.ResourceModel) *ResourceEntity {
+func toResourceEntity(model *proto.ResourceModel) *entities.ResourceEntity {
 	if model != nil {
-		return &ResourceEntity{
+		return &entities.ResourceEntity{
 			ResourceId:      model.ResourceId,
 			Name:            model.Name,
 			Description:     model.Description,
@@ -44,7 +44,7 @@ func toResourceEntity(model *proto.ResourceModel) *ResourceEntity {
 	}
 	return nil
 }
-func toResourceModel(entity *ResourceEntity) *proto.ResourceModel {
+func toResourceModel(entity *entities.ResourceEntity) *proto.ResourceModel {
 	if entity != nil {
 		return &proto.ResourceModel{
 			ResourceId:      entity.ResourceId,
@@ -65,7 +65,7 @@ func toResourceModel(entity *ResourceEntity) *proto.ResourceModel {
 	return nil
 }
 
-func validateResourceEntity(entity *ResourceEntity) error {
+func validateResourceEntity(entity *entities.ResourceEntity) error {
 	// validate name, description, type, ImageProject, ImageFamily, ImageSource
 	if entity.Name == "" {
 		return errors.New("name cannot be empty")
@@ -94,7 +94,7 @@ func validateResourceEntity(entity *ResourceEntity) error {
 // Creates the given Resource.
 func (e *ResourceHandler) Create(ctx context.Context, req *proto.CreateResourceRequest) (*proto.ResourceModel, error) {
 	id := uuid.New().String()
-	entity := &ResourceEntity{
+	entity := &entities.ResourceEntity{
 		ResourceId:      id,
 		Name:            req.GetName(),
 		Description:     req.GetDescription(),
@@ -201,7 +201,7 @@ func (e *ResourceHandler) Delete(ctx context.Context, req *proto.DeleteResourceR
 // Lists all Resources.
 func (e *ResourceHandler) List(ctx context.Context, in *proto.ListResourcesRequest) (*proto.ListResourcesResponse, error) {
 	query := datastore.NewQuery("ResourceEntity")
-	var resourceEntities []*ResourceEntity
+	var resourceEntities []*entities.ResourceEntity
 	res := &proto.ListResourcesResponse{}
 	if err := datastore.GetAll(ctx, query, &resourceEntities); err != nil {
 		return nil, err
@@ -213,8 +213,8 @@ func (e *ResourceHandler) List(ctx context.Context, in *proto.ListResourcesReque
 }
 
 // Helper functions
-func getResourceById(ctx context.Context, id string) (*ResourceEntity, error) {
-	resource := &ResourceEntity{ResourceId: id}
+func getResourceById(ctx context.Context, id string) (*entities.ResourceEntity, error) {
+	resource := &entities.ResourceEntity{ResourceId: id}
 	if err := datastore.Get(ctx, resource); err != nil {
 		return nil, err
 	}
