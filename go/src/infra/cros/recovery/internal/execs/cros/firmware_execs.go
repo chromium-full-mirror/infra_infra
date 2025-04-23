@@ -58,7 +58,7 @@ func isOnStableFirmwareVersionExec(ctx context.Context, info *execs.ExecInfo) er
 	actionArgs := info.GetActionArgs(ctx)
 	// crosystem control provide data from the DUT
 	control := "fwid"
-	if "ro" == actionArgs.AsString(ctx, "target", "rw") {
+	if actionArgs.AsString(ctx, "target", "rw") == "ro" {
 		control = "ro_fwid"
 	}
 	sv, err := version.ByDut(ctx, info.GetDut())
