@@ -100,6 +100,9 @@ type Dut struct {
 	Android *Android
 	// DevBoard hold specific data for DevBoard device's data.
 	DevBoard *DevBoard
+	// Provide DUT/drone affinity
+	// Example: satlab-abc123
+	Hive string
 }
 
 // GetAndroid returns Android device.
