@@ -5,13 +5,18 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"reflect"
 	"strconv"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+
 	"go.chromium.org/chromiumos/config/go/test/api"
 
+	androidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api"
+	mockandroidapi "go.chromium.org/infra/cros/cmd/common_lib/android_api/mocks"
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
 )
 
@@ -176,21 +181,17 @@ func TestExtractBuildInfoFromInstallPath_Success(t *testing.T) {
 			installPath:         common.GetABOTAPath("12345", "board-target", "board"),
 			expectedBuildId:     "12345",
 			expectedBuildTarget: "board-target",
-			expectedBoard:       "board",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			buildId, buildTarget, board := extractBuildInfoFromInstallPath(tt.installPath)
+			buildId, buildTarget := extractBuildInfoFromInstallPath(tt.installPath)
 			if buildId != tt.expectedBuildId {
 				t.Errorf("extractBuildInfoFromInstallPath() buildId = %q, want %q", buildId, tt.expectedBuildId)
 			}
 			if buildTarget != tt.expectedBuildTarget {
 				t.Errorf("extractBuildInfoFromInstallPath() buildTarget = %q, want %q", buildTarget, tt.expectedBuildTarget)
-			}
-			if board != tt.expectedBoard {
-				t.Errorf("extractBuildInfoFromInstallPath() board = %q, want %q", board, tt.expectedBoard)
 			}
 		})
 	}
@@ -222,15 +223,12 @@ func TestExtractBuildInfoFromInstallPath_Failure(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Expect empty strings and a log message (log check omitted)
-			buildId, buildTarget, board := extractBuildInfoFromInstallPath(tt.installPath)
+			buildId, buildTarget := extractBuildInfoFromInstallPath(tt.installPath)
 			if buildId != "" {
 				t.Errorf("extractBuildInfoFromInstallPath() buildId = %q, want \"\"", buildId)
 			}
 			if buildTarget != "" {
 				t.Errorf("extractBuildInfoFromInstallPath() buildTarget = %q, want \"\"", buildTarget)
-			}
-			if board != "" {
-				t.Errorf("extractBuildInfoFromInstallPath() board = %q, want \"\"", board)
 			}
 		})
 	}
@@ -244,6 +242,7 @@ func TestApplyBuildInfoToTarget(t *testing.T) {
 		initialKeyValues  []*api.KeyValue
 		buildId           string
 		buildTarget       string
+		buildBranch       string
 		expectedKeyValues []*api.KeyValue
 	}{
 		{
@@ -251,9 +250,11 @@ func TestApplyBuildInfoToTarget(t *testing.T) {
 			initialKeyValues: nil,
 			buildId:          "12345",
 			buildTarget:      "board-target",
+			buildBranch:      "brya-branch",
 			expectedKeyValues: []*api.KeyValue{
 				{Key: "al_build_id", Value: "12345"},
 				{Key: "al_build_target", Value: "board-target"},
+				{Key: "al_build_branch", Value: "brya-branch"},
 			},
 		},
 		{
@@ -261,9 +262,11 @@ func TestApplyBuildInfoToTarget(t *testing.T) {
 			initialKeyValues: []*api.KeyValue{},
 			buildId:          "67890",
 			buildTarget:      "another-target",
+			buildBranch:      "another-branch",
 			expectedKeyValues: []*api.KeyValue{
 				{Key: "al_build_id", Value: "67890"},
 				{Key: "al_build_target", Value: "another-target"},
+				{Key: "al_build_branch", Value: "another-branch"},
 			},
 		},
 		{
@@ -273,10 +276,12 @@ func TestApplyBuildInfoToTarget(t *testing.T) {
 			},
 			buildId:     "99999",
 			buildTarget: "final-target",
+			buildBranch: "final-branch",
 			expectedKeyValues: []*api.KeyValue{
 				{Key: "existing_key", Value: "existing_value"},
 				{Key: "al_build_id", Value: "99999"},
 				{Key: "al_build_target", Value: "final-target"},
+				{Key: "al_build_branch", Value: "final-branch"},
 			},
 		},
 	}
@@ -293,7 +298,7 @@ func TestApplyBuildInfoToTarget(t *testing.T) {
 				target.SwReq.KeyValues = []*api.KeyValue{}
 			}
 
-			applyBuildInfoToTarget(tt.buildId, tt.buildTarget, target)
+			applyBuildInfoToTarget(tt.buildId, tt.buildTarget, tt.buildBranch, target)
 
 			// Handle nil vs empty slice for comparison
 			actualKVs := target.SwReq.KeyValues
@@ -325,41 +330,6 @@ func newTestSchedulingUnit(gcsPath string, initialKVs []*api.KeyValue) *api.Sche
 			},
 		},
 		DynamicUpdateLookupTable: make(map[string]string),
-	}
-}
-
-func TestUpdateSchedulingUnit_ExplicitAndroidBuildPath(t *testing.T) {
-	gcsPath := common.AndroidBuildPrefix + "54321/test-board-target/image.zip"
-	expectedBuildId := "54321"
-	expectedBuildTarget := "test-board-target"
-
-	su := newTestSchedulingUnit(gcsPath, nil) // Start with empty KVs
-
-	updater := &ALProvisionRequestUpdater{} // Not used in this path
-	logger := log.Default()                 // Use default logger
-
-	updateSchedulingUnit(su, &api.InternalTestplan{}, updater, logger)
-
-	// Check DynamicUpdateLookupTable
-	if val, ok := su.DynamicUpdateLookupTable["buildNumber"]; !ok || val != expectedBuildId {
-		t.Errorf("DynamicUpdateLookupTable['buildNumber'] = %q, want %q", val, expectedBuildId)
-	}
-	if val, ok := su.DynamicUpdateLookupTable["installPath"]; !ok || val != gcsPath {
-		t.Errorf("DynamicUpdateLookupTable['installPath'] = %q, want %q", val, gcsPath)
-	}
-
-	// Check KeyValues were added by applyBuildInfoToTarget
-	expectedKeyValues := []*api.KeyValue{
-		{Key: "al_build_id", Value: expectedBuildId},
-		{Key: "al_build_target", Value: expectedBuildTarget},
-	}
-	if !reflect.DeepEqual(su.PrimaryTarget.SwReq.KeyValues, expectedKeyValues) {
-		t.Errorf("PrimaryTarget.SwReq.KeyValues = %v, want %v", su.PrimaryTarget.SwReq.KeyValues, expectedKeyValues)
-	}
-
-	// Check GcsPath was NOT modified in this case
-	if su.PrimaryTarget.SwReq.GcsPath != gcsPath {
-		t.Errorf("PrimaryTarget.SwReq.GcsPath was modified to %q, should remain %q", su.PrimaryTarget.SwReq.GcsPath, gcsPath)
 	}
 }
 
@@ -396,6 +366,7 @@ func TestUpdateSchedulingUnit_LatestGreenBuild(t *testing.T) {
 	expectedKeyValues := []*api.KeyValue{
 		{Key: "al_build_id", Value: expectedBuildId},
 		{Key: "al_build_target", Value: expectedBuildTarget},
+		{Key: "al_build_branch", Value: "git_main-al-dev"},
 	}
 	actualKeyValues := su.PrimaryTarget.SwReq.KeyValues
 	// Handle nil vs empty slice for comparison
@@ -416,6 +387,7 @@ func TestUpdateSchedulingUnit_LatestGreenBuild(t *testing.T) {
 func TestFixInstallPathForKernelTest_Success(t *testing.T) {
 	originalInstallPath := "android-build/build_explorer/artifacts_list/123456789/brya_device_x86_64/brya-ota-123456789.zip"
 	expected := "android-build/build_explorer/artifacts_list/987654321/brya-trunk_staging-userdebug/brya-ota-987654321.zip"
+	board := "brya"
 	req := &api.InternalTestplan{
 		SuiteInfo: &api.SuiteInfo{
 			SuiteMetadata: &api.SuiteMetadata{
@@ -428,9 +400,135 @@ func TestFixInstallPathForKernelTest_Success(t *testing.T) {
 			},
 		},
 	}
-	if got, err := fixInstallPathForKernelTest(originalInstallPath, req); err != nil {
+	if got, err := fixInstallPathForKernelTest(originalInstallPath, req, board); err != nil {
 		t.Fatalf("fixInstallPathForKernelTest(%q, %q) raised error %q", originalInstallPath, req, err)
 	} else if got != expected {
 		t.Fatalf("fixInstallPathForKernelTest(%q, %q) = %q, want %q", originalInstallPath, req, got, expected)
+	}
+}
+
+// TestUpdateSchedulingUnit_AndroidBuildPath tests the updateSchedulingUnit function
+// specifically for the flow where the GCS path starts with "android-build".
+func TestUpdateSchedulingUnit_ExplicitAndroidBuildPath(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	logger := log.Default() // Use default logger
+
+	mockBuilds := mockandroidapi.NewMockAndroidBuildClient(ctrl)
+	// Override the global factory function to return the mock
+	androidapi.AndroidBuildFactory = func() androidapi.AndroidBuildClient {
+		return mockBuilds
+	}
+	defer func() {
+		// Reset to the original factory after the test
+		androidapi.AndroidBuildFactory = func() androidapi.AndroidBuildClient {
+			return &androidapi.DefaultAndroidBuildClient{} // Or whatever the original was
+		}
+	}()
+
+	tests := []struct {
+		name           string
+		su             *api.SchedulingUnit
+		req            *api.InternalTestplan
+		wantErr        bool
+		wantSU         *api.SchedulingUnit
+		mockBuildsFunc func(*mockandroidapi.MockAndroidBuildClient)
+	}{
+		{
+			name: "successful update with android build path",
+			su: &api.SchedulingUnit{
+				DynamicUpdateLookupTable: map[string]string{"board": "brya"},
+				PrimaryTarget: &api.Target{
+					SwReq: &api.LegacySW{
+						GcsPath:   "android-build/build_explorer/artifacts_list/123/brya_device_x86_64/brya-ota-123456789.zip",
+						KeyValues: []*api.KeyValue{},
+					},
+				},
+			},
+			req: &api.InternalTestplan{},
+			wantSU: &api.SchedulingUnit{
+				DynamicUpdateLookupTable: map[string]string{"board": "brya", "buildNumber": "123", "installPath": "android-build/build_explorer/artifacts_list/123/brya_device_x86_64/brya-ota-123456789.zip"},
+				PrimaryTarget: &api.Target{
+					SwReq: &api.LegacySW{
+						GcsPath: "android-build/build_explorer/artifacts_list/123/brya_device_x86_64/brya-ota-123456789.zip",
+						KeyValues: []*api.KeyValue{
+							{Key: "al_build_id", Value: "123"},
+							{Key: "al_build_target", Value: "brya_device_x86_64"},
+							{Key: "al_build_branch", Value: DefaultBranch},
+						},
+					},
+				},
+			},
+			mockBuildsFunc: func(mockBuilds *mockandroidapi.MockAndroidBuildClient) {
+				mockBuilds.EXPECT().GetBranchFromBuildID(gomock.Any(), gomock.Any()).Return(DefaultBranch, nil).Times(1)
+			},
+		},
+		{
+			name: "failed to get branch from build id",
+			su: &api.SchedulingUnit{
+				DynamicUpdateLookupTable: map[string]string{"board": "brya"},
+				PrimaryTarget: &api.Target{
+					SwReq: &api.LegacySW{
+						GcsPath:   "android-build/build_explorer/artifacts_list/456/brya_device_x86_64/brya-ota-123456789.zip",
+						KeyValues: []*api.KeyValue{},
+					},
+				},
+			},
+			req: &api.InternalTestplan{},
+			wantSU: &api.SchedulingUnit{
+				DynamicUpdateLookupTable: map[string]string{"board": "brya", "buildNumber": "456", "installPath": "android-build/build_explorer/artifacts_list/456/brya_device_x86_64/brya-ota-123456789.zip"},
+				PrimaryTarget: &api.Target{
+					SwReq: &api.LegacySW{
+						GcsPath: "android-build/build_explorer/artifacts_list/456/brya_device_x86_64/brya-ota-123456789.zip",
+						KeyValues: []*api.KeyValue{
+							{Key: "al_build_id", Value: "456"},
+							{Key: "al_build_target", Value: "brya_device_x86_64"},
+							{Key: "al_build_branch", Value: ""}, // Branch will be empty due to failure
+						},
+					},
+				},
+			},
+			mockBuildsFunc: func(mockBuilds *mockandroidapi.MockAndroidBuildClient) {
+				mockBuilds.EXPECT().GetBranchFromBuildID(gomock.Any(), gomock.Any()).Return("", fmt.Errorf("failed to get branch")).Times(1)
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+
+			// Mock the latest build lookup
+			tt.mockBuildsFunc(mockBuilds)
+			updater := &ALProvisionRequestUpdater{}
+			err := updateSchedulingUnit(tt.su, tt.req, updater, logger)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("updateSchedulingUnit() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if !tt.wantErr {
+				if tt.wantSU.DynamicUpdateLookupTable["buildNumber"] != tt.su.DynamicUpdateLookupTable["buildNumber"] {
+					t.Errorf("updateSchedulingUnit() buildNumber got = %v, want %v", tt.su.DynamicUpdateLookupTable["buildNumber"], tt.wantSU.DynamicUpdateLookupTable["buildNumber"])
+				}
+				if tt.wantSU.DynamicUpdateLookupTable["installPath"] != tt.su.DynamicUpdateLookupTable["installPath"] {
+					t.Errorf("updateSchedulingUnit() installPath got = %v, want %v", tt.su.DynamicUpdateLookupTable["installPath"], tt.wantSU.DynamicUpdateLookupTable["installPath"])
+				}
+				gotGcsPath := tt.su.GetPrimaryTarget().GetSwReq().GetGcsPath()
+				wantGcsPath := tt.wantSU.PrimaryTarget.GetSwReq().GetGcsPath()
+				if wantGcsPath != gotGcsPath {
+					t.Errorf("updateSchedulingUnit() GcsPath got = %v, want %v", gotGcsPath, wantGcsPath)
+				}
+				gotKeyValues := tt.su.GetPrimaryTarget().GetSwReq().GetKeyValues()
+				wantKeyValues := tt.wantSU.PrimaryTarget.GetSwReq().GetKeyValues()
+				if len(wantKeyValues) != len(gotKeyValues) {
+					t.Errorf("updateSchedulingUnit() KeyValues length got = %v, want %v", len(gotKeyValues), len(wantKeyValues))
+				} else {
+					for i, wantKV := range wantKeyValues {
+						if gotKeyValues[i].GetKey() != wantKV.GetKey() || gotKeyValues[i].GetValue() != wantKV.GetValue() {
+							t.Errorf("updateSchedulingUnit() KeyValues[%d] got = %v, want %v", i, gotKeyValues[i], wantKV)
+						}
+					}
+				}
+			}
+		})
 	}
 }

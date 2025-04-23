@@ -216,24 +216,29 @@ func getAllSchedulingUnits(metadata *api.SuiteMetadata) []*api.SchedulingUnit {
 
 // updateSchedulingUnit sets the SchedulingUnit's install path and associated metadata.
 func updateSchedulingUnit(su *api.SchedulingUnit, req *api.InternalTestplan, updater *ALProvisionRequestUpdater, log *log.Logger) error {
-	var buildId, buildTarget, installPath string
-	if gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath(); strings.HasPrefix(gcsPath, "android-build") {
-		buildId, buildTarget, _ = extractBuildInfoFromInstallPath(gcsPath)
+	var buildId, buildTarget, installPath, branch string
+	var err error
+	// Look up board information. Exit early if not found.
+	board, ok := su.GetDynamicUpdateLookupTable()["board"]
+	if !ok {
+		return fmt.Errorf("board information not found")
+	}
+	buildApi := androidapi.AndroidBuildFactory()
+	gcsPath := su.GetPrimaryTarget().GetSwReq().GetGcsPath()
+	if strings.HasPrefix(gcsPath, "android-build") {
+		buildId, buildTarget = extractBuildInfoFromInstallPath(gcsPath)
 		installPath = gcsPath
+		branch, err = buildApi.GetBranchFromBuildID(androidapi.ContainerGce, buildGetReq(board, "", buildId))
+		if err != nil {
+			log.Printf("Error getting branch for build number %s: target: %s %v", buildId, buildTarget, err)
+		}
+		log.Printf("Got branch %s from android api for build number: %s\n", branch, buildId)
 	} else {
-		// Look up latest for board as not provided in gcs path.
-		if su.GetDynamicUpdateLookupTable() == nil {
-			log.Printf("dynamic lookup table is nil")
-		}
-		board, ok := su.GetDynamicUpdateLookupTable()["board"]
-		if !ok {
-			log.Printf("board not found")
-		}
-		branch := getBranch(su, log)
+		branch = getBranch(su, log)
 		var latestGreenBuild int
 		var err error
 		if latestGreenBuild, ok = updater.LatestBuildsByBoard[board]; !ok {
-			latestGreenBuild, err = androidapi.GetLatestGreenBuildNumber(androidapi.ContainerGce, buildGetReq(board, branch))
+			latestGreenBuild, err = buildApi.GetLatestGreenBuildNumber(androidapi.ContainerGce, buildGetReq(board, branch, ""))
 			if err != nil {
 				log.Printf("Error getting latest green build number: %v", err)
 				return err
@@ -249,7 +254,7 @@ func updateSchedulingUnit(su *api.SchedulingUnit, req *api.InternalTestplan, upd
 	}
 	if getTestType(req) == common.KernelTestType {
 		var err error
-		installPath, err = fixInstallPathForKernelTest(installPath, req)
+		installPath, err = fixInstallPathForKernelTest(installPath, req, board)
 		if err != nil {
 			return fmt.Errorf("fixing install path for kernel test: %+v", err)
 		}
@@ -257,7 +262,7 @@ func updateSchedulingUnit(su *api.SchedulingUnit, req *api.InternalTestplan, upd
 	// Make sure the buildId and installPath are consistent in all expected locations.
 	su.DynamicUpdateLookupTable["buildNumber"] = buildId
 	su.DynamicUpdateLookupTable["installPath"] = installPath
-	applyBuildInfoToTarget(buildId, buildTarget, su.GetPrimaryTarget())
+	applyBuildInfoToTarget(buildId, buildTarget, branch, su.GetPrimaryTarget())
 	su.GetPrimaryTarget().GetSwReq().GcsPath = installPath
 	return nil
 }
@@ -268,8 +273,7 @@ func updateSchedulingUnit(su *api.SchedulingUnit, req *api.InternalTestplan, upd
 // AL OS build. However, for tests on the kernel tree, the primary build is
 // actually the kernel build, so this artifact doesn't exist. We must replace
 // it with an artifact from the OS build, which gets passed in via Args.
-func fixInstallPathForKernelTest(installPath string, req *api.InternalTestplan) (string, error) {
-	_, _, board := extractBuildInfoFromInstallPath(installPath)
+func fixInstallPathForKernelTest(installPath string, req *api.InternalTestplan, board string) (string, error) {
 	var osBuildId, osTarget string
 	args := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
 	for _, arg := range args {
@@ -291,33 +295,21 @@ func fixInstallPathForKernelTest(installPath string, req *api.InternalTestplan) 
 // extractBuildInfoFromInstallPath parses metadata out of the provided installPath.
 // A typical installPath is expected to look like: {common.AndroidBuildPrefix}/{buildId}/{buildTarget}/{board}-ota-{buildId}.zip
 // For example: android-build/build_explorer/artifacts_list/123456789/brya-trunk_staging-userdebug/brya-ota-123456789.zip
-func extractBuildInfoFromInstallPath(installPath string) (buildId, buildTarget, board string) {
+func extractBuildInfoFromInstallPath(installPath string) (buildId, buildTarget string) {
 	trimmedPath := strings.TrimPrefix(installPath, common.AndroidBuildPrefix)
 	splitPath := strings.Split(trimmedPath, "/")
 	if len(splitPath) < 2 {
-		log.Printf("Warning: could not parse installPath: %s", installPath)
+		log.Printf("Warning: could not extract buildId and buildTarget from installPath")
 		return
 	}
+	// Indexes 0 and 1 correspond to buildId and buildTarget.
 	buildId, buildTarget = splitPath[0], splitPath[1]
-	if len(splitPath) < 3 {
-		log.Printf("Warning: could not parse artifact name from installPath: %s", installPath)
-		return
-	}
-	artifactName := splitPath[2]
-	splitArtifactName := strings.Split(artifactName, "-")
-	if len(splitArtifactName) < 3 {
-		log.Printf(
-			"Warning: could not parse artifact name %s in installPath: %s",
-			artifactName, installPath)
-		return
-	}
-	board = splitArtifactName[0]
 	return
 }
 
-// applyBuildInfoToTarget sets the provided buildId and buildTarget in the
+// applyBuildInfoToTarget sets the provided buildId, buildTarget, buildBranch in the
 // target's software request key values.
-func applyBuildInfoToTarget(buildId, buildTarget string, target *api.Target) {
+func applyBuildInfoToTarget(buildId, buildTarget, buildBranch string, target *api.Target) {
 	target.GetSwReq().KeyValues = append(target.GetSwReq().KeyValues, []*api.KeyValue{
 		{
 			Key:   "al_build_id",
@@ -327,13 +319,17 @@ func applyBuildInfoToTarget(buildId, buildTarget string, target *api.Target) {
 			Key:   "al_build_target",
 			Value: buildTarget,
 		},
+		{
+			Key:   "al_build_branch",
+			Value: buildBranch,
+		},
 	}...)
-	return
 }
 
 // buildGetReq constructs a BuildGetRequest for the board.
-func buildGetReq(board string, branch string) androidapi.BuildGetRequest {
+func buildGetReq(board string, branch string, buildID string) androidapi.BuildGetRequest {
 	return androidapi.BuildGetRequest{
+		BuildID:            buildID,
 		BuildType:          "submitted",
 		Board:              board,
 		MaxResults:         "1",

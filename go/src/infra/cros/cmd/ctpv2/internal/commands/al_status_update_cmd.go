@@ -200,8 +200,8 @@ func (cmd *AlStatusUpdateCmd) initRunAndShards(ctx context.Context) error {
 // alInvocationInformation fetches the required Invocation generation from
 // the build request. If this information is missing then we cannot generate an
 // invocation.
-func (cmd *AlStatusUpdateCmd) alInvocationInformation() (string, string, string) {
-	var buildID, buildTarget, runTarget string
+func (cmd *AlStatusUpdateCmd) alInvocationInformation() (string, string, string, string) {
+	var buildID, buildTarget, runTarget, buildBranch string
 	for _, item := range cmd.BuildsMap {
 		// Avoid nil pointer in the loop.
 		if item.SuiteInfo == nil {
@@ -209,14 +209,14 @@ func (cmd *AlStatusUpdateCmd) alInvocationInformation() (string, string, string)
 		}
 
 		// Exit if we've found our results
-		if buildID != "" && buildTarget != "" {
+		if buildID != "" && buildTarget != "" && buildBranch != "" {
 			break
 		}
 
 		for _, schedUnitOption := range item.SuiteInfo.GetSuiteMetadata().GetSchedulingUnitOptions() {
 			for _, unit := range schedUnitOption.GetSchedulingUnits() {
-				buildID, buildTarget, runTarget = cmd.fetchInvocationInfo(unit)
-				if buildID != "" && buildTarget != "" {
+				buildID, buildTarget, runTarget, buildBranch = cmd.fetchInvocationInfo(unit)
+				if buildID != "" && buildTarget != "" && buildBranch != "" {
 					break
 				}
 			}
@@ -224,21 +224,21 @@ func (cmd *AlStatusUpdateCmd) alInvocationInformation() (string, string, string)
 
 		// TODO (oldProto-azrahman): remove after new proto change rolls in
 		for _, unit := range item.SuiteInfo.GetSuiteMetadata().GetSchedulingUnits() {
-			buildID, buildTarget, runTarget = cmd.fetchInvocationInfo(unit)
-			if buildID != "" && buildTarget != "" {
+			buildID, buildTarget, runTarget, buildBranch = cmd.fetchInvocationInfo(unit)
+			if buildID != "" && buildTarget != "" && buildBranch != "" {
 				break
 			}
 		}
 	}
 
-	return buildID, buildTarget, runTarget
+	return buildID, buildTarget, runTarget, buildBranch
 }
 
-func (cmd *AlStatusUpdateCmd) fetchInvocationInfo(schedUnit *testapi.SchedulingUnit) (string, string, string) {
-	var buildID, buildTarget, runTarget string
+func (cmd *AlStatusUpdateCmd) fetchInvocationInfo(schedUnit *testapi.SchedulingUnit) (string, string, string, string) {
+	var buildID, buildTarget, runTarget, buildBranch string
 
 	for _, pair := range schedUnit.GetPrimaryTarget().GetSwReq().GetKeyValues() {
-		if buildID != "" && buildTarget != "" {
+		if buildID != "" && buildTarget != "" && buildBranch != "" {
 			break
 		}
 
@@ -246,6 +246,8 @@ func (cmd *AlStatusUpdateCmd) fetchInvocationInfo(schedUnit *testapi.SchedulingU
 			buildID = pair.GetValue()
 		} else if pair.GetKey() == "al_build_target" {
 			buildTarget = pair.GetValue()
+		} else if pair.GetKey() == "al_build_branch" {
+			buildBranch = pair.GetValue()
 		}
 	}
 
@@ -262,14 +264,14 @@ func (cmd *AlStatusUpdateCmd) fetchInvocationInfo(schedUnit *testapi.SchedulingU
 		model = dutInfo.GetChromeos().GetDutModel().GetModelName()
 	}
 	if board == "" && model == "" {
-		return buildID, buildTarget, runTarget
+		return buildID, buildTarget, runTarget, buildBranch
 	} else if model == "" {
 		runTarget = board
 	} else {
 		runTarget = fmt.Sprintf("%s_%s", board, model)
 	}
 
-	return buildID, buildTarget, runTarget
+	return buildID, buildTarget, runTarget, buildBranch
 }
 
 func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, _ *build.Step) error {
@@ -278,17 +280,19 @@ func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, _ *build.S
 	}
 
 	// Only generate the invocation if we have the requisite information.
-	buildID, buildTarget, runTarget := cmd.alInvocationInformation()
+	buildID, buildTarget, runTarget, buildBranch := cmd.alInvocationInformation()
 	isReady := buildID != "" && buildTarget != "" && runTarget != ""
 	if !isReady {
 		return nil
 	}
-
+	logging.Infof(ctx, "buildID %s, buildTarget %s, runTarget %s, buildBranch: %s\n", buildID, buildTarget, runTarget, buildBranch)
 	cmd.AlStateInfo.ATP = cmd.service
 	inv, err := cmd.service.InvocationService.Insert(&androidbuildinternal.Invocation{
 		PrimaryBuild: &androidbuildinternal.BuildDescriptor{
 			BuildId:     buildID,
-			BuildTarget: buildTarget},
+			BuildTarget: buildTarget,
+			Branch:      buildBranch,
+		},
 		Properties: []*androidbuildinternal.Property{
 			{
 				Name:  "cluster_id",
@@ -315,7 +319,7 @@ func (cmd *AlStatusUpdateCmd) generateInvocation(ctx context.Context, _ *build.S
 		},
 	})
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to generate invocation ID: %v", err)
 	}
 	invocationID := inv.InvocationId
 	logging.Infof(ctx, "generated invocationID: %s\n", invocationID)

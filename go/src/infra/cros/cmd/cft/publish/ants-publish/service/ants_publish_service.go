@@ -14,7 +14,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -326,10 +325,6 @@ func (aps *AntsPublishService) removeModulePrefix(moduleName string) string {
 func (aps *AntsPublishService) UploadToAnts(ctx context.Context) error {
 	log.Printf("Uploading to AnTS: %+v", aps.results)
 
-	if !isInternalAccount(aps.metadata.GetAccountId()) {
-		return nil
-	}
-
 	if len(aps.results) == 0 {
 		log.Println("no given test results to upload. Skipping results upload")
 		return nil
@@ -414,9 +409,6 @@ func (aps *AntsPublishService) testProperties(result *api.TestCaseResult) ([]*at
 }
 
 func (aps *AntsPublishService) UploadArtifacts(ctx context.Context) error {
-	if !isInternalAccount(aps.metadata.GetAccountId()) {
-		return nil
-	}
 
 	if _, err := os.Stat(artifactsDir); err != nil {
 		log.Printf("%s does not exists. Skipping artifacts upload.", artifactsDir)
@@ -537,27 +529,6 @@ func validateAntsPublishRequest(req *api.PublishRequest) error {
 func timeTrack(start time.Time, msg string) {
 	elapsed := time.Since(start)
 	log.Printf("%s took: %s", msg, elapsed)
-}
-
-func isInternalAccount(accountID string) bool {
-	// Sometimes, we do not have accountId for internal users.
-	if accountID == "" {
-		log.Printf("accountID is empty")
-		return true
-	}
-
-	id, err := strconv.Atoi(accountID)
-	if err != nil {
-		log.Printf("Cannot convert accountID %s to int", accountID)
-		return false
-	}
-
-	if id < 1 {
-		log.Printf("Account ID %s not supported", accountID)
-		return false
-	}
-
-	return id == internalAccountID
 }
 
 // unpackMetadata unpacks the Any metadata field into PublishGcsMetadata

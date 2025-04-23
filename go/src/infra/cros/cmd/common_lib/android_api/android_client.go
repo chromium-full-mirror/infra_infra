@@ -120,7 +120,6 @@ func fetchCredentialsFromJSON(serviceAccountJSONPath string) (*google.Credential
 	creds, err := google.CredentialsFromJSON(context.Background(), jsonData, cloudPlatformScope, androidBuildInternalScope)
 	if err != nil {
 		return nil, err
-		// log.Printf("Error loading credentials: %s\n", err)
 	}
 	return creds, nil
 }

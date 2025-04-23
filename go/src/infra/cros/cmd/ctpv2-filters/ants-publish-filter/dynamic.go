@@ -30,27 +30,6 @@ const (
 	partnerRunKey     = "is_partner_run"
 )
 
-func addAntsPublish(isPartnerRun string, log *log.Logger) bool {
-	if isPartnerRun == "" {
-		log.Println("Empty value found for partner run")
-		return true
-	}
-
-	isPartner, err := strconv.ParseBool(isPartnerRun)
-	if err != nil {
-		log.Printf("Error converting %s to bool: %v", isPartnerRun, err)
-		return true
-	}
-
-	if isPartner {
-		// Skip calling ants-publish for external partners.
-		log.Printf("External partner run found.")
-		return false
-	}
-
-	return true
-}
-
 func skipTFUpload(req *api.InternalTestplan, log *log.Logger) {
 	log.Printf("Got AL run, setting skip tradefed upload flag")
 	em := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata()
@@ -70,7 +49,7 @@ func GeneratePublishTask(req *api.InternalTestplan, metadata *metadata.PublishAn
 		}
 	}
 
-	if alRun && addAntsPublish(suiteExecutionMetadataArgValue(req, partnerRunKey), log) {
+	if alRun {
 		log.Printf("AL run. Adding ants-publish step and skipping upload through TF plugin.")
 		skipTFUpload(req, log)
 	} else {

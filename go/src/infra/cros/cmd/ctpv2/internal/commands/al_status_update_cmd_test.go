@@ -117,6 +117,7 @@ func TestALInvocationInformation(t *testing.T) {
 			swReqKeyValues: []*api.KeyValue{
 				{Key: "al_build_id", Value: "12345"},
 				{Key: "al_build_target", Value: "brya-staging"},
+				{Key: "al_build_branch", Value: "brya-branch"},
 			},
 		},
 	}
@@ -146,7 +147,7 @@ func TestALInvocationInformation(t *testing.T) {
 				},
 			}
 
-			gotBuildID, gotBuildTarget, gotRunTarget := cmd.alInvocationInformation()
+			gotBuildID, gotBuildTarget, gotRunTarget, gotBuildBranch := cmd.alInvocationInformation()
 
 			if gotBuildID != "12345" {
 				t.Errorf("Unexpected buildID: got(%s), want(%s)", gotBuildID, "12345")
@@ -154,6 +155,9 @@ func TestALInvocationInformation(t *testing.T) {
 
 			if gotBuildTarget != "brya-staging" {
 				t.Errorf("Unexpected buildTarget: got(%s), want(%s)", gotBuildID, "brya-staging")
+			}
+			if gotBuildBranch != "brya-branch" {
+				t.Errorf("Unexpected buildBranch: got(%s), want(%s)", gotBuildID, "brya-branch")
 			}
 
 			wantRunTarget := fmt.Sprintf("%s_%s", tc.dutInfo.GetChromeos().DutModel.BuildTarget, tc.dutInfo.GetChromeos().DutModel.ModelName)

@@ -213,7 +213,7 @@ func (cmd *TranslateV1ToV2Cmd) initiateATPWorkUnits(ctx context.Context) error {
 		cmd.AlStateInfo.Top = top
 		logging.Infof(ctx, "TOP Node %s: %+v\n", top.GetWorkUnit().Id, top)
 		logging.Infof(ctx, "parentWUID: %s\tinvocationID: %s\n", parentWUID, invocationID)
-	} else if isAlRun && !cmd.IsPartnerRun {
+	} else if isAlRun {
 		// If we are in an AL run but no ATP information was provided then
 		// generate the invocation details in the during the suite run.
 		logging.Infof(ctx, "In AL run but no ATP details provided, generate invocation at runtime.")

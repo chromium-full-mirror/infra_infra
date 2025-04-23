@@ -41,10 +41,10 @@ func TestGeneratePublishTask(t *testing.T) {
 			name: "nonAL",
 		},
 		{
-			name:       "partner",
-			alRun:      true,
-			partnerRun: true,
-			wantArgs:   2,
+			name:     "partner",
+			alRun:    true,
+			wantDu:   1,
+			wantArgs: 2,
 		},
 	}
 
@@ -55,10 +55,6 @@ func TestGeneratePublishTask(t *testing.T) {
 			if tc.alRun {
 				args = append(args, &api.Arg{Flag: alRunKey, Value: "true"})
 			}
-			if tc.partnerRun {
-				args = append(args, &api.Arg{Flag: partnerRunKey, Value: "true"})
-			}
-
 			req := &api.InternalTestplan{
 				SuiteInfo: &api.SuiteInfo{
 					SuiteMetadata: &api.SuiteMetadata{
@@ -77,13 +73,13 @@ func TestGeneratePublishTask(t *testing.T) {
 
 			du := req.GetSuiteInfo().GetSuiteMetadata().GetDynamicUpdates()
 			if len(du) != tc.wantDu {
-				t.Errorf("Unexpected dynamic updates length. got %d want %d", len(du), tc.wantDu)
+				t.Errorf("Unexpected dynamic updates length . got %d want %d", len(du), tc.wantDu)
 			}
 
 			gotArgs := req.GetSuiteInfo().GetSuiteMetadata().GetExecutionMetadata().GetArgs()
-			if tc.alRun && !tc.partnerRun {
+			if tc.alRun {
 				if len(gotArgs) != 2 {
-					t.Errorf("Unexpected execution metadata args len: got(%d), want(2)", len(gotArgs))
+					t.Errorf("Unexpected execution metadata args %v len: got(%d), want(2)", gotArgs, len(gotArgs))
 				}
 				wantArg := &api.Arg{Flag: skipTFUploadFlag, Value: "true"}
 				if diff := cmp.Diff(gotArgs[1], wantArg, protocmp.Transform()); diff != "" {
@@ -93,40 +89,6 @@ func TestGeneratePublishTask(t *testing.T) {
 				if len(gotArgs) != tc.wantArgs {
 					t.Errorf("Unexpected execution metadata args len: got(%d), want(%d)", len(gotArgs), tc.wantArgs)
 				}
-			}
-		})
-	}
-}
-
-func TestAddAntsPublish(t *testing.T) {
-	testCases := []struct {
-		name         string
-		isPartnerRun string
-		wantAdd      bool
-	}{
-		{
-			name:    "missingAccountID",
-			wantAdd: true,
-		},
-		{
-			name:         "externalPartner",
-			isPartnerRun: "true",
-		},
-		{
-			name:         "success",
-			isPartnerRun: "false",
-			wantAdd:      true,
-		},
-	}
-
-	log := log.New(os.Stdout, "test", 1)
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			gotAdd := addAntsPublish(tc.isPartnerRun, log)
-
-			if gotAdd != tc.wantAdd {
-				t.Errorf("Unexpected error: got %v want %v", gotAdd, tc.wantAdd)
 			}
 		})
 	}
