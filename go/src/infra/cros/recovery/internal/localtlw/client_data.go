@@ -10,7 +10,7 @@ import (
 
 	"go.chromium.org/luci/common/errors"
 
-	"go.chromium.org/infra/cros/recovery/internal/localtlw/dutinfo"
+	"go.chromium.org/infra/cros/recovery/internal/dutinfo"
 	"go.chromium.org/infra/cros/recovery/internal/localtlw/localinfo"
 	"go.chromium.org/infra/cros/recovery/internal/log"
 	"go.chromium.org/infra/cros/recovery/tlw"
