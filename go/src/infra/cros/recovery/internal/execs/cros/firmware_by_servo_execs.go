@@ -22,12 +22,17 @@ import (
 
 func readGbbFlagsByServoExec(ctx context.Context, info *execs.ExecInfo) error {
 	servod := info.NewServod()
+	actionArgs := info.GetActionArgs(ctx)
+	expectedGbbHex := actionArgs.AsString(ctx, "expected_gbb", "")
 	run := info.NewRunner(info.GetChromeos().GetServo().GetName())
 	rawGBB, err := firmware.ReadGBBByServo(ctx, info.GetExecTimeout(), run, servod)
 	if err != nil {
 		return errors.Annotate(err, "read gbb flags").Err()
 	}
 	log.Debugf(ctx, "Device has GBB flags: %v", rawGBB)
+	if expectedGbbHex != "" && rawGBB != expectedGbbHex {
+		return errors.Reason("read gbb flags: missmatch, expected %q but has %q", expectedGbbHex, rawGBB).Err()
+	}
 	return nil
 }
 
