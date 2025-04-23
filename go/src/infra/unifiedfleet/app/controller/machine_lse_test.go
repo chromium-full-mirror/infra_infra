@@ -863,7 +863,7 @@ func TestUpdateMachineLSEDUT(t *testing.T) {
 		t.Run("Update machineLSE DUT with Pool Names", func(t *ftt.Test) {
 			dutMachinelse3 := mockDutMachineLSE("DUTMachineLSE-22")
 			dutMachinelse3.Machines = []string{"machine-22"}
-			dutMachinelse3.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools = []string{"pool1", "pool2"}
+			dutMachinelse3.GetChromeosMachineLse().GetDeviceLse().GetDut().Pools = []string{"pool1", "pool2", "pool_3", "pool-4", "pool.5"}
 			dutMachinelse3.ResourceState = ufspb.State_STATE_SERVING
 			resp, err := UpdateMachineLSE(ctx, dutMachinelse3, nil)
 			assert.Loosely(t, err, should.BeNil)

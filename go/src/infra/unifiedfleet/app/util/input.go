@@ -1009,7 +1009,7 @@ func GetSuffixAfterSeparator(name, seprator string) string {
 var ServoV3HostnameRegex = regexp.MustCompile(`.*-servo`)
 
 // PoolNameRegex ensures that a pool name is valid.
-var PoolNameRegex = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9_-]*$`)
+var PoolNameRegex = regexp.MustCompile(`^[a-zA-Z0-9][a-zA-Z0-9_.-]*$`)
 
 // Invalid characters for tags field. Used by Contains/ContainsAny method.
 var invalidTagChars string = "="
