@@ -9117,10 +9117,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Power-on the DUT using AMT (ALWAYS_RUN)
                       exec_name: cros_flex_set_amt_power_state
                       exec_args:
@@ -9229,10 +9229,10 @@ plans:
                             - invert_result:false
                           docs:
                             - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Power-off the DUT using AMT (ALWAYS_RUN)
                       exec_name: cros_flex_set_amt_power_state
                       exec_args:
@@ -9295,10 +9295,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -11218,10 +11218,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Power-on the DUT using AMT (ALWAYS_RUN)
                       exec_name: cros_flex_set_amt_power_state
                       exec_args:
@@ -11330,10 +11330,10 @@ plans:
                             - invert_result:false
                           docs:
                             - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Power-off the DUT using AMT (ALWAYS_RUN)
                       exec_name: cros_flex_set_amt_power_state
                       exec_args:
@@ -11396,10 +11396,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -15165,10 +15165,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Power-on the DUT using AMT (ALWAYS_RUN)
                       exec_name: cros_flex_set_amt_power_state
                       exec_args:
@@ -15277,10 +15277,10 @@ plans:
                             - invert_result:false
                           docs:
                             - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Power-off the DUT using AMT (ALWAYS_RUN)
                       exec_name: cros_flex_set_amt_power_state
                       exec_args:
@@ -15343,10 +15343,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -16908,10 +16908,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -17020,10 +17020,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -17086,10 +17086,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -18702,10 +18702,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -18814,10 +18814,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -18880,10 +18880,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -20335,10 +20335,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:1
+                    - sleep:10
                 - name: Power-on the DUT using AMT (ALWAYS_RUN)
                   exec_name: cros_flex_set_amt_power_state
                   exec_args:
@@ -20447,10 +20447,10 @@ plans:
                         - invert_result:false
                       docs:
                         - Check that DUT is a Flex board
-                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:1
+                    - sleep:10
                 - name: Power-off the DUT using AMT (ALWAYS_RUN)
                   exec_name: cros_flex_set_amt_power_state
                   exec_args:
@@ -20513,10 +20513,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:1
+                    - sleep:10
                 - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                   exec_name: servo_set
                   exec_args:
@@ -23128,10 +23128,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:1
+                    - sleep:10
                 - name: Power-on the DUT using AMT (ALWAYS_RUN)
                   exec_name: cros_flex_set_amt_power_state
                   exec_args:
@@ -23240,10 +23240,10 @@ plans:
                         - invert_result:false
                       docs:
                         - Check that DUT is a Flex board
-                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:1
+                    - sleep:10
                 - name: Power-off the DUT using AMT (ALWAYS_RUN)
                   exec_name: cros_flex_set_amt_power_state
                   exec_args:
@@ -23306,10 +23306,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                   exec_name: sample_sleep
                   exec_args:
-                    - sleep:1
+                    - sleep:10
                 - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                   exec_name: servo_set
                   exec_args:
@@ -24981,10 +24981,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -25093,10 +25093,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -25159,10 +25159,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -26686,10 +26686,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-on the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -26798,10 +26798,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-off the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -26864,10 +26864,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -28391,10 +28391,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -28503,10 +28503,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -28569,10 +28569,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -30096,10 +30096,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-on the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -30208,10 +30208,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-off the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -30274,10 +30274,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -31898,10 +31898,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Power-on the DUT using AMT (ALWAYS_RUN)
                       exec_name: cros_flex_set_amt_power_state
                       exec_args:
@@ -32010,10 +32010,10 @@ plans:
                             - invert_result:false
                           docs:
                             - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Power-off the DUT using AMT (ALWAYS_RUN)
                       exec_name: cros_flex_set_amt_power_state
                       exec_args:
@@ -32076,10 +32076,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -33656,10 +33656,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-on the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -33768,10 +33768,10 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-off the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -33834,10 +33834,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -36018,10 +36018,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-on the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -36130,10 +36130,10 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-off the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -36196,10 +36196,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -40324,10 +40324,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-on the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -40436,10 +40436,10 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-off the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -40502,10 +40502,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -42669,10 +42669,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -42781,10 +42781,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -42847,10 +42847,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -45527,10 +45527,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Power-on the DUT using AMT (ALWAYS_RUN)
                       exec_name: cros_flex_set_amt_power_state
                       exec_args:
@@ -45639,10 +45639,10 @@ plans:
                             - invert_result:false
                           docs:
                             - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Power-off the DUT using AMT (ALWAYS_RUN)
                       exec_name: cros_flex_set_amt_power_state
                       exec_args:
@@ -45705,10 +45705,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -47272,10 +47272,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -47384,10 +47384,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -47450,10 +47450,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -49335,10 +49335,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Power-on the DUT using AMT (ALWAYS_RUN)
                       exec_name: cros_flex_set_amt_power_state
                       exec_args:
@@ -49447,10 +49447,10 @@ plans:
                             - invert_result:false
                           docs:
                             - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Power-off the DUT using AMT (ALWAYS_RUN)
                       exec_name: cros_flex_set_amt_power_state
                       exec_args:
@@ -49513,10 +49513,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
@@ -51775,10 +51775,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -51887,10 +51887,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -51953,10 +51953,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -54585,10 +54585,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -54697,10 +54697,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -54763,10 +54763,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -59100,10 +59100,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -59212,10 +59212,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -59278,10 +59278,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -62099,10 +62099,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -62211,10 +62211,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -62277,10 +62277,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -65687,10 +65687,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-on the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -65799,10 +65799,10 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-off the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -65865,10 +65865,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -67440,10 +67440,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-on the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -67552,10 +67552,10 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-off the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -67618,10 +67618,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -69194,10 +69194,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-on the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -69306,10 +69306,10 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-off the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -69372,10 +69372,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -70977,10 +70977,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-on the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -71089,10 +71089,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-off the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -71155,10 +71155,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -72758,10 +72758,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-on the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -72870,10 +72870,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-off the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -72936,10 +72936,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -74552,10 +74552,10 @@ plans:
                                                         - invert_result:false
                                                       docs:
                                                         - Check that DUT is a Flex board
-                                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                       exec_name: sample_sleep
                                       exec_args:
-                                        - sleep:1
+                                        - sleep:10
                                     - name: Power-on the DUT using AMT (ALWAYS_RUN)
                                       exec_name: cros_flex_set_amt_power_state
                                       exec_args:
@@ -74664,10 +74664,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                       exec_name: sample_sleep
                                       exec_args:
-                                        - sleep:1
+                                        - sleep:10
                                     - name: Power-off the DUT using AMT (ALWAYS_RUN)
                                       exec_name: cros_flex_set_amt_power_state
                                       exec_args:
@@ -74730,10 +74730,10 @@ plans:
                                                         - invert_result:false
                                                       docs:
                                                         - Check that DUT is a Flex board
-                                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                       exec_name: sample_sleep
                                       exec_args:
-                                        - sleep:1
+                                        - sleep:10
                                     - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                                       exec_name: servo_set
                                       exec_args:
@@ -76335,10 +76335,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-on the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -76447,10 +76447,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-off the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -76513,10 +76513,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -78114,10 +78114,10 @@ plans:
                                                         - invert_result:false
                                                       docs:
                                                         - Check that DUT is a Flex board
-                                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                       exec_name: sample_sleep
                                       exec_args:
-                                        - sleep:1
+                                        - sleep:10
                                     - name: Power-on the DUT using AMT (ALWAYS_RUN)
                                       exec_name: cros_flex_set_amt_power_state
                                       exec_args:
@@ -78226,10 +78226,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                       exec_name: sample_sleep
                                       exec_args:
-                                        - sleep:1
+                                        - sleep:10
                                     - name: Power-off the DUT using AMT (ALWAYS_RUN)
                                       exec_name: cros_flex_set_amt_power_state
                                       exec_args:
@@ -78292,10 +78292,10 @@ plans:
                                                         - invert_result:false
                                                       docs:
                                                         - Check that DUT is a Flex board
-                                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                       exec_name: sample_sleep
                                       exec_args:
-                                        - sleep:1
+                                        - sleep:10
                                     - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                                       exec_name: servo_set
                                       exec_args:
@@ -79894,10 +79894,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -80006,10 +80006,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -80072,10 +80072,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -81611,10 +81611,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-on the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -81723,10 +81723,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-off the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -81789,10 +81789,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -83377,10 +83377,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-on the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -83489,10 +83489,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-off the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -83555,10 +83555,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -85094,10 +85094,10 @@ plans:
                                                         - invert_result:false
                                                       docs:
                                                         - Check that DUT is a Flex board
-                                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                       exec_name: sample_sleep
                                       exec_args:
-                                        - sleep:1
+                                        - sleep:10
                                     - name: Power-on the DUT using AMT (ALWAYS_RUN)
                                       exec_name: cros_flex_set_amt_power_state
                                       exec_args:
@@ -85206,10 +85206,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                       exec_name: sample_sleep
                                       exec_args:
-                                        - sleep:1
+                                        - sleep:10
                                     - name: Power-off the DUT using AMT (ALWAYS_RUN)
                                       exec_name: cros_flex_set_amt_power_state
                                       exec_args:
@@ -85272,10 +85272,10 @@ plans:
                                                         - invert_result:false
                                                       docs:
                                                         - Check that DUT is a Flex board
-                                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                       exec_name: sample_sleep
                                       exec_args:
-                                        - sleep:1
+                                        - sleep:10
                                     - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                                       exec_name: servo_set
                                       exec_args:
@@ -86867,10 +86867,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -86979,10 +86979,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -87045,10 +87045,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -88607,10 +88607,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -88719,10 +88719,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -88785,10 +88785,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -90317,10 +90317,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -90429,10 +90429,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -90495,10 +90495,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -92037,10 +92037,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-on the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -92149,10 +92149,10 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-off the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -92215,10 +92215,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -93845,10 +93845,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -93957,10 +93957,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -94023,10 +94023,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -96550,10 +96550,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -96662,10 +96662,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -96728,10 +96728,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -99462,10 +99462,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-on the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -99574,10 +99574,10 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-off the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -99640,10 +99640,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -101274,10 +101274,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -101386,10 +101386,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -101452,10 +101452,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -104851,10 +104851,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-on the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -104963,10 +104963,10 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-off the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -105029,10 +105029,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -106588,10 +106588,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -106700,10 +106700,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -106766,10 +106766,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -109993,10 +109993,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-on the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -110105,10 +110105,10 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-off the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -110171,10 +110171,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -111902,10 +111902,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-on the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -112014,10 +112014,10 @@ plans:
                                 - invert_result:false
                               docs:
                                 - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Power-off the DUT using AMT (ALWAYS_RUN)
                           exec_name: cros_flex_set_amt_power_state
                           exec_args:
@@ -112080,10 +112080,10 @@ plans:
                                             - invert_result:false
                                           docs:
                                             - Check that DUT is a Flex board
-                        - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                        - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                           exec_name: sample_sleep
                           exec_args:
-                            - sleep:1
+                            - sleep:10
                         - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                           exec_name: servo_set
                           exec_args:
@@ -113977,10 +113977,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -114089,10 +114089,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -114155,10 +114155,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -115712,10 +115712,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -115824,10 +115824,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -115890,10 +115890,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -117417,10 +117417,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-on the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -117529,10 +117529,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-off the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -117595,10 +117595,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -119122,10 +119122,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-on the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -119234,10 +119234,10 @@ plans:
                                     - invert_result:false
                                   docs:
                                     - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Power-off the DUT using AMT (ALWAYS_RUN)
                               exec_name: cros_flex_set_amt_power_state
                               exec_args:
@@ -119300,10 +119300,10 @@ plans:
                                                 - invert_result:false
                                               docs:
                                                 - Check that DUT is a Flex board
-                            - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                            - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                               exec_name: sample_sleep
                               exec_args:
-                                - sleep:1
+                                - sleep:10
                             - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                               exec_name: servo_set
                               exec_args:
@@ -120827,10 +120827,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-on the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -120939,10 +120939,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Power-off the DUT using AMT (ALWAYS_RUN)
                                   exec_name: cros_flex_set_amt_power_state
                                   exec_args:
@@ -121005,10 +121005,10 @@ plans:
                                                     - invert_result:false
                                                   docs:
                                                     - Check that DUT is a Flex board
-                                - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                                - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                                   exec_name: sample_sleep
                                   exec_args:
-                                    - sleep:1
+                                    - sleep:10
                                 - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                                   exec_name: servo_set
                                   exec_args:
@@ -125408,10 +125408,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Power-on the DUT using AMT (ALWAYS_RUN)
                       exec_name: cros_flex_set_amt_power_state
                       exec_args:
@@ -125520,10 +125520,10 @@ plans:
                             - invert_result:false
                           docs:
                             - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Power-off the DUT using AMT (ALWAYS_RUN)
                       exec_name: cros_flex_set_amt_power_state
                       exec_args:
@@ -125586,10 +125586,10 @@ plans:
                                         - invert_result:false
                                       docs:
                                         - Check that DUT is a Flex board
-                    - name: Sleep 1 seconds (Allow to fail) (ALWAYS_RUN) (time:'2s')
+                    - name: Sleep 10 seconds (Allow to fail) (ALWAYS_RUN) (time:'11s')
                       exec_name: sample_sleep
                       exec_args:
-                        - sleep:1
+                        - sleep:10
                     - name: Direct USB-drive to servo host (ALWAYS_RUN) (time:'20s')
                       exec_name: servo_set
                       exec_args:
