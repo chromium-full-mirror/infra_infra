@@ -51,6 +51,15 @@ func auditStorageBadblocksExec(ctx context.Context, info *execs.ExecInfo) error 
 	return nil
 }
 
+// auditStoragePartitionHashExec confirms that it is able to audit storage
+// by checksum on the partitions, and mark the DUT if it needs replacement.
+func auditStoragePartitionHashExec(ctx context.Context, info *execs.ExecInfo) error {
+	if err := storage.CheckPartitionHash(ctx, info.DefaultRunner(), info.GetChromeos().GetStorage(), info.GetDut()); err != nil {
+		return errors.Annotate(err, "audit storage partition hash").Err()
+	}
+	return nil
+}
+
 // hasEnoughStorageSpaceExec confirms the given path has at least the amount of free space specified by the actionArgs arguments.
 // provides arguments should be in the formart of:
 // ["path:x"]
@@ -159,6 +168,7 @@ func updateStorageTypeToInvExec(ctx context.Context, info *execs.ExecInfo) error
 func init() {
 	execs.Register("cros_audit_storage_smart", auditStorageSMARTExec)
 	execs.Register("cros_audit_storage_bad_blocks", auditStorageBadblocksExec)
+	execs.Register("cros_audit_storage_partition_hash", auditStoragePartitionHashExec)
 	execs.Register("cros_has_enough_storage_space", hasEnoughStorageSpaceExec)
 	execs.Register("cros_has_enough_storage_space_percentage", hasEnoughStorageSpacePercentageExec)
 	execs.Register("cros_has_enough_index_nodes", hasEnoughFreeIndexNodesExec)

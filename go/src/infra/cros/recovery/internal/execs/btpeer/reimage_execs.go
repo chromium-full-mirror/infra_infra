@@ -430,12 +430,12 @@ func provisionExec(ctx context.Context, info *execs.ExecInfo) error {
 
 	// Flash boot partition.
 	if err := btpeer.FlashImage(ctx, runner.Run, flashBootTimeout, imgBootDev, bootB); err != nil {
-		return errors.Annotate(err, "provision: failed to flash BOOT_B parition").Err()
+		return errors.Annotate(err, "provision: failed to flash BOOT_B partition").Err()
 	}
 
 	// Flash root partition.
 	if err := btpeer.FlashImage(ctx, runner.Run, flashRootTimeout, imgRootDev, rootB); err != nil {
-		return errors.Annotate(err, "provision: failed to flash ROOT_B parition").Err()
+		return errors.Annotate(err, "provision: failed to flash ROOT_B partition").Err()
 	}
 
 	// Finally, update the partition IDs to match the new device.

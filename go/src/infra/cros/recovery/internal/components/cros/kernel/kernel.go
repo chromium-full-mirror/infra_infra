@@ -1,8 +1,8 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package cros
+package kernel
 
 import (
 	"context"
@@ -18,24 +18,24 @@ import (
 	"go.chromium.org/infra/cros/recovery/internal/log"
 )
 
-// kernelInfo holds info about kernel and root partitions.
-type kernelInfo struct {
+// KernelInfo holds info about kernel and root partitions.
+type KernelInfo struct {
 	name            string
 	kernelPartition int
-	rootPartition   int
+	RootPartition   int
 }
 
 var (
 	// ChromeOS devices has two kernels and separate root partitions to boot.
-	kernelA = &kernelInfo{name: "KERN-A", kernelPartition: 2, rootPartition: 3}
-	kernelB = &kernelInfo{name: "KERN-B", kernelPartition: 4, rootPartition: 5}
+	kernelA = &KernelInfo{name: "KERN-A", kernelPartition: 2, RootPartition: 3}
+	kernelB = &KernelInfo{name: "KERN-B", kernelPartition: 4, RootPartition: 5}
 )
 
 // kernelPriorityChangePattern is the leading 3 or 5 in the output of rootdev -s -d.
 var kernelPriorityChangePattern = regexp.MustCompile(`(\d)`)
 
-// getKernelData read kernel from the DUT.
-func getKernelData(ctx context.Context, run components.Runner) (*kernelInfo, *kernelInfo, string, error) {
+// GetKernelData read kernel from the DUT.
+func GetKernelData(ctx context.Context, run components.Runner) (*KernelInfo, *KernelInfo, string, error) {
 	diskBlock, err := run(ctx, time.Minute, "rootdev -s -d")
 	if err != nil {
 		return nil, nil, "", errors.Annotate(err, "get kernel data").Err()
@@ -58,10 +58,10 @@ func getKernelData(ctx context.Context, run components.Runner) (*kernelInfo, *ke
 		return nil, nil, "", errors.Annotate(err, "get kernel data: fail extract root partition number for %q", diskSuffix).Err()
 	}
 	log.Debugf(ctx, "Booted root partition: %d.", activeRootPartition)
-	var activeKernel, nextKernel *kernelInfo
-	if kernelA.rootPartition == int(activeRootPartition) {
+	var activeKernel, nextKernel *KernelInfo
+	if kernelA.RootPartition == int(activeRootPartition) {
 		activeKernel, nextKernel = kernelA, kernelB
-	} else if kernelB.rootPartition == int(activeRootPartition) {
+	} else if kernelB.RootPartition == int(activeRootPartition) {
 		activeKernel, nextKernel = kernelB, kernelA
 	} else {
 		return nil, nil, "", errors.Reason("get kernel data: fail found kernel for root partition %q", diskRoot).Err()
@@ -76,12 +76,12 @@ func IsKernelPriorityChanged(ctx context.Context, run components.Runner) (bool, 
 	// Determine if we have an update that pending on reboot by check if
 	// the current inactive kernel has priority for the next boot.
 	// Check which partition is set for the next boot. If that is not active Kernel then system expect reboot.
-	activeKernel, _, diskBlock, err := getKernelData(ctx, run)
+	activeKernel, _, diskBlock, err := GetKernelData(ctx, run)
 	if err != nil {
 		return false, errors.Annotate(err, "is kernel priority changed").Err()
 	}
 	// Help function to read boot priority for kernel.
-	getKernelBootPriority := func(k *kernelInfo) (int, error) {
+	getKernelBootPriority := func(k *KernelInfo) (int, error) {
 		v, kErr := run(ctx, time.Minute, fmt.Sprintf("cgpt show -n -i %d -P %s", k.kernelPartition, diskBlock))
 		if kErr != nil {
 			return 0, errors.Annotate(err, "kernel boot priority %q", k.name).Err()
@@ -113,7 +113,7 @@ func IsKernelPriorityChanged(ctx context.Context, run components.Runner) (bool, 
 
 // SwitchKernelPriority updates kernel priority on the DUT, so next boot will be done with new kernel side.
 func SwitchKernelPriority(ctx context.Context, run components.Runner) error {
-	_, nextKernel, diskBlock, err := getKernelData(ctx, run)
+	_, nextKernel, diskBlock, err := GetKernelData(ctx, run)
 	if err != nil {
 		return errors.Annotate(err, "switch kernel priority").Err()
 	}
