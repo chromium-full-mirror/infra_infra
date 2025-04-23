@@ -438,18 +438,14 @@ WHERE
 		firmwarePrefix := fmt.Sprintf("canary-channel/%s/%s/ChromeOS-firmware-", board, version)
 		log.Printf("Listing gs://%s/%s", chromeOSReleasesBucket, firmwarePrefix)
 		fileIter := bucket.Objects(ctx, &storage.Query{Prefix: firmwarePrefix, Delimiter: "/"})
-		for {
-			fileAttrs, err := fileIter.Next()
-			if err == iterator.Done {
-				break
-			}
-			if err != nil {
-				return "", fmt.Errorf("%s.Objects(%s): %w", chromeOSReleasesBucket, firmwarePrefix, err)
-			}
-			return fmt.Sprintf("gs://%s/%s", fileAttrs.Bucket, fileAttrs.Name), nil
+		fileAttrs, err := fileIter.Next()
+		if err == iterator.Done {
+			return "", fmt.Errorf("artifacts for version %s not found for %s", version, board)
 		}
-
-		return "", fmt.Errorf("artifacts for version %s not found for %s", version, board)
+		if err != nil {
+			return "", fmt.Errorf("%s.Objects(%s): %w", chromeOSReleasesBucket, firmwarePrefix, err)
+		}
+		return fmt.Sprintf("gs://%s/%s", fileAttrs.Bucket, fileAttrs.Name), nil
 	}
 
 	if err := GenerateDynamicInfo(ctx, req, specs, log, searchGCS); err != nil {
