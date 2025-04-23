@@ -178,6 +178,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 		SetupType:      setup,
 		State:          dutstate.ConvertFromUFSState(lc.GetResourceState()),
 		RepairRequests: convertRepairRequestsFromUFS(ds.GetRepairRequests()),
+		Hive:           dut.GetHive(),
 		Chromeos: &tlw.ChromeOS{
 			Board:               machine.GetChromeosMachine().GetBuildTarget(),
 			Model:               machine.GetChromeosMachine().GetModel(),
@@ -289,6 +290,7 @@ func adaptUfsLabstationToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error
 		Id:        machine.GetName(),
 		Name:      name,
 		SetupType: tlw.DUTSetupType_LABSTATION,
+		Hive:      l.GetHive(),
 		Chromeos: &tlw.ChromeOS{
 			Board:           machine.GetChromeosMachine().GetBuildTarget(),
 			Model:           machine.GetChromeosMachine().GetModel(),
