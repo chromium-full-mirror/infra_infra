@@ -214,6 +214,7 @@ func adaptUfsDutToTLWDut(data *ufspb.ChromeOSDeviceData) (*tlw.Dut, error) {
 			AmtManager:          createDUTAMTManager(p, ds),
 			Camera:              createDUTCamera(ds),
 			Fingerprint:         createDUTFingerprint(ds),
+			OsRestriction:       convertOSRestriction(dut.GetOsRestriction()),
 		},
 		ExtraAttributes: map[string][]string{
 			tlw.ExtraAttributePools: dut.GetPools(),

@@ -618,3 +618,16 @@ func convertVersionInfoOsTypeToUFS(t tlw.VersionInfo_OsType) ufslab.VersionInfo_
 	}
 	return ufslab.VersionInfo_UNKNOWN
 }
+
+var osRestrictions = map[ufslab.DeviceUnderTest_OSRestriction]tlw.ChromeOS_OSRestruction{
+	ufslab.DeviceUnderTest_OSR_ANY:           tlw.ChromeOS_OSR_ANY,
+	ufslab.DeviceUnderTest_OSR_CHROMEOS_ONLY: tlw.ChromeOS_OSR_CHROMEOS_ONLY,
+	ufslab.DeviceUnderTest_OSR_ANDROID_ONLY:  tlw.ChromeOS_OSR_ANDROID_ONLY,
+}
+
+func convertOSRestriction(v ufslab.DeviceUnderTest_OSRestriction) tlw.ChromeOS_OSRestruction {
+	if r, ok := osRestrictions[v]; ok {
+		return r
+	}
+	return tlw.ChromeOS_OSR_ANY
+}
