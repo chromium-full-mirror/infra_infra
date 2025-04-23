@@ -438,6 +438,7 @@ func internalRun(ctx context.Context, in *lab.LabpackInput, metrics metrics.Metr
 	// we use an unrecognized (or empty) task name.
 	task, ok := supportedTasks[in.TaskName]
 	if !ok {
+		lg.Errorf("Unsupported task-name %q!", in.TaskName)
 		return errors.Reason("task name %q is invalid", in.TaskName).Err()
 	}
 	runArgs := &recovery.RunArgs{
@@ -475,6 +476,7 @@ var supportedTasks = map[string]buildbucket.TaskName{
 	string(buildbucket.Deploy):       buildbucket.Deploy,
 	string(buildbucket.Recovery):     buildbucket.Recovery,
 	string(buildbucket.MHRecovery):   buildbucket.MHRecovery,
+	string(buildbucket.MHDeploy):     buildbucket.MHDeploy,
 	string(buildbucket.DeepRecovery): buildbucket.DeepRecovery,
 	string(buildbucket.DryRun):       buildbucket.DryRun,
 	string(buildbucket.PostTest):     buildbucket.PostTest,
