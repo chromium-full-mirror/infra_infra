@@ -169,9 +169,6 @@ linters:
         # https://staticcheck.dev/docs/checks#ST1012
         # Poorly chosen name for error variable
         - "-ST1012"
-        # https://staticcheck.dev/docs/checks#ST1017
-        # Don't use Yoda conditions
-        - "-ST1017"
         # https://staticcheck.dev/docs/checks#ST1019
         # Importing the same package multiple times
         - "-ST1019"
