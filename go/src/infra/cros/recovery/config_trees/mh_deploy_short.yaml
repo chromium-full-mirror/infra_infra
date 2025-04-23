@@ -2211,7 +2211,9 @@ plans:
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
-        - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+        - name: Check if GBB set to deploy DUT with Servo ('cros_read_gbb_by_servo') (time:'10m0s')
+          conditions:
+            - name: Setup has servo info ('dut_servo_host_present')
           dependencies:
             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
               dependencies:
@@ -2219,6 +2221,15 @@ plans:
                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                   dependencies:
                     - name: Setup has servo info ('dut_servo_host_present')
+          recoveries:
+            - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
+              dependencies:
+                - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                  dependencies:
+                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                      dependencies:
+                        - name: Setup has servo info ('dut_servo_host_present')
         - name: ADB Connect DUT ('ctr_adb_connect') (ALWAYS_RUN)
           recoveries:
             - name: Cold reset by servo and wait for ping ('sample_pass') (ALWAYS_RUN)

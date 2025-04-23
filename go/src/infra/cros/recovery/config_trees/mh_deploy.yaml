@@ -6617,13 +6617,15 @@ plans:
                   exec_name: has_stable_version_service_path
                   docs:
                     - Verify if we have access to the service provided access to the stable version
-        - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
-          exec_name: cros_set_gbb_by_servo
+        - name: Check if GBB set to deploy DUT with Servo (time:'10m0s')
+          exec_name: cros_read_gbb_by_servo
           exec_args:
-            - gbb_flags:0x80000018
+            - expected_gbb:0x80000018
           docs:
-            - Force to set GBB flags to boot in DEV mode and enable to boot from USB-drive.
-            - Allowed to fail as flags can be applied but the command may fail due to various reasons.
+            - Check if GBB 0x80000018 set to dev more.
+          conditions:
+            - name: Setup has servo info
+              exec_name: dut_servo_host_present
           dependencies:
             - name: Is servod running (ALWAYS_RUN)
               exec_name: sample_pass
@@ -6639,6 +6641,29 @@ plans:
                   dependencies:
                     - name: Setup has servo info
                       exec_name: dut_servo_host_present
+          recoveries:
+            - name: Set GBB flags to enable dev mode and boot from usb by servo (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
+              exec_name: cros_set_gbb_by_servo
+              exec_args:
+                - gbb_flags:0x80000018
+              docs:
+                - Force to set GBB flags to boot in DEV mode and enable to boot from USB-drive.
+                - Allowed to fail as flags can be applied but the command may fail due to various reasons.
+              dependencies:
+                - name: Is servod running (ALWAYS_RUN)
+                  exec_name: sample_pass
+                  docs:
+                    - Verify that servo host specified in setup and servod is running.
+                  dependencies:
+                    - name: Setup has servo info
+                      exec_name: dut_servo_host_present
+                    - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                      exec_name: servod_echo
+                      exec_args:
+                        - ssh_check:false
+                      dependencies:
+                        - name: Setup has servo info
+                          exec_name: dut_servo_host_present
         - name: ADB Connect DUT (ALWAYS_RUN)
           exec_name: ctr_adb_connect
           exec_args:

@@ -45,7 +45,7 @@ func mhDeployPlan() *Plan {
 			"Mark as Android based",
 			"Set CacheService address",
 			"Check stable versions exist",
-			"Set GBB flags to enable dev mode and boot from usb by servo",
+			"Check if GBB set to deploy DUT with Servo",
 			"ADB Connect DUT",
 			"Android is accessible",
 			"ADB set Android as always awake",

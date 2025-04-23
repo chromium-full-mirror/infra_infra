@@ -2974,19 +2974,24 @@ func crosRepairActions() map[string]*Action {
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
-		"Read BIOS from DUT by servo": {
+		"Check if GBB set to deploy DUT with Servo": {
 			Docs: []string{
-				"Read GBB flags from the DUT by servo.",
+				fmt.Sprintf("Check if GBB 0x%x set to dev more.", gbb.DevUsbDefault),
+			},
+			Conditions: []string{
+				"Setup has servo info",
 			},
 			Dependencies: []string{
-				"Setup has servo info",
 				"Is servod running",
 			},
 			ExecName: "cros_read_gbb_by_servo",
 			ExecExtraArgs: []string{
-				"remove_file:false",
+				fmt.Sprintf("expected_gbb:0x%x", gbb.DevUsbDefault),
 			},
 			ExecTimeout: &durationpb.Duration{Seconds: 600},
+			RecoveryActions: []string{
+				"Set GBB flags to enable dev mode and boot from usb by servo",
+			},
 		},
 		"Set GBB flags to enable dev mode and boot from usb by servo": {
 			Docs: []string{
