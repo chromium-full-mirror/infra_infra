@@ -63,3 +63,38 @@ func TestTaskNameToBuilderPerVersion(t *testing.T) {
 		})
 	}
 }
+
+func TestNormalizeTaskName(t *testing.T) {
+	var cases = []struct {
+		name      string
+		in        []string
+		out       TaskName
+		expectErr bool
+	}{
+		{"audit-usb", []string{"verify-servo-usb-drive", "usb-drive", "audit-usb", "audit_usb"}, AuditUSB, false},
+		{"audit storage", []string{"verify-dut-storage", "storage", "audit-storage", "audit_storage"}, AuditStorage, false},
+		{"adit rpm", []string{"verify-rpm-config", "rpm config", "audit-rpm", "audit_rpm"}, AuditRPM, false},
+		{"repair", []string{"repair", "recovery"}, Recovery, false},
+		{"repair MH", []string{"mhrepair", "mh_recovery", "mh-recovery", "mh-repair", "mh_repair"}, MHRecovery, false},
+		{"deep repair", []string{"deep-repair", "deep_repair"}, DeepRecovery, false},
+		{"deploy", []string{"deploy"}, Deploy, false},
+		{"deploy MH", []string{"mh-deploy", "mh_deploy", "mhdeploy"}, MHDeploy, false},
+		{"dry-run", []string{"dry_run", "dry-run"}, DryRun, false},
+		{"custom", []string{"custom"}, Custom, false},
+		{"bad", []string{""}, InvalidTaskName, true},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+			for _, in := range c.in {
+				tn, err := NormalizeTaskName(in)
+				if c.expectErr && err == nil {
+					t.Errorf("TestNormalizeTaskName: %q: unexpected pass when expecetd error", c.name)
+				}
+				if tn != c.out {
+					t.Errorf("TestNormalizeTaskName: %q: wanted %q but got %q", c.name, c.out, tn)
+				}
+			}
+		})
+	}
+}

@@ -76,7 +76,7 @@ func NormalizeTaskName(name string) (TaskName, error) {
 	case "deploy":
 		return Deploy, nil
 	case "mh-deploy", "mh_deploy", "mhdeploy":
-		return Deploy, nil
+		return MHDeploy, nil
 	case "dry_run", "dry-run":
 		return DryRun, nil
 	case "custom":
