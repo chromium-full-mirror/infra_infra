@@ -53,6 +53,7 @@ func mhRepairPlan() *Plan {
 func crosRepairCriticalActions() []string {
 	actions := []string{
 		"Mark labstation as servod is in-use",
+		"Mark base on OS-restriction",
 		"Has repair-request for re-image USB-key",
 		"Has repair-request for reflash-firmware",
 		"Has repair-request for re-image by USB-key",
@@ -156,11 +157,54 @@ func crosRepairActions() map[string]*Action {
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_UPLOAD_ON_ERROR},
 		},
+		"Mark base on OS-restriction": {
+			Docs: []string{
+				"Mark DUT base on OS restriction.",
+			},
+			ExecName: "cros_set_from_os_restriction",
+		},
+		"Run if restricted to ChromeOS only": {
+			Docs: []string{
+				"OS restriction set to ChromeOS only",
+			},
+			ExecName: "cros_match_os_restriction",
+			ExecExtraArgs: []string{
+				"restriction:OSR_CHROMEOS_ONLY",
+			},
+		},
+		"Run if not restricted to ChromeOS only": {
+			Docs: []string{
+				"OS does not limited by ChromeOS only",
+			},
+			ExecName: "cros_not_match_os_restriction",
+			ExecExtraArgs: []string{
+				"restrictions:OSR_CHROMEOS_ONLY",
+			},
+		},
+		"Run if restricted to Android only": {
+			Docs: []string{
+				"OS restriction set to Android only",
+			},
+			ExecName: "cros_match_os_restriction",
+			ExecExtraArgs: []string{
+				"restriction:OSR_ANDROID_ONLY",
+			},
+		},
+		"Run if not restricted to Android only": {
+			Docs: []string{
+				"OS does not limited by ChromeOS only",
+			},
+			ExecName: "cros_not_match_os_restriction",
+			ExecExtraArgs: []string{
+				"restrictions:OSR_ANDROID_ONLY",
+			},
+		},
 		"Mark DUT as Android if applicable": {
 			Docs: []string{
 				"Mark DUT as Android, based on ADB responses.",
 			},
 			Conditions: []string{
+				"Run if not restricted to ChromeOS only",
 				// Always reset first.
 				"Mark as ChromeOS based",
 				"Device is not accessible (simple)",
@@ -200,6 +244,7 @@ func crosRepairActions() map[string]*Action {
 			},
 			Dependencies: []string{
 				"Do not run on Mobile Harness box",
+				"Run if not restricted to Android only",
 			},
 			ExecName:      "dut_is_chromeos_hw",
 			RunControl:    RunControl_ALWAYS_RUN,

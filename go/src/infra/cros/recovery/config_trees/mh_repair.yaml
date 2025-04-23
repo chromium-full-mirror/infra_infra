@@ -6814,6 +6814,12 @@ plans:
                       exec_name: env_is_not_mh_box
                       docs:
                         - Check that the process is not running on Mobile Harness box.
+                    - name: Run if not restricted to Android only
+                      exec_name: cros_not_match_os_restriction
+                      exec_args:
+                        - restrictions:OSR_ANDROID_ONLY
+                      docs:
+                        - OS does not limited by ChromeOS only
                 - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -7063,6 +7069,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -7294,6 +7301,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -7524,6 +7532,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -7755,6 +7764,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -7803,6 +7813,7 @@ plans:
             - retry_count:3
             - retry_interval:3
             - timeout:5
+            - skip_when_connected:true
           docs:
             - Exec ADB connect to the DUT by ethernet.
           recoveries:
@@ -7957,6 +7968,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -8188,6 +8200,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -8379,6 +8392,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -8610,6 +8624,12 @@ plans:
                       exec_name: env_is_not_mh_box
                       docs:
                         - Check that the process is not running on Mobile Harness box.
+                    - name: Run if not restricted to Android only
+                      exec_name: cros_not_match_os_restriction
+                      exec_args:
+                        - restrictions:OSR_ANDROID_ONLY
+                      docs:
+                        - OS does not limited by ChromeOS only
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
                   docs:
@@ -8948,6 +8968,12 @@ plans:
                       exec_name: env_is_not_mh_box
                       docs:
                         - Check that the process is not running on Mobile Harness box.
+                    - name: Run if not restricted to Android only
+                      exec_name: cros_not_match_os_restriction
+                      exec_args:
+                        - restrictions:OSR_ANDROID_ONLY
+                      docs:
+                        - OS does not limited by ChromeOS only
                 - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -9350,6 +9376,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -9428,6 +9455,12 @@ plans:
                       exec_name: env_is_not_mh_box
                       docs:
                         - Check that the process is not running on Mobile Harness box.
+                    - name: Run if not restricted to Android only
+                      exec_name: cros_not_match_os_restriction
+                      exec_args:
+                        - restrictions:OSR_ANDROID_ONLY
+                      docs:
+                        - OS does not limited by ChromeOS only
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
                   docs:
@@ -9766,6 +9799,12 @@ plans:
                       exec_name: env_is_not_mh_box
                       docs:
                         - Check that the process is not running on Mobile Harness box.
+                    - name: Run if not restricted to Android only
+                      exec_name: cros_not_match_os_restriction
+                      exec_args:
+                        - restrictions:OSR_ANDROID_ONLY
+                      docs:
+                        - OS does not limited by ChromeOS only
                 - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
                   exec_args:
@@ -10110,6 +10149,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -10384,6 +10424,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -10526,6 +10567,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -10800,6 +10842,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -10954,6 +10997,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -11066,6 +11110,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -11142,6 +11187,12 @@ plans:
                       exec_name: env_is_not_mh_box
                       docs:
                         - Check that the process is not running on Mobile Harness box.
+                    - name: Run if not restricted to Android only
+                      exec_name: cros_not_match_os_restriction
+                      exec_args:
+                        - restrictions:OSR_ANDROID_ONLY
+                      docs:
+                        - OS does not limited by ChromeOS only
                 - name: Recovery version has OS image path
                   exec_name: has_stable_version_cros_image
                   docs:
@@ -11306,6 +11357,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -11418,6 +11470,7 @@ plans:
                     - retry_count:3
                     - retry_interval:3
                     - timeout:5
+                    - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
                     - Only executed if DUT is Android based.
@@ -11494,6 +11547,12 @@ plans:
                       exec_name: env_is_not_mh_box
                       docs:
                         - Check that the process is not running on Mobile Harness box.
+                    - name: Run if not restricted to Android only
+                      exec_name: cros_not_match_os_restriction
+                      exec_args:
+                        - restrictions:OSR_ANDROID_ONLY
+                      docs:
+                        - OS does not limited by ChromeOS only
                 - name: Recovery version has OS image path
                   exec_name: has_stable_version_cros_image
                   docs:

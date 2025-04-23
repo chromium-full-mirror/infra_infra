@@ -16,6 +16,7 @@ func androidActions(actions map[string]*Action) {
 				"Is Android based?",
 			},
 			Dependencies: []string{
+				"ADB reconnect",
 				"Android is accessible",
 				"ADB set Android as always awake",
 				"Read bootId",
@@ -81,6 +82,7 @@ func androidActions(actions map[string]*Action) {
 				"retry_count:3",
 				"retry_interval:3",
 				"timeout:5",
+				"skip_when_connected:true",
 			},
 			RecoveryActions: []string{
 				"Cold reset by servo and wait for ping",
@@ -102,6 +104,7 @@ func androidActions(actions map[string]*Action) {
 				"retry_count:3",
 				"retry_interval:3",
 				"timeout:5",
+				"skip_when_connected:true",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
 		},

@@ -49,6 +49,12 @@ plans:
           docs:
             - Mark DUT as Android, based on ADB responses.
           conditions:
+            - name: Run if not restricted to ChromeOS only
+              exec_name: cros_not_match_os_restriction
+              exec_args:
+                - restrictions:OSR_CHROMEOS_ONLY
+              docs:
+                - OS does not limited by ChromeOS only
             - name: Mark as ChromeOS based (ALWAYS_RUN)
               exec_name: cros_set_as_chrome_based
               docs:
@@ -69,6 +75,7 @@ plans:
                 - retry_count:3
                 - retry_interval:3
                 - timeout:5
+                - skip_when_connected:true
               docs:
                 - Exec ADB connect to the DUT by ethernet.
         - name: Audit storage
@@ -189,6 +196,12 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
+                            - name: Run if not restricted to Android only
+                              exec_name: cros_not_match_os_restriction
+                              exec_args:
+                                - restrictions:OSR_ANDROID_ONLY
+                              docs:
+                                - OS does not limited by ChromeOS only
                         - name: Recovery version has OS image path
                           exec_name: has_stable_version_cros_image
                           docs:
@@ -425,6 +438,12 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
+                            - name: Run if not restricted to Android only
+                              exec_name: cros_not_match_os_restriction
+                              exec_args:
+                                - restrictions:OSR_ANDROID_ONLY
+                              docs:
+                                - OS does not limited by ChromeOS only
                         - name: Is a Chromebook (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
@@ -646,6 +665,12 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
+                            - name: Run if not restricted to Android only
+                              exec_name: cros_not_match_os_restriction
+                              exec_args:
+                                - restrictions:OSR_ANDROID_ONLY
+                              docs:
+                                - OS does not limited by ChromeOS only
                         - name: Is a Chromebook (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
@@ -743,6 +768,12 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
+                            - name: Run if not restricted to Android only
+                              exec_name: cros_not_match_os_restriction
+                              exec_args:
+                                - restrictions:OSR_ANDROID_ONLY
+                              docs:
+                                - OS does not limited by ChromeOS only
                         - name: Is servo USB key detected
                           exec_name: servo_usbkey_is_detected
                           exec_args:
@@ -831,6 +862,12 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
+                            - name: Run if not restricted to Android only
+                              exec_name: cros_not_match_os_restriction
+                              exec_args:
+                                - restrictions:OSR_ANDROID_ONLY
+                              docs:
+                                - OS does not limited by ChromeOS only
                         - name: Is a Chromebook (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
@@ -1066,6 +1103,12 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
+                            - name: Run if not restricted to Android only
+                              exec_name: cros_not_match_os_restriction
+                              exec_args:
+                                - restrictions:OSR_ANDROID_ONLY
+                              docs:
+                                - OS does not limited by ChromeOS only
                         - name: Is Flex device (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
@@ -1637,6 +1680,12 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
+                            - name: Run if not restricted to Android only
+                              exec_name: cros_not_match_os_restriction
+                              exec_args:
+                                - restrictions:OSR_ANDROID_ONLY
+                              docs:
+                                - OS does not limited by ChromeOS only
                         - name: Is a Chromebook (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
@@ -1834,6 +1883,12 @@ plans:
                           exec_name: env_is_not_mh_box
                           docs:
                             - Check that the process is not running on Mobile Harness box.
+                        - name: Run if not restricted to Android only
+                          exec_name: cros_not_match_os_restriction
+                          exec_args:
+                            - restrictions:OSR_ANDROID_ONLY
+                          docs:
+                            - OS does not limited by ChromeOS only
                     - name: Recovery version has OS image path
                       exec_name: has_stable_version_cros_image
                       docs:
@@ -1913,6 +1968,12 @@ plans:
                           exec_name: env_is_not_mh_box
                           docs:
                             - Check that the process is not running on Mobile Harness box.
+                        - name: Run if not restricted to Android only
+                          exec_name: cros_not_match_os_restriction
+                          exec_args:
+                            - restrictions:OSR_ANDROID_ONLY
+                          docs:
+                            - OS does not limited by ChromeOS only
                     - name: Is servo USB key detected
                       exec_name: servo_usbkey_is_detected
                       exec_args:
@@ -2080,6 +2141,12 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
+                            - name: Run if not restricted to Android only
+                              exec_name: cros_not_match_os_restriction
+                              exec_args:
+                                - restrictions:OSR_ANDROID_ONLY
+                              docs:
+                                - OS does not limited by ChromeOS only
                         - name: Is a Chromebook (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
@@ -2328,6 +2395,12 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
+                            - name: Run if not restricted to Android only
+                              exec_name: cros_not_match_os_restriction
+                              exec_args:
+                                - restrictions:OSR_ANDROID_ONLY
+                              docs:
+                                - OS does not limited by ChromeOS only
                         - name: Is a Chromebook (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
@@ -2642,6 +2715,12 @@ plans:
                               exec_name: env_is_not_mh_box
                               docs:
                                 - Check that the process is not running on Mobile Harness box.
+                            - name: Run if not restricted to Android only
+                              exec_name: cros_not_match_os_restriction
+                              exec_args:
+                                - restrictions:OSR_ANDROID_ONLY
+                              docs:
+                                - OS does not limited by ChromeOS only
                         - name: Is a Chromebook (RUN_ONCE)
                           exec_name: dut_check_board
                           exec_args:
@@ -2796,6 +2875,12 @@ plans:
                           exec_name: env_is_not_mh_box
                           docs:
                             - Check that the process is not running on Mobile Harness box.
+                        - name: Run if not restricted to Android only
+                          exec_name: cros_not_match_os_restriction
+                          exec_args:
+                            - restrictions:OSR_ANDROID_ONLY
+                          docs:
+                            - OS does not limited by ChromeOS only
                     - name: Is a Chromebook (RUN_ONCE)
                       exec_name: dut_check_board
                       exec_args:

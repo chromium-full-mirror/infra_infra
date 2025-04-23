@@ -2242,6 +2242,7 @@ plans:
                 - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                   dependencies:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Is recovery-version has firmware image path ('has_stable_version_fw_image')
                   dependencies:
@@ -2777,6 +2778,7 @@ plans:
                 - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                   dependencies:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
                 - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
@@ -2886,6 +2888,7 @@ plans:
                 - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                   dependencies:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
@@ -3022,6 +3025,7 @@ plans:
                 - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                   dependencies:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
                 - name: Is Android based by ADB or provision-info ('cros_is_previous_android_based_or_os_type') (ALWAYS_RUN)
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
@@ -3131,6 +3135,7 @@ plans:
                 - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                   dependencies:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
@@ -3508,6 +3513,7 @@ plans:
                 - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                   dependencies:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
@@ -3597,6 +3603,7 @@ plans:
                 - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                   dependencies:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)

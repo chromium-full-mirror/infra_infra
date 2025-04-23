@@ -2053,6 +2053,7 @@ plans:
         - name: Device is pingable (simple) ('cros_ping') (ALWAYS_RUN) (time:'15s')
         - name: Mark DUT as Android if applicable ('cros_set_as_android_based')
           conditions:
+            - name: Run if not restricted to ChromeOS only ('cros_not_match_os_restriction')
             - name: Mark as ChromeOS based ('cros_set_as_chrome_based') (ALWAYS_RUN)
             - name: Device is not accessible (simple) ('sample_fail') (ALWAYS_RUN)
               conditions:
@@ -2087,6 +2088,7 @@ plans:
                 - name: Can become ChromeOS-based ('dut_is_chromeos_hw') (ALWAYS_RUN)
                   dependencies:
                     - name: Do not run on Mobile Harness box ('env_is_not_mh_box') (RUN_ONCE)
+                    - name: Run if not restricted to Android only ('cros_not_match_os_restriction')
                 - name: Recovery version has OS image path ('has_stable_version_cros_image')
                   dependencies:
                     - name: Has a stable-version service ('has_stable_version_service_path') (RUN_ONCE)
