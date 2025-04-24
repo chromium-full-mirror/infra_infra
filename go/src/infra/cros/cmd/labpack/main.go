@@ -88,6 +88,24 @@ func main() {
 			}
 			defer func() { lg.Close() }()
 
+			// Synchronously try to reach out to device manager
+			// to confirm that we still have a lease by extending it by zero seconds.
+			//
+			// If we have an invalid lease, then exit.
+			// If no lease was specified at all, do nothing.
+			//
+			// See b/398915101 for more information.
+			pool, ok := getPool(state)
+			if !ok {
+				return errors.New("early check: couldn't find the device's label-pool dimension")
+			}
+			leaseID := getLeaseID(state)
+			if leaseID != "" {
+				if err := checkLeaseAlreadyExpired(ctx, lg, leaseID, pool, nil); err != nil {
+					return errors.Annotate(err, "main run").Err()
+				}
+			}
+
 			ctx, cancel := context.WithCancel(ctx)
 			eg, ctx := errgroup.WithContext(ctx)
 			eg.Go(func() error {
@@ -95,7 +113,7 @@ func main() {
 				return mainRunInternal(ctx, logRoot, lg, ioProps.GetInput(ctx), state)
 			})
 			eg.Go(func() error {
-				return watchDMLease(ctx, lg, state)
+				return watchDMLease(ctx, lg, leaseID, pool)
 			})
 			err = eg.Wait()
 			return errors.Annotate(err, "main").Err()
@@ -203,22 +221,71 @@ func mainRunInternal(ctx context.Context, logRoot string, lg logger.Logger, inpu
 	return errors.Annotate(errors.MultiError(resultErrors), "run recovery").Err()
 }
 
+// getLeaseID gets the ID of the current lease from the build state.
+// Returns "" if and only if there is no lease, legitimately.
+//
+// If it looks like a lease should have been there, but is not, we will panic.
+// This case will only happen if something is seriously wrong further up the stack.
+func getLeaseID(state *build.State) string {
+	leaseIDStructVal, ok := state.Build().GetInput().GetProperties().GetFields()["device_manager_lease_id"]
+	if !ok {
+		return ""
+	}
+	out := leaseIDStructVal.GetStringValue()
+	if out == "" {
+		panic("Lease is empty but device_manager_lease_id field is present. This can only happen if something is seriously wrong with how labpack was called.")
+	}
+	return out
+}
+
+// checkLeaseAlreadyExpired checks if the lease has already expired. It is synchronous and intended to be run
+// before doing any significant repair actions.
+//
+// Only set the extenderOverride to override the default implementation during testing.
+func checkLeaseAlreadyExpired(
+	ctx context.Context,
+	lg logger.Logger,
+	leaseID string,
+	pool string,
+	extenderOverride func(context.Context, string, time.Duration) (time.Time, error),
+) error {
+	if leaseID == "" {
+		return errors.New("lease id cannot be empty")
+	}
+	if pool == "" {
+		return errors.New("pool cannot be empty")
+	}
+	var extender func(context.Context, string, time.Duration) (time.Time, error)
+	switch {
+	case extenderOverride != nil:
+		extender = extenderOverride
+	default:
+		dmc, err := dm.NewClient(ctx, pool)
+		if err != nil {
+			err = errors.Annotate(err, "early check: connecting to Device Manager").Err()
+			lg.Infof(err.Error())
+			return err
+		}
+		extender = dmc.Extend
+	}
+
+	_, err := extender(ctx, leaseID, 0)
+	return errors.Annotate(err, "early check").Err()
+}
+
 // watchDMLease watches the Device Manager lease associated with this build for
 // the duration of the build (if a lease exists), and cancels it when the given
 // context is cancelled or an error is encountered.
-func watchDMLease(ctx context.Context, lg logger.Logger, state *build.State) error {
-	// Only watch the DM lease if one has been created for this build.
-	leaseIDStructVal, ok := state.Build().GetInput().GetProperties().GetFields()["device_manager_lease_id"]
-	if !ok {
+func watchDMLease(ctx context.Context, lg logger.Logger, leaseID string, pool string) error {
+	if pool == "" {
+		lg.Infof("no pool")
 		return nil
 	}
-	leaseID := leaseIDStructVal.GetStringValue()
-
-	// Initialize the DM client with the device's label-pool dimension.
-	pool, ok := getPool(state)
-	if !ok {
-		return errors.New("watching DM lease: couldn't find the device's label-pool dimension")
+	if leaseID == "" {
+		lg.Infof("no lease")
+		return nil
 	}
+	// Only watch the DM lease if one has been created for this build.
 	dmc, err := dm.NewClient(ctx, pool)
 	if err != nil {
 		err = errors.Annotate(err, "watching DM lease: connecting to Device Manager").Err()
