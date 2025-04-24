@@ -68,7 +68,7 @@ func Run(ctx context.Context, device *api.CrosToolRunnerProvisionRequest_Device,
 	log.Printf("Preparing for provisioning of %q, with: %s", dutName, device.GetProvisionState())
 
 	// Use the host network.
-	var networkName string = "host"
+	var networkName = "host"
 
 	parentTempDir := ""
 	if _, err := os.Stat(tempDirPath); err == nil {

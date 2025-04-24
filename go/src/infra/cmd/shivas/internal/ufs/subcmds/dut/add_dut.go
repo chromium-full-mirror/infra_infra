@@ -293,7 +293,7 @@ func (c *addDUT) innerRun(a subcommands.Application, args []string, env subcomma
 	sessionTag := fmt.Sprintf("admin-session:%s", uuid.New().String())
 
 	// Created client to update UFS when required.
-	var ic ufsAPI.FleetClient = ufsAPI.NewFleetPRPCClient(&prpc.Client{
+	var ic = ufsAPI.NewFleetPRPCClient(&prpc.Client{
 		C:       hc,
 		Host:    e.UnifiedFleetService,
 		Options: site.DefaultPRPCOptions(c.envFlags),

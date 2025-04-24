@@ -166,9 +166,6 @@ linters:
         # https://staticcheck.dev/docs/checks#ST1019
         # Importing the same package multiple times
         - "-ST1019"
-        # https://staticcheck.dev/docs/checks#ST1023
-        # Redundant type in variable declaration
-        - "-ST1023"
 
   exclusions:
     # Independently from option `exclude` we use default exclude patterns,
