@@ -2,16 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+FROM gcr.io/dockerized-tradefed/tradefed:latest as tf
+
 FROM us-docker.pkg.dev/cros-registry/base-images/ubuntu:ubuntuProd
 RUN apt-get update
 RUN apt-get install -y curl
 
 # Replace to internal tools
-COPY aapt /usr/bin/aapt
-COPY aapt2 /usr/bin/aapt2
-COPY adb /usr/bin/adb
+COPY --from=tf /tradefed/aapt /usr/bin/aapt
+COPY --from=tf /tradefed/aapt2 /usr/bin/aapt2
+COPY --from=tf /tradefed/adb /usr/bin/adb
+COPY --from=tf /tradefed/fastboot /usr/bin/fastboot
+
 COPY base-adb /usr/bin/
 
 RUN chmod 750 /usr/bin/adb
 RUN chmod 750 /usr/bin/aapt
 RUN chmod 750 /usr/bin/aapt2
+RUN chmod 750 /usr/bin/fastboot

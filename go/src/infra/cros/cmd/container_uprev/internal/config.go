@@ -198,7 +198,6 @@ func GetConfigs() []*UprevConfig {
 				DefaultRepository,
 				PartnerRepository,
 			},
-			Prepper: preppers.AdbBase,
 		},
 		{
 			Name: "ants-publish",
