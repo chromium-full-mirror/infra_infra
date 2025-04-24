@@ -73,9 +73,6 @@ linters:
         # https://staticcheck.dev/docs/checks#S1000
         # Use plain channel send or receive instead of single-case select
         - "-S1000"
-        # https://staticcheck.dev/docs/checks#S1006
-        # Use for { ... } for infinite loops
-        - "-S1006"
         # https://staticcheck.dev/docs/checks#S1007
         # Simplify regular expression by using raw string literal
         - "-S1007"

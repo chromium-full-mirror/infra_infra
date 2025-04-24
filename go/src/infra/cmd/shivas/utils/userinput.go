@@ -106,7 +106,7 @@ func GetSwitchInteractiveInput(ctx context.Context, ic UfleetAPI.FleetClient, s 
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -175,7 +175,7 @@ func GetMachineInteractiveInput(ctx context.Context, ic UfleetAPI.FleetClient, m
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -278,7 +278,7 @@ func getOSMachine(ctx context.Context, ic UfleetAPI.FleetClient, scanner *bufio.
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -349,7 +349,7 @@ func getBrowserMachine(ctx context.Context, ic UfleetAPI.FleetClient, scanner *b
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -466,7 +466,7 @@ func GetMachinelseInteractiveInput(ctx context.Context, ic UfleetAPI.FleetClient
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -553,7 +553,7 @@ func getPrototype(ctx context.Context, ic UfleetAPI.FleetClient, scanner *bufio.
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -597,7 +597,7 @@ func getOSMachineLse(ctx context.Context, ic UfleetAPI.FleetClient, scanner *buf
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -647,7 +647,7 @@ func getOSDeviceLse(ctx context.Context, ic UfleetAPI.FleetClient, scanner *bufi
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -749,7 +749,7 @@ func getDut(ctx context.Context, ic UfleetAPI.FleetClient, scanner *bufio.Scanne
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -851,7 +851,7 @@ func getACSLabConfig(scanner *bufio.Scanner, machinelse *fleet.MachineLSE) {
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -1059,7 +1059,7 @@ func getLabstation(ctx context.Context, ic UfleetAPI.FleetClient, scanner *bufio
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -1127,7 +1127,7 @@ func getOSServerLse(ctx context.Context, ic UfleetAPI.FleetClient, scanner *bufi
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -1182,7 +1182,7 @@ func getBrowserMachineLse(ctx context.Context, ic UfleetAPI.FleetClient, scanner
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -1231,7 +1231,7 @@ func getVms(ctx context.Context, ic UfleetAPI.FleetClient, scanner *bufio.Scanne
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -1321,7 +1321,7 @@ func GetMachinelsePrototypeInteractiveInput(ctx context.Context, ic UfleetAPI.Fl
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -1407,7 +1407,7 @@ func GetRacklsePrototypeInteractiveInput(ctx context.Context, ic UfleetAPI.Fleet
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -1480,7 +1480,7 @@ func getPeripheralRequirements(scanner *bufio.Scanner) []*fleet.PeripheralRequir
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return prs
 			}
@@ -1578,7 +1578,7 @@ func getVirtualRequirements(scanner *bufio.Scanner, mlsep *fleet.MachineLSEProto
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -1674,7 +1674,7 @@ func GetChromePlatformInteractiveInput(ctx context.Context, ic UfleetAPI.FleetCl
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -1733,7 +1733,7 @@ func GetNicInteractiveInput(ctx context.Context, ic UfleetAPI.FleetClient, nic *
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return machineName
 			}
@@ -1830,7 +1830,7 @@ func GetDracInteractiveInput(ctx context.Context, ic UfleetAPI.FleetClient, drac
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return machineName
 			}
@@ -1933,7 +1933,7 @@ func GetKVMInteractiveInput(ctx context.Context, ic UfleetAPI.FleetClient, kvm *
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return rackName
 			}
@@ -2021,7 +2021,7 @@ func GetRPMInteractiveInput(ctx context.Context, ic UfleetAPI.FleetClient, rpm *
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -2097,7 +2097,7 @@ func GetRackInteractiveInput(ctx context.Context, ic UfleetAPI.FleetClient, req 
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return
 			}
@@ -2316,7 +2316,7 @@ func getRepeatedStringInput(ctx context.Context, ic UfleetAPI.FleetClient, scann
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return values, true
 			}
@@ -2378,7 +2378,7 @@ func getRepeatedEnumInput(scanner *bufio.Scanner, yn, key string, m map[int32]st
 			fmt.Println(input.Desc)
 		}
 		fmt.Print(input.Key, ": ")
-		for true {
+		for {
 			if !scanner.Scan() {
 				return values, true
 			}
