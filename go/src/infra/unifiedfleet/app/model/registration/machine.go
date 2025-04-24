@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -447,7 +447,7 @@ func BatchUpdateMachines(ctx context.Context, machines []*ufspb.Machine) ([]*ufs
 }
 
 func putMachine(ctx context.Context, machine *ufspb.Machine, update bool) (*ufspb.Machine, error) {
-	machine.UpdateTime = ptypes.TimestampNow()
+	machine.UpdateTime = timestamppb.Now()
 
 	// Redact ownership data
 	redactMachineOwnership(ctx, machine)
@@ -466,7 +466,7 @@ func putMachineOwnership(ctx context.Context, id string, ownership *ufspb.Owners
 		return machine, err
 	}
 	machine.Ownership = ownership
-	machine.UpdateTime = ptypes.TimestampNow()
+	machine.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, machine, newMachineEntity, update)
 	if err == nil {
 		return pm.(*ufspb.Machine), err
@@ -491,7 +491,7 @@ func redactMachineOwnership(ctx context.Context, machine *ufspb.Machine) {
 
 func putAllMachine(ctx context.Context, machines []*ufspb.Machine, update bool) ([]*ufspb.Machine, error) {
 	protos := make([]proto.Message, len(machines))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, machine := range machines {
 		machine.UpdateTime = updateTime
 

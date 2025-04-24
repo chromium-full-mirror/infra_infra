@@ -8,9 +8,9 @@ import (
 	"context"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -68,7 +68,7 @@ func newChangeEventEntity(ctx context.Context, pm proto.Message) (ufsds.FleetEnt
 // CreateBatchChangeEvents creates a batch of new change records in datastore.
 func CreateBatchChangeEvents(ctx context.Context, changes []*ufspb.ChangeEvent) ([]*ufspb.ChangeEvent, error) {
 	protos := make([]proto.Message, len(changes))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, change := range changes {
 		change.UpdateTime = updateTime
 		protos[i] = change

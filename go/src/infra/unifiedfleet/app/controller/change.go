@@ -9,7 +9,7 @@ import (
 	"fmt"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/logging"
 	"go.chromium.org/luci/server/auth"
@@ -198,7 +198,7 @@ func (hc *HistoryClient) LogMachineChanges(oldData *ufspb.Machine, newData *ufsp
 	}
 	if newData == nil {
 		hc.changes = append(hc.changes, logLifeCycle(resourceName, "machine", LifeCycleRetire)...)
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		hc.logMsgEntity(resourceName, true, oldData)
 		return
 	}
@@ -240,7 +240,7 @@ func (hc *HistoryClient) LogMachineLSEDeploymentChanges(oldData, newData *ufspb.
 	}
 	if newData == nil {
 		hc.changes = append(hc.changes, logLifeCycle(resourceName, "machine_lse_deployment", LifeCycleRetire)...)
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		hc.logMsgEntity(resourceName, true, oldData)
 		return
 	}
@@ -305,7 +305,7 @@ func (hc *HistoryClient) LogMachineLSEChanges(oldData *ufspb.MachineLSE, newData
 	}
 	if newData == nil {
 		hc.changes = append(hc.changes, logLifeCycle(resourceName, "machine_lse", LifeCycleRetire)...)
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		hc.logMsgEntity(resourceName, true, oldData)
 		return
 	}
@@ -362,7 +362,7 @@ func (hc *HistoryClient) LogVMChanges(oldData *ufspb.VM, newData *ufspb.VM) {
 	}
 	if newData == nil {
 		hc.changes = append(hc.changes, logLifeCycle(resourceName, "vm", LifeCycleRetire)...)
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		hc.logMsgEntity(resourceName, true, oldData)
 		return
 	}
@@ -395,7 +395,7 @@ func (hc *HistoryClient) LogRackChanges(oldData *ufspb.Rack, newData *ufspb.Rack
 	}
 	if newData == nil {
 		hc.changes = append(hc.changes, logLifeCycle(oldResName, "rack", LifeCycleRetire)...)
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		hc.logMsgEntity(oldResName, true, oldData)
 		return
 	}
@@ -435,7 +435,7 @@ func (hc *HistoryClient) LogNicChanges(oldData, newData *ufspb.Nic) {
 	}
 	if newData == nil {
 		hc.changes = append(hc.changes, logLifeCycle(resourceName, "nic", LifeCycleRetire)...)
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		hc.logMsgEntity(resourceName, true, oldData)
 		return
 	}
@@ -475,7 +475,7 @@ func (hc *HistoryClient) LogDracChanges(oldData, newData *ufspb.Drac) {
 	}
 	if newData == nil {
 		hc.changes = append(hc.changes, logLifeCycle(resourceName, "drac", LifeCycleRetire)...)
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		hc.logMsgEntity(resourceName, true, oldData)
 		return
 	}
@@ -504,7 +504,7 @@ func (hc *HistoryClient) LogKVMChanges(oldData, newData *ufspb.KVM) {
 	}
 	if newData == nil {
 		hc.changes = append(hc.changes, logLifeCycle(resourceName, "kvm", LifeCycleRetire)...)
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		hc.logMsgEntity(resourceName, true, oldData)
 		return
 	}
@@ -533,7 +533,7 @@ func (hc *HistoryClient) LogSwitchChanges(oldData, newData *ufspb.Switch) {
 	}
 	if newData == nil {
 		hc.changes = append(hc.changes, logLifeCycle(resourceName, "switch", LifeCycleRetire)...)
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		hc.logMsgEntity(resourceName, true, oldData)
 		return
 	}
@@ -570,7 +570,7 @@ func (hc *HistoryClient) LogRPMChanges(oldData, newData *ufspb.RPM) {
 	}
 	if newData == nil {
 		hc.changes = append(hc.changes, logLifeCycle(resourceName, "rpm", LifeCycleRetire)...)
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		hc.logMsgEntity(resourceName, true, oldData)
 		return
 	}
@@ -598,7 +598,7 @@ func (hc *HistoryClient) LogVLANChanges(oldData, newData *ufspb.Vlan) {
 	}
 	if newData == nil {
 		hc.changes = append(hc.changes, logLifeCycle(resourceName, "vlan", LifeCycleRetire)...)
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		hc.logMsgEntity(resourceName, true, oldData)
 		return
 	}
@@ -628,7 +628,7 @@ func (hc *HistoryClient) LogDutStateChanges(oldData, newData *chromeosLab.DutSta
 	}
 	if newData == nil {
 		hc.changes = append(hc.changes, logLifeCycle(resourceName, "dut_state", LifeCycleRetire)...)
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		hc.logMsgEntity(resourceName, true, oldData)
 		return
 	}
@@ -694,7 +694,7 @@ func LogDHCPChanges(oldData, newData *ufspb.DHCPConfig) ([]*ufspb.ChangeEvent, *
 		return logCommon(resourceName, "dhcp_config.ip", "", newData.GetIp()), e
 	}
 	if newData == nil {
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		e, _ := history.NewSnapshotMsgEntity(resourceName, true, oldData)
 		return logCommon(resourceName, "dhcp_config.ip", oldData.GetIp(), ""), e
 	}
@@ -738,7 +738,7 @@ func LogStateChanges(oldData, newData *ufspb.StateRecord) ([]*ufspb.ChangeEvent,
 	if newData != nil {
 		e, _ = history.NewSnapshotMsgEntity(resourceName, false, newData)
 	} else {
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		e, _ = history.NewSnapshotMsgEntity(resourceName, true, oldData)
 	}
 	return logCommon(resourceName, "state_record.state", oldData.GetState().String(), newData.GetState().String()), e
@@ -994,7 +994,7 @@ func (hc *HistoryClient) logCachingServiceChanges(oldData, newData *ufspb.Cachin
 	}
 	if newData == nil {
 		hc.changes = append(hc.changes, logLifeCycle(resourceName, "cachingservice", LifeCycleRetire)...)
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		hc.logMsgEntity(resourceName, true, oldData)
 		return
 	}
@@ -1023,7 +1023,7 @@ func (hc *HistoryClient) logSchedulingUnitChanges(oldData, newData *ufspb.Schedu
 	}
 	if newData == nil {
 		hc.changes = append(hc.changes, logLifeCycle(resourceName, "schedulingunit", LifeCycleRetire)...)
-		oldData.UpdateTime = ptypes.TimestampNow()
+		oldData.UpdateTime = timestamppb.Now()
 		hc.logMsgEntity(resourceName, true, oldData)
 		return
 	}

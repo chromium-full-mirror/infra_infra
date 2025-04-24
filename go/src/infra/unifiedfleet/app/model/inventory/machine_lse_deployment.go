@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -72,7 +72,7 @@ func newMachineLSEDeploymentEntity(ctx context.Context, pm proto.Message) (ufsds
 // UpdateMachineLSEDeployments updates the deployment infos for a batch of hosts in datastore.
 func UpdateMachineLSEDeployments(ctx context.Context, dis []*ufspb.MachineLSEDeployment) ([]*ufspb.MachineLSEDeployment, error) {
 	protos := make([]proto.Message, len(dis))
-	utime := ptypes.TimestampNow()
+	utime := timestamppb.Now()
 	for i, di := range dis {
 		di.UpdateTime = utime
 		protos[i] = di

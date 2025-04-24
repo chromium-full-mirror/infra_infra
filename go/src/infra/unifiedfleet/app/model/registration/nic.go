@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -199,7 +199,7 @@ func DeleteNic(ctx context.Context, id string) error {
 }
 
 func putNic(ctx context.Context, nic *ufspb.Nic, update bool) (*ufspb.Nic, error) {
-	nic.UpdateTime = ptypes.TimestampNow()
+	nic.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, nic, newNicEntity, update)
 	if err == nil {
 		return pm.(*ufspb.Nic), err
@@ -230,7 +230,7 @@ func BatchDeleteNics(ctx context.Context, ids []string) error {
 
 func putAllNic(ctx context.Context, nics []*ufspb.Nic, update bool) ([]*ufspb.Nic, error) {
 	protos := make([]proto.Message, len(nics))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, nic := range nics {
 		nic.UpdateTime = updateTime
 		protos[i] = nic

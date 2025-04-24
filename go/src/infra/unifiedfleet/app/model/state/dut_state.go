@@ -9,9 +9,9 @@ import (
 	"math/rand"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -122,7 +122,7 @@ func getDutStateACL(ctx context.Context, id string) (*chromeosLab.DutState, erro
 // UpdateDutStates updates dut states in datastore.
 func UpdateDutStates(ctx context.Context, dutStates []*chromeosLab.DutState) ([]*chromeosLab.DutState, error) {
 	protos := make([]proto.Message, len(dutStates))
-	utime := ptypes.TimestampNow()
+	utime := timestamppb.Now()
 	for i, ds := range dutStates {
 		ds.UpdateTime = utime
 		protos[i] = ds

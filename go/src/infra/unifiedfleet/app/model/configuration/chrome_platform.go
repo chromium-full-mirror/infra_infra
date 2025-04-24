@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -196,7 +196,7 @@ func BatchUpdateChromePlatforms(ctx context.Context, platforms []*ufspb.ChromePl
 
 func putAllChromePlatform(ctx context.Context, platforms []*ufspb.ChromePlatform, update bool) ([]*ufspb.ChromePlatform, error) {
 	protos := make([]proto.Message, len(platforms))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, chromeplatform := range platforms {
 		chromeplatform.UpdateTime = updateTime
 		protos[i] = chromeplatform
@@ -209,7 +209,7 @@ func putAllChromePlatform(ctx context.Context, platforms []*ufspb.ChromePlatform
 }
 
 func putChromePlatform(ctx context.Context, chromePlatform *ufspb.ChromePlatform, update bool) (*ufspb.ChromePlatform, error) {
-	chromePlatform.UpdateTime = ptypes.TimestampNow()
+	chromePlatform.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, chromePlatform, newChromePlatformEntity, update)
 	if err == nil {
 		return pm.(*ufspb.ChromePlatform), err

@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -90,7 +90,7 @@ func UpdateVlan(ctx context.Context, vlan *ufspb.Vlan) (*ufspb.Vlan, error) {
 // Can be used in a transaction
 func BatchUpdateVlans(ctx context.Context, vlans []*ufspb.Vlan) ([]*ufspb.Vlan, error) {
 	protos := make([]proto.Message, len(vlans))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, vlan := range vlans {
 		vlan.UpdateTime = updateTime
 		protos[i] = vlan
@@ -181,7 +181,7 @@ func DeleteVlan(ctx context.Context, id string) error {
 }
 
 func putVlan(ctx context.Context, vlan *ufspb.Vlan, update bool) (*ufspb.Vlan, error) {
-	vlan.UpdateTime = ptypes.TimestampNow()
+	vlan.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, vlan, newVlanEntity, update)
 	if err == nil {
 		return pm.(*ufspb.Vlan), err
@@ -192,7 +192,7 @@ func putVlan(ctx context.Context, vlan *ufspb.Vlan, update bool) (*ufspb.Vlan, e
 // ImportVlans creates or updates a batch of vlan in datastore
 func ImportVlans(ctx context.Context, vlans []*ufspb.Vlan) (*ufsds.OpResults, error) {
 	protos := make([]proto.Message, len(vlans))
-	utime := ptypes.TimestampNow()
+	utime := timestamppb.Now()
 	for i, m := range vlans {
 		m.UpdateTime = utime
 		protos[i] = m

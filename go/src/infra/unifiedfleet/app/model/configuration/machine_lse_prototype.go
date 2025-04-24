@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -82,7 +82,7 @@ func UpdateMachineLSEPrototype(ctx context.Context, machineLSEPrototype *ufspb.M
 // Will lead to partial updates if not used in a transaction.
 func BatchUpdateMachineLSEPrototypes(ctx context.Context, machineLSEPrototypes []*ufspb.MachineLSEPrototype) ([]*ufspb.MachineLSEPrototype, error) {
 	protos := make([]proto.Message, len(machineLSEPrototypes))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, p := range machineLSEPrototypes {
 		p.UpdateTime = updateTime
 		protos[i] = p
@@ -174,7 +174,7 @@ func DeleteMachineLSEPrototype(ctx context.Context, id string) error {
 }
 
 func putMachineLSEPrototype(ctx context.Context, machineLSEPrototype *ufspb.MachineLSEPrototype, update bool) (*ufspb.MachineLSEPrototype, error) {
-	machineLSEPrototype.UpdateTime = ptypes.TimestampNow()
+	machineLSEPrototype.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, machineLSEPrototype, newMachineLSEPrototypeEntity, update)
 	if err == nil {
 		return pm.(*ufspb.MachineLSEPrototype), err

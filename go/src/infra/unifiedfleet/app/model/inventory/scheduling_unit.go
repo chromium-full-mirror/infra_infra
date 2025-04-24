@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -116,7 +116,7 @@ func CreateSchedulingUnit(ctx context.Context, su *ufspb.SchedulingUnit) (*ufspb
 // Will lead to partial updates if not used in a transaction.
 func BatchUpdateSchedulingUnits(ctx context.Context, schedulingUnits []*ufspb.SchedulingUnit) ([]*ufspb.SchedulingUnit, error) {
 	protos := make([]proto.Message, len(schedulingUnits))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, su := range schedulingUnits {
 		su.UpdateTime = updateTime
 		protos[i] = su
@@ -129,7 +129,7 @@ func BatchUpdateSchedulingUnits(ctx context.Context, schedulingUnits []*ufspb.Sc
 }
 
 func putSchedulingUnit(ctx context.Context, su *ufspb.SchedulingUnit, update bool) (*ufspb.SchedulingUnit, error) {
-	su.UpdateTime = ptypes.TimestampNow()
+	su.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, su, newSchedulingUnitEntity, update)
 	if err == nil {
 		return pm.(*ufspb.SchedulingUnit), err

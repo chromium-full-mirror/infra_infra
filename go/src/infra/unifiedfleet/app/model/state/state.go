@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -79,7 +79,7 @@ func GetStateRecord(ctx context.Context, id string) (*ufspb.StateRecord, error) 
 
 // UpdateStateRecord updates a state record in datastore.
 func UpdateStateRecord(ctx context.Context, stateRecord *ufspb.StateRecord) (*ufspb.StateRecord, error) {
-	stateRecord.UpdateTime = ptypes.TimestampNow()
+	stateRecord.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.PutSingle(ctx, stateRecord, newRecordEntity)
 	if err == nil {
 		return pm.(*ufspb.StateRecord), err
@@ -168,7 +168,7 @@ func GetStateIndexedFieldName(input string) (string, error) {
 // This can be used inside a transaction
 func BatchUpdateStates(ctx context.Context, states []*ufspb.StateRecord) ([]*ufspb.StateRecord, error) {
 	protos := make([]proto.Message, len(states))
-	utime := ptypes.TimestampNow()
+	utime := timestamppb.Now()
 	for i, s := range states {
 		s.UpdateTime = utime
 		protos[i] = s

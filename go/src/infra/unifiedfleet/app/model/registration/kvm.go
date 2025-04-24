@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -198,7 +198,7 @@ func DeleteKVM(ctx context.Context, id string) error {
 }
 
 func putKVM(ctx context.Context, KVM *ufspb.KVM, update bool) (*ufspb.KVM, error) {
-	KVM.UpdateTime = ptypes.TimestampNow()
+	KVM.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, KVM, newKVMEntity, update)
 	if err == nil {
 		return pm.(*ufspb.KVM), err
@@ -217,7 +217,7 @@ func BatchUpdateKVMs(ctx context.Context, kvms []*ufspb.KVM) ([]*ufspb.KVM, erro
 
 func putAllKVM(ctx context.Context, kvms []*ufspb.KVM, update bool) ([]*ufspb.KVM, error) {
 	protos := make([]proto.Message, len(kvms))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, kvm := range kvms {
 		kvm.UpdateTime = updateTime
 		protos[i] = kvm

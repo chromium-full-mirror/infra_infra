@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -194,7 +194,7 @@ func DeleteSwitch(ctx context.Context, id string) error {
 }
 
 func putSwitch(ctx context.Context, s *ufspb.Switch, update bool) (*ufspb.Switch, error) {
-	s.UpdateTime = ptypes.TimestampNow()
+	s.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, s, newSwitchEntity, update)
 	if err == nil {
 		return pm.(*ufspb.Switch), err
@@ -213,7 +213,7 @@ func BatchUpdateSwitches(ctx context.Context, switches []*ufspb.Switch) ([]*ufsp
 
 func putAllSwitch(ctx context.Context, switches []*ufspb.Switch, update bool) ([]*ufspb.Switch, error) {
 	protos := make([]proto.Message, len(switches))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, s := range switches {
 		s.UpdateTime = updateTime
 		protos[i] = s

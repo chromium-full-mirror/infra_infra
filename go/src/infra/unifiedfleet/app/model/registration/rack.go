@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -355,7 +355,7 @@ func BatchUpdateRacks(ctx context.Context, racks []*ufspb.Rack) ([]*ufspb.Rack, 
 }
 
 func putRack(ctx context.Context, rack *ufspb.Rack, update bool) (*ufspb.Rack, error) {
-	rack.UpdateTime = ptypes.TimestampNow()
+	rack.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, rack, newRackEntity, update)
 	if err == nil {
 		return pm.(*ufspb.Rack), err
@@ -365,7 +365,7 @@ func putRack(ctx context.Context, rack *ufspb.Rack, update bool) (*ufspb.Rack, e
 
 func putAllRack(ctx context.Context, racks []*ufspb.Rack, update bool) ([]*ufspb.Rack, error) {
 	protos := make([]proto.Message, len(racks))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, rack := range racks {
 		rack.UpdateTime = updateTime
 		protos[i] = rack

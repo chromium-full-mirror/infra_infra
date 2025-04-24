@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -224,7 +224,7 @@ func BatchGetVMs(ctx context.Context, ids []string) ([]*ufspb.VM, error) {
 // Will lead to partial updates if not used in a transaction.
 func BatchUpdateVMs(ctx context.Context, vms []*ufspb.VM) ([]*ufspb.VM, error) {
 	protos := make([]proto.Message, len(vms))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, v := range vms {
 		v.UpdateTime = updateTime
 
@@ -252,7 +252,7 @@ func putVMOwnership(ctx context.Context, id string, ownership *ufspb.OwnershipDa
 	}
 	vm.Ownership = ownership
 
-	vm.UpdateTime = ptypes.TimestampNow()
+	vm.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, vm, newVMEntity, update)
 	if err == nil {
 		return pm.(*ufspb.VM), err

@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -182,7 +182,7 @@ func BatchUpdateRackLSEs(ctx context.Context, rackLSEs []*ufspb.RackLSE) ([]*ufs
 }
 
 func putRackLSE(ctx context.Context, rackLSE *ufspb.RackLSE, update bool) (*ufspb.RackLSE, error) {
-	rackLSE.UpdateTime = ptypes.TimestampNow()
+	rackLSE.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, rackLSE, newRackLSEEntity, update)
 	if err == nil {
 		return pm.(*ufspb.RackLSE), err
@@ -192,7 +192,7 @@ func putRackLSE(ctx context.Context, rackLSE *ufspb.RackLSE, update bool) (*ufsp
 
 func putAllRackLSE(ctx context.Context, rackLSEs []*ufspb.RackLSE, update bool) ([]*ufspb.RackLSE, error) {
 	protos := make([]proto.Message, len(rackLSEs))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, rackLSE := range rackLSEs {
 		rackLSE.UpdateTime = updateTime
 		protos[i] = rackLSE

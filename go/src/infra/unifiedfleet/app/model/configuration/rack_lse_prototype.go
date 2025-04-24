@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -82,7 +82,7 @@ func UpdateRackLSEPrototype(ctx context.Context, rackLSEPrototype *ufspb.RackLSE
 // Will lead to partial updates if not used in a transaction.
 func BatchUpdateRackLSEPrototypes(ctx context.Context, prototypes []*ufspb.RackLSEPrototype) ([]*ufspb.RackLSEPrototype, error) {
 	protos := make([]proto.Message, len(prototypes))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, p := range prototypes {
 		p.UpdateTime = updateTime
 		protos[i] = p
@@ -174,7 +174,7 @@ func DeleteRackLSEPrototype(ctx context.Context, id string) error {
 }
 
 func putRackLSEPrototype(ctx context.Context, rackLSEPrototype *ufspb.RackLSEPrototype, update bool) (*ufspb.RackLSEPrototype, error) {
-	rackLSEPrototype.UpdateTime = ptypes.TimestampNow()
+	rackLSEPrototype.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, rackLSEPrototype, newRackLSEPrototypeEntity, update)
 	if err == nil {
 		return pm.(*ufspb.RackLSEPrototype), err

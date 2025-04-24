@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -568,7 +568,7 @@ func BatchUpdateMachineLSEs(ctx context.Context, machineLSEs []*ufspb.MachineLSE
 }
 
 func putMachineLSE(ctx context.Context, machineLSE *ufspb.MachineLSE, update bool) (*ufspb.MachineLSE, error) {
-	machineLSE.UpdateTime = ptypes.TimestampNow()
+	machineLSE.UpdateTime = timestamppb.Now()
 
 	// Redact ownership data
 	redactMachineLSEOwnership(ctx, machineLSE)
@@ -582,7 +582,7 @@ func putMachineLSE(ctx context.Context, machineLSE *ufspb.MachineLSE, update boo
 
 func putAllMachineLSE(ctx context.Context, machineLSEs []*ufspb.MachineLSE, update bool) ([]*ufspb.MachineLSE, error) {
 	protos := make([]proto.Message, len(machineLSEs))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, machineLSE := range machineLSEs {
 		machineLSE.UpdateTime = updateTime
 
@@ -605,7 +605,7 @@ func putMachineLSEOwnership(ctx context.Context, id string, ownership *ufspb.Own
 		return machineLSE, err
 	}
 	machineLSE.Ownership = ownership
-	machineLSE.UpdateTime = ptypes.TimestampNow()
+	machineLSE.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, machineLSE, newMachineLSEEntity, update)
 	if err == nil {
 		return pm.(*ufspb.MachineLSE), err
@@ -620,7 +620,7 @@ func putMachineLSEMaintenanceConfig(ctx context.Context, id string, configName s
 		return machineLSE, err
 	}
 	machineLSE.MaintenanceConfigName = configName
-	machineLSE.UpdateTime = ptypes.TimestampNow()
+	machineLSE.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, machineLSE, newMachineLSEEntity, update)
 	if err == nil {
 		return pm.(*ufspb.MachineLSE), err

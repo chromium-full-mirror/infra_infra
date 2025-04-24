@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -105,7 +105,7 @@ func CreateCachingService(ctx context.Context, cs *ufspb.CachingService) (*ufspb
 // Will lead to partial updates if not used in a transaction.
 func BatchUpdateCachingServices(ctx context.Context, cachingServices []*ufspb.CachingService) ([]*ufspb.CachingService, error) {
 	protos := make([]proto.Message, len(cachingServices))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, cs := range cachingServices {
 		cs.UpdateTime = updateTime
 		protos[i] = cs
@@ -199,7 +199,7 @@ func ListAllCachingServices(ctx context.Context, keysOnly bool) (res []*ufspb.Ca
 }
 
 func putCachingService(ctx context.Context, cs *ufspb.CachingService, update bool) (*ufspb.CachingService, error) {
-	cs.UpdateTime = ptypes.TimestampNow()
+	cs.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, cs, newCSEntity, update)
 	if err == nil {
 		return pm.(*ufspb.CachingService), err

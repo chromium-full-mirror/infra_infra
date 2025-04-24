@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -200,7 +200,7 @@ func DeleteDrac(ctx context.Context, id string) error {
 }
 
 func putDrac(ctx context.Context, drac *ufspb.Drac, update bool) (*ufspb.Drac, error) {
-	drac.UpdateTime = ptypes.TimestampNow()
+	drac.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, drac, newDracEntity, update)
 	if err == nil {
 		return pm.(*ufspb.Drac), err
@@ -219,7 +219,7 @@ func BatchUpdateDracs(ctx context.Context, dracs []*ufspb.Drac) ([]*ufspb.Drac, 
 
 func putAllDrac(ctx context.Context, dracs []*ufspb.Drac, update bool) ([]*ufspb.Drac, error) {
 	protos := make([]proto.Message, len(dracs))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, drac := range dracs {
 		drac.UpdateTime = updateTime
 		protos[i] = drac

@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -168,7 +168,7 @@ func ListDHCPConfigs(ctx context.Context, pageSize int32, pageToken string, filt
 // ImportDHCPConfigs creates or updates a batch of dhcp configs in datastore
 func ImportDHCPConfigs(ctx context.Context, dhcpConfigs []*ufspb.DHCPConfig) (*ufsds.OpResults, error) {
 	protos := make([]proto.Message, len(dhcpConfigs))
-	utime := ptypes.TimestampNow()
+	utime := timestamppb.Now()
 	for i, m := range dhcpConfigs {
 		m.UpdateTime = utime
 		protos[i] = m
@@ -244,7 +244,7 @@ func GetDHCPIndexedFieldName(input string) (string, error) {
 // This can be used inside a transaction
 func BatchUpdateDHCPs(ctx context.Context, dhcps []*ufspb.DHCPConfig) ([]*ufspb.DHCPConfig, error) {
 	protos := make([]proto.Message, len(dhcps))
-	utime := ptypes.TimestampNow()
+	utime := timestamppb.Now()
 	for i, dhcp := range dhcps {
 		dhcp.UpdateTime = utime
 		protos[i] = dhcp

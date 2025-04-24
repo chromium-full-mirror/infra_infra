@@ -9,9 +9,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -196,7 +196,7 @@ func DeleteRPM(ctx context.Context, id string) error {
 }
 
 func putRPM(ctx context.Context, RPM *ufspb.RPM, update bool) (*ufspb.RPM, error) {
-	RPM.UpdateTime = ptypes.TimestampNow()
+	RPM.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, RPM, newRPMEntity, update)
 	if err == nil {
 		return pm.(*ufspb.RPM), err
@@ -227,7 +227,7 @@ func BatchUpdateRPMs(ctx context.Context, rpms []*ufspb.RPM) ([]*ufspb.RPM, erro
 
 func putAllRPM(ctx context.Context, rpms []*ufspb.RPM, update bool) ([]*ufspb.RPM, error) {
 	protos := make([]proto.Message, len(rpms))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, rpm := range rpms {
 		rpm.UpdateTime = updateTime
 		protos[i] = rpm

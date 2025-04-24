@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"go.chromium.org/luci/common/errors"
 	"go.chromium.org/luci/common/logging"
@@ -175,7 +175,7 @@ func CreateAsset(ctx context.Context, asset *ufspb.Asset) (*ufspb.Asset, error) 
 	if asset == nil || asset.Name == "" || asset.Type == ufspb.AssetType_UNDEFINED || asset.Location == nil {
 		return nil, errors.Reason("Invalid Asset [Asset is empty or one or more required fields are missing]").Err()
 	}
-	asset.UpdateTime = ptypes.TimestampNow()
+	asset.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, asset, newAssetEntity, false)
 	if err != nil {
 		return nil, err
@@ -185,7 +185,7 @@ func CreateAsset(ctx context.Context, asset *ufspb.Asset) (*ufspb.Asset, error) 
 
 // UpdateAsset updates the asset to the given asset proto.
 func UpdateAsset(ctx context.Context, asset *ufspb.Asset) (*ufspb.Asset, error) {
-	asset.UpdateTime = ptypes.TimestampNow()
+	asset.UpdateTime = timestamppb.Now()
 	pm, err := ufsds.Put(ctx, asset, newAssetEntity, true)
 	if err != nil {
 		return nil, err
@@ -298,7 +298,7 @@ func ListAssetsACL(ctx context.Context, pageSize int32, pageToken string, filter
 // BatchUpdateAssets updates the assets to the datastore
 func BatchUpdateAssets(ctx context.Context, assets []*ufspb.Asset) ([]*ufspb.Asset, error) {
 	protos := make([]proto.Message, len(assets))
-	updateTime := ptypes.TimestampNow()
+	updateTime := timestamppb.Now()
 	for i, asset := range assets {
 		if asset != nil {
 			asset.UpdateTime = updateTime
