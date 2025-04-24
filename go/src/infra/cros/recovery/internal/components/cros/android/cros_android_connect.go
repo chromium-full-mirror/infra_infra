@@ -39,21 +39,20 @@ func ADBConnect(ctx context.Context, retryCount int, retryinterval time.Duration
 		return err
 	}
 
+	log.Debugf(ctx, "Check if %q is already connected!", deviceName)
 	if isConnected(ctx, deviceName, client, singleRunTimeout) {
 		// If the device is connected and there is no request to reconnect,
 		// then we need to root service to run commands as the root user.
 		if !forceReconnect {
 			log.Infof(ctx, "Device is already connected, no need to reconnect just root it!")
-			if _, err := adb.RunCommand(ctx, client, singleRunTimeout, "root"); err != nil {
+			if err := adbRoot(); err != nil {
 				log.Debugf(ctx, "Fail to root device: %s", err)
-				log.Debugf(ctx, "Reenforce disconnect first")
-				if err := adbRoot(); err != nil {
-					log.Debugf(ctx, "Fail to root device: %s", err)
-				}
 				forceReconnect = true
-			} else {
+			} else if isConnected(ctx, deviceName, client, singleRunTimeout) {
 				log.Infof(ctx, "Device rooted!")
 				return nil
+			} else {
+				log.Infof(ctx, "Device disconnected after rooting!")
 			}
 		}
 		if forceReconnect {
@@ -63,10 +62,6 @@ func ADBConnect(ctx context.Context, retryCount int, retryinterval time.Duration
 			}
 		}
 	}
-
-	// Only restart ADB server when run in a container for a single DUT,
-	// as it is not safe to restart it when other devices are connected.
-	restartServerIfNeed(ctx, client, singleRunTimeout)
 
 	connect := func() error {
 		log.Infof(ctx, "Try to connect to %q by adb", dut.Name)
@@ -94,19 +89,6 @@ func ADBConnect(ctx context.Context, retryCount int, retryinterval time.Duration
 	return nil
 }
 
-func restartServerIfNeed(ctx context.Context, client api.ADBServiceClient, timeout time.Duration) {
-	if adbTool.UseLocal(ctx) {
-		log.Infof(ctx, "Skip restart ADB server as using local shared version!")
-	} else {
-		if _, err := adb.ExecCommand(ctx, client, timeout, "kill-server"); err != nil {
-			log.Debugf(ctx, "adb devices error: %s", err)
-		}
-		if _, err := adb.ExecCommand(ctx, client, timeout, "start-server"); err != nil {
-			log.Debugf(ctx, "adb devices error: %s", err)
-		}
-	}
-}
-
 func getADBClient(ctx context.Context, dut *tlw.Dut) (api.ADBServiceClient, error) {
 	if !adbTool.UseLocal(ctx) {
 		return cft.ADBClientFromScope(ctx, dut)
@@ -115,7 +97,6 @@ func getADBClient(ctx context.Context, dut *tlw.Dut) (api.ADBServiceClient, erro
 }
 
 func isConnected(ctx context.Context, deviceName string, client api.ADBServiceClient, timeout time.Duration) bool {
-	log.Debugf(ctx, "Check if %q is already connected!", deviceName)
 	if res, err := adb.ExecCommand(ctx, client, timeout, "devices"); err != nil {
 		log.Debugf(ctx, "Fail to read adb devices, assume device isn't listed yet: %s", err)
 		return false
