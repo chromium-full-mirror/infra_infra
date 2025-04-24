@@ -12,7 +12,8 @@ import (
 )
 
 const (
-	ResourceRequestTableName                = "resource_delivery_dev.resource_requests"
+	ResourceRequestDevTableName             = "resource_delivery_dev.resource_requests"
+	ResourceRequestProdTableName            = "resource_delivery_prod.resource_requests"
 	RrIDColumn                              = "rr_id"
 	ResourceDetailsColumn                   = "resource_details"
 	ResourceRequestActualDeliveryDateColumn = "resource_request_actual_delivery_date"
@@ -32,8 +33,12 @@ const (
 	CompleteStatus   = "COMPLETE"
 )
 
-func GetResourceRequestsTable() *queryutils.Table {
-	return queryutils.NewTableBuilder(ResourceRequestTableName).WithColumns(
+func GetResourceRequestsTable(isProd bool) *queryutils.Table {
+	tableName := ResourceRequestDevTableName
+	if isProd {
+		tableName = ResourceRequestProdTableName
+	}
+	return queryutils.NewTableBuilder(tableName).WithColumns(
 		queryutils.NewColumn(RrIDColumn).Build(),
 		queryutils.NewColumn(ResourceDetailsColumn).Build(),
 		queryutils.NewColumn(ResourceRequestActualDeliveryDateColumn).Build(),

@@ -81,7 +81,7 @@ func (frontend *FleetConsoleFrontend) ListResourceRequests(ctx context.Context, 
 		return nil, err
 	}
 
-	query, err := buildListResourceRequestsQuery(ctx, bqClient, req, offset)
+	query, err := buildListResourceRequestsQuery(ctx, bqClient, req, offset, frontend.IsProdEnvironment())
 	if err != nil {
 		logging.Errorf(ctx, "failed to build query: %s", err)
 		return nil, err
@@ -140,8 +140,8 @@ func resourceRequestsOffsetToPageToken(offset int, req *fleetconsolerpc.ListReso
 
 // buildListResourceRequestsQuery uses queryutils to build a query for listing
 // resource requests.
-func buildListResourceRequestsQuery(ctx context.Context, bqClient *bigquery.Client, req *fleetconsolerpc.ListResourceRequestsRequest, offset int) (*bigquery.Query, error) {
-	queryBuilder := queryutils.NewQueryBuilder(rri.GetResourceRequestsTable())
+func buildListResourceRequestsQuery(ctx context.Context, bqClient *bigquery.Client, req *fleetconsolerpc.ListResourceRequestsRequest, offset int, isProd bool) (*bigquery.Query, error) {
+	queryBuilder := queryutils.NewQueryBuilder(rri.GetResourceRequestsTable(isProd))
 	queryBuilder = queryBuilder.SetSqlLangType(queryutils.BigQueryLangType)
 	queryBuilder = queryBuilder.WithSelectAllClause()
 

@@ -26,7 +26,7 @@ func Test_buildListResourceRequestsQuery(t *testing.T) {
 			Filter:   "rr_id=RR-001 OR rr_id = RR-002",
 			PageSize: 10,
 		}
-		query, err := buildListResourceRequestsQuery(ctx, &bigquery.Client{}, req, 0)
+		query, err := buildListResourceRequestsQuery(ctx, &bigquery.Client{}, req, 0, false)
 		assert.Loosely(t, err, should.BeNil)
 		assert.Loosely(t, query.Q, should.Equal(
 			`SELECT rr_id, resource_details, resource_request_actual_delivery_date, resource_request_target_delivery_date, fulfillment_status, material_sourcing_target_delivery_date, build_target_delivery_date, qa_target_delivery_date, config_target_delivery_date

@@ -17,7 +17,7 @@ import (
 // PingUfs pings UFS.
 func (frontend *FleetConsoleFrontend) PingUfs(ctx context.Context, req *fleetconsolerpc.PingUfsRequest) (_ *fleetconsolerpc.PingUfsResponse, err error) {
 	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
-	ufsClient, err := frontend.ufsClient(ctx, frontend.cloudProject)
+	ufsClient, err := frontend.ufsClient(ctx, frontend.IsProdEnvironment())
 	if err != nil {
 		return nil, errors.Annotate(err, "ping ufs").Err()
 	}

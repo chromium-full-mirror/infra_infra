@@ -122,9 +122,9 @@ func ConfigureCORS(ctx context.Context, srv *server.Server) {
 	})
 }
 
-func GetDeviceManagerClient(ctx context.Context, cloudProject string) (*devicemanagerclient.Client, error) {
+func GetDeviceManagerClient(ctx context.Context, isProd bool) (*devicemanagerclient.Client, error) {
 	deviceManagerAddr := devicemanagerclient.DMDevURL
-	if isProdEnvironment(cloudProject) {
+	if isProd {
 		deviceManagerAddr = devicemanagerclient.DMProdURL
 	}
 	deviceManagerPort := devicemanagerclient.DMLeasesPort
@@ -153,9 +153,9 @@ func GetDeviceManagerClient(ctx context.Context, cloudProject string) (*devicema
 	return deviceManagerClient, nil
 }
 
-func GetUfsClient(ctx context.Context, cloudProject string) (ufsclient.Client, error) {
+func GetUfsClient(ctx context.Context, isProd bool) (ufsclient.Client, error) {
 	ufsAddr := ufsclient.UfsDevURL
-	if isProdEnvironment(cloudProject) {
+	if isProd {
 		ufsAddr = ufsclient.UfsProdURL
 	}
 	ufsPort := ufsclient.UfsPort
@@ -189,8 +189,4 @@ func GetUfsClient(ctx context.Context, cloudProject string) (ufsclient.Client, e
 
 	logging.Infof(ctx, "Initializing ufs client with address: %s:%d", ufsAddr, ufsPort)
 	return ufsClient, nil
-}
-
-func isProdEnvironment(cloudProject string) bool {
-	return !strings.HasSuffix(cloudProject, "dev")
 }

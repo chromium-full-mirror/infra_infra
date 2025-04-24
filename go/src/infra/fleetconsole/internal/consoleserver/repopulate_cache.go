@@ -33,14 +33,14 @@ const parametersPerDevice = 8
 func (frontend *FleetConsoleFrontend) RepopulateCache(ctx context.Context, req *fleetconsolerpc.RepopulateCacheRequest) (_ *fleetconsolerpc.RepopulateCacheResponse, err error) {
 	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
 
-	deviceManagerClient, err := frontend.deviceManagerClient(ctx, frontend.cloudProject)
+	deviceManagerClient, err := frontend.deviceManagerClient(ctx, frontend.IsProdEnvironment())
 	if err != nil {
 		return nil, err
 	}
 	// Device manager always uses prod ufs even in it's dev environment,
 	// this means that we also need to use ufs prod in our dev, otherwise
 	// we will not be able to match deviceManager devices with ufs devices
-	ufsClient, err := frontend.ufsClient(ctx, "fleet-console-prod")
+	ufsClient, err := frontend.ufsClient(ctx, true)
 	if err != nil {
 		return nil, err
 	}

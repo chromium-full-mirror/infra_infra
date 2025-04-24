@@ -6,6 +6,7 @@ package consoleserver
 
 import (
 	"context"
+	"strings"
 
 	"google.golang.org/grpc"
 
@@ -24,8 +25,12 @@ type FleetConsoleFrontend struct {
 	fleetconsolerpc.UnimplementedFleetConsoleServer
 
 	cloudProject        string
-	deviceManagerClient func(context.Context, string) (*devicemanagerclient.Client, error)
-	ufsClient           func(context.Context, string) (ufsclient.Client, error)
+	deviceManagerClient func(context.Context, bool) (*devicemanagerclient.Client, error)
+	ufsClient           func(context.Context, bool) (ufsclient.Client, error)
+}
+
+func (frontend *FleetConsoleFrontend) IsProdEnvironment() bool {
+	return frontend.cloudProject != "" && !strings.HasSuffix(frontend.cloudProject, "dev")
 }
 
 // InstallServices installs services into the server.
@@ -34,12 +39,12 @@ func InstallServices(consoleFrontend fleetconsolerpc.FleetConsoleServer, srv grp
 }
 
 // SetDeviceManagerClient sets the device manager client.
-func SetDeviceManagerClient(consoleFrontend *FleetConsoleFrontend, deviceManagerClient func(context.Context, string) (*devicemanagerclient.Client, error)) {
+func SetDeviceManagerClient(consoleFrontend *FleetConsoleFrontend, deviceManagerClient func(context.Context, bool) (*devicemanagerclient.Client, error)) {
 	consoleFrontend.deviceManagerClient = deviceManagerClient
 }
 
 // SetUFSClient sets the UFS client.
-func SetUFSClient(consoleFrontend *FleetConsoleFrontend, ufsClient func(context.Context, string) (ufsclient.Client, error)) {
+func SetUFSClient(consoleFrontend *FleetConsoleFrontend, ufsClient func(context.Context, bool) (ufsclient.Client, error)) {
 	consoleFrontend.ufsClient = ufsClient
 }
 

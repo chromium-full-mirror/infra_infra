@@ -25,7 +25,7 @@ func (frontend *FleetConsoleFrontend) CountResourceRequests(ctx context.Context,
 
 	var total, ffInProgress, ffComplete, msInProgress, buildInProgress, qaInProgress, configInProgress any
 
-	queryBuilder := queryutils.NewQueryBuilder(rri.GetResourceRequestsTable()).
+	queryBuilder := queryutils.NewQueryBuilder(rri.GetResourceRequestsTable(frontend.IsProdEnvironment())).
 		SetSqlLangType(queryutils.BigQueryLangType).
 		WithCustomSelectClause(
 			queryutils.CountAll(&total),
