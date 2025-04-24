@@ -9,7 +9,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"strings"
+	"os"
 
 	androidlib "go.chromium.org/infra/cros/cmd/common_lib/android_api"
 	"go.chromium.org/infra/cros/cmd/common_lib/common"
@@ -34,14 +34,6 @@ func NewTestCommand() *TestCommand {
 	return tc
 }
 
-func (tc *TestCommand) Is(group string) bool {
-	return strings.HasPrefix(group, "t")
-}
-
-func (tc *TestCommand) Name() string {
-	return "test"
-}
-
 func (tc *TestCommand) Init(args []string) error {
 	err := tc.flagSet.Parse(args)
 	if err != nil {
@@ -52,6 +44,10 @@ func (tc *TestCommand) Init(args []string) error {
 }
 
 func (tc *TestCommand) Run() error {
+	if err := tc.Init(os.Args[2:]); err != nil {
+		return err
+	}
+
 	log.Printf("running test mode:")
 	ctx := context.Background()
 

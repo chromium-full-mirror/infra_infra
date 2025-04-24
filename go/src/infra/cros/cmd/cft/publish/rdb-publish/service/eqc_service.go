@@ -283,3 +283,22 @@ func EqcInfo(eqcInfoMap map[string]string) (*artifact.EqcInfo, error) {
 	log.Printf("Successfully extracted the EqC info: %#v", eqcInfo)
 	return eqcInfo, nil
 }
+
+// PublishEQC exports the EqC info to BigQuery.
+func PublishEQC(ctx context.Context, req *api.PublishRequest) error {
+	if !req.Is_3DRun {
+		return nil
+	}
+
+	eps, err := NewEQCPublishService(ctx, req)
+	if err != nil {
+		return fmt.Errorf("failed to create new EqC publish service: %s", err.Error())
+	}
+
+	defer eps.Close()
+
+	if err := eps.ExportToBQ(ctx); err != nil {
+		return fmt.Errorf("failed to export the EqC info to BQ: %s", err.Error())
+	}
+	return nil
+}

@@ -5,17 +5,55 @@
 package main
 
 import (
+	"context"
 	"fmt"
-	"os"
+	"log"
 
-	"go.chromium.org/infra/cros/cmd/cft/publish/rdb-publish/cli"
+	"go.chromium.org/chromiumos/config/go/test/api"
+
+	"go.chromium.org/infra/cros/cmd/cft/publish/rdb-publish/service"
+	"go.chromium.org/infra/cros/cmd/cft/publish/servertemplate"
 )
 
-func main() {
-	opt, err := cli.ParseInputs()
-	if err != nil {
-		fmt.Printf("unable to parse inputs: %s", err)
-		os.Exit(2)
+const (
+	Name        = "rdb-publish"
+	ArtifactDir = "/tmp/rdb-publish"
+)
+
+type RdbPublishService struct{}
+
+func (s *RdbPublishService) Publish(ctx context.Context, log *log.Logger, req *api.PublishRequest) (*api.PublishResponse, error) {
+	out := &api.PublishResponse{
+		Status: api.PublishResponse_STATUS_SUCCESS,
 	}
-	opt.Run()
+
+	// Exports the EqC info to BQ if it's a 3D test run.
+	if err := service.PublishEQC(ctx, req); err != nil {
+		// Only logs the error message without exiting early.
+		log.Printf("failed to publish the EqC info to BQ: %s", err)
+	}
+
+	gps, err := service.NewRdbPublishService(req)
+	if err != nil {
+		log.Printf("failed to create new rdb publish service: %s", err)
+		out.Status = api.PublishResponse_STATUS_INVALID_REQUEST
+		out.Message = fmt.Sprintf("failed to create new rdb publish service: %s", err.Error())
+		return out, fmt.Errorf("failed to create new rdb publish service: %s", err)
+	}
+
+	if err := gps.UploadToRdb(context.Background()); err != nil {
+		log.Printf("upload to rdb failed: %s", err)
+		out.Status = api.PublishResponse_STATUS_FAILURE
+		out.Message = fmt.Sprintf("failed upload to rdb: %s", err.Error())
+		return out, fmt.Errorf("failed upload to rdb: %s", err)
+	}
+
+	log.Println("Finished Successfuly!")
+
+	return out, nil
+}
+
+func main() {
+	service := &RdbPublishService{}
+	servertemplate.Server(Name, ArtifactDir, service)
 }
