@@ -134,6 +134,18 @@ func Companions(devices []*api.CrosTestRequest_Device) (chromeOSCompanions []*de
 	return chromeOSCompanions, androidCompanions, nil
 }
 
+// Fetches the build ID from TestSuite request.
+func BuildIDFomSuites(suites []*api.TestSuite) (string, error) {
+	for _, suite := range suites {
+		for _, arg := range suite.GetExecutionMetadata().GetArgs() {
+			if arg.GetFlag() == "build_id" {
+				return arg.GetValue(), nil
+			}
+		}
+	}
+	return "", fmt.Errorf("no build_id present in suite metadata")
+}
+
 // TranslateMoblyResults translate a mobly test result yaml output
 // to test results.
 func TranslateMoblyResults(moblyYaml []byte, resultsRootDir string) ([]*api.TestCaseResult, error) {

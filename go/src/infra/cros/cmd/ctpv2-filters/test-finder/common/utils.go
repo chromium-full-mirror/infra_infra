@@ -6,11 +6,15 @@
 package common
 
 import (
+	"archive/zip"
 	"context"
 	"errors"
 	"fmt"
 	"io"
+	"log"
+	"os"
 	"path"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -18,6 +22,7 @@ import (
 
 	"go.chromium.org/chromiumos/config/go/test/api"
 
+	statuserrors "go.chromium.org/infra/cros/cmd/cft/common/errors"
 	"go.chromium.org/infra/libs/skylab/inventory/autotest/labels"
 	s "go.chromium.org/infra/libs/skylab/inventory/swarming"
 )
@@ -88,6 +93,46 @@ func PullAllFilesFromGcsDir(ctx context.Context, bucket *storage.BucketHandle, d
 		return nil, fmt.Errorf("no files found in newest directory %s", dir)
 	}
 	return data, nil
+}
+
+// ObjectExists checks if an object exists at the specified path.
+func ObjectExists(ctx context.Context, bucket *storage.BucketHandle, object string) (bool, error) {
+	if _, err := bucket.Object(object).Attrs(ctx); err == storage.ErrObjectNotExist {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// PullFilesFromGcsDirLocal will fetch all artifacts listed an pull them to a local directory.
+func PullFilesFromGcsDirLocal(ctx context.Context, logger *log.Logger, bucket *storage.BucketHandle, inDir, outDir string, files []string) error {
+	for _, artifact := range files {
+		gcsPath := filepath.Join(inDir, artifact)
+		logger.Printf("Fetching artifact %s from GCS", gcsPath)
+
+		// Get the file from GCS
+		rc, err := bucket.Object(gcsPath).NewReader(ctx)
+		if err != nil {
+			return fmt.Errorf("error getting reader for %s: %w", gcsPath, err)
+		}
+		defer rc.Close()
+
+		// Create a local file for the artifact
+		localPath := filepath.Join(outDir, artifact)
+		file, err := os.Create(localPath)
+		if err != nil {
+			return statuserrors.NewStatusError(statuserrors.IOCreateError, fmt.Errorf("failed to create local file %v: %w", localPath, err))
+		}
+		defer file.Close()
+
+		// Copy the GCS file to the local file
+		if _, err := io.Copy(file, rc); err != nil {
+			return fmt.Errorf("failed to copy GCS file %s to local file %s: %w", gcsPath, localPath, err)
+		}
+		logger.Printf("Successfully fetched and saved file to %s", localPath)
+	}
+	return nil
 }
 
 func ExtractBucketAndPrefixFromPath(gcsPath string) (bucketName, prefix string, err error) {
@@ -188,4 +233,40 @@ func AddFlexibleTFFlag(tp *api.InternalTestplan) {
 
 		tp.SuiteInfo.SuiteMetadata = &api.SuiteMetadata{ExecutionMetadata: existingMD}
 	}
+}
+
+// UnzipFile unzips a file and returns a list of files found.
+func UnzipFile(srcFile, dstPath string) ([]string, error) {
+	r, e := zip.OpenReader(srcFile)
+	if e != nil {
+		return nil, e
+	}
+	defer r.Close()
+
+	var files []string
+	for _, f := range r.File {
+		file := filepath.Join(dstPath, f.Name)
+		files = append(files, file)
+		if f.FileInfo().IsDir() {
+			os.MkdirAll(file, os.ModePerm)
+			continue
+		}
+		if err := os.MkdirAll(filepath.Dir(file), os.ModePerm); err != nil {
+			return nil, err
+		}
+		var err error
+		var dstFile *os.File
+		if dstFile, err = os.OpenFile(file, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode()); err == nil {
+			var fileInArchive io.ReadCloser
+			if fileInArchive, err = f.Open(); err == nil {
+				_, err = io.Copy(dstFile, fileInArchive)
+				fileInArchive.Close()
+			}
+			dstFile.Close()
+		}
+		if err != nil {
+			return nil, err
+		}
+	}
+	return files, nil
 }

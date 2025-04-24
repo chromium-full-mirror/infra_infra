@@ -53,7 +53,6 @@ func GetUniqueParfiles(mdList []*api.TestCaseMetadata) ([]string, error) {
 
 // FetchAndInstallParfiles fetches parfiles from GCS and installs them locally.
 func FetchAndInstallParfiles(ctx context.Context, logger *log.Logger, gcsBasePath string, parfiles []string) error {
-	const moblyInstallDir = "/usr/local/mobly"
 
 	client, err := storage.NewClient(ctx)
 	if err != nil {

@@ -20,9 +20,12 @@ import (
 
 	statuserrors "go.chromium.org/infra/cros/cmd/cft/common/errors"
 	"go.chromium.org/infra/cros/cmd/cft/common/finder"
+	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/common"
 	"go.chromium.org/infra/cros/cmd/cft/execution/cros-test/internal/driver"
 	"go.chromium.org/infra/cros/cmd/ctpv2-filters/test-finder/finders"
 )
+
+const androidBasePath = "mobly_priv_artifacts/aosp_out"
 
 // driverToTestsMapping builds a map between test and its driver.
 func driverToTestsMapping(logger *log.Logger, mdList []*api.TestCaseMetadata) (map[driver.Driver][]*api.TestCaseMetadata, error) {
@@ -77,6 +80,17 @@ func runTests(ctx context.Context, logger *log.Logger, resultRootDir, tlwAddr st
 		metadata := finders.TranslateG3SrcToMetadata(src)
 		md = append(md, metadata...)
 
+		androidDir, err := androidBuildArtifactPath(ctx, logger, req, androidBasePath)
+		if err != nil {
+			log.Printf("Failed to determine Android Build Mobly artifact path %v", err)
+		}
+
+		androidMetadata, err := finders.GetAndroidBuildMoblySourceData(ctx, logger, androidBasePath, androidDir)
+		if err != nil {
+			log.Printf("Failed to fetch Android Build Mobly test metadata")
+		}
+		md = append(md, androidMetadata...)
+
 		tfsrc, err := finders.GetTFSourceData(context.Background(), "cros-xts-metadata")
 		if err != nil {
 			log.Println("Unable to fetch data from GCS: ", err)
@@ -103,6 +117,22 @@ func runTests(ctx context.Context, logger *log.Logger, resultRootDir, tlwAddr st
 	if len(uniqueParfiles) > 0 {
 		if err := finders.FetchAndInstallParfiles(ctx, logger, "mobly_priv_artifacts/out", uniqueParfiles); err != nil {
 			return nil, fmt.Errorf("failed to fetch and install parfiles: %v", err)
+		}
+	}
+
+	artifacts, err := finders.GetUniqueMoblyZipArtifacts(matchedMdList)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get unique artifacts: %v", err)
+	}
+
+	if len(artifacts) > 0 {
+		androidDir, err := androidBuildArtifactPath(ctx, logger, req, androidBasePath)
+		if err != nil {
+			return nil, fmt.Errorf("failed to fetch Android Build Mobly directory %w", err)
+		}
+
+		if err := finders.FetchAndInstallZipArtifacts(ctx, logger, androidBasePath, androidDir, artifacts); err != nil {
+			return nil, fmt.Errorf("failed to fetch and install Android Mobly artifacts %w", err)
 		}
 	}
 
@@ -204,6 +234,24 @@ func isFlexibleTFSuite(req *api.CrosTestRequest) bool {
 		}
 	}
 	return false
+}
+
+func androidBuildArtifactPath(ctx context.Context, logger *log.Logger, req *api.CrosTestRequest, gcsBasePath string) (string, error) {
+	buildID, err := common.BuildIDFomSuites(req.GetTestSuites())
+	if err != nil {
+		// Technically undefined behavior, so just reset so we always select "latest"
+		logger.Printf("Failed to get build ID, defaulting to latest: %v", err)
+		buildID = ""
+	}
+
+	dir, exists, err := finders.PathOrLatest(ctx, gcsBasePath, buildID)
+	if err != nil {
+		return "", err
+	}
+	if !exists {
+		logger.Printf("Failed to find Android directory for specific build: %q, defaulting to latest: %q", buildID, dir)
+	}
+	return dir, nil
 }
 
 func mdFlagPresent(metadata *api.ExecutionMetadata, flagName string) bool {

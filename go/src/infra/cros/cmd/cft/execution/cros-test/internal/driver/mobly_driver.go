@@ -40,15 +40,21 @@ func (md *MoblyDriver) Name() string {
 
 // buildMoblyCommand constructs the Mobly execution command.
 func buildMoblyCommand(logger *log.Logger, test *api.TestCaseMetadata) (*exec.Cmd, error) {
-	parFile, ok := test.GetTestCaseInfo().GetExtraInfo()["executable_name"]
+	executable, ok := test.GetTestCaseInfo().GetExtraInfo()["executable_name"]
 	if !ok {
 		return nil, fmt.Errorf("missing 'executable_name' in test metadata")
 	}
 
-	par := filepath.Join("/usr/local/mobly", parFile)
+	executable = filepath.Join("/usr/local/mobly", executable)
+
+	// Check if there is a test-specific separator defined.
+	separator := "--"
+	if s, ok := test.GetTestCaseInfo().GetExtraInfo()["separator"]; ok {
+		separator = s
+	}
 
 	args := []string{
-		"--", // Separator between global and test-specific arguments.
+		separator, // Separator between global and test-specific arguments.
 		"-c", "/usr/local/mobly/test_config.yml",
 		"--tests", test.GetTestCase().GetName(),
 	}
@@ -57,13 +63,13 @@ func buildMoblyCommand(logger *log.Logger, test *api.TestCaseMetadata) (*exec.Cm
 	// enforcing kernel ipv6 support as our lab does not support this generally.
 	// This is currently relevant for the g3 executable.
 	// See b/390240237 for more details.
-	helpCmd := exec.Command(par, "--helpfull")
+	helpCmd := exec.Command(executable, "--helpfull")
 	out, _ := helpCmd.CombinedOutput()
 	flagRegex := regexp.MustCompile(`enforce_kernel_ipv6_support`)
 	if flagRegex.MatchString(string(out)) {
 		args = append([]string{"--enforce_kernel_ipv6_support=false"}, args...)
 	}
-	cmd := exec.Command(par, args...)
+	cmd := exec.Command(executable, args...)
 	return cmd, nil
 }
 
