@@ -135,6 +135,7 @@ func crosRepairClosingActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"regex:(?i)^cellular|dut_pool_quota",
 			},
+			RunControl:    RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Update cellular modem state for non-cellular pools": {

@@ -1791,10 +1791,8 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"regex:(?i)^cellular",
 			},
-			RunControl: RunControl_RUN_ONCE,
-			MetricsConfig: &MetricsConfig{
-				UploadPolicy: MetricsConfig_SKIP_ALL,
-			},
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Is in non-cellular pool that runs cellular tests": {
 			Docs: []string{
@@ -1805,10 +1803,8 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"regex:(?i)^dut_pool_quota$",
 			},
-			RunControl: RunControl_RUN_ONCE,
-			MetricsConfig: &MetricsConfig{
-				UploadPolicy: MetricsConfig_SKIP_ALL,
-			},
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Is not starfish device": {
 			Docs: []string{
@@ -3580,6 +3576,8 @@ func crosRepairActions() map[string]*Action {
 				"faft-experimental",
 				"satlab_faft",
 			},
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Pools allowed to stay in DEV mode": {
 			Docs: []string{
@@ -3596,6 +3594,7 @@ func crosRepairActions() map[string]*Action {
 				// Device with MP AP firmware must be in dev mode to boot test OS image
 				"mp_firmware_testing",
 			},
+			RunControl:    RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Pools require Servo in WORKING state": {
@@ -3611,6 +3610,7 @@ func crosRepairActions() map[string]*Action {
 				"faft-test",
 				"satlab_faft",
 			},
+			RunControl:    RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Pools required to be in Secure mode": {
@@ -3620,7 +3620,9 @@ func crosRepairActions() map[string]*Action {
 			Conditions: []string{
 				"Pools allowed to stay in DEV mode",
 			},
-			ExecName: "sample_fail",
+			ExecName:      "sample_fail",
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Device not in MP Signed AP FW pool": {
 			Docs: []string{
@@ -3633,6 +3635,7 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"mp_firmware_testing",
 			},
+			RunControl:    RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Set default boot as disk and reboot": {
@@ -4214,10 +4217,9 @@ func crosRepairActions() map[string]*Action {
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Setup has servo info": {
-			ExecName: "dut_servo_host_present",
-			MetricsConfig: &MetricsConfig{
-				UploadPolicy: MetricsConfig_SKIP_ALL,
-			},
+			ExecName:      "dut_servo_host_present",
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Verify servod is responsive": {
 			Dependencies: []string{
@@ -4339,21 +4341,21 @@ func crosRepairActions() map[string]*Action {
 				"Internal storage is responsive",
 			},
 			Conditions: []string{
-				"is_camerabox_tablet_pool",
+				"Run only for camerabox_tablet pool",
 			},
 			ExecName: "is_camerabox_tablet_on_os_version",
 			RecoveryActions: []string{
-				"provision camerabox tablet",
+				"Provision camerabox tablet",
 			},
 		},
-		"provision camerabox tablet": {
+		"Provision camerabox tablet": {
 			Docs: []string{
 				"Provision camerabox tablet",
 			},
 			ExecName:    "provision_camerabox_tablet",
 			ExecTimeout: &durationpb.Duration{Seconds: 3600},
 		},
-		"is_camerabox_tablet_pool": {
+		"Run only for camerabox_tablet pool": {
 			Docs: []string{
 				"Verify device is in camerabox_tablet pool.",
 			},
@@ -4361,6 +4363,7 @@ func crosRepairActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"camerabox_tablet",
 			},
+			RunControl:    RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Audit camera": {

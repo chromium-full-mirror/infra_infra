@@ -14,9 +14,6 @@ plans:
     - name: servo
       criticalactions:
         - name: Set state:MISSING_CONFIG ('servo_set_servo_state') (ALWAYS_RUN)
-        - name: Servo is know in the setup ('dut_servo_host_present') (RUN_ONCE)
-          dependencies:
-            - name: Set state:WRONG_CONFIG ('servo_set_servo_state') (ALWAYS_RUN)
         - name: Servod port specified ('servo_servod_port_present') (RUN_ONCE)
           dependencies:
             - name: Set state:WRONG_CONFIG ('servo_set_servo_state') (ALWAYS_RUN)
@@ -1749,7 +1746,7 @@ plans:
         - name: Cr50 testlab is enabled ('servo_check_servod_control')
           conditions:
             - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
-            - name: Is not in cr50 pools ('dut_not_in_pool_regex')
+            - name: Is not in cr50 pools ('dut_not_in_pool_regex') (RUN_ONCE)
             - name: Expected CCD factory settings ('servo_ccd_expect_have_factory_reset')
               dependencies:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -2067,10 +2064,10 @@ plans:
             - name: Servo state is working ('servo_match_state')
             - name: Is servod running ('sample_pass') (ALWAYS_RUN)
               dependencies:
-                - name: Setup has servo info ('dut_servo_host_present')
+                - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
                 - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
                   dependencies:
-                    - name: Setup has servo info ('dut_servo_host_present')
+                    - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
             - name: Device NOT booted from USB-drive ('sample_fail') (ALWAYS_RUN)
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)

@@ -43,15 +43,6 @@ plans:
           exec_name: servo_set_servo_state
           exec_args:
             - state:MISSING_CONFIG
-        - name: Servo is know in the setup (RUN_ONCE)
-          exec_name: dut_servo_host_present
-          docs:
-            - Verify if setup data has any data related to servo-host which mean servo is present in setup.
-          dependencies:
-            - name: Set state:WRONG_CONFIG (ALWAYS_RUN)
-              exec_name: servo_set_servo_state
-              exec_args:
-                - state:WRONG_CONFIG
         - name: Servod port specified (RUN_ONCE)
           exec_name: servo_servod_port_present
           docs:
@@ -5279,7 +5270,7 @@ plans:
                 - invert_result:true
               docs:
                 - Verify that the device is a Chromebook by checking for non-Chromebook boards
-            - name: Is not in cr50 pools
+            - name: Is not in cr50 pools (RUN_ONCE)
               exec_name: dut_not_in_pool_regex
               exec_args:
                 - regex:(?i)^faft-cr50
@@ -6188,8 +6179,8 @@ plans:
               exec_name: ctr_adb_connect
               exec_args:
                 - retry_count:3
-                - retry_interval:3
-                - timeout:5
+                - retry_interval:1
+                - timeout:10
                 - skip_when_connected:true
               docs:
                 - Exec ADB connect to the DUT by ethernet.

@@ -72,6 +72,8 @@ func LabstationRepairConfig() *Configuration {
 				"labstation_canary",
 				"labstation_block_autoupdate",
 			},
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Update provisioned info": {
 			Docs: []string{

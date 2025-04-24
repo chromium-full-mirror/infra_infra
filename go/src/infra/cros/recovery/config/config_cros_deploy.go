@@ -13,7 +13,6 @@ import (
 func crosDeployPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
-			"Set state: needs_deploy",
 			"Check stable versions exist",
 			"Download stable version OS image to servo usbkey if necessary",
 			"Device is pingable before deploy",
@@ -45,7 +44,6 @@ func mhDeployPlan() *Plan {
 			"Mark as Android based",
 			"Set CacheService address",
 			"Check stable versions exist",
-			"Check if GBB set to deploy DUT with Servo",
 			"ADB Connect DUT",
 			"Android is accessible",
 			"ADB set Android as always awake",
@@ -358,6 +356,7 @@ func deployActions() map[string]*Action {
 			},
 			ExecName:      "sample_pass",
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			RunControl:    RunControl_RUN_ONCE,
 		},
 		"Collect HWID into inventory": {
 			Docs: []string{

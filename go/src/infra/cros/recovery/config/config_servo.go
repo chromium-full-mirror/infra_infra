@@ -12,7 +12,6 @@ func servoRepairPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
 			"Set state:MISSING_CONFIG",
-			"Servo is know in the setup",
 			"Servod port specified",
 			"Servo serial is specified",
 			"Initialize docker container",
@@ -57,7 +56,6 @@ func servoPreDeployPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
 			"Set state:MISSING_CONFIG",
-			"Servo is know in the setup",
 			"Servo serial is specified",
 			"Initialize docker container",
 			"Device is SSHable",
@@ -92,16 +90,6 @@ func servoPlanActions() map[string]*Action {
 			ExecName:               "servod_stop_uart_capture",
 			AllowFailAfterRecovery: true,
 			MetricsConfig:          &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
-		},
-		"Servo is know in the setup": {
-			Docs: []string{
-				"Verify if setup data has any data related to servo-host which mean servo is present in setup.",
-			},
-			Dependencies: []string{
-				"Set state:WRONG_CONFIG",
-			},
-			ExecName:   "dut_servo_host_present",
-			RunControl: RunControl_RUN_ONCE,
 		},
 		"Servo serial is specified": {
 			Docs: []string{
@@ -281,8 +269,9 @@ func servoPlanActions() map[string]*Action {
 			Dependencies: []string{
 				"Set state:WRONG_CONFIG",
 			},
-			ExecName:   "servo_servod_port_present",
-			RunControl: RunControl_RUN_ONCE,
+			ExecName:      "servo_servod_port_present",
+			RunControl:    RunControl_RUN_ONCE,
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Only applies to labstation": {
 			Docs: []string{
@@ -788,6 +777,7 @@ func servoPlanActions() map[string]*Action {
 			ExecExtraArgs: []string{
 				"regex:(?i)^faft-cr50",
 			},
+			RunControl:    RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 		"Open gsc testlab": {

@@ -80,8 +80,8 @@ func androidActions(actions map[string]*Action) {
 			ExecName: "ctr_adb_connect",
 			ExecExtraArgs: []string{
 				"retry_count:3",
-				"retry_interval:3",
-				"timeout:5",
+				"retry_interval:1",
+				"timeout:10",
 				"skip_when_connected:true",
 			},
 			RecoveryActions: []string{
@@ -102,8 +102,8 @@ func androidActions(actions map[string]*Action) {
 			ExecName: "ctr_adb_connect",
 			ExecExtraArgs: []string{
 				"retry_count:3",
-				"retry_interval:3",
-				"timeout:5",
+				"retry_interval:1",
+				"timeout:10",
 				"skip_when_connected:true",
 			},
 			RunControl: RunControl_ALWAYS_RUN,
@@ -243,6 +243,8 @@ func androidActions(actions map[string]*Action) {
 			ExecExtraArgs: []string{
 				"cache_address:10.128.176.210:8082",
 			},
+			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
+			RunControl:    RunControl_RUN_ONCE,
 		},
 		"Boot on USB-key and install AndroidOS": {
 			Docs: []string{
@@ -338,6 +340,7 @@ func androidActions(actions map[string]*Action) {
 			ExecExtraArgs: []string{
 				"chrome",
 			},
+			RunControl:    RunControl_RUN_ONCE,
 			MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 		},
 	}

@@ -39,7 +39,6 @@ func deepRepairCrosPlan() *Plan {
 func deepRepairServoPlan() *Plan {
 	return &Plan{
 		CriticalActions: []string{
-			"Servo is know in the setup",
 			"Servod port specified",
 			"Servo serial is specified",
 			"Device is accessible",
@@ -51,26 +50,21 @@ func deepRepairServoPlan() *Plan {
 			"Servod is responsive to dut-control",
 		},
 		Actions: map[string]*Action{
-			"Servo is know in the setup": {
-				Docs: []string{
-					"Verify if setup data has any data related to servo-host which mean servo is present in setup.",
-				},
-				ExecName:   "dut_servo_host_present",
-				RunControl: RunControl_RUN_ONCE,
-			},
 			"Servod port specified": {
 				Docs: []string{
 					"Verify that servod port is present in servo data.",
 				},
-				ExecName:   "servo_servod_port_present",
-				RunControl: RunControl_RUN_ONCE,
+				ExecName:      "servo_servod_port_present",
+				RunControl:    RunControl_RUN_ONCE,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Servo serial is specified": {
 				Docs: []string{
 					"Check if root servo serial is present.",
 				},
-				ExecName:   "dut_servo_has_serial",
-				RunControl: RunControl_RUN_ONCE,
+				ExecName:      "dut_servo_has_serial",
+				RunControl:    RunControl_RUN_ONCE,
+				MetricsConfig: &MetricsConfig{UploadPolicy: MetricsConfig_SKIP_ALL},
 			},
 			"Device is accessible": {
 				Docs: []string{

@@ -126,15 +126,6 @@ plans:
           exec_name: servo_set_servo_state
           exec_args:
             - state:MISSING_CONFIG
-        - name: Servo is know in the setup (RUN_ONCE)
-          exec_name: dut_servo_host_present
-          docs:
-            - Verify if setup data has any data related to servo-host which mean servo is present in setup.
-          dependencies:
-            - name: Set state:WRONG_CONFIG (ALWAYS_RUN)
-              exec_name: servo_set_servo_state
-              exec_args:
-                - state:WRONG_CONFIG
         - name: Servod port specified (RUN_ONCE)
           exec_name: servo_servod_port_present
           docs:
@@ -5362,7 +5353,7 @@ plans:
                 - invert_result:true
               docs:
                 - Verify that the device is a Chromebook by checking for non-Chromebook boards
-            - name: Is not in cr50 pools
+            - name: Is not in cr50 pools (RUN_ONCE)
               exec_name: dut_not_in_pool_regex
               exec_args:
                 - regex:(?i)^faft-cr50
@@ -6723,7 +6714,7 @@ plans:
           exec_name: cros_set_as_android_based
           docs:
             - Mark DUT as Android based.
-        - name: Set CacheService address
+        - name: Set CacheService address (RUN_ONCE)
           exec_name: cache_service_address_detection
           exec_args:
             - cache_address:10.128.176.210:8082
@@ -6751,7 +6742,7 @@ plans:
                 - ' errors happen during download because the image can already'
                 - ' be present on the USB-drive.'
               dependencies:
-                - name: Setup has servo info
+                - name: Setup has servo info (RUN_ONCE)
                   exec_name: dut_servo_host_present
                 - name: Is servo USB key detected
                   exec_name: servo_usbkey_is_detected
@@ -6766,14 +6757,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
                   exec_name: servo_download_image_to_usb
@@ -6841,14 +6832,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
               dependencies:
                 - name: Flash EC (FW) by servo (allowed failed) (Allow to fail) (time:'1h50m0s')
@@ -6868,14 +6859,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -6901,14 +6892,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
@@ -6928,14 +6919,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -6984,14 +6975,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
@@ -7010,14 +7001,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
               dependencies:
                 - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
@@ -7067,8 +7058,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -7107,14 +7098,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
@@ -7133,14 +7124,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Is recovery-version has firmware image path
                   exec_name: has_stable_version_fw_image
@@ -7188,14 +7179,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -7221,14 +7212,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
@@ -7248,14 +7239,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -7299,8 +7290,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -7343,14 +7334,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
               dependencies:
                 - name: Cold reset DUT by servo (ALWAYS_RUN)
@@ -7366,14 +7357,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                   exec_name: cros_ping
@@ -7390,14 +7381,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: is_servo_v4p1_by_serial_number
                   exec_name: is_servo_v4p1_by_serial_number
@@ -7414,14 +7405,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                   exec_name: cros_ping
@@ -7447,14 +7438,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
@@ -7473,14 +7464,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
               dependencies:
                 - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
@@ -7530,8 +7521,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -7570,14 +7561,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
@@ -7596,14 +7587,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Is recovery-version has firmware image path
                   exec_name: has_stable_version_fw_image
@@ -7651,14 +7642,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -7684,14 +7675,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
@@ -7711,14 +7702,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -7762,8 +7753,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -7811,8 +7802,8 @@ plans:
           exec_name: ctr_adb_connect
           exec_args:
             - retry_count:3
-            - retry_interval:3
-            - timeout:5
+            - retry_interval:1
+            - timeout:10
             - skip_when_connected:true
           docs:
             - Exec ADB connect to the DUT by ethernet.
@@ -7827,14 +7818,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
               dependencies:
                 - name: Cold reset DUT by servo (ALWAYS_RUN)
@@ -7850,14 +7841,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                   exec_name: cros_ping
@@ -7883,14 +7874,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
@@ -7909,14 +7900,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
               dependencies:
                 - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
@@ -7966,8 +7957,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -8006,14 +7997,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
@@ -8032,14 +8023,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Is recovery-version has firmware image path
                   exec_name: has_stable_version_fw_image
@@ -8087,14 +8078,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -8120,14 +8111,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
@@ -8147,14 +8138,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -8198,8 +8189,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -8251,14 +8242,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
               dependencies:
                 - name: Cold reset DUT by servo (ALWAYS_RUN)
@@ -8274,14 +8265,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                   exec_name: cros_ping
@@ -8307,14 +8298,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
@@ -8333,14 +8324,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
               dependencies:
                 - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
@@ -8390,8 +8381,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -8464,14 +8455,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: is_servo_v4p1_by_serial_number
                   exec_name: is_servo_v4p1_by_serial_number
@@ -8488,14 +8479,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                   exec_name: cros_ping
@@ -8542,14 +8533,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                   exec_name: cros_ping
@@ -8573,14 +8564,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: is_servo_type_ccd
                   exec_name: is_servo_type_ccd
@@ -8664,14 +8655,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is servo USB key detected
                   exec_name: servo_usbkey_is_detected
@@ -8686,14 +8677,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
               dependencies:
                 - name: Mark as ChromeOS based (ALWAYS_RUN)
@@ -8726,14 +8717,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -8759,14 +8750,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (allowed failed) (time:'1h30m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
@@ -8789,14 +8780,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -8814,7 +8805,7 @@ plans:
                     - This action will download model specific stable version OS image to servo usbkey.
                     - The action will be skipped if the required image is already loaded.
                   conditions:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Has a stable-version service (RUN_ONCE)
                       exec_name: has_stable_version_service_path
@@ -8852,14 +8843,14 @@ plans:
                           docs:
                             - Verify that servo host specified in setup and servod is running.
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                             - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
                               dependencies:
-                                - name: Setup has servo info
+                                - name: Setup has servo info (RUN_ONCE)
                                   exec_name: dut_servo_host_present
                     - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
                       exec_name: servo_download_image_to_usb
@@ -8888,7 +8879,7 @@ plans:
                     - Restart and try to boot from USB-drive
                     - First boot in dev mode can take time so set boot time to 10 minutes.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                 - name: Run install after boot from USB-drive (ALWAYS_RUN) (time:'20m0s')
                   exec_name: cros_run_chromeos_install_command_after_boot_usbdrive
@@ -8904,14 +8895,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Cold reset DUT by servo (ALWAYS_RUN)
@@ -8927,14 +8918,14 @@ plans:
                           docs:
                             - Verify that servo host specified in setup and servod is running.
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                             - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
                               dependencies:
-                                - name: Setup has servo info
+                                - name: Setup has servo info (RUN_ONCE)
                                   exec_name: dut_servo_host_present
                     - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_ping
@@ -8995,14 +8986,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is servo USB key detected
                   exec_name: servo_usbkey_is_detected
@@ -9017,14 +9008,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
               dependencies:
                 - name: Servo USB-Key needs to be reflashed
@@ -9052,7 +9043,7 @@ plans:
                         - ' errors happen during download because the image can already'
                         - ' be present on the USB-drive.'
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Is servo USB key detected
                           exec_name: servo_usbkey_is_detected
@@ -9067,14 +9058,14 @@ plans:
                               docs:
                                 - Verify that servo host specified in setup and servod is running.
                               dependencies:
-                                - name: Setup has servo info
+                                - name: Setup has servo info (RUN_ONCE)
                                   exec_name: dut_servo_host_present
                                 - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
                                   dependencies:
-                                    - name: Setup has servo info
+                                    - name: Setup has servo info (RUN_ONCE)
                                       exec_name: dut_servo_host_present
                         - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
                           exec_name: servo_download_image_to_usb
@@ -9092,7 +9083,7 @@ plans:
                     - This action will download model specific stable version OS image to servo usbkey.
                     - The action will be skipped if the required image is already loaded.
                   conditions:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Has a stable-version service (RUN_ONCE)
                       exec_name: has_stable_version_service_path
@@ -9130,14 +9121,14 @@ plans:
                           docs:
                             - Verify that servo host specified in setup and servod is running.
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                             - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
                               dependencies:
-                                - name: Setup has servo info
+                                - name: Setup has servo info (RUN_ONCE)
                                   exec_name: dut_servo_host_present
                     - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
                       exec_name: servo_download_image_to_usb
@@ -9235,14 +9226,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
               dependencies:
                 - name: Cold reset DUT by servo (ALWAYS_RUN)
@@ -9258,14 +9249,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                   exec_name: cros_ping
@@ -9291,14 +9282,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
@@ -9317,14 +9308,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
               dependencies:
                 - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
@@ -9374,8 +9365,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -9495,14 +9486,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is servo USB key detected
                   exec_name: servo_usbkey_is_detected
@@ -9517,14 +9508,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
               dependencies:
                 - name: Mark as ChromeOS based (ALWAYS_RUN)
@@ -9557,14 +9548,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -9590,14 +9581,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (allowed failed) (time:'1h30m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
@@ -9620,14 +9611,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -9645,7 +9636,7 @@ plans:
                     - This action will download model specific stable version OS image to servo usbkey.
                     - The action will be skipped if the required image is already loaded.
                   conditions:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Has a stable-version service (RUN_ONCE)
                       exec_name: has_stable_version_service_path
@@ -9683,14 +9674,14 @@ plans:
                           docs:
                             - Verify that servo host specified in setup and servod is running.
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                             - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
                               dependencies:
-                                - name: Setup has servo info
+                                - name: Setup has servo info (RUN_ONCE)
                                   exec_name: dut_servo_host_present
                     - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
                       exec_name: servo_download_image_to_usb
@@ -9719,7 +9710,7 @@ plans:
                     - Restart and try to boot from USB-drive
                     - First boot in dev mode can take time so set boot time to 10 minutes.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                 - name: Run install after boot from USB-drive (ALWAYS_RUN) (time:'20m0s')
                   exec_name: cros_run_chromeos_install_command_after_boot_usbdrive
@@ -9735,14 +9726,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Cold reset DUT by servo (ALWAYS_RUN)
@@ -9758,14 +9749,14 @@ plans:
                           docs:
                             - Verify that servo host specified in setup and servod is running.
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                             - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
                               dependencies:
-                                - name: Setup has servo info
+                                - name: Setup has servo info (RUN_ONCE)
                                   exec_name: dut_servo_host_present
                     - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
                       exec_name: cros_ping
@@ -9826,14 +9817,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is servo USB key detected
                   exec_name: servo_usbkey_is_detected
@@ -9848,14 +9839,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
               dependencies:
                 - name: Servo USB-Key needs to be reflashed
@@ -9883,7 +9874,7 @@ plans:
                         - ' errors happen during download because the image can already'
                         - ' be present on the USB-drive.'
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Is servo USB key detected
                           exec_name: servo_usbkey_is_detected
@@ -9898,14 +9889,14 @@ plans:
                               docs:
                                 - Verify that servo host specified in setup and servod is running.
                               dependencies:
-                                - name: Setup has servo info
+                                - name: Setup has servo info (RUN_ONCE)
                                   exec_name: dut_servo_host_present
                                 - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                                   exec_name: servod_echo
                                   exec_args:
                                     - ssh_check:false
                                   dependencies:
-                                    - name: Setup has servo info
+                                    - name: Setup has servo info (RUN_ONCE)
                                       exec_name: dut_servo_host_present
                         - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
                           exec_name: servo_download_image_to_usb
@@ -9923,7 +9914,7 @@ plans:
                     - This action will download model specific stable version OS image to servo usbkey.
                     - The action will be skipped if the required image is already loaded.
                   conditions:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Has a stable-version service (RUN_ONCE)
                       exec_name: has_stable_version_service_path
@@ -9961,14 +9952,14 @@ plans:
                           docs:
                             - Verify that servo host specified in setup and servod is running.
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                             - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                               exec_name: servod_echo
                               exec_args:
                                 - ssh_check:false
                               dependencies:
-                                - name: Setup has servo info
+                                - name: Setup has servo info (RUN_ONCE)
                                   exec_name: dut_servo_host_present
                     - name: Call servod to download image to USB-key (ALWAYS_RUN) (time:'50m0s')
                       exec_name: servo_download_image_to_usb
@@ -10064,14 +10055,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
@@ -10090,14 +10081,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
               dependencies:
                 - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
@@ -10147,8 +10138,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -10230,14 +10221,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
@@ -10256,14 +10247,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Is recovery-version has firmware image path
                   exec_name: has_stable_version_fw_image
@@ -10311,14 +10302,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -10344,14 +10335,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
@@ -10371,14 +10362,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -10422,8 +10413,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -10456,7 +10447,7 @@ plans:
           conditions:
             - name: Is Android based? (ALWAYS_RUN)
               exec_name: cros_is_android_based
-            - name: Is in stable version required pools
+            - name: Is in stable version required pools (RUN_ONCE)
               exec_name: dut_is_in_pool
               exec_args:
                 - chrome
@@ -10482,14 +10473,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
@@ -10508,14 +10499,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
               dependencies:
                 - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
@@ -10565,8 +10556,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -10648,14 +10639,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
@@ -10674,14 +10665,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Is recovery-version has firmware image path
                   exec_name: has_stable_version_fw_image
@@ -10729,14 +10720,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -10762,14 +10753,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                 - name: Flash AP (FW) by servo with GBB (dev mode + USB boot) (Allow to fail) (time:'1h30m0s')
                   exec_name: cros_update_fw_with_fw_image_by_servo
@@ -10789,14 +10780,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
                   dependencies:
                     - name: Is recovery-version has firmware image path
@@ -10840,8 +10831,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -10884,12 +10875,12 @@ plans:
                 - invert_result:true
               docs:
                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-            - name: Pools required to be in Secure mode
+            - name: Pools required to be in Secure mode (RUN_ONCE)
               exec_name: sample_fail
               docs:
                 - Verify that DUT need to be in Secure mode.
               conditions:
-                - name: Pools allowed to stay in DEV mode
+                - name: Pools allowed to stay in DEV mode (RUN_ONCE)
                   exec_name: dut_is_in_pool
                   exec_args:
                     - crouton
@@ -10916,12 +10907,12 @@ plans:
                     - invert_result:true
                   docs:
                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                - name: Pools required to be in Secure mode
+                - name: Pools required to be in Secure mode (RUN_ONCE)
                   exec_name: sample_fail
                   docs:
                     - Verify that DUT need to be in Secure mode.
                   conditions:
-                    - name: Pools allowed to stay in DEV mode
+                    - name: Pools allowed to stay in DEV mode (RUN_ONCE)
                       exec_name: dut_is_in_pool
                       exec_args:
                         - crouton
@@ -10995,8 +10986,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -11025,14 +11016,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
@@ -11051,14 +11042,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
               dependencies:
                 - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
@@ -11108,8 +11099,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -11246,7 +11237,7 @@ plans:
                 - invert_result:true
               docs:
                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-            - name: Pools required to manage FW on the device
+            - name: Pools required to manage FW on the device (RUN_ONCE)
               exec_name: dut_not_in_pool
               exec_args:
                 - faft-test
@@ -11276,12 +11267,12 @@ plans:
                     - invert_result:true
                   docs:
                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                - name: Pools required to be in Secure mode
+                - name: Pools required to be in Secure mode (RUN_ONCE)
                   exec_name: sample_fail
                   docs:
                     - Verify that DUT need to be in Secure mode.
                   conditions:
-                    - name: Pools allowed to stay in DEV mode
+                    - name: Pools allowed to stay in DEV mode (RUN_ONCE)
                       exec_name: dut_is_in_pool
                       exec_args:
                         - crouton
@@ -11355,8 +11346,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -11385,14 +11376,14 @@ plans:
                   docs:
                     - Verify that servo host specified in setup and servod is running.
                   dependencies:
-                    - name: Setup has servo info
+                    - name: Setup has servo info (RUN_ONCE)
                       exec_name: dut_servo_host_present
                     - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                       exec_name: servod_echo
                       exec_args:
                         - ssh_check:false
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                 - name: Is Android based by ADB or provision-info (ALWAYS_RUN)
                   exec_name: cros_is_previous_android_based_or_os_type
@@ -11411,14 +11402,14 @@ plans:
                       docs:
                         - Verify that servo host specified in setup and servod is running.
                       dependencies:
-                        - name: Setup has servo info
+                        - name: Setup has servo info (RUN_ONCE)
                           exec_name: dut_servo_host_present
                         - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
                           exec_name: servod_echo
                           exec_args:
                             - ssh_check:false
                           dependencies:
-                            - name: Setup has servo info
+                            - name: Setup has servo info (RUN_ONCE)
                               exec_name: dut_servo_host_present
               dependencies:
                 - name: Mark as Android based (Allow to fail) (ALWAYS_RUN)
@@ -11468,8 +11459,8 @@ plans:
                   exec_name: ctr_adb_connect
                   exec_args:
                     - retry_count:3
-                    - retry_interval:3
-                    - timeout:5
+                    - retry_interval:1
+                    - timeout:10
                     - skip_when_connected:true
                   docs:
                     - Connect to DUT by ADB if not connected.
@@ -11736,7 +11727,7 @@ plans:
             - Some pool requires servo on WORKING state.
             - This action does not have any recovery actions.
           conditions:
-            - name: Pools require Servo in WORKING state
+            - name: Pools require Servo in WORKING state (RUN_ONCE)
               exec_name: dut_is_in_pool
               exec_args:
                 - faft-cr50
@@ -11959,7 +11950,7 @@ plans:
           docs:
             - Set cellular modem state for DUTs in non-cellular pools.
           conditions:
-            - name: Is not in cellular pool
+            - name: Is not in cellular pool (RUN_ONCE)
               exec_name: dut_not_in_pool_regex
               exec_args:
                 - regex:(?i)^cellular|dut_pool_quota

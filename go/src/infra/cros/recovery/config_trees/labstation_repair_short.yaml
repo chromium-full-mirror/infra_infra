@@ -91,7 +91,7 @@ plans:
             - name: Powerwash repair labstation ('sample_pass')
               conditions:
                 - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
-                - name: Labstation not in auto-update exempted pool ('dut_not_in_pool')
+                - name: Labstation not in auto-update exempted pool ('dut_not_in_pool') (RUN_ONCE)
               dependencies:
                 - name: Write factory-install-reset to file system ('cros_run_shell_command')
                 - name: Labstation reboot ('sample_pass') (ALWAYS_RUN)
@@ -173,7 +173,7 @@ plans:
             - name: Powerwash repair labstation ('sample_pass')
               conditions:
                 - name: Device is SSHable ('cros_access') (ALWAYS_RUN) (time:'30s')
-                - name: Labstation not in auto-update exempted pool ('dut_not_in_pool')
+                - name: Labstation not in auto-update exempted pool ('dut_not_in_pool') (RUN_ONCE)
               dependencies:
                 - name: Write factory-install-reset to file system ('cros_run_shell_command')
                 - name: Labstation reboot ('sample_pass') (ALWAYS_RUN)
@@ -222,7 +222,7 @@ plans:
           conditions:
             - name: has_stable_version_cros_image
             - name: cros_kernel_priority_has_not_changed
-            - name: Labstation not in auto-update exempted pool ('dut_not_in_pool')
+            - name: Labstation not in auto-update exempted pool ('dut_not_in_pool') (RUN_ONCE)
           recoveries:
             - name: Install stable labstation image without reboot ('cros_provision') (time:'1h0m0s')
               conditions:

@@ -305,7 +305,7 @@ plans:
                   exec_name: cros_access
                   docs:
                     - This verifier checks whether the host is accessible over ssh.
-                - name: Labstation not in auto-update exempted pool
+                - name: Labstation not in auto-update exempted pool (RUN_ONCE)
                   exec_name: dut_not_in_pool
                   exec_args:
                     - servo_verification
@@ -581,7 +581,7 @@ plans:
                   exec_name: cros_access
                   docs:
                     - This verifier checks whether the host is accessible over ssh.
-                - name: Labstation not in auto-update exempted pool
+                - name: Labstation not in auto-update exempted pool (RUN_ONCE)
                   exec_name: dut_not_in_pool
                   exec_args:
                     - servo_verification
@@ -757,7 +757,7 @@ plans:
               exec_name: has_stable_version_cros_image
             - name: cros_kernel_priority_has_not_changed
               exec_name: cros_kernel_priority_has_not_changed
-            - name: Labstation not in auto-update exempted pool
+            - name: Labstation not in auto-update exempted pool (RUN_ONCE)
               exec_name: dut_not_in_pool
               exec_args:
                 - servo_verification
