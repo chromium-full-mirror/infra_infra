@@ -30,7 +30,7 @@ func TestQueryBuilder(t *testing.T) {
 
 		t.Run("query with all the clauses", func(t *ftt.Test) {
 			builder := NewQueryBuilder(table).WithSelectAllClause().WithFromClause().WithOffsetPagination(20, 10)
-			builder, err := builder.WithWhereClause("dut_state = available")
+			builder, err := builder.WithWhereClause("dut_state = available", nil)
 			assert.Loosely(t, err, should.BeNil)
 			builder, err = builder.WithOrderByClause("id desc", "")
 			assert.Loosely(t, err, should.BeNil)
@@ -48,7 +48,7 @@ func TestQueryBuilder(t *testing.T) {
 			builder.sqlLangType = BigQueryLangType
 			assert.Loosely(t, builder.sqlLangType, should.Equal(BigQueryLangType))
 			builder = builder.WithSelectAllClause().WithFromClause().WithOffsetPagination(20, 10)
-			builder, err := builder.WithWhereClause("dut_state = available")
+			builder, err := builder.WithWhereClause("dut_state = available", nil)
 			assert.Loosely(t, err, should.BeNil)
 			builder, err = builder.WithOrderByClause("id desc", "")
 			assert.Loosely(t, err, should.BeNil)

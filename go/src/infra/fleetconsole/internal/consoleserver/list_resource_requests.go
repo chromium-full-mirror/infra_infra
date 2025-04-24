@@ -13,6 +13,7 @@ import (
 	"cloud.google.com/go/civil"
 
 	"go.chromium.org/luci/common/data/aip132"
+	"go.chromium.org/luci/common/data/aip160"
 	"go.chromium.org/luci/common/logging"
 
 	"go.chromium.org/infra/fleetconsole/api/fleetconsolerpc"
@@ -138,6 +139,21 @@ func resourceRequestsOffsetToPageToken(offset int, req *fleetconsolerpc.ListReso
 	})
 }
 
+func comparableOverride(comparable *aip160.Comparable) (string, bool) {
+	if comparable.Member == nil {
+		return "", false
+	}
+	if len(comparable.Member.Fields) > 0 {
+		return "", false
+	}
+
+	if comparable.Member.Value != ExpectedEtaColumnKey {
+		return "", false
+	}
+
+	return fmt.Sprintf("COALESCE(%s, %s)", rri.ResourceRequestActualDeliveryDateColumn, rri.ResourceRequestTargetDeliveryDateColumn), true
+}
+
 // buildListResourceRequestsQuery uses queryutils to build a query for listing
 // resource requests.
 func buildListResourceRequestsQuery(ctx context.Context, bqClient *bigquery.Client, req *fleetconsolerpc.ListResourceRequestsRequest, offset int, isProd bool) (*bigquery.Query, error) {
@@ -145,7 +161,8 @@ func buildListResourceRequestsQuery(ctx context.Context, bqClient *bigquery.Clie
 	queryBuilder = queryBuilder.SetSqlLangType(queryutils.BigQueryLangType)
 	queryBuilder = queryBuilder.WithSelectAllClause()
 
-	queryBuilder, err := queryBuilder.WithWhereClause(req.GetFilter())
+	comparableOverridePtr := queryutils.ComparableOverride(comparableOverride)
+	queryBuilder, err := queryBuilder.WithWhereClause(req.GetFilter(), &comparableOverridePtr)
 	if err != nil {
 		logging.Errorf(ctx, "failed to build where clause: %s", err)
 		return nil, err

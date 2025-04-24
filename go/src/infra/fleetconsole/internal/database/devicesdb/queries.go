@@ -13,7 +13,7 @@ import (
 )
 
 func buildListDevicesQuery(ctx context.Context, offset, pageSize int, filter, orderby string, ids []string, realms []string) (*queryutils.Query, error) {
-	q, err := queryutils.NewQueryBuilder(DevicesTable).WithSelectAllClause(RealmColumn).WithFromClause().WithSpecificIdsFilter(ids).WithWhereClause(filter)
+	q, err := queryutils.NewQueryBuilder(DevicesTable).WithSelectAllClause(RealmColumn).WithFromClause().WithSpecificIdsFilter(ids).WithWhereClause(filter, nil)
 	if err != nil {
 		return nil, utils.InvalidFilterError(err)
 	}
@@ -48,7 +48,7 @@ func buildCountDevicesQuery(ctx context.Context, filter string, realms []string)
 		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'ready' THEN 1 ELSE NULL END) AS ready,
 		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'needs_manual_repair' THEN 1 ELSE NULL END) AS needs_manual_repair,
 		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'needs_repair' THEN 1 ELSE NULL END) AS needs_repair,
-		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'repair_failed' THEN 1 ELSE NULL END) AS repair_failed`).WithFromClause().WithWhereClause(filter)
+		COUNT(CASE WHEN labels -> 'dut_state' -> 'Values' ? 'repair_failed' THEN 1 ELSE NULL END) AS repair_failed`).WithFromClause().WithWhereClause(filter, nil)
 	if err != nil {
 		return nil, utils.InvalidFilterError(err)
 	}
