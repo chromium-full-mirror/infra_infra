@@ -21,7 +21,7 @@ func (frontend *FleetConsoleFrontend) PingDB(ctx context.Context, req *fleetcons
 	defer func() { err = grpcutil.GRPCifyAndLogErr(ctx, err) }()
 	logging.Infof(ctx, "beginning of ping db call")
 
-	ctx, cancel := context.WithDeadline(ctx, time.Now().Add(5*time.Second))
+	ctx, cancel := context.WithTimeout(ctx, time.Second)
 	defer cancel()
 	if err := sqldb.MustGetDB(ctx).PingContext(ctx); err != nil {
 		logging.Errorf(ctx, "ping db call failed: %s", err)
