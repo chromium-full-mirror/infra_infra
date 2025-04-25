@@ -3104,6 +3104,21 @@ plans:
                 - Quick audit internal storage by reading SMART data.
                 - The check updates storage state.
                 - The check is not critical as update storage state.
+            - name: Stop if DUT needs replacement
+              exec_name: dut_state_match
+              exec_args:
+                - state:needs_replacement
+                - invert:true
+              docs:
+                - Plan stopper if the DUT has state 'needs_replacement'.
+              recoveries:
+                - name: Place PROVISION repair-requests (ALWAYS_RUN)
+                  exec_name: dut_add_repair_requests
+                  exec_args:
+                    - requests:PROVISION
+                  docs:
+                    - 'Place repair-request: provision to reimage the DUT.'
+                    - The request will be applied when plan restarted and reached action to address it.
             - name: Audit device storage using badblocks (Allow to fail) (time:'1h40m0s')
               exec_name: cros_audit_storage_bad_blocks
               exec_args:
@@ -3112,3 +3127,45 @@ plans:
                 - ro_badblocks_timeout:3600
               docs:
                 - Use the badblocks command to audit the storage on the DUT
+            - name: Stop if DUT needs replacement
+              exec_name: dut_state_match
+              exec_args:
+                - state:needs_replacement
+                - invert:true
+              docs:
+                - Plan stopper if the DUT has state 'needs_replacement'.
+              recoveries:
+                - name: Place PROVISION repair-requests (ALWAYS_RUN)
+                  exec_name: dut_add_repair_requests
+                  exec_args:
+                    - requests:PROVISION
+                  docs:
+                    - 'Place repair-request: provision to reimage the DUT.'
+                    - The request will be applied when plan restarted and reached action to address it.
+            - name: Audit device storage comparing partition hash (Allow to fail) (RUN_ONCE) (time:'10m0s')
+              exec_name: cros_audit_storage_partition_hash
+              docs:
+                - Use dd to copy root partition and compare the hashes
+                - DUT must be reimaged afterwards
+            - name: Stop if DUT needs replacement
+              exec_name: dut_state_match
+              exec_args:
+                - state:needs_replacement
+                - invert:true
+              docs:
+                - Plan stopper if the DUT has state 'needs_replacement'.
+              recoveries:
+                - name: Place PROVISION repair-requests (ALWAYS_RUN)
+                  exec_name: dut_add_repair_requests
+                  exec_args:
+                    - requests:PROVISION
+                  docs:
+                    - 'Place repair-request: provision to reimage the DUT.'
+                    - The request will be applied when plan restarted and reached action to address it.
+            - name: Place REIMAGE_BY_USBKEY repair-requests (ALWAYS_RUN)
+              exec_name: dut_add_repair_requests
+              exec_args:
+                - requests:REIMAGE_BY_USBKEY
+              docs:
+                - 'Place repair-request: reimage the DUT from USB.'
+                - The request will be applied when plan restarted and reached action to address it.

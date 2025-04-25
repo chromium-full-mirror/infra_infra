@@ -499,7 +499,12 @@ func crosRepairActions() map[string]*Action {
 				// Just to be sure that audit executed on good OS version.
 				"DUT has correct cros image version",
 				"Audit storage (SMART only)",
+				"Stop if DUT needs replacement",
 				"Audit device storage using badblocks",
+				"Stop if DUT needs replacement",
+				"Audit device storage comparing partition hash",
+				"Stop if DUT needs replacement",
+				"Place REIMAGE_BY_USBKEY repair-requests",
 			},
 			ExecName: "sample_pass",
 		},
@@ -525,6 +530,18 @@ func crosRepairActions() map[string]*Action {
 				"rw_badblocks_timeout:5400",
 				"ro_badblocks_timeout:3600",
 			},
+			AllowFailAfterRecovery: true,
+		},
+		"Audit device storage comparing partition hash": {
+			Docs: []string{
+				"Use dd to copy root partition and compare the hashes",
+				"DUT must be reimaged afterwards",
+			},
+			ExecName: "cros_audit_storage_partition_hash",
+			ExecTimeout: &durationpb.Duration{
+				Seconds: 600,
+			},
+			RunControl:             RunControl_RUN_ONCE,
 			AllowFailAfterRecovery: true,
 		},
 		"Restore HWID from inventory": {

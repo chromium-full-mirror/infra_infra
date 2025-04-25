@@ -925,4 +925,15 @@ plans:
                     - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                     - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Audit storage (SMART only) (Allow to fail) ('cros_audit_storage_smart')
+            - name: Stop if DUT needs replacement ('dut_state_match')
+              recoveries:
+                - name: Place PROVISION repair-requests ('dut_add_repair_requests') (ALWAYS_RUN)
             - name: Audit device storage using badblocks (Allow to fail) ('cros_audit_storage_bad_blocks') (time:'1h40m0s')
+            - name: Stop if DUT needs replacement ('dut_state_match')
+              recoveries:
+                - name: Place PROVISION repair-requests ('dut_add_repair_requests') (ALWAYS_RUN)
+            - name: Audit device storage comparing partition hash (Allow to fail) ('cros_audit_storage_partition_hash') (RUN_ONCE) (time:'10m0s')
+            - name: Stop if DUT needs replacement ('dut_state_match')
+              recoveries:
+                - name: Place PROVISION repair-requests ('dut_add_repair_requests') (ALWAYS_RUN)
+            - name: Place REIMAGE_BY_USBKEY repair-requests ('dut_add_repair_requests') (ALWAYS_RUN)
