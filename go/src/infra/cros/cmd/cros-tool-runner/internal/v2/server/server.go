@@ -207,7 +207,7 @@ func (s *ContainerServerImpl) StartContainer(ctx context.Context, request *api.S
 	if s.cachedLoginRegistryRequest != nil {
 		// If time since the last authentication is greater than
 		// the allowed amount, re-authenicate.
-		timeSinceAuth := time.Now().Sub(s.lastAuth)
+		timeSinceAuth := time.Since(s.lastAuth)
 		if timeSinceAuth >= reauthTime {
 			log.Printf("Last authentication happened %s ago, re-authenticating", timeSinceAuth.String())
 			_, err := s.LoginRegistry(ctx, s.cachedLoginRegistryRequest)
