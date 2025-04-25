@@ -36,8 +36,8 @@ func mhRepairPlan() *Plan {
 			"Android: Has repair-request for re-provision",
 			"Provision to stable-version if required",
 			"Reset provisioned info",
+			"Verify by host that DUT has default GBB flags",
 			"Verify that DUT is not in DEV mode",
-			"Verify that DUT has default GBB flags",
 			"Missing HWID",
 			"Match HWID",
 			"Reset provisioned info",
@@ -135,8 +135,8 @@ func crosRepairActions() map[string]*Action {
 				"Verify RO_VPD dsm_calib",
 				"Verify RO_VPD data on DUT",
 				"Default boot set as internal storage",
+				"Verify by host that DUT has default GBB flags",
 				"Verify that DUT is not in DEV mode",
-				"Verify that DUT has default GBB flags",
 				"Missing HWID",
 				"Missing serial-number",
 				"Match HWID",
@@ -2194,37 +2194,82 @@ func crosRepairActions() map[string]*Action {
 				"Quick provision OS",
 			},
 		},
-		"Verify that DUT has default GBB flags": {
+		"Verify by host that DUT has default GBB flags": {
 			Docs: []string{
 				"Check if the device booted with default GBB flags.",
 			},
 			Conditions: []string{
 				"Is a Chromebook",
-				"Pools required to manage FW on the device",
+				"Pools required to be in Secure mode",
 			},
-			ExecName: "cros_is_booted_in_secure_mode",
+			ExecName: "cros_has_default_gbb_flags",
 			RecoveryActions: []string{
-				"Switch to secure-mode and reboot",
+				"Reset GBB flags by host and reboot",
+				"Set defautlt GBB flags by servo and reboot",
 				"Install Android OS by booting from servo USB-drive",
 				"Foil: Install Android OS from servo USB-drive",
 				"Quick provision OS",
 			},
 		},
+		"Verify by servo that DUT has default GBB flags": {
+			Docs: []string{
+				fmt.Sprintf("Check if GBB 0x%x set to dev more.", gbb.DevUsbDefault),
+			},
+			Conditions: []string{
+				"Is a Chromebook",
+				"Setup has servo info",
+				"Pools required to manage FW on the device",
+			},
+			Dependencies: []string{
+				"Is servod running",
+			},
+			ExecName: "cros_read_gbb_by_servo",
+			ExecExtraArgs: []string{
+				fmt.Sprintf("expected_gbb:0x%x", gbb.DevUsbDefault),
+			},
+			ExecTimeout: &durationpb.Duration{Seconds: 300},
+			RecoveryActions: []string{
+				"Set defautlt GBB flags by servo and reboot",
+			},
+		},
+		"Set defautlt GBB flags by servo and reboot": {
+			Docs: []string{
+				"This repair to set GBB to defaul and reboot.",
+			},
+			Conditions: []string{
+				"Is a Chromebook",
+			},
+			Dependencies: []string{
+				"Set defautlt GBB flags by servo",
+				"Cold reset DUT by servo",
+				"Wait to be pingable (normal boot)",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Set defautlt GBB flags by servo": {
+			Docs: []string{
+				fmt.Sprintf("Check if GBB 0x%x set to dev more.", gbb.DefaultFlags),
+			},
+			Conditions: []string{
+				"Is a Chromebook",
+			},
+			Dependencies: []string{
+				"Is servod running",
+			},
+			ExecName: "cros_set_gbb_by_servo",
+			ExecExtraArgs: []string{
+				fmt.Sprintf("gbb_flags:0x%x", gbb.DefaultFlags),
+			},
+			ExecTimeout:            &durationpb.Duration{Seconds: 300},
+			AllowFailAfterRecovery: true,
+			RunControl:             RunControl_ALWAYS_RUN,
+		},
 		"Is not booted in secure mode (condition)": {
 			Docs: []string{
 				"Check if the device is not booted in secure mode.",
 			},
-			Conditions: []string{
-				"Booted in secure mode (condition)",
-			},
-			ExecName:   "sample_fail",
-			RunControl: RunControl_ALWAYS_RUN,
-		},
-		"Booted in secure mode (condition)": {
-			Docs: []string{
-				"Check if the device booted in secure mode.",
-			},
-			ExecName:   "cros_is_booted_in_secure_mode",
+			ExecName:   "cros_is_not_in_dev_mode",
 			RunControl: RunControl_ALWAYS_RUN,
 		},
 		"Missing HWID": {
@@ -2756,18 +2801,12 @@ func crosRepairActions() map[string]*Action {
 		},
 		"Switch to secure-mode and reboot": {
 			Docs: []string{
-				"This repair action utilizes the dependent actions to set the",
-				" GBB flags and disable booting into dev-mode. Then it reboots",
-				" the DUT.",
+				"This repair action is disable booting into dev-mode.",
 			},
 			Conditions: []string{
-				//TODO(b:231640496): flex board unpingable after switching to secure-mode.
 				"Is a Chromebook",
-				"Pools required to be in Secure mode",
-				"Is not booted in secure mode (condition)",
 			},
 			Dependencies: []string{
-				"Reset GBB flags by host",
 				"Disables booting into DEV-mode",
 				"Simple reboot",
 				"Wait to be pingable (normal boot)",
@@ -2777,13 +2816,26 @@ func crosRepairActions() map[string]*Action {
 			ExecTimeout: &durationpb.Duration{Seconds: 150},
 			RunControl:  RunControl_ALWAYS_RUN,
 		},
-		"Reset GBB flags by host": {
+		"Reset GBB flags by host and reboot": {
 			Docs: []string{
-				"This action sets the GBB flags to the default value.",
+				"This repair to set GBB to defaul and reboot.",
+			},
+			Conditions: []string{
+				"Is a Chromebook",
 			},
 			Dependencies: []string{
 				"Disable software-controlled write-protect for 'internal'",
 				"Disable software-controlled write-protect for 'ec'",
+				"Reset GBB flags by host",
+				"Simple reboot",
+				"Wait to be pingable (normal boot)",
+			},
+			ExecName:   "sample_pass",
+			RunControl: RunControl_ALWAYS_RUN,
+		},
+		"Reset GBB flags by host": {
+			Docs: []string{
+				"This action sets the GBB flags to the default value.",
 			},
 			ExecName: "cros_set_gbb_flags",
 			ExecExtraArgs: []string{

@@ -10862,11 +10862,10 @@ plans:
           exec_name: cros_reset_provision_info
           docs:
             - Reset all provision info.
-        - name: Verify that DUT is not in DEV mode
-          exec_name: cros_is_not_in_dev_mode
+        - name: Verify by host that DUT has default GBB flags
+          exec_name: cros_has_default_gbb_flags
           docs:
-            - Verify that devices is not in DEV mode.
-            - Mostly devices in the lab required to be in Secure mode, not DEV mode.
+            - Check if the device booted with default GBB flags.
           conditions:
             - name: Is a Chromebook (RUN_ONCE)
               exec_name: dut_check_board
@@ -10893,12 +10892,10 @@ plans:
                   docs:
                     - Verify that pools are allowed to stay in DEV mode.
           recoveries:
-            - name: Switch to secure-mode and reboot (ALWAYS_RUN) (time:'2m30s')
-              exec_name: cros_access
+            - name: Reset GBB flags by host and reboot (ALWAYS_RUN)
+              exec_name: sample_pass
               docs:
-                - This repair action utilizes the dependent actions to set the
-                - ' GBB flags and disable booting into dev-mode. Then it reboots'
-                - ' the DUT.'
+                - This repair to set GBB to defaul and reboot.
               conditions:
                 - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
@@ -10907,68 +10904,37 @@ plans:
                     - invert_result:true
                   docs:
                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                - name: Pools required to be in Secure mode (RUN_ONCE)
-                  exec_name: sample_fail
-                  docs:
-                    - Verify that DUT need to be in Secure mode.
-                  conditions:
-                    - name: Pools allowed to stay in DEV mode (RUN_ONCE)
-                      exec_name: dut_is_in_pool
-                      exec_args:
-                        - crouton
-                        - faft-test
-                        - faft-test-au
-                        - faft-test-tot
-                        - nyc-meet-lab
-                        - satlab_faft
-                        - mp_firmware_testing
-                      docs:
-                        - Verify that pools are allowed to stay in DEV mode.
-                - name: Is not booted in secure mode (condition) (ALWAYS_RUN)
-                  exec_name: sample_fail
-                  docs:
-                    - Check if the device is not booted in secure mode.
-                  conditions:
-                    - name: Booted in secure mode (condition) (ALWAYS_RUN)
-                      exec_name: cros_is_booted_in_secure_mode
-                      docs:
-                        - Check if the device booted in secure mode.
               dependencies:
+                - name: Disable software-controlled write-protect for 'internal' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
+                  exec_name: cros_disable_fprom_write_protect
+                  exec_args:
+                    - fprom:internal
+                  docs:
+                    - Disable write-protect fprom 'internal'.
+                  dependencies:
+                    - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                      exec_name: cros_access
+                      docs:
+                        - Verify that device is reachable by SSH.
+                        - Limited to 15 seconds.
+                - name: Disable software-controlled write-protect for 'ec' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
+                  exec_name: cros_disable_fprom_write_protect
+                  exec_args:
+                    - fprom:ec
+                  docs:
+                    - Disable write-protect fprom 'ec'.
+                  dependencies:
+                    - name: Device is accessible (ALWAYS_RUN) (time:'15s')
+                      exec_name: cros_access
+                      docs:
+                        - Verify that device is reachable by SSH.
+                        - Limited to 15 seconds.
                 - name: Reset GBB flags by host (Allow to fail) (ALWAYS_RUN) (time:'3m0s')
                   exec_name: cros_set_gbb_flags
                   exec_args:
                     - gbb_flags:0x80000000
                   docs:
                     - This action sets the GBB flags to the default value.
-                  dependencies:
-                    - name: Disable software-controlled write-protect for 'internal' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
-                      exec_name: cros_disable_fprom_write_protect
-                      exec_args:
-                        - fprom:internal
-                      docs:
-                        - Disable write-protect fprom 'internal'.
-                      dependencies:
-                        - name: Device is accessible (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_access
-                          docs:
-                            - Verify that device is reachable by SSH.
-                            - Limited to 15 seconds.
-                    - name: Disable software-controlled write-protect for 'ec' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
-                      exec_name: cros_disable_fprom_write_protect
-                      exec_args:
-                        - fprom:ec
-                      docs:
-                        - Disable write-protect fprom 'ec'.
-                      dependencies:
-                        - name: Device is accessible (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_access
-                          docs:
-                            - Verify that device is reachable by SSH.
-                            - Limited to 15 seconds.
-                - name: Disables booting into DEV-mode (Allow to fail) (ALWAYS_RUN)
-                  exec_name: cros_switch_to_secure_mode
-                  docs:
-                    - This action disables booting into dev-mode.
                 - name: Simple reboot (ALWAYS_RUN)
                   exec_name: cros_run_command
                   exec_args:
@@ -10982,21 +10948,75 @@ plans:
                   docs:
                     - Wait DUT to be pingable after some action on it.
                     - Waiting time 150 seconds.
-                - name: ADB reconnect (ALWAYS_RUN)
-                  exec_name: ctr_adb_connect
+            - name: Set defautlt GBB flags by servo and reboot (ALWAYS_RUN)
+              exec_name: sample_pass
+              docs:
+                - This repair to set GBB to defaul and reboot.
+              conditions:
+                - name: Is a Chromebook (RUN_ONCE)
+                  exec_name: dut_check_board
                   exec_args:
-                    - retry_count:3
-                    - retry_interval:1
-                    - timeout:10
-                    - skip_when_connected:true
+                    - string_values:aurora,reven
+                    - invert_result:true
                   docs:
-                    - Connect to DUT by ADB if not connected.
-                    - Only executed if DUT is Android based.
+                    - Check that DUT is a Chromebook by checking for non-Chromebook boards
+              dependencies:
+                - name: Set defautlt GBB flags by servo (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
+                  exec_name: cros_set_gbb_by_servo
+                  exec_args:
+                    - gbb_flags:0x80000000
+                  docs:
+                    - Check if GBB 0x80000000 set to dev more.
                   conditions:
-                    - name: Is Android based on previous DUT OS
-                      exec_name: cros_is_previous_android_os_type
+                    - name: Is a Chromebook (RUN_ONCE)
+                      exec_name: dut_check_board
+                      exec_args:
+                        - string_values:aurora,reven
+                        - invert_result:true
                       docs:
-                        - Validate that OS on the DUT was provisioned with Android.
+                        - Check that DUT is a Chromebook by checking for non-Chromebook boards
+                  dependencies:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info (RUN_ONCE)
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          dependencies:
+                            - name: Setup has servo info (RUN_ONCE)
+                              exec_name: dut_servo_host_present
+                - name: Cold reset DUT by servo (ALWAYS_RUN)
+                  exec_name: servo_power_state_reset
+                  exec_args:
+                    - timeout:30
+                    - more_logs:true
+                  docs:
+                    - Cold reset device by servo and do not wait.
+                  dependencies:
+                    - name: Is servod running (ALWAYS_RUN)
+                      exec_name: sample_pass
+                      docs:
+                        - Verify that servo host specified in setup and servod is running.
+                      dependencies:
+                        - name: Setup has servo info (RUN_ONCE)
+                          exec_name: dut_servo_host_present
+                        - name: Verify servod is responsive (ALWAYS_RUN) (time:'10s')
+                          exec_name: servod_echo
+                          exec_args:
+                            - ssh_check:false
+                          dependencies:
+                            - name: Setup has servo info (RUN_ONCE)
+                              exec_name: dut_servo_host_present
+                - name: Wait to be pingable (normal boot) (ALWAYS_RUN) (time:'2m30s')
+                  exec_name: cros_ping
+                  docs:
+                    - Wait DUT to be pingable after some action on it.
+                    - Waiting time 150 seconds.
             - name: Install Android OS by booting from servo USB-drive (ALWAYS_RUN)
               exec_name: sample_pass
               docs:
@@ -11225,10 +11245,11 @@ plans:
                     - requests:PROVISION
                   docs:
                     - Remove a PROVISION repair-request.
-        - name: Verify that DUT has default GBB flags
-          exec_name: cros_is_booted_in_secure_mode
+        - name: Verify that DUT is not in DEV mode
+          exec_name: cros_is_not_in_dev_mode
           docs:
-            - Check if the device booted with default GBB flags.
+            - Verify that devices is not in DEV mode.
+            - Mostly devices in the lab required to be in Secure mode, not DEV mode.
           conditions:
             - name: Is a Chromebook (RUN_ONCE)
               exec_name: dut_check_board
@@ -11237,28 +11258,28 @@ plans:
                 - invert_result:true
               docs:
                 - Check that DUT is a Chromebook by checking for non-Chromebook boards
-            - name: Pools required to manage FW on the device (RUN_ONCE)
-              exec_name: dut_not_in_pool
-              exec_args:
-                - faft-test
-                - faft-test-tot
-                - faft-test-experiment
-                - faft_test_debug
-                - faft-cr50
-                - faft-cr50-debug
-                - faft-cr50-experimental
-                - faft-cr50-tot
-                - faft-experimental
-                - satlab_faft
+            - name: Pools required to be in Secure mode (RUN_ONCE)
+              exec_name: sample_fail
               docs:
-                - Verify that device we check in the pool which not required fw management.
+                - Verify that DUT need to be in Secure mode.
+              conditions:
+                - name: Pools allowed to stay in DEV mode (RUN_ONCE)
+                  exec_name: dut_is_in_pool
+                  exec_args:
+                    - crouton
+                    - faft-test
+                    - faft-test-au
+                    - faft-test-tot
+                    - nyc-meet-lab
+                    - satlab_faft
+                    - mp_firmware_testing
+                  docs:
+                    - Verify that pools are allowed to stay in DEV mode.
           recoveries:
             - name: Switch to secure-mode and reboot (ALWAYS_RUN) (time:'2m30s')
               exec_name: cros_access
               docs:
-                - This repair action utilizes the dependent actions to set the
-                - ' GBB flags and disable booting into dev-mode. Then it reboots'
-                - ' the DUT.'
+                - This repair action is disable booting into dev-mode.
               conditions:
                 - name: Is a Chromebook (RUN_ONCE)
                   exec_name: dut_check_board
@@ -11267,64 +11288,7 @@ plans:
                     - invert_result:true
                   docs:
                     - Check that DUT is a Chromebook by checking for non-Chromebook boards
-                - name: Pools required to be in Secure mode (RUN_ONCE)
-                  exec_name: sample_fail
-                  docs:
-                    - Verify that DUT need to be in Secure mode.
-                  conditions:
-                    - name: Pools allowed to stay in DEV mode (RUN_ONCE)
-                      exec_name: dut_is_in_pool
-                      exec_args:
-                        - crouton
-                        - faft-test
-                        - faft-test-au
-                        - faft-test-tot
-                        - nyc-meet-lab
-                        - satlab_faft
-                        - mp_firmware_testing
-                      docs:
-                        - Verify that pools are allowed to stay in DEV mode.
-                - name: Is not booted in secure mode (condition) (ALWAYS_RUN)
-                  exec_name: sample_fail
-                  docs:
-                    - Check if the device is not booted in secure mode.
-                  conditions:
-                    - name: Booted in secure mode (condition) (ALWAYS_RUN)
-                      exec_name: cros_is_booted_in_secure_mode
-                      docs:
-                        - Check if the device booted in secure mode.
               dependencies:
-                - name: Reset GBB flags by host (Allow to fail) (ALWAYS_RUN) (time:'3m0s')
-                  exec_name: cros_set_gbb_flags
-                  exec_args:
-                    - gbb_flags:0x80000000
-                  docs:
-                    - This action sets the GBB flags to the default value.
-                  dependencies:
-                    - name: Disable software-controlled write-protect for 'internal' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
-                      exec_name: cros_disable_fprom_write_protect
-                      exec_args:
-                        - fprom:internal
-                      docs:
-                        - Disable write-protect fprom 'internal'.
-                      dependencies:
-                        - name: Device is accessible (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_access
-                          docs:
-                            - Verify that device is reachable by SSH.
-                            - Limited to 15 seconds.
-                    - name: Disable software-controlled write-protect for 'ec' (Allow to fail) (ALWAYS_RUN) (time:'5m0s')
-                      exec_name: cros_disable_fprom_write_protect
-                      exec_args:
-                        - fprom:ec
-                      docs:
-                        - Disable write-protect fprom 'ec'.
-                      dependencies:
-                        - name: Device is accessible (ALWAYS_RUN) (time:'15s')
-                          exec_name: cros_access
-                          docs:
-                            - Verify that device is reachable by SSH.
-                            - Limited to 15 seconds.
                 - name: Disables booting into DEV-mode (Allow to fail) (ALWAYS_RUN)
                   exec_name: cros_switch_to_secure_mode
                   docs:

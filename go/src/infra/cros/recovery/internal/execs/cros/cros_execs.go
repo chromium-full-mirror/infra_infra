@@ -186,17 +186,12 @@ func isNotInDevModeExec(ctx context.Context, info *execs.ExecInfo) error {
 	return errors.Annotate(err, "not in dev mode").Err()
 }
 
-// isBootedInSecureModeExec checks is device booted in secure mode.
-func isBootedInSecureModeExec(ctx context.Context, info *execs.ExecInfo) error {
+// hasDefaultGBBFlagsByHostExec checks that device has default GBB flags.
+func hasDefaultGBBFlagsByHostExec(ctx context.Context, info *execs.ExecInfo) error {
 	run := info.DefaultRunner()
-	if err := cros.MatchCrossystemValueToExpectation(ctx, run, "devsw_boot", "0"); err != nil {
-		return errors.Annotate(err, "is booted in secure mode").Err()
-	}
-	checkTimeout := 15 * time.Second
-	runTimeout := info.GetExecTimeout() - checkTimeout
 	// New CMD supported from R111-15306.0.0 of ChromeOS.
 	const readGbbCmd = "futility gbb --get --flash --flags"
-	out, err := run(ctx, runTimeout, readGbbCmd)
+	out, err := run(ctx, info.GetExecTimeout(), readGbbCmd)
 	if err != nil {
 		return errors.Annotate(err, "is booted in secure mode").Err()
 	}
@@ -459,7 +454,7 @@ func init() {
 	execs.Register("cros_is_default_boot_from_disk", isDefaultBootFromDiskExec)
 	execs.Register("cros_is_not_in_dev_mode", isNotInDevModeExec)
 	execs.Register("cros_is_on_expected_version", isOnExpectedVersionExec)
-	execs.Register("cros_is_booted_in_secure_mode", isBootedInSecureModeExec)
+	execs.Register("cros_has_default_gbb_flags", hasDefaultGBBFlagsByHostExec)
 	execs.Register("cros_run_shell_command", runShellCommandExec)
 	execs.Register("cros_run_command", runCommandExec)
 	execs.Register("cros_is_file_system_writable", isFileSystemWritableExec)

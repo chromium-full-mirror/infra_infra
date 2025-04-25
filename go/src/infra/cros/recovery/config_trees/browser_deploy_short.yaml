@@ -32289,37 +32289,49 @@ plans:
                             - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                     - name: Sleep 1s (Allow to fail) ('sample_sleep') (ALWAYS_RUN)
-            - name: Verify that DUT is not in DEV mode ('cros_is_not_in_dev_mode')
+            - name: Verify by host that DUT has default GBB flags ('cros_has_default_gbb_flags')
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Pools required to be in Secure mode ('sample_fail') (RUN_ONCE)
                   conditions:
                     - name: Pools allowed to stay in DEV mode ('dut_is_in_pool') (RUN_ONCE)
               recoveries:
-                - name: Switch to secure-mode and reboot ('cros_access') (ALWAYS_RUN) (time:'2m30s')
+                - name: Reset GBB flags by host and reboot ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
-                    - name: Pools required to be in Secure mode ('sample_fail') (RUN_ONCE)
-                      conditions:
-                        - name: Pools allowed to stay in DEV mode ('dut_is_in_pool') (RUN_ONCE)
-                    - name: Is not booted in secure mode (condition) ('sample_fail') (ALWAYS_RUN)
-                      conditions:
-                        - name: Booted in secure mode (condition) ('cros_is_booted_in_secure_mode') (ALWAYS_RUN)
                   dependencies:
-                    - name: Reset GBB flags by host (Allow to fail) ('cros_set_gbb_flags') (ALWAYS_RUN) (time:'3m0s')
+                    - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                       dependencies:
-                        - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
-                          dependencies:
-                            - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
-                        - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
-                          dependencies:
-                            - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
-                    - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
+                        - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
+                    - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
+                      dependencies:
+                        - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
+                    - name: Reset GBB flags by host (Allow to fail) ('cros_set_gbb_flags') (ALWAYS_RUN) (time:'3m0s')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
-                    - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                - name: Set defautlt GBB flags by servo and reboot ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                  dependencies:
+                    - name: Set defautlt GBB flags by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                       conditions:
-                        - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Cold reset DUT by servo ('servo_power_state_reset') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -32381,29 +32393,17 @@ plans:
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-            - name: Verify that DUT has default GBB flags ('cros_is_booted_in_secure_mode')
+            - name: Verify that DUT is not in DEV mode ('cros_is_not_in_dev_mode')
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
-                - name: Pools required to manage FW on the device ('dut_not_in_pool') (RUN_ONCE)
+                - name: Pools required to be in Secure mode ('sample_fail') (RUN_ONCE)
+                  conditions:
+                    - name: Pools allowed to stay in DEV mode ('dut_is_in_pool') (RUN_ONCE)
               recoveries:
                 - name: Switch to secure-mode and reboot ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
-                    - name: Pools required to be in Secure mode ('sample_fail') (RUN_ONCE)
-                      conditions:
-                        - name: Pools allowed to stay in DEV mode ('dut_is_in_pool') (RUN_ONCE)
-                    - name: Is not booted in secure mode (condition) ('sample_fail') (ALWAYS_RUN)
-                      conditions:
-                        - name: Booted in secure mode (condition) ('cros_is_booted_in_secure_mode') (ALWAYS_RUN)
                   dependencies:
-                    - name: Reset GBB flags by host (Allow to fail) ('cros_set_gbb_flags') (ALWAYS_RUN) (time:'3m0s')
-                      dependencies:
-                        - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
-                          dependencies:
-                            - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
-                        - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
-                          dependencies:
-                            - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                     - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
@@ -37602,37 +37602,49 @@ plans:
                         - name: Wait to be accessible ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                         - name: Remove REIMAGE_BY_USBKEY repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
             - name: Reset provisioned info ('cros_reset_provision_info') (ALWAYS_RUN)
-            - name: Verify that DUT is not in DEV mode ('cros_is_not_in_dev_mode')
+            - name: Verify by host that DUT has default GBB flags ('cros_has_default_gbb_flags')
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
                 - name: Pools required to be in Secure mode ('sample_fail') (RUN_ONCE)
                   conditions:
                     - name: Pools allowed to stay in DEV mode ('dut_is_in_pool') (RUN_ONCE)
               recoveries:
-                - name: Switch to secure-mode and reboot ('cros_access') (ALWAYS_RUN) (time:'2m30s')
+                - name: Reset GBB flags by host and reboot ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
-                    - name: Pools required to be in Secure mode ('sample_fail') (RUN_ONCE)
-                      conditions:
-                        - name: Pools allowed to stay in DEV mode ('dut_is_in_pool') (RUN_ONCE)
-                    - name: Is not booted in secure mode (condition) ('sample_fail') (ALWAYS_RUN)
-                      conditions:
-                        - name: Booted in secure mode (condition) ('cros_is_booted_in_secure_mode') (ALWAYS_RUN)
                   dependencies:
-                    - name: Reset GBB flags by host (Allow to fail) ('cros_set_gbb_flags') (ALWAYS_RUN) (time:'3m0s')
+                    - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
                       dependencies:
-                        - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
-                          dependencies:
-                            - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
-                        - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
-                          dependencies:
-                            - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
-                    - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
+                        - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
+                    - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
+                      dependencies:
+                        - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
+                    - name: Reset GBB flags by host (Allow to fail) ('cros_set_gbb_flags') (ALWAYS_RUN) (time:'3m0s')
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
-                    - name: ADB reconnect ('ctr_adb_connect') (ALWAYS_RUN)
+                - name: Set defautlt GBB flags by servo and reboot ('sample_pass') (ALWAYS_RUN)
+                  conditions:
+                    - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                  dependencies:
+                    - name: Set defautlt GBB flags by servo (Allow to fail) ('cros_set_gbb_by_servo') (ALWAYS_RUN) (time:'5m0s')
                       conditions:
-                        - name: Is Android based on previous DUT OS ('cros_is_previous_android_os_type')
+                        - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Cold reset DUT by servo ('servo_power_state_reset') (ALWAYS_RUN)
+                      dependencies:
+                        - name: Is servod running ('sample_pass') (ALWAYS_RUN)
+                          dependencies:
+                            - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                            - name: Verify servod is responsive ('servod_echo') (ALWAYS_RUN) (time:'10s')
+                              dependencies:
+                                - name: Setup has servo info ('dut_servo_host_present') (RUN_ONCE)
+                    - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
                 - name: Install Android OS by booting from servo USB-drive ('sample_pass') (ALWAYS_RUN)
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
@@ -37694,29 +37706,17 @@ plans:
                   dependencies:
                     - name: Call provision for DUT ('cros_provision') (ALWAYS_RUN) (time:'1h0m0s')
                     - name: Remove PROVISION repair-request ('dut_remove_repair_requests') (ALWAYS_RUN)
-            - name: Verify that DUT has default GBB flags ('cros_is_booted_in_secure_mode')
+            - name: Verify that DUT is not in DEV mode ('cros_is_not_in_dev_mode')
               conditions:
                 - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
-                - name: Pools required to manage FW on the device ('dut_not_in_pool') (RUN_ONCE)
+                - name: Pools required to be in Secure mode ('sample_fail') (RUN_ONCE)
+                  conditions:
+                    - name: Pools allowed to stay in DEV mode ('dut_is_in_pool') (RUN_ONCE)
               recoveries:
                 - name: Switch to secure-mode and reboot ('cros_access') (ALWAYS_RUN) (time:'2m30s')
                   conditions:
                     - name: Is a Chromebook ('dut_check_board') (RUN_ONCE)
-                    - name: Pools required to be in Secure mode ('sample_fail') (RUN_ONCE)
-                      conditions:
-                        - name: Pools allowed to stay in DEV mode ('dut_is_in_pool') (RUN_ONCE)
-                    - name: Is not booted in secure mode (condition) ('sample_fail') (ALWAYS_RUN)
-                      conditions:
-                        - name: Booted in secure mode (condition) ('cros_is_booted_in_secure_mode') (ALWAYS_RUN)
                   dependencies:
-                    - name: Reset GBB flags by host (Allow to fail) ('cros_set_gbb_flags') (ALWAYS_RUN) (time:'3m0s')
-                      dependencies:
-                        - name: Disable software-controlled write-protect for 'internal' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
-                          dependencies:
-                            - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
-                        - name: Disable software-controlled write-protect for 'ec' (Allow to fail) ('cros_disable_fprom_write_protect') (ALWAYS_RUN) (time:'5m0s')
-                          dependencies:
-                            - name: Device is accessible ('cros_access') (ALWAYS_RUN) (time:'15s')
                     - name: Disables booting into DEV-mode (Allow to fail) ('cros_switch_to_secure_mode') (ALWAYS_RUN)
                     - name: Simple reboot ('cros_run_command') (ALWAYS_RUN)
                     - name: Wait to be pingable (normal boot) ('cros_ping') (ALWAYS_RUN) (time:'2m30s')
